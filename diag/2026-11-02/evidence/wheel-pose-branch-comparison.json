@@ -1,0 +1,233 @@
+{
+  "rows": [
+    {
+      "branch": "smooth-tag",
+      "queries": 50000,
+      "timing": [
+        {
+          "mode": "reference",
+          "wallMs": 33.79552100000001,
+          "threadMs": 31.907
+        },
+        {
+          "mode": "cached",
+          "wallMs": 95.64239600000002,
+          "threadMs": 94.074
+        },
+        {
+          "mode": "cached",
+          "wallMs": 88.90703100000007,
+          "threadMs": 87.66
+        },
+        {
+          "mode": "reference",
+          "wallMs": 24.53546899999992,
+          "threadMs": 23.872
+        },
+        {
+          "mode": "reference",
+          "wallMs": 24.512865000000033,
+          "threadMs": 27.916
+        },
+        {
+          "mode": "cached",
+          "wallMs": 111.85895800000003,
+          "threadMs": 85.641
+        },
+        {
+          "mode": "cached",
+          "wallMs": 100.822136,
+          "threadMs": 88.853
+        },
+        {
+          "mode": "reference",
+          "wallMs": 24.637707999999975,
+          "threadMs": 23.906
+        },
+        {
+          "mode": "reference",
+          "wallMs": 24.533750000000055,
+          "threadMs": 23.81
+        },
+        {
+          "mode": "cached",
+          "wallMs": 89.80338500000005,
+          "threadMs": 90.944
+        },
+        {
+          "mode": "cached",
+          "wallMs": 88.63906200000008,
+          "threadMs": 86.679
+        },
+        {
+          "mode": "reference",
+          "wallMs": 22.72859399999993,
+          "threadMs": 19.849
+        }
+      ],
+      "allocations": [
+        {
+          "mode": "reference",
+          "MiB": 31.16100311279297
+        },
+        {
+          "mode": "cached",
+          "MiB": 37.773765563964844
+        }
+      ]
+    },
+    {
+      "branch": "smooth-bounds",
+      "queries": 50000,
+      "timing": [
+        {
+          "mode": "reference",
+          "wallMs": 23.537708000000066,
+          "threadMs": 23.945
+        },
+        {
+          "mode": "cached",
+          "wallMs": 96.163229,
+          "threadMs": 94.033
+        },
+        {
+          "mode": "cached",
+          "wallMs": 115.55234399999995,
+          "threadMs": 114.766
+        },
+        {
+          "mode": "reference",
+          "wallMs": 47.23895900000002,
+          "threadMs": 47.803
+        },
+        {
+          "mode": "reference",
+          "wallMs": 47.15802099999996,
+          "threadMs": 43.819
+        },
+        {
+          "mode": "cached",
+          "wallMs": 115.42760399999997,
+          "threadMs": 115.462
+        },
+        {
+          "mode": "cached",
+          "wallMs": 113.03307299999983,
+          "threadMs": 115.396
+        },
+        {
+          "mode": "reference",
+          "wallMs": 47.234322999999904,
+          "threadMs": 43.739
+        },
+        {
+          "mode": "reference",
+          "wallMs": 47.2222919999997,
+          "threadMs": 47.746
+        },
+        {
+          "mode": "cached",
+          "wallMs": 115.21333300000015,
+          "threadMs": 115.426
+        },
+        {
+          "mode": "cached",
+          "wallMs": 105.37916599999971,
+          "threadMs": 103.476
+        },
+        {
+          "mode": "reference",
+          "wallMs": 47.36937399999988,
+          "threadMs": 47.679
+        }
+      ],
+      "allocations": [
+        {
+          "mode": "reference",
+          "MiB": 38.276771545410156
+        },
+        {
+          "mode": "cached",
+          "MiB": 44.308013916015625
+        }
+      ]
+    },
+    {
+      "branch": "active",
+      "queries": 2000,
+      "timing": [
+        {
+          "mode": "reference",
+          "wallMs": 468.57255199999963,
+          "threadMs": 463.231
+        },
+        {
+          "mode": "cached",
+          "wallMs": 253.31906200000003,
+          "threadMs": 249.919
+        },
+        {
+          "mode": "cached",
+          "wallMs": 253.17135400000006,
+          "threadMs": 254.408
+        },
+        {
+          "mode": "reference",
+          "wallMs": 452.35525999999936,
+          "threadMs": 439.062
+        },
+        {
+          "mode": "reference",
+          "wallMs": 474.4964060000002,
+          "threadMs": 469.918
+        },
+        {
+          "mode": "cached",
+          "wallMs": 247.2896350000001,
+          "threadMs": 246.692
+        },
+        {
+          "mode": "cached",
+          "wallMs": 246.21640600000046,
+          "threadMs": 246.857
+        },
+        {
+          "mode": "reference",
+          "wallMs": 469.16911400000026,
+          "threadMs": 463.249
+        },
+        {
+          "mode": "reference",
+          "wallMs": 456.2059900000004,
+          "threadMs": 451.182
+        },
+        {
+          "mode": "cached",
+          "wallMs": 258.2269269999997,
+          "threadMs": 256.215
+        },
+        {
+          "mode": "cached",
+          "wallMs": 261.9105209999998,
+          "threadMs": 252.352
+        },
+        {
+          "mode": "reference",
+          "wallMs": 435.1875520000003,
+          "threadMs": 430.786
+        }
+      ],
+      "allocations": [
+        {
+          "mode": "reference",
+          "MiB": 876.5606918334961
+        },
+        {
+          "mode": "cached",
+          "MiB": 376.05777740478516
+        }
+      ]
+    }
+  ],
+  "limitations": "Synthetic same-process three-branch comparison, no actual triangle intersections. Timing uses CPU batches; no whole-game claim."
+}

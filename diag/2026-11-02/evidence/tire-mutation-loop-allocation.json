@@ -1,0 +1,26 @@
+{
+  "scope": "Isolated repeated wet tire event; cumulative estimated allocation, not FPS",
+  "rows": [
+    {
+      "mode": "before",
+      "calls": 20000,
+      "sampledBytes": 78776288
+    },
+    {
+      "mode": "after",
+      "calls": 20000,
+      "sampledBytes": 77330272
+    },
+    {
+      "mode": "after",
+      "calls": 20000,
+      "sampledBytes": 79429440
+    },
+    {
+      "mode": "before",
+      "calls": 20000,
+      "sampledBytes": 79989736
+    }
+  ],
+  "sink": 239999.99999960492
+}

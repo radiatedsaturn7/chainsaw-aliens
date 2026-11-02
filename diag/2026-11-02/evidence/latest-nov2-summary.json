@@ -1,0 +1,1229 @@
+[
+  {
+    "file": "c7e7edd86d7c5680807db1c19c84e40d2cfa89405947a0969fe526287a3b45ef.json",
+    "metadata": {
+      "mode": "detailed",
+      "race": "Mount Washington Auto Road \u2014 point-to-point",
+      "device": {
+        "userAgent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Mobile Safari/537.36",
+        "pixelRatio": 3
+      },
+      "startedAt": "2026-11-02T12:52:37.979Z",
+      "epochStartedMs": 1793623957979
+    },
+    "eventQueue": [
+      {
+        "stages": {
+          "normalize": {
+            "calls": 99630,
+            "totalMs": 81.89999993890524,
+            "maxMs": 2.600000001490116
+          },
+          "lookup": {
+            "calls": 99685,
+            "totalMs": 63.80000001937151,
+            "maxMs": 2.5
+          },
+          "idInsert": {
+            "calls": 99685,
+            "totalMs": 16.900000005960464,
+            "maxMs": 0.30000000447034836
+          },
+          "queueInsert": {
+            "calls": 99685,
+            "totalMs": 15.600000031292439,
+            "maxMs": 0.10000000149011612
+          }
+        },
+        "slow": []
+      }
+    ],
+    "durationMs": 60007.90000000596,
+    "active": {
+      "n": 4667,
+      "median": 11.5,
+      "p95": 18.6,
+      "p99": 22.8,
+      "maximum": 94.69999999552965,
+      "over33": 6,
+      "over50": 2,
+      "over16pct": 11.0,
+      "phases": {
+        "playerPhysics": 1.52,
+        "AI": 2.92,
+        "AI.detailedCars": 1.9,
+        "AI.lightweightCars": 0.99,
+        "draw": 5.08,
+        "carSprites": 0.94,
+        "player.collision.stepTerrain": 0.19,
+        "player.collision.getAdaptiveSupportWorldUnprofiled": 0.06,
+        "playerTires": 0.32,
+        "weatherField": 0.16
+      }
+    },
+    "drive": {
+      "n": 4667,
+      "median": 11.5,
+      "p95": 18.6,
+      "p99": 22.8,
+      "maximum": 94.69999999552965,
+      "over33": 6,
+      "over50": 2,
+      "over16pct": 11.0,
+      "phases": {
+        "playerPhysics": 1.52,
+        "AI": 2.92,
+        "AI.detailedCars": 1.9,
+        "AI.lightweightCars": 0.99,
+        "draw": 5.08,
+        "carSprites": 0.94,
+        "player.collision.stepTerrain": 0.19,
+        "player.collision.getAdaptiveSupportWorldUnprofiled": 0.06,
+        "playerTires": 0.32,
+        "weatherField": 0.16
+      }
+    },
+    "resets": 0,
+    "resetHistory": [],
+    "worst": [
+      {
+        "index": 4094,
+        "at": 46.452,
+        "interval": 94.69999999552965,
+        "cpu": 92.3999999910593,
+        "cars": 1,
+        "reset": {
+          "pending": false,
+          "attempts": 0,
+          "verifiedPose": false,
+          "history": {
+            "stored": 48,
+            "accepted": 133,
+            "lastRejection": null,
+            "rejected": {
+              "wheel-support": 324,
+              "invalid-contact": 12,
+              "off-road": 8,
+              "not-grounded": 12
+            },
+            "selection": null
+          },
+          "incremental": false,
+          "supportFailure": null,
+          "automaticBlocked": false,
+          "lastStatus": null,
+          "error": null
+        },
+        "self": [
+          [
+            "AI[5].tireContactSubsystem.step",
+            38.1
+          ],
+          [
+            "surfaceLookup.sampleRawTerrain",
+            21.1
+          ],
+          [
+            "webglSubmit",
+            4.2
+          ],
+          [
+            "simulation",
+            3.9
+          ],
+          [
+            "threeScene",
+            2.3
+          ],
+          [
+            "playerTires",
+            1.4
+          ]
+        ],
+        "physics": {
+          "sequence": 4095,
+          "counters": {
+            "backlogSteps": 0,
+            "chassisGeometryFrames": 4,
+            "terrainQueryFrames": 4,
+            "terrainQueryFrameCacheHits": 4,
+            "terrainQueryFrameBatchQueries": 8,
+            "terrainQueryFramePointQueries": 152,
+            "preparedTrianglesVisited": 467,
+            "terrainQueryFrameFullSurfaceClassifications": 0,
+            "terrainQueryFrameMaximumHeightQueries": 4,
+            "environmentProviderCalls": 4,
+            "terrainQueryFramePointCacheHits": 16,
+            "staticColliderBroadphaseQueries": 4,
+            "staticColliderCandidates": 0,
+            "bodyCcdActivations": 0,
+            "wheelCcdActivations": 0,
+            "completedSteps": 4,
+            "completedTireSubsteps": 4,
+            "routeProjections": 1,
+            "bakedTriangleBucketLookups": 1
+          },
+          "timings": {
+            "wheelCenterAndFootprintQueries": {
+              "inclusiveMs": 0.7000000104308128,
+              "exclusiveMs": 0.7000000104308128,
+              "calls": 4
+            },
+            "tireFootprintAndKinematics": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 16
+            },
+            "iterativeTireContactSolving": {
+              "inclusiveMs": 0.29999999701976776,
+              "exclusiveMs": 0.29999999701976776,
+              "calls": 16
+            },
+            "tireSuspensionInitialContact": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 16
+            },
+            "tireSuspensionDynamics": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 16
+            },
+            "tireSuspensionGeometry": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 16
+            },
+            "tireSuspensionKinematics": {
+              "inclusiveMs": 0.09999999403953552,
+              "exclusiveMs": 0.09999999403953552,
+              "calls": 16
+            },
+            "tireSuspensionSetup": {
+              "inclusiveMs": 0.3999999985098839,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 16
+            },
+            "tireContactValidation": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 16
+            },
+            "tireContactSetup": {
+              "inclusiveMs": 0.7999999970197678,
+              "exclusiveMs": 0,
+              "calls": 4
+            },
+            "tireGripForces": {
+              "inclusiveMs": 0.20000000298023224,
+              "exclusiveMs": 0.20000000298023224,
+              "calls": 4
+            },
+            "tirePowertrain": {
+              "inclusiveMs": 0.20000000298023224,
+              "exclusiveMs": 0.20000000298023224,
+              "calls": 4
+            },
+            "tireForceIntegration": {
+              "inclusiveMs": 0.20000000298023224,
+              "exclusiveMs": 0.20000000298023224,
+              "calls": 4
+            },
+            "staticColliderBroadphase": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 4
+            },
+            "chassisTireThermalPublication": {
+              "inclusiveMs": 0.20000000298023224,
+              "exclusiveMs": 0.20000000298023224,
+              "calls": 4
+            }
+          }
+        }
+      },
+      {
+        "index": 3928,
+        "at": 43.892,
+        "interval": 53.20000000298023,
+        "cpu": 51.5,
+        "cars": 3,
+        "reset": {
+          "pending": false,
+          "attempts": 0,
+          "verifiedPose": false,
+          "history": {
+            "stored": 48,
+            "accepted": 123,
+            "lastRejection": null,
+            "rejected": {
+              "wheel-support": 324,
+              "invalid-contact": 12,
+              "off-road": 8,
+              "not-grounded": 12
+            },
+            "selection": null
+          },
+          "incremental": false,
+          "supportFailure": null,
+          "automaticBlocked": false,
+          "lastStatus": null,
+          "error": null
+        },
+        "self": [
+          [
+            "AIcar[14].lightweight",
+            37
+          ],
+          [
+            "webglSubmit",
+            3
+          ],
+          [
+            "carSprites.copyTexture",
+            0.8
+          ],
+          [
+            "HUD",
+            0.7
+          ],
+          [
+            "editor.getRaceAiContactState",
+            0.6
+          ],
+          [
+            "editor.drawRaceCarBillboardLayers",
+            0.6
+          ]
+        ],
+        "physics": {
+          "sequence": 3929,
+          "counters": {
+            "backlogSteps": 0,
+            "chassisGeometryFrames": 2,
+            "terrainQueryFrames": 2,
+            "terrainQueryFrameCacheHits": 2,
+            "terrainQueryFrameBatchQueries": 4,
+            "terrainQueryFramePointQueries": 76,
+            "preparedTrianglesVisited": 257,
+            "terrainQueryFrameFullSurfaceClassifications": 0,
+            "terrainQueryFrameMaximumHeightQueries": 2,
+            "environmentProviderCalls": 2,
+            "terrainQueryFramePointCacheHits": 8,
+            "staticColliderBroadphaseQueries": 2,
+            "staticColliderCandidates": 0,
+            "bodyCcdActivations": 0,
+            "wheelCcdActivations": 0,
+            "completedSteps": 2,
+            "completedTireSubsteps": 2
+          },
+          "timings": {
+            "wheelCenterAndFootprintQueries": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 2
+            },
+            "tireFootprintAndKinematics": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "iterativeTireContactSolving": {
+              "inclusiveMs": 0.09999999403953552,
+              "exclusiveMs": 0.09999999403953552,
+              "calls": 8
+            },
+            "tireSuspensionInitialContact": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 8
+            },
+            "tireSuspensionDynamics": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "tireSuspensionGeometry": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "tireSuspensionKinematics": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "tireSuspensionSetup": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "tireContactValidation": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "tireContactSetup": {
+              "inclusiveMs": 0.19999999552965164,
+              "exclusiveMs": 0,
+              "calls": 2
+            },
+            "tireGripForces": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 2
+            },
+            "tirePowertrain": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 2
+            },
+            "tireForceIntegration": {
+              "inclusiveMs": 0.20000000298023224,
+              "exclusiveMs": 0.20000000298023224,
+              "calls": 2
+            },
+            "staticColliderBroadphase": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 2
+            },
+            "chassisTireThermalPublication": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 2
+            }
+          }
+        }
+      },
+      {
+        "index": 1393,
+        "at": 12.528,
+        "interval": 46.399999998509884,
+        "cpu": 42.600000001490116,
+        "cars": 2,
+        "reset": {
+          "pending": false,
+          "attempts": 0,
+          "verifiedPose": false,
+          "history": {
+            "stored": 15,
+            "accepted": 15,
+            "lastRejection": "off-road",
+            "rejected": {
+              "wheel-support": 212,
+              "invalid-contact": 4,
+              "off-road": 8
+            },
+            "selection": null
+          },
+          "incremental": false,
+          "supportFailure": null,
+          "automaticBlocked": false,
+          "lastStatus": null,
+          "error": null
+        },
+        "self": [
+          [
+            "simulation",
+            18.2
+          ],
+          [
+            "editor.getRaceRoadbedProfile",
+            2.2
+          ],
+          [
+            "editor.getRaceRouteLength",
+            1.2
+          ],
+          [
+            "editor.drawRaceCarBillboardLayers",
+            1.2
+          ],
+          [
+            "editor.getRaceRouteProjectionForWorldPoint",
+            1.1
+          ],
+          [
+            "playerTires",
+            1
+          ]
+        ],
+        "physics": {
+          "sequence": 1394,
+          "counters": {
+            "backlogSteps": 0,
+            "chassisGeometryFrames": 4,
+            "terrainQueryFrames": 4,
+            "terrainQueryFrameCacheHits": 4,
+            "terrainQueryFrameBatchQueries": 12,
+            "terrainQueryFramePointQueries": 144,
+            "preparedTrianglesVisited": 752,
+            "terrainQueryFrameFullSurfaceClassifications": 0,
+            "terrainQueryFrameMaximumHeightQueries": 4,
+            "environmentProviderCalls": 4,
+            "terrainQueryFramePointCacheHits": 8,
+            "staticColliderBroadphaseQueries": 4,
+            "staticColliderCandidates": 0,
+            "wheelCylinderActivationPoints": 16,
+            "smoothWheelCcdRejections": 16,
+            "bodyLowerHullProbes": 4,
+            "bodyLowerHullSupportFeatures": 24,
+            "analyticContactPlaneQueries": 24,
+            "bodyLowerHullRejections": 4,
+            "bodyCcdActivations": 0,
+            "wheelCcdActivations": 0,
+            "completedSteps": 4,
+            "completedTireSubsteps": 4
+          },
+          "timings": {
+            "wheelCenterAndFootprintQueries": {
+              "inclusiveMs": 0.29999999701976776,
+              "exclusiveMs": 0.29999999701976776,
+              "calls": 4
+            },
+            "tireFootprintAndKinematics": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 16
+            },
+            "iterativeTireContactSolving": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 16
+            },
+            "tireSuspensionInitialContact": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 16
+            },
+            "tireSuspensionDynamics": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 16
+            },
+            "tireSuspensionGeometry": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 16
+            },
+            "tireSuspensionKinematics": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 16
+            },
+            "tireSuspensionSetup": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0,
+              "calls": 16
+            },
+            "tireContactValidation": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 16
+            },
+            "tireContactSetup": {
+              "inclusiveMs": 0.30000000447034836,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 4
+            },
+            "tireGripForces": {
+              "inclusiveMs": 0.29999998956918716,
+              "exclusiveMs": 0.29999998956918716,
+              "calls": 4
+            },
+            "tirePowertrain": {
+              "inclusiveMs": 0.20000000298023224,
+              "exclusiveMs": 0.20000000298023224,
+              "calls": 4
+            },
+            "tireForceIntegration": {
+              "inclusiveMs": 0.20000000298023224,
+              "exclusiveMs": 0.20000000298023224,
+              "calls": 4
+            },
+            "staticColliderBroadphase": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 4
+            },
+            "bodyBroadphase": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 4
+            },
+            "wheelCylinderActivation": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 4
+            },
+            "chassisTireThermalPublication": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 4
+            }
+          }
+        }
+      },
+      {
+        "index": 4093,
+        "at": 46.411,
+        "interval": 40.399999998509884,
+        "cpu": 38.600000001490116,
+        "cars": 1,
+        "reset": {
+          "pending": false,
+          "attempts": 0,
+          "verifiedPose": false,
+          "history": {
+            "stored": 48,
+            "accepted": 133,
+            "lastRejection": null,
+            "rejected": {
+              "wheel-support": 324,
+              "invalid-contact": 12,
+              "off-road": 8,
+              "not-grounded": 12
+            },
+            "selection": null
+          },
+          "incremental": false,
+          "supportFailure": null,
+          "automaticBlocked": false,
+          "lastStatus": null,
+          "error": null
+        },
+        "self": [
+          [
+            "webglSubmit",
+            4.1
+          ],
+          [
+            "editor.getRaceRoadbedProfile",
+            4.0
+          ],
+          [
+            "editor.getRaceRouteProjectionForWorldPoint",
+            3.9
+          ],
+          [
+            "editor.getRaceRouteLength",
+            3.4
+          ],
+          [
+            "weatherField",
+            3
+          ],
+          [
+            "AI[2].tireContactSubsystem.step",
+            0.9
+          ]
+        ],
+        "physics": {
+          "sequence": 4094,
+          "counters": {
+            "backlogSteps": 0,
+            "chassisGeometryFrames": 3,
+            "terrainQueryFrames": 3,
+            "terrainQueryFrameCacheHits": 3,
+            "terrainQueryFrameBatchQueries": 6,
+            "terrainQueryFramePointQueries": 114,
+            "preparedTrianglesVisited": 294,
+            "terrainQueryFrameFullSurfaceClassifications": 0,
+            "terrainQueryFrameMaximumHeightQueries": 3,
+            "environmentProviderCalls": 3,
+            "terrainQueryFramePointCacheHits": 12,
+            "staticColliderBroadphaseQueries": 3,
+            "staticColliderCandidates": 0,
+            "bodyCcdActivations": 0,
+            "wheelCcdActivations": 0,
+            "completedSteps": 3,
+            "completedTireSubsteps": 3
+          },
+          "timings": {
+            "wheelCenterAndFootprintQueries": {
+              "inclusiveMs": 0.29999999701976776,
+              "exclusiveMs": 0.29999999701976776,
+              "calls": 3
+            },
+            "tireFootprintAndKinematics": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 12
+            },
+            "iterativeTireContactSolving": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 12
+            },
+            "tireSuspensionInitialContact": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 12
+            },
+            "tireSuspensionDynamics": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 12
+            },
+            "tireSuspensionGeometry": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 12
+            },
+            "tireSuspensionKinematics": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 12
+            },
+            "tireSuspensionSetup": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0,
+              "calls": 12
+            },
+            "tireContactValidation": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 12
+            },
+            "tireContactSetup": {
+              "inclusiveMs": 0.30000000447034836,
+              "exclusiveMs": 0,
+              "calls": 3
+            },
+            "tireGripForces": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 3
+            },
+            "tirePowertrain": {
+              "inclusiveMs": 0.30000000447034836,
+              "exclusiveMs": 0.30000000447034836,
+              "calls": 3
+            },
+            "tireForceIntegration": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 3
+            },
+            "staticColliderBroadphase": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 3
+            },
+            "chassisTireThermalPublication": {
+              "inclusiveMs": 0.30000000447034836,
+              "exclusiveMs": 0.30000000447034836,
+              "calls": 3
+            }
+          }
+        }
+      },
+      {
+        "index": 3154,
+        "at": 32.373,
+        "interval": 37.69999999552965,
+        "cpu": 36.50000000745058,
+        "cars": 9,
+        "reset": {
+          "pending": false,
+          "attempts": 0,
+          "verifiedPose": false,
+          "history": {
+            "stored": 48,
+            "accepted": 87,
+            "lastRejection": null,
+            "rejected": {
+              "wheel-support": 283,
+              "invalid-contact": 6,
+              "off-road": 8
+            },
+            "selection": null
+          },
+          "incremental": false,
+          "supportFailure": null,
+          "automaticBlocked": false,
+          "lastStatus": null,
+          "error": null
+        },
+        "self": [
+          [
+            "editor.drawRaceCarBillboardLayers",
+            15.3
+          ],
+          [
+            "playerTires",
+            4.6
+          ],
+          [
+            "webglSubmit",
+            1.6
+          ],
+          [
+            "trackState.applyEvent",
+            1.1
+          ],
+          [
+            "carSprites.copyTexture",
+            0.9
+          ],
+          [
+            "draw",
+            0.7
+          ]
+        ],
+        "physics": {
+          "sequence": 3155,
+          "counters": {
+            "backlogSteps": 0,
+            "chassisGeometryFrames": 2,
+            "terrainQueryFrames": 2,
+            "terrainQueryFrameCacheHits": 2,
+            "terrainQueryFrameBatchQueries": 4,
+            "terrainQueryFramePointQueries": 53,
+            "preparedTrianglesVisited": 1242,
+            "terrainQueryFrameFullSurfaceClassifications": 0,
+            "terrainQueryFrameMaximumHeightQueries": 2,
+            "environmentProviderCalls": 2,
+            "staticColliderBroadphaseQueries": 2,
+            "staticColliderCandidates": 0,
+            "wheelCylinderActivationPoints": 8,
+            "smoothWheelCcdRejections": 5,
+            "activeWheelCylinders": 3,
+            "wheelCylinderFeatures": 108,
+            "triangleIntersectionTests": 36,
+            "bodyLowerHullProbes": 2,
+            "bodyLowerHullSupportFeatures": 12,
+            "analyticContactPlaneQueries": 12,
+            "bodyLowerHullRejections": 2,
+            "bodyCcdActivations": 0,
+            "wheelCcdActivations": 0,
+            "completedSteps": 2,
+            "completedTireSubsteps": 2,
+            "routeProjections": 8,
+            "bakedTriangleBucketLookups": 8
+          },
+          "timings": {
+            "wheelCenterAndFootprintQueries": {
+              "inclusiveMs": 0.19999999552965164,
+              "exclusiveMs": 0.19999999552965164,
+              "calls": 2
+            },
+            "tireFootprintAndKinematics": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 8
+            },
+            "iterativeTireContactSolving": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "tireSuspensionInitialContact": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "tireSuspensionDynamics": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "tireSuspensionGeometry": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "tireSuspensionKinematics": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 8
+            },
+            "tireSuspensionSetup": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "tireContactValidation": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 8
+            },
+            "tireContactSetup": {
+              "inclusiveMs": 0.20000000298023224,
+              "exclusiveMs": 0,
+              "calls": 2
+            },
+            "tireGripForces": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 2
+            },
+            "tirePowertrain": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 2
+            },
+            "tireForceIntegration": {
+              "inclusiveMs": 4.299999997019768,
+              "exclusiveMs": 4.299999997019768,
+              "calls": 2
+            },
+            "staticColliderBroadphase": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 2
+            },
+            "bodyBroadphase": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 2
+            },
+            "wheelCylinderActivation": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 2
+            },
+            "wheelCylinderTriangleSweep": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 2
+            },
+            "chassisTireThermalPublication": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 2
+            }
+          }
+        }
+      },
+      {
+        "index": 1392,
+        "at": 12.495,
+        "interval": 33.399999998509884,
+        "cpu": 31.799999997019768,
+        "cars": 2,
+        "reset": {
+          "pending": false,
+          "attempts": 0,
+          "verifiedPose": false,
+          "history": {
+            "stored": 15,
+            "accepted": 15,
+            "lastRejection": "invalid-contact",
+            "rejected": {
+              "wheel-support": 212,
+              "invalid-contact": 4,
+              "off-road": 7
+            },
+            "selection": null
+          },
+          "incremental": false,
+          "supportFailure": null,
+          "automaticBlocked": false,
+          "lastStatus": null,
+          "error": null
+        },
+        "self": [
+          [
+            "editor.drawRaceCarBillboardLayers",
+            3.5
+          ],
+          [
+            "playerTires",
+            1.4
+          ],
+          [
+            "player.runStep",
+            1.4
+          ],
+          [
+            "editor.getRaceAiContactState",
+            1.0
+          ],
+          [
+            "carSprites.copyTexture",
+            1
+          ],
+          [
+            "webglSubmit",
+            1
+          ]
+        ],
+        "physics": {
+          "sequence": 1393,
+          "counters": {
+            "backlogSteps": 0,
+            "chassisGeometryFrames": 4,
+            "terrainQueryFrames": 4,
+            "terrainQueryFrameCacheHits": 4,
+            "terrainQueryFrameBatchQueries": 12,
+            "terrainQueryFramePointQueries": 144,
+            "preparedTrianglesVisited": 774,
+            "terrainQueryFrameFullSurfaceClassifications": 0,
+            "terrainQueryFrameMaximumHeightQueries": 5,
+            "environmentProviderCalls": 4,
+            "terrainQueryFramePointCacheHits": 8,
+            "staticColliderBroadphaseQueries": 4,
+            "staticColliderCandidates": 0,
+            "wheelCylinderActivationPoints": 16,
+            "smoothWheelCcdRejections": 16,
+            "bodyLowerHullProbes": 4,
+            "bodyLowerHullSupportFeatures": 24,
+            "analyticContactPlaneQueries": 24,
+            "bodyLowerHullRejections": 4,
+            "bodyCcdActivations": 0,
+            "wheelCcdActivations": 0,
+            "completedSteps": 4,
+            "completedTireSubsteps": 4
+          },
+          "timings": {
+            "wheelCenterAndFootprintQueries": {
+              "inclusiveMs": 0.29999999701976776,
+              "exclusiveMs": 0.29999999701976776,
+              "calls": 4
+            },
+            "tireFootprintAndKinematics": {
+              "inclusiveMs": 0.09999999403953552,
+              "exclusiveMs": 0.09999999403953552,
+              "calls": 16
+            },
+            "iterativeTireContactSolving": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 16
+            },
+            "tireSuspensionInitialContact": {
+              "inclusiveMs": 0.30000000447034836,
+              "exclusiveMs": 0.30000000447034836,
+              "calls": 16
+            },
+            "tireSuspensionDynamics": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 16
+            },
+            "tireSuspensionGeometry": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 16
+            },
+            "tireSuspensionKinematics": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 16
+            },
+            "tireSuspensionSetup": {
+              "inclusiveMs": 0.5000000074505806,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 16
+            },
+            "tireContactValidation": {
+              "inclusiveMs": 0.19999999552965164,
+              "exclusiveMs": 0.19999999552965164,
+              "calls": 16
+            },
+            "tireContactSetup": {
+              "inclusiveMs": 0.8999999985098839,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 4
+            },
+            "tireGripForces": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 4
+            },
+            "tirePowertrain": {
+              "inclusiveMs": 0.19999998807907104,
+              "exclusiveMs": 0.19999998807907104,
+              "calls": 4
+            },
+            "tireForceIntegration": {
+              "inclusiveMs": 0.30000000447034836,
+              "exclusiveMs": 0.30000000447034836,
+              "calls": 4
+            },
+            "staticColliderBroadphase": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 4
+            },
+            "bodyBroadphase": {
+              "inclusiveMs": 0.10000000149011612,
+              "exclusiveMs": 0.10000000149011612,
+              "calls": 4
+            },
+            "wheelCylinderActivation": {
+              "inclusiveMs": 0,
+              "exclusiveMs": 0,
+              "calls": 4
+            },
+            "chassisTireThermalPublication": {
+              "inclusiveMs": 0.19999999552965164,
+              "exclusiveMs": 0.19999999552965164,
+              "calls": 4
+            }
+          }
+        }
+      }
+    ],
+    "collision": {
+      "player": {
+        "wheelCylinderActivation": 0.002,
+        "wheelCylinderTriangleSweep": 0.026,
+        "wheelCylinderHeightSweep": 0.0,
+        "penetrationValidation": 0.071,
+        "bodyManifoldSolve": 0.041,
+        "bodyContinuousSweep": 0.005,
+        "staticColliderContinuousSweep": 0.008,
+        "staticColliderManifoldSolve": 0.001,
+        "tireFootprintAndKinematics": 0.039
+      },
+      "ai": {
+        "wheelCylinderActivation": 0.003,
+        "wheelCylinderTriangleSweep": 0.029,
+        "wheelCylinderHeightSweep": 0.0,
+        "penetrationValidation": 0.088,
+        "bodyManifoldSolve": 0.034,
+        "bodyContinuousSweep": 0.001,
+        "staticColliderContinuousSweep": 0.0,
+        "staticColliderManifoldSolve": 0.0,
+        "tireFootprintAndKinematics": 0.059
+      }
+    },
+    "windows": {
+      "0": {
+        "n": 677,
+        "median": 8.5,
+        "p95": 13.3,
+        "p99": 15.2,
+        "maximum": 18.299999997019768,
+        "over33": 0,
+        "over50": 0,
+        "over16pct": 0.4,
+        "phases": {
+          "playerPhysics": 1.14,
+          "AI": 1.95,
+          "AI.detailedCars": 1.27,
+          "AI.lightweightCars": 0.65,
+          "draw": 3.82,
+          "carSprites": 0.51,
+          "player.collision.stepTerrain": 0.14,
+          "player.collision.getAdaptiveSupportWorldUnprofiled": 0.05,
+          "playerTires": 0.23,
+          "weatherField": 0.13
+        }
+      },
+      "10": {
+        "n": 958,
+        "median": 9.9,
+        "p95": 17.2,
+        "p99": 22.8,
+        "maximum": 46.399999998509884,
+        "over33": 2,
+        "over50": 0,
+        "over16pct": 5.3,
+        "phases": {
+          "playerPhysics": 1.31,
+          "AI": 2.67,
+          "AI.detailedCars": 1.71,
+          "AI.lightweightCars": 0.92,
+          "draw": 4.4,
+          "carSprites": 1.32,
+          "player.collision.stepTerrain": 0.07,
+          "player.collision.getAdaptiveSupportWorldUnprofiled": 0.03,
+          "playerTires": 0.29,
+          "weatherField": 0.12
+        }
+      },
+      "20": {
+        "n": 890,
+        "median": 10.8,
+        "p95": 16.9,
+        "p99": 21.7,
+        "maximum": 24.299999997019768,
+        "over33": 0,
+        "over50": 0,
+        "over16pct": 5.5,
+        "phases": {
+          "playerPhysics": 1.24,
+          "AI": 2.65,
+          "AI.detailedCars": 1.61,
+          "AI.lightweightCars": 1.01,
+          "draw": 4.96,
+          "carSprites": 1.18,
+          "player.collision.stepTerrain": 0.1,
+          "player.collision.getAdaptiveSupportWorldUnprofiled": 0.03,
+          "playerTires": 0.29,
+          "weatherField": 0.16
+        }
+      },
+      "30": {
+        "n": 710,
+        "median": 13.8,
+        "p95": 18.7,
+        "p99": 21.3,
+        "maximum": 37.69999999552965,
+        "over33": 1,
+        "over50": 0,
+        "over16pct": 14.4,
+        "phases": {
+          "playerPhysics": 1.56,
+          "AI": 3.11,
+          "AI.detailedCars": 1.96,
+          "AI.lightweightCars": 1.12,
+          "draw": 6.11,
+          "carSprites": 0.95,
+          "player.collision.stepTerrain": 0.1,
+          "player.collision.getAdaptiveSupportWorldUnprofiled": 0.03,
+          "playerTires": 0.35,
+          "weatherField": 0.18
+        }
+      },
+      "40": {
+        "n": 655,
+        "median": 14.5,
+        "p95": 20.5,
+        "p99": 24.5,
+        "maximum": 94.69999999552965,
+        "over33": 3,
+        "over50": 2,
+        "over16pct": 24.4,
+        "phases": {
+          "playerPhysics": 1.87,
+          "AI": 3.77,
+          "AI.detailedCars": 2.5,
+          "AI.lightweightCars": 1.23,
+          "draw": 6.54,
+          "carSprites": 0.73,
+          "player.collision.stepTerrain": 0.31,
+          "player.collision.getAdaptiveSupportWorldUnprofiled": 0.1,
+          "playerTires": 0.39,
+          "weatherField": 0.18
+        }
+      },
+      "50": {
+        "n": 777,
+        "median": 12.5,
+        "p95": 19.5,
+        "p99": 24.5,
+        "maximum": 28.899999998509884,
+        "over33": 0,
+        "over50": 0,
+        "over16pct": 19.2,
+        "phases": {
+          "playerPhysics": 2.08,
+          "AI": 3.52,
+          "AI.detailedCars": 2.45,
+          "AI.lightweightCars": 1.03,
+          "draw": 5.0,
+          "carSprites": 0.74,
+          "player.collision.stepTerrain": 0.48,
+          "player.collision.getAdaptiveSupportWorldUnprofiled": 0.14,
+          "playerTires": 0.39,
+          "weatherField": 0.23
+        }
+      }
+    }
+  }
+]

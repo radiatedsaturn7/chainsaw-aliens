@@ -1,0 +1,148 @@
+{
+  "before": {
+    "bytes": 5132107984,
+    "MiB": 4894.359573364258,
+    "topSelfMiB": [
+      [
+        "getRaceRouteProjectionForWorldPoint@RaceEditor.js",
+        248.04
+      ],
+      [
+        "sampleDeckAtDistance@RaceSurfaceModel.js",
+        169.06
+      ],
+      [
+        "getTrackStateCellSample@TrackStateCell.js",
+        130.65
+      ],
+      [
+        "createRaceWheelContactStateFromSamples@RaceVehicleSurfaceContact.js",
+        104.91
+      ],
+      [
+        "join@",
+        102.05
+      ],
+      [
+        "createDefaultCar@raceData.js",
+        100.94
+      ],
+      [
+        "authority.raceEnvironmentProvider@RaceSimulation.js",
+        91.5
+      ],
+      [
+        "quantizeTrackStateNumber@TrackStateMath.js",
+        90.76
+      ],
+      [
+        "calculateWheelContactKinematics@ContactPatchTireModel.js",
+        89.02
+      ],
+      [
+        "max@",
+        74.51
+      ],
+      [
+        "clampTrackStateCell@TrackStateCell.js",
+        72.13
+      ],
+      [
+        "samplePhysicsGeometry@RaceSurfaceModel.js",
+        70.4
+      ],
+      [
+        "@RaceEditor.js",
+        69.42
+      ],
+      [
+        "step@ContactPatchTireModel.js",
+        68.4
+      ],
+      [
+        "sampleRaceRoadbedProfileAtDistance@RaceRoadDeckProfile.js",
+        66.14
+      ]
+    ]
+  },
+  "after": {
+    "bytes": 4691799920,
+    "MiB": 4474.449081420898,
+    "topSelfMiB": [
+      [
+        "sampleDeckAtDistance@RaceSurfaceModel.js",
+        136.42
+      ],
+      [
+        "getTrackStateCellSample@TrackStateCell.js",
+        112.52
+      ],
+      [
+        "join@",
+        102.41
+      ],
+      [
+        "createRaceWheelContactStateFromSamples@RaceVehicleSurfaceContact.js",
+        96.4
+      ],
+      [
+        "quantizeTrackStateNumber@TrackStateMath.js",
+        89.26
+      ],
+      [
+        "authority.raceEnvironmentProvider@RaceSimulation.js",
+        87.84
+      ],
+      [
+        "calculateWheelContactKinematics@ContactPatchTireModel.js",
+        86.89
+      ],
+      [
+        "max@",
+        73.38
+      ],
+      [
+        "samplePhysicsGeometry@RaceSurfaceModel.js",
+        71.9
+      ],
+      [
+        "@RaceEditor.js",
+        71.15
+      ],
+      [
+        "step@ContactPatchTireModel.js",
+        70.77
+      ],
+      [
+        "sampleRaceRoadbedProfileAtDistance@RaceRoadDeckProfile.js",
+        70.51
+      ],
+      [
+        "clampTrackStateCell@TrackStateCell.js",
+        68.75
+      ],
+      [
+        "keys@",
+        66.43
+      ],
+      [
+        "applyTireContactEvent@TrackState.js",
+        65.14
+      ]
+    ]
+  },
+  "exactParity": {
+    "trackStateChecksum": true,
+    "driveState": true,
+    "aiStates": true,
+    "detailedCounters": true,
+    "detailedSteps": true,
+    "frameClock": true,
+    "finalWeatherState": true,
+    "frames": true,
+    "simulatedSeconds": true,
+    "sourceDigest": true
+  },
+  "scope": "Paired headless Mount Washington,29 AI,full storm,1200 updates;allocation sampling frames301-1200. No rendering. No FPS claim.",
+  "allocationReductionPercent": 8.579477777410693
+}
