@@ -459,6 +459,7 @@ test('Race and Car Editor browser starts avoid main-thread world prewarm', async
   await page.waitForFunction(() => (
     window.__game?.raceEditor?.playtestSession?.running === true
     && window.__game.raceEditor.playtestSession.startupFramePending === false
+    && !window.__game.raceEditor.playtestSession.raceIntro?.active
   ), null, { timeout: 45_000 });
   await page.waitForFunction(() => (
     Number(window.__game?.raceEditor?.playtestSession?.countdownRemainingMs || 0) <= 0
@@ -587,6 +588,7 @@ test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async
   await page.waitForFunction(() => (
     window.__game?.raceEditor?.playtestSession?.running === true
     && window.__game.raceEditor.playtestSession.startupFramePending === false
+    && !window.__game.raceEditor.playtestSession.raceIntro?.active
     && Number(window.__game.raceEditor.playtestSession.countdownRemainingMs || 0) <= 0
   ), null, { timeout: 55_000 });
 

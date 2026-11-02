@@ -60,7 +60,9 @@ await expect.poll(()=>page.evaluate(ref=>window.__game.items.garage.configuratio
  await backToGarage(page);await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
  await clickMenu(page,'garage-tune');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('tuning');
  await page.waitForFunction(()=>window.__game.menuPlayer.tuner?.ready);
- await press(page,'ArrowRight');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.index)).toBe(3);
+ // Repair is now an available category between Tires and Gearing.
+ for(let step=0;step<4&&await page.evaluate(()=>window.__game.menuPlayer.tuner.index!==3);step++)await press(page,'ArrowRight');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.index)).toBe(3);
  await press(page,'Enter');await press(page,'Enter');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.row.id)).toBe('gearFinalDrive');
  const steps=await page.evaluate(()=>Math.round((3.4-window.__game.menuPlayer.tuner.draft)/.1));
