@@ -576,6 +576,9 @@ test('Race and Car Editor browser starts avoid main-thread world prewarm', async
 
 test('levelA Studio Sprint2 trigger lets the saved WRX2 reach the finish', async ({ page }) => {
   test.setTimeout(120_000);
+  // This test advances a synthetic clock below. A real-time worker cannot
+  // consume twenty simulated seconds during a tight browser evaluate loop.
+  await page.addInitScript(() => { globalThis.__RTG_VEHICLE_DYNAMICS_WORKER_MODE__ = 'off'; });
   await waitForGameReady(page);
   await seedRaceRuntimeFixtures(page);
 
