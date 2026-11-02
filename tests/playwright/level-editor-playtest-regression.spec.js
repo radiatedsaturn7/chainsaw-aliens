@@ -318,9 +318,16 @@ test('cold level-to-race travel keeps loading, preparation, and first frames res
     });
     const tireTrackNormalYs = [...(tireTrackRenderer?.tireTrackChunks?.values?.() || [])]
       .flatMap((chunk) => {
-        const positions = chunk.mesh.geometry.getAttribute('position').array;
+        const geometry = chunk.mesh.geometry;
+        const position = geometry.getAttribute('position');
+        const positions = position.array;
+        // Persistent buffers reserve capacity beyond the rendered triangles.
+        // Check winding only for the vertices submitted by this draw range.
+        const start = geometry.drawRange.start * position.itemSize;
+        const end = Math.min(position.count,
+          geometry.drawRange.start + geometry.drawRange.count) * position.itemSize;
         const normalYs = [];
-        for (let offset = 0; offset + 8 < positions.length; offset += 9) {
+        for (let offset = start; offset + 8 < end; offset += 9) {
           const abX = positions[offset + 3] - positions[offset];
           const abZ = positions[offset + 5] - positions[offset + 2];
           const acX = positions[offset + 6] - positions[offset];

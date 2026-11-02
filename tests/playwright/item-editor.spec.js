@@ -122,7 +122,62 @@ test('race inventory boosts the player and fires a slowing projectile at an oppo
  await page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().find(row=>row.id==='inventory:nitro-ci').onClick());
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.raceInput.paused)).toBe(false);
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier)).toBe(1.5);
- await expect.poll(()=>page.evaluate(()=>Math.abs(window.__game.raceEditor.playtestSession.speedMps)),{timeout:5000}).toBeGreaterThan(0.3);
+ try{
+  await expect.poll(()=>page.evaluate(()=>Math.abs(window.__game.raceEditor.playtestSession.speedMps)),{timeout:5000}).toBeGreaterThan(0.3);
+ }catch(error){
+  try{
+   const snapshot=await page.evaluate(()=>{
+    const g=window.__game,e=g.raceEditor,s=e.playtestSession,r=s?.vehicleDynamicsRunner;
+    const timing=g.frameTiming,clock=s?.frameSimulationClock,hold=r?.stationaryResetHold;
+    const controls=value=>value?{itemSpeedMultiplier:value.itemSpeedMultiplier,
+     throttle:value.throttle,brake:value.brake,clutch:value.clutch,
+     handbrake:value.handbrake,requestedGear:value.requestedGear}:null;
+    const sample=value=>value?{timeSeconds:value.timeSeconds,sequence:value.sequence,
+     controls:controls(value.input)}:null;
+    const lastBoost=r?.inputTimeline?.samples?.findLast(entry=>entry.input?.itemSpeedMultiplier>1);
+    return{
+     gameState:g.state,hidden:document.hidden,status:String(e.status||'').slice(0,300),
+     session:s?{running:s.running,preparing:s.preparing,startupFramePending:s.startupFramePending,
+      finishing:s.finishing,results:Boolean(s.raceResults),introActive:s.raceIntro?.active,
+      countdownRemainingMs:s.countdownRemainingMs,raceMusicPending:s.raceMusicPending,
+      launchLockMs:s.launchLockMs,incrementalRoadReset:Boolean(s.incrementalRoadReset),
+      elapsedMs:s.elapsedMs,sceneElapsedMs:s.sceneElapsedMs,speedMps:s.speedMps,
+      itemSpeedMultiplier:s.itemSpeedMultiplier,carDocumentName:s.carDocumentName,
+      itemEffects:(s.itemSpeedEffects||[]).slice(0,4).map(effect=>({amount:effect.amount,remaining:effect.remaining})),
+      frameObservedRawSeconds:s.frameObservedRawSeconds,frameRawSeconds:s.frameRawSeconds,
+      frameExcludedSeconds:s.frameExcludedSeconds,frameAdmittedSeconds:s.frameAdmittedSeconds,
+      frameClockMode:s.frameClockMode,frameTimeExclusionReason:s.frameTimeExclusionReason,
+      frameTimingSequence:s.frameTimingSequence}:null,
+     clock:clock?{rawSeconds:clock.rawSeconds,admittedSeconds:clock.admittedSeconds,
+      debtSeconds:clock.debtSeconds,discardedSeconds:clock.discardedSeconds,
+      excludedSeconds:clock.excludedSeconds}:null,
+     frameTiming:timing?{sequence:timing.sequence,last:timing.last,now:performance.now(),
+      inUpdate:timing.inUpdate,raceActive:timing.raceActive,sameSession:timing.raceSession===s,
+      rawSeconds:timing.rawSeconds,updateSeconds:timing.updateSeconds,raceSeconds:timing.raceSeconds,
+      excludedRaceSeconds:timing.excludedRaceSeconds,raceExclusionReason:timing.raceExclusionReason}:null,
+     runner:r?{stepIndex:r.stepIndex,simulationTimeSeconds:r.simulationTimeSeconds,
+      speedMps:r.state?.speedMps,velocity:r.state?.velocity?{
+       x:r.state.velocity.x,y:r.state.velocity.y,z:r.state.velocity.z}:null,
+      grounded:r.state?.grounded,supportedWheelCount:r.state?.supportedWheelCount,
+      sampledControls:controls(r.sampledControlsScratch),
+      lastInputSample:sample(r.inputTimeline?.samples?.at(-1)),lastBoostSample:sample(lastBoost),
+      stationaryResetHold:hold?{wakeRequested:hold.wakeRequested,
+       validContactConfirmations:hold.validContactConfirmations,
+       confirmationSteps:hold.confirmationSteps,confirmationTimedOut:hold.confirmationTimedOut,
+       rebuildScheduled:hold.rebuildScheduled,equilibriumGeneration:hold.equilibriumGeneration}:null}:null,
+     input:{paused:e.raceInput.paused,throttle:e.raceInput.throttle,brake:e.raceInput.brake,
+      throttleAxis:e.raceInput.throttleAxis,brakeAxis:e.raceInput.brakeAxis,
+      keyboardThrottle:e.raceInput.keyboardThrottle,keyboardBrake:e.raceInput.keyboardBrake,
+      handbrake:e.raceInput.handbrake,gear:e.raceInput.gear}
+    };
+   });
+   console.log('RACE_ITEM_BOOST_FAILURE',JSON.stringify({pageErrors:errors.slice(-8),...snapshot}));
+  }catch(diagnosticError){
+   console.log('RACE_ITEM_BOOST_DIAGNOSTICS_UNAVAILABLE',JSON.stringify({pageErrors:errors.slice(-8),
+    message:String(diagnosticError?.message||diagnosticError).slice(0,300)}));
+  }
+  throw error;
+ }
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier),{timeout:8000}).toBe(1);
  expect(await page.evaluate(()=>window.__game.items.progress.bags.items['nitro-ci'])).toBe(0);
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime.length)).toBe(1);

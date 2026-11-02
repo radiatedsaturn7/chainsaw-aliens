@@ -24,7 +24,7 @@ test('pause Restart Race starts a fresh attempt with the same car and baked trac
   old.tireTrackSegments.push({ id: 1 });
   old.activeEngineSoundId = 'engine';
   old.deferredArtWorker = { terminate() { closed++; } };
-  editor.vehicleDynamicsAuthority = { workerBridge: { close() { closed++; } } };
+  editor.vehicleDynamicsAuthority = { session: old, workerBridge: { close() { closed++; } } };
   editor.raceInput.autoShift = false;
   editor.raceInput.keyboardThrottle = true;
   editor.raceInput.activeDpadPointerId = 42;

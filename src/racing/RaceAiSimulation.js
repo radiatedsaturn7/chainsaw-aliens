@@ -319,6 +319,7 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
         maxCatchUpSteps: 4,
         telemetryLimit: 1,
         telemetryRetention: 'none',
+        postResetDiagnosticsEnabled: globalThis.__RTG_CAPTURE_PHYSICS_INCIDENTS__ === true,
         inputTimelineLimit: 512
       }
     );
@@ -1170,13 +1171,13 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
 } = {}) {
   const session = editor.playtestSession;
   if (!session?.aiRuntime?.length) {
-    if(session){session.aiDetailedPhysicsCount=0;session.aiCheapPhysicsCount=0;}
+    if(session) assignRaceAiPhysicsBudget(session);
     return;
   }
   const dt = Math.max(0, Number(seconds) || 0);
   const routeLength = Math.max(1, Number(session.routeLength || editor.getRaceRouteLength()));
   const isCircuit = (session.routeRuntimeType || editor.getSelectedRaceRuntimeType()) === 'circuit';
-  assignRaceAiPhysicsBudget(session, {worker:!!editor.vehicleDynamicsAuthority?.workerBridge});
+  assignRaceAiPhysicsBudget(session, {worker:!!editor.vehicleDynamicsAuthority?.workerBridge, seconds:dt});
   if (preStartMode === 'standing' || preStartMode === 'rolling') {
     const stagedSpeedMps = preStartMode === 'rolling'
       ? Math.max(0, Number(rollingStartSpeedMps || 0))

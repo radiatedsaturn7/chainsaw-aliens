@@ -136,7 +136,11 @@ test('distant contact reuse requires the exact same pose, baked world and track 
  assert.equal(getReusableRaceAiDistantContacts(editor,ai),null);
  editor.playtestSession.worldBake=bake;editor.playtestSession.trackState={};
  assert.equal(getReusableRaceAiDistantContacts(editor,ai),null);
- editor.playtestSession.trackState=track;ai.simulationDetail='full';
+ editor.playtestSession.trackState=track;
+ restoreRaceAiDetailedPhysics(editor,ai);
+ assert.equal(ai.distantContactState,null,'promotion invalidates the old cheap contact record');
+ assert.equal(getReusableRaceAiDistantContacts(editor,ai),null);
+ ai.simulationDetail='distant';
  assert.equal(getReusableRaceAiDistantContacts(editor,ai),null);
 });
 
@@ -265,3 +269,4 @@ test('budgeted full cars never take cheap path, and demotion does not snap an ov
  assert.deepEqual(runner.state.position,before.position);
  assert.deepEqual(runner.state.orientation,before.orientation);
 });
+

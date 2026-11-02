@@ -3,22 +3,23 @@ import assert from 'node:assert/strict';
 import {assignRaceAiPhysicsBudget} from '../../src/racing/RaceAiPhysicsBudget.js';
 import {consumeRaceAiSimulationStep} from '../../src/racing/RaceAiScheduling.js';
 
-test('exactly three nearest world positions receive physics, independent of camera and route progress',()=>{
+test('up to three eligible world positions receive physics, independent of camera and route progress',()=>{
  const session={worldX:0,worldZ:0,aiRuntime:Array.from({length:30},(_,i)=>({id:i,worldX:i*10,worldZ:0,distance:1000-i}))};
  assignRaceAiPhysicsBudget(session);
  assert.deepEqual(session.aiRuntime.filter(a=>a.physicsBudgetDetail==='full').map(a=>a.id),[0,1,2]);
  session.worldX=290;assignRaceAiPhysicsBudget(session);
  assert.deepEqual(session.aiRuntime.filter(a=>a.physicsBudgetDetail==='full').map(a=>a.id),[27,28,29]);
  assert.equal(session.aiDetailedPhysicsCount,3);assert.equal(session.aiCheapPhysicsCount,27);
- session.aiRuntime.splice(2);assignRaceAiPhysicsBudget(session);assert.equal(session.aiDetailedPhysicsCount,2);
+ session.aiRuntime.splice(2);assignRaceAiPhysicsBudget(session);assert.equal(session.aiDetailedPhysicsCount,0);
 });
 test('equal-distance ties are stable and a dense grid never expands the budget',()=>{
- const session={worldX:0,worldZ:0,aiRuntime:Array.from({length:30},(_,i)=>({id:i,worldX:1,worldZ:1}))};
+ const session={worldX:0,worldZ:0,aiRuntime:Array.from({length:30},(_,i)=>({id:i,worldX:10,worldZ:10}))};
  assignRaceAiPhysicsBudget(session);session.aiRuntime.reverse();assignRaceAiPhysicsBudget(session);
  assert.deepEqual(session.aiRuntime.filter(a=>a.physicsBudgetDetail==='full').map(a=>a.id).sort(),[0,1,2]);
  const cheap=session.aiRuntime[0];cheap.vehicleDynamicsRunner={pendingCollisionImpulses:[{}]};
+ assignRaceAiPhysicsBudget(session);
  consumeRaceAiSimulationStep(cheap,session,1/60,0);
- assert.equal(cheap.simulationPipelineHz,20,'nearby traffic does not promote every cheap car');
+ assert.equal(cheap.simulationPipelineHz,60,'a queued impact takes priority over normal budget residence');
 });
 
 test('real 30-car race runs at most three full vehicle solvers and the cheap fleet still advances',async()=>{
@@ -62,3 +63,4 @@ test('real 30-car race runs at most three full vehicle solvers and the cheap fle
  active.clear();e.updateRaceAiDrivers(1/60,{preStartMode:'standing'});assert.equal(active.size,3);
  session.aiRuntime.slice(3).forEach((a,i)=>assert.deepEqual({x:a.worldX,z:a.worldZ},before[i]));
 });
+

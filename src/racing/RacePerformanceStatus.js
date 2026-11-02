@@ -4,6 +4,7 @@ export function racePerformanceStatus(capture) {
   const seconds=Math.min(Math.floor(capture.durationMs/1000),Math.floor((capture.now()-capture.started)/1000));
   return {text:`REC ${seconds}s / ${capture.durationMs/1000}s`,color:'#ff5252'};
  }
+ if(capture.uploadState==='queued')return {text:'Capture ready · uploads when paused',color:'#ffd166'};
  if(capture.uploadState==='uploading')return {text:'Uploading capture…',color:'#ffd166'};
  if(capture.uploadState==='saved')return {text:'Capture submitted ✓',color:'#64e5ac'};
  if(capture.uploadState==='failed')return {text:'Upload failed · retry in Debug',detail:String(capture.uploadError||'').slice(0,240),color:'#ff8866'};

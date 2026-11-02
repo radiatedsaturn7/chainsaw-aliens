@@ -13,6 +13,8 @@ test('packed frame totals retain exact values across reused records and serializ
  assert.deepEqual(JSON.parse(JSON.stringify(first)),{phases:{AI:{inclusiveMs:1.125,selfMs:.125,calls:3}}});
  assert.equal(packed.bytes,32);assert.equal(packed.cpu,.125);
  assert.equal(next.phases.AI.calls,7);assert.equal('new' in first.phases,false);
+ assert.equal(first.phases,first.phases,'materialization is cached across report and JSON reads');
+ assert.equal(Object.getOwnPropertyDescriptor(first,'phases').get,undefined);
 });
 test('compact capture continues frame aggregates beyond trace capacity and captures slow sprite identity',()=>{
  let now=0;const e={playtestSession:{running:true,aiRuntime:[]},update(){},draw(){}};
