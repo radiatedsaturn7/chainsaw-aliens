@@ -1,3 +1,4 @@
+import {isProjectStorageReadOnly} from './serverStorage.js';
 import {openEditorForm,chooseEditorFiles} from './shared/editorForm.js';
 import {readMenuAppearanceFile,MenuAppearanceResources} from '../menus/MenuAppearance.js';
 import {loadFontLibrary,saveLibraryFont} from './FontLibrary.js';
@@ -6,7 +7,7 @@ import {loadFontLibrary,saveLibraryFont} from './FontLibrary.js';
 // library controls together in the shared responsive modal, with actions at the bottom.
 export async function openFontEditor({select=false,current=null,name=''}={}){
  const fonts=await loadFontLibrary(),resources=new MenuAppearanceResources();
- if(current?.fontData&&!fonts.some(f=>f.fontData===current.fontData))fonts.push(await saveLibraryFont(current));
+ if(current?.fontData&&!fonts.some(f=>f.fontData===current.fontData))fonts.push(isProjectStorageReadOnly()?{name:current.fontFileName||'Current font',...current}:await saveLibraryFont(current));
  const ready=async font=>{resources.font(font);const entry=resources.fonts.get(font.fontData);await entry?.pending;if(entry&&!entry.ready)throw Error('Could not load this font. Try uploading it again.');};
  await Promise.all(fonts.map(ready));
  let initial=fonts.find(f=>f.name===name||current?.fontData===f.fontData)?.name||fonts[0]?.name||'';

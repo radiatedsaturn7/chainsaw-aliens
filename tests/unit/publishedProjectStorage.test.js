@@ -101,3 +101,10 @@ test('listing does not download documents; selected actors warm referenced art f
  assert.deepEqual(loadProjectFile('art','Hero sprite').data.frames,[[1]]);
  assert.equal(calls.some(([url])=>url.includes('Unrelated/document')),false);
 }));
+
+test('opening the font library can recover embedded fonts without attempting static writes',async()=>fixture(async({add,calls})=>{
+ const {loadFontLibrary}=await import('../../src/ui/FontLibrary.js');
+ add('menus','Splash',{defaultFont:{fontData:'data:font/ttf;base64,AQID',fontFileName:'Embedded.ttf'}});
+ const fonts=await loadFontLibrary();assert.equal(fonts[0].fontFileName,'Embedded.ttf');
+ assert.equal(calls.some(([,method])=>method==='POST'),false);
+}));

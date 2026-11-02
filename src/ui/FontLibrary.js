@@ -1,5 +1,5 @@
 import {hydrateProjectFilePayload,listProjectFiles,saveProjectFileAndConfirm,sanitizeProjectFileName} from './projectFiles.js';
-import {hydrateServerStorage} from './serverStorage.js';
+import {hydrateServerStorage,isProjectStorageReadOnly} from './serverStorage.js';
 
 export function embeddedFonts(value,result=new Map()){
  if(!value||typeof value!=='object')return result;
@@ -22,8 +22,9 @@ export async function loadFontLibrary({recoverEmbedded=true}={}){
  for(const folder of (recoverEmbedded?['cars','menus']:[]))for(const entry of listProjectFiles(folder)){
   const payload=await hydrateProjectFilePayload(folder,entry.name);embeddedFonts(payload?.data,found);
  }
- for(const font of found.values())await saveLibraryFont(font);
+ if(!isProjectStorageReadOnly())for(const font of found.values())await saveLibraryFont(font);
  const fonts=[];
  for(const entry of listProjectFiles('fonts')){const payload=await hydrateProjectFilePayload('fonts',entry.name);if(payload?.data?.fontData)fonts.push({name:entry.name,...payload.data});}
+ if(isProjectStorageReadOnly())for(const font of found.values())if(!fonts.some(entry=>entry.fontData===font.fontData))fonts.push({name:font.fontFileName,...font});
  return fonts;
 }

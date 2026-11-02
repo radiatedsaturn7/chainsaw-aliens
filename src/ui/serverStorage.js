@@ -105,32 +105,35 @@ async function decodeStoredProjectDocument(data, baseUrl = '') {
     const text = await new Response(stream).text();
     decoded = JSON.parse(text);
   }
-  const hydrateAssets = async (value) => {
-    if (Array.isArray(value)) {
-      return Promise.all(value.map((entry) => hydrateAssets(entry)));
+  // JSON.parse owns this document. Replace only asset placeholders in place;
+  // don't allocate a Promise and duplicate every pixel/terrain cell merely to
+  // discover that most leaves are numbers. Bound actual binary downloads.
+  const holder = {value: decoded};
+  const assets = [];
+  const visit = (parent, key) => {
+    const value = parent[key];
+    if (!value || typeof value !== 'object') return;
+    if (typeof value[ASSET_REF_MARKER] === 'string' && typeof value.mime === 'string') {
+      assets.push({parent, key, ref: value[ASSET_REF_MARKER], mime: value.mime});
+      return;
     }
-    if (value && typeof value === 'object') {
-      const ref = value[ASSET_REF_MARKER];
-      const mime = value.mime;
-      if (typeof ref === 'string' && typeof mime === 'string') {
-        const buffer = await requestStatic(resolveStaticStorageUrl(ref, baseUrl), 'bytes');
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        const chunkSize = 0x8000;
-        for (let index = 0; index < bytes.length; index += chunkSize) {
-          binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
-        }
-        return `data:${mime};base64,${btoa(binary)}`;
-      }
-      const result = {};
-      await Promise.all(Object.entries(value).map(async ([key, entry]) => {
-        result[key] = await hydrateAssets(entry);
-      }));
-      return result;
-    }
-    return value;
+    for (const child of Object.keys(value)) visit(value, child);
   };
-  return hydrateAssets(decoded);
+  visit(holder, 'value');
+  let cursor = 0;
+  await Promise.all(Array.from({length: Math.min(3, assets.length)}, async () => {
+    while (cursor < assets.length) {
+      const {parent, key, ref, mime} = assets[cursor++];
+      const buffer = await requestStatic(resolveStaticStorageUrl(ref, baseUrl), 'bytes');
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      for (let index = 0; index < bytes.length; index += 0x8000) {
+        binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
+      }
+      parent[key] = `data:${mime};base64,${btoa(binary)}`;
+    }
+  }));
+  return holder.value;
 }
 
 function normalizeIndex(index = {}) {
@@ -380,7 +383,9 @@ async function hydrateStaticDependencies(payload) {
   if (!payload?.data || payload.folder === 'settings') return;
   const folders = await loadStaticManifest();
   const references = new Map();
+  let maxReferenceLength = 0;
   for (const folder of RESOURCE_FOLDERS) for (const name of Object.keys(folders[folder] || {})) {
+    maxReferenceLength = Math.max(maxReferenceLength, name.length);
     if (!references.has(name)) references.set(name, []);
     references.get(name).push({folder, name});
   }
@@ -390,6 +395,7 @@ async function hydrateStaticDependencies(payload) {
     const wanted = [];
     const scan = value => {
       if (typeof value === 'string') {
+        if (value.length > maxReferenceLength) return; // Never hash embedded MP3/font/image data URLs.
         for (const ref of references.get(value) || []) {
           const key = fileKey(ref.folder, ref.name);
           if (!visited.has(key)) { visited.add(key); wanted.push(ref); }
