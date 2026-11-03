@@ -257,3 +257,32 @@ test('authored race loading screen stays black while its background downloads',a
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.raceLoadingPresentation?.ready),{timeout:60000}).toBe(true);
  expect(await page.evaluate(()=>window.__game.raceEditor.raceLoadingEntry.fade.hold)).toBe(false);
 });
+
+
+test('Studio shows startup status and mobile fullscreen prompt before game modules arrive',async({page})=>{
+ test.setTimeout(120000);
+ await page.setViewportSize({width:390,height:844});
+ await page.addInitScript(()=>Object.defineProperty(navigator,'userAgentData',{value:{mobile:true},configurable:true}));
+ let release;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/src/game/Game.js',async route=>{await gate;await route.continue();});
+ await page.goto(origin+'/index.html',{waitUntil:'domcontentloaded'});
+ try{
+  await expect(page.locator('#studio-boot-status')).toHaveText('Loading RTG Studio…');
+  await expect(page.getByRole('dialog',{name:'Full screen'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'OK',exact:true})).toBeFocused();
+  expect(await page.evaluate(()=>Boolean(window.__gameReady))).toBe(false);
+  await page.getByRole('button',{name:'Cancel',exact:true}).click();
+ }finally{release();}
+ await page.waitForFunction(()=>window.__gameReady,null,{timeout:60000});
+ await expect(page.locator('#studio-boot')).toHaveCount(0);
+ await expect.poll(()=>page.evaluate(()=>window.__game.state),{timeout:60000}).toBe('title');
+ await expect(page.getByRole('dialog',{name:'Full screen'})).toHaveCount(0);
+});
+
+test('Studio explains startup download failures instead of leaving a blank canvas',async({page})=>{
+ await page.route('**/src/game/Game.js',route=>route.fulfill({status:503,body:'Unavailable'}));
+ await page.goto(origin+'/index.html?hideFullscreenForTesting=1',{waitUntil:'domcontentloaded'});
+ await expect(page.locator('#studio-boot-status')).toContainText('could not load');
+ await expect(page.getByRole('button',{name:'Reload',exact:true})).toBeVisible();
+ expect(await page.evaluate(()=>Boolean(window.__gameReady))).toBe(false);
+});
