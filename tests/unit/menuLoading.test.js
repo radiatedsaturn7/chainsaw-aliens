@@ -82,3 +82,14 @@ test('loading menu holds black until its artwork is prepared, even when the race
   now=5100;e.drawRacePreparationScreen(ctx,640,360);assert.ok(e.raceLoadingEntry.fade.active);
  }finally{globalThis.document=previous;}
 });
+
+
+test('failed loading artwork stops an already prepared race instead of leaving it hidden',async()=>{
+ const e=new RaceEditor({});e.playtestSession={running:true,startupFramePending:true};
+ e.raceLoadingEntry={fade:{active:false,update(){}},last:0};
+ e.prepareRaceLoadingMenu=async()=>{throw Error('Background missing');};
+ let failure;e.failRaceStartupPresentation=message=>{failure=message;e.playtestSession=null;};
+ const ctx=new Proxy({},{get:()=>()=>{}});
+ e.drawRacePreparationScreen(ctx,640,360);await e.raceLoadingEntry.task;
+ assert.match(failure,/Background missing/);assert.equal(e.playtestSession,null);
+});

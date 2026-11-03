@@ -6738,7 +6738,9 @@ export default class RaceEditor {
       entry.task=this.prepareRaceLoadingMenu(entry,fitMenuCanvas(bounds)).catch(error=>{
         if(this.raceLoadingEntry!==entry)return;
         entry.error=error;
-        this.failRacePlaytestPreparation(`Loading screen artwork could not load: ${error?.message||error}`);
+        const message=`Loading screen artwork could not load: ${error?.message||error}`;
+        if(this.playtestSession?.running)this.failRaceStartupPresentation(message);
+        else this.failRacePlaytestPreparation(message);
       });
     }
     if(!this.raceLoadingPresentation?.ready){
