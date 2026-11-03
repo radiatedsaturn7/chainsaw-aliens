@@ -120,3 +120,29 @@ test('editor forwards an already sampled AI contact state without sampling it ag
  assert.ok(ai.vehicleDynamicsRunner);
  assert.ok(Number.isFinite(ai.worldX));
 });
+
+
+test('editor playtest waits for saved opponents before building its grid',async()=>{
+ const e=editor();let release;let starts=0;
+ e.hydrateSavedRaceCarsForTravel=()=>new Promise(resolve=>{release=resolve;});
+ e.startPlaytest=(id,options)=>{starts++;assert.equal(id,'saved-car:Player');assert.equal(options.hydrateCars,false);};
+ const pending=e.startSavedRacePlaytest('saved-car:Player');
+ assert.equal(starts,0);
+ assert.equal(await e.startSavedRacePlaytest('saved-car:Player'),false);
+ release();assert.equal(await pending,true);assert.equal(starts,1);
+ assert.equal(e.savedRacePlaytestLoading,false);
+});
+
+test('failed or abandoned car downloads cannot start an empty AI grid',async()=>{
+ const e=editor();let starts=0;
+ e.startPlaytest=()=>{starts++;};
+ e.hydrateSavedRaceCarsForTravel=async()=>{throw Error('Opponent download failed');};
+ assert.equal(await e.startSavedRacePlaytest('player'),false);
+ assert.match(e.lastRaceFailure.message,/Opponent download failed/);
+ assert.equal(e.savedRacePlaytestLoading,false);
+ let release;
+ e.hydrateSavedRaceCarsForTravel=()=>new Promise(resolve=>{release=resolve;});
+ const pending=e.startSavedRacePlaytest('player');
+ e.game.state='title';release();
+ assert.equal(await pending,false);assert.equal(starts,0);
+});

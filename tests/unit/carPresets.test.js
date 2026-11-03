@@ -59,6 +59,11 @@ test('preset names are only AWD, RWD and FWD',()=>{
 test('legacy starter files and tagged templates are excluded while separately named copies remain playable', async()=>{
  resetProjectFilesForTests();
  const {upsertCachedProjectFile}=await import('../../src/ui/serverStorage.js');
+ const originalFetch=globalThis.fetch;
+ globalThis.fetch=async(url)=>{
+  assert.ok(['/__storage/index?folder=cars','/data/server-storage/files/manifest.json'].includes(url));
+  return {ok:true,json:async()=>({index:{cars:{}},folders:{cars:{}}})};
+ };
  try{
   const cache=(name,data)=>upsertCachedProjectFile('cars',name,JSON.stringify({folder:'cars',name,data}));
   for(const [preset,name] of [['awd','2022 Subaru WRX'],['rwd','2022 Subaru BRZ'],['fwd','2023 Honda Civic Type R']]){
@@ -78,5 +83,5 @@ test('legacy starter files and tagged templates are excluded while separately na
   assert.equal(e.playtestSession.aiRuntime.length,3);
   assert.ok(e.playtestSession.aiRuntime.every(ai=>ai.carId==='saved-car:RTG-001'));
   assert.ok(e.playtestSession.aiRuntime.every(ai=>ai.runtimeCar.__playtestDocumentName==='RTG-001'));
- }finally{resetProjectFilesForTests();}
+ }finally{globalThis.fetch=originalFetch;resetProjectFilesForTests();}
 });
