@@ -56,11 +56,14 @@ class ProjectManifestTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / 'source'
             source.mkdir()
-            for name in ['src', 'css', 'assets', 'vendor', 'data/system']:
+            for name in ['src', 'ui', 'css', 'assets', 'vendor', 'data/system']:
                 (source / name).mkdir(parents=True)
                 (source / name / 'included.txt').write_text('runtime')
             for name in ['index.html', 'styles.css']:
                 (source / name).write_text('fixture')
+            (source / 'src/main.js').write_text("import { theme } from '../ui/EditorShell.js';\n")
+            (source / 'ui/EditorShell.js').write_text("export const theme = {};\n")
+            (source / 'ui/tokens.css').write_text(':root { --ui-bg: black; }')
             root = source / 'data/server-storage/files'
             for folder in ['levels', 'art', 'music', 'sfx', 'fonts', 'cars', 'tires', 'doodads', 'menus', 'races', 'actors', 'items', 'models', 'cutscenes', 'settings']:
                 directory = root / folder / 'New'
@@ -79,6 +82,9 @@ class ProjectManifestTests(unittest.TestCase):
             manifest = json.loads((output / 'data/server-storage/files/manifest.json').read_text())
             self.assertEqual(manifest, module.build_manifest(root))
             self.assertEqual(module.validate_assets(output / 'data/server-storage/files', manifest), {'documents': 15, 'assets': 15})
+            self.assertEqual((output / 'ui/EditorShell.js').read_bytes(), (source / 'ui/EditorShell.js').read_bytes())
+            self.assertTrue((output / 'ui/tokens.css').exists())
+            self.assertTrue((output / 'src/main.js').exists())
             self.assertTrue((output / 'data/system/included.txt').exists())
             self.assertFalse((output / 'data/server-storage/performance-captures').exists())
             self.assertFalse(any(output.rglob('versions')))
