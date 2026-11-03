@@ -8,7 +8,9 @@ import {createDefaultRace,createDefaultCar} from '../../src/racing/raceData.js';
 // A real static HTTP host: no storage API, no decoded-document middleware.
 // Unlike the normal test server, this exercises exactly what Pages serves.
 let server,origin;
-const root=path.resolve('.');
+// CI points this at the actual deployment artifact so omitted runtime folders
+// fail startup here instead of only after deployment.
+const root=path.resolve(process.env.STATIC_PROJECT_ROOT || '.');
 const folders=['levels','art','music','actors','sfx','cutscenes','races','cars','tires','models','menus','doodads','items','fonts'];
 const manifest={folders:{}};
 const published=new Map();

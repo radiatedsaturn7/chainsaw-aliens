@@ -13,7 +13,7 @@ def build_site(source, destination):
     if destination == source or destination in source.parents:
         raise ValueError('Output cannot replace the source repository')
     destination.mkdir(parents=True)
-    for name in ['index.html', 'styles.css', 'src', 'css', 'assets', 'vendor']:
+    for name in ['index.html', 'styles.css', 'src', 'ui', 'css', 'assets', 'vendor']:
         item = source / name
         if item.is_dir():
             shutil.copytree(item, destination / name)
