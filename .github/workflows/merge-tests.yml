@@ -37,6 +37,13 @@ jobs:
       - name: Run race frame pacing and resource lifecycle regressions
         run: >-
           node --test --experimental-test-isolation=none
+          tests/unit/raceHotLoopAllocation.test.js
+          tests/unit/raceRenderAllocation.test.js
+          tests/unit/raceAiRenderPoseAllocation.test.js
+          tests/unit/wheelPainterAllocation.test.js
+          tests/unit/tireFxPainterAllocation.test.js
+          tests/unit/raceAiDirector.test.js
+          tests/unit/raceAiTerrainCollision.test.js
           tests/unit/raceAiInteractionBudget.test.js
           tests/unit/raceAiPhysicsBudget.test.js
           tests/unit/raceAiDistantPhysics.test.js

@@ -131,7 +131,9 @@ export function emitWeatherParticle(particles, x, y, vx, vy, life, style, rng = 
 }
 
 export function updateWeatherParticleMotion(particles, dt, windValue = 0) {
-  particles.forEach((particle) => {
+  let kept = 0;
+  for (let i = 0; i < particles.length; i++) {
+    const particle = particles[i];
     particle.life -= dt;
     particle.x += particle.vx * dt;
     particle.y += particle.vy * dt;
@@ -146,8 +148,10 @@ export function updateWeatherParticleMotion(particles, dt, windValue = 0) {
       particle.sway += dt * (particle.style.swaySpeed || 3);
       particle.x += Math.sin(particle.sway) * particle.style.swayAmplitude * dt;
     }
-  });
-  return particles.filter((particle) => particle.life > 0);
+    if (particle.life > 0) particles[kept++] = particle;
+  }
+  particles.length = kept;
+  return particles;
 }
 
 export function updateWeatherSystem({
@@ -187,9 +191,7 @@ export function updateWeatherSystem({
   }
 
   if (applyMotion) {
-    const nextParticles = updateWeatherParticleMotion(particles, safeDt, state.wind.value);
-    particles.length = 0;
-    particles.push(...nextParticles);
+    updateWeatherParticleMotion(particles, safeDt, state.wind.value);
   }
 
   const profile = WEATHER_PROFILES[weatherType];
@@ -254,17 +256,18 @@ export function updateWeatherSystem({
     }
   }
 
-  const filtered = particles.filter((particle) => {
+  let kept = 0;
+  for (let i = 0; i < particles.length; i++) {
+    const particle = particles[i];
     if (particle.style.weatherType === weatherType || particle.style === profile) {
-      return particle.y <= safeBounds.bottom + 24 * safeScale
+      if (!(particle.y <= safeBounds.bottom + 24 * safeScale
         && particle.x >= safeBounds.left - 64 * safeScale
         && particle.x <= safeBounds.right + 64 * safeScale
-        && particle.life > 0;
+        && particle.life > 0)) continue;
     }
-    return true;
-  });
-  particles.length = 0;
-  particles.push(...filtered);
+    particles[kept++] = particle;
+  }
+  particles.length = kept;
 
   if (weatherType === 'weather-hurricane') {
     state.lightning.timer -= safeDt;

@@ -81,45 +81,62 @@ export function carSpriteCornerDepth(camera, world, x, y, scratch = null) {
   return origin.addScaledVector(ray, t).project(camera).z;
 }
 
+// Owned by a single renderer and consumed synchronously. Helpers without this
+// optional scratch retain their independent-result API for other callers.
+export function createCarSpritePlacementScratch() {
+  return {
+    normal:new THREE.Vector3(), origin:new THREE.Vector3(),
+    groundNormal:new THREE.Vector3(), groundPoint:new THREE.Vector3(),
+    ray:new THREE.Vector3(), delta:new THREE.Vector3(), contact:new THREE.Vector3(),
+    projected:new THREE.Vector3(), view:new THREE.Vector3(),
+    footprintAnchor:{x:0,y:0,z:0}, paintAnchor:{x:0,y:0,z:0},
+    ground:{x:0,y:0,z:0,normal:null}, bottomNdc:{xs:[0,0],y:0}, emptyFootprint:{}
+  };
+}
+
 // A sprite depicts the whole car, not a zero-thickness slice through its rear
 // axle. Put its occlusion plane at the camera-facing edge of the physical
 // footprint. This keeps the front wheels above uphill road surfaces without
 // disabling terrain depth testing or drawing the car over distant ridges.
-export function carSpriteFootprintDepthAnchor(camera, world, {x=world.x,z=world.z,yaw=0,lengthM=0,widthM=0}={}) {
-  const normal=camera.getWorldDirection(new THREE.Vector3());normal.y=0;
+export function carSpriteFootprintDepthAnchor(camera, world, {x=world.x,z=world.z,yaw=0,lengthM=0,widthM=0}={}, scratch = null) {
+  const normal=camera.getWorldDirection(scratch?.normal || new THREE.Vector3());normal.y=0;
   if(normal.lengthSq()<1e-8)return world;
   normal.normalize();
-  const forward={x:Math.sin(yaw),z:Math.cos(yaw)},right={x:Math.cos(yaw),z:-Math.sin(yaw)};
-  const support=Math.abs(normal.x*forward.x+normal.z*forward.z)*Math.max(0,lengthM)/2
-    +Math.abs(normal.x*right.x+normal.z*right.z)*Math.max(0,widthM)/2;
-  return {x:x-normal.x*(support+.08),y:world.y,z:z-normal.z*(support+.08)};
+  const sin=Math.sin(yaw),cos=Math.cos(yaw);
+  const support=Math.abs(normal.x*sin+normal.z*cos)*Math.max(0,lengthM)/2
+    +Math.abs(normal.x*cos+normal.z*(-sin))*Math.max(0,widthM)/2;
+  const result=scratch?.footprintAnchor || {};
+  result.x=x-normal.x*(support+.08);result.y=world.y;result.z=z-normal.z*(support+.08);
+  return result;
 }
 
 // Authored body/wheel offsets need not end at the physics footprint. Fit the
 // occlusion plane to their painted ground contact as well, rather than letting
 // the road slice off the bottom of a perfectly complete sprite. This changes
 // depth only, never the screen layout; nearer scenery still depth-tests normally.
-export function carSpritePaintDepthAnchor(camera, world, ground, bottomNdc, footprint = {}) {
+export function carSpritePaintDepthAnchor(camera, world, ground, bottomNdc, footprint = {}, scratch = null) {
   if (!ground || !Number.isFinite(ground.y)) return world;
-  const normal = camera.getWorldDirection(new THREE.Vector3()); normal.y = 0;
+  const normal = camera.getWorldDirection(scratch?.normal || new THREE.Vector3()); normal.y = 0;
   if (normal.lengthSq() < 1e-8) return world;
   normal.normalize();
-  const origin = camera.getWorldPosition(new THREE.Vector3());
-  const groundNormal = new THREE.Vector3(ground.normal?.x || 0, ground.normal?.y ?? 1, ground.normal?.z || 0).normalize();
-  const groundPoint = new THREE.Vector3(ground.x, ground.y, ground.z);
+  const origin = camera.getWorldPosition(scratch?.origin || new THREE.Vector3());
+  const groundNormal = (scratch?.groundNormal || new THREE.Vector3()).set(ground.normal?.x || 0, ground.normal?.y ?? 1, ground.normal?.z || 0).normalize();
+  const groundPoint = (scratch?.groundPoint || new THREE.Vector3()).set(ground.x, ground.y, ground.z);
   let shift = 0;
   for (const x of bottomNdc.xs) {
-    const ray = new THREE.Vector3(x, bottomNdc.y, 0).unproject(camera).sub(origin);
+    const ray = (scratch?.ray || new THREE.Vector3()).set(x, bottomNdc.y, 0).unproject(camera).sub(origin);
     const denominator = ray.dot(groundNormal);
     if (denominator >= -1e-8) continue;
-    const t = groundPoint.clone().sub(origin).dot(groundNormal) / denominator;
+    const t = (scratch?.delta || new THREE.Vector3()).copy(groundPoint).sub(origin).dot(groundNormal) / denominator;
     if (!Number.isFinite(t) || t <= 0) continue;
-    const contact = origin.clone().addScaledVector(ray, t);
-    shift = Math.max(shift, new THREE.Vector3(world.x-contact.x, 0, world.z-contact.z).dot(normal) + .03);
+    const contact = (scratch?.contact || new THREE.Vector3()).copy(origin).addScaledVector(ray, t);
+    shift = Math.max(shift, (scratch?.delta || new THREE.Vector3()).set(world.x-contact.x, 0, world.z-contact.z).dot(normal) + .03);
   }
   // Malformed/oversized artwork must not pull the car through unrelated scenery.
   shift = Math.min(shift, Math.max(1, Number(footprint.lengthM) || 4.5));
-  return {x:world.x-normal.x*shift,y:world.y,z:world.z-normal.z*shift};
+  const result=scratch?.paintAnchor || {};
+  result.x=world.x-normal.x*shift;result.y=world.y;result.z=world.z-normal.z*shift;
+  return result;
 }
 
 export function clearCarSpriteScratch(context, canvas, box) {
@@ -144,6 +161,7 @@ export class RaceCarDepthSprites {
     this.boundsRecorder=boundedContext(this.context,this.emissionContext);
     this.depthScratch={anchor:new THREE.Vector3(),normal:new THREE.Vector3(),
       origin:new THREE.Vector3(),ray:new THREE.Vector3(),delta:new THREE.Vector3()};
+    this.placementScratch=createCarSpritePlacementScratch();
     this.active=new Set();
   }
 
@@ -165,9 +183,10 @@ export class RaceCarDepthSprites {
   }
 
   draw(key, world, camera, draw, { intervalMs = 0, appearanceKey = '', footprint = null, adaptive = false, resting = false } = {}) {
-    let depthWorld=footprint?carSpriteFootprintDepthAnchor(camera,world,footprint):world;
-    const projected=new THREE.Vector3(world.x,world.y,world.z).project(camera);
-    const view=new THREE.Vector3(world.x,world.y,world.z).applyMatrix4(camera.matrixWorldInverse);
+    const scratch=this.placementScratch;
+    let depthWorld=footprint?carSpriteFootprintDepthAnchor(camera,world,footprint,scratch):world;
+    const projected=scratch.projected.set(world.x,world.y,world.z).project(camera);
+    const view=scratch.view.set(world.x,world.y,world.z).applyMatrix4(camera.matrixWorldInverse);
     if(view.z>=0 || projected.z < -1 || projected.z > 1)return;
     const ctx=this.context, bounds=this.bounds;
     const cached=this.entries.get(key);
@@ -314,11 +333,13 @@ export class RaceCarDepthSprites {
 
   fitPaintDepth(entry,depthWorld,world,camera,left,top,scale,footprint) {
     if(!entry.ground)return depthWorld;
-    const ground={...entry.ground,x:entry.ground.x+world.x,y:entry.ground.y+world.y,z:entry.ground.z+world.z};
-    return carSpritePaintDepthAnchor(camera,depthWorld,ground,{
-      xs:[left/this.scratch.width*2-1,(left+entry.paintWidth*scale)/this.scratch.width*2-1],
-      y:1-(top+entry.paintHeight*scale)/this.scratch.height*2
-    },footprint || {});
+    const scratch=this.placementScratch,ground=scratch.ground,bottom=scratch.bottomNdc;
+    ground.x=entry.ground.x+world.x;ground.y=entry.ground.y+world.y;ground.z=entry.ground.z+world.z;
+    ground.normal=entry.ground.normal;
+    bottom.xs[0]=left/this.scratch.width*2-1;
+    bottom.xs[1]=(left+entry.paintWidth*scale)/this.scratch.width*2-1;
+    bottom.y=1-(top+entry.paintHeight*scale)/this.scratch.height*2;
+    return carSpritePaintDepthAnchor(camera,depthWorld,ground,bottom,footprint || scratch.emptyFootprint,scratch);
   }
 
   place(entry,world,camera,projected,left,top,width,height) {

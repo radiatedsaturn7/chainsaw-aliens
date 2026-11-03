@@ -1,5 +1,6 @@
 import {advanceWipers,wiperAngle} from './CarWipers.js';
 export const GLASS_DROP_LIMIT=96;
+const GLASS_LAYERS=['windshield','lens'];
 const STEP=1/60,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 export function syncWeatherWipers(session,weather){
  const wet=['rain','storm','snow'].includes(weather?.id)&&Number(weather.precipitationIntensity??weather.visualIntensity??weather.targetIntensity??0)>.02;
@@ -12,7 +13,10 @@ function random(s){s.seed=(Math.imul(s.seed,1664525)+1013904223)>>>0;return s.se
 export function createGlassWeather(){return {seed:0x18f2be01,accumulator:0,windshield:[],lens:[],spawn:0,aspect:16/9};}
 export function sweptByWiper(drop,config,aspect,angles){
  if(!config?.artRef)return false;
- const min=Math.min(...angles)-.035,max=Math.max(...angles)+.035;
+ return sweptByWiperRange(drop,config,aspect,Math.min(...angles)-.035,Math.max(...angles)+.035);
+}
+function sweptByWiperRange(drop,config,aspect,min,max){
+ if(!config?.artRef)return false;
  for(const mount of config.mounts||[]){
   const dx=drop.x-mount.x,dy=(drop.y-mount.y)/aspect;
   const radius=Math.hypot(dx,dy),angle=Math.atan2(dy,dx);
@@ -27,15 +31,17 @@ function tick(session,s,options){
  const old=wiperAngle(session,wipers),moving=session.wipers?.moving;
  advanceWipers(session,STEP,wipers);
  const angle=wiperAngle(session,wipers),speed=Math.abs(Number(speedMps)||0);
+ // The sweep is identical for every drop in this fixed simulation tick.
+ const sweepMin=Math.min(old,angle)-.035,sweepMax=Math.max(old,angle)+.035;
  s.spawn+=STEP*intensity*(weather.id==='storm'?26:18);
  while(s.spawn>=1){
   s.spawn--;
-  for(const layer of ['windshield','lens']){
+  for(const layer of GLASS_LAYERS){
    if(s[layer].length>=GLASS_DROP_LIMIT)continue;
    s[layer].push({x:.025+random(s)*.95,y:.025+random(s)*(layer==='windshield'?.69:.9),radius:.0035+random(s)*.007,age:0,life:16+random(s)*14,snow:weather.id==='snow'?1:0,drift:random(s)-.5});
   }
  }
- for(const layer of ['windshield','lens']){
+ for(const layer of GLASS_LAYERS){
   const drops=s[layer];let keep=0;
   for(const d of drops){
    d.age+=STEP;
@@ -46,7 +52,7 @@ function tick(session,s,options){
    d.y+=STEP*(.008-climb)*water*(.5+d.radius*70);
    d.x+=STEP*d.drift*speed*.00015*water;
    d.life-=STEP*(layer==='lens'&&session.wipers?.enabled?18:1);
-   if(layer==='windshield'&&moving&&sweptByWiper(d,wipers,s.aspect,[old,angle]))continue;
+   if(layer==='windshield'&&moving&&sweptByWiperRange(d,wipers,s.aspect,sweepMin,sweepMax))continue;
    if(d.life<=0||d.y<-.03||d.y>1.03||d.x<-.03||d.x>1.03)continue;
    drops[keep++]=d;
   }

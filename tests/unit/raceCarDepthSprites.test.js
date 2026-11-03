@@ -224,3 +224,27 @@ test('inactive car cache retains recent resources within its memory budget and d
  assert.equal(disposed,4);
  batch.end(true);assert.equal(batch.entries.size,0);assert.equal(disposed,8);
 });
+
+test('footprint and painted-ground placement reuse scratch with identical results and independent default outputs',async()=>{
+ const {createCarSpritePlacementScratch,carSpriteFootprintDepthAnchor,carSpritePaintDepthAnchor}=await import('../../src/racing/RaceCarDepthSprites.js');
+ const scratch=createCarSpritePlacementScratch(),other=createCarSpritePlacementScratch();
+ const identity=scratch.paintAnchor;
+ for(let i=0;i<160;i++){
+  const camera=new THREE.PerspectiveCamera(40+i%40,1.6,.1,2600);
+  camera.position.set(Math.sin(i)*20,2+i%12,20);camera.lookAt(0,1,0);camera.updateMatrixWorld(true);
+  const world={x:Math.cos(i)*2,y:1,z:0},footprint={x:world.x,z:world.z,yaw:i*.2,lengthM:4.5,widthM:1.8};
+  const expected=carSpriteFootprintDepthAnchor(camera,world,footprint);
+  const actual=carSpriteFootprintDepthAnchor(camera,world,footprint,scratch);
+  assert.deepEqual(actual,expected);
+  const ground={x:0,y:0,z:0,normal:{x:.1,y:1,z:(i%3-1)*.2}};
+  const bottom={xs:[-.1,.1],y:-.4};
+  const painted=carSpritePaintDepthAnchor(camera,actual,ground,bottom,footprint,scratch);
+  assert.deepEqual(painted,carSpritePaintDepthAnchor(camera,expected,ground,bottom,footprint));
+  assert.equal(painted,identity);
+  const retained=structuredClone(painted);
+  carSpritePaintDepthAnchor(camera,world,ground,bottom,footprint,other);
+  assert.deepEqual(painted,retained,'separate renderers cannot overwrite each other');
+  assert.deepEqual(world,{x:Math.cos(i)*2,y:1,z:0},'input world remains unchanged');
+ }
+ assert.notEqual(carSpriteFootprintDepthAnchor(new THREE.PerspectiveCamera(),{x:0,y:1,z:0}),scratch.footprintAnchor);
+});
