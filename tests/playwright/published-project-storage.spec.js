@@ -334,7 +334,9 @@ test('mobile fullscreen dialog remains tappable across portrait and landscape ro
   await page.locator('#game').tap({position:{x:20,y:20}});
   await expect.poll(()=>page.evaluate(()=>window.touchProbe)).toBe(1);
   await page.setViewportSize({width:390,height:844});
-  await expect.poll(()=>page.evaluate(()=>window.__game.viewport.width)).toBe(390);
+  await expect.poll(()=>page.evaluate(()=>window.__game.viewport.width === Math.round(window.visualViewport.width))).toBe(true);
+  await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('mobile-portrait'))).toBe(true);
+  console.log('ROTATED_VIEWPORT',await page.evaluate(()=>({innerWidth,innerHeight,visualWidth:visualViewport.width,visualHeight:visualViewport.height,scale:visualViewport.scale,game:window.__game.viewport,canvas:document.getElementById('game').getBoundingClientRect().toJSON()})));
   await page.locator('#game').tap({position:{x:20,y:20}});
   await expect.poll(()=>page.evaluate(()=>window.touchProbe)).toBe(2);
  }finally{await context.close();}
