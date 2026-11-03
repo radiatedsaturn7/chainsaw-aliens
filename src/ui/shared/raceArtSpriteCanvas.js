@@ -56,6 +56,7 @@ export function getRaceArtSpriteCanvasShared(artRef = '', {
   }
   const missStartMs = playtestSession && !racePreloadingArt ? getNowMs() : 0;
   const payload = loadProjectFile('art', clean, {allowSyncFetch});
+  if (!payload) return null;
   let data = payload?.data || payload;
   if (payload?.__chainsawStorage && typeof payload.data === 'string' && payload.encoding === 'json') {
     try {

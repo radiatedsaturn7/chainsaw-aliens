@@ -1,3 +1,4 @@
+import {getArtDocumentFrames} from '../ui/shared/artDocumentPixels.js';
 import {prepareMenuScreen} from './MenuScreenPreparation.js';
 import {MenuAppearanceResources} from './MenuAppearance.js';
 import {partFits,isGarageUpgrade} from '../garage/CarPart.js';
@@ -95,5 +96,14 @@ export class MenuResources {
     ctx.drawImage(canvas,b.x,b.y,b.w,b.h);
   }
   tuning(car){if(!this.tunings.has(car))this.tunings.set(car,this.game.carEditor.getRaceCarTuning(car));return this.tunings.get(car);}
-  art(ref,frameIndex=0){if(!ref)return null;const canvas=getRaceArtSpriteCanvasShared(ref,{frameIndex,cache:this.artCache,allowSyncFetch:false});if(!canvas)this.request(`art:${ref}`,()=>hydrateRaceArtSpriteShared(ref));return canvas;}
+  async prepareArt(ref){
+    const payload=await hydrateRaceArtSpriteShared(ref);
+    if(!payload)throw Error(`Artwork not found: ${ref}`);
+    const count=getArtDocumentFrames(payload.data).frames.length||1;
+    for(let frameIndex=0;frameIndex<count;frameIndex++){
+      if(!getRaceArtSpriteCanvasShared(ref,{frameIndex,cache:this.artCache,allowSyncFetch:false}))throw Error(`Artwork could not be drawn: ${ref}`);
+      if(frameIndex+1<count)await new Promise(resolve=>setTimeout(resolve,0));
+    }
+  }
+  art(ref,frameIndex=0){if(!ref)return null;const canvas=getRaceArtSpriteCanvasShared(ref,{frameIndex,cache:this.artCache,allowSyncFetch:false});if(!canvas)this.request(`art:${ref}`,()=>this.prepareArt(ref));return canvas;}
 }

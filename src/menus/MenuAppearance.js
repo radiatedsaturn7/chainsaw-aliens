@@ -49,14 +49,14 @@ export class MenuAppearanceResources {
   let entry=this.fonts.get(e.fontData);
   if(!entry){
    entry={family:`RTGMenuFont${++fontSequence}`,ready:false};this.fonts.set(e.fontData,entry);
-   try{const face=new this.FontFace(entry.family,`url(${JSON.stringify(e.fontData)})`);entry.pending=face.load().then(loaded=>{this.fontSet.add(loaded);entry.ready=true;}).catch(()=>{});}catch{}
+   try{const face=new this.FontFace(entry.family,`url(${JSON.stringify(e.fontData)})`);entry.pending=face.load().then(loaded=>{this.fontSet.add(loaded);entry.ready=true;}).catch(error=>{entry.error=error;});}catch(error){entry.error=error;}
   }
   return entry.ready?`${entry.family}, ${fallback}`:fallback;
  }
  cursor(e){
   if(!e.cursorData||!this.Image)return null;
   let entry=this.images.get(e.cursorData);
-  if(!entry){entry={image:new this.Image(),ready:false};this.images.set(e.cursorData,entry);entry.pending=new Promise(resolve=>{entry.image.onload=()=>{entry.ready=true;resolve();};entry.image.onerror=()=>resolve();});entry.image.src=e.cursorData;}
+  if(!entry){entry={image:new this.Image(),ready:false};this.images.set(e.cursorData,entry);entry.pending=new Promise(resolve=>{entry.image.onload=()=>{entry.ready=true;resolve();};entry.image.onerror=()=>{entry.error=Error('Could not decode cursor image');resolve();};});entry.image.src=e.cursorData;}
   return entry.ready?entry.image:null;
  }
 }

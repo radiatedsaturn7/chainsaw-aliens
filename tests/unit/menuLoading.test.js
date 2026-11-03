@@ -58,3 +58,23 @@ test('loading content is not created until a fully black entry frame has been dr
   now=516;e.drawRacePreparationScreen(ctx,640,360);assert.ok(e.raceLoadingPresentation);
  }finally{globalThis.document=saved;}
 });
+
+
+test('loading menu holds black until its artwork is prepared, even when the race is ready',async()=>{
+ const previous=globalThis.document;globalThis.document={createElement:()=>({getContext:()=>({drawImage(){}})})};
+ try{
+  let resolve;const ready=new Promise(r=>{resolve=r;});
+  const document=createMenuDocument();document.loadingScreen='loading';document.screens.push({...createLoadingMenuScreen(),elements:[]});
+  const game={menuPlayer:{flow:{document,parameters:{}},resources:{prepareScreen:()=>ready,art:()=>null}}};
+  const e=new RaceEditor(game);let now=0;e.getNowMs=()=>now;
+  e.playtestSession={preparing:true};e.racePlaytestPreparation={progress:1};
+  const ctx=new Proxy({canvas:{},measureText:()=>({width:20}),getTransform:()=>({a:1,d:1,e:0,f:0})},{get:(o,k)=>k in o?o[k]:()=>{}});
+  e.drawRacePreparationScreen(ctx,640,360);now=500;e.drawRacePreparationScreen(ctx,640,360);
+  now=600;e.drawRacePreparationScreen(ctx,640,360);
+  assert.equal(e.raceLoadingPresentation.ready,false);assert.equal(e.raceLoadingEntry.fade.hold,true);
+  now=5000;e.drawRacePreparationScreen(ctx,640,360);assert.equal(e.raceLoadingEntry.fade.elapsed,.15);
+  resolve();await e.raceLoadingEntry.task;
+  assert.equal(e.raceLoadingPresentation.ready,true);assert.equal(e.raceLoadingEntry.fade.hold,false);
+  now=5100;e.drawRacePreparationScreen(ctx,640,360);assert.ok(e.raceLoadingEntry.fade.active);
+ }finally{globalThis.document=previous;}
+});

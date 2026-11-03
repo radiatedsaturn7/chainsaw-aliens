@@ -27,6 +27,7 @@ for(const name of ['Player','Opponent']){
  const car=createDefaultCar();car.name=name;car.art.body='Sheet 50% #';
  add('cars',name,{schemaVersion:1,kind:'race-car',car});
 }
+for(const name of ['Menu background','Menu button','Loading background'])add('art',name,{width:1,height:1,frames:[['#ff0000'],['#00ff00']]});
 add('actors','Hero',{actor:{artRef:'Sheet 50% #'}});
 add('fonts','Tiny font',{fontData:{__chainsawAssetRef:'assets/font.ttf',mime:'font/ttf'}});
 published.set('/data/server-storage/files/fonts/Tiny font/assets/font.ttf',Buffer.from([1,2,3]));
@@ -215,4 +216,44 @@ test('generated car dashboard and light artwork packs from the static snapshot',
  },generatedCarArt);
  expect(result.missing).toEqual([]);
  expect(result.count).toBe(generatedCarArt.length);
+});
+
+
+test('menu playback waits for delayed button artwork and decodes every frame before entry',async({page})=>{
+ test.setTimeout(120000);
+ await page.goto(origin+'/index.html');await page.waitForFunction(()=>window.__gameReady,null,{timeout:60000});
+ let release;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/art/Menu%20button/document.json',async route=>{await gate;await route.continue();});
+ await page.evaluate(()=>{
+  window.menuOpenDone=false;window.menuOpenError=null;
+  void window.__game.previewMenu({screens:[{id:'splash',backgroundArt:'Menu background',elements:[{id:'start',type:'button',label:'Start',artRef:'Menu button'}]}]},{screenId:'splash'}).then(()=>window.menuOpenDone=true,error=>window.menuOpenError=error.message);
+ });
+ try{
+  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.pendingScreenEntry)).toBe(true);
+  expect(await page.evaluate(()=>window.menuOpenDone)).toBe(false);
+ }finally{release();}
+ await expect.poll(()=>page.evaluate(()=>({done:window.menuOpenDone,error:window.menuOpenError})),{timeout:60000}).toEqual({done:true,error:null});
+ expect(await page.evaluate(()=>[...window.__game.menuPlayer.resources.artCache.keys()].filter(k=>k.startsWith('Menu button:')).length)).toBe(2);
+});
+
+test('authored race loading screen stays black while its background downloads',async({page})=>{
+ test.setTimeout(120000);
+ await page.goto(origin+'/index.html');await page.waitForFunction(()=>window.__gameReady,null,{timeout:60000});
+ let release;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/art/Loading%20background/document.json',async route=>{await gate;await route.continue();});
+ await page.evaluate(async()=>{
+  const {normalizeMenuDocument}=await import('./src/menus/MenuDocument.js');
+  const g=window.__game,e=g.raceEditor;
+  g.menuPlayer.flow={document:normalizeMenuDocument({loadingScreen:'loading',screens:[{id:'loading',backgroundArt:'Loading background',elements:[]}]}),parameters:{}};
+  window.loadingProbe=document.createElement('canvas');window.loadingProbe.width=640;window.loadingProbe.height=360;
+  window.loadingProbeTime=0;e.getNowMs=()=>window.loadingProbeTime;
+  e.drawRacePreparationScreen(window.loadingProbe.getContext('2d'),640,360);
+  window.loadingProbeTime=500;e.drawRacePreparationScreen(window.loadingProbe.getContext('2d'),640,360);
+  window.loadingProbeTime=600;e.drawRacePreparationScreen(window.loadingProbe.getContext('2d'),640,360);
+ });
+ try{
+  expect(await page.evaluate(()=>({ready:window.__game.raceEditor.raceLoadingPresentation.ready,hold:window.__game.raceEditor.raceLoadingEntry.fade.hold,pixel:[...window.loadingProbe.getContext('2d').getImageData(320,180,1,1).data]}))).toEqual({ready:false,hold:true,pixel:[0,0,0,255]});
+ }finally{release();}
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.raceLoadingPresentation?.ready),{timeout:60000}).toBe(true);
+ expect(await page.evaluate(()=>window.__game.raceEditor.raceLoadingEntry.fade.hold)).toBe(false);
 });

@@ -3,7 +3,7 @@ import {menuElementVisible} from './MenuLayout.js';
 import {drawMenuScreen} from './MenuRenderer.js';
 import {listProjectFiles,loadProjectFile,hydrateProjectFilePayload} from '../ui/projectFiles.js';
 import {getArtDocumentFrames} from '../ui/shared/artDocumentPixels.js';
-import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared} from '../ui/shared/raceArtSpriteCanvas.js';
+import {getRaceArtSpriteCanvasShared} from '../ui/shared/raceArtSpriteCanvas.js';
 
 const yieldFrame=()=>new Promise(resolve=>setTimeout(resolve,0));
 // Returns null without a drawing surface (headless callers); otherwise resolves
@@ -21,9 +21,7 @@ export function prepareMenuScreen(resources,document,screen,parameters,{bounds={
       for(const node of e.nodes||[])for(const key of ['artRef','selectedArtRef','disabledArtRef'])refs.add(node[key]);
       resources.font(e.useDefaultFont?document.defaultFont||e:e);resources.cursor(e);
     }
-    const art=ref=>resources.request(`art:${ref}`,async()=>{
-      if(!await hydrateRaceArtSpriteShared(ref))throw Error(`Artwork not found: ${ref}`);
-    });
+    const art=ref=>resources.request(`art:${ref}`,()=>resources.prepareArt(ref));
     const visualLoads=[...refs].filter(Boolean).map(art);
     const carRefs=new Set();
     if(elements.some(e=>e.type==='car-showroom')){
@@ -63,13 +61,17 @@ export function prepareMenuScreen(resources,document,screen,parameters,{bounds={
     }
     // Drawing may discover dependent assets (garage-installed tires, map race
     // descriptions, embedded fonts). Resolve them before revealing the screen.
-    for(let pass=0;pass<6&&isCurrent();pass++){
+    const priorErrors=new Set(resources.errors.keys());
+    for(let pass=0;isCurrent();pass++){
       ctx.clearRect(0,0,canvas.width,canvas.height);
       drawMenuScreen(ctx,{x:0,y:0,w:bounds.w,h:bounds.h},document,screen,parameters,{resources,time:0});
-      const pending=[...resources.pending.values(),...[...resources.appearance.fonts.values(),...resources.appearance.images.values()].map(f=>f.pending).filter(Boolean)];
-      if(!resources.pending.size){await Promise.all(pending);
-        if(isCurrent())drawMenuScreen(ctx,{x:0,y:0,w:bounds.w,h:bounds.h},document,screen,parameters,{resources,time:0});
-        break;}
+      const appearance=[...resources.appearance.fonts.values(),...resources.appearance.images.values()];
+      const appearanceError=appearance.find(f=>f.error);if(appearanceError)throw appearanceError.error;
+      const pending=[...resources.pending.values(),...appearance.filter(f=>!f.ready).map(f=>f.pending).filter(Boolean)];
+      const failed=[...resources.errors].filter(([key])=>!priorErrors.has(key)||refs.has(key.replace(/^art:/,'')));
+      if(failed.length)throw Error(failed.map(([,error])=>error).join(', '));
+      if(!pending.length)return;
+      if(pass>=32)throw Error('Menu resources did not finish preparing');
       await Promise.all(pending);await yieldFrame();
     }
   })().finally(()=>{canvas.width=1;canvas.height=1;});
