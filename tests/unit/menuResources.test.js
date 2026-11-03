@@ -79,12 +79,37 @@ test('screen preparation builds background and button pixels before resolving',a
  globalThis.document={createElement:()=>({getContext:context})};
  clearCachedProjectFilesForTests();
  try{
-  for(const ref of ['bg-ready','button-ready'])upsertCachedProjectFile('art',ref,JSON.stringify({savedAt:1,data:{width:1,height:1,pixels:['#ff0000']}}));
+  for(const ref of ['bg-ready','button-ready'])upsertCachedProjectFile('art',ref,JSON.stringify({savedAt:1,data:{width:1,height:1,frames:[['#ff0000'],['#00ff00']]}}));
   const resources=new MenuResources({carEditor:{}});
   const doc=normalizeMenuDocument({screens:[{id:'splash',backgroundArt:'bg-ready',elements:[{id:'start',type:'button',label:'Start',artRef:'button-ready'}]}]});
   await resources.prepareScreen(doc,doc.screens[0],{});
   assert.equal(resources.pending.size,0);
   assert.ok(resources.art('bg-ready'));assert.ok(resources.art('button-ready'));
-  assert.equal(resources.artCache.size,2);
+  assert.equal(resources.artCache.size,4,'all animation frames are decoded before revealing the menu');
  }finally{globalThis.document=previous;clearCachedProjectFilesForTests();}
+});
+
+
+test('an early menu art cache miss cannot hide a later untimestamped download',async()=>{
+ const {upsertCachedProjectFile,clearCachedProjectFilesForTests}=await import('../../src/ui/serverStorage.js');
+ const {getRaceArtSpriteCanvasShared}=await import('../../src/ui/shared/raceArtSpriteCanvas.js');
+ const cache=new Map(),documentRef={createElement:()=>({getContext:()=>({fillRect(){}})})};
+ clearCachedProjectFilesForTests();
+ try{
+  assert.equal(getRaceArtSpriteCanvasShared('late',{cache,documentRef,allowSyncFetch:false}),null);
+  upsertCachedProjectFile('art','late',JSON.stringify({savedAt:0,data:{width:1,height:1,pixels:['#ffffff']}}));
+  assert.ok(getRaceArtSpriteCanvasShared('late',{cache,documentRef,allowSyncFetch:false}));
+ }finally{clearCachedProjectFilesForTests();}
+});
+
+
+test('missing optional world map descriptions are fetched once instead of keeping preparation pending',async()=>{
+ const {clearCachedProjectFilesForTests}=await import('../../src/ui/serverStorage.js');
+ clearCachedProjectFilesForTests();const original=globalThis.fetch;let reads=0;
+ globalThis.fetch=async()=>{reads++;return {ok:true,json:async()=>({file:null})};};
+ try{
+  const resources=new MenuResources({carEditor:{}});
+  for(let i=0;i<4;i++){assert.equal(resources.race('Missing description'),null);await Promise.all(resources.pending.values());}
+  assert.equal(reads,1);assert.equal(resources.pending.size,0);
+ }finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
 });

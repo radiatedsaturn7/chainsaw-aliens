@@ -579,10 +579,13 @@ test('incremental artwork adoption rejects conversion errors instead of remainin
   );
 });
 
-test('preparation progress remains below complete until presentation finishes', () => {
+test('preparation progress remains below complete until presentation finishes', async () => {
   const editor=createEditor();
   editor.racePlaytestPreparation={progress:.999,raceName:'Studio Sprint2',phase:'Starting race'};
+  editor.raceLoadingMenuDocument={screens:[]};
   const ctx=new Proxy({measureText:()=>({width:20})},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
+  editor.drawRacePreparationScreen(ctx,640,360);
+  await editor.raceLoadingEntry.task;
   editor.drawRacePreparationScreen(ctx,640,360);
   assert.equal(editor.raceLoadingPresentation.progress,.999);
   assert.ok(editor.raceLoadingPresentation.progress<1);

@@ -1146,7 +1146,9 @@ export default class RaceEditor {
     const startupFramePending = liveSession
       && this.playtestSession?.running
       && this.playtestSession.startupFramePending === true;
+    const loadingArtworkPending=this.raceLoadingEntry?.task && !this.raceLoadingPresentation?.ready;
     if (startupFramePending
+      && !loadingArtworkPending
       && Number(this.playtestSession.startupPresentationStartedAtMs || 0) > 0
       && Date.now() - Number(this.playtestSession.startupPresentationStartedAtMs) > RACE_PRESENTATION_TIMEOUT_MS + (this.raceLoadingPresentation ? 3300 : 0)) {
       this.failRaceStartupPresentation('Race did not present its first playable frame');
@@ -6600,7 +6602,7 @@ export default class RaceEditor {
         this.buttons=[];
         this.drawRacePreparationScreen(ctx,width,height);
         if (!warm.surfacePrepared) prepareRaceLoadingSurfaceSlice(this, warm);
-        if(warm.surfacePrepared && raceStartupWarmupReady(warm,session,now)){
+        if(warm.surfacePrepared && this.raceLoadingPresentation?.ready!==false && !this.raceLoadingEntry?.fade?.active && raceStartupWarmupReady(warm,session,now)){
           warm.exit=new MenuScreenTransition();
           warm.exit.start(ctx.canvas,this.raceLoadingBounds,undefined,{transform:ctx.getTransform?.()});
           warm.last=now;
@@ -6728,28 +6730,23 @@ export default class RaceEditor {
     if(layout)this.drawRaceHandheldShell(ctx,layout);
     if(entry.fade.active && !entry.blackDrawn){
       entry.fade.draw(ctx,entry.menuBounds ? fitMenuCanvas(bounds) : bounds);
-      if(entry.fade.elapsed>=.15){entry.blackDrawn=true;entry.fade.release();}
+      if(entry.fade.elapsed>=.15)entry.blackDrawn=true;
       if(layout)this.drawRaceHandheldControls(ctx,layout);
       ctx.restore();return;
     }
-    if(!this.raceLoadingPresentation){
-      const flow=this.game?.raceTravelSession?.menuFlow || this.game?.menuPlayer?.flow;
-      if(!flow?.document && !this.raceLoadingMenuRequest && typeof window!=='undefined'){
-        this.raceLoadingMenuRequest=loadServerPreferenceAsync('menu-launch',null)
-          .then(preference=>preference?.menuRef?hydrateProjectFilePayload('menus',preference.menuRef):null)
-          .then(payload=>{if(payload?.data){this.raceLoadingMenuDocument=normalizeMenuDocument(payload.data);this.raceLoadingPresentation=null;}})
-          .catch(()=>{});
-      }
-      const document=flow?.document || this.raceLoadingMenuDocument || createMenuDocument();
-      const authored=document.screens.find(s=>s.id===document.loadingScreen);
-      const screen=authored || {...createLoadingMenuScreen(document.screens.find(s=>s.id==='splash')||document.screens[0]),elements:[]};
-      if(!authored)screen.elements=createLoadingMenuScreen().elements.map(normalizeMenuElement);
-      const base=this.game?.menuPlayer?.resources || new MenuResources(this.game);
-      const resources=Object.create(base);
-      const car=this.raceLoadingCar || this.playtestSession?.runtimeCar || this.getRaceSessionCar(this.playtestSession);
-      const carRef=flow?.parameters?.carRef || this.game?.raceTravelSession?.carSelection?.documentName || car?.id || '';
-      resources.car=ref=>ref===carRef&&car?car:base.car(ref);
-      this.raceLoadingPresentation={document,screen,resources,carRef,parameters:flow?.parameters||{},seed:Math.random(),started:this.getNowMs()};
+    if(!entry.task){
+      entry.task=this.prepareRaceLoadingMenu(entry,fitMenuCanvas(bounds)).catch(error=>{
+        if(this.raceLoadingEntry!==entry)return;
+        entry.error=error;
+        const message=`Loading screen artwork could not load: ${error?.message||error}`;
+        if(this.playtestSession?.running)this.failRaceStartupPresentation(message);
+        else this.failRacePlaytestPreparation(message);
+      });
+    }
+    if(!this.raceLoadingPresentation?.ready){
+      ctx.fillStyle='#000000';ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
+      if(layout)this.drawRaceHandheldControls(ctx,layout);
+      ctx.restore();return;
     }
     const view=this.raceLoadingPresentation;
     const progress=view.progress=Math.max(view.progress||0,clamp(Number(preparation?.progress ?? (this.playtestSession?.startupFramePending ? 1 : 0)),0,1));
@@ -6761,9 +6758,39 @@ export default class RaceEditor {
       drawDisplayModeInBounds(this.game,ctx,menuBounds);
     }
     entry.fade.draw(ctx,entry.menuBounds ? fitMenuCanvas(bounds) : bounds);
-    if(entry.fade.active && entry.fade.elapsed>=.15){entry.blackDrawn=true;entry.fade.release();}
+    if(entry.fade.active && entry.fade.elapsed>=.15){entry.blackDrawn=true;if(view.ready)entry.fade.release();}
     if(layout)this.drawRaceHandheldControls(ctx,layout);
     ctx.restore();
+  }
+
+  async prepareRaceLoadingMenu(entry,bounds) {
+    const isCurrent=()=>this.raceLoadingEntry===entry;
+    const flow=this.game?.raceTravelSession?.menuFlow || this.game?.menuPlayer?.flow;
+    if(!flow?.document && !this.raceLoadingMenuDocument && typeof window!=='undefined'){
+      this.raceLoadingMenuRequest ||= loadServerPreferenceAsync('menu-launch',null)
+        .then(preference=>preference?.menuRef?hydrateProjectFilePayload('menus',preference.menuRef):null)
+        .then(payload=>{if(payload?.data)this.raceLoadingMenuDocument=normalizeMenuDocument(payload.data);})
+        .finally(()=>{this.raceLoadingMenuRequest=null;});
+      await this.raceLoadingMenuRequest;
+    }
+    if(!isCurrent())return;
+    const document=flow?.document || this.raceLoadingMenuDocument || createMenuDocument();
+    const authored=document.screens.find(s=>s.id===document.loadingScreen);
+    const screen=authored || {...createLoadingMenuScreen(document.screens.find(s=>s.id==='splash')||document.screens[0]),elements:createLoadingMenuScreen().elements.map(normalizeMenuElement)};
+    const base=this.game?.menuPlayer?.resources || new MenuResources(this.game);
+    const resources=Object.create(base);
+    const car=this.raceLoadingCar || this.playtestSession?.runtimeCar || this.getRaceSessionCar(this.playtestSession);
+    const carRef=flow?.parameters?.carRef || this.game?.raceTravelSession?.carSelection?.documentName || car?.id || '';
+    resources.car=ref=>ref===carRef&&car?car:base.car(ref);
+    const view={document,screen,resources,carRef,parameters:flow?.parameters||{},seed:Math.random(),ready:false};
+    this.raceLoadingPresentation=view;
+    await resources.prepareScreen(document,screen,{...view.parameters,carRef,loadingProgress:0,loadingFactSeed:view.seed},{bounds,isCurrent});
+    if(!isCurrent())return;
+    view.ready=true;view.started=this.getNowMs();
+    // Network time for the menu is not a stalled first race frame. Its requests
+    // have their own timeout; start the presentation watchdog after they finish.
+    if(this.playtestSession?.startupFramePending)this.playtestSession.startupPresentationStartedAtMs=Date.now();
+    entry.fade.release();
   }
 
   resolveRaceViewportMode(width = this.game?.canvas?.width || 0, height = this.game?.canvas?.height || 0) {

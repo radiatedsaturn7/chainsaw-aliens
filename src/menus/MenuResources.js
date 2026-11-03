@@ -1,3 +1,4 @@
+import {getArtDocumentFrames} from '../ui/shared/artDocumentPixels.js';
 import {prepareMenuScreen} from './MenuScreenPreparation.js';
 import {MenuAppearanceResources} from './MenuAppearance.js';
 import {partFits,isGarageUpgrade} from '../garage/CarPart.js';
@@ -8,7 +9,7 @@ import {listProjectFiles,loadProjectFile,hydrateProjectFilePayload} from '../ui/
 import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared} from '../ui/shared/raceArtSpriteCanvas.js';
 
 export class MenuResources {
-  constructor(game){this.appearance=new MenuAppearanceResources();this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.showroomFrames=new WeakMap();this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.garageCars=new Map();this.partCatalog=[];this.pending=new Map();this.errors=new Map();}
+  constructor(game){this.appearance=new MenuAppearanceResources();this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.showroomFrames=new WeakMap();this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.garageCars=new Map();this.partCatalog=[];this.pending=new Map();this.errors=new Map();this.missingRaces=new Set();}
   prepareScreen(document,screen,parameters,options){return prepareMenuScreen(this,document,screen,parameters,options);}
   exteriorArtRefs(car){return this.game.carEditor.collectRaceCarArtRefs({...car,art:{...car.art,gauges:{},interior:{}}});}
   font(element){return this.appearance.font(element);}
@@ -44,7 +45,8 @@ export class MenuResources {
     if(!ref)return null;
     const payload=loadProjectFile('races',ref,{allowSyncFetch:false})?.data;
     if(payload)return payload.race||payload;
-    this.request(`race:${ref}`,()=>hydrateProjectFilePayload('races',ref));return null;
+    if(this.missingRaces.has(ref))return null;
+    this.request(`race:${ref}`,async()=>{if(!(await hydrateProjectFilePayload('races',ref))?.data)this.missingRaces.add(ref);});return null;
   }
   stockCar(ref){
     if(!ref)return null;
@@ -95,5 +97,14 @@ export class MenuResources {
     ctx.drawImage(canvas,b.x,b.y,b.w,b.h);
   }
   tuning(car){if(!this.tunings.has(car))this.tunings.set(car,this.game.carEditor.getRaceCarTuning(car));return this.tunings.get(car);}
-  art(ref,frameIndex=0){if(!ref)return null;const canvas=getRaceArtSpriteCanvasShared(ref,{frameIndex,cache:this.artCache,allowSyncFetch:false});if(!canvas)this.request(`art:${ref}`,()=>hydrateRaceArtSpriteShared(ref));return canvas;}
+  async prepareArt(ref){
+    const payload=await hydrateRaceArtSpriteShared(ref);
+    if(!payload)throw Error(`Artwork not found: ${ref}`);
+    const count=getArtDocumentFrames(payload.data).frames.length||1;
+    for(let frameIndex=0;frameIndex<count;frameIndex++){
+      if(!getRaceArtSpriteCanvasShared(ref,{frameIndex,cache:this.artCache,allowSyncFetch:false}))throw Error(`Artwork could not be drawn: ${ref}`);
+      if(frameIndex+1<count)await new Promise(resolve=>setTimeout(resolve,0));
+    }
+  }
+  art(ref,frameIndex=0){if(!ref)return null;const canvas=getRaceArtSpriteCanvasShared(ref,{frameIndex,cache:this.artCache,allowSyncFetch:false});if(!canvas)this.request(`art:${ref}`,()=>this.prepareArt(ref));return canvas;}
 }
