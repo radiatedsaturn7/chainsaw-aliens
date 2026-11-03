@@ -265,7 +265,7 @@ test('Studio shows startup status and mobile fullscreen prompt before game modul
  await page.addInitScript(()=>Object.defineProperty(navigator,'userAgentData',{value:{mobile:true},configurable:true}));
  let release;const gate=new Promise(resolve=>{release=resolve;});
  await page.route('**/src/game/Game.js',async route=>{await gate;await route.continue();});
- await page.goto(origin+'/index.html',{waitUntil:'domcontentloaded'});
+ await page.goto(origin+'/index.html',{waitUntil:'commit'});
  try{
   await expect(page.locator('#studio-boot-status')).toHaveText('Loading RTG Studio…');
   await expect(page.getByRole('dialog',{name:'Full screen'})).toBeVisible();

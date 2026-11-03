@@ -13,7 +13,7 @@ function fail(error) {
   console.error('RTG Studio startup failed', error);
 }
 const onError = event => fail(event.error || event.reason || event.message);
-window.addEventListener('error', onError);
+window.addEventListener('error', onError, true);
 window.addEventListener('unhandledrejection', onError);
 retry.addEventListener('click', () => location.reload());
 const boot = window.__rtgBoot = {
@@ -22,7 +22,7 @@ const boot = window.__rtgBoot = {
     if (ready) return;
     ready = true;
     splash.remove();
-    window.removeEventListener('error', onError);
+    window.removeEventListener('error', onError, true);
     window.removeEventListener('unhandledrejection', onError);
   }
 };
@@ -39,13 +39,3 @@ if (mobile && !new URLSearchParams(location.search).has('hideFullscreenForTestin
   });
   void boot.fullscreenPrompt.show();
 }
-const vendors = ['soundfont-player.min.js', 'jszip.min.js', 'midi.min.js'];
-const vendorLoads = vendors.map(name => new Promise((resolve, reject) => {
-  const script = document.createElement('script');
-  script.async = false;
-  script.src = new URL(`../vendor/${name}`, import.meta.url).href;
-  script.onload = resolve;
-  script.onerror = () => reject(Error(`Could not load ${name}`));
-  document.head.appendChild(script);
-}));
-Promise.all(vendorLoads).then(() => import('./main.js')).catch(fail);
