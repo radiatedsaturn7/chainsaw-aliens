@@ -15,12 +15,37 @@ export class FullscreenPrompt {
     if (this.active) return;
     this.active = true;
     this.awaitingRelease = false;
+    let detachViewport = () => {};
     return this.open({
       title: 'Full screen', confirmText: 'OK', cancelText: 'Cancel',
       initialFocus: 'confirm', confirmFirst: true,
       onConfirm: this.request,
-      onOpen: buttons => { this.buttons = buttons; }
+      onOpen: buttons => {
+        this.buttons = buttons;
+        // Mobile browser chrome, zoom, and rotation can leave the layout
+        // viewport larger than the visible screen. Keep both buttons visible.
+        const win = globalThis.window;
+        const viewport = win?.visualViewport;
+        const fit = () => {
+          if (!viewport || !buttons.overlay) return;
+          Object.assign(buttons.overlay.style, {
+            inset: 'auto', left: `${viewport.offsetLeft || 0}px`,
+            top: `${viewport.offsetTop || 0}px`, width: `${viewport.width}px`,
+            height: `${viewport.height}px`, boxSizing: 'border-box', overflow: 'auto'
+          });
+        };
+        fit();
+        viewport?.addEventListener('resize', fit);
+        viewport?.addEventListener('scroll', fit);
+        win?.addEventListener('resize', fit);
+        detachViewport = () => {
+          viewport?.removeEventListener('resize', fit);
+          viewport?.removeEventListener('scroll', fit);
+          win?.removeEventListener('resize', fit);
+        };
+      }
     }).finally(() => {
+      detachViewport();
       this.active = false;
       this.buttons = null;
       this.awaitingRelease = true;

@@ -284,5 +284,60 @@ test('Studio explains startup download failures instead of leaving a blank canva
  await page.goto(origin+'/index.html?hideFullscreenForTesting=1',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#studio-boot-status')).toContainText('could not load');
  await expect(page.getByRole('button',{name:'Reload',exact:true})).toBeVisible();
+ await expect(page.locator('#studio-boot-error')).not.toHaveText('');
  expect(await page.evaluate(()=>Boolean(window.__gameReady))).toBe(false);
+});
+
+
+test('Studio paints loading feedback while stylesheets are still downloading',async({page})=>{
+ let release;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/*.css',async route=>{await gate;await route.continue();});
+ await page.goto(origin+'/index.html?hideFullscreenForTesting=1',{waitUntil:'commit'});
+ try{
+  await expect(page.locator('#studio-boot-status')).toHaveText('Loading RTG Studio…');
+  await expect(page.locator('#studio-boot-status')).toBeVisible();
+  // A render-blocking stylesheet prevents these frames from happening.
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  await expect(page.locator('#studio-boot')).toBeVisible();
+ }finally{release();}
+ await expect(page.locator('#studio-boot')).toHaveCount(0,{timeout:60000});
+});
+
+test('Studio retains loading feedback until game initialization completes',async({page})=>{
+ let release;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/src/content/endless.json',async route=>{await gate;await route.continue();});
+ await page.goto(origin+'/index.html?hideFullscreenForTesting=1',{waitUntil:'domcontentloaded'});
+ try{
+  await page.waitForFunction(()=>window.__gameReady,null,{timeout:60000});
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  expect(await page.evaluate(()=>window.__game.loading)).toBe(true);
+  await expect(page.locator('#studio-boot')).toBeVisible();
+ }finally{release();}
+ await expect(page.locator('#studio-boot')).toHaveCount(0,{timeout:60000});
+});
+
+
+test('mobile fullscreen dialog remains tappable across portrait and landscape rotation',async({browser})=>{
+ const context=await browser.newContext({isMobile:true,hasTouch:true,deviceScaleFactor:3,viewport:{width:390,height:844}});
+ const page=await context.newPage();
+ await page.addInitScript(()=>Object.defineProperty(navigator,'userAgentData',{value:{mobile:true},configurable:true}));
+ try{
+  await page.goto(origin+'/index.html',{waitUntil:'commit'});
+  const cancel=page.getByRole('button',{name:'Cancel',exact:true});
+  await expect(cancel).toBeInViewport();
+  await page.setViewportSize({width:844,height:390});
+  await expect(cancel).toBeInViewport();
+  await cancel.tap();
+  await expect(page.getByRole('dialog',{name:'Full screen'})).toHaveCount(0);
+  await expect(page.locator('#studio-boot')).toHaveCount(0,{timeout:60000});
+  await page.evaluate(()=>{window.touchProbe=0;const game=window.__game;const original=game.handlePointerDown.bind(game);game.handlePointerDown=(...args)=>{window.touchProbe++;return original(...args);};});
+  await page.locator('#game').tap({position:{x:20,y:20}});
+  await expect.poll(()=>page.evaluate(()=>window.touchProbe)).toBe(1);
+  await page.setViewportSize({width:390,height:844});
+  await expect.poll(()=>page.evaluate(()=>window.__game.viewport.width === Math.round(window.visualViewport.width))).toBe(true);
+  await expect.poll(()=>page.evaluate(()=>document.body.classList.contains('mobile-portrait'))).toBe(true);
+  console.log('ROTATED_VIEWPORT',await page.evaluate(()=>({innerWidth,innerHeight,visualWidth:visualViewport.width,visualHeight:visualViewport.height,scale:visualViewport.scale,game:window.__game.viewport,canvas:document.getElementById('game').getBoundingClientRect().toJSON()})));
+  await page.locator('#game').tap({position:{x:20,y:20}});
+  await expect.poll(()=>page.evaluate(()=>window.touchProbe)).toBe(2);
+ }finally{await context.close();}
 });

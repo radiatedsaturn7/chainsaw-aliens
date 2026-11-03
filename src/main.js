@@ -424,7 +424,7 @@ function loop(now) {
     try { game.update(dt); } finally { frameTiming.inUpdate = false; }
   }
   game.draw();
-  window.__rtgBoot?.ready();
+  window.__rtgBoot?.ready(game);
   serviceRacePerformanceWork(game.raceEditor);
   serviceRacePerformanceWork(game.carEditor);
   requestAnimationFrame(loop);

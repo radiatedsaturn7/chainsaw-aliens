@@ -1,31 +1,60 @@
-import { FullscreenPrompt } from './ui/FullscreenPrompt.js';
+import { FullscreenPrompt } from './ui/FullscreenPrompt.js?v=startup-565';
 
 // Keep this entry point independent of Game and its editor/module graph. The
 // HTML loading message is visible while those much larger downloads arrive.
 const splash = document.getElementById('studio-boot');
 const status = document.getElementById('studio-boot-status');
 const retry = document.getElementById('studio-boot-retry');
+const details = document.getElementById('studio-boot-error');
 let ready = false;
+let failed = false;
+let stylesReady = false;
+const slowTimer = setTimeout(() => {
+  if (ready || failed) return;
+  status.textContent = 'Still loading RTG Studio… The first visit can take longer while files download.';
+  retry.hidden = false;
+}, 15000);
 function fail(error) {
   if (ready) return;
+  failed = true;
+  clearTimeout(slowTimer);
   status.textContent = 'RTG Studio could not load. Check your connection and reload.';
   retry.hidden = false;
+  if (details) {
+    details.hidden = false;
+    details.textContent = String(error?.stack || error?.message || error || 'Unknown startup error');
+  }
   console.error('RTG Studio startup failed', error);
 }
-const onError = event => fail(event.error || event.reason || event.message);
+const onError = event => {
+  const target = event.target;
+  // Optional image/audio failures are not a failed JavaScript startup.
+  if (target && target !== window && !['SCRIPT', 'LINK'].includes(target.tagName)) return;
+  fail(event.error || event.reason || event.message
+    || `Could not download ${target?.src || target?.href || 'startup resource'}`);
+};
 window.addEventListener('error', onError, true);
 window.addEventListener('unhandledrejection', onError);
 retry.addEventListener('click', () => location.reload());
 const boot = window.__rtgBoot = {
   fullscreenPromptShown: false,
-  ready() {
-    if (ready) return;
+  ready(game) {
+    if (ready || failed || !stylesReady || game?.loading || game?.state === 'loading') return;
+    clearTimeout(slowTimer);
     ready = true;
     splash.remove();
     window.removeEventListener('error', onError, true);
     window.removeEventListener('unhandledrejection', onError);
   }
 };
+// Styles must not block the first loading message. Wait before presenting the
+// styled fullscreen dialog or handing the page over to the game.
+const stylesheetLoads = [...document.querySelectorAll('link[as="style"]')].map(link =>
+  link.sheet ? Promise.resolve() : new Promise((resolve, reject) => {
+    link.addEventListener('load', resolve, {once: true});
+    link.addEventListener('error', () => reject(new Error(`Could not load ${link.href}`)), {once: true});
+  })
+);
 const mobile = typeof navigator.userAgentData?.mobile === 'boolean'
   ? navigator.userAgentData.mobile
   : /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '')
@@ -37,5 +66,10 @@ if (mobile && !new URLSearchParams(location.search).has('hideFullscreenForTestin
     // This must remain inside the OK click's user activation.
     void document.documentElement.requestFullscreen().catch(() => {});
   });
-  void boot.fullscreenPrompt.show();
+
 }
+
+Promise.all(stylesheetLoads).then(() => {
+  stylesReady = true;
+  if (!failed) void boot.fullscreenPrompt?.show();
+}).catch(fail);
