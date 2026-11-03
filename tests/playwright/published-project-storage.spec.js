@@ -284,6 +284,7 @@ test('Studio explains startup download failures instead of leaving a blank canva
  await page.goto(origin+'/index.html?hideFullscreenForTesting=1',{waitUntil:'domcontentloaded'});
  await expect(page.locator('#studio-boot-status')).toContainText('could not load');
  await expect(page.getByRole('button',{name:'Reload',exact:true})).toBeVisible();
+ await expect(page.locator('#studio-boot-error')).not.toHaveText('');
  expect(await page.evaluate(()=>Boolean(window.__gameReady))).toBe(false);
 });
 

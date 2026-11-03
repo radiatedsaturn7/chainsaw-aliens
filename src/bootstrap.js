@@ -5,6 +5,7 @@ import { FullscreenPrompt } from './ui/FullscreenPrompt.js';
 const splash = document.getElementById('studio-boot');
 const status = document.getElementById('studio-boot-status');
 const retry = document.getElementById('studio-boot-retry');
+const details = document.getElementById('studio-boot-error');
 let ready = false;
 let failed = false;
 let stylesReady = false;
@@ -19,9 +20,17 @@ function fail(error) {
   clearTimeout(slowTimer);
   status.textContent = 'RTG Studio could not load. Check your connection and reload.';
   retry.hidden = false;
+  details.hidden = false;
+  details.textContent = String(error?.stack || error?.message || error || 'Unknown startup error');
   console.error('RTG Studio startup failed', error);
 }
-const onError = event => fail(event.error || event.reason || event.message);
+const onError = event => {
+  const target = event.target;
+  // Optional image/audio failures are not a failed JavaScript startup.
+  if (target && target !== window && !['SCRIPT', 'LINK'].includes(target.tagName)) return;
+  fail(event.error || event.reason || event.message
+    || `Could not download ${target?.src || target?.href || 'startup resource'}`);
+};
 window.addEventListener('error', onError, true);
 window.addEventListener('unhandledrejection', onError);
 retry.addEventListener('click', () => location.reload());
