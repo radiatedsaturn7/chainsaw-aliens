@@ -34,9 +34,14 @@ export function classifyRaceAiTerrainCollision(frame, state, config, positions, 
       || Math.abs(Number(state.rollRad || 0)) > 0.35
   };
   const radius = Math.max(0.1, Number(config.wheelRadiusM || 0.34));
-  const heights = Object.values(positions).map(point => point.y);
-  bounds.minY = Math.min(...heights) - radius - probe;
-  bounds.maxY = Math.max(...heights) + radius + probe;
+  let minHeight = Infinity, maxHeight = -Infinity;
+  for (const id in positions) {
+    if (!Object.hasOwn(positions, id)) continue;
+    minHeight = Math.min(minHeight, positions[id].y);
+    maxHeight = Math.max(maxHeight, positions[id].y);
+  }
+  bounds.minY = minHeight - radius - probe;
+  bounds.maxY = maxHeight + radius + probe;
   result.terrainCollisionClassification = frame.classifyCollisionFeaturesInBounds(bounds, {}).classification;
   return result;
 }

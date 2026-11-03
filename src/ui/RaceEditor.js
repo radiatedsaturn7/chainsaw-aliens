@@ -1,3 +1,5 @@
+import { appendRaceProjectedQuadPath, drawRaceProjectedVehicleQuad } from '../racing/RaceProjectedPolygon.js';
+import { acquireRaceTireFxProjection, projectRaceTireFxParticles, releaseRaceTireFxProjection, acquireRaceTireFxParticle, trimRaceTireFxParticles, advanceRaceTireFxParticles } from '../racing/RaceTireFxParticles.js';
 import { prepareRaceLoadingSurfaceSlice } from '../racing/RaceAheadPreparation.js';
 import { runBudgetedRaceFrame } from '../racing/RaceFrameBudget.js';
 import {
@@ -19899,44 +19901,34 @@ export default class RaceEditor {
         const ageSeed = Math.random();
         session.tireFxParticleSequence = (Number(session.tireFxParticleSequence || 0) + 1) % 1000000;
         const isMark = slotId === 'asphaltSkid';
-        particles.push({
-          id: `${slotId}-${session.elapsedMs}-${wheelId}-${session.tireFxParticleSequence}`,
-          slotId,
-          artRef: String(settings.artRef || ''),
-          color: surfaceTint,
-          tintColor: surfaceTint,
-          visualMaterialId: visualMaterial.materialId || visualMaterial.surfaceId || '',
-          visualSurfaceId: visualMaterial.surfaceId || '',
-          x: Number(wheel.x || 0) + (Math.random() - 0.5) * (isMark ? 0.08 : 0.22),
-          z: Number(wheel.z || 0) + (Math.random() - 0.5) * (isMark ? 0.08 : 0.22),
-          elevation: Number(wheel.elevation || 0)
+        const particle = acquireRaceTireFxParticle(session);
+        particle.id = `${slotId}-${session.elapsedMs}-${wheelId}-${session.tireFxParticleSequence}`;
+        particle.slotId = slotId;
+        particle.artRef = String(settings.artRef || '');
+        particle.color = surfaceTint;
+        particle.tintColor = surfaceTint;
+        particle.visualMaterialId = visualMaterial.materialId || visualMaterial.surfaceId || '';
+        particle.visualSurfaceId = visualMaterial.surfaceId || '';
+        particle.x = Number(wheel.x || 0) + (Math.random() - 0.5) * (isMark ? 0.08 : 0.22);
+        particle.z = Number(wheel.z || 0) + (Math.random() - 0.5) * (isMark ? 0.08 : 0.22);
+        particle.elevation = Number(wheel.elevation || 0)
             + (isMark ? RACE_TIRE_FX_MARK_SURFACE_BIAS_M : RACE_TIRE_FX_PARTICLE_SURFACE_BIAS_M)
-              / RACE_THREE_ELEVATION_M,
-          vx: isMark ? 0 : -Math.sin(Number(session.velocityYaw || session.carYaw || 0)) * (0.35 + speed * 0.016) + (Math.random() - 0.5) * 0.42,
-          vz: isMark ? 0 : -Math.cos(Number(session.velocityYaw || session.carYaw || 0)) * (0.35 + speed * 0.016) + (Math.random() - 0.5) * 0.42,
-          vy: isMark ? 0 : 0.018 + Math.random() * (slotId === 'skidSmoke' ? 0.055 : 0.085),
-          ageMs: 0,
-          lifetimeMs: (isMark ? clamp(Number(settings.lifetimeMs ?? 1100), 420, 1800) : clamp(Number(settings.lifetimeMs ?? 620), 120, 1800)) * (0.72 + ageSeed * 0.56),
-          sizeM: clamp(Number(settings.scale ?? 1), 0.25, 4) * (isMark ? 0.22 : 0.32 + slotIntensity * 0.95) * (0.75 + Math.random() * 0.65),
-          alpha: isMark ? clamp(0.18 + slotIntensity * 0.36, 0.14, 0.48) : clamp(0.18 + slotIntensity * 0.64, 0.14, 0.82)
-        });
+              / RACE_THREE_ELEVATION_M;
+        particle.vx = isMark ? 0 : -Math.sin(Number(session.velocityYaw || session.carYaw || 0)) * (0.35 + speed * 0.016) + (Math.random() - 0.5) * 0.42;
+        particle.vz = isMark ? 0 : -Math.cos(Number(session.velocityYaw || session.carYaw || 0)) * (0.35 + speed * 0.016) + (Math.random() - 0.5) * 0.42;
+        particle.vy = isMark ? 0 : 0.018 + Math.random() * (slotId === 'skidSmoke' ? 0.055 : 0.085);
+        particle.ageMs = 0;
+        particle.lifetimeMs = (isMark ? clamp(Number(settings.lifetimeMs ?? 1100), 420, 1800) : clamp(Number(settings.lifetimeMs ?? 620), 120, 1800)) * (0.72 + ageSeed * 0.56);
+        particle.sizeM = clamp(Number(settings.scale ?? 1), 0.25, 4) * (isMark ? 0.22 : 0.32 + slotIntensity * 0.95) * (0.75 + Math.random() * 0.65);
+        particle.alpha = isMark ? clamp(0.18 + slotIntensity * 0.36, 0.14, 0.48) : clamp(0.18 + slotIntensity * 0.64, 0.14, 0.82);
+        particles.push(particle);
       }
     });
-    if (particles.length > 140) particles.splice(0, particles.length - 140);
+    trimRaceTireFxParticles(session);
   }
 
   updateRaceTireFxParticles(seconds = 0) {
-    const session = this.playtestSession;
-    if (!session?.tireFxParticles?.length) return;
-    session.tireFxParticles = session.tireFxParticles
-      .map((particle) => ({
-        ...particle,
-        ageMs: Number(particle.ageMs || 0) + seconds * 1000,
-        x: Number(particle.x || 0) + Number(particle.vx || 0) * seconds,
-        z: Number(particle.z || 0) + Number(particle.vz || 0) * seconds,
-        elevation: Number(particle.elevation || 0) + Number(particle.vy || 0) * seconds
-      }))
-      .filter((particle) => Number(particle.ageMs || 0) < Number(particle.lifetimeMs || 1));
+    advanceRaceTireFxParticles(this.playtestSession, seconds);
   }
 
   stepRaceTireFxParticles(seconds = 0, context = {}) {
@@ -24258,10 +24250,10 @@ export default class RaceEditor {
   getRacePlayerRenderPose(
     session = this.playtestSession,
     car = this.selectedCar,
-    { fallbackElevation = 0 } = {}
+    { fallbackElevation = 0, fallbackPose = null } = {}
   ) {
     const canonical = session?.vehicleRenderState;
-    const planarPosition = canonical?.position || this.getRaceSessionPlanarWorldPosition(session);
+    const planarPosition = canonical?.position || fallbackPose || this.getRaceSessionPlanarWorldPosition(session);
     const bodyHeightM = Number.isFinite(Number(canonical?.position?.y))
       ? Number(canonical.position.y)
       : Number.isFinite(Number(session?.bodyY))
@@ -24273,6 +24265,8 @@ export default class RaceEditor {
       ? Number(canonical.wheels.fl.steeringAngleRad)
       : Number.isFinite(Number(session?.tireSlip?.frontTireAngle))
       ? Number(session.tireSlip.frontTireAngle)
+      : fallbackPose && !session?.tireSlip
+      ? 0
       : this.getRacePhysicalTireAngleForSteering(
         Number(this.raceInput?.steeringWheel || 0),
         Number(session?.speedMps || 0)
@@ -24281,7 +24275,7 @@ export default class RaceEditor {
       x: Number(planarPosition.x || 0),
       z: Number(planarPosition.z || 0),
       elevation: bodyHeightM / RACE_THREE_ELEVATION_M,
-      yaw: Number(canonical?.yawRad ?? session?.carYaw ?? 0),
+      yaw: Number(canonical?.yawRad ?? session?.carYaw ?? fallbackPose?.yaw ?? 0),
       pitchRad: Number(canonical?.pitchRad ?? session?.pitchRad ?? 0),
       rollRad: Number(canonical?.rollRad ?? session?.rollRad ?? 0),
       frontTireAngle,
@@ -33796,89 +33790,47 @@ export default class RaceEditor {
   drawRaceTireFxParticles(ctx, bounds, { camera = {}, cameraYaw = 0, layer = 'all' } = {}) {
     const particles = this.playtestSession?.tireFxParticles;
     if (!Array.isArray(particles) || !particles.length) return false;
-    const projected = particles
-      .filter((particle) => {
-        if (layer === 'all') return true;
-        const groundEffect = particle.slotId === 'asphaltSkid';
-        return layer === 'ground' ? groundEffect : !groundEffect;
-      })
-      .map((particle) => {
-        const point = this.projectRaceWorldVisualPoint(particle, {
-          camera,
-          cameraYaw,
-          bounds
-        });
-        return { particle, point };
-      })
-      .filter(({ point }) => point?.visible && point.screenY >= bounds.y - 40 && point.screenY <= bounds.y + bounds.h + 60)
-      .sort((a, b) => Number(b.point.cameraZ || 0) - Number(a.point.cameraZ || 0));
-    if (!projected.length) return false;
-    const focal = camera.firstPersonFrame?Number(bounds.h||1)/(2*Math.tan(58*Math.PI/360)):Math.max(140, Number(bounds.w || 1) * (Number(camera.focalScale) || 1.04));
-    const roadWidthScale = Number(camera.roadWidthScale) || 1;
-    ctx.save();
-    projected.forEach(({ particle, point }) => {
-      const life = clamp(Number(particle.ageMs || 0) / Math.max(1, Number(particle.lifetimeMs || 1)), 0, 1);
-      const alpha = Number(particle.alpha || 0.5) * (1 - life);
-      if (alpha <= 0.01) return;
-      const size = clamp(
-        Number(particle.sizeM || 0.5) * roadWidthScale * (focal / Math.max(1.2, Number(point.renderZ || point.cameraZ || 1))) * (1 + life * 1.2),
-        2,
-        bounds.w * 0.22
-      );
-      const sourceArtCanvas = particle.artRef ? this.getRaceArtSpriteCanvas(particle.artRef) : null;
-      const artCanvas = sourceArtCanvas
-        ? this.getRaceTintedTireFxArtCanvas(sourceArtCanvas, particle.artRef, particle.tintColor || particle.color)
-        : null;
-      ctx.globalAlpha = alpha;
-      if (artCanvas && typeof ctx.drawImage === 'function') {
-        const previousSmoothing = ctx.imageSmoothingEnabled;
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(artCanvas, point.screenX - size * 0.5, point.screenY - size * 0.55, size, size);
-        ctx.imageSmoothingEnabled = previousSmoothing;
-      } else {
-        ctx.fillStyle = particle.color || 'rgba(228,232,222,0.72)';
-        ctx.beginPath();
-        ctx.ellipse?.(point.screenX, point.screenY - size * 0.18, size * 0.55, size * 0.26, 0, 0, Math.PI * 2);
-        if (!ctx.ellipse) ctx.arc(point.screenX, point.screenY, size * 0.32, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    });
-    ctx.restore();
-    return true;
+    const scratch = acquireRaceTireFxProjection(this.playtestSession);
+    try {
+      const projected = projectRaceTireFxParticles(scratch, this, particles, bounds, camera, cameraYaw, layer);
+      if (!projected.length) return false;
+      const focal = camera.firstPersonFrame?Number(bounds.h||1)/(2*Math.tan(58*Math.PI/360)):Math.max(140, Number(bounds.w || 1) * (Number(camera.focalScale) || 1.04));
+      const roadWidthScale = Number(camera.roadWidthScale) || 1;
+      ctx.save();
+      projected.forEach(({ particle, point }) => {
+        const life = clamp(Number(particle.ageMs || 0) / Math.max(1, Number(particle.lifetimeMs || 1)), 0, 1);
+        const alpha = Number(particle.alpha || 0.5) * (1 - life);
+        if (alpha <= 0.01) return;
+        const size = clamp(
+          Number(particle.sizeM || 0.5) * roadWidthScale * (focal / Math.max(1.2, Number(point.renderZ || point.cameraZ || 1))) * (1 + life * 1.2),
+          2,
+          bounds.w * 0.22
+        );
+        const sourceArtCanvas = particle.artRef ? this.getRaceArtSpriteCanvas(particle.artRef) : null;
+        const artCanvas = sourceArtCanvas
+          ? this.getRaceTintedTireFxArtCanvas(sourceArtCanvas, particle.artRef, particle.tintColor || particle.color)
+          : null;
+        ctx.globalAlpha = alpha;
+        if (artCanvas && typeof ctx.drawImage === 'function') {
+          const previousSmoothing = ctx.imageSmoothingEnabled;
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(artCanvas, point.screenX - size * 0.5, point.screenY - size * 0.55, size, size);
+          ctx.imageSmoothingEnabled = previousSmoothing;
+        } else {
+          ctx.fillStyle = particle.color || 'rgba(228,232,222,0.72)';
+          ctx.beginPath();
+          ctx.ellipse?.(point.screenX, point.screenY - size * 0.18, size * 0.55, size * 0.26, 0, 0, Math.PI * 2);
+          if (!ctx.ellipse) ctx.arc(point.screenX, point.screenY, size * 0.32, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+      ctx.restore();
+      return true;
+    } finally { releaseRaceTireFxProjection(scratch); }
   }
 
   appendRaceProjectedQuadPath(ctx, bounds, points = []) {
-    if (!Array.isArray(points) || points.length < 3) return false;
-    const bottom = Number(bounds.y || 0) + Number(bounds.h || 0) + 2;
-    const top = Number(bounds.y || 0) - Number(bounds.h || 0) * 0.35;
-    const sanitized = points.map((point) => ({
-      x: Number(point?.screenX),
-      y: clamp(Number(point?.screenY), top, bottom),
-      cameraZ: Number(point?.cameraZ ?? point?.renderZ ?? 0),
-      clippedToNearPlane: Boolean(point?.clippedToNearPlane),
-      visible: Boolean(point?.visible || point?.clippedToNearPlane)
-    }));
-    if (sanitized.some((point) => !Number.isFinite(point.x) || !Number.isFinite(point.y))) return false;
-    if (!sanitized.some((point) => point.visible)) return false;
-    const clippedCount = sanitized.filter((point) => point.clippedToNearPlane).length;
-    const ySpan = Math.max(...sanitized.map((point) => point.y)) - Math.min(...sanitized.map((point) => point.y));
-    const xSpan = Math.max(...sanitized.map((point) => point.x)) - Math.min(...sanitized.map((point) => point.x));
-    if (clippedCount >= 2 && ySpan < Math.max(3, Number(bounds.h || 1) * 0.018) && xSpan > Number(bounds.w || 1) * 0.32) return false;
-    const hugeNearCameraPlane = clippedCount >= 2
-      && xSpan > Number(bounds.w || 1) * 1.75
-      && ySpan > Number(bounds.h || 1) * 0.72;
-    if (hugeNearCameraPlane) return false;
-    let area = 0;
-    for (let index = 0; index < sanitized.length; index += 1) {
-      const current = sanitized[index];
-      const next = sanitized[(index + 1) % sanitized.length];
-      area += current.x * next.y - next.x * current.y;
-    }
-    if (Math.abs(area) < 0.7) return false;
-    ctx.moveTo(sanitized[0].x, sanitized[0].y);
-    sanitized.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
-    ctx.closePath();
-    return true;
+    return appendRaceProjectedQuadPath(ctx, bounds, points);
   }
 
   drawRaceProjectedQuad(ctx, bounds, points = [], fillStyle = '#315734') {
@@ -33890,38 +33842,7 @@ export default class RaceEditor {
   }
 
   drawRaceProjectedVehicleQuad(ctx, bounds, points = [], fillStyle = '#58d6ff') {
-    if (!Array.isArray(points) || points.length < 3) return false;
-    const sanitized = points.map((point) => ({
-      x: Number(point?.screenX),
-      y: Number(point?.screenY),
-      visible: Boolean(point?.visible || point?.clippedToNearPlane)
-    }));
-    if (sanitized.some((point) => !Number.isFinite(point.x) || !Number.isFinite(point.y))) return false;
-    if (!sanitized.some((point) => point.visible)) return false;
-    const minX = Math.min(...sanitized.map((point) => point.x));
-    const maxX = Math.max(...sanitized.map((point) => point.x));
-    const minY = Math.min(...sanitized.map((point) => point.y));
-    const maxY = Math.max(...sanitized.map((point) => point.y));
-    if (maxX < Number(bounds.x || 0) - Number(bounds.w || 0) * 0.5
-      || minX > Number(bounds.x || 0) + Number(bounds.w || 0) * 1.5
-      || maxY < Number(bounds.y || 0) - Number(bounds.h || 0) * 0.5
-      || minY > Number(bounds.y || 0) + Number(bounds.h || 0) * 1.9) {
-      return false;
-    }
-    let area = 0;
-    for (let index = 0; index < sanitized.length; index += 1) {
-      const current = sanitized[index];
-      const next = sanitized[(index + 1) % sanitized.length];
-      area += current.x * next.y - next.x * current.y;
-    }
-    if (Math.abs(area) < 0.7) return false;
-    ctx.fillStyle = fillStyle || '#58d6ff';
-    ctx.beginPath();
-    ctx.moveTo(sanitized[0].x, sanitized[0].y);
-    sanitized.slice(1).forEach((point) => ctx.lineTo(point.x, point.y));
-    ctx.closePath();
-    ctx.fill();
-    return true;
+    return drawRaceProjectedVehicleQuad(ctx, bounds, points, fillStyle);
   }
 
   drawRaceProjectedTexturedQuad(ctx, bounds, points = [], fillStyle = '#315734', artRef = '', {
@@ -40313,9 +40234,12 @@ export default class RaceEditor {
       const car = ai.runtimeCar || this.findRaceProjectCarById(ai.carId) || this.selectedCar;
       const worldX = Number.isFinite(ai.worldX) ? ai.worldX : Number(pose.x || 0) + right.x * lateral;
       const worldZ = Number.isFinite(ai.worldZ) ? ai.worldZ : Number(pose.z || 0) + right.z * lateral;
-      const renderPose = this.getRacePlayerRenderPose({ ...ai, worldX, worldZ,
-        carYaw: ai.carYaw ?? pose.yaw, tireSlip: ai.tireSlip || { frontTireAngle: 0 }
-      }, car, { fallbackElevation: Number(pose.elevation || 0) });
+      // Keep the AI state by reference; copying its entire physics/telemetry
+      // record per rendered frame is unnecessary for these three fallbacks.
+      const renderPose = this.getRacePlayerRenderPose(ai, car, {
+        fallbackElevation: Number(pose.elevation || 0),
+        fallbackPose: { x: worldX, z: worldZ, yaw: pose.yaw }
+      });
       const point = { x: renderPose.x, z: renderPose.z, elevation: renderPose.elevation, segment };
       const projected = this.projectRaceCarVisualPoint(point, { camera, cameraYaw, bounds });
       return { ai, car, pose: renderPose, projected: { ...projected, ...point } };

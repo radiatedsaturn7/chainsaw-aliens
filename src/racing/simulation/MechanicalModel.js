@@ -16,6 +16,16 @@ const definitions=[
 ];
 export const MECHANICAL_COMPONENTS=Object.freeze(definitions.map(([id,label,damagePath,cost])=>({id,label,damagePath,cost})));
 const get=(obj,path)=>path.split('.').reduce((o,k)=>o?.[k],obj);
+// Damage paths are fixed by the component catalog. Compile once instead of
+// splitting all component paths on every player/AI physics update.
+const damageBindings = MECHANICAL_COMPONENTS.map(({id, damagePath}) => {
+ const keys = damagePath.split('.');
+ const read = keys.length === 1
+  ? object => object?.[keys[0]]
+  : keys.length === 2 ? object => object?.[keys[0]]?.[keys[1]]
+  : object => { for (const key of keys) object = object?.[key]; return object; };
+ return {id, read};
+});
 function hash(text){let h=2166136261;for(const ch of text)h=Math.imul(h^ch.charCodeAt(0),16777619);return ((h>>>0)+1)/4294967297;}
 export function normalizeMechanicalConfig(value={}){
  value ||= {};
@@ -58,7 +68,7 @@ export function stepMechanicalState(s,dt,telemetry={},damage={}){
  for(const key of ['headlights','highBeams','auxLights'])if(typeof telemetry[key]==='boolean')s[key]=telemetry[key];
  if(!s.config.enabled){if(typeof telemetry.headlights==='boolean')s.headlights=telemetry.headlights;s.effects.lights=(s.headlights||s.auxLights)?1:0;return s;}
  // Positive external changes only: normalizing or repairing a health bar cannot heal failures.
- for(const c of MECHANICAL_COMPONENTS){const d=clamp(get(damage,c.damagePath),0,100),old=s.observedDamage[c.id]||0;if(d>old)s.components[c.id].damage=clamp(s.components[c.id].damage+(d-old)/s.config.components[c.id].durability,0,100);s.observedDamage[c.id]=d;}
+ for(const c of damageBindings){const d=clamp(c.read(damage),0,100),old=s.observedDamage[c.id]||0;if(d>old)s.components[c.id].damage=clamp(s.components[c.id].damage+(d-old)/s.config.components[c.id].durability,0,100);s.observedDamage[c.id]=d;}
  s.pendingImpact=Math.max(s.pendingImpact,clamp(telemetry.impact??0,0,10));
  s.remainder+=Math.min(dt,1);
  while(s.remainder>=.1-1e-9){s.remainder=Math.max(0,s.remainder-.1);mechanicalTick(s,{...telemetry,impact:s.pendingImpact});s.pendingImpact=0;}

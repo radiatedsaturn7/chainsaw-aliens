@@ -457,24 +457,25 @@ export function getAckermannSteeringAngles({
 }
 
 export function calculateAuthoritativeSteeringEnvelope(state = {}, config = {}) {
-  const front = ['fl', 'fr'].map((wheelId) => state.contactPatches?.[wheelId]).filter((patch) => (
-    Number(patch?.normalLoadN || 0) > 1
-  ));
   const maximumAngleRad = Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52);
   const speedMps = Math.max(0, Number(state.groundSpeedMps
     ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0))) || 0);
   // Blend contact authority near rest rather than switching rack limits at 1 m/s.
   const supportBlend = Math.min(1, speedMps) ** 2 * (3 - 2 * Math.min(1, speedMps));
-  if (!front.length) return maximumAngleRad + (0.002 - maximumAngleRad) * supportBlend;
   let supportedLoadN = 0;
   let supportedSuspensionLoadN = 0;
-  front.forEach((patch) => {
+  let supportedCount = 0;
+  for (let i = 0; i < 2; i++) {
+    const patch = state.contactPatches?.[i === 0 ? 'fl' : 'fr'];
+    if (!(Number(patch?.normalLoadN || 0) > 1)) continue;
     const loadN = Math.max(0, Number(patch.normalLoadN || 0));
     const suspensionLoadN = Math.max(loadN, Number(patch.suspensionNormalLoadN || loadN));
     supportedLoadN += loadN;
     supportedSuspensionLoadN += suspensionLoadN;
-  });
-  const contactScale = front.length / 2;
+    supportedCount++;
+  }
+  if (!supportedCount) return maximumAngleRad + (0.002 - maximumAngleRad) * supportBlend;
+  const contactScale = supportedCount / 2;
   const frontReferenceLoadN = Math.max(1, Number(config.massKg || 1450) * 9.81
     * clamp(Number(config.frontWeightDistribution ?? 0.55), 0.3, 0.75));
   const loadSupportScale = clamp(supportedLoadN / frontReferenceLoadN, 0, 1);
@@ -493,21 +494,35 @@ export function calculateAuthoritativeSteeringEnvelope(state = {}, config = {}) 
   return speedEnvelope + (supportedEnvelope - speedEnvelope) * supportBlend;
 }
 
+function maxNumericOwnValue(values) {
+  let maximum = 0;
+  for (const key in values) {
+    if (Object.hasOwn(values, key)) maximum = Math.max(maximum, Number(values[key]));
+  }
+  return maximum;
+}
+
 export function classifySteeringResponseTelemetry(telemetry = {}) {
   const intent = Math.abs(Number(telemetry.inputIntent || 0));
   const target = Math.abs(Number(telemetry.steeringTarget || 0));
   const output = Math.abs(Number(telemetry.controllerFilterOutput || 0));
   const requested = Math.abs(Number(telemetry.requestedRackAngleRad || 0));
   const permitted = Math.abs(Number(telemetry.permittedRackAngleRad || 0));
-  const utilization = Math.max(0, ...Object.values(telemetry.frontUtilization || {}).map(Number));
-  const longitudinalUse = Math.max(0, ...Object.values(telemetry.throttleFrictionCircleUse || {}).map(Number));
-  const grip = Object.values(telemetry.frontGripCoefficients || {}).map(Number).filter(Number.isFinite);
+  const utilization = maxNumericOwnValue(telemetry.frontUtilization);
+  const longitudinalUse = maxNumericOwnValue(telemetry.throttleFrictionCircleUse);
   if (intent > 0.2 && target > 0.1 && output < target * 0.65) return 'input-latency';
   if (requested > 0.01 && permitted < requested * 0.75) return 'steering-envelope-limitation';
   if (telemetry.escInterventionActive === true) return 'esc-intervention';
   if (longitudinalUse > 0.55 && utilization > 0.82) return 'drivetrain-understeer';
   if (utilization > 0.92) return 'front-tire-saturation';
-  if (grip.length && grip.reduce((sum, value) => sum + value, 0) / grip.length < 0.45) {
+  let gripSum = 0, gripCount = 0;
+  const grip = telemetry.frontGripCoefficients;
+  for (const key in grip) {
+    if (!Object.hasOwn(grip, key)) continue;
+    const value = Number(grip[key]);
+    if (Number.isFinite(value)) { gripSum += value; gripCount++; }
+  }
+  if (gripCount && gripSum / gripCount < 0.45) {
     return 'insufficient-surface-grip';
   }
   return 'responsive';

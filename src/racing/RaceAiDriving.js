@@ -76,7 +76,10 @@ export function planRaceAiDriving(editor, ai, tuning, {
   const lateralAcceleration = 9.81 * liveGrip
     * (0.48 + Number(profile.corner ?? 0.72) * 0.34);
   const brakeEffects=ai.vehicleDynamicsRunner?.state?.mechanical?.effects?.brakes || {};
-  const brakeCondition=Math.min(1,...Object.values(brakeEffects).map(v=>clamp(Number(v)||0,0,1)));
+  let brakeCondition = 1;
+  for (const id in brakeEffects) {
+    if (Object.hasOwn(brakeEffects, id)) brakeCondition = Math.min(brakeCondition, clamp(Number(brakeEffects[id]) || 0, 0, 1));
+  }
   const brakeCapability=Number.isFinite(tuning.brakeForceN)&&Number.isFinite(tuning.weightKg)
     ? tuning.brakeForceN/Math.max(450,tuning.weightKg)/9.81 : 1;
   const deceleration = 9.81 * liveGrip
