@@ -86,3 +86,20 @@ test('keyboard OK is consumed until Enter is released',async()=>{
   assert.equal(flushes,2);
  }finally{restore();}
 });
+
+test('fullscreen prompt follows the visible viewport and removes rotation listeners on close',async()=>{
+ const restore=dom();const previousWindow=globalThis.window;
+ const viewport=Object.assign(new EventTarget(),{width:390,height:700,offsetLeft:0,offsetTop:40});
+ const win=Object.assign(new EventTarget(),{visualViewport:viewport});
+ globalThis.window=win;
+ try{
+  const prompt=new FullscreenPrompt(()=>{}),result=prompt.show();
+  const overlay=prompt.buttons.overlay;
+  assert.equal(overlay.style.top,'40px');assert.equal(overlay.style.height,'700px');
+  Object.assign(viewport,{width:844,height:320,offsetTop:0});viewport.dispatchEvent(new Event('resize'));
+  assert.equal(overlay.style.width,'844px');assert.equal(overlay.style.height,'320px');
+  prompt.buttons.cancelBtn.click();await result;
+  viewport.width=1;viewport.dispatchEvent(new Event('resize'));
+  assert.equal(overlay.style.width,'844px');
+ }finally{globalThis.window=previousWindow;restore();}
+});

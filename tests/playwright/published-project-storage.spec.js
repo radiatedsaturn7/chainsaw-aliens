@@ -314,3 +314,27 @@ test('Studio retains loading feedback until game initialization completes',async
  }finally{release();}
  await expect(page.locator('#studio-boot')).toHaveCount(0,{timeout:60000});
 });
+
+
+test('mobile fullscreen dialog remains tappable across portrait and landscape rotation',async({browser})=>{
+ const context=await browser.newContext({isMobile:true,hasTouch:true,deviceScaleFactor:3,viewport:{width:390,height:844}});
+ const page=await context.newPage();
+ await page.addInitScript(()=>Object.defineProperty(navigator,'userAgentData',{value:{mobile:true},configurable:true}));
+ try{
+  await page.goto(origin+'/index.html',{waitUntil:'commit'});
+  const cancel=page.getByRole('button',{name:'Cancel',exact:true});
+  await expect(cancel).toBeInViewport();
+  await page.setViewportSize({width:844,height:390});
+  await expect(cancel).toBeInViewport();
+  await cancel.tap();
+  await expect(page.getByRole('dialog',{name:'Full screen'})).toHaveCount(0);
+  await expect(page.locator('#studio-boot')).toHaveCount(0,{timeout:60000});
+  await page.evaluate(()=>{window.touchProbe=0;const game=window.__game;const original=game.handlePointerDown.bind(game);game.handlePointerDown=(...args)=>{window.touchProbe++;return original(...args);};});
+  await page.locator('#game').tap({position:{x:20,y:20}});
+  await expect.poll(()=>page.evaluate(()=>window.touchProbe)).toBe(1);
+  await page.setViewportSize({width:390,height:844});
+  await expect.poll(()=>page.evaluate(()=>window.__game.viewport.width)).toBe(390);
+  await page.locator('#game').tap({position:{x:20,y:20}});
+  await expect.poll(()=>page.evaluate(()=>window.touchProbe)).toBe(2);
+ }finally{await context.close();}
+});
