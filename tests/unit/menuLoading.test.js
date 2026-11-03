@@ -73,7 +73,11 @@ test('loading menu holds black until its artwork is prepared, even when the race
   now=600;e.drawRacePreparationScreen(ctx,640,360);
   assert.equal(e.raceLoadingPresentation.ready,false);assert.equal(e.raceLoadingEntry.fade.hold,true);
   now=5000;e.drawRacePreparationScreen(ctx,640,360);assert.equal(e.raceLoadingEntry.fade.elapsed,.15);
+  Object.assign(e.playtestSession,{preparing:false,running:true,startupFramePending:true,startupPresentationStartedAtMs:1});
+  e.isLivePlaytestSession=()=>true;let failures=0;e.failRaceStartupPresentation=()=>failures++;
+  e.update({},.016);assert.equal(failures,0,'a slow image download is not a first-frame timeout');
   resolve();await e.raceLoadingEntry.task;
+  assert.ok(e.playtestSession.startupPresentationStartedAtMs>1);
   assert.equal(e.raceLoadingPresentation.ready,true);assert.equal(e.raceLoadingEntry.fade.hold,false);
   now=5100;e.drawRacePreparationScreen(ctx,640,360);assert.ok(e.raceLoadingEntry.fade.active);
  }finally{globalThis.document=previous;}

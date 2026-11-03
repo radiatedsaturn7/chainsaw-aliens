@@ -1146,7 +1146,9 @@ export default class RaceEditor {
     const startupFramePending = liveSession
       && this.playtestSession?.running
       && this.playtestSession.startupFramePending === true;
+    const loadingArtworkPending=this.raceLoadingEntry?.task && !this.raceLoadingPresentation?.ready;
     if (startupFramePending
+      && !loadingArtworkPending
       && Number(this.playtestSession.startupPresentationStartedAtMs || 0) > 0
       && Date.now() - Number(this.playtestSession.startupPresentationStartedAtMs) > RACE_PRESENTATION_TIMEOUT_MS + (this.raceLoadingPresentation ? 3300 : 0)) {
       this.failRaceStartupPresentation('Race did not present its first playable frame');
@@ -6783,6 +6785,9 @@ export default class RaceEditor {
     await resources.prepareScreen(document,screen,{...view.parameters,carRef,loadingProgress:0,loadingFactSeed:view.seed},{bounds,isCurrent});
     if(!isCurrent())return;
     view.ready=true;view.started=this.getNowMs();
+    // Network time for the menu is not a stalled first race frame. Its requests
+    // have their own timeout; start the presentation watchdog after they finish.
+    if(this.playtestSession?.startupFramePending)this.playtestSession.startupPresentationStartedAtMs=Date.now();
     entry.fade.release();
   }
 
