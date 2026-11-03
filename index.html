@@ -11,7 +11,7 @@
     #studio-boot-error { max-width:min(90vw,720px); max-height:35dvh; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; text-align:left; font:13px monospace; }
     #studio-boot button { padding:10px 24px; font:inherit; }
   </style>
-  <link rel="modulepreload" href="src/main.js" />
+  <link rel="modulepreload" href="src/main.js?v=startup-565" />
   <link rel="preload" as="style" href="css/ui-suite.css" onload="this.onload=null;this.rel='stylesheet'" />
   <link rel="preload" as="style" href="styles.css" onload="this.onload=null;this.rel='stylesheet'" />
 </head>
@@ -27,10 +27,10 @@
     <canvas id="game" width="1280" height="720"></canvas>
     <div class="hint">Press SPACE for dialog / confirm</div>
   </main>
-  <script type="module" src="src/bootstrap.js"></script>
+  <script type="module" src="src/bootstrap.js?v=startup-565"></script>
   <script defer src="vendor/soundfont-player.min.js"></script>
   <script defer src="vendor/jszip.min.js"></script>
   <script defer src="vendor/midi.min.js"></script>
-  <script id="studio-main" type="module" src="src/main.js"></script>
+  <script id="studio-main" type="module" src="src/main.js?v=startup-565"></script>
 </body>
 </html>

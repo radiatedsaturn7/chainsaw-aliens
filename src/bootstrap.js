@@ -1,4 +1,4 @@
-import { FullscreenPrompt } from './ui/FullscreenPrompt.js';
+import { FullscreenPrompt } from './ui/FullscreenPrompt.js?v=startup-565';
 
 // Keep this entry point independent of Game and its editor/module graph. The
 // HTML loading message is visible while those much larger downloads arrive.
@@ -20,8 +20,10 @@ function fail(error) {
   clearTimeout(slowTimer);
   status.textContent = 'RTG Studio could not load. Check your connection and reload.';
   retry.hidden = false;
-  details.hidden = false;
-  details.textContent = String(error?.stack || error?.message || error || 'Unknown startup error');
+  if (details) {
+    details.hidden = false;
+    details.textContent = String(error?.stack || error?.message || error || 'Unknown startup error');
+  }
   console.error('RTG Studio startup failed', error);
 }
 const onError = event => {
