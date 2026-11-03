@@ -263,7 +263,10 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
   void g.startRaceTravel({raceName:'Music Drop Race',carSelection:'specific',carRef:'2022 Subaru WRX2'});
  });
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
- await expect.poll(()=>page.evaluate(()=>window.__raceGoSample),{timeout:15000}).not.toBeNull();
+ // Running is set before loading-screen presentation, the camera intro and
+ // countdown finish. Software WebGL on CI can take longer than 15 wall-clock
+ // seconds; still require the actual GO sample and all audio assertions below.
+ await expect.poll(()=>page.evaluate(()=>window.__raceGoSample),{timeout:60000}).not.toBeNull();
  const go=await page.evaluate(()=>window.__raceGoSample);
  // Real audio advances during slow software-WebGL frames. Verify GO does not
  // seek/restart the decoder; precise cue alignment is covered with a controlled
