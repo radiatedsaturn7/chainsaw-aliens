@@ -11,8 +11,8 @@
     #studio-boot button { padding:10px 24px; font:inherit; }
   </style>
   <link rel="modulepreload" href="src/main.js" />
-  <link rel="stylesheet" href="css/ui-suite.css" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="preload" as="style" href="css/ui-suite.css" onload="this.onload=null;this.rel='stylesheet'" />
+  <link rel="preload" as="style" href="styles.css" onload="this.onload=null;this.rel='stylesheet'" />
 </head>
 <body>
   <section id="studio-boot" aria-label="RTG Studio startup">

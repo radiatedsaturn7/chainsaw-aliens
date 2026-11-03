@@ -286,3 +286,31 @@ test('Studio explains startup download failures instead of leaving a blank canva
  await expect(page.getByRole('button',{name:'Reload',exact:true})).toBeVisible();
  expect(await page.evaluate(()=>Boolean(window.__gameReady))).toBe(false);
 });
+
+
+test('Studio paints loading feedback while stylesheets are still downloading',async({page})=>{
+ let release;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/*.css',async route=>{await gate;await route.continue();});
+ await page.goto(origin+'/index.html?hideFullscreenForTesting=1',{waitUntil:'commit'});
+ try{
+  await expect(page.locator('#studio-boot-status')).toHaveText('Loading RTG Studio…');
+  await expect(page.locator('#studio-boot-status')).toBeVisible();
+  // A render-blocking stylesheet prevents these frames from happening.
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  await expect(page.locator('#studio-boot')).toBeVisible();
+ }finally{release();}
+ await expect(page.locator('#studio-boot')).toHaveCount(0,{timeout:60000});
+});
+
+test('Studio retains loading feedback until game initialization completes',async({page})=>{
+ let release;const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('**/src/content/endless.json',async route=>{await gate;await route.continue();});
+ await page.goto(origin+'/index.html?hideFullscreenForTesting=1',{waitUntil:'domcontentloaded'});
+ try{
+  await page.waitForFunction(()=>window.__gameReady,null,{timeout:60000});
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  expect(await page.evaluate(()=>window.__game.loading)).toBe(true);
+  await expect(page.locator('#studio-boot')).toBeVisible();
+ }finally{release();}
+ await expect(page.locator('#studio-boot')).toHaveCount(0,{timeout:60000});
+});
