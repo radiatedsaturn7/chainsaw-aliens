@@ -101,3 +101,15 @@ test('an early menu art cache miss cannot hide a later untimestamped download',a
   assert.ok(getRaceArtSpriteCanvasShared('late',{cache,documentRef,allowSyncFetch:false}));
  }finally{clearCachedProjectFilesForTests();}
 });
+
+
+test('missing optional world map descriptions are fetched once instead of keeping preparation pending',async()=>{
+ const {clearCachedProjectFilesForTests}=await import('../../src/ui/serverStorage.js');
+ clearCachedProjectFilesForTests();const original=globalThis.fetch;let reads=0;
+ globalThis.fetch=async()=>{reads++;return {ok:true,json:async()=>({file:null})};};
+ try{
+  const resources=new MenuResources({carEditor:{}});
+  for(let i=0;i<4;i++){assert.equal(resources.race('Missing description'),null);await Promise.all(resources.pending.values());}
+  assert.equal(reads,1);assert.equal(resources.pending.size,0);
+ }finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
+});
