@@ -18,8 +18,8 @@ window.__game = game;
 window.__gameReady = true;
 let isMobile = false;
 let fullscreenPending = false;
-let fullscreenPromptShown = false;
-const fullscreenPrompt = new FullscreenPrompt(requestFullscreen);
+let fullscreenPromptShown = Boolean(window.__rtgBoot?.fullscreenPromptShown);
+const fullscreenPrompt = window.__rtgBoot?.fullscreenPrompt || new FullscreenPrompt(requestFullscreen);
 const hideFullscreenControlsForTesting = new URLSearchParams(window.location.search).has('hideFullscreenForTesting');
 const DEFAULT_CANVAS_WIDTH = canvas.width;
 const DEFAULT_CANVAS_HEIGHT = canvas.height;
@@ -424,6 +424,7 @@ function loop(now) {
     try { game.update(dt); } finally { frameTiming.inUpdate = false; }
   }
   game.draw();
+  window.__rtgBoot?.ready();
   serviceRacePerformanceWork(game.raceEditor);
   serviceRacePerformanceWork(game.carEditor);
   requestAnimationFrame(loop);

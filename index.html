@@ -4,17 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RTG Studio</title>
+  <style>
+    #studio-boot { position:fixed; inset:0; z-index:2147483646; display:grid; place-content:center; gap:16px; padding:24px; text-align:center; background:#080c14; color:#f8fbff; font:16px system-ui,sans-serif; }
+    #studio-boot h1 { margin:0; font-size:32px; }
+    #studio-boot p { margin:0; color:#c6dcf5; }
+    #studio-boot button { padding:10px 24px; font:inherit; }
+  </style>
+  <link rel="modulepreload" href="src/main.js" />
   <link rel="stylesheet" href="css/ui-suite.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <section id="studio-boot" aria-label="RTG Studio startup">
+    <h1>RTG Studio</h1>
+    <p id="studio-boot-status" role="status">Loading RTG Studio…</p>
+    <button id="studio-boot-retry" type="button" hidden>Reload</button>
+    <noscript>Enable JavaScript to run RTG Studio.</noscript>
+  </section>
   <main class="frame">
     <canvas id="game" width="1280" height="720"></canvas>
     <div class="hint">Press SPACE for dialog / confirm</div>
   </main>
-  <script src="vendor/soundfont-player.min.js"></script>
-  <script src="vendor/jszip.min.js"></script>
-  <script src="vendor/midi.min.js"></script>
-  <script type="module" src="src/main.js"></script>
+  <script type="module" src="src/bootstrap.js"></script>
+  <script defer src="vendor/soundfont-player.min.js"></script>
+  <script defer src="vendor/jszip.min.js"></script>
+  <script defer src="vendor/midi.min.js"></script>
+  <script id="studio-main" type="module" src="src/main.js"></script>
 </body>
 </html>
