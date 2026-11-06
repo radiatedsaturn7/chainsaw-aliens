@@ -1,3 +1,5 @@
+import {analyzeRaceDrivingRoute, racePaceNotes, nextRacePaceNote, updateRaceDrivingAssists} from '../racing/RaceDrivingAssists.js';
+import {drawRaceDrivingLine, drawRaceDrivingAssistHud, syncRaceThreeDrivingLine, disposeRaceThreeDrivingLine} from '../racing/RaceDrivingGuideRenderer.js';
 import { appendRaceProjectedQuadPath, drawRaceProjectedVehicleQuad } from '../racing/RaceProjectedPolygon.js';
 import { acquireRaceTireFxProjection, projectRaceTireFxParticles, releaseRaceTireFxProjection, acquireRaceTireFxParticle, trimRaceTireFxParticles, advanceRaceTireFxParticles } from '../racing/RaceTireFxParticles.js';
 import { prepareRaceLoadingSurfaceSlice } from '../racing/RaceAheadPreparation.js';
@@ -738,6 +740,8 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'race-radio',
   'race-music',
   'race-countdown',
+  'race-driving-guide',
+  'race-pace-notes',
   'race-rolling-start',
   'race-rolling-speed',
   'generate-random-race',
@@ -1178,6 +1182,7 @@ export default class RaceEditor {
       if (liveSession && !startupFramePending && !this.raceInput.paused && !this.playtestSession.carEditorPreview) {
         this.game.items?.runtime.update(this.playtestSession.frameAdmittedSeconds ?? dt);
       }
+      if (liveSession && !startupFramePending) updateRaceDrivingAssists(this, this.playtestSession.frameAdmittedSeconds ?? dt);
       if (liveSession && !startupFramePending) this.updateRaceAutomaticVehicleRecovery(this.playtestSession.frameAdmittedSeconds ?? dt);
     } finally {
       this.deferRaceFrameBudgetFinish = false;
@@ -4211,10 +4216,10 @@ export default class RaceEditor {
   getRaceSurfaceModel() {
     if (!this.raceSurfaceModel) {
       this.raceSurfaceModel = this.raceSimulationSystems.surface.createSampler({
-        flatJoinWidthM: RACE_ROAD_TERRAIN_FLAT_JOIN_WIDTH_M,
+        flatJoinWidthM: clamp(Number(this.selectedRace?.source?.shoulderFlatJoinM) || RACE_ROAD_TERRAIN_FLAT_JOIN_WIDTH_M, 1, 16),
         slopeBlendWidthM: RACE_ROAD_TERRAIN_SLOPE_BLEND_WIDTH_M,
-        maxCutSideSlope: 0.5,
-        maxFillSideSlope: 0.5,
+        maxCutSideSlope: clamp(Number(this.selectedRace?.source?.shoulderMaxSlope) || .5, .1, .5),
+        maxFillSideSlope: clamp(Number(this.selectedRace?.source?.shoulderMaxSlope) || .5, .1, .5),
         elevationScaleM: RACE_THREE_ELEVATION_M,
         bankTransitionLengthM: 680,
         normalSampleStepM: 1,
@@ -7198,6 +7203,8 @@ export default class RaceEditor {
       'car-mechanics': 'Mechanical systems',
       'race-radio': `Radio: ${this.selectedRace?.radioEnabled !== false ? 'On' : 'Off'}`,
       'race-music': `Music: ${this.getRaceStartSettings().musicTrackId || 'None'}`,
+      'race-driving-guide': `Driving line: ${this.selectedRace?.drivingGuide?.line !== false ? 'On' : 'Off'}`,
+      'race-pace-notes': `Pace notes: ${!this.selectedRace?.codriver?.enabled ? 'Off' : this.selectedRace.codriver.spoken ? 'Voice' : 'Text'}`,
       'race-countdown': `Countdown: ${this.getRaceStartSettings().countdown ? 'On' : 'Off'}`,
       'race-rolling-start': `Rolling Start: ${this.getRaceStartSettings().rollingStart ? 'On' : 'Off'}`,
       'race-rolling-speed': `Rolling Speed: ${Math.round(this.getRaceStartSettings().rollingStartSpeedMps * 2.23694)} mph`,
@@ -8677,7 +8684,10 @@ export default class RaceEditor {
     const race = this.cloneRaceDocument();
     const map=race?.road?.tileMap;
     if(map){map.models||={};for(const id of new Set([map.defaultTileId,...this.getRaceTileMapEntries().map(([,cell])=>cell.tileId)])){if(!Object.hasOwn(map.models,id)){const binding=normalizeModelBinding(this.getRaceTileDefinition(id)?.model);if(binding)map.models[id]=binding;}}}
-    if (race) race.finishBehavior = normalizeRaceFinishBehavior(race.finishBehavior);
+    if (race) {
+      race.finishBehavior = normalizeRaceFinishBehavior(race.finishBehavior);
+      race.codriver = {...race.codriver, calls: racePaceNotes(race, analyzeRaceDrivingRoute(this))};
+    }
     return {
       schemaVersion: 1,
       kind: 'race-track',
@@ -10080,6 +10090,10 @@ export default class RaceEditor {
       this.deleteSelectedRaceTrigger();
     } else if (action === 'race-music') {
       this.pickRaceMusic().catch(() => { this.status = 'Music picker failed'; });
+    } else if (action === 'race-driving-guide') {
+      this.toggleRaceDrivingLine();
+    } else if (action === 'race-pace-notes') {
+      this.cycleRacePaceNotes();
     } else if (action === 'race-countdown') {
       const settings = this.getRaceStartSettings();
       settings.countdown = !settings.countdown;
@@ -14328,11 +14342,13 @@ export default class RaceEditor {
       eventLog: [
         normalizedAiDrivers.length ? `${normalizedAiDrivers.length} AI racers enabled` : 'Solo playtest',
         hazards.length ? `${hazards.length} race hazards loaded` : 'No hazards enabled',
-        diagnosticMode ? `Diagnostic: ${diagnosticMode}` : 'Co-driver disabled'
+        diagnosticMode ? `Diagnostic: ${diagnosticMode}` : `Pace notes ${this.selectedRace?.codriver?.enabled ? 'enabled' : 'off'}`
       ]
     };
     prepareManagedRaceScenery(this.ensureRaceScenery(), this.playtestSession);
-    if (this.playtestSession.aiRuntime.length) prepareRaceAiRoadPlan(this);
+    const drivingPlan = options?.carEditorPreview ? null : prepareRaceAiRoadPlan(this);
+    this.playtestSession.drivingAssists = {plan: drivingPlan};
+    this.playtestSession.codriverCalls = options?.carEditorPreview ? [] : racePaceNotes(this.selectedRace, analyzeRaceDrivingRoute(this));
     for(const key of ['highBeams','auxLights'])this.raceInput[key]=this.playtestSession.mechanical?.[key]===true;
     this.playtestSession.trackState = this.createRaceTrackState({
       session: this.playtestSession,
@@ -16562,7 +16578,7 @@ export default class RaceEditor {
   getRaceRoadTerrainBlendWidthWorld(segment = null) {
     const roadHalfWidth = this.getRaceRoadHalfWidthWorld(segment);
     const shoulderWidth = this.getRaceShoulderWidthWorld(segment);
-    const minimumBlend = RACE_ROAD_TERRAIN_FLAT_JOIN_WIDTH_M + RACE_ROAD_TERRAIN_SLOPE_BLEND_WIDTH_M;
+    const minimumBlend = Math.max(RACE_ROAD_TERRAIN_FLAT_JOIN_WIDTH_M + RACE_ROAD_TERRAIN_SLOPE_BLEND_WIDTH_M, Number(this.selectedRace?.source?.shoulderBlendWidthM) || 0);
     if (shoulderWidth <= 0) return Math.max(minimumBlend, roadHalfWidth * 0.08);
     return Math.max(minimumBlend, 8, roadHalfWidth * 0.65, shoulderWidth * 1.75);
   }
@@ -20868,6 +20884,8 @@ export default class RaceEditor {
           onAdjust: () => this.toggleRaceTransmissionMode(),
           onClick: () => this.toggleRaceTransmissionMode()
         },
+        {id:'race-driving-guide',label:'Driving line',value:this.selectedRace?.drivingGuide?.line !== false ? 'On' : 'Off',onClick:()=>this.toggleRaceDrivingLine(),onAdjust:()=>this.toggleRaceDrivingLine()},
+        {id:'race-pace-notes',label:'Pace notes',value:!this.selectedRace?.codriver?.enabled ? 'Off' : this.selectedRace.codriver.spoken ? 'Voice' : 'Text',onClick:()=>this.cycleRacePaceNotes(),onAdjust:()=>this.cycleRacePaceNotes()},
         {
           id: 'race-toggle-telemetry',
           label: 'Telemetry',
@@ -21079,18 +21097,27 @@ export default class RaceEditor {
     return (2 * Math.atan((Number(bounds.w || 1) * 0.5) / focal)) * (180 / Math.PI);
   }
 
+  toggleRaceDrivingLine() {
+    this.selectedRace.drivingGuide ||= {};
+    this.selectedRace.drivingGuide.line = this.selectedRace.drivingGuide.line === false;
+    this.status = `Driving line ${this.selectedRace.drivingGuide.line ? 'on' : 'off'}`;
+  }
+
+  cycleRacePaceNotes() {
+    const notes = this.selectedRace.codriver ||= {};
+    if (!notes.enabled) { notes.enabled = true; notes.spoken = false; }
+    else if (!notes.spoken) notes.spoken = true;
+    else { notes.enabled = false; notes.spoken = false; }
+    this.status = `Pace notes: ${!notes.enabled ? 'Off' : notes.spoken ? 'Voice (with text)' : 'Text'}`;
+  }
+
   getNextCoDriverCall() {
     const session = this.playtestSession;
     if (!session) return null;
     if (!session.codriverCalls?.length) return null;
-    const lookAheadDistance = Number(session.distance || 0) + clamp(Math.abs(Number(session.speedMps || 0)) * 3.2, 80, 260);
-    const segmentCue = this.getRaceSegmentCoDriverCue(this.getRaceSegmentAtDistance(lookAheadDistance));
-    const sorted = [...session.codriverCalls].sort((a, b) => (Number(a.at) || 0) - (Number(b.at) || 0));
-    const explicit = sorted.find((call) => {
-      const at = Number(call.at) || 0;
-      return at >= session.distance && at <= Number(session.distance || 0) + 280;
-    });
-    return explicit || segmentCue || sorted.find((call) => (Number(call.at) || 0) >= session.distance) || sorted[0];
+    if (!this.selectedRace?.codriver?.enabled) return null;
+    return nextRacePaceNote(session.codriverCalls, session.projectedDistance ?? session.distance ?? 0,
+      session.speedMps, session.routeLength, session.routeRuntimeType === 'circuit');
   }
 
   getUpcomingHazard() {
@@ -21823,6 +21850,7 @@ export default class RaceEditor {
     }
     const brightness=clamp(Number(this.getRaceLightingBrightness()),0,1);
     if(brightness<1&&!this.raceHeadlightsRendered){ctx.save();ctx.fillStyle=`rgba(0,0,0,${1-brightness})`;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.restore();}
+    if (!physicsSurfaceVisible && !physicsVehicleRigVisible) drawRaceDrivingLine(this, ctx, bounds);
     if(!physicsSurfaceVisible&&!physicsVehicleRigVisible&&!this.playtestSession?.carEditorPreview){
       drawRaceSpeedFx(ctx,bounds,this.getRaceRenderVisualFx(),{speedMps:this.playtestSession?.speedMps,paused:this.raceInput.paused||Boolean(this.playtestSession?.raceIntro?.active),time:(this.playtestSession?.elapsedMs||0)/1000,state:this.raceVisualFxState||={},getArt:ref=>this.getRaceArtSpriteCanvas(ref)});
     }
@@ -24704,6 +24732,7 @@ export default class RaceEditor {
     this.drawRaceCarStatusPanel(ctx, bounds);
     this.drawRaceTachPanel(ctx, bounds, { speedMph });
     }
+    drawRaceDrivingAssistHud(this, ctx, bounds);
     this.drawRaceSelectResetProgress(ctx, bounds);
     if (this.raceInput.telemetryVisible || this.playtestSession?.diagnosticMode) {
       this.drawRaceDiagnosticsHud(ctx, bounds);
@@ -36632,6 +36661,7 @@ export default class RaceEditor {
 
   clearRaceThreeScene(renderer = null) {
     if (!renderer?.scene) return;
+    disposeRaceThreeDrivingLine(renderer);
     renderer.staticWorldObjects=[];
     renderer.staticWorldKey=null;
     renderer.carDepthSprites?.dispose();
@@ -38596,6 +38626,7 @@ export default class RaceEditor {
     const brightness=this.playtestSession?this.getRaceLightingBrightness():1;
     updateRaceLighting(renderer,{brightness,highBeams:this.playtestSession?.mechanical?.highBeams===true,auxIntensity:this.playtestSession?.mechanical?.auxLights?(this.playtestSession?.mechanical?.effects?.lights??1):0,visibilityDistanceM:weatherState.visibilityDistanceM,cameraPosition:{x:Number(camera.x||0),y:cameraY,z:Number(camera.z||0)},headlightIntensity:this.raceHeadlightsEnabled()?(this.playtestSession?.mechanical?.effects?.lights??1):0,pose:lightPose?{...lightPose,y:lightPose.elevation*RACE_THREE_ELEVATION_M}:null,dimensions:{width:lightDimensions.widthM,length:lightDimensions.lengthM}});
     renderer.threeRenderer.clear(true, true, true);
+    syncRaceThreeDrivingLine(this, renderer);
     const renderStartMs = this.getNowMs();
     renderer.threeRenderer.render(renderer.scene, renderer.camera);
     const compositeStartMs = this.getNowMs();
@@ -41299,7 +41330,7 @@ export default class RaceEditor {
     if (
       this.playtestSession
       && hit?.id
-      && ['race-pause-return-editor', 'race-resume', 'race-car-settings', 'race-debug', 'race-pause-back', 'race-toggle-abs', 'race-toggle-tc', 'race-toggle-transmission', 'race-toggle-telemetry', 'race-toggle-debug-hud', 'race-toggle-physics-surface', 'race-exit-main', 'end-playtest'].includes(hit.id)
+      && ['race-pause-return-editor', 'race-resume', 'race-car-settings', 'race-debug', 'race-pause-back', 'race-toggle-abs', 'race-toggle-tc', 'race-toggle-transmission', 'race-toggle-telemetry', 'race-driving-guide', 'race-pace-notes', 'race-toggle-debug-hud', 'race-toggle-physics-surface', 'race-exit-main', 'end-playtest'].includes(hit.id)
       && !hit.desktopDropdownItem
     ) {
       if (this.isDesktopMode()) {

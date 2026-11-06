@@ -1,3 +1,4 @@
+import {sampleRaceRacingLine} from './RaceRacingLine.js';
 import {createRaceAiTrafficProbe} from './RaceAiTrafficBounds.js';
 import { raceAiRoadPlanIndex, getRaceAiPlannedSpeed } from './RaceAiRoadPlan.js';
 import { RACE_THREE_ELEVATION_M } from './simulation/RaceSimulationConfig.js';
@@ -44,6 +45,14 @@ export function getRaceAiRoadSafety(editor, ai, tuning) {
     Math.max(0, (halfWidth - Number(tuning.widthM || 1.8) / 2 - .65) / Math.max(1, halfWidth)))};
 }
 
+export function preferRaceAiRacingLine(decision) {
+  const center=decision?.candidates?.find(c=>Math.abs(c.offset)<.001);
+  // Return to the optimized path once a surface detour offers no meaningful
+  // grip benefit. Initial grid lanes must not become permanent race lanes.
+  if(center && center.score >= Number(decision.score)-.015)return {...decision,chosenOffset:0,gripScale:center.grip,risk:center.risk};
+  return decision;
+}
+
 export function planRaceAiDriving(editor, ai, tuning, {
   grip = 1, profile = {}, topSpeedMps = 60, roadSafety = null, seconds = null, scheduleIndex = 0, surfacePlanRefreshed = false
 } = {}) {
@@ -54,12 +63,21 @@ export function planRaceAiDriving(editor, ai, tuning, {
   const speed = Math.abs(Number(ai.speedMps || 0));
   const samplePose = (ahead) => editor.getRaceWorldPoseAtDistance(distance + ahead, { runtimeType, allowVisualExtension: true });
   const safety = roadSafety || getRaceAiRoadSafety(editor, ai, tuning);
-  const lookahead = clamp(5 + speed * (0.65 - safety.risk * .25), 6, 30 - safety.risk * 14);
+  const nominalLookahead = clamp(5 + speed * (0.65 - safety.risk * .25), 6, 30 - safety.risk * 14);
+  const roadPlan=getRaceAiRoadPlan(editor);
+  // Long straight-line lookahead cuts inside an apex. Bound the chord's
+  // sagitta on bends to keep the driven body near the optimized path.
+  const upcomingCurvature=roadPlan?.racingLine ? Math.max(roadPlan.curvature[raceAiRoadPlanIndex(roadPlan,distance)],roadPlan.curvature[raceAiRoadPlanIndex(roadPlan,distance+nominalLookahead)]) : 0;
+  const lookahead=Math.min(nominalLookahead,Math.max(7,Math.sqrt(8*.4/Math.max(.00001,upcomingCurvature))));
+  const racingTarget=session.debugAiCenterSlow?null:sampleRaceRacingLine(roadPlan,distance+lookahead);
   const targetPose = samplePose(lookahead);
   const halfWidth = Math.max(1, editor.getRaceRoadHalfWidthWorld(targetPose.segment));
   const laneLimit = Math.max(0, halfWidth - Number(tuning.widthM || 1.8) / 2 - 0.45);
-  const offset = clamp(clamp(Number(ai.lineOffset || 0), -safety.maxLineOffset, safety.maxLineOffset) * halfWidth, -laneLimit, laneLimit);
   const right = editor.getRaceRightVector(targetPose.yaw);
+  // Stored path offsets use +X at yaw zero; the engine's lateral convention
+  // uses its own right vector. Project the actual path, never assume a sign.
+  const lineOffset=racingTarget ? (racingTarget.x-targetPose.x)*right.x+(racingTarget.z-(targetPose.z??targetPose.y))*right.z : 0;
+  const offset = clamp(lineOffset+clamp(Number(ai.lineOffset || 0), -safety.maxLineOffset, safety.maxLineOffset) * halfWidth, -laneLimit, laneLimit);
   const dx = Number(targetPose.x || 0) + right.x * offset - Number(ai.worldX || 0);
   const dz = Number(targetPose.z ?? targetPose.y ?? 0) + right.z * offset - Number(ai.worldZ || 0);
   const yaw = Number(ai.carYaw || 0);
@@ -71,7 +89,6 @@ export function planRaceAiDriving(editor, ai, tuning, {
     Math.max(4, dx * dx + dz * dz)
   ), -maxSteer, maxSteer);
 
-  const roadPlan=getRaceAiRoadPlan(editor);
   const liveGrip=clamp(grip,0.12,1.2)*clamp(Number(tuning.tireGrip)||1,.35,1.4);
   const lateralAcceleration = 9.81 * liveGrip
     * (0.48 + Number(profile.corner ?? 0.72) * 0.34);
@@ -133,6 +150,15 @@ export function planRaceAiDriving(editor, ai, tuning, {
       targetSpeedMps = Math.min(targetSpeedMps,
         Math.sqrt(cornerSpeed * cornerSpeed + 2 * deceleration * brakingRoom));
     }
+    // Track the falling speed envelope with feed-forward brake pressure;
+    // waiting for a large speed error lets the car overrun a valid brake point.
+    memo.plannedDecelerationMps2=0;
+    if(roadPlan?.racingLine){
+      const cap=Math.max(0,topSpeedMps)*(1-safety.risk*.35);
+      const v0=Math.min(cap,targetSpeedMps);
+      const v1=Math.min(cap,getRaceAiPlannedSpeed(roadPlan,distance+4,speed,lateralAcceleration,deceleration));
+      memo.plannedDecelerationMps2=clamp((v0*v0-v1*v1)/8,0,deceleration);
+    }
     memo.speedLimit = targetSpeedMps;
     memo.speedBucket = speedBucket; memo.speedAt = memo.clock;
     memo.grip = liveGrip; memo.deceleration = deceleration;
@@ -176,5 +202,5 @@ export function planRaceAiDriving(editor, ai, tuning, {
     memo.trafficBucket = trafficBucket; memo.trafficAt = memo.clock;
   }
   targetSpeedMps = Math.min(targetSpeedMps, memo.trafficLimit);
-  return { steeringAngleRad, targetSpeedMps, headingError, lookahead };
+  return { steeringAngleRad, targetSpeedMps, plannedDecelerationMps2:memo.plannedDecelerationMps2||0, headingError, lookahead, racingLineOffsetM:lineOffset, targetOffsetM:offset, targetX:Number(targetPose.x||0)+right.x*offset, targetZ:Number(targetPose.z??targetPose.y??0)+right.z*offset };
 }

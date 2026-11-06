@@ -1,3 +1,4 @@
+import {prepareAmericaRace} from './prepare_america.mjs';
 // Install only campaign files and the world-map screen; retain other user content.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -24,6 +25,7 @@ for(const stage of catalog){
  const branchLabel={north:'Northern',middle:'Middle',south:'Southern'}[stage.branch];
  race.description=`${branchLabel} route · Stage ${stage.stage}/8 · ${(stage.lengthM/1000).toFixed(1)} km\n${stage.location.name}\nDifficulty ${stage.difficulty}/8 · ${stage.surface.replaceAll('-',' ')} · ${stage.weather} · ${stage.timeOfDay}`;
 
+ prepareAmericaRace(race, stage);
  const folder=path.join(root,'races',stage.name);fs.mkdirSync(folder,{recursive:true});
  write(`${folder}/document.json`,encode({schemaVersion:1,kind:'race-track',savedAt,selectedRaceId:race.id,race}));
  write(`${folder}/metadata.json`,{name:stage.name,folder:'races',savedAt,version:1});
