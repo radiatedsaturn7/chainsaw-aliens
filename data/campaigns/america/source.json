@@ -26,5 +26,22 @@
     "node tools/campaigns/install_america.mjs"
   ],
   "elevationAttribution": "Terrain Tiles (Mapzen/Tilezen), accessed 2026-11-05 from https://registry.opendata.aws/terrain-tiles/",
-  "elevationLicenseUrl": "https://github.com/tilezen/joerd/blob/master/docs/attribution.md"
+  "elevationLicenseUrl": "https://github.com/tilezen/joerd/blob/master/docs/attribution.md",
+  "roadComfort": "45 m elevation smoothing radius; authored bumps reduced by 80 percent; 8 m flat terrain join, minimum 32 m blended transition, maximum cut/fill slope 0.22. GPS turns and raw DEM samples are retained. Reapply to installed tracks with node tools/campaigns/smooth_america.mjs.",
+  "paceNotes": {
+    "version": "steering-recce-v3",
+    "method": "Virtual recce of road-wheel steering, integrated heading, a braking envelope and power-limited acceleration. Checks inside-apex doodads for do-not-cut hazards. Numeric severity thresholds are game-specific calibration; not proprietary WRC Generations values.",
+    "references": [
+      "https://racinggames.fly.dev/article/wrc-generations-beginners-guide-5-essential-tips-to-get-you-started",
+      "https://www.reccelab.com/en/guides/pace-notes/",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/310560/manuals/DiRT_RALLY_MANUAL_v7.pdf"
+    ]
+  },
+  "racingLine": {
+    "method": "Bounded minimum-curvature path optimization with vehicle and roadside-object clearance; backward braking speed envelope on actual path curvature; shared by guide and AI.",
+    "references": [
+      "https://torcs.sourceforge.net/api/robot_tutorial_trajectories.html",
+      "https://arxiv.org/abs/1902.00606"
+    ]
+  }
 }
