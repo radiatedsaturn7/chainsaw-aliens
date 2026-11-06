@@ -11,9 +11,13 @@ export function planRaceAiControls(editor,ai,tuning,targetMps,profile={}) {
  // A stopped traffic queue still needs brake pressure on a grade. Releasing
  // at zero speed caused rollback, collisions and repeated detailed simulation.
  const holding=target<=.05 && speed<.5;
- const braking=holding||error<-.35;
+ const plannedDeceleration=Math.max(0,Number(ai.drivingPlan?.plannedDecelerationMps2)||0);
+ const physicalBrakeDeceleration=Number(tuning.brakeForceN)/Math.max(450,Number(tuning.weightKg)||1400);
+ const feedForward=Number.isFinite(physicalBrakeDeceleration)&&physicalBrakeDeceleration>0
+   ? clamp(plannedDeceleration/physicalBrakeDeceleration,0,1)*clamp((speed-target+1)/1,0,1) : 0;
+ const braking=holding||error<-.35||feedForward>.01;
  let throttle=braking?0:clamp(error/Math.max(4,20-Number(profile.pace||.8)*8),0,1);
- const brake=holding?1:braking?clamp(-error/Math.max(5,22-Number(profile.brake||.7)*10),0,1):0;
+ const brake=holding?1:braking?clamp(feedForward+Math.max(0,-error)/Math.max(5,22-Number(profile.brake||.7)*10),0,1):0;
  let gear=clamp(Math.round(Number(ai.gear||1)),1,Math.max(1,tuning.gearRatios.length));
  const projectedRpm=editor.getRaceProjectedEngineRpmForGear(tuning,speed,gear);
  const upshift=editor.getRaceAutomaticUpshiftRpm(tuning),downshift=editor.getRaceAutomaticDownshiftRpm(tuning);

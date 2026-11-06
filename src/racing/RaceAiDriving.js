@@ -150,6 +150,15 @@ export function planRaceAiDriving(editor, ai, tuning, {
       targetSpeedMps = Math.min(targetSpeedMps,
         Math.sqrt(cornerSpeed * cornerSpeed + 2 * deceleration * brakingRoom));
     }
+    // Track the falling speed envelope with feed-forward brake pressure;
+    // waiting for a large speed error lets the car overrun a valid brake point.
+    memo.plannedDecelerationMps2=0;
+    if(roadPlan?.racingLine){
+      const cap=Math.max(0,topSpeedMps)*(1-safety.risk*.35);
+      const v0=Math.min(cap,targetSpeedMps);
+      const v1=Math.min(cap,getRaceAiPlannedSpeed(roadPlan,distance+4,speed,lateralAcceleration,deceleration));
+      memo.plannedDecelerationMps2=clamp((v0*v0-v1*v1)/8,0,deceleration);
+    }
     memo.speedLimit = targetSpeedMps;
     memo.speedBucket = speedBucket; memo.speedAt = memo.clock;
     memo.grip = liveGrip; memo.deceleration = deceleration;
@@ -193,5 +202,5 @@ export function planRaceAiDriving(editor, ai, tuning, {
     memo.trafficBucket = trafficBucket; memo.trafficAt = memo.clock;
   }
   targetSpeedMps = Math.min(targetSpeedMps, memo.trafficLimit);
-  return { steeringAngleRad, targetSpeedMps, headingError, lookahead, racingLineOffsetM:lineOffset, targetOffsetM:offset, targetX:Number(targetPose.x||0)+right.x*offset, targetZ:Number(targetPose.z??targetPose.y??0)+right.z*offset };
+  return { steeringAngleRad, targetSpeedMps, plannedDecelerationMps2:memo.plannedDecelerationMps2||0, headingError, lookahead, racingLineOffsetM:lineOffset, targetOffsetM:offset, targetX:Number(targetPose.x||0)+right.x*offset, targetZ:Number(targetPose.z??targetPose.y??0)+right.z*offset };
 }

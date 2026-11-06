@@ -7,7 +7,7 @@ import {planRaceAiDriving} from '../../src/racing/RaceAiDriving.js';
 import {planRaceAiControls} from '../../src/racing/RaceAiControls.js';
 import {sampleRaceRacingLine} from '../../src/racing/RaceRacingLine.js';
 
-test('AI follows an optimized apex through real tire/chassis physics without teleporting or leaving the road',t=>{
+for(const initialSpeed of [12,25])test(`AI at ${initialSpeed} m/s follows an optimized apex through real tire/chassis physics without teleporting or leaving the road`,t=>{
  const track=racingLineTrack(),editor=new RaceEditor({});
  const race=editor.selectedRace;
  race.type='destination';race.road.network=null;race.scenery=[];race.hazards=[];
@@ -22,14 +22,16 @@ test('AI follows an optimized apex through real tire/chassis physics without tel
  const session=editor.playtestSession;session.countdownRemainingMs=0;session.aiRuntime=[];
  const plan=prepareRaceAiRoadPlan(editor);assert.ok(plan.racingLine);
  const car=editor.selectedCar,tuning=editor.getRaceCarTuning(car),profile=editor.getRaceAiDifficultyProfile('hard');
- const pose=editor.getRaceWorldPoseAtDistance(20,{runtimeType:'destination'});
+ // Low-speed case joins from the grid centre; fast case approaches already on the line.
+ const pose=initialSpeed>20?sampleRaceRacingLine(plan,20):editor.getRaceWorldPoseAtDistance(20,{runtimeType:'destination'});
  const ai={id:'racing-line-physics',carId:car.id,difficulty:'hard',worldX:pose.x,worldZ:pose.z,carYaw:pose.yaw,
-  projectedDistance:20,distance:20,speedMps:12,lineOffset:0,gear:2,rpm:3000,engineDrive:{throttle:.2,brake:0}};
+  projectedDistance:20,distance:20,speedMps:initialSpeed,lineOffset:0,gear:2,rpm:3000,engineDrive:{throttle:.2,brake:0}};
+ let worstTracking=null;
  let maxBodyLateral=0,maxLateral=0,maxLineError=0,apexOffset=0,maxStep=0;
  for(let i=0;i<1500&&ai.projectedDistance<track.end+35;i++){
   editor.withRaceGeometryReadCache(()=>{
    const previous={x:ai.worldX,z:ai.worldZ};
-   ai.drivingPlan=planRaceAiDriving(editor,ai,tuning,{profile,topSpeedMps:20});
+   ai.drivingPlan=planRaceAiDriving(editor,ai,tuning,{profile,topSpeedMps:30});
    const controls=planRaceAiControls(editor,ai,tuning,ai.drivingPlan.targetSpeedMps,profile);
    ai.engineDrive=controls;ai.gear=controls.gear;ai.rpm=controls.rpm;
    editor.updateRaceAiVehiclePhysics(ai,{car,tuning,seconds:1/60});
@@ -40,12 +42,13 @@ test('AI follows an optimized apex through real tire/chassis physics without tel
    const road=editor.getRaceWorldPoseAtDistance(projection.distance),heading=ai.carYaw-road.yaw;
    const bodyHalfWidth=Math.abs(Math.cos(heading))*tuning.widthM/2+Math.abs(Math.sin(heading))*tuning.lengthM/2;
    maxBodyLateral=Math.max(maxBodyLateral,Math.abs(projection.lateral)+bodyHalfWidth);
-   if(projection.distance>40)maxLineError=Math.max(maxLineError,Math.hypot(target.x-ai.worldX,target.z-ai.worldZ));
+   const error=Math.hypot(target.x-ai.worldX,target.z-ai.worldZ);
+   if(projection.distance>40&&error>maxLineError){maxLineError=error;worstTracking={distance:projection.distance,speed:ai.speedMps,targetSpeed:ai.drivingPlan.targetSpeedMps,brake:controls.brake};}
    if(Math.abs(projection.distance-(track.entry+track.end)/2)<4)apexOffset=Math.max(apexOffset,Math.abs(projection.lateral));
    maxStep=Math.max(maxStep,Math.hypot(ai.worldX-previous.x,ai.worldZ-previous.z));
   });
  }
- t.diagnostic(JSON.stringify({distance:ai.projectedDistance,maxBodyLateral,maxLateral,maxLineError,apexOffset,maxStep}));
+ t.diagnostic(JSON.stringify({distance:ai.projectedDistance,maxBodyLateral,maxLateral,maxLineError,apexOffset,maxStep,worstTracking}));
  assert.ok(ai.projectedDistance>track.end+30,`progress ${ai.projectedDistance}, speed ${ai.speedMps}`);
  assert.ok(maxBodyLateral<6,`body crossed edge: swept lateral extent ${maxBodyLateral}`);
  assert.ok(apexOffset>2,`AI stayed near center at apex: ${apexOffset}`);
