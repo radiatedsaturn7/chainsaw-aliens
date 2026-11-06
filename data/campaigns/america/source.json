@@ -1,0 +1,30 @@
+{
+  "name": "Providence to Los Angeles",
+  "raceCount": 24,
+  "stagesPerBranch": 8,
+  "branches": [
+    "north",
+    "middle",
+    "south"
+  ],
+  "geometryProvider": "OpenStreetMap",
+  "attribution": "\u00a9 OpenStreetMap contributors",
+  "license": "ODbL-1.0",
+  "licenseUrl": "https://www.openstreetmap.org/copyright",
+  "geometryEndpoints": [
+    "https://api.openstreetmap.org/api/0.6/map.json",
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter"
+  ],
+  "elevationProvider": "Mapzen / Tilezen Terrain Tiles, zoom 12, bilinear DEM samples",
+  "elevationEndpoint": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
+  "authoredConditions": "Weather, time of day, road width, surface and bumps are fictional gameplay conditions. Incomplete terrain surveys are filled with editable terrain derived from road heights. Per-race source metadata records elevation gaps and fallback methods.",
+  "structure": "Local scenic road stages across three westbound branches, with shared Providence and LA map junctions; not a continuous drive across the connecting highways.",
+  "rebuild": [
+    "python tools/campaigns/import_america.py",
+    "python tools/campaigns/finish_america_terrain.py",
+    "node tools/campaigns/install_america.mjs"
+  ],
+  "elevationAttribution": "Terrain Tiles (Mapzen/Tilezen), accessed 2026-11-05 from https://registry.opendata.aws/terrain-tiles/",
+  "elevationLicenseUrl": "https://github.com/tilezen/joerd/blob/master/docs/attribution.md"
+}
