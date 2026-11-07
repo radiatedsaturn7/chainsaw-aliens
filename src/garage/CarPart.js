@@ -217,7 +217,7 @@ export function buildGarageCar(stock,{parts=[],tune={},tires={}}={}){
   for(let i=0;i<=32;i++){const rpm=lo+(hi-lo)*i/32;original+=engine.getTorqueNmAtRpm(rpm,base)*rpm;upgraded+=engine.getTorqueNmAtRpm(rpm,built)*rpm;}
   if(Number.isFinite(original)&&Number.isFinite(upgraded)&&original>0){
    const ratio=Math.max(.25,Math.min(10,upgraded/original)),cruise=1+.25*(ratio-1),fuel=normalizeFuelConfig(car.mechanics);
-   car.mechanics={...car.mechanics,fuelMpg:Math.max(1,Math.min(200,fuel.fuelMpg/cruise)),fuelPowerLoadScale:Math.max(.1,Math.min(10,fuel.fuelPowerLoadScale*ratio/cruise))};
+   car.mechanics={...car.mechanics,engineHeatScale:Math.max(.25,Math.min(4,(Number(car.mechanics?.engineHeatScale)||1)*Math.sqrt(ratio))),fuelMpg:Math.max(1,Math.min(200,fuel.fuelMpg/cruise)),fuelPowerLoadScale:Math.max(.1,Math.min(10,fuel.fuelPowerLoadScale*ratio/cruise))};
   }
  }
  return car;

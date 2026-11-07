@@ -9,6 +9,7 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   currentStatus: [
+    '2026-11-07 02:36 UTC - Keep swap boost instruments and thermal load consistent with the installed engine; verify saved failures, editor chassis controls and delivered tire/driveline forces.',
     '2026-11-07 02:31 UTC - Audit all upgrade inputs, give ECU/gearing/suspension tiers installed calibrations, add tire-width and driveline kits, and expose cooling controls in the mechanical editor.',
     '2026-11-07 02:27 UTC - Add chassis reinforcement, ballast placement and cooling upgrades with suspension compliance, CG/inertia and thermal effects; expose rigidity and mass settings in the car editor.',
     '2026-11-07 02:23 UTC - Add reversible engine and FWD/RWD/AWD conversions with real torque curves, driven-wheel changes, mass, inertia, shift limits and gauge ranges across transmission variants.',

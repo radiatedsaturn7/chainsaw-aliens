@@ -64,3 +64,23 @@ test('purchased conversions survive save normalization and stock removal restore
  const restored=editor.getRaceCarTuning(await items.garage.build('test',stock)),base=editor.getRaceCarTuning(stock);
  for(const key of ['drivetrain','revLimitRpm','engineInertiaKgM2','weightKg','torqueLbFt','powerHp'])assert.equal(restored[key],base[key],key);
 });
+
+test('engine swaps update boost instruments and thermal load without healing saved failures',async()=>{
+ const {createMechanicalState,stepMechanicalState}=await import('../../src/racing/simulation/MechanicalModel.js');
+ const stock=createBuiltInRaceCars()[0];stock.mechanics={...stock.mechanics,boostBar:1};
+ for(const engine of ['v8','turbo']){
+  const built=buildGarageCar(stock,{parts:[part('engine-swap-'+engine)]});
+  assert.equal(built.mechanics.boostBar,engine==='turbo'?1.1:0);
+  assert.ok(Number.isFinite(built.mechanics.engineHeatScale));
+  const tuning=editor.getRaceCarTuning(built);
+  const state=createMechanicalState({components:{waterPump:{failed:true,damage:100}},fuel:.4,oil:.3},{},built.mechanics);
+  stepMechanicalState(state,.1,{rpm:5000,maxRpm:tuning.revLimitRpm,throttle:1});
+  assert.equal(state.components.waterPump.failed,true);assert.ok(state.oil<=.3);
+  assert.equal(state.config.boostBar,built.mechanics.boostBar);
+ }
+ const hot=buildGarageCar(stock,{parts:[part('engine-swap-v8'),part('race-intake')]});
+ assert.ok(hot.mechanics.engineHeatScale>1);
+ const baseState=createMechanicalState({}, {},stock.mechanics),hotState=createMechanicalState({}, {},hot.mechanics);
+ for(let i=0;i<100;i++)for(const state of [baseState,hotState])stepMechanicalState(state,.1,{rpm:5000,maxRpm:7000,throttle:1});
+ assert.ok(hotState.coolantTemperatureC>baseState.coolantTemperatureC);
+});

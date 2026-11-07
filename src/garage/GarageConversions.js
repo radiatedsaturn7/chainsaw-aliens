@@ -23,6 +23,7 @@ export function applyGarageConversions(car,parts){
   const baseWeight=Number(car.tuning.weightKg)||1495;
   for(const target of targets){Object.assign(target,values);target.engineCurve=structuredClone(curve);target.weightKg=Math.max(450,(Number(target.weightKg)||baseWeight)+spec.mass-previousMass);}
   car.tuning.engineConversion=engine;
+  car.mechanics={...car.mechanics,boostBar:spec.aspiration==='Turbocharged'?1.1:0};
  }
  if(drive){
   if(!['fwd','rwd','awd'].includes(drive))throw Error('Unknown drivetrain conversion');

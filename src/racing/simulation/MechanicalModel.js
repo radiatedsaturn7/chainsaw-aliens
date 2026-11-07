@@ -30,7 +30,7 @@ function hash(text){let h=2166136261;for(const ch of text)h=Math.imul(h^ch.charC
 export function normalizeMechanicalConfig(value={}){
  value ||= {};
  return {enabled:value.enabled!==false,timeScale:clamp(value.timeScale??8,.1,60),failureRate:clamp(value.failureRate??1,0,10),
- coolingEfficiency:clamp(value.coolingEfficiency??1,.5,3),oilCoolingEfficiency:clamp(value.oilCoolingEfficiency??1,.5,3),
+ engineHeatScale:clamp(value.engineHeatScale??1,.25,4),coolingEfficiency:clamp(value.coolingEfficiency??1,.5,3),oilCoolingEfficiency:clamp(value.oilCoolingEfficiency??1,.5,3),
  batteryAh:clamp(value.batteryAh??45,5,150),...normalizeFuelConfig(value),boostBar:clamp(value.boostBar??0,0,4),
  components:Object.fromEntries(MECHANICAL_COMPONENTS.map(({id,cost})=>[id,{durability:clamp(value.components?.[id]?.durability??1,.1,10),
  requiredPart:typeof value.components?.[id]?.requiredPart==='string'?value.components[id].requiredPart.slice(0,100):'',
@@ -102,7 +102,7 @@ function mechanicalTick(s,t){
  const thermostatOpening=clamp((s.coolantTemperatureC-80)/15);
  const circulation=thermalHealth('waterPump')*thermalHealth('thermostat');
  const cooling=s.config.coolingEfficiency*circulation*Math.max(.02,thermalHealth('radiator'))*Math.max(.02,s.coolant)*airflow*thermostatOpening;
- const heat=s.engineRunning?(3+load*rpmRatio*12):0;
+ const heat=s.engineRunning?(3+load*rpmRatio*12)*s.config.engineHeatScale:0;
  const thermalMass=25+20*s.coolant;
  s.coolantTemperatureC=clamp(s.coolantTemperatureC+dt*(heat-cooling*Math.max(0,s.coolantTemperatureC-ambient)*.16)/thermalMass,ambient,240);
  const oilTarget=s.coolantTemperatureC+(s.engineRunning?load*rpmRatio*12:0)/s.config.oilCoolingEfficiency;
