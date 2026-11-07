@@ -29183,15 +29183,15 @@ export default class RaceEditor {
       ctx.fillText(label, content.x, y, content.w);
       ctx.restore();
     };
-    const drawSliderRows = (rows, { scrollKey = null } = {}) => {
+    const drawSliderRows = (rows, { scrollKey = `car-tune-${this.carTuneTab}` } = {}) => {
       const rowH = 28;
       const columns = content.w > 520 ? 2 : 1;
       const colW = Math.floor((content.w - gap * (columns - 1)) / columns);
       const totalLines = Math.max(1, Math.ceil(rows.length / columns));
-      const needsScroll = Boolean(scrollKey) && totalLines * (rowH + gap) > content.h;
       const sliderTop = content.y;
       const sliderHeight = Math.max(1, content.h);
-      const visibleLines = Math.max(1, Math.floor((sliderHeight + gap) / (rowH + gap)));
+      const visibleLines = Math.max(1, Math.min(Math.floor(8 / columns), Math.floor((sliderHeight + gap) / (rowH + gap))));
+      const needsScroll = Boolean(scrollKey) && totalLines > visibleLines;
       const maxScroll = Math.max(0, totalLines - visibleLines);
       const scroll = needsScroll
         ? clamp(Math.round(Number(this.menuScrollState?.[scrollKey] || 0)), 0, maxScroll)

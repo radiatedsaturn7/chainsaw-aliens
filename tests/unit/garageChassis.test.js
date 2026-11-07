@@ -48,3 +48,20 @@ test('car editor writes rigidity, ballast and inertia settings consumed by the s
  const baseline=structuredClone(editor.selectedCar);baseline.tuning.ballastKg=0;
  assert.equal(config(editor.selectedCar).massKg,config(baseline).massKg+80);
 });
+
+test('short chassis panels scroll to every setting and suspension panels show at most eight controls',()=>{
+ const e=new RaceEditor({});
+ const ctx=new Proxy({measureText:()=>({width:40})},{get:(o,k)=>k in o?o[k]:()=>{}});
+ for(const [tab,bounds,total] of [['weight',{x:0,y:0,w:360,h:150},7],['suspension',{x:0,y:0,w:900,h:600},12]]){
+  e.carTuneTab=tab;e.drawCarTunePanel(ctx,bounds);
+  assert.ok(e.carDriveSliderRegions.length<=8);
+  const region=e.carTuneScrollRegion;assert.ok(region);
+  const seen=new Set(e.carDriveSliderRegions.map(r=>r.key));
+  for(let i=1;i<=region.maxScroll;i++){
+   e.menuScrollState[region.scrollKey]=i;e.drawCarTunePanel(ctx,bounds);
+   for(const r of e.carDriveSliderRegions)seen.add(r.key);
+   assert.ok(e.carDriveSliderRegions.length<=8);
+  }
+  assert.equal(seen.size,total);
+ }
+});

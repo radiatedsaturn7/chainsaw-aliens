@@ -11,6 +11,9 @@ export function resolveChassisMass(tuning,physical){
  const baseMass=Math.max(450,Number(tuning.weightKg)||1495);
  const ballast=clamp(Number(tuning.ballastKg)||0,0,200);
  const position=clamp(Number(tuning.ballastPosition)||0,-1,1); // rear to front
+ // Normal cars can reuse their immutable authored profile; tuning is queried
+ // by presentation and AI as well as physics initialization.
+ if(!ballast&&(!physical?.inertiaTensorBodyKgM2||!(physical.massKg>0)||physical.massKg===baseMass))return {tuning,physical};
  let profile=physical?structuredClone(physical):undefined;
  if(profile?.inertiaTensorBodyKgM2&&profile.massKg>0){
   for(const key of Object.keys(profile.inertiaTensorBodyKgM2))profile.inertiaTensorBodyKgM2[key]*=baseMass/profile.massKg;
