@@ -152,3 +152,34 @@ test('every new car gets Stock tires without a purchase or mutating the authored
  }
  assert.deepEqual(car,before);assert.equal(game.player.credits,1000);
 });
+
+test('catalog brakes appear in Upgrade, affect physical pressure and unlock only adjustable brake kits',async()=>{
+ const {default:catalog}=await import('../../src/content/garage-parts.json',{with:{type:'json'}});
+ const {garageBrowserRows}=await import('../../src/menus/MenuGarageWidgets.js');
+ const {tuningRows}=await import('../../src/garage/GarageTuning.js');
+ const {createVehicleDynamicsConfigFromTuning}=await import('../../src/racing/simulation/VehicleDynamicsRunner.js');
+ const brakes=catalog.items.filter(i=>i.carPart.slot==='brakes'&&i.carPart.tier!=='custom').map(normalizeItemDocument);
+ assert.deepEqual(brakes.map(i=>i.carPart.tier),['street','sport','race']);
+ for(const kit of brakes){
+  const car=stock();car.tuning.frontBrakeBias=.64;
+  const {garage,game}=fixture({catalog:brakes});game.player.credits=5000;await garage.load();
+  const resources={garage,stockCar:()=>car,garageCatalog:()=>brakes.map(item=>({ref:item.id,item}))};
+  assert.ok(garageBrowserRows(resources,{carRef:'test'}).some(r=>r.value==='Brakes'));
+  await garage.purchase(kit.id,{carRef:'test'});
+  const built=await garage.build('test',car),rows=tuningRows(garage,'test',car,built);
+  const adjustable=kit.carPart.tier!=='street';
+  assert.equal(rows.find(r=>r.id==='brakePressure').enabled,adjustable);
+  assert.equal(rows.find(r=>r.id==='brakeBalance').enabled,adjustable);
+  assert.equal(rows.find(r=>r.id==='brakeBalance').value,.64);
+  const editor=new RaceEditor({}),config=createVehicleDynamicsConfigFromTuning(editor.getRaceCarTuning(built));
+  assert.equal(config.brakePressure,kit.carPart.modifiers[0].value,'missing legacy pressure starts at the runtime default of 1');
+  if(adjustable){
+   await garage.setTune('test',{brakeBalance:.6,brakePressure:1.2});
+   const tuned=editor.getRaceCarTuning(await garage.build('test',car));
+   assert.equal(tuned.frontBrakeBias,.6);assert.equal(tuned.brakePressure,1.2);
+  }else await assert.rejects(garage.setTune('test',{brakePressure:1.2}),/Install/);
+  await garage.remove('test','brakes');
+  assert.equal(editor.getRaceCarTuning(await garage.build('test',car)).brakePressure,1);
+  assert.equal(car.tuning.brakePressure,undefined,'stock document stays unchanged');
+ }
+});

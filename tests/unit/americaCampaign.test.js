@@ -15,6 +15,14 @@ test('24 real-road races have GPS provenance and installed playable documents',(
  for(const stage of catalog){
   const race=decode(read(`../../data/server-storage/files/races/${stage.name}/document.json`)).race;
   assert.equal(race.type,'destination');assert.equal(race.laps,1);
+  assert.equal(race.source.elevationSmoothingRadiusM,45);
+  assert.equal(race.source.shoulderFlatJoinM,8);
+  assert.equal(race.source.shoulderBlendWidthM,32);
+  assert.equal(race.source.shoulderMaxSlope,.22);
+  assert.ok(race.road.segments.every(s=>s.bumpiness<=.035));
+  assert.equal(race.drivingGuide.line,true);
+  assert.equal(race.codriver.enabled,false);
+  assert.ok(race.codriver.calls.every(c=>c.generated==='steering-recce-v3' && c.at>=0 && c.at<=stage.lengthM));
   assert.equal(race.finishBehavior.menuScreen,'world-map');
   assert.ok(race.source.osmWayIds.length>0);
   assert.ok(race.source.routeReference.originalGeometry.length>2);

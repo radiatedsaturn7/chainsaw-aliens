@@ -57,8 +57,8 @@ export function drawGarageTuner(ctx,b,tuner,fontFamily='system-ui',element={},re
   ctx.fillStyle='#485663';ctx.fillRect(track.x,y-3,track.w,6);ctx.fillStyle='#e5bd67';ctx.fillRect(track.x,y-3,track.w*ratio,6);ctx.beginPath();ctx.arc(track.x+track.w*ratio,y,Math.max(6,9*scale),0,Math.PI*2);ctx.fill();
   if(!row.options){text(String(row.min),track.x,b.y+b.h*.46,17,'#adb9c5');text(String(row.max),track.x+track.w,b.y+b.h*.46,17,'#adb9c5','right');}
   const controls=[['step','−',{direction:'left'}],['step','+',{direction:'right'}],['apply','Set',{}],['exit','Cancel',{}]];
-  controls.forEach(([kind,label,extra],i)=>{const card=garageGridBounds(b,i+4);button(rect(card.x,card.y,card.w,card.h,kind,extra),label,kind==='apply',!tuner.busy);});
-  text(tuner.message||(tuner.busy?'Saving…':''),b.x+b.w/2,b.y+b.h-8,18,'#adb9c5','center',b.w-12);
+  controls.forEach(([kind,label,extra],i)=>{const card=garageGridBounds(b,i+4);button(rect(card.x,card.y,card.w,card.h,kind,extra),kind==='apply'&&row.package?'Buy & fit':label,kind==='apply',!tuner.busy);});
+  text(tuner.message||(tuner.busy?'Saving…':row.package?(row.options[value]?.error||'Reuses owned parts; price includes missing parts.'):row.setup?'Tunes unlocked settings; buy upgrades separately.':''),b.x+b.w/2,b.y+b.h-8,18,'#adb9c5','center',b.w-12);
  }
  if(tuner)tuner.hitAreas=areas;
 }

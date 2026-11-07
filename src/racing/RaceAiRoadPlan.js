@@ -1,12 +1,13 @@
+import {buildRaceRacingLine} from './RaceRacingLine.js';
 import { RACE_THREE_ELEVATION_M } from './simulation/RaceSimulationConfig.js';
 import { clamp } from './simulation/SimulationMath.js';
 
 // Transient, vehicle-independent load-time data. Never stored in race saves.
-// Road-center geometry is the safe reference line; drivers can choose offsets
-// within its usable corridor. Live terrain/collision checks remain authoritative.
+// A bounded minimum-curvature path is shared by the guide and AI. The original
+// corridor remains authoritative for contacts, recovery and passing clearance.
 export function buildRaceAiRoadPlan(editor, {routeLength, runtimeType}) {
   const length=Math.max(1,Number(routeLength)||1);
-  const count=Math.ceil(length/8)+1;
+  const count=Math.ceil(length/4)+1;
   // Fail back to online planning rather than coarsening away hairpins on an
   // exceptionally large user track or allocating unbounded memory.
   if(count>131072)return null;
@@ -30,13 +31,22 @@ export function buildRaceAiRoadPlan(editor, {routeLength, runtimeType}) {
       curvature=Math.max(curvature,Math.abs(delta(Number(q.yaw)||0,Number(p.yaw)||0))/step);
       const width=Number(editor.getRaceRoadHalfWidthWorld(p.segment));
       halfWidth=Math.min(halfWidth,Number.isFinite(width)?Math.max(.5,width):1);
-      const slope=Math.abs(Number(q.elevation||0)-Number(p.elevation||0))*RACE_THREE_ELEVATION_M/step;
+      const slope=Number.isFinite(authoredGrade)?Math.abs(authoredGrade):Math.abs(Number(q.elevation||0)-Number(p.elevation||0))*RACE_THREE_ELEVATION_M/step;
       risk=Math.max(risk,clamp((slope-.025)/.10,0,1));
     }
     plan.curvature[i]=curvature;
     plan.halfWidth[i]=halfWidth;
     plan.risk[i]=Math.max(risk,clamp((3-halfWidth)/1.5,0,1));
   }
+  const cars=[editor.selectedCar,...(editor.playtestSession?.aiRuntime||[]).map(ai=>ai.runtimeCar)].filter(Boolean);
+  const vehicleWidth=Math.max(2.2,...cars.map(car=>Number(editor.getRaceCarDimensions?.(car)?.widthM||car.tuning?.widthM)||1.8));
+  const obstacles=(editor.selectedRace?.scenery||[]).filter(s=>s&&s.visible!==false&&(s.doodadRef||s.previewDoodad||s.presetId==='doodad')).map(s=>{
+    const def=editor.getRaceDoodadForScenery?.(s)||s.previewDoodad||s;
+    return {x:Number(s.x)||0,z:Number(s.z??s.y)||0,radius:Math.max(.1,Number(def.hitboxWidthM||def.widthM||s.widthM)||1.5)/2};
+  });
+  plan.centerCurvature=plan.curvature;
+  plan.racingLine=buildRaceRacingLine(poses,plan.halfWidth,{circuit,step,vehicleWidth,obstacles});
+  if(plan.racingLine){plan.curvature=plan.racingLine.curvature;plan.segmentLength=plan.racingLine.segmentLength;}
   return plan;
 }
 
@@ -60,7 +70,7 @@ export function getRaceAiSpeedEnvelope(plan,ratio) {
   for(let pass=0;pass<(plan.circuit?2:1);pass++) {
     for(let i=end-1;i>=0;i--) {
       const next=plan.circuit?(i+1)%end:Math.min(end-1,i+1);
-      values[i]=Math.min(values[i],values[next]+2*brakingRatio*plan.step);
+      values[i]=Math.min(values[i],values[next]+2*brakingRatio*(plan.segmentLength?.[i] ?? plan.step));
     }
   }
   if(plan.circuit)values[plan.count-1]=values[0];
@@ -76,6 +86,12 @@ export function getRaceAiPlannedSpeed(plan,distance,speed,lateralAcceleration,de
   if(ratio<1/16)return 0;
   const values=getRaceAiSpeedEnvelope(plan,ratio);
   const here=raceAiRoadPlanIndex(plan,distance);
-  const reaction=raceAiRoadPlanIndex(plan,distance+Math.max(0,speed)*.45+3);
-  return Math.sqrt(lateralAcceleration*Math.min(values[here],values[reaction]));
+  const reactionDistance=distance+Math.max(0,speed)*.25+1;
+  const reaction=raceAiRoadPlanIndex(plan,reactionDistance);
+  const sample=(d,i)=>{
+    const wrapped=plan.circuit?(d%plan.length+plan.length)%plan.length:clamp(d,0,plan.length);
+    const t=clamp((wrapped-i*plan.step)/plan.step,0,1);
+    return values[i]+(values[Math.min(plan.count-1,i+1)]-values[i])*t;
+  };
+  return Math.sqrt(lateralAcceleration*Math.min(sample(distance,here),sample(reactionDistance,reaction)));
 }

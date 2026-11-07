@@ -108,6 +108,11 @@ export const RACE_TIRE_COMPOUNDS = [
     id: 'street', label: 'Street',
     surfaceGrip: { asphalt: 1.02, 'wet-asphalt': 0.92, dirt: 0.68, gravel: 0.60, mud: 0.40, 'wet-gravel': 0.46, snow: 0.25, slush: 0.32 },
     wetEvacuationFactor: 1, treadDepthMm: 7, wearRate: 1
+  },
+  {
+    id: 'sport', label: 'Sport',
+    surfaceGrip: { asphalt: 1.10, 'wet-asphalt': 0.85, dirt: 0.62, gravel: 0.53, mud: 0.35, 'wet-gravel': 0.40, snow: 0.20, slush: 0.27 },
+    wetEvacuationFactor: 0.85, treadDepthMm: 5.5, wearRate: 1.15
   }
 ];
 

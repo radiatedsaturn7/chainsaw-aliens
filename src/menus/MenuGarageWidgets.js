@@ -1,3 +1,4 @@
+import {GARAGE_CATEGORIES} from '../garage/GarageCategories.js';
 import {partFits,isStockPart,isGarageUpgrade} from '../garage/CarPart.js';
 
 export function showroomPage(choices, value, maximum = 4) {
@@ -13,14 +14,15 @@ export function garageBrowserRows(resources, parameters, state = {}) {
   const catalog = resources.garageCatalog().filter(({item})=>isGarageUpgrade(item)).filter(({item}) => installedSlots[item.carPart.slot]===item.id || (partFits(item.carPart, parameters.carRef, stock)
     && (item.carPart.forSale || resources.garage?.items.progress.bags.items[item.id] > 0)));
   if (!state.section) return [...new Set(catalog.map(({item}) => item.carPart.section || 'Engine'))]
+    .sort((a,b)=>(GARAGE_CATEGORIES.includes(a)?GARAGE_CATEGORIES.indexOf(a):GARAGE_CATEGORIES.length)-(GARAGE_CATEGORIES.includes(b)?GARAGE_CATEGORIES.indexOf(b):GARAGE_CATEGORIES.length))
     .map(section => ({value: section, label: section}));
   const section = catalog.filter(({item}) => (item.carPart.section || 'Engine') === state.section);
   if (!state.slot) return [...new Set(section.map(({item}) => item.carPart.slot))]
-    .map(slot => ({value: slot, label: slot.charAt(0).toUpperCase() + slot.slice(1)}));
+    .map(slot => ({value: slot, label: ({'engine-swap':'Swaps','drive-swap':'Conversions',ecu:'ECU',weight:'Weight','fuel-system':'Fuel',ignition:'Ignition',camshaft:'Cams'}[slot] || slot.charAt(0).toUpperCase() + slot.slice(1))}));
   const installed = resources.garage?.configuration(parameters.carRef).installed[state.slot];
   const tiers = {street: 1, sport: 2, race: 3, custom: 4};
   const stockInstalled=!installed||catalog.some(({item})=>item.id===installed&&isStockPart(item));
-  return [{value: '', label: `Stock${stockInstalled ? ' · Installed' : ' · Install'}`},
+  return [{value: '', label: 'Stock', installed: stockInstalled},
     ...section.filter(({item}) => item.carPart.slot === state.slot && !isStockPart(item) && partFits(item.carPart, parameters.carRef, stock))
       .sort((a,b) => (tiers[a.item.carPart.tier] || 4) - (tiers[b.item.carPart.tier] || 4) || a.item.carPart.price - b.item.carPart.price)
       .map(({ref,item}) => {
@@ -29,7 +31,7 @@ export function garageBrowserRows(resources, parameters, state = {}) {
         const credits=Number(resources.garage?.items.game?.player?.credits??resources.garage?.items.savedStats?.credits);
         // Unlock and scrap requirements apply to purchasing, not installing a spare already owned.
         const disabled=installed!==item.id&&!owned&&(!!locked||(Number.isFinite(credits)&&credits<item.carPart.price));
-        return {disabled,reason:locked?'This part has not been unlocked':'Not enough scrap',value: ref, label: `${item.name} · ${installed === item.id ? 'Installed' : owned ? 'Install' : locked ? 'Locked' : `${item.carPart.price} scrap`}`};
+        return {installed:installed===item.id,disabled,reason:locked?'This part has not been unlocked':'Not enough scrap',value: ref, label: installed===item.id?item.name:`${item.name} · ${owned ? 'Owned' : locked ? 'Locked' : `${item.carPart.price} scrap`}`};
       })];
 }
 export function garageCardBounds(bounds, count, index) {

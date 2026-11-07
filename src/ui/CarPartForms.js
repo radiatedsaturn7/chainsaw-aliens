@@ -1,3 +1,5 @@
+import {GARAGE_ENGINES} from '../garage/GarageConversions.js';
+import {GARAGE_CATEGORIES} from '../garage/GarageCategories.js';
 import {RACE_TIRE_COMPOUNDS} from '../racing/raceData.js';
 import {CAR_PART_FIELDS,normalizeCarPart} from '../garage/CarPart.js';
 import {openEditorForm} from './shared/editorForm.js';
@@ -18,11 +20,13 @@ export async function editCarPart(item,section='properties'){
   if(part.unlockKey&&!unlocks.some(e=>e.value===part.unlockKey))unlocks.push({value:part.unlockKey,label:part.unlockKey});
   const result=await openEditorForm('Car Part Properties',[
    {id:'slot',label:'Installation slot',type:'text',value:part.slot,suggestions:['engine','turbo','ecu','transmission','tires','suspension','weight']},
-   {id:'section',label:'Garage section',type:'text',value:part.section,suggestions:['Engine','Drivetrain','Handling','Brakes','Tires','Body']},
+   {id:'section',label:'Garage section',type:'text',value:part.section,suggestions:GARAGE_CATEGORIES},
    {id:'tier',label:'Upgrade tier',value:part.tier,options:options(['street','sport','race','custom'])},
    toggle('forSale','Available in shop',part.forSale),{id:'price',label:'Price (scrap)',value:part.price,min:0},
    {id:'unlockKey',label:'Required unlock',value:part.unlockKey,options:[{value:'',label:'None'},...unlocks]},
    {id:'tireRef',label:'Install tires',value:part.tireRef,options:[{value:'',label:'No tire replacement'},...RACE_TIRE_COMPOUNDS.map(t=>({value:'builtin:'+t.id,label:t.label+' (template)'})),...options([...new Set([...tires,...(part.tireRef&&!part.tireRef.startsWith('builtin:')?[part.tireRef]:[])])])]},
+   {id:'engineSwap',label:'Engine conversion',value:part.engineSwap||'',options:[{value:'',label:'None'},...Object.entries(GARAGE_ENGINES).map(([value,e])=>({value,label:e.label}))]},
+   {id:'drivetrainSwap',label:'Drivetrain conversion',value:part.drivetrainSwap||'',options:[{value:'',label:'None'},...options(['fwd','rwd','awd'])]},
    toggle('allCars','Fits all cars',!part.compatibleCars.length),
    ...[...new Set([...cars,...part.compatibleCars])].map((name,i)=>({...toggle(`car${i}`,`Fits ${name}`,part.compatibleCars.includes(name)),visibleWhen:s=>s.allCars==='no'})),
    ...required.map((other,i)=>toggle(`requires${i}`,`Requires ${other.name}`,part.requires.includes(other.id)))

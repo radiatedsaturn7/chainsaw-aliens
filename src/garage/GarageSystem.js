@@ -1,3 +1,4 @@
+import {normalizeMechanicalConfig} from '../racing/simulation/MechanicalModel.js';
 import {saveCarCondition,repairCar,repairRows} from './GarageRepairs.js';
 import {unlockBestUpgrades} from './GarageCheats.js';
 import {applyTireDefinition,createTireDefinition} from '../racing/raceTires.js';
@@ -70,12 +71,13 @@ export class GarageSystem {
   for(const item of parts)for(const id of item.carPart.requires)if(!ids.includes(id))throw Error(`${item.name} requires another installed part`);
   garageTuningRanges(parts);
  }
- pruneTune(ref,progress){const ranges=garageTuningRanges(this.installed(ref,progress)),setup=progress.garage.cars[ref];
+ pruneTune(ref,progress){delete progress.garage.cars[ref]?.setupId;const ranges=garageTuningRanges(this.installed(ref,progress)),setup=progress.garage.cars[ref];
   setup.tune=Object.fromEntries(Object.entries(setup.tune).filter(([id,value])=>ranges[id]&&value>=ranges[id].min&&value<=ranges[id].max));
  }
  tune(carRef,field,value){return this.setTune(carRef,{[field]:value});}
  setTune(carRef,values){if(!safeGarageKey(carRef))return Promise.reject(Error('Choose a car first'));return this.transaction(next=>{
   next.garage.cars[carRef]||={installed:{},tune:{}};
+  delete next.garage.cars[carRef].setupId;
   const ranges=garageTuningRanges(this.installed(carRef,next));
   for(const [field,value] of Object.entries(values)){
    const range=ranges[field];if(!range)throw Error('Install a part that unlocks this setting');
@@ -95,7 +97,7 @@ export class GarageSystem {
    this.validateSetup(carRef,next);this.pruneTune(carRef,next);
   });
  }
- resetTune(carRef){return this.transaction(next=>{if(next.garage.cars[carRef])next.garage.cars[carRef].tune={};});}
+ resetTune(carRef){return this.transaction(next=>{if(next.garage.cars[carRef]){next.garage.cars[carRef].tune={};delete next.garage.cars[carRef].setupId;}});}
  saveCondition(ref,condition){return saveCarCondition(this,ref,condition);}
  repair(ref,id,car){return repairCar(this,ref,id,car);}
  repairRows(ref,car){return repairRows(this,ref,car);}
@@ -117,7 +119,12 @@ export class GarageSystem {
    if(pressure)baseline.setup.tirePressurePsi=pressure;
   }
   const built=buildGarageCar(baseline,{parts,tune:this.configuration(carRef).tune,tires});
-  if(this.configuration(carRef).condition)built.condition=structuredClone(this.configuration(carRef).condition);
+  // Always supply current equipment defaults, even when Stock has no authored
+  // mechanics. Saved condition retains wear/fluids, not removed upgrade ratings.
+  if(this.configuration(carRef).condition){
+   built.mechanics=normalizeMechanicalConfig(built.mechanics);
+   built.condition=structuredClone(this.configuration(carRef).condition);
+  }
   return built;
  }
 }

@@ -287,7 +287,7 @@ test('upgrade tire list has one free Stock choice and recognizes existing stock 
  for(const id of [undefined,'stock-tires','race-tires']){
   setup.installed.tires=id;
   const rows=garageBrowserRows(resources,{carRef:'car'},{section:'Tires',slot:'tires'});
-  assert.equal(rows.length,2);assert.equal(rows[0].value,'');assert.equal(rows[0].label,id==='race-tires'?'Stock · Install':'Stock · Installed');assert.equal(rows[1].value,'Race Tires');
+  assert.equal(rows.length,2);assert.equal(rows[0].value,'');assert.equal(rows[0].label,'Stock');assert.equal(rows[0].installed,id!=='race-tires');assert.equal(rows[1].installed,id==='race-tires');assert.equal(rows[1].value,'Race Tires');
  }
 });
 
@@ -316,6 +316,6 @@ test('owned spare upgrades remain installable without purchase unlocks or scrap'
  const item=normalizeItemDocument({id:'gift-turbo',name:'Gift Turbo',carPart:{section:'Engine',slot:'turbo',tier:'race',price:5000,unlockKey:'chapter2'}});
  let owned=1;const resources={garageCatalog:()=>[{ref:'gift',item}],garage:{configuration:()=>({installed:{}}),availableCount:()=>owned,items:{progress:{bags:{items:{'gift-turbo':1}},unlocks:{}},game:{player:{credits:0}}}}};
  const rows=()=>garageBrowserRows(resources,{carRef:'car'},{section:'Engine',slot:'turbo'});
- assert.equal(rows()[1].disabled,false);assert.match(rows()[1].label,/Install$/);
+ assert.equal(rows()[1].disabled,false);assert.match(rows()[1].label,/Owned$/);
  owned=0;assert.equal(rows()[1].disabled,true);assert.match(rows()[1].label,/Locked$/);
 });

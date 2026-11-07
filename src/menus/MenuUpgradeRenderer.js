@@ -24,5 +24,7 @@ export function drawUpgradeGrid(ctx,b,element,resources,parameters,state={},font
   visible.forEach((text,j)=>drawMenuText(ctx,element,text,card.x+card.w/2,card.y+card.h/2+(j-(total-1)/2)*lineHeight,width));
   if(status){ctx.fillStyle=locked?'#73808b':'#e5bd67';drawMenuText(ctx,element,status,card.x+card.w/2,card.y+card.h/2+(visible.length-(total-1)/2)*lineHeight,width);}
   ctx.restore();
+  // Installed equipment stays identifiable independently of keyboard/touch focus.
+  if(row.installed){ctx.save();ctx.strokeStyle='#54df86';ctx.lineWidth=3;ctx.strokeRect(card.x+2,card.y+2,Math.max(0,card.w-4),Math.max(0,card.h-4));ctx.restore();}
  });
 }

@@ -36,7 +36,7 @@ jobs:
         run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js tests/unit/raceImageTrace.test.js tests/unit/raceTrackImport.test.js tests/unit/raceRouteImport.test.js tests/unit/raceTrackImportIntegration.test.js tests/unit/raceTerrainGuardBudget.test.js tests/unit/reverseRaceRoute.test.js tests/unit/raceImportedCircuitRegression.test.js tests/unit/raceTireTrackRenderer.test.js tests/unit/steeringCommandMapping.test.js tests/unit/racePauseRestart.test.js
       - name: Validate GPS America campaign
         run: |
-          node --test tests/unit/americaCampaign.test.js
+          node --test tests/unit/americaCampaign.test.js tests/unit/raceDrivingAssists.test.js tests/unit/raceRecce.test.js tests/unit/raceDrivingGuideThree.test.js tests/unit/raceRacingLine.test.js tests/unit/raceAiRacingLinePhysics.test.js tests/unit/raceAiControls.test.js tests/unit/raceImportedElevationSmoothing.test.js
           python3 -m unittest discover -s tests/python -p 'test_campaign_terrain_tiles.py'
 
       - name: Run race frame pacing and resource lifecycle regressions
@@ -88,7 +88,7 @@ jobs:
         run: node --test tests/unit/menu*.test.js tests/unit/carDirectionalArt.test.js tests/unit/raceTravel.test.js
 
       - name: Run radio and mix tape tests
-        run: node --test tests/unit/handbrakeRecovery.test.js tests/unit/automaticKickdown.test.js tests/unit/uphillTraction.test.js tests/unit/vehicleSound.test.js tests/unit/raceMusicDrops.test.js tests/unit/garageParts.test.js tests/unit/itemEffects.test.js tests/unit/itemSystem.test.js tests/unit/itemInventory.test.js tests/unit/vehicleDynamicsWorkerProtocol.test.js tests/unit/radioEditor.test.js tests/unit/radioPlayer.test.js tests/unit/mixTapePickup.test.js tests/unit/doodadEditor.test.js tests/unit/raceDoodads.test.js tests/unit/pauseMenu.test.js tests/unit/titleLayout.test.js
+        run: node --test tests/unit/handbrakeRecovery.test.js tests/unit/automaticKickdown.test.js tests/unit/uphillTraction.test.js tests/unit/vehicleSound.test.js tests/unit/raceMusicDrops.test.js tests/unit/garageParts.test.js tests/unit/garageCatalog.test.js tests/unit/garageSetups.test.js tests/unit/garagePowertrainUpgrades.test.js tests/unit/garageConversions.test.js tests/unit/garageChassis.test.js tests/unit/garageCooling.test.js tests/unit/garageUpgradeAudit.test.js tests/unit/itemEffects.test.js tests/unit/itemSystem.test.js tests/unit/itemInventory.test.js tests/unit/vehicleDynamicsWorkerProtocol.test.js tests/unit/radioEditor.test.js tests/unit/radioPlayer.test.js tests/unit/mixTapePickup.test.js tests/unit/doodadEditor.test.js tests/unit/raceDoodads.test.js tests/unit/pauseMenu.test.js tests/unit/titleLayout.test.js
 
       - name: Run race presentation, storage and editor feature regressions
         run: node --test tests/unit/beamModes.test.js tests/unit/weatherVisibility.test.js tests/unit/thunderstorm.test.js tests/unit/raceWeatherAudio.test.js tests/unit/stormWeatherBalance.test.js tests/unit/stormTireDriveability.test.js tests/unit/automaticKickdown.test.js tests/unit/glassWeather.test.js tests/unit/carWipers.test.js tests/unit/turnSignals.test.js tests/unit/carFx.test.js tests/unit/carGauges.test.js tests/unit/editorRangeInput.test.js tests/unit/carEditorDefaultTrack.test.js tests/unit/fontLibrary.test.js tests/unit/menuLoading.test.js tests/unit/menuScreenMusic.test.js tests/unit/raceDecals.test.js tests/unit/raceEditingPersistence.test.js tests/unit/raceFences.test.js tests/unit/raceFinishNodes.test.js tests/unit/raceFinishPresentation.test.js tests/unit/raceIntro.test.js tests/unit/raceIntroSky.test.js tests/unit/raceLargePaintedWorld.test.js tests/unit/raceLargeTileMap.test.js tests/unit/raceLighting.test.js tests/unit/raceLoadingMusic.test.js tests/unit/raceNetworkQueryIndex.test.js tests/unit/racePlaytestTopControls.test.js tests/unit/raceSceneryPerformance.test.js tests/unit/raceVisualFx.test.js tests/unit/saveStatusModal.test.js tests/unit/trackStateDryInitialization.test.js tests/unit/trackStateVisualPerformance.test.js tests/unit/serverStorage.test.js
@@ -184,6 +184,7 @@ jobs:
             test-results/menu-*.png
             test-results/radio-*.png
             test-results/item-*.png
+            test-results/tuning-*.png
             test-results/car-presets-*.png
             test-results/network-*.png
           if-no-files-found: ignore

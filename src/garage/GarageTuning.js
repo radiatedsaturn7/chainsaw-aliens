@@ -1,16 +1,18 @@
+import {GARAGE_SETUP_PROFILES} from './GarageSetupProfiles.js';
+import {loadGarageSetupCatalog,quoteGarageSetup,applyGarageSetup} from './GarageSetups.js';
 import {selectableGridIndex} from '../menus/MenuSelection.js';
 import {CAR_PART_FIELDS,garageTuningRanges,readCarSetting,partFits,isStockPart} from './CarPart.js';
 import {createMenuRepeatState,getMenuRepeatDirection,resetMenuRepeatState} from '../ui/shared/menuRepeat.js';
 
 export const TUNING_SECTIONS=[
- {id:'tires',label:'Tires',hint:'Adjust pressure or fit owned tires.',matches:id=>id.startsWith('pressure.')||id==='tireType'},
+ {id:'tires',label:'Setup',hint:'Adjust pressure or fit owned tires.',matches:id=>id.startsWith('pressure.')||['tireWidthMm','tireType','drivingSetup','setupPackage'].includes(id)},
  {id:'repair',label:'Repair',hint:'Inspect components, repair faults and service fluids.',matches:()=>false},
- {id:'engine',label:'Engine & weight',hint:'Install a tunable ECU or weight upgrade.',matches:id=>['torqueScale','weightKg'].includes(id)||id.startsWith('fuel')},
- {id:'gearing',label:'Gearing',hint:'Install an adjustable transmission.',matches:id=>id==='gearFinalDrive'||id.startsWith('gearRatios.')},
- {id:'suspension',label:'Suspension',hint:'Install adjustable springs, dampers or anti-roll bars.',matches:id=>/^(spring|rideHeight|damping|bump|rebound|antiRoll)/.test(id)},
- {id:'alignment',label:'Alignment & aero',hint:'Install adjustable alignment or aero parts.',matches:id=>/^(camber|toe|aero)/.test(id)},
+ {id:'engine',label:'Engine',hint:'Install a tunable ECU or weight upgrade.',matches:id=>['torqueScale','weightKg','engineInertiaKgM2','chassisRigidityNmDeg','ballastKg','ballastPosition','coolingEfficiency','oilCoolingEfficiency'].includes(id)||id.startsWith('fuel')},
+ {id:'gearing',label:'Gearing',hint:'Install an adjustable transmission.',matches:id=>['gearFinalDrive','shiftTimeMs','drivetrainEfficiency'].includes(id)||id.startsWith('gearRatios.')},
+ {id:'suspension',label:'Suspension',hint:'Install adjustable springs, dampers or anti-roll bars.',matches:id=>/^(spring|rideHeight|suspensionTravel|damping|bump|rebound|antiRoll)/.test(id)},
+ {id:'alignment',label:'Geometry',hint:'Install adjustable alignment or aero parts.',matches:id=>/^(camber|toe|caster|aero)/.test(id)},
  {id:'brakes',label:'Brakes',hint:'Install adjustable brakes.',matches:id=>id.startsWith('brake')},
- {id:'differential',label:'Differential',hint:'Install an adjustable differential.',matches:id=>id.startsWith('differential')}
+ {id:'differential',label:'Differential',hint:'Install an adjustable differential.',matches:id=>/differential/i.test(id)}
 ];
 export function tuningRows(garage,ref,stock,car){
  const ranges=garageTuningRanges(garage.installed(ref)),tune=garage.configuration(ref).tune;
@@ -34,9 +36,16 @@ export class GarageTuner {
  async load(){try{
   if(!this.carRef)throw Error('Choose a car first.');
   this.stock=await this.resolveCar(this.carRef);if(!this.stock)throw Error('Car unavailable.');
+  this.setupCatalog=await loadGarageSetupCatalog(this.garage);
   await this.refresh();if(!this.active)return;this.ready=true;this.message='';
  }catch(error){if(this.active)this.message=error.message;}}
- async refresh(){const car=await this.garage.build(this.carRef,this.stock);if(this.active){this.rows=tuningRows(this.garage,this.carRef,this.stock,car);this.repairs=this.garage.repairRows?.(this.carRef,car)||[];}}
+ async refresh(){const car=await this.garage.build(this.carRef,this.stock);if(this.active){this.rows=tuningRows(this.garage,this.carRef,this.stock,car);
+   const profiles=[{id:'',label:'Custom'},...GARAGE_SETUP_PROFILES];
+   const setupId=this.garage.configuration(this.carRef).setupId;
+   this.rows.push({id:'drivingSetup',label:'Driving setup',setup:true,min:0,max:profiles.length-1,step:1,value:Math.max(0,profiles.findIndex(p=>p.id===setupId)),options:profiles,enabled:true});
+   const packages=profiles.map(p=>{if(!p.id)return {...p,label:'Choose package'};try{const quote=quoteGarageSetup(this.garage,this.carRef,this.stock,p.id,this.setupCatalog);return {...p,...quote,label:p.label+' · '+quote.cost.toLocaleString()+' scrap'};}catch(error){return {...p,error:error.message,label:p.label+' · Unavailable'};}});
+   this.rows.push({id:'setupPackage',label:'Upgrade package',setup:true,package:true,min:0,max:packages.length-1,step:1,value:0,options:packages,enabled:packages.some(p=>p.id&&!p.error)});
+this.repairs=this.garage.repairRows?.(this.carRef,car)||[];}}
  dispose(){this.active=false;this.pointerDirection=null;this.dragging=false;}
  sectionRows(index=this.index){const section=TUNING_SECTIONS[index];if(!section)return [];return section.id==='repair'?(this.repairs||[]):this.rows.filter(r=>section.matches(r.id));}
  enabled(index){return this.ready&&this.sectionRows(index).some(r=>r.enabled);}
@@ -66,11 +75,17 @@ export class GarageTuner {
   }else{
    const row=this.row,value=this.draft;this.busy=true;
    try{
-    if(row.repair)await this.garage.repair(this.carRef,row.id,this.stock);
+    let setupMessage='';
+    if(row.setup){
+     const choice=row.options[value];if(!choice.id)throw Error('Choose a setup first');if(choice.error)throw Error(choice.error);
+     const result=await applyGarageSetup(this.garage,this.carRef,this.stock,choice.id,{packageParts:!!row.package,expectedCost:choice.cost});
+     setupMessage=`${result.label}: ${result.applied} settings applied${result.skipped?' · '+result.skipped+' locked':''}${result.clamped?' · '+result.clamped+' limited by parts':''}`;
+    }
+    else if(row.repair)await this.garage.repair(this.carRef,row.id,this.stock);
     else if(row.options)await this.garage.setTireType(this.carRef,row.options[value].id,this.stock);
     else await this.garage.setTune(this.carRef,{[row.id]:value});
     await this.refresh();if(!this.active)return;
-    this.mode='list';this.message='Setting applied';this.onSaved();
+    this.mode='list';this.message=setupMessage||'Setting applied';this.onSaved();
    }catch(error){if(this.active)this.message=error.message;}
    finally{this.busy=false;}
   }

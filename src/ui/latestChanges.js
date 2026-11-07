@@ -9,6 +9,16 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   currentStatus: [
+    '2026-11-07 02:36 UTC - Keep swap boost instruments and thermal load consistent with the installed engine; verify saved failures, editor chassis controls and delivered tire/driveline forces.',
+    '2026-11-07 02:31 UTC - Audit all upgrade inputs, give ECU/gearing/suspension tiers installed calibrations, add tire-width and driveline kits, and expose cooling controls in the mechanical editor.',
+    '2026-11-07 02:27 UTC - Add chassis reinforcement, ballast placement and cooling upgrades with suspension compliance, CG/inertia and thermal effects; expose rigidity and mass settings in the car editor.',
+    '2026-11-07 02:23 UTC - Add reversible engine and FWD/RWD/AWD conversions with real torque curves, driven-wheel changes, mass, inertia, shift limits and gauge ranges across transmission variants.',
+    '2026-11-07 02:21 UTC - Mark installed upgrades with green outlines, shorten category names, and add functional Street/Sport/Race flywheel and clutch upgrades with simulator regression coverage.',
+    '2026-11-07 02:04 UTC - Organize upgrades into eight populated categories on one page, splitting intake/exhaust and aero into their own sections; share category defaults with the part editor.',
+    '2026-11-07 01:17 UTC - Add eight driving setups and priced matching upgrade packages under Tires & Setups, with owned-part reuse, atomic purchases and specialist components; connect ride height and travel to physical suspension.',
+    '2026-11-07 00:56 UTC - Complete all 15 upgrade families with Street/Sport/Race progression, named engine components and specialist tires; retain free Stock restoration and unlock every supported tuning field through available parts.',
+    '2026-11-07 00:51 UTC - Add Street, Sport and Race brake upgrades; Sport and Race brakes unlock brake balance and pressure tuning, including older cars using default brake settings.',
+    '2026-11-06 13:05 UTC - Share an optimized outside-apex-outside racing line between the 3D guide and AI, plan braking from its actual curvature, show upcoming turns instead of pedal banners, and correct pace-note direction against the race camera.',
     '2026-11-02 11:27 UTC - Detailed recordings now break down tire-event construction, duplicate checks and queue insertion, retaining bounded slow samples and collection sizes.',
     '2026-11-02 11:22 UTC - Skip invisible race-scene rendering during the fully black reset hold; preserve pause overlays, display filters and visible fades.',
     '2026-11-02 04:12 UTC - Spread player reset settling across frames while holding the black fade and race clock; preserve upright, four-wheel road validation and cancel unfinished searches on exit.',
@@ -1636,6 +1646,8 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {date:'2026-11-06',time:'11:51 UTC',title:'True 3D driving line and rally recce notes',details:['Moved driving arrows into the Three.js scene with road-surface heights, the actual camera and depth occlusion.','Replaced peak-radius calls with a steering and speed recce: 1–6 severity, square/hairpin shapes, tightening/opening bends, linked turns, crests/dips and inside-apex doodad hazards. Regenerated America campaign notes.']},
+  {date:'2026-11-06',time:'04:35 UTC',title:'Driving guide, pace notes and smoother campaign roads',details:['Added a blinking wrong-way warning and green/yellow/red road arrows with AI corner-speed and braking guidance.','Race Settings offers Driving Line and Off/Text/Voice pace notes. Saving analyzes turns; race startup refreshes notes for edited routes and solo races.','All 24 America stages use stronger elevation smoothing, gentler bumps and broader shoulder terrain transitions while retaining their GPS geometry.']},
   {date:'2026-11-05',time:'18:25 UTC',title:'Three GPS routes across America',details:['Added 24 editable real-road races: northern, middle and southern routes with eight stages each, using OpenStreetMap geometry and sampled terrain elevations.','The world map branches from Providence on the right and joins at Los Angeles on the left. Each branch unlocks independently, with narrower roads, rougher surfaces, stronger weather and night stages toward the west.']},
   {date:'2026-10-26',time:'22:18 UTC',title:'Right-aligned compact timer',details:['Right-aligned and slightly nudged RTG-001 time/progress text; enlarged its square warning icons by 20 percent.','Gauge Properties now offers left, center and right text alignment.']},
   {date:'2026-10-27',time:'03:36 UTC',title:'RTG cockpit instruments',details:['Configured a separate RTG-001 interior gauge layout with compact RPM, speed, fuel, gear and warning lamps under the steering-wheel arch; damage on the left, timing on the right and framed map at far right.','Interior instruments render after the dashboard and before the steering wheel. Nudged exterior tire and suspension icons outward.']},

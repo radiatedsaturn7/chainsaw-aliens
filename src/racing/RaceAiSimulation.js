@@ -1,3 +1,5 @@
+import {getRaceAiRoadPlan} from './RaceAiDirector.js';
+import {raceAiRoadPlanIndex} from './RaceAiRoadPlan.js';
 import {recordRaceRecoveryPosition, getRaceRecoveryHistoryCandidates} from './RaceRecoveryHistory.js';
 import {shouldRetryRaceAiCheap,tryRecoverRaceAiCheap} from './RaceAiCheapRecovery.js';
 import {assignRaceAiPhysicsBudget} from './RaceAiPhysicsBudget.js';
@@ -12,7 +14,7 @@ import { shouldRefreshRaceAiSurfacePlan, consumeRaceAiSimulationStep, getRaceAiS
 import { createRaceWheelContactStateFromSamples } from './RaceVehicleSurfaceContact.js';
 import { classifyRaceAiTerrainCollision } from './RaceAiTerrainCollision.js';
 import { createPhysicsTerrainQueryFrameCache } from './simulation/PhysicsTerrainQueryFrame.js';
-import { planRaceAiDriving, getRaceAiRoadSafety } from './RaceAiDriving.js';
+import { planRaceAiDriving, getRaceAiRoadSafety, preferRaceAiRacingLine } from './RaceAiDriving.js';
 import { RACE_AI_PHYSICS_HZ, RACE_PEDAL_INPUT, RACE_THREE_ELEVATION_M } from './simulation/RaceSimulationConfig.js';
 import { RACE_WHEEL_IDS, clamp } from './simulation/SimulationMath.js';
 import { getSurfaceById } from './raceData.js';
@@ -118,6 +120,12 @@ export function getRaceAiDifficultyProfile(editor, difficulty = 'easy') {
 
 export function getRaceAiLookaheadSeverity(editor, distance = 0, speedMps = 0) {
   const lookahead = Math.max(40, Math.abs(Number(speedMps || 0)) * 2.2);
+  const plan=getRaceAiRoadPlan(editor);
+  if(plan?.racingLine){
+    let severity=0;
+    for(const fraction of [.25,.55,.9]){const i=raceAiRoadPlanIndex(plan,distance+lookahead*fraction);severity=Math.max(severity,plan.curvature[i]*25,Math.abs(plan.grade[i])*2);}
+    return clamp(severity,0,1);
+  }
   const samples = [0.25, 0.55, 0.9].map((weight) => editor.getRaceSegmentAtDistance(distance + lookahead * weight, { wrap: true }).segment || {});
   return samples.reduce((max, segment) => Math.max(
     max,
@@ -1274,7 +1282,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     const surfacePlanRefreshed = shouldRefreshRaceAiSurfacePlan(ai, session, dt, index);
     if (surfacePlanRefreshed) {
       ai.surfacePlanUpdates = (ai.surfacePlanUpdates || 0) + 1;
-      const lineDecision = editor.raceSimulationSystems.surface.evaluateTrackStateAiCandidates({
+      let lineDecision = editor.raceSimulationSystems.surface.evaluateTrackStateAiCandidates({
         trackState: session.trackState,
         observationCache: getRaceAiSurfaceObservationCache(session),
         distance: Number(ai.projectedDistance ?? ai.distance ?? 0),
@@ -1286,13 +1294,14 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
         switchCooldownSteps: 12,
         getWorldPoint: createRaceAiSurfaceProbe(editor, session, routeLength)
       });
+      if(getRaceAiRoadPlan(editor)?.racingLine)lineDecision=preferRaceAiRacingLine(lineDecision);
       ai.trackStateTargetLineOffset = clamp(lineDecision.chosenOffset + overtakeOffset, -0.78, 0.78);
       ai.trackStateNextLineSwitchStep = lineDecision.nextSwitchStep;
       ai.trackStateLineDecision = lineDecision;
       ai.trackStateLastObservationStep = session.trackState.stepIndex;
     }
-    if (session.trackState) {
-      const targetOffset = Number(ai.trackStateTargetLineOffset ?? ai.lineOffset ?? 0);
+    if (session.trackState || getRaceAiRoadPlan(editor)?.racingLine) {
+      const targetOffset = session.trackState ? Number(ai.trackStateTargetLineOffset ?? ai.lineOffset ?? 0) : overtakeOffset;
       const currentOffset = Number(ai.lineOffset || 0);
       const maxOffsetChange = Math.max(0, dt) * 0.42;
       ai.lineOffset = currentOffset + clamp(
@@ -1335,7 +1344,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
         * profile.pace
         * Math.sqrt(predictiveGripScale)
         * (1 - predictiveSurfaceRisk * 0.34)
-        * (1 - clamp(severity * (0.48 - profile.corner * 0.16), 0, 0.66))
+        * (getRaceAiRoadPlan(editor)?.racingLine ? 1 : (1 - clamp(severity * (0.48 - profile.corner * 0.16), 0, 0.66)))
         * (1 + draftOpportunity * 0.18)
         * (1 - dirtyAirCornerPenalty * 0.32 - dirtyAirBrakingPenalty * 0.12 - crosswindRisk * 0.08)
         * (1 + variance)

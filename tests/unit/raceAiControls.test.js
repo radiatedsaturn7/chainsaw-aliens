@@ -107,3 +107,15 @@ test('center-slow experiment changes driver intent without teleporting the car',
  assert.ok(Math.hypot(ai.worldX-before.x,ai.worldZ-before.z)<.5);
  assert.ok(ai.vehicleDynamicsRunner.stepIndex>0);
 });
+
+test('falling racing-line speed requests braking before overspeed, releasing when below target',()=>{
+ const editor=new RaceEditor({}),tuning=editor.getRaceCarTuning(editor.selectedCar);
+ const ai={speedMps:20,gear:3,drivingPlan:{plannedDecelerationMps2:4}};
+ const brake=planRaceAiControls(editor,ai,tuning,20);
+ assert.ok(brake.brake>.1);assert.equal(brake.throttle,0);
+ ai.speedMps=17;
+ const accelerate=planRaceAiControls(editor,ai,tuning,20);
+ assert.equal(accelerate.brake,0);assert.ok(accelerate.throttle>0);
+ ai.speedMps=0;
+ assert.equal(planRaceAiControls(editor,ai,tuning,0).brake,1,'traffic hold retains priority');
+});

@@ -35,14 +35,14 @@ function context(){
 test('tuning labels and values share selected, unselected and disabled panel brightness',()=>{
  const {ctx,draws}=context();
  const tuner={mode:'grid',index:0,enabled:i=>i<2};drawGarageTuner(ctx,{x:0,y:0,w:900,h:460},tuner);
- assert.equal(draws.find(d=>d.text==='Tires'&&d.filter==='none')?.filter,'none');
+ assert.equal(draws.find(d=>d.text==='Setup'&&d.filter==='none')?.filter,'none');
  assert.ok(draws.some(d=>d.text==='Repair'&&d.filter==='brightness(0.55)'));
  assert.ok(draws.some(d=>d.text==='Suspension'&&d.filter==='grayscale(1) brightness(0.5)'));
 });
 test('upgrade titles and prices share their panel brightness',()=>{
  const {ctx,draws}=context(),resources={garageCatalog:()=>['Tires','Engine'].map(section=>({item:{carPart:{section,slot:section,compatibleCars:[],forSale:true}}}))};
  drawUpgradeGrid(ctx,{x:0,y:0,w:900,h:460},{color:'#fff'},resources,{}, {index:0});
- assert.equal(draws.find(d=>d.text==='Tires').filter,'none');assert.equal(draws.find(d=>d.text==='Engine').filter,'brightness(0.55)');assert.equal(ctx.filter,'none');
+ assert.equal(draws.find(d=>d.text==='Engine').filter,'none');assert.equal(draws.find(d=>d.text==='Tires').filter,'brightness(0.55)');assert.equal(ctx.filter,'none');
 });
 
 

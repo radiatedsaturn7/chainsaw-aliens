@@ -38,3 +38,24 @@ for(const mobile of [false,true])test(`car presets load isolated drafts and save
  },name);
  expect(saved).toEqual({name,drive:'fwd',system:false,draft:false});
 });
+
+for(const mobile of [false,true])test(`chassis tuning controls reach physics ${mobile?'portrait':'desktop'}`,async({page})=>{
+ await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});
+ await page.goto('/index.html');await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
+ await page.evaluate(mobile=>{
+  const g=window.__game;g.deviceIsMobile=g.isMobile=mobile;
+  g.setViewport({width:innerWidth,height:innerHeight,scale:1,dpr:1,isMobile:mobile});
+  g.enterCarEditor();g.setDisplayMode('color');g.carEditor.openCarTuneAction('weight-balance');
+ },mobile);
+ await expect.poll(()=>page.evaluate(()=>window.__game.carEditor.carDriveSliderRegions?.some(r=>r.key==='chassisRigidityNmDeg'))).toBe(true);
+ const result=await page.evaluate(()=>{
+  const e=window.__game.carEditor,regions=e.carDriveSliderRegions;
+  const rigidity=regions.find(r=>r.key==='chassisRigidityNmDeg');
+  e.updateCarDriveSlider(rigidity,rigidity.track.x+rigidity.track.w*.5);
+  const ballast=regions.find(r=>r.key==='ballastKg');e.updateCarDriveSlider(ballast,ballast.track.x+ballast.track.w*.5);
+  const tuning=e.getRaceCarTuning();
+  return {count:regions.length,rigidity:tuning.chassisRigidityNmDeg,mass:tuning.weightKg,base:e.selectedCar.transmissions?.[e.getRaceTransmissionType()]?.weightKg??e.selectedCar.tuning.weightKg};
+ });
+ expect(result.count).toBeLessThanOrEqual(8);expect(result.rigidity).toBe(50500);expect(result.mass).toBe(result.base+100);
+ await page.screenshot({path:`test-results/car-presets-chassis-${mobile?'portrait':'desktop'}.png`});
+});
