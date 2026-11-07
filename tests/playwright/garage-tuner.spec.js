@@ -77,7 +77,7 @@ for(const viewport of [{width:1280,height:800},{width:390,height:844}])test(`upg
   const {normalizeItemDocument}=await import('/src/items/ItemDocument.js');
   const catalog=await fetch('/src/content/garage-parts.json').then(r=>r.json());
   const parts=catalog.items.map(normalizeItemDocument),installed={brakes:'race-brakes'};
-  const resources={garageCatalog:()=>parts.map(item=>({item,ref:item.id})),garage:{configuration:()=>({installed}),availableCount:()=>0,items:{progress:{bags:{items:{}},unlocks:{}},game:{player:{credits:100000}}}};
+  const resources={garageCatalog:()=>parts.map(item=>({item,ref:item.id})),garage:{configuration:()=>({installed}),availableCount:()=>0,items:{progress:{bags:{items:{}},unlocks:{}},game:{player:{credits:100000}}}}};
   const canvas=document.createElement('canvas');canvas.width=innerWidth;canvas.height=innerHeight;
   Object.assign(canvas.style,{position:'fixed',inset:0,zIndex:999999,width:'100vw',height:'100vh'});document.body.append(canvas);
   const ctx=canvas.getContext('2d'),bounds={x:8,y:8,w:innerWidth-16,h:Math.min(400,innerHeight-16)},element={color:'#ffffff'};

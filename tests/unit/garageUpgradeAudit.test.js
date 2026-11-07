@@ -39,3 +39,15 @@ test('all eight one-word shop sections and their built-in subsections fit eight 
   assert.ok(slots.length<=8,section.value);assert.ok(slots.length>0);
  }
 });
+
+test('width and driveline upgrades change contact forces and delivered wheel torque',async()=>{
+ const {calculateBrushTireForce}=await import('../../src/racing/simulation/ContactPatchTireModel.js');
+ const stock=createBuiltInRaceCars()[0];
+ const upgraded=buildGarageCar(stock,{parts:parts.filter(p=>['race-wheels','race-driveline'].includes(p.id))});
+ const force=car=>calculateBrushTireForce({kinematics:{slipRatio:.01,slipAngleRad:.01,longitudinalVelocityMps:15},normalLoadN:3500,tire:{widthMm:editor.getRaceCarSetup(car).tireSize?.widthMm??245},material:{surfaceId:'asphalt'}});
+ assert.ok(force(upgraded).longitudinalForceN>force(stock).longitudinalForceN);
+ assert.ok(Math.abs(force(upgraded).lateralForceN)>Math.abs(force(stock).lateralForceN));
+ const torque=car=>{const tuning=editor.getRaceCarTuning(car);return engine.stepAuthoritativeWheelTorques({tuning,config:createVehicleDynamicsConfigFromTuning(tuning),controls:{requestedGear:1,throttle:1,assists:{tractionControlEnabled:false}},previous:{gear:1,targetGear:1,engineRpm:3500},driveShareByWheel:{fl:.25,fr:.25,rl:.25,rr:.25},dt:0}).wheelDriveTorqueNm;};
+ const before=Object.values(torque(stock)).reduce((a,b)=>a+b,0),after=Object.values(torque(upgraded)).reduce((a,b)=>a+b,0);
+ assert.ok(after>before);
+});
