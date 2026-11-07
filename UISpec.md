@@ -876,9 +876,9 @@ Specialist suspension, transmission, differential, alignment, aero and brake par
 
 - Upgrade cards mark installed equipment (including Stock) with a green outline independent of navigation focus; omit the Installed label. Upgrade and tuner sections use single-word names. Both category and control lists page at eight cards.
 
-### Upgrade physics expansion (in progress)
+### Upgrade physics expansion
 - Flywheel parts reduce `engineInertiaKgM2` (combined crank/flywheel inertia, default 0.3 kg m²). Current implementation scales the calibrated RPM response inversely with inertia; it is not yet a fully coupled energy-conserving rotating drivetrain solver. Clutch parts reduce `shiftTimeMs` across authored transmission variants. Regression coverage measures RPM rise/fall, shift duration, engine-off state, damage delay and unchanged steady torque.
-- Remaining requested work: review expanded runtime coverage and browser-rendered checks; tachometer/shift/AI/fuel/heat/damage consistency after swaps; browser-rendered checks of green installed outlines and eight-card paging. Keep eight top-level sections and avoid more than eight visible subsection cards.
+- Validation requirements: audit catalog effects against runtime inputs and delivered forces; verify conversion limits, fuel/heat/damage and Stock restoration; inspect desktop/phone installed outlines, packages and editor controls. Keep eight top-level sections and at most eight visible control cards, with scrolling for additional editor sliders.
 
 - Engine conversions offer game-calibrated Turbo, Six and V8 crate engines. Conversion applies before other parts and replaces curve, displacement, aspiration, inertia, RPM/automatic-shift/gauge limits, and engine mass (legacy engine mass defaults to 180 kg). Drivetrain conversions offer FWD/RWD/AWD with changed driven wheels, efficiency and driveline mass. All transmission variants receive the conversion; Stock restoration rebuilds the original document. Conversions are choices, not ordered upgrade tiers, and the best-parts cheat does not automatically convert a car. Part authoring supports conversion selectors in dedicated engine-swap/drive-swap slots.
 
@@ -889,3 +889,5 @@ Specialist suspension, transmission, differential, alignment, aero and brake par
 - ECU, transmission and suspension tiers include installed calibrations in addition to unlocking adjustments. Tire-width kits change the contact-patch width; driveline kits reduce transmitted torque losses. The mechanical editor exposes radiator/oil cooling efficiencies. Catalog audit covers every purchasable entry against simulator inputs and checks eight populated single-word shop sections with no built-in submenu exceeding eight cards.
 
 - Engine swaps replace the rated boost measurement (zero for naturally aspirated engines). Increased curve output raises the mechanical heat multiplier as the square root of the calculated power ratio; the mechanical editor exposes that multiplier. Runtime reconfiguration preserves saved component failures and fluid levels.
+
+- Authored suspension wheel rates are calibrated at the stock 20,000 Nm/degree rigidity. The mount-compliance model removes that reference compliance before applying the selected rigidity, preserving stock spring/damper calibration. A cage still increases effective response and mass; low-rigidity settings soften response.

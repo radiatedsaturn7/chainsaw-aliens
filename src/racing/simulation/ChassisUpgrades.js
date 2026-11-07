@@ -4,8 +4,14 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 // This is not a deformable mesh or a separate torsional vibration integrator.
 export function chassisComplianceScale(rigidityNmDeg,springNpm,trackM){
  if(!(rigidityNmDeg>0))return 1; // Legacy direct simulator callers remain rigid.
- const mountNpm=clamp(rigidityNmDeg,1000,100000)*180/Math.PI/(Math.max(.5,trackM)**2);
- return mountNpm/(mountNpm+Math.max(0,springNpm));
+ const armSquared=Math.max(.5,trackM)**2;
+ const mountNpm=clamp(rigidityNmDeg,1000,100000)*180/Math.PI/armSquared;
+ const referenceMountNpm=20000*180/Math.PI/armSquared;
+ // Authored rates are measured wheel rates at the stock 20,000 Nm/degree
+ // reference, already including its mount compliance. Remove that compliance
+ // before adding the selected chassis; otherwise stock springs soften twice.
+ const effectiveRate=Math.min(Math.max(0,springNpm),referenceMountNpm*.95);
+ return 1/(1+effectiveRate*(1/mountNpm-1/referenceMountNpm));
 }
 export function resolveChassisMass(tuning,physical){
  const baseMass=Math.max(450,Number(tuning.weightKg)||1495);

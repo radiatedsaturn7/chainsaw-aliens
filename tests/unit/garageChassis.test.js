@@ -12,6 +12,8 @@ const config=car=>createVehicleDynamicsConfigFromTuning(editor.getRaceCarTuning(
 test('braces and cages increase effective spring response, carry mass and preserve original authored profiles',()=>{
  for(const stock of createBuiltInRaceCars()){
   const original=structuredClone(stock),base=config(stock);let stiffness=base.suspensionSpringRateFrontNpm;
+  const rigidReference=createVehicleDynamicsConfigFromTuning({...editor.getRaceCarTuning(stock),chassisRigidityNmDeg:0});
+  for(const axle of ['Front','Rear'])for(const [prefix,unit] of [['suspensionSpringRate','Npm'],['suspensionBumpDamper','NsM'],['suspensionReboundDamper','NsM']])assert.equal(base[prefix+axle+unit],rigidReference[prefix+axle+unit]);
   for(const tier of ['street','sport','race']){
    const built=buildGarageCar(stock,{parts:[part(tier+'-rigidity')]}),next=config(built);
    assert.ok(next.suspensionSpringRateFrontNpm>stiffness);stiffness=next.suspensionSpringRateFrontNpm;
@@ -21,6 +23,7 @@ test('braces and cages increase effective spring response, carry mass and preser
   assert.deepEqual(stock,original);
  }
  assert.equal(chassisComplianceScale(0,30000,1.6),1);
+ assert.equal(chassisComplianceScale(20000,30000,1.6),1);
  assert.ok(chassisComplianceScale(1000,30000,1.6)<chassisComplianceScale(100000,30000,1.6));
 });
 test('ballast shifts axle loads and CG, adds rotational inertia, and zero ballast restores baseline',()=>{
