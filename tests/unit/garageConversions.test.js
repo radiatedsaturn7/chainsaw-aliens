@@ -60,8 +60,15 @@ test('purchased conversions survive save normalization and stock removal restore
  assert.equal(editor.getRaceCarTuning(converted).revLimitRpm,7000);
  assert.equal(saved.garage.parts['engine-swap-v8'].carPart.engineSwap,'v8');
  assert.equal(saved.garage.parts['drive-swap-rwd'].carPart.drivetrainSwap,'rwd');
+ const {createMechanicalState}=await import('../../src/racing/simulation/MechanicalModel.js');
+ const damaged=createMechanicalState({components:{waterPump:{failed:true,damage:100}},oil:.4}, {},converted.mechanics);
+ await items.garage.saveCondition('test',{mechanical:damaged});
  await items.garage.remove('test','engine-swap');await items.garage.remove('test','drive-swap');
- const restored=editor.getRaceCarTuning(await items.garage.build('test',stock)),base=editor.getRaceCarTuning(stock);
+ const stockBuild=await items.garage.build('test',stock);
+ const restoredState=createMechanicalState(stockBuild.condition.mechanical,stockBuild.condition.damage,stockBuild.mechanics);
+ assert.equal(restoredState.config.engineHeatScale,1);assert.equal(restoredState.config.boostBar,0);
+ assert.equal(restoredState.components.waterPump.failed,true);assert.equal(restoredState.oil,.4);
+ const restored=editor.getRaceCarTuning(stockBuild),base=editor.getRaceCarTuning(stock);
  for(const key of ['drivetrain','revLimitRpm','engineInertiaKgM2','weightKg','torqueLbFt','powerHp'])assert.equal(restored[key],base[key],key);
 });
 

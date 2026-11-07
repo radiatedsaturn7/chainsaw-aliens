@@ -1,3 +1,4 @@
+import {normalizeMechanicalConfig} from '../racing/simulation/MechanicalModel.js';
 import {saveCarCondition,repairCar,repairRows} from './GarageRepairs.js';
 import {unlockBestUpgrades} from './GarageCheats.js';
 import {applyTireDefinition,createTireDefinition} from '../racing/raceTires.js';
@@ -118,7 +119,12 @@ export class GarageSystem {
    if(pressure)baseline.setup.tirePressurePsi=pressure;
   }
   const built=buildGarageCar(baseline,{parts,tune:this.configuration(carRef).tune,tires});
-  if(this.configuration(carRef).condition)built.condition=structuredClone(this.configuration(carRef).condition);
+  // Always supply current equipment defaults, even when Stock has no authored
+  // mechanics. Saved condition retains wear/fluids, not removed upgrade ratings.
+  if(this.configuration(carRef).condition){
+   built.mechanics=normalizeMechanicalConfig(built.mechanics);
+   built.condition=structuredClone(this.configuration(carRef).condition);
+  }
   return built;
  }
 }
