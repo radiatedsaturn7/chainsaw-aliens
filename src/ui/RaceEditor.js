@@ -1,3 +1,4 @@
+import {resolveChassisMass} from '../racing/simulation/ChassisUpgrades.js';
 import {analyzeRaceDrivingRoute, racePaceNotes, nextRacePaceNote, updateRaceDrivingAssists} from '../racing/RaceDrivingAssists.js';
 import {drawRaceDrivingLine, drawRaceDrivingAssistHud, syncRaceThreeDrivingLine, disposeRaceThreeDrivingLine} from '../racing/RaceDrivingGuideRenderer.js';
 import { appendRaceProjectedQuadPath, drawRaceProjectedVehicleQuad } from '../racing/RaceProjectedPolygon.js';
@@ -18607,14 +18608,15 @@ export default class RaceEditor {
       : (car?.tuning || {});
     const selectedTransmissionType = transmissionType || this.getRaceTransmissionType(car);
     const transmission = car?.transmissions?.[selectedTransmissionType] || {};
-    const merged = { ...tuning, ...transmission };
+    let merged = { ...tuning, ...transmission };
     // Saved built-in car documents can predate the authoritative SI profile.
     // Rehydrate only the physical profile by canonical chassis identity while
     // preserving every authored tuning, setup, transmission, and art value.
     const canonicalPhysicalProfile = getBuiltInRacePhysicalProfile(car?.id);
-    const physicalVehicleProfile = tuning.physicalVehicleProfile
+    let physicalVehicleProfile = tuning.physicalVehicleProfile
       || car?.physicalVehicleProfile
       || canonicalPhysicalProfile;
+    ({tuning:merged,physical:physicalVehicleProfile}=resolveChassisMass(merged,physicalVehicleProfile));
     const dimensions = this.getRaceCarDimensions(car);
     const idleRpm = Math.max(500, Number(merged.idleRpm) || 850);
     const redlineRpm = Math.max(3000, Number(merged.redlineRpm) || 6100);
@@ -18661,6 +18663,8 @@ export default class RaceEditor {
       dragCoefficient: clamp(Number(merged.dragCoefficient) || 0.43, 0.08, 0.7),
       accelerationCalibration: clamp(accelerationCalibration || 1, 0.7, 1.35),
       drivetrainEfficiency: clamp(Number(merged.drivetrainEfficiency) || 0.84, 0.55, 0.96),
+      chassisRigidityNmDeg: clamp(Number(merged.chassisRigidityNmDeg)||20000,1000,100000),
+      engineInertiaKgM2: clamp(Number(merged.engineInertiaKgM2) || 0.3, 0.05, 2),
       shiftTimeMs: Math.max(80, Number(merged.shiftTimeMs) || 420),
       autoUpshiftRpm: Math.max(2500, Number(merged.autoUpshiftRpm) || 5800),
       autoDownshiftRpm: Math.max(900, Number(merged.autoDownshiftRpm) || 1700),
@@ -29454,7 +29458,12 @@ export default class RaceEditor {
     if (this.carTuneTab === 'weight') {
       drawSliderRows([
         { id: 'weightKg', label: 'Weight', value: tuning.weightKg ?? 1495, min: 450, max: 2400, format: (value) => `${Math.round(value)} kg` },
-        { id: 'weight-balance', label: 'Balance', value: tuning.frontWeightDistribution ?? 0.5, min: 0.35, max: 0.75, format: (value) => `${Math.round(value * 100)}% F` }
+        { id: 'weight-balance', label: 'Balance', value: tuning.frontWeightDistribution ?? 0.5, min: 0.35, max: 0.75, format: (value) => `${Math.round(value * 100)}% F` },
+        { id:'chassisRigidityNmDeg',label:'Rigidity',value:tuning.chassisRigidityNmDeg??20000,min:1000,max:100000,format:v=>`${Math.round(v)} Nm/°` },
+        { id:'ballastKg',label:'Ballast',value:tuning.ballastKg??0,min:0,max:200,format:v=>`${Math.round(v)} kg` },
+        { id:'ballastPosition',label:'Placement',value:tuning.ballastPosition??0,min:-1,max:1,format:v=>v===0?'Center':`${Math.round(Math.abs(v)*100)}% ${v<0?'rear':'front'}` },
+        { id:'engineInertiaKgM2',label:'Inertia',value:tuning.engineInertiaKgM2??.3,min:.05,max:2,format:v=>`${v.toFixed(2)} kg m²` },
+        { id:'engineMassKg',label:'Engine',value:tuning.engineMassKg??180,min:50,max:500,format:v=>`${Math.round(v)} kg` }
       ]);
       return;
     }

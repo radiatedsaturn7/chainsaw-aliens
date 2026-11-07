@@ -3,11 +3,16 @@
     {
       "id": "sport-turbo",
       "name": "Sport Turbo",
-      "description": "Garage part",
+      "description": "Boost-focused torque curve: gains build with RPM; increased output also increases fuel demand.",
       "effects": [],
       "carPart": {
         "slot": "turbo",
+        "section": "Engine",
+        "tier": "sport",
         "price": 1200,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
         "torqueCurve": [
           {
             "rpm": 1000,
@@ -15,7 +20,7 @@
           },
           {
             "rpm": 3000,
-            "multiplier": 1.12
+            "multiplier": 1.1199999999999999
           },
           {
             "rpm": 6000,
@@ -27,11 +32,21 @@
     {
       "id": "adjustable-ecu",
       "name": "Adjustable ECU",
-      "description": "Garage part",
+      "description": "Unlocks adjustable engine torque mapping; higher output increases fuel demand.",
       "effects": [],
       "carPart": {
         "slot": "ecu",
+        "section": "Engine",
+        "tier": "sport",
         "price": 500,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "torqueScale",
+            "operation": "multiply",
+            "value": 1.04
+          }
+        ],
         "tuning": [
           {
             "field": "torqueScale",
@@ -45,28 +60,42 @@
     {
       "id": "lightweight-panels",
       "name": "Lightweight Panels",
-      "description": "Garage part",
+      "description": "Lighter body components reduce vehicle mass.",
       "effects": [],
       "carPart": {
         "slot": "weight",
+        "section": "Chassis",
+        "tier": "sport",
         "price": 800,
+        "forSale": true,
         "modifiers": [
           {
             "field": "weightKg",
             "operation": "multiply",
             "value": 0.95
           }
-        ]
+        ],
+        "tuning": []
       }
     },
     {
       "id": "adjustable-gearbox",
       "name": "Adjustable Gearbox",
-      "description": "Garage part",
+      "description": "Unlocks final drive and every gear fitted to this car; tune ratios for the course.",
       "effects": [],
       "carPart": {
         "slot": "transmission",
+        "section": "Drivetrain",
+        "tier": "sport",
         "price": 1000,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "gearFinalDrive",
+            "operation": "multiply",
+            "value": 1.04
+          }
+        ],
         "tuning": [
           {
             "field": "gearFinalDrive",
@@ -109,6 +138,30 @@
             "min": 0.2,
             "max": 5,
             "step": 0.01
+          },
+          {
+            "field": "gearRatios.6",
+            "min": 0.2,
+            "max": 5,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.7",
+            "min": 0.2,
+            "max": 5,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.8",
+            "min": 0.2,
+            "max": 5,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.9",
+            "min": 0.2,
+            "max": 5,
+            "step": 0.01
           }
         ]
       }
@@ -116,11 +169,36 @@
     {
       "id": "adjustable-suspension",
       "name": "Adjustable Suspension",
-      "description": "Garage part",
+      "description": "Adjustable springs, ride height, dampers, bump/rebound and anti-roll bars.",
       "effects": [],
       "carPart": {
         "slot": "suspension",
+        "section": "Suspension",
+        "tier": "sport",
         "price": 750,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "springFront",
+            "operation": "add",
+            "value": 0.08
+          },
+          {
+            "field": "rideHeightFront",
+            "operation": "add",
+            "value": -0.05
+          },
+          {
+            "field": "springRear",
+            "operation": "add",
+            "value": 0.08
+          },
+          {
+            "field": "rideHeightRear",
+            "operation": "add",
+            "value": -0.05
+          }
+        ],
         "tuning": [
           {
             "field": "springFront",
@@ -225,12 +303,4204 @@
     {
       "id": "rally-tires",
       "name": "Rally Tires",
-      "description": "Garage part",
+      "description": "Specialist rally tires; choose for the surface and driving style, not as a universal higher tier.",
       "effects": [],
       "carPart": {
         "slot": "tires",
+        "section": "Tires",
+        "tier": "custom",
         "price": 450,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
         "tireRef": "builtin:dirt"
+      }
+    },
+    {
+      "id": "street-brakes",
+      "name": "Street Brakes",
+      "description": "Higher brake pressure with a fixed street setup. Install Sport or Race Brakes for adjustable balance and pressure.",
+      "effects": [],
+      "carPart": {
+        "slot": "brakes",
+        "section": "Brakes",
+        "tier": "street",
+        "price": 350,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "brakePressure",
+            "operation": "multiply",
+            "value": 1.08
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "sport-brakes",
+      "name": "Sport Brakes",
+      "description": "Higher brake pressure with adjustable front/rear balance and pressure.",
+      "effects": [],
+      "carPart": {
+        "slot": "brakes",
+        "section": "Brakes",
+        "tier": "sport",
+        "price": 750,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "brakePressure",
+            "operation": "multiply",
+            "value": 1.16
+          }
+        ],
+        "tuning": [
+          {
+            "field": "brakeBalance",
+            "min": 0.5,
+            "max": 0.72,
+            "step": 0.01
+          },
+          {
+            "field": "brakePressure",
+            "min": 0.8,
+            "max": 1.25,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-brakes",
+      "name": "Race Brakes",
+      "description": "Higher brake pressure with the widest brake balance and pressure adjustment ranges.",
+      "effects": [],
+      "carPart": {
+        "slot": "brakes",
+        "section": "Brakes",
+        "tier": "race",
+        "price": 1500,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "brakePressure",
+            "operation": "multiply",
+            "value": 1.25
+          }
+        ],
+        "tuning": [
+          {
+            "field": "brakeBalance",
+            "min": 0.45,
+            "max": 0.78,
+            "step": 0.01
+          },
+          {
+            "field": "brakePressure",
+            "min": 0.7,
+            "max": 1.35,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-turbo",
+      "name": "Street Turbo",
+      "description": "Boost-focused torque curve: gains build with RPM; increased output also increases fuel demand.",
+      "effects": [],
+      "carPart": {
+        "slot": "turbo",
+        "section": "Engine",
+        "tier": "street",
+        "price": 600,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3000,
+            "multiplier": 1.06
+          },
+          {
+            "rpm": 6000,
+            "multiplier": 1.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-turbo",
+      "name": "Race Turbo",
+      "description": "Boost-focused torque curve: gains build with RPM; increased output also increases fuel demand.",
+      "effects": [],
+      "carPart": {
+        "slot": "turbo",
+        "section": "Engine",
+        "tier": "race",
+        "price": 2400,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3000,
+            "multiplier": 1.192
+          },
+          {
+            "rpm": 6000,
+            "multiplier": 1.32
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-ecu",
+      "name": "Street ECU Remap",
+      "description": "Unlocks adjustable engine torque mapping; higher output increases fuel demand.",
+      "effects": [],
+      "carPart": {
+        "slot": "ecu",
+        "section": "Engine",
+        "tier": "street",
+        "price": 250,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "torqueScale",
+            "operation": "multiply",
+            "value": 1.02
+          }
+        ],
+        "tuning": [
+          {
+            "field": "torqueScale",
+            "min": 0.95,
+            "max": 1.05,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-ecu",
+      "name": "Standalone Race ECU",
+      "description": "Unlocks adjustable engine torque mapping; higher output increases fuel demand.",
+      "effects": [],
+      "carPart": {
+        "slot": "ecu",
+        "section": "Engine",
+        "tier": "race",
+        "price": 1200,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "torqueScale",
+            "operation": "multiply",
+            "value": 1.06
+          }
+        ],
+        "tuning": [
+          {
+            "field": "torqueScale",
+            "min": 0.7,
+            "max": 1.2,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-intake",
+      "name": "High-Flow Air Filter",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "intake",
+        "section": "Breathing",
+        "tier": "street",
+        "price": 150,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.01
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.02
+          }
+        ]
+      }
+    },
+    {
+      "id": "sport-intake",
+      "name": "Cold-Air Intake",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "intake",
+        "section": "Breathing",
+        "tier": "sport",
+        "price": 400,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.02
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.04
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-intake",
+      "name": "Race Intake Manifold",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "intake",
+        "section": "Breathing",
+        "tier": "race",
+        "price": 900,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.0350000000000001
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.07
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-exhaust",
+      "name": "Sport Rear Muffler",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "exhaust",
+        "section": "Breathing",
+        "tier": "street",
+        "price": 200,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.01
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.02
+          }
+        ]
+      }
+    },
+    {
+      "id": "sport-exhaust",
+      "name": "Cat-Back Exhaust",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "exhaust",
+        "section": "Breathing",
+        "tier": "sport",
+        "price": 550,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.025
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.05
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-exhaust",
+      "name": "Race Header and Exhaust",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "exhaust",
+        "section": "Breathing",
+        "tier": "race",
+        "price": 1200,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.04
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.08
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-ignition",
+      "name": "Iridium Spark Plugs",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "ignition",
+        "section": "Engine",
+        "tier": "street",
+        "price": 100,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.005
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "sport-ignition",
+      "name": "Performance Coil Pack",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "ignition",
+        "section": "Engine",
+        "tier": "sport",
+        "price": 300,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.01
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.02
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-ignition",
+      "name": "Race Ignition System",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "ignition",
+        "section": "Engine",
+        "tier": "race",
+        "price": 650,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 1
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.0150000000000001
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.03
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-camshaft",
+      "name": "Street Camshaft",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "camshaft",
+        "section": "Engine",
+        "tier": "street",
+        "price": 350,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 0.991
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.0150000000000001
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.03
+          }
+        ]
+      }
+    },
+    {
+      "id": "sport-camshaft",
+      "name": "Sport Camshaft",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "camshaft",
+        "section": "Engine",
+        "tier": "sport",
+        "price": 800,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 0.982
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.03
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.06
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-camshaft",
+      "name": "High-Lift Race Camshaft",
+      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "effects": [],
+      "carPart": {
+        "slot": "camshaft",
+        "section": "Engine",
+        "tier": "race",
+        "price": 1600,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": [
+          {
+            "rpm": 1000,
+            "multiplier": 0.97
+          },
+          {
+            "rpm": 3500,
+            "multiplier": 1.05
+          },
+          {
+            "rpm": 6500,
+            "multiplier": 1.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-fuel-system",
+      "name": "High-Flow Fuel Pump",
+      "description": "Game-calibrated fuel-metering upgrade; adjustable kits unlock consumption tuning.",
+      "effects": [],
+      "carPart": {
+        "slot": "fuel-system",
+        "section": "Engine",
+        "tier": "street",
+        "price": 200,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "fuelConsumptionScale",
+            "operation": "multiply",
+            "value": 0.98
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "sport-fuel-system",
+      "name": "Matched Injector Kit",
+      "description": "Game-calibrated fuel-metering upgrade; adjustable kits unlock consumption tuning.",
+      "effects": [],
+      "carPart": {
+        "slot": "fuel-system",
+        "section": "Engine",
+        "tier": "sport",
+        "price": 500,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "fuelConsumptionScale",
+            "operation": "multiply",
+            "value": 0.95
+          }
+        ],
+        "tuning": [
+          {
+            "field": "fuelConsumptionScale",
+            "min": 0.85,
+            "max": 1.15,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-fuel-system",
+      "name": "Programmable Fuel System",
+      "description": "Game-calibrated fuel-metering upgrade; adjustable kits unlock consumption tuning.",
+      "effects": [],
+      "carPart": {
+        "slot": "fuel-system",
+        "section": "Engine",
+        "tier": "race",
+        "price": 1000,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "fuelConsumptionScale",
+            "operation": "multiply",
+            "value": 0.92
+          }
+        ],
+        "tuning": [
+          {
+            "field": "fuelConsumptionScale",
+            "min": 0.7,
+            "max": 1.3,
+            "step": 0.01
+          },
+          {
+            "field": "fuelMpg",
+            "min": 8,
+            "max": 45,
+            "step": 0.5
+          },
+          {
+            "field": "fuelIdleGallonsPerHour",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.05
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-weight",
+      "name": "Street Weight Reduction",
+      "description": "Lighter body components reduce vehicle mass.",
+      "effects": [],
+      "carPart": {
+        "slot": "weight",
+        "section": "Chassis",
+        "tier": "street",
+        "price": 350,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "weightKg",
+            "operation": "multiply",
+            "value": 0.98
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "race-weight",
+      "name": "Race Weight and Ballast",
+      "description": "Reduces vehicle mass. Race kit also unlocks total race-weight and ballast adjustment.",
+      "effects": [],
+      "carPart": {
+        "slot": "weight",
+        "section": "Chassis",
+        "tier": "race",
+        "price": 1800,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "weightKg",
+            "operation": "multiply",
+            "value": 0.9
+          }
+        ],
+        "tuning": [
+          {
+            "field": "weightKg",
+            "min": 450,
+            "max": 20000,
+            "step": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-transmission",
+      "name": "Street Final Drive",
+      "description": "Unlocks final-drive adjustment.",
+      "effects": [],
+      "carPart": {
+        "slot": "transmission",
+        "section": "Drivetrain",
+        "tier": "street",
+        "price": 450,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "gearFinalDrive",
+            "operation": "multiply",
+            "value": 1.02
+          }
+        ],
+        "tuning": [
+          {
+            "field": "gearFinalDrive",
+            "min": 2,
+            "max": 6,
+            "step": 0.05
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-transmission",
+      "name": "Race Close-Ratio Gearbox",
+      "description": "Unlocks final drive and every gear fitted to this car; tune ratios for the course.",
+      "effects": [],
+      "carPart": {
+        "slot": "transmission",
+        "section": "Drivetrain",
+        "tier": "race",
+        "price": 2200,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "gearFinalDrive",
+            "operation": "multiply",
+            "value": 1.06
+          }
+        ],
+        "tuning": [
+          {
+            "field": "gearFinalDrive",
+            "min": 0.5,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.0",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.1",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.2",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.3",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.4",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.5",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.6",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.7",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.8",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.9",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-suspension",
+      "name": "Street Suspension",
+      "description": "Adjustable springs and ride height.",
+      "effects": [],
+      "carPart": {
+        "slot": "suspension",
+        "section": "Suspension",
+        "tier": "street",
+        "price": 350,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "springFront",
+            "operation": "add",
+            "value": 0.04
+          },
+          {
+            "field": "rideHeightFront",
+            "operation": "add",
+            "value": -0.025
+          },
+          {
+            "field": "springRear",
+            "operation": "add",
+            "value": 0.04
+          },
+          {
+            "field": "rideHeightRear",
+            "operation": "add",
+            "value": -0.025
+          }
+        ],
+        "tuning": [
+          {
+            "field": "springFront",
+            "min": 0.3,
+            "max": 0.7,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightFront",
+            "min": 0.3,
+            "max": 0.7,
+            "step": 0.01
+          },
+          {
+            "field": "springRear",
+            "min": 0.3,
+            "max": 0.7,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightRear",
+            "min": 0.3,
+            "max": 0.7,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-suspension",
+      "name": "Race Coilovers",
+      "description": "Adjustable springs, ride height, dampers, bump/rebound and anti-roll bars.",
+      "effects": [],
+      "carPart": {
+        "slot": "suspension",
+        "section": "Suspension",
+        "tier": "race",
+        "price": 1600,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "springFront",
+            "operation": "add",
+            "value": 0.12
+          },
+          {
+            "field": "rideHeightFront",
+            "operation": "add",
+            "value": -0.07500000000000001
+          },
+          {
+            "field": "springRear",
+            "operation": "add",
+            "value": 0.12
+          },
+          {
+            "field": "rideHeightRear",
+            "operation": "add",
+            "value": -0.07500000000000001
+          }
+        ],
+        "tuning": [
+          {
+            "field": "suspensionTravelFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "springFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "dampingFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "suspensionTravelRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "springRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "dampingRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-alignment",
+      "name": "Street Alignment Kit",
+      "description": "Unlocks camber adjustment.",
+      "effects": [],
+      "carPart": {
+        "slot": "alignment",
+        "section": "Suspension",
+        "tier": "street",
+        "price": 250,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "camberFront",
+            "operation": "set",
+            "value": -0.5
+          },
+          {
+            "field": "camberRear",
+            "operation": "set",
+            "value": -0.5
+          }
+        ],
+        "tuning": [
+          {
+            "field": "camberFront",
+            "min": -2,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "camberRear",
+            "min": -2,
+            "max": 1,
+            "step": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "sport-alignment",
+      "name": "Adjustable Camber Plates",
+      "description": "Unlocks front/rear camber and toe adjustment.",
+      "effects": [],
+      "carPart": {
+        "slot": "alignment",
+        "section": "Suspension",
+        "tier": "sport",
+        "price": 600,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "camberFront",
+            "operation": "set",
+            "value": -1
+          },
+          {
+            "field": "camberRear",
+            "operation": "set",
+            "value": -1
+          }
+        ],
+        "tuning": [
+          {
+            "field": "camberFront",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "camberRear",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "toeFront",
+            "min": -0.5,
+            "max": 0.5,
+            "step": 0.1
+          },
+          {
+            "field": "toeRear",
+            "min": -0.5,
+            "max": 0.5,
+            "step": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-alignment",
+      "name": "Race Alignment Arms",
+      "description": "Unlocks front/rear camber and toe adjustment.",
+      "effects": [],
+      "carPart": {
+        "slot": "alignment",
+        "section": "Suspension",
+        "tier": "race",
+        "price": 1300,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "camberFront",
+            "operation": "set",
+            "value": -1.5
+          },
+          {
+            "field": "camberRear",
+            "operation": "set",
+            "value": -1.5
+          }
+        ],
+        "tuning": [
+          {
+            "field": "camberFront",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "toeFront",
+            "min": -1,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "camberRear",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "toeRear",
+            "min": -1,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "casterFront",
+            "min": 3,
+            "max": 8,
+            "step": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-aero",
+      "name": "Street Aero Kit",
+      "description": "Fixed front and rear aero setup.",
+      "effects": [],
+      "carPart": {
+        "slot": "aero",
+        "section": "Aero",
+        "tier": "street",
+        "price": 400,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "aeroFront",
+            "operation": "set",
+            "value": 0.2
+          },
+          {
+            "field": "aeroRear",
+            "operation": "set",
+            "value": 0.2
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "sport-aero",
+      "name": "Adjustable Splitter and Wing",
+      "description": "Adjustable front and rear aero balance.",
+      "effects": [],
+      "carPart": {
+        "slot": "aero",
+        "section": "Aero",
+        "tier": "sport",
+        "price": 900,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "aeroFront",
+            "operation": "set",
+            "value": 0.4
+          },
+          {
+            "field": "aeroRear",
+            "operation": "set",
+            "value": 0.4
+          }
+        ],
+        "tuning": [
+          {
+            "field": "aeroFront",
+            "min": 0,
+            "max": 0.7,
+            "step": 0.01
+          },
+          {
+            "field": "aeroRear",
+            "min": 0,
+            "max": 0.7,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-aero",
+      "name": "Race Aero Package",
+      "description": "Adjustable front and rear aero balance.",
+      "effects": [],
+      "carPart": {
+        "slot": "aero",
+        "section": "Aero",
+        "tier": "race",
+        "price": 1900,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "aeroFront",
+            "operation": "set",
+            "value": 0.65
+          },
+          {
+            "field": "aeroRear",
+            "operation": "set",
+            "value": 0.65
+          }
+        ],
+        "tuning": [
+          {
+            "field": "aeroFront",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "aeroRear",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-differential",
+      "name": "Street Limited-Slip Differential",
+      "description": "Fixed acceleration and deceleration locking.",
+      "effects": [],
+      "carPart": {
+        "slot": "differential",
+        "section": "Drivetrain",
+        "tier": "street",
+        "price": 500,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "differentialAccel",
+            "operation": "set",
+            "value": 0.3
+          },
+          {
+            "field": "differentialDecel",
+            "operation": "set",
+            "value": 0.15
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "sport-differential",
+      "name": "Adjustable Limited-Slip Differential",
+      "description": "Unlocks acceleration and deceleration differential locking.",
+      "effects": [],
+      "carPart": {
+        "slot": "differential",
+        "section": "Drivetrain",
+        "tier": "sport",
+        "price": 1100,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "differentialAccel",
+            "operation": "set",
+            "value": 0.5
+          },
+          {
+            "field": "differentialDecel",
+            "operation": "set",
+            "value": 0.25
+          }
+        ],
+        "tuning": [
+          {
+            "field": "differentialAccel",
+            "min": 0.1,
+            "max": 0.8,
+            "step": 0.01
+          },
+          {
+            "field": "differentialDecel",
+            "min": 0.1,
+            "max": 0.8,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "race-differential",
+      "name": "Race Plate Differential",
+      "description": "Unlocks acceleration and deceleration differential locking.",
+      "effects": [],
+      "carPart": {
+        "slot": "differential",
+        "section": "Drivetrain",
+        "tier": "race",
+        "price": 2100,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "differentialAccel",
+            "operation": "set",
+            "value": 0.7
+          },
+          {
+            "field": "differentialDecel",
+            "operation": "set",
+            "value": 0.35
+          }
+        ],
+        "tuning": [
+          {
+            "field": "frontDifferentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "frontDifferentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rearDifferentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rearDifferentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "centerDifferentialBalance",
+            "min": 0.1,
+            "max": 0.9,
+            "step": 0.01
+          },
+          {
+            "field": "centerDifferentialLock",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "differentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "differentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-tires",
+      "name": "Street Tires",
+      "description": "Dry-road compound. More dry grip trades away wet/loose-surface performance and durability at higher tiers.",
+      "effects": [],
+      "carPart": {
+        "slot": "tires",
+        "section": "Tires",
+        "tier": "street",
+        "price": 250,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "tireRef": "builtin:street"
+      }
+    },
+    {
+      "id": "sport-tires",
+      "name": "Sport Tires",
+      "description": "Dry-road compound. More dry grip trades away wet/loose-surface performance and durability at higher tiers.",
+      "effects": [],
+      "carPart": {
+        "slot": "tires",
+        "section": "Tires",
+        "tier": "sport",
+        "price": 500,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "tireRef": "builtin:sport"
+      }
+    },
+    {
+      "id": "race-tires",
+      "name": "Race Tarmac Tires",
+      "description": "Dry-road compound. More dry grip trades away wet/loose-surface performance and durability at higher tiers.",
+      "effects": [],
+      "carPart": {
+        "slot": "tires",
+        "section": "Tires",
+        "tier": "race",
+        "price": 1000,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "tireRef": "builtin:tarmac"
+      }
+    },
+    {
+      "id": "rain-tires",
+      "name": "Rain Tires",
+      "description": "Specialist rain tires; choose for the surface and driving style, not as a universal higher tier.",
+      "effects": [],
+      "carPart": {
+        "slot": "tires",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 500,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "tireRef": "builtin:rain"
+      }
+    },
+    {
+      "id": "snow-tires",
+      "name": "Snow Tires",
+      "description": "Specialist snow tires; choose for the surface and driving style, not as a universal higher tier.",
+      "effects": [],
+      "carPart": {
+        "slot": "tires",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 500,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "tireRef": "builtin:snow"
+      }
+    },
+    {
+      "id": "offroad-tires",
+      "name": "Offroad Tires",
+      "description": "Specialist offroad tires; choose for the surface and driving style, not as a universal higher tier.",
+      "effects": [],
+      "carPart": {
+        "slot": "tires",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 450,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "tireRef": "builtin:offroad"
+      }
+    },
+    {
+      "id": "drift-tires",
+      "name": "Drift Tires",
+      "description": "Specialist drift tires; choose for the surface and driving style, not as a universal higher tier.",
+      "effects": [],
+      "carPart": {
+        "slot": "tires",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 400,
+        "forSale": true,
+        "modifiers": [],
+        "tuning": [],
+        "tireRef": "builtin:drift"
+      }
+    },
+    {
+      "id": "rally-suspension",
+      "name": "Rally Suspension",
+      "description": "Rally starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "suspension",
+        "section": "Suspension",
+        "tier": "custom",
+        "price": 1450,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "springFront",
+            "operation": "set",
+            "value": 0.48
+          },
+          {
+            "field": "springRear",
+            "operation": "set",
+            "value": 0.5
+          },
+          {
+            "field": "rideHeightFront",
+            "operation": "set",
+            "value": 0.62
+          },
+          {
+            "field": "rideHeightRear",
+            "operation": "set",
+            "value": 0.64
+          },
+          {
+            "field": "suspensionTravelFront",
+            "operation": "set",
+            "value": 0.72
+          },
+          {
+            "field": "suspensionTravelRear",
+            "operation": "set",
+            "value": 0.76
+          },
+          {
+            "field": "bumpFront",
+            "operation": "set",
+            "value": 0.44
+          },
+          {
+            "field": "bumpRear",
+            "operation": "set",
+            "value": 0.46
+          },
+          {
+            "field": "reboundFront",
+            "operation": "set",
+            "value": 0.56
+          },
+          {
+            "field": "reboundRear",
+            "operation": "set",
+            "value": 0.5800000000000001
+          },
+          {
+            "field": "antiRollFront",
+            "operation": "set",
+            "value": 0.42
+          },
+          {
+            "field": "antiRollRear",
+            "operation": "set",
+            "value": 0.46
+          }
+        ],
+        "tuning": [
+          {
+            "field": "suspensionTravelFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "springFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "dampingFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "suspensionTravelRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "springRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "dampingRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "rally-alignment",
+      "name": "Rally Alignment Kit",
+      "description": "Rally starting setup with adjustable alignment settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "alignment",
+        "section": "Suspension",
+        "tier": "custom",
+        "price": 1150,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "camberFront",
+            "operation": "set",
+            "value": -1.5
+          },
+          {
+            "field": "camberRear",
+            "operation": "set",
+            "value": -1.2
+          },
+          {
+            "field": "toeFront",
+            "operation": "set",
+            "value": 0
+          },
+          {
+            "field": "toeRear",
+            "operation": "set",
+            "value": 0.06
+          },
+          {
+            "field": "casterFront",
+            "operation": "set",
+            "value": 6.2
+          }
+        ],
+        "tuning": [
+          {
+            "field": "camberFront",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "toeFront",
+            "min": -1,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "camberRear",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "toeRear",
+            "min": -1,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "casterFront",
+            "min": 3,
+            "max": 8,
+            "step": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "rally-differential",
+      "name": "Rally Differential",
+      "description": "Rally starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "differential",
+        "section": "Drivetrain",
+        "tier": "custom",
+        "price": 1900,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "differentialAccel",
+            "operation": "set",
+            "value": 0.45
+          },
+          {
+            "field": "differentialDecel",
+            "operation": "set",
+            "value": 0.2
+          },
+          {
+            "field": "frontDifferentialAccel",
+            "operation": "set",
+            "value": 0.3
+          },
+          {
+            "field": "frontDifferentialDecel",
+            "operation": "set",
+            "value": 0.13999999999999999
+          },
+          {
+            "field": "rearDifferentialAccel",
+            "operation": "set",
+            "value": 0.45
+          },
+          {
+            "field": "rearDifferentialDecel",
+            "operation": "set",
+            "value": 0.2
+          },
+          {
+            "field": "centerDifferentialBalance",
+            "operation": "set",
+            "value": 0.55
+          },
+          {
+            "field": "centerDifferentialLock",
+            "operation": "set",
+            "value": 0.45
+          }
+        ],
+        "tuning": [
+          {
+            "field": "frontDifferentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "frontDifferentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rearDifferentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rearDifferentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "centerDifferentialBalance",
+            "min": 0.1,
+            "max": 0.9,
+            "step": 0.01
+          },
+          {
+            "field": "centerDifferentialLock",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "differentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "differentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "rally-transmission",
+      "name": "Rally Gearbox",
+      "description": "Rally starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "transmission",
+        "section": "Drivetrain",
+        "tier": "custom",
+        "price": 2000,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "gearFinalDrive",
+            "operation": "multiply",
+            "value": 1.1
+          }
+        ],
+        "tuning": [
+          {
+            "field": "gearFinalDrive",
+            "min": 0.5,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.0",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.1",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.2",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.3",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.4",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.5",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.6",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.7",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.8",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.9",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "rally-aero",
+      "name": "Rally Aero Kit",
+      "description": "Rally starting setup with adjustable aero settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "aero",
+        "section": "Aero",
+        "tier": "custom",
+        "price": 1700,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "aeroFront",
+            "operation": "set",
+            "value": 0.28
+          },
+          {
+            "field": "aeroRear",
+            "operation": "set",
+            "value": 0.36000000000000004
+          }
+        ],
+        "tuning": [
+          {
+            "field": "aeroFront",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "aeroRear",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "rally-brakes",
+      "name": "Rally Brakes",
+      "description": "Rally starting setup with adjustable brakes settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "brakes",
+        "section": "Brakes",
+        "tier": "custom",
+        "price": 1350,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "brakeBalance",
+            "operation": "set",
+            "value": 0.62
+          },
+          {
+            "field": "brakePressure",
+            "operation": "set",
+            "value": 1.12
+          }
+        ],
+        "tuning": [
+          {
+            "field": "brakeBalance",
+            "min": 0.45,
+            "max": 0.78,
+            "step": 0.01
+          },
+          {
+            "field": "brakePressure",
+            "min": 0.7,
+            "max": 1.35,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "drift-suspension",
+      "name": "Drift Suspension",
+      "description": "Drift starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "suspension",
+        "section": "Suspension",
+        "tier": "custom",
+        "price": 1450,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "springFront",
+            "operation": "set",
+            "value": 0.62
+          },
+          {
+            "field": "springRear",
+            "operation": "set",
+            "value": 0.54
+          },
+          {
+            "field": "rideHeightFront",
+            "operation": "set",
+            "value": 0.44
+          },
+          {
+            "field": "rideHeightRear",
+            "operation": "set",
+            "value": 0.46
+          },
+          {
+            "field": "suspensionTravelFront",
+            "operation": "set",
+            "value": 0.52
+          },
+          {
+            "field": "suspensionTravelRear",
+            "operation": "set",
+            "value": 0.56
+          },
+          {
+            "field": "bumpFront",
+            "operation": "set",
+            "value": 0.5
+          },
+          {
+            "field": "bumpRear",
+            "operation": "set",
+            "value": 0.52
+          },
+          {
+            "field": "reboundFront",
+            "operation": "set",
+            "value": 0.66
+          },
+          {
+            "field": "reboundRear",
+            "operation": "set",
+            "value": 0.68
+          },
+          {
+            "field": "antiRollFront",
+            "operation": "set",
+            "value": 0.76
+          },
+          {
+            "field": "antiRollRear",
+            "operation": "set",
+            "value": 0.38
+          }
+        ],
+        "tuning": [
+          {
+            "field": "suspensionTravelFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "springFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "dampingFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "suspensionTravelRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "springRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "dampingRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "drift-alignment",
+      "name": "Drift Alignment Kit",
+      "description": "Drift starting setup with adjustable alignment settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "alignment",
+        "section": "Suspension",
+        "tier": "custom",
+        "price": 1150,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "camberFront",
+            "operation": "set",
+            "value": -3.4
+          },
+          {
+            "field": "camberRear",
+            "operation": "set",
+            "value": -1
+          },
+          {
+            "field": "toeFront",
+            "operation": "set",
+            "value": -0.15
+          },
+          {
+            "field": "toeRear",
+            "operation": "set",
+            "value": 0.15
+          },
+          {
+            "field": "casterFront",
+            "operation": "set",
+            "value": 7.6
+          }
+        ],
+        "tuning": [
+          {
+            "field": "camberFront",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "toeFront",
+            "min": -1,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "camberRear",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "toeRear",
+            "min": -1,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "casterFront",
+            "min": 3,
+            "max": 8,
+            "step": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "drift-differential",
+      "name": "Drift Differential",
+      "description": "Drift starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "differential",
+        "section": "Drivetrain",
+        "tier": "custom",
+        "price": 1900,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "differentialAccel",
+            "operation": "set",
+            "value": 0.95
+          },
+          {
+            "field": "differentialDecel",
+            "operation": "set",
+            "value": 0.75
+          },
+          {
+            "field": "frontDifferentialAccel",
+            "operation": "set",
+            "value": 0.85
+          },
+          {
+            "field": "frontDifferentialDecel",
+            "operation": "set",
+            "value": 0.5249999999999999
+          },
+          {
+            "field": "rearDifferentialAccel",
+            "operation": "set",
+            "value": 0.95
+          },
+          {
+            "field": "rearDifferentialDecel",
+            "operation": "set",
+            "value": 0.75
+          },
+          {
+            "field": "centerDifferentialBalance",
+            "operation": "set",
+            "value": 0.75
+          },
+          {
+            "field": "centerDifferentialLock",
+            "operation": "set",
+            "value": 0.45
+          }
+        ],
+        "tuning": [
+          {
+            "field": "frontDifferentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "frontDifferentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rearDifferentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rearDifferentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "centerDifferentialBalance",
+            "min": 0.1,
+            "max": 0.9,
+            "step": 0.01
+          },
+          {
+            "field": "centerDifferentialLock",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "differentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "differentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "drift-transmission",
+      "name": "Drift Gearbox",
+      "description": "Drift starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "transmission",
+        "section": "Drivetrain",
+        "tier": "custom",
+        "price": 2000,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "gearFinalDrive",
+            "operation": "multiply",
+            "value": 1.02
+          }
+        ],
+        "tuning": [
+          {
+            "field": "gearFinalDrive",
+            "min": 0.5,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.0",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.1",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.2",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.3",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.4",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.5",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.6",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.7",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.8",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.9",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "drift-aero",
+      "name": "Drift Aero Kit",
+      "description": "Drift starting setup with adjustable aero settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "aero",
+        "section": "Aero",
+        "tier": "custom",
+        "price": 1700,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "aeroFront",
+            "operation": "set",
+            "value": 0.12
+          },
+          {
+            "field": "aeroRear",
+            "operation": "set",
+            "value": 0.2
+          }
+        ],
+        "tuning": [
+          {
+            "field": "aeroFront",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "aeroRear",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "drift-brakes",
+      "name": "Drift Brakes",
+      "description": "Drift starting setup with adjustable brakes settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "brakes",
+        "section": "Brakes",
+        "tier": "custom",
+        "price": 1350,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "brakeBalance",
+            "operation": "set",
+            "value": 0.58
+          },
+          {
+            "field": "brakePressure",
+            "operation": "set",
+            "value": 1.12
+          }
+        ],
+        "tuning": [
+          {
+            "field": "brakeBalance",
+            "min": 0.45,
+            "max": 0.78,
+            "step": 0.01
+          },
+          {
+            "field": "brakePressure",
+            "min": 0.7,
+            "max": 1.35,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "offroad-suspension",
+      "name": "Off-road Suspension",
+      "description": "Off-road starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "suspension",
+        "section": "Suspension",
+        "tier": "custom",
+        "price": 1450,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "springFront",
+            "operation": "set",
+            "value": 0.38
+          },
+          {
+            "field": "springRear",
+            "operation": "set",
+            "value": 0.42
+          },
+          {
+            "field": "rideHeightFront",
+            "operation": "set",
+            "value": 0.82
+          },
+          {
+            "field": "rideHeightRear",
+            "operation": "set",
+            "value": 0.84
+          },
+          {
+            "field": "suspensionTravelFront",
+            "operation": "set",
+            "value": 0.9
+          },
+          {
+            "field": "suspensionTravelRear",
+            "operation": "set",
+            "value": 0.9400000000000001
+          },
+          {
+            "field": "bumpFront",
+            "operation": "set",
+            "value": 0.34
+          },
+          {
+            "field": "bumpRear",
+            "operation": "set",
+            "value": 0.36000000000000004
+          },
+          {
+            "field": "reboundFront",
+            "operation": "set",
+            "value": 0.46
+          },
+          {
+            "field": "reboundRear",
+            "operation": "set",
+            "value": 0.48000000000000004
+          },
+          {
+            "field": "antiRollFront",
+            "operation": "set",
+            "value": 0.26
+          },
+          {
+            "field": "antiRollRear",
+            "operation": "set",
+            "value": 0.3
+          }
+        ],
+        "tuning": [
+          {
+            "field": "suspensionTravelFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "springFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "dampingFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "suspensionTravelRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "springRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "dampingRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "offroad-alignment",
+      "name": "Off-road Alignment Kit",
+      "description": "Off-road starting setup with adjustable alignment settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "alignment",
+        "section": "Suspension",
+        "tier": "custom",
+        "price": 1150,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "camberFront",
+            "operation": "set",
+            "value": -0.6
+          },
+          {
+            "field": "camberRear",
+            "operation": "set",
+            "value": -0.4
+          },
+          {
+            "field": "toeFront",
+            "operation": "set",
+            "value": 0
+          },
+          {
+            "field": "toeRear",
+            "operation": "set",
+            "value": 0.06
+          },
+          {
+            "field": "casterFront",
+            "operation": "set",
+            "value": 6.2
+          }
+        ],
+        "tuning": [
+          {
+            "field": "camberFront",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "toeFront",
+            "min": -1,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "camberRear",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "toeRear",
+            "min": -1,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "casterFront",
+            "min": 3,
+            "max": 8,
+            "step": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "offroad-differential",
+      "name": "Off-road Differential",
+      "description": "Off-road starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "differential",
+        "section": "Drivetrain",
+        "tier": "custom",
+        "price": 1900,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "differentialAccel",
+            "operation": "set",
+            "value": 0.65
+          },
+          {
+            "field": "differentialDecel",
+            "operation": "set",
+            "value": 0.3
+          },
+          {
+            "field": "frontDifferentialAccel",
+            "operation": "set",
+            "value": 0.5
+          },
+          {
+            "field": "frontDifferentialDecel",
+            "operation": "set",
+            "value": 0.21
+          },
+          {
+            "field": "rearDifferentialAccel",
+            "operation": "set",
+            "value": 0.65
+          },
+          {
+            "field": "rearDifferentialDecel",
+            "operation": "set",
+            "value": 0.3
+          },
+          {
+            "field": "centerDifferentialBalance",
+            "operation": "set",
+            "value": 0.55
+          },
+          {
+            "field": "centerDifferentialLock",
+            "operation": "set",
+            "value": 0.75
+          }
+        ],
+        "tuning": [
+          {
+            "field": "frontDifferentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "frontDifferentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rearDifferentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rearDifferentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "centerDifferentialBalance",
+            "min": 0.1,
+            "max": 0.9,
+            "step": 0.01
+          },
+          {
+            "field": "centerDifferentialLock",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "differentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "differentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "offroad-transmission",
+      "name": "Off-road Gearbox",
+      "description": "Off-road starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "transmission",
+        "section": "Drivetrain",
+        "tier": "custom",
+        "price": 2000,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "gearFinalDrive",
+            "operation": "multiply",
+            "value": 1.2
+          }
+        ],
+        "tuning": [
+          {
+            "field": "gearFinalDrive",
+            "min": 0.5,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.0",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.1",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.2",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.3",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.4",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.5",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.6",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.7",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.8",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.9",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "offroad-aero",
+      "name": "Off-road Aero Kit",
+      "description": "Off-road starting setup with adjustable aero settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "aero",
+        "section": "Aero",
+        "tier": "custom",
+        "price": 1700,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "aeroFront",
+            "operation": "set",
+            "value": 0.08
+          },
+          {
+            "field": "aeroRear",
+            "operation": "set",
+            "value": 0.16
+          }
+        ],
+        "tuning": [
+          {
+            "field": "aeroFront",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "aeroRear",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "offroad-brakes",
+      "name": "Off-road Brakes",
+      "description": "Off-road starting setup with adjustable brakes settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "brakes",
+        "section": "Brakes",
+        "tier": "custom",
+        "price": 1350,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "brakeBalance",
+            "operation": "set",
+            "value": 0.62
+          },
+          {
+            "field": "brakePressure",
+            "operation": "set",
+            "value": 1
+          }
+        ],
+        "tuning": [
+          {
+            "field": "brakeBalance",
+            "min": 0.45,
+            "max": 0.78,
+            "step": 0.01
+          },
+          {
+            "field": "brakePressure",
+            "min": 0.7,
+            "max": 1.35,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "drag-suspension",
+      "name": "Drag Suspension",
+      "description": "Drag starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "suspension",
+        "section": "Suspension",
+        "tier": "custom",
+        "price": 1450,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "springFront",
+            "operation": "set",
+            "value": 0.4
+          },
+          {
+            "field": "springRear",
+            "operation": "set",
+            "value": 0.6
+          },
+          {
+            "field": "rideHeightFront",
+            "operation": "set",
+            "value": 0.45
+          },
+          {
+            "field": "rideHeightRear",
+            "operation": "set",
+            "value": 0.47000000000000003
+          },
+          {
+            "field": "suspensionTravelFront",
+            "operation": "set",
+            "value": 0.55
+          },
+          {
+            "field": "suspensionTravelRear",
+            "operation": "set",
+            "value": 0.5900000000000001
+          },
+          {
+            "field": "bumpFront",
+            "operation": "set",
+            "value": 0.36
+          },
+          {
+            "field": "bumpRear",
+            "operation": "set",
+            "value": 0.38
+          },
+          {
+            "field": "reboundFront",
+            "operation": "set",
+            "value": 0.52
+          },
+          {
+            "field": "reboundRear",
+            "operation": "set",
+            "value": 0.54
+          },
+          {
+            "field": "antiRollFront",
+            "operation": "set",
+            "value": 0.22
+          },
+          {
+            "field": "antiRollRear",
+            "operation": "set",
+            "value": 0.3
+          }
+        ],
+        "tuning": [
+          {
+            "field": "suspensionTravelFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "springFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "dampingFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollFront",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "suspensionTravelRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "springRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rideHeightRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "dampingRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "bumpRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "reboundRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "antiRollRear",
+            "min": 0.1,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "drag-alignment",
+      "name": "Drag Alignment Kit",
+      "description": "Drag starting setup with adjustable alignment settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "alignment",
+        "section": "Suspension",
+        "tier": "custom",
+        "price": 1150,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "camberFront",
+            "operation": "set",
+            "value": -0.2
+          },
+          {
+            "field": "camberRear",
+            "operation": "set",
+            "value": -0.1
+          },
+          {
+            "field": "toeFront",
+            "operation": "set",
+            "value": 0
+          },
+          {
+            "field": "toeRear",
+            "operation": "set",
+            "value": 0.06
+          },
+          {
+            "field": "casterFront",
+            "operation": "set",
+            "value": 6.2
+          }
+        ],
+        "tuning": [
+          {
+            "field": "camberFront",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "toeFront",
+            "min": -1,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "camberRear",
+            "min": -5,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "toeRear",
+            "min": -1,
+            "max": 1,
+            "step": 0.1
+          },
+          {
+            "field": "casterFront",
+            "min": 3,
+            "max": 8,
+            "step": 0.1
+          }
+        ]
+      }
+    },
+    {
+      "id": "drag-differential",
+      "name": "Drag Differential",
+      "description": "Drag starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "differential",
+        "section": "Drivetrain",
+        "tier": "custom",
+        "price": 1900,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "differentialAccel",
+            "operation": "set",
+            "value": 0.95
+          },
+          {
+            "field": "differentialDecel",
+            "operation": "set",
+            "value": 0.1
+          },
+          {
+            "field": "frontDifferentialAccel",
+            "operation": "set",
+            "value": 0.8
+          },
+          {
+            "field": "frontDifferentialDecel",
+            "operation": "set",
+            "value": 0.06999999999999999
+          },
+          {
+            "field": "rearDifferentialAccel",
+            "operation": "set",
+            "value": 0.95
+          },
+          {
+            "field": "rearDifferentialDecel",
+            "operation": "set",
+            "value": 0.1
+          },
+          {
+            "field": "centerDifferentialBalance",
+            "operation": "set",
+            "value": 0.55
+          },
+          {
+            "field": "centerDifferentialLock",
+            "operation": "set",
+            "value": 0.45
+          }
+        ],
+        "tuning": [
+          {
+            "field": "frontDifferentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "frontDifferentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rearDifferentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "rearDifferentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "centerDifferentialBalance",
+            "min": 0.1,
+            "max": 0.9,
+            "step": 0.01
+          },
+          {
+            "field": "centerDifferentialLock",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "differentialAccel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "differentialDecel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "drag-transmission",
+      "name": "Drag Gearbox",
+      "description": "Drag starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "transmission",
+        "section": "Drivetrain",
+        "tier": "custom",
+        "price": 2000,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "gearFinalDrive",
+            "operation": "multiply",
+            "value": 1.15
+          }
+        ],
+        "tuning": [
+          {
+            "field": "gearFinalDrive",
+            "min": 0.5,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.0",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.1",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.2",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.3",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.4",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.5",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.6",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.7",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.8",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          },
+          {
+            "field": "gearRatios.9",
+            "min": 0.1,
+            "max": 12,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "drag-aero",
+      "name": "Drag Aero Kit",
+      "description": "Drag starting setup with adjustable aero settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "aero",
+        "section": "Aero",
+        "tier": "custom",
+        "price": 1700,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "aeroFront",
+            "operation": "set",
+            "value": 0
+          },
+          {
+            "field": "aeroRear",
+            "operation": "set",
+            "value": 0.08
+          }
+        ],
+        "tuning": [
+          {
+            "field": "aeroFront",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          },
+          {
+            "field": "aeroRear",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "drag-brakes",
+      "name": "Drag Brakes",
+      "description": "Drag starting setup with adjustable brakes settings. Fit independently or as a matching setup package.",
+      "effects": [],
+      "carPart": {
+        "slot": "brakes",
+        "section": "Brakes",
+        "tier": "custom",
+        "price": 1350,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "brakeBalance",
+            "operation": "set",
+            "value": 0.62
+          },
+          {
+            "field": "brakePressure",
+            "operation": "set",
+            "value": 1.12
+          }
+        ],
+        "tuning": [
+          {
+            "field": "brakeBalance",
+            "min": 0.45,
+            "max": 0.78,
+            "step": 0.01
+          },
+          {
+            "field": "brakePressure",
+            "min": 0.7,
+            "max": 1.35,
+            "step": 0.01
+          }
+        ]
+      }
+    },
+    {
+      "id": "street-flywheel",
+      "name": "Street Flywheel",
+      "description": "Reduces rotational inertia for faster RPM response.",
+      "effects": [],
+      "carPart": {
+        "slot": "flywheel",
+        "section": "Drivetrain",
+        "tier": "street",
+        "price": 350,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "engineInertiaKgM2",
+            "operation": "multiply",
+            "value": 0.85
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "sport-flywheel",
+      "name": "Sport Flywheel",
+      "description": "Reduces rotational inertia for faster RPM response.",
+      "effects": [],
+      "carPart": {
+        "slot": "flywheel",
+        "section": "Drivetrain",
+        "tier": "sport",
+        "price": 750,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "engineInertiaKgM2",
+            "operation": "multiply",
+            "value": 0.7
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "race-flywheel",
+      "name": "Race Flywheel",
+      "description": "Reduces rotational inertia for faster RPM response.",
+      "effects": [],
+      "carPart": {
+        "slot": "flywheel",
+        "section": "Drivetrain",
+        "tier": "race",
+        "price": 1400,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "engineInertiaKgM2",
+            "operation": "multiply",
+            "value": 0.55
+          }
+        ],
+        "tuning": [
+          {
+            "field": "engineInertiaKgM2",
+            "min": 0.05,
+            "max": 2,
+            "step": 0.01
+          }
+        ],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "street-clutch",
+      "name": "Street Clutch",
+      "description": "Shortens the clutch torque interruption during gear changes.",
+      "effects": [],
+      "carPart": {
+        "slot": "clutch",
+        "section": "Drivetrain",
+        "tier": "street",
+        "price": 350,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "shiftTimeMs",
+            "operation": "multiply",
+            "value": 0.85
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "sport-clutch",
+      "name": "Sport Clutch",
+      "description": "Shortens the clutch torque interruption during gear changes.",
+      "effects": [],
+      "carPart": {
+        "slot": "clutch",
+        "section": "Drivetrain",
+        "tier": "sport",
+        "price": 750,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "shiftTimeMs",
+            "operation": "multiply",
+            "value": 0.7
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "race-clutch",
+      "name": "Race Clutch",
+      "description": "Shortens the clutch torque interruption during gear changes.",
+      "effects": [],
+      "carPart": {
+        "slot": "clutch",
+        "section": "Drivetrain",
+        "tier": "race",
+        "price": 1400,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "shiftTimeMs",
+            "operation": "multiply",
+            "value": 0.5
+          }
+        ],
+        "tuning": [
+          {
+            "field": "shiftTimeMs",
+            "min": 80,
+            "max": 1000,
+            "step": 10
+          }
+        ],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "engine-swap-turbo",
+      "name": "Turbo Conversion",
+      "description": "Replaces the engine curve, RPM limits and rotating inertia; includes engine mass.",
+      "effects": [],
+      "carPart": {
+        "slot": "engine-swap",
+        "section": "Engine",
+        "tier": "custom",
+        "price": 6500,
+        "forSale": true,
+        "engineSwap": "turbo",
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "engine-swap-six",
+      "name": "Six Conversion",
+      "description": "Replaces the engine curve, RPM limits and rotating inertia; includes engine mass.",
+      "effects": [],
+      "carPart": {
+        "slot": "engine-swap",
+        "section": "Engine",
+        "tier": "custom",
+        "price": 7500,
+        "forSale": true,
+        "engineSwap": "six",
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "engine-swap-v8",
+      "name": "V8 Conversion",
+      "description": "Replaces the engine curve, RPM limits and rotating inertia; includes engine mass.",
+      "effects": [],
+      "carPart": {
+        "slot": "engine-swap",
+        "section": "Engine",
+        "tier": "custom",
+        "price": 9500,
+        "forSale": true,
+        "engineSwap": "v8",
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "drive-swap-fwd",
+      "name": "FWD Conversion",
+      "description": "Changes driven wheels, driveline mass and transmission efficiency.",
+      "effects": [],
+      "carPart": {
+        "slot": "drive-swap",
+        "section": "Drivetrain",
+        "tier": "custom",
+        "price": 3500,
+        "forSale": true,
+        "drivetrainSwap": "fwd",
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "drive-swap-rwd",
+      "name": "RWD Conversion",
+      "description": "Changes driven wheels, driveline mass and transmission efficiency.",
+      "effects": [],
+      "carPart": {
+        "slot": "drive-swap",
+        "section": "Drivetrain",
+        "tier": "custom",
+        "price": 4000,
+        "forSale": true,
+        "drivetrainSwap": "rwd",
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "drive-swap-awd",
+      "name": "AWD Conversion",
+      "description": "Changes driven wheels, driveline mass and transmission efficiency.",
+      "effects": [],
+      "carPart": {
+        "slot": "drive-swap",
+        "section": "Drivetrain",
+        "tier": "custom",
+        "price": 6000,
+        "forSale": true,
+        "drivetrainSwap": "awd",
+        "modifiers": [],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "street-rigidity",
+      "name": "Braces",
+      "description": "Reinforces suspension mounting stiffness with added chassis mass. Does not repair damaged components.",
+      "effects": [],
+      "carPart": {
+        "slot": "rigidity",
+        "section": "Chassis",
+        "tier": "street",
+        "price": 400,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "chassisRigidityNmDeg",
+            "operation": "multiply",
+            "value": 1.2
+          },
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 8
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "sport-rigidity",
+      "name": "Cage",
+      "description": "Reinforces suspension mounting stiffness with added chassis mass. Does not repair damaged components.",
+      "effects": [],
+      "carPart": {
+        "slot": "rigidity",
+        "section": "Chassis",
+        "tier": "sport",
+        "price": 1000,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "chassisRigidityNmDeg",
+            "operation": "multiply",
+            "value": 1.6
+          },
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 24
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "race-rigidity",
+      "name": "Welded Cage",
+      "description": "Reinforces suspension mounting stiffness with added chassis mass. Does not repair damaged components.",
+      "effects": [],
+      "carPart": {
+        "slot": "rigidity",
+        "section": "Chassis",
+        "tier": "race",
+        "price": 2000,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "chassisRigidityNmDeg",
+            "operation": "multiply",
+            "value": 2.2
+          },
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 38
+          }
+        ],
+        "tuning": [
+          {
+            "field": "chassisRigidityNmDeg",
+            "min": 1000,
+            "max": 100000,
+            "step": 1000
+          }
+        ],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "street-ballast",
+      "name": "Street Ballast",
+      "description": "Adjustable ballast with fore/aft placement. Changes mass, center of gravity and rotational inertia.",
+      "effects": [],
+      "carPart": {
+        "slot": "ballast",
+        "section": "Chassis",
+        "tier": "street",
+        "price": 200,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "ballastKg",
+            "operation": "set",
+            "value": 20
+          }
+        ],
+        "tuning": [
+          {
+            "field": "ballastKg",
+            "min": 0,
+            "max": 50,
+            "step": 1
+          },
+          {
+            "field": "ballastPosition",
+            "min": -1,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "sport-ballast",
+      "name": "Sport Ballast",
+      "description": "Adjustable ballast with fore/aft placement. Changes mass, center of gravity and rotational inertia.",
+      "effects": [],
+      "carPart": {
+        "slot": "ballast",
+        "section": "Chassis",
+        "tier": "sport",
+        "price": 400,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "ballastKg",
+            "operation": "set",
+            "value": 20
+          }
+        ],
+        "tuning": [
+          {
+            "field": "ballastKg",
+            "min": 0,
+            "max": 100,
+            "step": 1
+          },
+          {
+            "field": "ballastPosition",
+            "min": -1,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "race-ballast",
+      "name": "Race Ballast",
+      "description": "Adjustable ballast with fore/aft placement. Changes mass, center of gravity and rotational inertia.",
+      "effects": [],
+      "carPart": {
+        "slot": "ballast",
+        "section": "Chassis",
+        "tier": "race",
+        "price": 700,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "ballastKg",
+            "operation": "set",
+            "value": 20
+          }
+        ],
+        "tuning": [
+          {
+            "field": "ballastKg",
+            "min": 0,
+            "max": 200,
+            "step": 1
+          },
+          {
+            "field": "ballastPosition",
+            "min": -1,
+            "max": 1,
+            "step": 0.05
+          }
+        ],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "street-cooling",
+      "name": "Street Cooling",
+      "description": "Radiator and oil heat exchanger improve thermal rejection. Failed pumps, leaks and electrical faults still impair cooling.",
+      "effects": [],
+      "carPart": {
+        "slot": "cooling",
+        "section": "Engine",
+        "tier": "street",
+        "price": 450,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "coolingEfficiency",
+            "operation": "multiply",
+            "value": 1.15
+          },
+          {
+            "field": "oilCoolingEfficiency",
+            "operation": "multiply",
+            "value": 1.15
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "sport-cooling",
+      "name": "Sport Cooling",
+      "description": "Radiator and oil heat exchanger improve thermal rejection. Failed pumps, leaks and electrical faults still impair cooling.",
+      "effects": [],
+      "carPart": {
+        "slot": "cooling",
+        "section": "Engine",
+        "tier": "sport",
+        "price": 850,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "coolingEfficiency",
+            "operation": "multiply",
+            "value": 1.35
+          },
+          {
+            "field": "oilCoolingEfficiency",
+            "operation": "multiply",
+            "value": 1.35
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "race-cooling",
+      "name": "Race Cooling",
+      "description": "Radiator and oil heat exchanger improve thermal rejection. Failed pumps, leaks and electrical faults still impair cooling.",
+      "effects": [],
+      "carPart": {
+        "slot": "cooling",
+        "section": "Engine",
+        "tier": "race",
+        "price": 1600,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "coolingEfficiency",
+            "operation": "multiply",
+            "value": 1.65
+          },
+          {
+            "field": "oilCoolingEfficiency",
+            "operation": "multiply",
+            "value": 1.65
+          }
+        ],
+        "tuning": [
+          {
+            "field": "coolingEfficiency",
+            "min": 0.5,
+            "max": 3,
+            "step": 0.05
+          },
+          {
+            "field": "oilCoolingEfficiency",
+            "min": 0.5,
+            "max": 3,
+            "step": 0.05
+          }
+        ],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "street-wheels",
+      "name": "Street Width",
+      "description": "Wider tires alter contact-patch stiffness and surface grip.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheels",
+        "section": "Tires",
+        "tier": "street",
+        "price": 350,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "tireWidthMm",
+            "operation": "add",
+            "value": 10
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "sport-wheels",
+      "name": "Sport Width",
+      "description": "Wider tires alter contact-patch stiffness and surface grip.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheels",
+        "section": "Tires",
+        "tier": "sport",
+        "price": 750,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "tireWidthMm",
+            "operation": "add",
+            "value": 20
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "race-wheels",
+      "name": "Race Width",
+      "description": "Wider tires alter contact-patch stiffness and surface grip.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheels",
+        "section": "Tires",
+        "tier": "race",
+        "price": 1300,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "tireWidthMm",
+            "operation": "add",
+            "value": 35
+          }
+        ],
+        "tuning": [
+          {
+            "field": "tireWidthMm",
+            "min": 125,
+            "max": 405,
+            "step": 5
+          }
+        ],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "street-driveline",
+      "name": "Street Driveline",
+      "description": "Reduced driveline losses increase torque delivered to driven wheels.",
+      "effects": [],
+      "carPart": {
+        "slot": "driveline",
+        "section": "Drivetrain",
+        "tier": "street",
+        "price": 350,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "drivetrainEfficiency",
+            "operation": "add",
+            "value": 0.01
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "sport-driveline",
+      "name": "Sport Driveline",
+      "description": "Reduced driveline losses increase torque delivered to driven wheels.",
+      "effects": [],
+      "carPart": {
+        "slot": "driveline",
+        "section": "Drivetrain",
+        "tier": "sport",
+        "price": 750,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "drivetrainEfficiency",
+            "operation": "add",
+            "value": 0.025
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "race-driveline",
+      "name": "Race Driveline",
+      "description": "Reduced driveline losses increase torque delivered to driven wheels.",
+      "effects": [],
+      "carPart": {
+        "slot": "driveline",
+        "section": "Drivetrain",
+        "tier": "race",
+        "price": 1300,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "drivetrainEfficiency",
+            "operation": "add",
+            "value": 0.04
+          }
+        ],
+        "tuning": [
+          {
+            "field": "drivetrainEfficiency",
+            "min": 0.55,
+            "max": 0.96,
+            "step": 0.01
+          }
+        ],
+        "torqueCurve": []
       }
     }
   ]

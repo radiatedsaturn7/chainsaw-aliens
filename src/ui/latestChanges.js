@@ -9,6 +9,14 @@ export const LATEST_MAJOR_WORK = {
     'Reduce per-editor UI drift by moving repeated canvas and DOM chrome into shared RTG Studio helpers and CSS tokens.'
   ],
   currentStatus: [
+    '2026-11-07 02:31 UTC - Audit all upgrade inputs, give ECU/gearing/suspension tiers installed calibrations, add tire-width and driveline kits, and expose cooling controls in the mechanical editor.',
+    '2026-11-07 02:27 UTC - Add chassis reinforcement, ballast placement and cooling upgrades with suspension compliance, CG/inertia and thermal effects; expose rigidity and mass settings in the car editor.',
+    '2026-11-07 02:23 UTC - Add reversible engine and FWD/RWD/AWD conversions with real torque curves, driven-wheel changes, mass, inertia, shift limits and gauge ranges across transmission variants.',
+    '2026-11-07 02:21 UTC - Mark installed upgrades with green outlines, shorten category names, and add functional Street/Sport/Race flywheel and clutch upgrades with simulator regression coverage.',
+    '2026-11-07 02:04 UTC - Organize upgrades into eight populated categories on one page, splitting intake/exhaust and aero into their own sections; share category defaults with the part editor.',
+    '2026-11-07 01:17 UTC - Add eight driving setups and priced matching upgrade packages under Tires & Setups, with owned-part reuse, atomic purchases and specialist components; connect ride height and travel to physical suspension.',
+    '2026-11-07 00:56 UTC - Complete all 15 upgrade families with Street/Sport/Race progression, named engine components and specialist tires; retain free Stock restoration and unlock every supported tuning field through available parts.',
+    '2026-11-07 00:51 UTC - Add Street, Sport and Race brake upgrades; Sport and Race brakes unlock brake balance and pressure tuning, including older cars using default brake settings.',
     '2026-11-06 13:05 UTC - Share an optimized outside-apex-outside racing line between the 3D guide and AI, plan braking from its actual curvature, show upcoming turns instead of pedal banners, and correct pace-note direction against the race camera.',
     '2026-11-02 11:27 UTC - Detailed recordings now break down tire-event construction, duplicate checks and queue insertion, retaining bounded slow samples and collection sizes.',
     '2026-11-02 11:22 UTC - Skip invisible race-scene rendering during the fully black reset hold; preserve pause overlays, display filters and visible fades.',

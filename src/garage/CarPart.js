@@ -1,3 +1,5 @@
+import {GARAGE_ENGINES,applyGarageConversions} from './GarageConversions.js';
+import {GARAGE_SLOT_CATEGORIES} from './GarageCategories.js';
 import {createBuiltInRaceCars} from '../racing/raceData.js';
 import {PowertrainModel} from '../racing/simulation/PowertrainModel.js';
 import {normalizeFuelConfig} from '../racing/simulation/FuelModel.js';
@@ -7,15 +9,28 @@ import {applyTireDefinition} from '../racing/raceTires.js';
 // names, slots, prices, compatibility, effects and the tuning ranges they unlock.
 const field=(id,label,min,max,step=0.01)=>({id,label,min,max,step});
 export const CAR_PART_FIELDS=[
+ field('tireWidthMm','Width (mm)',125,405,5),
+ field('drivetrainEfficiency','Efficiency',.55,.96,.01),
+ field('coolingEfficiency','Radiator',.5,3,.05),
+ field('oilCoolingEfficiency','Oil cooler',.5,3,.05),
+ field('chassisRigidityNmDeg','Rigidity (Nm/°)',1000,100000,1000),
+ field('ballastKg','Ballast (kg)',0,200,1),
+ field('ballastPosition','Placement',-1,1,.05),
+ field('engineInertiaKgM2','Inertia (kg m²)',0.05,2,0.01),
+ field('shiftTimeMs','Shift (ms)',80,1000,10),
  field('weightKg','Weight (kg)',450,20000,1),
  field('gearFinalDrive','Final drive',0.5,12),
  ...Array.from({length:10},(_,i)=>field(`gearRatios.${i}`,`Gear ${i+1} ratio`,0.1,12)),
  ...['Front','Rear'].flatMap(axle=>[
+  field(`suspensionTravel${axle}`,`${axle} suspension travel`,0.1,1),
   field(`spring${axle}`,`${axle} springs`,0.1,1),field(`rideHeight${axle}`,`${axle} ride height`,0.1,1),
   field(`damping${axle}`,`${axle} damping`,0.1,1),field(`bump${axle}`,`${axle} bump`,0.1,1),
   field(`rebound${axle}`,`${axle} rebound`,0.1,1),field(`antiRoll${axle}`,`${axle} anti-roll`,0.1,1),
   field(`camber${axle}`,`${axle} camber`,-5,1,0.1),field(`toe${axle}`,`${axle} toe`,-1,1,0.1)]),
  ...['fl','fr','rl','rr'].map(wheel=>field(`pressure.${wheel}`,`${{fl:'Front left',fr:'Front right',rl:'Rear left',rr:'Rear right'}[wheel]} pressure (PSI)`,5,80,0.5)),
+ field('casterFront','Front caster',3,8,0.1),
+ ...['front','rear'].flatMap(axle=>['Accel','Decel'].map(phase=>field(`${axle}Differential${phase}`,`${axle} differential ${phase.toLowerCase()}`,0,1))),
+ field('centerDifferentialBalance','AWD rear torque split',0.1,0.9),field('centerDifferentialLock','AWD center lock',0,1),
  field('brakeBalance','Brake balance',0.45,0.78),field('brakePressure','Brake pressure',0.7,1.35),
  field('differentialAccel','Differential acceleration',0,1),field('differentialDecel','Differential deceleration',0,1),
  field('aeroFront','Front aero',0,1),field('aeroRear','Rear aero',0,1),
@@ -33,7 +48,9 @@ function target(id){const f=fields.get(id);if(!f)throw Error('Choose a supported
 export function normalizeCarPart(value){
  if(!value)return null;
  const slot=safeGarageKey(value.slot);if(!slot)throw Error('Enter a part slot');
- return {slot,section:text(value.section)||({tires:'Tires',suspension:'Handling',brakes:'Brakes',transmission:'Drivetrain',weight:'Body'}[slot]||'Engine'),tier:['street','sport','race','custom'].includes(value.tier)?value.tier:'custom',price:Math.max(0,finite(value.price??0,'Price')),forSale:value.forSale!==false,
+ if(value.engineSwap&&(!Object.hasOwn(GARAGE_ENGINES,value.engineSwap)||slot!=='engine-swap'))throw Error('Choose an engine conversion in the engine-swap slot');
+ if(value.drivetrainSwap&&(!['fwd','rwd','awd'].includes(value.drivetrainSwap)||slot!=='drive-swap'))throw Error('Choose a drivetrain conversion in the drive-swap slot');
+ return {...(value.engineSwap?{engineSwap:value.engineSwap}:{}),...(value.drivetrainSwap?{drivetrainSwap:value.drivetrainSwap}:{}),slot,section:text(value.section)||(GARAGE_SLOT_CATEGORIES[slot]||'Engine'),tier:['street','sport','race','custom'].includes(value.tier)?value.tier:'custom',price:Math.max(0,finite(value.price??0,'Price')),forSale:value.forSale!==false,
   unlockKey:safeGarageKey(value.unlockKey)||'',compatibleCars:list(value.compatibleCars),requires:list(value.requires),
   modifiers:(value.modifiers||[]).map(m=>{target(m.field);if(m.field==='torqueScale'&&m.operation==='add')throw Error('Use Set or Multiply for torque scale');if(!['add','multiply','set'].includes(m.operation))throw Error('Choose a part operation');return {field:m.field,operation:m.operation,value:finite(m.value,'Change')};}),
   tuning:(value.tuning||[]).map(t=>{const f=target(t.field),min=finite(t.min,'Minimum'),max=finite(t.max,'Maximum'),step=finite(t.step??f.step,'Step');if(min<f.min||max>f.max||min>max||step<=0)throw Error(`Invalid tuning range for ${f.label}`);return {field:f.id,min,max,step};}),
@@ -88,15 +105,35 @@ function scaleTorque(tuning,fn,rpms=[]){
 }
 export function readCarSetting(car,id){
  target(id);
+ if(id==='tireWidthMm')return car.setup?.tireSize?.widthMm??245;
+ if(id==='drivetrainEfficiency')return car.tuning?.[id]??.84;
+ if(id==='coolingEfficiency'||id==='oilCoolingEfficiency')return car.mechanics?.[id]??1;
+ if(id==='chassisRigidityNmDeg')return car.tuning?.[id]??20000;
+ if(id==='ballastKg'||id==='ballastPosition')return car.tuning?.[id]??0;
+ if(id==='engineInertiaKgM2')return car.tuning?.[id]??0.3;
+ if(id==='shiftTimeMs')return car.tuning?.[id]??420;
  if(id==='torqueScale')return 1;
+ if(id==='brakePressure')return car.tuning?.brakePressure??1;
+ if(id==='brakeBalance')return car.tuning?.frontBrakeBias??car.tuning?.brakeBalance??0.62;
  if(id.startsWith('fuel'))return normalizeFuelConfig(car.mechanics)[id];
  if(id.startsWith('pressure.'))return car.setup?.tirePressurePsi?.[id.split('.')[1]]??32;
  if(id.startsWith('gearRatios.'))return car.tuning?.gearRatios?.[Number(id.split('.')[1])];
+ if(id==='casterFront')return car.tuning?.[id]??5.5;
+ if(id==='centerDifferentialBalance')return car.tuning?.[id]??0.5;
+ if(id==='centerDifferentialLock')return car.tuning?.[id]??0.42;
+ if(/^(front|rear)Differential/.test(id))return car.tuning?.[id]??car.tuning?.['differential'+id.split('Differential')[1]]??0;
+ if(id.startsWith('differential')){
+  const suffix=id.slice('differential'.length);
+  return car.tuning?.[id]??car.tuning?.['rearDifferential'+suffix]??car.tuning?.['frontDifferential'+suffix]??0;
+ }
+ if(/^(camber|toe|aero)/.test(id))return car.tuning?.[id]??0;
+ if(/^(spring|rideHeight|suspensionTravel|damping|bump|rebound|antiRoll)/.test(id))return car.tuning?.[id]??0.5;
  return car.tuning?.[id];
 }
 function changeSetting(car,change){
  const f=target(change.field),id=f.id;
- if(id.startsWith('fuel')){
+ if(id==='tireWidthMm'){car.setup||={};car.setup.tireSize||={widthMm:245,aspectRatio:40,wheelDiameterIn:18};car.setup.tireSize.widthMm=Math.max(f.min,Math.min(f.max,applyNumber(readCarSetting(car,id),change)));return;}
+ if(id.startsWith('fuel')||id==='coolingEfficiency'||id==='oilCoolingEfficiency'){
   car.mechanics||={};car.mechanics[id]=Math.max(f.min,Math.min(f.max,applyNumber(readCarSetting(car,id),change)));return;
  }
  if(id==='torqueScale'){
@@ -119,8 +156,13 @@ function changeSetting(car,change){
    tuning.gearRatios[index]=Math.max(f.min,Math.min(f.max,applyNumber(tuning.gearRatios[index],change)));
   }else for(const key of aliases){
    if(Number.isFinite(tuning[key]))tuning[key]=Math.max(f.min,Math.min(f.max,applyNumber(tuning[key],change)));
-   else if(tuning===car.tuning)tuning[key]=Math.max(f.min,Math.min(f.max,applyNumber(Number(before[key]??before[id])||0.5,change)));
+   else if(tuning===car.tuning)tuning[key]=Math.max(f.min,Math.min(f.max,applyNumber(Number(before[key]??before[id]??readCarSetting({tuning:before},id)??0.5),change)));
   }
+ }
+ if(id.startsWith('rideHeight')){
+  const axle=id.slice('rideHeight'.length),profile=car.tuning.physicalVehicleProfile||car.physicalVehicleProfile||(car.tuning.physicalVehicleProfile={});
+  const key='garageRideHeightAdjustment'+axle+'M';
+  profile[key]=(Number(profile[key])||0)+.1*(car.tuning[id]-(before[id]??.5));
  }
  const profile=car.tuning.physicalVehicleProfile||car.physicalVehicleProfile;
  if(profile){
@@ -128,6 +170,12 @@ function changeSetting(car,change){
    for(const key of aliases){
     const physical={['spring'+axle]:[`suspensionSpringRate${axle}Npm`,12,20],['bump'+axle]:[`suspensionBumpDamper${axle}NsM`,1.7,3.1],['rebound'+axle]:[`suspensionReboundDamper${axle}NsM`,1.7,3.1]}[key];
     if(physical&&Number.isFinite(profile[physical[0]]))profile[physical[0]]*=(physical[1]+car.tuning[key]*physical[2])/(physical[1]+(before[key]??before[id]??0.5)*physical[2]);
+    // Authored SI profiles otherwise mask normalized garage adjustments.
+    const mappings={['rideHeight'+axle]:[axle.toLowerCase()+'RideHeightM',.11,.1],['suspensionTravel'+axle]:['suspensionTravel'+axle+'M',.055,.19],['antiRoll'+axle]:['antiRollStiffness'+axle+'Npm',.05,1]};
+    const mapping=mappings[key];
+    if(mapping&&Number.isFinite(profile[mapping[0]]))profile[mapping[0]]*=(mapping[1]+car.tuning[key]*mapping[2])/(mapping[1]+(before[key]??.5)*mapping[2]);
+    if(key==='aero'+axle){const coefficient=axle.toLowerCase()+'DownforceCoefficient';if(Number.isFinite(profile[coefficient]))profile[coefficient]=Math.max(0,profile[coefficient]+.6*(car.tuning[key]-(before[key]??0)));}
+
    }
   }
  }
@@ -141,6 +189,7 @@ export function buildGarageCar(stock,{parts=[],tune={},tires={}}={}){
   const profile=createBuiltInRaceCars().find(candidate=>candidate.id===car.id)?.tuning?.physicalVehicleProfile;
   if(profile)car.tuning.physicalVehicleProfile=structuredClone(profile);
  }
+ applyGarageConversions(car,installed.map(item=>({...item,carPart:normalizeCarPart(item.carPart)})));
  for(const item of installed){
   const part=normalizeCarPart(item.carPart);
   if(part.tireRef){if(!tires[part.tireRef])throw Error(`Tire unavailable: ${part.tireRef}`);applyTireDefinition(car,tires[part.tireRef],part.tireRef);}
@@ -148,7 +197,10 @@ export function buildGarageCar(stock,{parts=[],tune={},tires={}}={}){
   if(part.torqueCurve.length)scaleTorque(car.tuning,rpm=>curveMultiplier(part.torqueCurve,rpm),part.torqueCurve.map(p=>p.rpm));
  }
  const ranges=garageTuningRanges(installed);
- for(const [id,value] of Object.entries(tune)){
+ // Generic damping/differential controls run first; explicit axle values win
+ // regardless of the order in which the player previously edited settings.
+ const generic=id=>/^(damping|differential)/.test(id);
+ for(const [id,value] of Object.entries(tune).sort(([a],[b])=>Number(generic(b))-Number(generic(a)))){
   const range=ranges[id];if(!range)continue; // Removed parts also remove their tuning permissions.
   const number=finite(value,'Tune');if(number<range.min||number>range.max)throw Error(`Tune is outside the installed part range: ${target(id).label}`);
   changeSetting(car,{field:id,operation:'set',value:number});

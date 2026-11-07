@@ -4,7 +4,7 @@ import {partFits,garageTuningRanges,isGarageUpgrade} from './CarPart.js';
 // restrictions still apply; the cheat grants parts rather than bypassing physics.
 export function bestCheatParts(catalog,ref,stock){
  const rank={custom:0,street:1,sport:2,race:3};
- const candidates=catalog.filter(i=>isGarageUpgrade(i)&&partFits(i.carPart,ref,stock)).sort((a,b)=>(rank[b.carPart.tier]-rank[a.carPart.tier])||b.carPart.price-a.carPart.price||a.id.localeCompare(b.id));
+ const candidates=catalog.filter(i=>isGarageUpgrade(i)&&!i.carPart.engineSwap&&!i.carPart.drivetrainSwap&&partFits(i.carPart,ref,stock)).sort((a,b)=>(rank[b.carPart.tier]-rank[a.carPart.tier])||b.carPart.price-a.carPart.price||a.id.localeCompare(b.id));
  const byId=new Map(candidates.map(i=>[i.id,i])),chosen=new Map();
  function add(item,plan,visiting=new Set()){
   const slot=item.carPart.slot,existing=plan.get(slot);

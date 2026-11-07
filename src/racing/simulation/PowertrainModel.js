@@ -560,8 +560,12 @@ export class PowertrainModel {
         + freeRpmTarget * (1 - clutchCoupling)
       : freeRpmTarget;
     let engineRpm = clamp(Number(previous.engineRpm ?? state.engineRpm ?? idleRpm), idleRpm, maxRpm);
+    // Calibrated rotational response: torque-equivalent response stays constant,
+    // so a lower combined crank/flywheel inertia accelerates and decelerates RPM
+    // faster. The 0.3 kg m² baseline preserves existing authored cars.
+    const engineInertia = clamp(Number(tuning.engineInertiaKgM2) || 0.3, 0.05, 2);
     engineRpm += (clamp(rpmTarget, idleRpm, maxRpm) - engineRpm)
-      * Math.min(1, seconds * (overallRatio > 0 ? 12 : 7.5));
+      * Math.min(1, seconds * (overallRatio > 0 ? 12 : 7.5) * 0.3 / engineInertia);
     const limiterActive = engineRpm >= maxRpm - Math.max(40, Number(config.revLimiterDropRpm || 280) * 0.35)
       && controls.throttle > 0.05;
     const limiterPhase = Math.floor(Number(previous.limiterSequence || 0)) % 4;
