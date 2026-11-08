@@ -10,7 +10,7 @@ export const GARAGE_DIALOGUE={
  repair:"Let’s find what’s broken. We can fix individual components, or repair everything if we have the scrap and parts.",
  pressure:"Hmm... maybe a little less pressure? I mean, half these roads are barely roads anymore.",
  tires:"You think we'll need something for dirt or snow? I'd rather not waste a good set of tires on pavement.",
- engine:"We could get a little more power out of it. Or lose some weight. I'm not sure how much more this thing can take.",
+ engine:"We can trade some power for fuel and cooling, or sharpen the pedal. Turning everything up isn't always the answer.",
  gearing:"We could make it accelerate faster, but we'd lose some top speed. I guess it depends on what we're expecting out there.",
  suspension:"I'm thinking softer suspension might help. I mean, have you seen the roads lately?",
  alignment:"We could probably get it to corner better. Might be worth trying, especially with some of those highways falling apart.",
@@ -46,7 +46,7 @@ export const GARAGE_DIALOGUE={
 };
 export function garageDialogueContext(screen,resources,parameters,states=new Map(),focusedId=null){
  const tuner=screen.elements.find(e=>e.type==='garage-tuner');
- if(tuner){const state=states.get(tuner.id)?.tuner;return {detail:state?.index===1&&state.mode!=='grid'?(state.message||state.row?.reason):'',kind:'tuning',category:TUNING_SECTIONS[state?.index||0]?.id||'pressure',selection:state?.mode==='grid'?'':String(state?.rowIndex||0)};}
+ if(tuner){const state=states.get(tuner.id)?.tuner;return {detail:TUNING_SECTIONS[state?.index]?.id==='repair'&&state.mode!=='grid'?(state.message||state.row?.reason):state?.mode!=='grid'?(state?.row?.enabled===false&&!state?.row?.children?state.row.reason:state?.row?.help||''):'',kind:'tuning',category:TUNING_SECTIONS[state?.index||0]?.id||'pressure',selection:state?.mode==='grid'?'':String(state?.rowIndex||0)};}
  const browser=screen.elements.find(e=>e.type==='garage-browser');
  if(browser){
   const state=states.get(browser.id)||{},rows=garageBrowserRows(resources,parameters,state),row=rows[Math.min(state.index||0,Math.max(0,rows.length-1))];
@@ -56,7 +56,9 @@ export function garageDialogueContext(screen,resources,parameters,states=new Map
   const candidates=resources.garageCatalog().filter(e=>e.item.carPart.slot===state.slot);
   const rank=t=>({street:1,sport:2,race:3,custom:4}[t]||0);
   const maximum=!!item&&installed===item.id&&!candidates.some(e=>rank(e.item.carPart.tier)>rank(item.carPart.tier)||(rank(e.item.carPart.tier)===rank(item.carPart.tier)&&e.item.carPart.price>item.carPart.price));
-  return {kind:'upgrades',category,selection:state.slot?row?.value:state.section?row?.value:'',insufficient:!!item&&!owned&&credits<item.carPart.price,expensive:!!item&&!owned&&credits>0&&item.carPart.price>=credits*.6,maximum};
+  const selectedItem=state.slot&&row&&!row.children?(row.value===''?resources.stockPart?.(state.slot):item):null;
+  const detail=row?.package?row.description:selectedItem?.description||'';
+  return {kind:'upgrades',category,detail,selection:[state.slot||'',...(state.path||[]),row?.value||''].join('/'),insufficient:!!item&&!owned&&credits<item.carPart.price,expensive:!!item&&!owned&&credits>0&&item.carPart.price>=credits*.6,maximum};
  }
  const category=screen.id==='garage'?({'garage-play':'drive','garage-tune':'tune','garage-upgrade':'upgrade'}[focusedId]||'drive'):'';
  return {kind:'garage',category};
@@ -88,7 +90,7 @@ export class GarageDialogueState{
  }
  text(context,now=Date.now()){
   const selection=key(context);
-  if(selection!==this.lastContext){this.lastContext=selection;if(context.kind==='upgrades'&&context.category==='Engine'&&!context.insufficient&&!context.expensive&&++this.engineVisits%6===0)this.say('engineMemory',context,now);}
+  if(selection!==this.lastContext){this.lastContext=selection;if(context.kind==='upgrades'&&!context.detail&&context.category==='Engine'&&!context.insufficient&&!context.expensive&&++this.engineVisits%6===0)this.say('engineMemory',context,now);}
   if(this.event&&(this.event.until<=now||this.event.key!==key(context)))this.event=null;
   return this.event?.text||garageDialogueText(context);
  }

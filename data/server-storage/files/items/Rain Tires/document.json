@@ -4,7 +4,7 @@
   "item": {
     "id": "rain-tires",
     "name": "Rain Tires",
-    "description": "Rain tires. Uses the saved Rain tire definition.",
+    "description": "Rain Tires. If the road's soaked, these are the ones I'd want underneath us.",
     "carPart": {
       "slot": "tires",
       "section": "Tires",

@@ -1,3 +1,4 @@
+import {surfaceWearProfile} from './SurfaceWearModel.js';
 import { getRaceTireLoadSensitivityMultiplierForLoose } from '../RaceVehiclePhysics.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './SimulationMath.js';
 import { resolveCompoundSurfaceGrip } from './SurfaceConditionGrip.js';
@@ -209,18 +210,7 @@ export class TireModel {
   }
 
   getSurfaceWearMultiplier(compoundId = 'tarmac', terrain = 'road', surfaceId = 'asphalt') {
-    const compound = String(compoundId || 'tarmac');
-    const surface = String(surfaceId || '').toLowerCase();
-    const region = String(terrain || '').toLowerCase();
-    const offRoad = region !== 'road'
-      || ['dirt', 'gravel', 'mud', 'wet-gravel', 'snow', 'slush'].includes(surface);
-    if (!offRoad) return compound === 'offroad' || compound === 'dirt' || compound === 'snow' ? 1.18 : 1;
-    if (compound === 'tarmac') return surface === 'snow' || surface === 'slush' ? 2.1 : 1.72;
-    if (compound === 'rain') return surface === 'snow' || surface === 'slush' ? 1.85 : 1.44;
-    if (compound === 'dirt') return surface === 'snow' || surface === 'slush' ? 1.38 : 1.08;
-    if (compound === 'offroad') return surface === 'snow' || surface === 'slush' ? 1.22 : 0.94;
-    if (compound === 'snow') return surface === 'snow' || surface === 'slush' ? 0.96 : 1.5;
-    return 1.25;
+    return surfaceWearProfile(String(surfaceId).toLowerCase(),String(compoundId)).abrasion;
   }
 
   getWearMultiplier(compoundByWheel = {}) {

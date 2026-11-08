@@ -118,7 +118,7 @@ function buildRecce(editor) {
     const braking=samples[0].speedMps>minSpeed+4||approach.speedMps>minSpeed+6;
     const body=`${shape?`${shape} ${direction.toLowerCase()}`:`${direction} ${severity}`}${modifiers.length?' '+modifiers.join(', '):''}`;
     calls.push({at:Math.round(start),endAt:Math.round(circuit?(g.end*step)%length:g.end*step),apexAt:Math.round(apex.at),direction,severity,shape,
-      modifiers,hazardIds,body,text:`${braking?'Brake, ':''}${body}`,generated:RECCE_VERSION,
+      modifiers,hazardIds,body,text:body,generated:RECCE_VERSION,
       recce:{steeringDeg:Number(demand.toFixed(2)),turnDegrees:Math.round(totalAngle),entrySpeedMps:Number(samples[0].speedMps.toFixed(1)),
         apexSpeedMps:Number(apex.speedMps.toFixed(1)),minimumSpeedMps:Number(minSpeed.toFixed(1)),exitSpeedMps:Number(samples.at(-1).speedMps.toFixed(1)),
         braking,peakBrakingMps2:Number(observations.slice(Math.max(0,g.start-30),Math.min(count,g.end+1)).reduce((v,s)=>Math.max(v,-s.accelerationMps2),0).toFixed(2)),exitAccelerationMps2:Number(samples.at(-1).accelerationMps2.toFixed(2)),wheelbaseM:wheelbase},spanM:span});

@@ -1,3 +1,5 @@
+import {contactTireWear,applySuspensionContactDamage,applySuspensionLandingDamage} from './SurfaceWearModel.js';
+import {mapThrottlePedal} from './PowertrainModel.js';
 import {chassisComplianceScale} from './ChassisUpgrades.js';
 import {stepMechanicalState} from './MechanicalModel.js';
 import { getRaceServiceBrakeForceN } from './RaceSimulationConfig.js';
@@ -3436,8 +3438,12 @@ export class VehicleDynamicsRunner {
         dt,
         target: this.tireThermalScratch[wheelId]
       });
-      const slipWorkJ = Number(thermal.frictionHeatingWorkJ || 0) / 0.78;
-      const wear = quantize(clamp(Number(previous.wear || 0) + slipWorkJ * 1e-9, 0, 1));
+      const wearDelta=contactTireWear({patch,thermal,dt});
+      const wear = clamp(Number(previous.wear || 0) + wearDelta.wear, 0, 1);
+      if(state.mechanical?.config?.enabled&&wearDelta.damage>0){
+        const component=state.mechanical.components['tire_'+wheelId];
+        component.damage=clamp(component.damage+wearDelta.damage/state.mechanical.config.components['tire_'+wheelId].durability,0,100);
+      }
       const damage = quantize(clamp(
         Number(patch.tireParameters?.damage ?? previous.damage ?? 0),
         0,
@@ -4647,6 +4653,7 @@ export class VehicleDynamicsRunner {
     const ownsCostStep = this.physicsCostAccounting.beginStep(beginCostMetadata);
     this.physicsCostAccounting.count('backlogSteps', Math.max(0, Number(backlogSteps) || 0));
     const chassisStepPreImpactKineticEnergyJ = calculateKineticEnergyJ(this.state, this.config);
+    const preImpactVelocityX=Number(this.state.velocity?.x)||0,preImpactVelocityZ=Number(this.state.velocity?.z)||0;
     const preImpactVerticalVelocityMps = Number(this.state.velocity?.y || 0);
     const scheduledReplayCollisions = this.scheduledReplayCollisions.get(nextStepIndex);
     for (let collisionIndex = 0;
@@ -4693,6 +4700,7 @@ export class VehicleDynamicsRunner {
     const directHandbrake = Number(sampledControls.handbrake || 0) > 0.001;
     const authoritativeHandbrakeActive = directHandbrake || handbrakeRemainingSeconds > EPSILON;
     const controls = sampledControls;
+    controls.throttle = mapThrottlePedal(controls.throttle,this.config.powertrainTuning?.pedalResponse);
     if (this.stationaryResetHold || suppressThrottleForResetRelease) controls.throttle = 0;
     controls.handbrake = authoritativeHandbrakeActive
       ? Math.max(1, Number(sampledControls.handbrake || 0)) : 0;
@@ -6368,6 +6376,7 @@ export class VehicleDynamicsRunner {
     }
     this.terrainImpactContactActive = Boolean(terrainImpactContactQualifies);
     if (impactStarted && (!this.activeImpact || this.activeImpact.complete === true)) {
+      applySuspensionLandingDamage(this.state,this.config,{x:preImpactVelocityX,y:preImpactVerticalVelocityMps,z:preImpactVelocityZ});
       const impact = {
         sequence: Math.max(0, Number(this.impactHistory.at(-1)?.sequence || 0)) + 1,
         stepIndex: nextStepIndex,
@@ -6567,6 +6576,7 @@ export class VehicleDynamicsRunner {
         + Number(this.state.wheelAngularVelocityRadps?.[wheelId] || 0) * chassisStepDt
       ) % (Math.PI * 2), 12);
     }
+    applySuspensionContactDamage(this.state,this.config,chassisStepDt);
     if (this.state.mechanical) stepMechanicalState(this.state.mechanical, chassisStepDt, {
       rpm:this.state.engineRpm, maxRpm:this.config.maxRpm,
       throttle:controls.throttle, brake:controls.brake, headlights:controls.headlights,highBeams:controls.highBeams,auxLights:controls.auxLights,

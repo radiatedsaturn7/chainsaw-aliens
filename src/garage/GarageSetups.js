@@ -8,10 +8,10 @@ export async function loadGarageSetupCatalog(garage){
   try{const value=await garage.items.library.load(ref);return [ref,value?normalizeItemDocument(value):null];}catch{return [ref,null];}
  })));
 }
-function fitPackage(garage,progress,ref,stock,preset,catalog){
+export function fitGarageParts(garage,progress,ref,stock,partRefs,catalog){
  const setup=progress.garage.cars[ref]||={installed:{},tune:{}};
  let cost=0,bought=0,reused=0;
- for(const partRef of garageSetupPartIds(preset)){
+ for(const partRef of partRefs){
   const item=catalog.get(partRef),part=item?.carPart;
   if(!part)throw Error('Unavailable package part: '+partRef);
   if(!partFits(part,ref,stock))throw Error(item.name+' does not fit this car');
@@ -32,7 +32,7 @@ function fitPackage(garage,progress,ref,stock,preset,catalog){
 export function quoteGarageSetup(garage,ref,stock,id,catalog){
  if(!safeGarageKey(ref))throw Error('Choose a car first');
  const p=structuredClone(garage.items.progress);
- return fitPackage(garage,p,ref,stock,getGarageSetupProfile(id),catalog);
+ return fitGarageParts(garage,p,ref,stock,garageSetupPartIds(getGarageSetupProfile(id)),catalog);
 }
 export function planGarageSetup(garage,ref,stock,built,id,progress=garage.items.progress){
  const profile=getGarageSetupProfile(id),targets=garageSetupTargets(profile,stock);
@@ -52,7 +52,7 @@ export async function applyGarageSetup(garage,ref,stock,id,{packageParts=false,e
  await garage.load();
  const catalog=packageParts?await loadGarageSetupCatalog(garage):null;
  return garage.transaction(async next=>{
-  const receipt=packageParts?fitPackage(garage,next,ref,stock,profile,catalog):{cost:0,bought:0,reused:0};
+  const receipt=packageParts?fitGarageParts(garage,next,ref,stock,garageSetupPartIds(profile),catalog):{cost:0,bought:0,reused:0};
   if(packageParts&&Number.isFinite(expectedCost)&&receipt.cost!==expectedCost)throw Error('Package price changed. Reopen the setup to review the new cost.');
   const parts=garage.installed(ref,next),tires={};
   for(const item of parts){if(!partFits(item.carPart,ref,stock))throw Error('An installed part does not fit this car');if(item.carPart.tireRef)tires[item.carPart.tireRef]=await garage.loadTire(item.carPart.tireRef);}

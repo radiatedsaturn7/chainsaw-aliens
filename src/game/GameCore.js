@@ -2161,7 +2161,7 @@ export default class Game {
       if (raceDocumentName) session.trackStateByRace[raceDocumentName] = trackStateSnapshot;
     }
     const completedRef=raceDocumentName||raceId;
-    const variables={...(completedRef?{[raceCompletionKey(completedRef)]:finishBehavior.mechanicalMissionSuccess!==false,lastCompletedRace:completedRef,garageReturnCount:Number(this.menuProgress?.garageReturnCount||0)+1,garageDialogueEvent:''}:{}),...finishBehavior.variables};
+    const variables={...(completedRef?{[raceCompletionKey(completedRef)]:finishBehavior.mechanicalMissionSuccess!==false,lastCompletedRace:completedRef,garageReturnCount:Number(this.menuProgress?.garageReturnCount||0)+(finishBehavior.progressSaved?0:1),garageDialogueEvent:''}:{}),...finishBehavior.variables};
     if(finishBehavior.type==='menu'){
       // Keep the race presentation alive until progress and menu assets are ready.
       return this.openMenuDestination({...finishBehavior,variables});
@@ -11341,6 +11341,7 @@ export default class Game {
   }
 
   update(dt) {
+    this.campaignSaves?.tick(dt);
     this.updatePlaytestFps(dt);
     const wheelFrame=this.wheelService?.readInput();
     if(this.state==='race-editor'&&this.raceEditor?.playtestSession?.running&&wheelFrame?.pressed.pause){

@@ -1,3 +1,7 @@
+import {savedTireForRef} from '../helpers/savedGarageTires.js';
+import MenuPlayer from '../../src/menus/MenuPlayer.js';
+import {garageBrowserRows} from '../../src/menus/MenuGarageWidgets.js';
+import {runGarageAction} from '../../src/garage/GarageMenu.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import raw from '../../src/content/garage-parts.json' with {type:'json'};
@@ -68,14 +72,29 @@ test('owned matching parts in another car need a new copy, and locked purchases 
  await assert.rejects(applyGarageSetup(f.garage,'second',car,'rally',{packageParts:true}),/locked/);
  assert.deepEqual(f.items.progress,before);
 });
-test('tuner previews package price, cancels without purchases, and applies through the shared controls',async()=>{
+test('Upgrade Presets presents eight package buttons, navigates back, and fits the selected package',async()=>{
  const f=await fixture(),car=stock(),t=new GarageTuner({garage:f.garage,carRef:'car',resolveCar:async()=>car});await t.readyTask;
- t.index=0;await t.confirm();t.rowIndex=t.sectionRows().findIndex(r=>r.id==='setupPackage');await t.confirm();
- const rally=t.row.options.findIndex(o=>o.id==='rally');t.draft=rally;
- assert.match(t.row.options[rally].label,/scrap/);const cost=t.row.options[rally].cost;
- t.cancel();assert.equal(f.game.player.credits,100000);assert.equal(f.garage.installed('car').length,0);
- await t.confirm();t.draft=rally;await t.confirm();
- assert.equal(t.mode,'list');assert.match(t.message,/Rally/);assert.equal(f.game.player.credits,100000-cost);
+ assert.ok(!t.rows.some(r=>r.id==='setupPackage'));
+ const p=new MenuPlayer({input:{}}),element={id:'parts',type:'garage-browser',binding:'partRef',action:{}};
+ p.resources={garage:f.garage,stockCar:()=>car,setupCatalog:f.catalog,garageCatalog:()=>f.parts.map(item=>({ref:item.id,item}))};
+ p.flow={parameters:{carRef:'car'},setParameter(k,v){this.parameters[k]=v;},run:async()=>runGarageAction(f.garage,'garage-fit',p.flow.parameters.partRef,p.flow.parameters,{resolveCar:async()=>car})};
+ p.interactive=()=>[element];p.focus=0;
+ const root=garageBrowserRows(p.resources,p.flow.parameters);
+ assert.deepEqual(root.map(r=>r.label),['Presets','Breathing','Drivetrain','Handling','Engine','Tires','Aero','Chassis']);
+ assert.deepEqual(garageBrowserRows(p.resources,p.flow.parameters,{section:'Handling'}).map(r=>r.value).sort(),['alignment','brakes','suspension']);
+ await p.activateGarageWidget(element,1,true);
+ const state=p.widgetStates.get(element.id);
+ assert.deepEqual(garageBrowserRows(p.resources,p.flow.parameters,state).map(r=>r.label),['Setup','Auto Upgrade']);
+ await p.activateGarageWidget(element,1,true);
+ const rows=garageBrowserRows(p.resources,p.flow.parameters,state);
+ assert.equal(rows.length,8);assert.ok(rows.every(r=>r.package&&!r.children));
+ assert.deepEqual(rows.map(r=>r.label),['Stock','Street','Road','Rally','Drift','Off-road','Drag','Snow']);
+ assert.equal(p.backGarageWidget(),true);assert.equal(f.game.player.credits,100000);
+ await p.activateGarageWidget(element,1,true);
+ state.index=rows.findIndex(r=>r.value==='package:rally');const cost=rows[state.index].cost;
+ assert.ok(cost>0);await p.activateGarageWidget(element,1,true);
+ assert.equal(f.game.player.credits,100000-cost);assert.equal(f.garage.configuration('car').setupId,'rally');
+ assert.equal(garageBrowserRows(p.resources,p.flow.parameters,state)[state.index].cost,0);
 });
 
 test('presets override older generic differential settings in either edit order',async()=>{
@@ -85,4 +104,30 @@ test('presets override older generic differential settings in either edit order'
  await applyGarageSetup(f.garage,'car',car,'rally');
  const t=editor.getRaceCarTuning(await f.garage.build('car',car));
  assert.equal(t.frontDifferentialAccel,.3);assert.equal(t.rearDifferentialAccel,.45);
+});
+
+test('Stock upgrade preset resets all installed parts and tuning for one car, retaining ownership and condition',async()=>{
+ const f=await fixture(),car=stock();
+ await applyGarageSetup(f.garage,'car',car,'rally',{packageParts:true});
+ await f.garage.purchase('engine-swap-v8',{carRef:'car'});
+ await f.garage.purchase('drive-swap-rwd',{carRef:'car'});
+ await applyGarageSetup(f.garage,'other',car,'street',{packageParts:true});
+ await f.garage.saveCondition('car',{damage:{engine:12}});
+ const before=structuredClone(f.items.progress),credits=f.game.player.credits;
+ const expected=await f.garage.build('fresh',car);
+ await runGarageAction(f.garage,'garage-fit','package:stock',{carRef:'car'},{resolveCar:async()=>car});
+ const setup=f.garage.configuration('car');
+ assert.deepEqual(setup.installed,{});assert.deepEqual(setup.tune,{});assert.equal(setup.setupId,undefined);
+ assert.deepEqual(setup.condition,before.garage.cars.car.condition);
+ assert.deepEqual(f.garage.configuration('other'),before.garage.cars.other);
+ assert.deepEqual(f.items.progress.bags,before.bags);assert.equal(f.game.player.credits,credits);
+ const built=await f.garage.build('car',car);
+ assert.deepEqual(built.tuning,expected.tuning);assert.deepEqual(built.transmissions,expected.transmissions);assert.deepEqual(built.setup,expected.setup);
+ for(const id of Object.values(before.garage.cars.car.installed))assert.ok(f.garage.availableCount(id)>0);
+});
+test('Stock reset is atomic when saving fails',async()=>{
+ let fail=false;const f=await fixture({save:async()=>({ok:!fail,reason:'offline'})});
+ await applyGarageSetup(f.garage,'car',stock(),'race',{packageParts:true});
+ const before=structuredClone(f.items.progress);fail=true;
+ await assert.rejects(f.garage.resetStock('car'),/offline/);assert.deepEqual(f.items.progress,before);
 });

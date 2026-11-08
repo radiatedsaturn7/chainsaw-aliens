@@ -458,7 +458,7 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-100'
       ]),
       sprites: section('sprites', 'Paint', ['paint-kind-doodad', 'paint-kind-fence', 'paint-kind-decal', 'paint-kind-tile', 'paint-kind-sprite']),
-      settings: section('settings', 'Settings', ['race-reverse', 'race-ground-texture', 'race-radio', 'race-music', 'race-countdown', 'race-driving-guide', 'race-pace-notes', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-weather', 'race-mechanics', 'race-fuel', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
+      settings: section('settings', 'Settings', ['race-reverse', 'race-ground-texture', 'race-radio', 'race-music', 'race-countdown', 'race-auto-extend', 'race-driving-guide', 'race-pace-notes', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-weather', 'race-mechanics', 'race-fuel', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
   model3d: {

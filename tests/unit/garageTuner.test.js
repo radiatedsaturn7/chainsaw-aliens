@@ -1,3 +1,4 @@
+import {savedTireForRef} from '../helpers/savedGarageTires.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {GarageTuner,TUNING_SECTIONS,tuningRows} from '../../src/garage/GarageTuning.js';
@@ -16,24 +17,24 @@ async function fixture({progress={},save,car=stock()}={}){
  const tuner=new GarageTuner({garage:items.garage,carRef:'car',resolveCar:async()=>car,onExit:()=>exits++});await tuner.readyTask;
  return {tuner,items,game,car,saved:()=>saved,writes:()=>writes,exits:()=>exits};
 }
-async function editPressure(t){t.index=0;await t.confirm();await t.confirm();assert.equal(t.mode,'edit');}
+async function editPressure(t){t.index=6;t.path=[];await t.confirm();await t.confirm();await t.confirm();assert.equal(t.mode,'edit');}
 test('eight sections cover every numeric tuning field once and show locked stock categories',async()=>{
  assert.equal(TUNING_SECTIONS.length,8);
  for(const f of CAR_PART_FIELDS)assert.equal(TUNING_SECTIONS.filter(s=>s.matches(f.id)).length,1,f.id);
- const {tuner}=await fixture();assert.equal(tuner.ready,true);assert.deepEqual(TUNING_SECTIONS.map((s,i)=>tuner.enabled(i)),[true,true,false,false,false,false,false,false]);
- tuner.index=4;await tuner.confirm();assert.equal(tuner.mode,'grid');assert.match(tuner.message,/springs/);
- tuner.index=7;tuner.move('right');tuner.move('down');assert.ok([0,1].includes(tuner.index));tuner.cancel();
+ const {tuner}=await fixture();assert.equal(tuner.ready,true);assert.deepEqual(TUNING_SECTIONS.map((s,i)=>tuner.enabled(i)),[true,true,true,true,true,true,true,true]);
+ tuner.index=4;await tuner.confirm();assert.equal(tuner.mode,'list');tuner.cancel();
+ tuner.index=7;tuner.move('right');tuner.move('down');assert.ok(tuner.index>=0&&tuner.index<8);tuner.cancel();
 });
 test('A edits/applies, B cancels only the draft, and saved pressure reaches reloaded car copies',async()=>{
  const f=await fixture();await editPressure(f.tuner);f.tuner.move('right');assert.equal(f.tuner.draft,32.5);assert.equal(f.items.garage.configuration('car').tune['pressure.fl'],undefined);assert.equal(f.writes(),0);
  f.tuner.cancel();assert.equal(f.tuner.mode,'list');assert.equal(f.tuner.row.value,32);
  await f.tuner.confirm();f.tuner.move('left');await f.tuner.confirm();assert.equal(f.tuner.mode,'list');assert.equal(f.items.garage.configuration('car').tune['pressure.fl'],31.5);
  const reload=await fixture({progress:f.saved()});assert.equal((await reload.items.garage.build('car',reload.car)).setup.tirePressurePsi.fl,31.5);
- assert.equal(f.car.setup.tirePressurePsi.fl,32);f.tuner.cancel();assert.equal(f.tuner.mode,'grid');f.tuner.cancel();assert.equal(f.exits(),1);
+ assert.equal(f.car.setup.tirePressurePsi.fl,32);f.tuner.cancel();f.tuner.cancel();assert.equal(f.tuner.mode,'grid');f.tuner.cancel();assert.equal(f.exits(),1);
 });
 test('installed parts unlock only their fields and slider values stay within granted limits',async()=>{
  const f=await fixture();await f.items.garage.purchase('springs',{carRef:'car'});await f.tuner.refresh();assert.equal(f.tuner.enabled(4),true);
- f.tuner.index=4;await f.tuner.confirm();assert.equal(f.tuner.row.id,'springFront');await f.tuner.confirm();
+ f.tuner.index=4;await f.tuner.confirm();assert.equal(f.tuner.row.id,'group:Front');await f.tuner.confirm();assert.equal(f.tuner.row.id,'springFront');await f.tuner.confirm();
  for(let i=0;i<50;i++)f.tuner.move('right',10);assert.equal(f.tuner.draft,1);
  for(let i=0;i<50;i++)f.tuner.move('left',10);assert.equal(f.tuner.draft,.1);
  await f.tuner.confirm();assert.equal((await f.items.garage.build('car',f.car)).tuning.springFront,.1);
@@ -54,17 +55,19 @@ test('a pending apply cannot be submitted twice or canceled halfway through savi
  let finish;const f=await fixture({save:()=>new Promise(r=>finish=r)});await editPressure(f.tuner);f.tuner.move('right');const save=f.tuner.confirm();await new Promise(r=>setImmediate(r));
  assert.equal(f.tuner.busy,true);f.tuner.cancel();await f.tuner.confirm();assert.equal(f.writes(),1);assert.equal(f.tuner.mode,'edit');finish({ok:true});await save;assert.equal(f.tuner.mode,'list');assert.equal(f.tuner.row.value,32.5);
 });
-test('tire type is a discrete slider over owned compatible tires, with cancel and stock restoration',async()=>{
- const f=await fixture();await f.items.garage.purchase('rally');await f.tuner.refresh();f.tuner.index=0;await f.tuner.confirm();f.tuner.rowIndex=f.tuner.sectionRows().findIndex(r=>r.id==='tireType');await f.tuner.confirm();f.tuner.move('right');assert.equal(f.tuner.row.options[f.tuner.draft].label,'Rally Tires');f.tuner.cancel();assert.deepEqual(f.items.garage.configuration('car').installed,{});
- await f.tuner.confirm();f.tuner.move('right');await f.tuner.confirm();assert.equal((await f.items.garage.build('car',f.car)).setup.defaultTireCompound,'dirt');
- await f.tuner.confirm();f.tuner.move('left');await f.tuner.confirm();assert.equal((await f.items.garage.build('car',f.car)).setup.defaultTireCompound,'stock');
- assert.ok(f.items.progress.bags.items.rally>0);
- const restricted={...f.car,garagePartSlots:[]};assert.equal(tuningRows(f.items.garage,'car',restricted,restricted).find(r=>r.id==='tireType').enabled,false);
+test('tuning preserves upgrade tires and places Stats first in Setup with front/rear pressures separate',async()=>{
+ const f=await fixture();await f.items.garage.purchase('rally',{carRef:'car'});await f.tuner.refresh();
+ assert.ok(!f.tuner.rows.some(r=>r.id==='tireType'));
+ assert.deepEqual(f.tuner.sectionRows(1).map(r=>r.id),['stats','drivingSetup','saveSetup','loadSetup','revEngine']);
+ assert.deepEqual(f.tuner.sectionRows(6).map(r=>r.label),['Front','Rear']);
+ f.tuner.index=1;await f.tuner.confirm();await f.tuner.confirm();assert.equal(f.tuner.mode,'stats');
+ f.tuner.move('right');assert.equal(f.tuner.row.id,'stats');f.tuner.cancel();assert.equal(f.tuner.mode,'list');
+ assert.equal(f.tuner.car.setup.defaultTireCompound,'dirt');assert.equal(f.items.garage.configuration('car').installed.tires,'rally');
 });
 test('renderer lays out two rows of four, grey locks, no exit button and bounded slider controls',async()=>{
  const f=await fixture();for(const b of [{x:0,y:0,w:900,h:460},{x:20,y:30,w:330,h:186}]){
   const labels=[],ctx=new Proxy({fillText(text){labels.push({text,color:this.fillStyle});}},{get:(o,k)=>k in o?o[k]:(()=>{})});
-  f.tuner.mode='grid';drawGarageTuner(ctx,b,f.tuner);const categories=f.tuner.hitAreas.filter(a=>a.kind==='category');assert.equal(categories.length,8);assert.equal(new Set(categories.map(a=>a.y)).size,2);assert.equal(new Set(categories.map(a=>a.x)).size,4);assert.ok(labels.some(l=>l.text==='Suspension'&&l.color==='#73808b'));
+  f.tuner.mode='grid';drawGarageTuner(ctx,b,f.tuner);const categories=f.tuner.hitAreas.filter(a=>a.kind==='category');assert.equal(categories.length,8);assert.equal(new Set(categories.map(a=>a.y)).size,2);assert.equal(new Set(categories.map(a=>a.x)).size,4);assert.ok(labels.some(l=>l.text==='Handling'&&l.color==='#ffffff'));
   assert.ok(!f.tuner.hitAreas.some(a=>a.kind==='exit'));assert.ok(!labels.some(l=>/ADJUST TUNING|D-pad|A:|A Open|B Exit/.test(l.text)));
   await editPressure(f.tuner);drawGarageTuner(ctx,b,f.tuner);
   assert.ok(f.tuner.hitAreas.every(a=>a.x>=b.x&&a.y>=b.y&&a.x+a.w<=b.x+b.w&&a.y+a.h<=b.y+b.h));
@@ -76,14 +79,14 @@ test('MenuPlayer uses the tuner for keyboard, physical controller and virtual ga
   const f=await fixture(),p=new MenuPlayer(f.game);p.settings.load=async()=>{};p.resources.prepareGarage=async()=>{};const doc=createMenuDocument();doc.parameters.carRef='car';await p.open(doc,{preview:true,screenId:'tuning'});await p.tuner.readyTask;assert.equal(p.tuner.ready,true);
   let touch={};p.surface.controls.getActions=()=>touch;
   const press=(key,pad,action)=>{const input=mode==='keyboard'?{wasPressedCode:c=>c===key}:mode==='gamepad'?{wasGamepadPressed:a=>a===pad}:{};if(mode==='touch')touch={[action]:true};p.update(input,.016);touch={};p.update({},.016);};
-  press('Enter','jump','jump');assert.equal(p.tuner.mode,'list');press('Enter','jump','jump');assert.equal(p.tuner.mode,'edit');press('ArrowRight','dpadRight','right');assert.equal(p.tuner.draft,32.5);press('Escape','gamepadB','attack');assert.equal(p.tuner.mode,'list');assert.equal(p.tuner.row.value,32);
+  press('ArrowDown','dpadDown','down');press('ArrowRight','dpadRight','right');press('ArrowRight','dpadRight','right');press('Enter','jump','jump');press('Enter','jump','jump');assert.equal(p.tuner.mode,'list');press('Enter','jump','jump');assert.equal(p.tuner.mode,'edit');press('ArrowRight','dpadRight','right');assert.equal(p.tuner.draft,32.5);press('Escape','gamepadB','attack');assert.equal(p.tuner.mode,'list');assert.equal(p.tuner.row.value,32);
   press('Enter','jump','jump');press('ArrowLeft','dpadLeft','left');press('Enter','jump','jump');await p.resources.garage.items.queue;await new Promise(r=>setImmediate(r));assert.equal(p.tuner.row.value,31.5);assert.equal(f.items.garage.configuration('car').tune['pressure.fl'],undefined,'preview must not change game setup');
  }
 });
 
 test('slider drafts start within newly installed part ranges even when stock is outside them',async()=>{
  const f=await fixture();const narrow=structuredClone(springs);narrow.carPart.tuning[0].min=.7;f.items.library.load=async()=>narrow;
- await f.items.garage.purchase('springs',{carRef:'car'});await f.tuner.refresh();f.tuner.index=4;await f.tuner.confirm();await f.tuner.confirm();assert.equal(f.tuner.draft,.7);await f.tuner.confirm();assert.equal(f.items.garage.configuration('car').tune.springFront,.7);
+ await f.items.garage.purchase('springs',{carRef:'car'});await f.tuner.refresh();f.tuner.index=4;await f.tuner.confirm();await f.tuner.confirm();await f.tuner.confirm();assert.equal(f.tuner.draft,.7);await f.tuner.confirm();assert.equal(f.items.garage.configuration('car').tune.springFront,.7);
 });
 test('owned tire copies and dependency rules are enforced atomically when switching tires',async()=>{
  const f=await fixture();await f.items.garage.purchase('rally',{carRef:'other'});
@@ -107,12 +110,12 @@ test('legacy Adjust Tuning actions open the in-game tuner and return to their or
 test('live MenuPlayer applies to game progress and keeps settings after leaving and reopening tuning',async()=>{
  const f=await fixture(),p=new MenuPlayer(f.game);p.settings.load=async()=>{};p.resources.prepareGarage=async()=>{};const doc=createMenuDocument();doc.parameters.carRef='car';await p.open(doc);p.flow.goTo('garage');p.flow.goTo('tuning');await p.tuner.readyTask;
  await editPressure(p.tuner);p.tuner.move('right');await p.tuner.confirm();assert.equal(f.items.garage.configuration('car').tune['pressure.fl'],32.5);
- p.tuner.cancel();p.tuner.cancel();assert.equal(p.flow.screenId,'garage');assert.equal(p.tuner,null);
- p.flow.goTo('tuning');await p.tuner.readyTask;await p.tuner.confirm();assert.equal(p.tuner.row.value,32.5);assert.equal(f.saved().garage.cars.car.tune['pressure.fl'],32.5);
+ p.tuner.cancel();p.tuner.cancel();p.tuner.cancel();assert.equal(p.flow.screenId,'garage');assert.equal(p.tuner,null);
+ p.flow.goTo('tuning');await p.tuner.readyTask;await editPressure(p.tuner);assert.equal(p.tuner.row.value,32.5);assert.equal(f.saved().garage.cars.car.tune['pressure.fl'],32.5);
 });
 
 test('tuning category panels match upgrade grid dimensions in portrait and wide layouts',async()=>{
- const {garageGridBounds}=await import('../../src/menus/MenuGarageWidgets.js');const f=await fixture();
+ const {garageGridBounds,upgradeGridArea}=await import('../../src/menus/MenuGarageWidgets.js');const f=await fixture();
  const ctx=new Proxy({},{get:()=>()=>{}});
  for(const b of [{x:20,y:40,w:900,h:400},{x:5,y:15,w:330,h:150}]){
   drawGarageTuner(ctx,b,f.tuner);
@@ -120,26 +123,81 @@ test('tuning category panels match upgrade grid dimensions in portrait and wide 
  }
 });
 
-test('every tuning panel keeps the upgrade tile size across categories, settings and edit controls',async()=>{
- const {garageGridBounds}=await import('../../src/menus/MenuGarageWidgets.js');
+test('tuning categories and lists use identical dimensions; sliders have no action buttons',async()=>{
+ const {garageGridBounds,upgradeGridArea}=await import('../../src/menus/MenuGarageWidgets.js');
  const f=await fixture(),ctx=new Proxy({},{get:()=>()=>{}});
  for(const b of [{x:10,y:20,w:900,h:400},{x:4,y:8,w:330,h:150}]){
-  f.tuner.mode='grid';f.tuner.index=0;f.tuner.rowIndex=0;
+  f.tuner.mode='grid';f.tuner.index=6;f.tuner.path=['group:Front'];f.tuner.rowIndex=0;
   const expected=garageGridBounds(b,0);
   for(const mode of ['grid','list','edit']){
    f.tuner.mode=mode;f.tuner.draft=32;drawGarageTuner(ctx,b,f.tuner);
-   const buttons=f.tuner.hitAreas.filter(a=>a.kind!=='slider');assert.ok(buttons.length);
+   const buttons=f.tuner.hitAreas.filter(a=>a.kind!=='slider');if(mode==='edit'){assert.equal(buttons.length,0);assert.equal(f.tuner.hitAreas.length,1);}else assert.ok(buttons.length);
    for(const a of buttons){assert.equal(a.w,expected.w);assert.equal(a.h,expected.h);}
   }
  }
 });
 
-test('disabled tuning categories and settings cannot be selected by movement or touch',async()=>{
- const f=await fixture(),t=f.tuner;
- t.move('right');assert.equal(t.index,1);t.move('left');t.move('down');assert.equal(t.index,0);
- t.hitAreas=[{kind:'category',index:4,x:0,y:0,w:40,h:40}];t.pointerDown({x:20,y:20});assert.equal(t.index,0);assert.equal(t.mode,'grid');
- await f.items.garage.purchase('springs',{carRef:'car'});await t.refresh();t.move('down');assert.equal(t.index,4);await t.confirm();
- const locked=t.sectionRows().findIndex(r=>!r.enabled),before=t.rowIndex;
- t.hitAreas=[{kind:'row',index:locked,x:0,y:0,w:40,h:40}];t.pointerDown({x:20,y:20});assert.equal(t.rowIndex,before);assert.equal(t.mode,'list');
- for(let i=0;i<12;i++){t.move('right');assert.equal(t.row.enabled,true);}
+test('locked settings can be highlighted with keyboard and touch but cannot be edited',async()=>{
+ const f=await fixture(),t=f.tuner;t.move('down');assert.equal(t.index,4);await t.confirm();
+ await t.confirm();assert.equal(t.mode,'list');
+ const locked=t.sectionRows().findIndex(r=>!r.enabled);assert.ok(locked>=0);
+ t.hitAreas=[{kind:'row',index:locked,x:0,y:0,w:40,h:40}];t.pointerDown({x:20,y:20});
+ assert.equal(t.rowIndex,locked);assert.equal(t.mode,'list');assert.match(t.message,/Locked.*Install/);
+ const before=f.writes();await t.confirm();assert.equal(t.mode,'list');assert.equal(f.writes(),before);
+ const labels=[],ctx=new Proxy({fillText(text){labels.push({text,color:this.fillStyle});}},{get:(o,k)=>k in o?o[k]:(()=>{})});
+ drawGarageTuner(ctx,{x:0,y:0,w:900,h:460},t);assert.ok(labels.some(l=>l.text==='(Locked)'&&l.color==='#ff5757'));
+ t.move('right');assert.ok(t.row);assert.equal(t.mode,'list');
+});
+
+test('repair confirmation moves between Repair and Cancel without changing the component',async()=>{
+ const f=await fixture(),t=f.tuner;t.index=0;await t.confirm();
+ t.rowIndex=t.sectionRows().findIndex(r=>r.label==='Service');await t.confirm();
+ t.rowIndex=t.sectionRows().findIndex(r=>r.id==='service');await t.confirm();
+ assert.equal(t.mode,'repair');const id=t.row.id,before=f.writes();
+ t.update({held:{right:true}},.016);assert.equal(t.repairAction,'exit');assert.equal(t.row.id,id);
+ t.update({held:{down:true}},.016);assert.equal(t.row.id,id);
+ await t.confirm();assert.equal(t.mode,'list');assert.equal(f.writes(),before);
+ await t.confirm();t.move('right');t.move('left');assert.equal(t.repairAction,'apply');
+ const texts=[],ctx=new Proxy({fillText(text){texts.push(text);}},{get:(o,k)=>k in o?o[k]:(()=>{})});
+ drawGarageTuner(ctx,{x:0,y:0,w:900,h:460},t);
+ assert.ok(!texts.includes(t.row.reason));assert.ok(texts.includes('Cancel'));
+ assert.ok(texts.includes(String(t.row.cost)));assert.ok(!texts.some(text=>/scrap|No replacement part required/.test(text)));
+ // A pointer click on Repair must override a Cancel keyboard/hover selection.
+ t.move('right');const apply=t.hitAreas.find(a=>a.kind==='apply');
+ t.pointerDown({x:apply.x+apply.w/2,y:apply.y+apply.h/2});
+ await f.items.queue;await new Promise(r=>setImmediate(r));assert.equal(t.mode,'list');assert.equal(f.writes(),before+1);
+ await t.confirm();drawGarageTuner(ctx,{x:0,y:0,w:350,h:210},t);
+ const cancel=t.hitAreas.find(a=>a.kind==='exit');t.pointerDown({x:cancel.x+cancel.w/2,y:cancel.y+cancel.h/2});
+ assert.equal(t.mode,'list');assert.equal(f.writes(),before+1);
+});
+
+test('Stats renders current upgraded car on the left and its power curve on the right, with B returning to Setup',async()=>{
+ const {createBuiltInRaceCars}=await import('../../src/racing/raceData.js');
+ const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');
+ const f=await fixture({car:createBuiltInRaceCars()[0]}),t=f.tuner;
+ await f.items.garage.purchase('rally',{carRef:'car'});await t.refresh();
+ t.index=1;await t.confirm();await t.confirm();
+ const editor=new RaceEditor({}),resources={game:{carEditor:editor},tuning:car=>{assert.equal(car,t.car);return editor.getRaceCarTuning(car);}};
+ for(const b of [{x:0,y:0,w:900,h:460},{x:20,y:30,w:330,h:186}]){
+  const texts=[],points=[],ctx=new Proxy({fillText(text,x,y){texts.push({text,x,y});},moveTo(x,y){points.push({x,y});},lineTo(x,y){points.push({x,y});}},{get:(o,k)=>k in o?o[k]:(()=>{})});
+  drawGarageTuner(ctx,b,t,'system-ui',{},resources);
+  assert.ok(texts.some(r=>r.text.includes(' HP')&&r.x<b.x+b.w/2));
+  assert.ok(texts.some(r=>r.text.includes('RPM')&&r.x>b.x+b.w/2));
+  assert.equal(points.length,82);assert.ok(points.every(p=>Number.isFinite(p.y)&&p.x>=b.x+b.w/2&&p.x<=b.x+b.w&&p.y>=b.y&&p.y<=b.y+b.h));
+ }
+ assert.equal(t.hitAreas.length,0);t.update({cancel:true},.016);assert.equal(t.mode,'list');assert.equal(t.row.id,'stats');
+});
+
+test('Rev Engine supports held confirm and pointer release, and stops on Back or disposal',async()=>{
+ const f=await fixture(),t=f.tuner,calls=[];
+ t.enginePreview={active:false,update(car,throttle){this.active=true;calls.push(throttle);return 3000;},stop(){this.active=false;}};
+ t.index=1;await t.confirm();t.rowIndex=t.sectionRows().findIndex(r=>r.rev);
+ const before=f.writes();await t.confirm();assert.equal(t.mode,'list');
+ for(let i=0;i<10;i++)t.update({confirmHeld:true},.05);assert.equal(calls.at(-1),1);
+ t.update({},.05);assert.equal(calls.at(-1),0);
+ t.hitAreas=[{kind:'row',index:t.rowIndex,x:0,y:0,w:40,h:40}];t.pointerDown({x:20,y:20});
+ for(let i=0;i<10;i++)t.update({},.05);assert.equal(calls.at(-1),1);
+ t.pointerUp();t.update({},.05);assert.equal(calls.at(-1),0);
+ t.cancel();assert.equal(t.enginePreview.active,false);assert.equal(t.mode,'grid');assert.equal(f.writes(),before);
+ await t.confirm();t.rowIndex=t.sectionRows().findIndex(r=>r.rev);await t.confirm();t.update({confirmHeld:true},.05);t.dispose();assert.equal(t.enginePreview.active,false);
 });

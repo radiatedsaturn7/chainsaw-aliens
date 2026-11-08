@@ -280,11 +280,7 @@ export function updateRaceWearAndDamage(editor, seconds = 0) {
     if (!crossed(at)) return;
     session.triggeredHazardIds.push(hazard.id);
     if (hazard.type === 'jump') {
-      const impact = Math.max(0, speed / 30 - Number(hazard.landingForgiveness || 0.35));
-      editor.applyRaceDamage('suspension', impact * 10 + Number(hazard.height || 0) * 12, {
-        pull: (nextDamageVariation(hazard.id) - 0.5) * 0.08,
-        source: `hazard:${hazard.id}`
-      });
+      // Jump markers describe the route; measured landing loads own damage.
     } else if (editor.didRaceHazardContactCar(hazard, session)) {
       const amount = Number(hazard.damage || 10);
       const panelKeys = hazard.side === 'left'

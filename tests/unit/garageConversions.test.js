@@ -1,9 +1,10 @@
+import {savedTireForRef} from '../helpers/savedGarageTires.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import catalog from '../../src/content/garage-parts.json' with {type:'json'};
 import {normalizeItemDocument} from '../../src/items/ItemDocument.js';
 import {buildGarageCar,normalizeCarPart} from '../../src/garage/CarPart.js';
-import {GARAGE_ENGINES} from '../../src/garage/GarageConversions.js';
+import {GARAGE_ENGINES,stockDrivetrain} from '../../src/garage/GarageConversions.js';
 import {createBuiltInRaceCars} from '../../src/racing/raceData.js';
 import {PowertrainModel} from '../../src/racing/simulation/PowertrainModel.js';
 import {createVehicleDynamicsConfigFromTuning} from '../../src/racing/simulation/VehicleDynamicsRunner.js';
@@ -33,7 +34,7 @@ test('drivetrain conversions change authoritative driven wheels and efficiency; 
   const tuning=editor.getRaceCarTuning(built),config=createVehicleDynamicsConfigFromTuning(tuning);
   assert.equal(tuning.drivetrain,drivetrain);
   assert.deepEqual(config.drivenWheelIds,powertrain.getDrivenWheelIds(tuning));
-  assert.equal(config.drivetrainEfficiency,{fwd:.90,rwd:.88,awd:.84}[drivetrain]);
+  assert.equal(config.drivetrainEfficiency,drivetrain===stockDrivetrain(stock)?editor.getRaceCarTuning(stock).drivetrainEfficiency:{fwd:.90,rwd:.88,awd:.84}[drivetrain]);
   assert.ok(tuning.engineInertiaKgM2<GARAGE_ENGINES.six.inertia);
   const bare=editor.getRaceCarTuning(buildGarageCar(stock,{parts:parts.slice(0,2)}));
   assert.ok(powertrain.getTorqueNmAtRpm(6000,tuning)>powertrain.getTorqueNmAtRpm(6000,bare));
@@ -90,4 +91,13 @@ test('engine swaps update boost instruments and thermal load without healing sav
  const baseState=createMechanicalState({}, {},stock.mechanics),hotState=createMechanicalState({}, {},hot.mechanics);
  for(let i=0;i<100;i++)for(const state of [baseState,hotState])stepMechanicalState(state,.1,{rpm:5000,maxRpm:7000,throttle:1});
  assert.ok(hotState.coolantTemperatureC>baseState.coolantTemperatureC);
+});
+
+test('factory drivetrain follows the authored default transmission and survives matching legacy parts',()=>{
+ const stock=createBuiltInRaceCars()[0];
+ stock.defaultTransmissionType='manual';
+ stock.transmissions.manual.drivetrain='fwd';
+ assert.equal(stockDrivetrain(stock),'fwd');
+ assert.deepEqual(buildGarageCar(stock,{parts:[part('drive-swap-fwd')]}),stock);
+ assert.equal(editor.getRaceCarTuning(stock,{transmissionType:stock.defaultTransmissionType}).drivetrain,'fwd');
 });

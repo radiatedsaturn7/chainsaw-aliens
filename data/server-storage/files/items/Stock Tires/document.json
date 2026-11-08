@@ -4,7 +4,7 @@
   "item": {
     "id": "stock-tires",
     "name": "Stock Tires",
-    "description": "Stock tires. Uses the saved Stock tire definition.",
+    "description": "Stock Tires. We probably should replace them at some point. They've gotten us this far, though.",
     "carPart": {
       "slot": "tires",
       "section": "Tires",

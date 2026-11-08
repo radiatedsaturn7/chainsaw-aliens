@@ -4,7 +4,7 @@
   "item": {
     "id": "tarmac-tires",
     "name": "Tarmac Race Tires",
-    "description": "Dry-pavement racing tires. Uses the saved Tarmac tire definition.",
+    "description": "Race Tires. If we're racing on dry asphalt, you can't get much better than these. I'd watch out for rain, though.",
     "carPart": {
       "slot": "tires",
       "section": "Tires",

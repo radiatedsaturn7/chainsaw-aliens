@@ -2,7 +2,13 @@ import {getRaceAiPlannedSpeed} from './RaceAiRoadPlan.js';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 export const drivingGuideSettings = race => ({line: race?.drivingGuide?.line !== false,
-  notes: race?.codriver?.enabled === true, voice: race?.codriver?.spoken === true});
+  notes: race?.codriver?.enabled === true, voice: race?.codriver?.spoken === true,
+  icons: race?.codriver?.icons ?? race?.codriver?.spoken !== true});
+
+export function racePaceNoteModeLabel(race) {
+  const settings = drivingGuideSettings(race);
+  return !settings.notes ? 'Off' : settings.voice ? (settings.icons ? 'Both' : 'Voice') : 'Icons';
+}
 
 // A virtual recce records steering, speed and pedal demand plus apex hazards.
 export {analyzeRaceRecce as analyzeRaceDrivingRoute} from './RaceRecce.js';
@@ -13,15 +19,14 @@ export function racePaceNotes(race, generated = []) {
 }
 
 export function nextRacePaceNote(calls, distance, speed, length, circuit = false, {preview = false} = {}) {
-  const ahead = clamp(Math.abs(speed) * 4, 65, 260);
+  const ahead = 100;
   let result = null;
   for (const call of calls || []) {
     let remaining = call.at - distance;
     if (circuit) remaining = ((remaining % length) + length) % length;
-    const brakingLead = Number.isFinite(call.recce?.apexSpeedMps) ? Math.max(0, (speed*speed-call.recce.apexSpeedMps**2)/(2*4)) + Math.abs(speed)*2 : 0;
-    if (remaining >= 0 && (preview || remaining <= Math.min(500, Math.max(ahead, brakingLead))) && (!result || remaining < result.remaining)) result = {...call, remaining};
+    if (remaining >= 0 && (preview || remaining <= ahead) && (!result || remaining < result.remaining)) result = {...call, remaining};
   }
-  if(result?.recce?.braking && Math.abs(speed) <= result.recce.apexSpeedMps+2) result.text=result.text.replace(/^Brake, /,'');
+  if(result)result.text=result.text.replace(/^Brake,\s*/i,'');
   return result;
 }
 
@@ -76,19 +81,36 @@ export function updateRaceDrivingAssists(editor, dt) {
   const brakes = session.vehicleDynamicsRunner?.state?.mechanical?.effects?.brakes || {};
   state.brakeCondition = Math.min(1, ...Object.values(brakes).map(v => clamp(Number(v) || 0, 0, 1)));
   const settings = drivingGuideSettings(editor.selectedRace);
-  state.note = active && settings.notes && !state.wrongWay
-    ? nextRacePaceNote(session.codriverCalls, distance, session.speedMps, session.routeLength, session.routeRuntimeType === 'circuit') : null;
+  state.notes = active && settings.notes && !state.wrongWay
+    ? (session.codriverCalls||[]).map(call=>nextRacePaceNote([call],distance,session.speedMps,session.routeLength,session.routeRuntimeType==='circuit')).filter(Boolean).sort((a,b)=>a.remaining-b.remaining) : [];
+  state.note=state.notes[0]||null;
   state.upcomingTurn = active && (settings.line || settings.notes) && !state.wrongWay
     ? nextRacePaceNote(session.codriverCalls,distance,session.speedMps,session.routeLength,session.routeRuntimeType==='circuit',{preview:true}) : null;
-  // Speech is opt-in and feature-detected; the readable note always remains.
-  if (state.note && settings.voice && globalThis.speechSynthesis && globalThis.SpeechSynthesisUtterance) {
-    const lap = Number(session.lap || 1);
-    const key = `${lap}:${state.note.at}:${state.note.text}`;
-    if (state.spokenKey !== key && !globalThis.speechSynthesis.speaking) {
-      const utterance = new SpeechSynthesisUtterance(`${Math.round(state.note.remaining / 10) * 10} metres. ${state.note.text}`);
-      utterance.rate = 1.15;
-      try { globalThis.speechSynthesis.speak(utterance); } catch { /* Text remains available. */ }
-      state.spokenKey = key;
+  // Capture the distance once on entering call range. Speed changes must not
+  // turn a single corner into a countdown or cause another spoken call.
+  const lap=Number(session.lap||1);
+  state.noteAnnouncements ||= new Map();state.spokenNotes ||= new Set();
+  if(state.noteLap!==lap){
+    state.noteLap=lap;
+    for(const key of state.noteAnnouncements.keys())if(Number(key.split(':')[0])<lap-1){state.noteAnnouncements.delete(key);state.spokenNotes.delete(key);}
+  }
+  const toSpeak=[];
+  state.notes=state.notes.map(note=>{
+    const callLap=lap+(session.routeRuntimeType==='circuit'&&note.at<distance?1:0);
+    const key=`${callLap}:${note.id||''}:${note.at}`;
+    if(!state.noteAnnouncements.has(key)){
+      const metres=Math.round(note.remaining/10)*10;
+      const text=(note.body||(Number.isFinite(note.linkedAt)?note.text.replace(/,\s*(?:into|and)\s+.*$/i,''):note.text)).replace(/^Brake,\s*/i,'').replace(/\b(?:meters|metres)\b/gi,'').replace(/\s+/g,' ').trim();
+      state.noteAnnouncements.set(key,{distance:metres,text});
     }
+    const announcement=state.noteAnnouncements.get(key);
+    const visible={...note,announcedDistance:announcement.distance,displayText:announcement.distance>0?`${announcement.distance} m · ${announcement.text}`:announcement.text};
+    if(!state.spokenNotes.has(key))toSpeak.push({key,text:announcement.distance>0?`${announcement.distance} ${announcement.text}`:announcement.text});
+    return visible;
+  });
+  state.note=state.notes[0]||null;
+  if(settings.voice&&active&&toSpeak.length&&globalThis.speechSynthesis&&globalThis.SpeechSynthesisUtterance&&!globalThis.speechSynthesis.speaking){
+    const utterance=new SpeechSynthesisUtterance(toSpeak.map(call=>call.text).join(', '));utterance.rate=1.15;
+    try{globalThis.speechSynthesis.speak(utterance);for(const call of toSpeak)state.spokenNotes.add(call.key);}catch{/* Retry while the call is still ahead. */}
   }
 }

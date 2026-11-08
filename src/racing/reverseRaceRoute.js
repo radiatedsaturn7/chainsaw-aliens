@@ -11,6 +11,11 @@ export function reverseRaceRoute(race){
   return {...s,length:Math.hypot(b.x-a.x,b.y-a.y),elevation:b.elevation,curve:Math.max(-1,Math.min(1,Math.atan2(Math.sin(yaw-prior),Math.cos(yaw-prior))/.78)),banking:-(Number(s.banking)||0),...(s.bankingDegrees!==undefined?{bankingDegrees:-Number(s.bankingDegrees)}:{})};
  });
  road.nodes=nodes;road.segments=segments;
+ if(road.continuations){
+  const {start=[],finish=[],startTurnDegrees,finishTurnDegrees}=road.continuations;
+  const reverse=points=>points.map(p=>({...p,offset:-p.offset,yaw:Math.atan2(Math.sin(p.yaw+Math.PI),Math.cos(p.yaw+Math.PI))})).reverse();
+  Object.assign(road.continuations,{start:reverse(finish),finish:reverse(start),startTurnDegrees:finishTurnDegrees,finishTurnDegrees:startTurnDegrees});
+ }
  if(race.source)race.source.reversed=!race.source.reversed;
  return race;
 }

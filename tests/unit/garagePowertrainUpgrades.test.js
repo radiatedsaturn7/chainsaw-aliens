@@ -36,3 +36,25 @@ test('clutch upgrades shorten actual shift interruption and preserve transmissio
   assert.ok(shift(tuning,{transmission:50})>duration);
  }
 });
+
+test('gearbox parts install authored gearing for every transmission without tuning overrides',()=>{
+ for(const stock of createBuiltInRaceCars())for(const id of ['street-transmission','adjustable-gearbox','race-transmission']){
+  const original=structuredClone(stock),item=part(id),built=buildGarageCar(stock,{parts:[item]});
+  const ratioChanges=item.carPart.modifiers.filter(m=>m.field.startsWith('gearRatios.'));
+  for(const transmissionType of Object.keys(stock.transmissions)){
+   const actual=editor.getRaceCarTuning(built,{transmissionType}),base=editor.getRaceCarTuning(stock,{transmissionType});
+   assert.equal(actual.gearRatios.length,base.gearRatios.length);
+   assert.deepEqual(actual.gearRatios,ratioChanges.slice(0,base.gearRatios.length).map(m=>m.value));
+   assert.equal(actual.finalDrive,item.carPart.modifiers.find(m=>m.field==='gearFinalDrive').value);
+   assert.notDeepEqual(actual.gearRatios,base.gearRatios);
+  }
+  assert.deepEqual(stock,original);assert.deepEqual(buildGarageCar(stock),stock);
+ }
+});
+test('suspension parts install matched damping and anti-roll baselines in physical runtime settings',()=>{
+ for(const stock of createBuiltInRaceCars()){
+  const built=buildGarageCar(stock,{parts:[part('race-suspension')]}),t=editor.getRaceCarTuning(built);
+  assert.equal(t.bumpFront,.64);assert.equal(t.reboundRear,.76);assert.equal(t.antiRollFront,.72);
+  assert.notDeepEqual(t.physicalVehicleProfile,editor.getRaceCarTuning(stock).physicalVehicleProfile);
+ }
+});

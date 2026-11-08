@@ -1,3 +1,11 @@
+// Resolve factory equipment from the authored car, before garage upgrades.
+export function stockDrivetrain(car) {
+ const available=car?.transmissions||{};
+ const requested=car?.defaultTransmissionType||car?.tuning?.shiftMode||car?.tuning?.transmissionType||'automatic';
+ const type=available[requested]?requested:available.automatic?'automatic':available.manual?'manual':requested;
+ return String(available[type]?.drivetrain||car?.tuning?.drivetrain||'awd').toLowerCase();
+}
+
 // Game-calibrated crate engines, not claims about a specific manufacturer's unit.
 export const GARAGE_ENGINES = {
  turbo: {label:'Turbo', displacement:2, aspiration:'Turbocharged', inertia:.24, idle:850, redline:7000, limit:7400, mass:150,
@@ -25,7 +33,7 @@ export function applyGarageConversions(car,parts){
   car.tuning.engineConversion=engine;
   car.mechanics={...car.mechanics,boostBar:spec.aspiration==='Turbocharged'?1.1:0};
  }
- if(drive){
+ if(drive && drive!==stockDrivetrain(car)){
   if(!['fwd','rwd','awd'].includes(drive))throw Error('Unknown drivetrain conversion');
   const mass={fwd:0,rwd:20,awd:80};
   const original=String(car.tuning.drivetrain||'awd').toLowerCase();

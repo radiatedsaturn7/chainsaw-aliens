@@ -35,7 +35,7 @@ test('HUD arrows and car FX share the same blink signal',()=>{
  for(const dt of [0,.41,.4]){advanceTurnSignals(s,dt,0);assert.equal(carFxActive(fx,carFxDrivingState(s)),!!controlLamp('leftsignallight',s));}
 });
 test('pause settings expose left, right and hazard controls',()=>{
- const e=new RaceEditor({},{mode:'car'});e.playtestSession={};e.raceInput.pauseMenuMode='settings';
+ const e=new RaceEditor({},{mode:'car'});e.playtestSession={};e.raceInput.pauseMenuMode='car-controls';
  const row=id=>e.getRacePauseMenuRows().find(r=>r.id==='race-signal-'+id);
  row('left').onClick();assert.equal(row('left').value,'On');row('right').onAdjust();assert.equal(row('left').value,'Off');assert.equal(row('right').value,'On');
  row('hazards').onClick();assert.equal(e.playtestSession.turnSignals.mode,'hazards');row('hazards').onClick();assert.equal(e.playtestSession.turnSignals.mode,'off');

@@ -1,3 +1,5 @@
+import {authorRaceContinuations} from './author_continuations.mjs';
+import {applyAmericaRoughness} from './america_roughness.mjs';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 import {analyzeRaceDrivingRoute, racePaceNotes} from '../../src/racing/RaceDrivingAssists.js';
 
@@ -7,7 +9,8 @@ const editor = new RaceEditor({deviceIsMobile:true,isMobile:true,exitRaceEditor(
 export function prepareAmericaRace(race, stage) {
   Object.assign(race.source, {elevationSmoothingRadiusM:45,
     shoulderFlatJoinM:8, shoulderBlendWidthM:32, shoulderMaxSlope:.22});
-  for (const segment of race.road.segments) segment.bumpiness = Number(((stage.stage-1)*.005).toFixed(3));
+  applyAmericaRoughness(race,stage);
+  authorRaceContinuations(race);
   race.drivingGuide = {...race.drivingGuide, line:true};
   race.codriver = {...race.codriver, enabled:false, spoken:false};
   editor.applyLoadedRaceDocument(race);

@@ -1,5 +1,10 @@
 import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
 
+// Shape pedal travel without changing zero or full-throttle output.
+export function mapThrottlePedal(throttle,response=1){
+ return clamp(Number(throttle)||0,0,1)**(2-clamp(Number(response)||1,.5,1.5));
+}
+
 export class PowertrainModel {
   getDrivenWheelIds(tuning = {}) {
     if (tuning.drivetrain === 'fwd') return ['fl', 'fr'];

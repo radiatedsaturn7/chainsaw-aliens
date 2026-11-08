@@ -5,7 +5,7 @@ import {listProjectFiles,loadProjectFile,saveProjectFileAndConfirm} from '../ui/
 import {hydrateProjectFile,hydrateServerStorage} from '../ui/serverStorage.js';
 
 export class ItemLibrary {
-  async loadDefaults() {return [...builtins.items,...garageParts.items];}
+  async loadDefaults() {return [...builtins.items,...garageParts.items,...(garageParts.stockItems||[])];}
   async list() {
     await hydrateServerStorage({folder:'items'}).catch(()=>null);
     const defaults=await this.loadDefaults();

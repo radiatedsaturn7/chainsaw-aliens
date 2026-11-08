@@ -1068,7 +1068,10 @@ export function applyRaceVehicleImpactEvents(editor, session, events = []) {
     const panel = Math.abs(rightDot) > Math.abs(forwardDot)
       ? (rightDot > 0 ? 'left' : 'right')
       : (forwardDot < 0 ? 'front' : 'rear');
-    const severity = clamp(normalImpulseNs / (massKg * 18) * 14, 0.2, 14);
+    // Armor protects identified underside contacts, not side/roof or wheel impacts.
+    const underside=/underbody|underside|underfloor|subframe|lower-chassis|lower-frame|rocker/i.test(String(impact.impactFeatureId||''))&&Number(normal.y)>0.35;
+    const protection=underside?clamp(Number(editor.getRaceCarTuning?.(editor.getRaceSessionCar?.(session))?.underbodyProtection)||0,0,.85):0;
+    const severity = clamp(normalImpulseNs / (massKg * 18) * 14, 0.2, 14)*(1-protection);
     editor.applyRaceDamage('panels', severity, {
       keys: [panel],
       source: 'terrain-impact'
@@ -1961,6 +1964,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       const material = materialByWheel[wheelId];
       updateRaceEnvironmentRecord(material, cell, RACE_MATERIAL_OVERLAY_KEYS);
       material.baseSurfaceId = baseSurfaceId;
+      material.roughness = Math.max(0,Math.min(1,Number(contact.segment?.bumpiness)||0));
       material.surfaceId = contact.surfaceId || wheelSurfaceState.surfaceByWheel?.[wheelId];
       material.effectiveGrip = trackSample?.effectiveGrip ?? contact.friction
         ?? wheelSurfaceState.frictionByWheel?.[wheelId] ?? 1;

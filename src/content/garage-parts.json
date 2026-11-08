@@ -3,7 +3,7 @@
     {
       "id": "sport-turbo",
       "name": "Sport Turbo",
-      "description": "Boost-focused torque curve: gains build with RPM; increased output also increases fuel demand.",
+      "description": "Sport Turbo. Boost adjusts how much of this turbo upgrade\u2019s extra torque we use. Turn it down for less power, fuel demand and heat; 100% gives the kit\u2019s full added boost.",
       "effects": [],
       "carPart": {
         "slot": "turbo",
@@ -12,7 +12,14 @@
         "price": 1200,
         "forSale": true,
         "modifiers": [],
-        "tuning": [],
+        "tuning": [
+          {
+            "field": "boostLevel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ],
         "torqueCurve": [
           {
             "rpm": 1000,
@@ -32,7 +39,7 @@
     {
       "id": "adjustable-ecu",
       "name": "Adjustable ECU",
-      "description": "Unlocks adjustable engine torque mapping; higher output increases fuel demand.",
+      "description": "Adjustable ECU. We can trade output for lower fuel use and heat with the power map, and make the pedal gentler or sharper. Full pedal still gives full available power.",
       "effects": [],
       "carPart": {
         "slot": "ecu",
@@ -53,14 +60,20 @@
             "min": 0.8,
             "max": 1.1,
             "step": 0.01
+          },
+          {
+            "field": "pedalResponse",
+            "min": 0.5,
+            "max": 1.5,
+            "step": 0.05
           }
         ]
       }
     },
     {
       "id": "lightweight-panels",
-      "name": "Lightweight Panels",
-      "description": "Lighter body components reduce vehicle mass.",
+      "name": "Light Panels",
+      "description": "Light Panels. Keep the trim removal and fit lighter body panels. That brings the total weight reduction to 5%. Less to haul through every corner.",
       "effects": [],
       "carPart": {
         "slot": "weight",
@@ -76,12 +89,15 @@
           }
         ],
         "tuning": []
-      }
+      },
+      "aliases": [
+        "Lightweight Panels"
+      ]
     },
     {
       "id": "adjustable-gearbox",
       "name": "Adjustable Gearbox",
-      "description": "Unlocks final drive and every gear fitted to this car; tune ratios for the course.",
+      "description": "Sport gearbox. Closer ratios and a taller final drive, ready to fit. We can fine-tune it later.",
       "effects": [],
       "carPart": {
         "slot": "transmission",
@@ -92,8 +108,58 @@
         "modifiers": [
           {
             "field": "gearFinalDrive",
-            "operation": "multiply",
-            "value": 1.04
+            "operation": "set",
+            "value": 3.55
+          },
+          {
+            "field": "gearRatios.0",
+            "operation": "set",
+            "value": 3.1
+          },
+          {
+            "field": "gearRatios.1",
+            "operation": "set",
+            "value": 2.15
+          },
+          {
+            "field": "gearRatios.2",
+            "operation": "set",
+            "value": 1.6
+          },
+          {
+            "field": "gearRatios.3",
+            "operation": "set",
+            "value": 1.25
+          },
+          {
+            "field": "gearRatios.4",
+            "operation": "set",
+            "value": 1
+          },
+          {
+            "field": "gearRatios.5",
+            "operation": "set",
+            "value": 0.79
+          },
+          {
+            "field": "gearRatios.6",
+            "operation": "set",
+            "value": 0.66
+          },
+          {
+            "field": "gearRatios.7",
+            "operation": "set",
+            "value": 0.56
+          },
+          {
+            "field": "gearRatios.8",
+            "operation": "set",
+            "value": 0.48
+          },
+          {
+            "field": "gearRatios.9",
+            "operation": "set",
+            "value": 0.41
           }
         ],
         "tuning": [
@@ -169,11 +235,11 @@
     {
       "id": "adjustable-suspension",
       "name": "Adjustable Suspension",
-      "description": "Adjustable springs, ride height, dampers, bump/rebound and anti-roll bars.",
+      "description": "Adjustable Suspension. Different springs and ride height. We should think about the bumps before we make it too stiff.",
       "effects": [],
       "carPart": {
         "slot": "suspension",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "sport",
         "price": 750,
         "forSale": true,
@@ -197,6 +263,36 @@
             "field": "rideHeightRear",
             "operation": "add",
             "value": -0.05
+          },
+          {
+            "field": "bumpFront",
+            "operation": "set",
+            "value": 0.57
+          },
+          {
+            "field": "reboundFront",
+            "operation": "set",
+            "value": 0.67
+          },
+          {
+            "field": "antiRollFront",
+            "operation": "set",
+            "value": 0.61
+          },
+          {
+            "field": "bumpRear",
+            "operation": "set",
+            "value": 0.57
+          },
+          {
+            "field": "reboundRear",
+            "operation": "set",
+            "value": 0.67
+          },
+          {
+            "field": "antiRollRear",
+            "operation": "set",
+            "value": 0.61
           }
         ],
         "tuning": [
@@ -260,7 +356,8 @@
             "max": 1,
             "step": 0.01
           }
-        ]
+        ],
+        "suspensionImpactStrength": 1.15
       }
     },
     {
@@ -303,7 +400,7 @@
     {
       "id": "rally-tires",
       "name": "Rally Tires",
-      "description": "Specialist rally tires; choose for the surface and driving style, not as a universal higher tier.",
+      "description": "Rally Tires. These should give us a better bite on gravel. You know, for when the pavement gives up.",
       "effects": [],
       "carPart": {
         "slot": "tires",
@@ -313,17 +410,17 @@
         "forSale": true,
         "modifiers": [],
         "tuning": [],
-        "tireRef": "builtin:dirt"
+        "tireRef": "Rally"
       }
     },
     {
       "id": "street-brakes",
       "name": "Street Brakes",
-      "description": "Higher brake pressure with a fixed street setup. Install Sport or Race Brakes for adjustable balance and pressure.",
+      "description": "Street Brakes. More braking force. I'd rather have it before we get to the bottom of a mountain.",
       "effects": [],
       "carPart": {
         "slot": "brakes",
-        "section": "Brakes",
+        "section": "Handling",
         "tier": "street",
         "price": 350,
         "forSale": true,
@@ -340,11 +437,11 @@
     {
       "id": "sport-brakes",
       "name": "Sport Brakes",
-      "description": "Higher brake pressure with adjustable front/rear balance and pressure.",
+      "description": "Sport Brakes. More braking force. I'd rather have it before we get to the bottom of a mountain.",
       "effects": [],
       "carPart": {
         "slot": "brakes",
-        "section": "Brakes",
+        "section": "Handling",
         "tier": "sport",
         "price": 750,
         "forSale": true,
@@ -374,11 +471,11 @@
     {
       "id": "race-brakes",
       "name": "Race Brakes",
-      "description": "Higher brake pressure with the widest brake balance and pressure adjustment ranges.",
+      "description": "Race Brakes. More braking force. I'd rather have it before we get to the bottom of a mountain.",
       "effects": [],
       "carPart": {
         "slot": "brakes",
-        "section": "Brakes",
+        "section": "Handling",
         "tier": "race",
         "price": 1500,
         "forSale": true,
@@ -408,7 +505,7 @@
     {
       "id": "street-turbo",
       "name": "Street Turbo",
-      "description": "Boost-focused torque curve: gains build with RPM; increased output also increases fuel demand.",
+      "description": "Street Turbo. Boost adjusts how much of this turbo upgrade\u2019s extra torque we use. Turn it down for less power, fuel demand and heat; 100% gives the kit\u2019s full added boost.",
       "effects": [],
       "carPart": {
         "slot": "turbo",
@@ -417,7 +514,14 @@
         "price": 600,
         "forSale": true,
         "modifiers": [],
-        "tuning": [],
+        "tuning": [
+          {
+            "field": "boostLevel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ],
         "torqueCurve": [
           {
             "rpm": 1000,
@@ -437,7 +541,7 @@
     {
       "id": "race-turbo",
       "name": "Race Turbo",
-      "description": "Boost-focused torque curve: gains build with RPM; increased output also increases fuel demand.",
+      "description": "Race Turbo. Boost adjusts how much of this turbo upgrade\u2019s extra torque we use. Turn it down for less power, fuel demand and heat; 100% gives the kit\u2019s full added boost.",
       "effects": [],
       "carPart": {
         "slot": "turbo",
@@ -446,7 +550,14 @@
         "price": 2400,
         "forSale": true,
         "modifiers": [],
-        "tuning": [],
+        "tuning": [
+          {
+            "field": "boostLevel",
+            "min": 0,
+            "max": 1,
+            "step": 0.01
+          }
+        ],
         "torqueCurve": [
           {
             "rpm": 1000,
@@ -466,7 +577,7 @@
     {
       "id": "street-ecu",
       "name": "Street ECU Remap",
-      "description": "Unlocks adjustable engine torque mapping; higher output increases fuel demand.",
+      "description": "Street ECU Remap. We can trade output for lower fuel use and heat with the power map, and make the pedal gentler or sharper. Full pedal still gives full available power.",
       "effects": [],
       "carPart": {
         "slot": "ecu",
@@ -487,6 +598,12 @@
             "min": 0.95,
             "max": 1.05,
             "step": 0.01
+          },
+          {
+            "field": "pedalResponse",
+            "min": 0.5,
+            "max": 1.5,
+            "step": 0.05
           }
         ]
       }
@@ -494,7 +611,7 @@
     {
       "id": "race-ecu",
       "name": "Standalone Race ECU",
-      "description": "Unlocks adjustable engine torque mapping; higher output increases fuel demand.",
+      "description": "Standalone Race ECU. We can trade output for lower fuel use and heat with the power map, and make the pedal gentler or sharper. Full pedal still gives full available power.",
       "effects": [],
       "carPart": {
         "slot": "ecu",
@@ -515,6 +632,12 @@
             "min": 0.7,
             "max": 1.2,
             "step": 0.01
+          },
+          {
+            "field": "pedalResponse",
+            "min": 0.5,
+            "max": 1.5,
+            "step": 0.05
           }
         ]
       }
@@ -522,7 +645,7 @@
     {
       "id": "street-intake",
       "name": "High-Flow Air Filter",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "High-Flow Air Filter. Let the engine breathe a little easier. It should give us some extra pull.",
       "effects": [],
       "carPart": {
         "slot": "intake",
@@ -551,7 +674,7 @@
     {
       "id": "sport-intake",
       "name": "Cold-Air Intake",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "Cold-Air Intake. Let the engine breathe a little easier. It should give us some extra pull.",
       "effects": [],
       "carPart": {
         "slot": "intake",
@@ -580,7 +703,7 @@
     {
       "id": "race-intake",
       "name": "Race Intake Manifold",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "Race Intake Manifold. Let the engine breathe a little easier. It should give us some extra pull.",
       "effects": [],
       "carPart": {
         "slot": "intake",
@@ -609,7 +732,7 @@
     {
       "id": "street-exhaust",
       "name": "Sport Rear Muffler",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "Sport Rear Muffler. A freer exhaust should help it make more power. Might finally put that noise to work.",
       "effects": [],
       "carPart": {
         "slot": "exhaust",
@@ -638,7 +761,7 @@
     {
       "id": "sport-exhaust",
       "name": "Cat-Back Exhaust",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "Cat-Back Exhaust. A freer exhaust should help it make more power. Might finally put that noise to work.",
       "effects": [],
       "carPart": {
         "slot": "exhaust",
@@ -667,7 +790,7 @@
     {
       "id": "race-exhaust",
       "name": "Race Header and Exhaust",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "Race Header and Exhaust. A freer exhaust should help it make more power. Might finally put that noise to work.",
       "effects": [],
       "carPart": {
         "slot": "exhaust",
@@ -696,7 +819,7 @@
     {
       "id": "street-ignition",
       "name": "Iridium Spark Plugs",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "Iridium Spark Plugs. Better ignition parts. A little more power to work with, if the rest of the engine holds together.",
       "effects": [],
       "carPart": {
         "slot": "ignition",
@@ -725,7 +848,7 @@
     {
       "id": "sport-ignition",
       "name": "Performance Coil Pack",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "Performance Coil Pack. Better ignition parts. A little more power to work with, if the rest of the engine holds together.",
       "effects": [],
       "carPart": {
         "slot": "ignition",
@@ -754,7 +877,7 @@
     {
       "id": "race-ignition",
       "name": "Race Ignition System",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "Race Ignition System. Better ignition parts. A little more power to work with, if the rest of the engine holds together.",
       "effects": [],
       "carPart": {
         "slot": "ignition",
@@ -783,7 +906,7 @@
     {
       "id": "street-camshaft",
       "name": "Street Camshaft",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "Street Camshaft. These change how the engine makes its power. We might want to pay attention to where it pulls hardest.",
       "effects": [],
       "carPart": {
         "slot": "camshaft",
@@ -812,7 +935,7 @@
     {
       "id": "sport-camshaft",
       "name": "Sport Camshaft",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "Sport Camshaft. These change how the engine makes its power. We might want to pay attention to where it pulls hardest.",
       "effects": [],
       "carPart": {
         "slot": "camshaft",
@@ -841,7 +964,7 @@
     {
       "id": "race-camshaft",
       "name": "High-Lift Race Camshaft",
-      "description": "Game-calibrated torque-curve upgrade. Gains are strongest at higher RPM; combines with other engine part families.",
+      "description": "High-Lift Race Camshaft. These change how the engine makes its power. We might want to pay attention to where it pulls hardest.",
       "effects": [],
       "carPart": {
         "slot": "camshaft",
@@ -870,7 +993,7 @@
     {
       "id": "street-fuel-system",
       "name": "High-Flow Fuel Pump",
-      "description": "Game-calibrated fuel-metering upgrade; adjustable kits unlock consumption tuning.",
+      "description": "High-Flow Fuel Pump. More capable fueling. Useful when we're asking the engine to work harder.",
       "effects": [],
       "carPart": {
         "slot": "fuel-system",
@@ -891,7 +1014,7 @@
     {
       "id": "sport-fuel-system",
       "name": "Matched Injector Kit",
-      "description": "Game-calibrated fuel-metering upgrade; adjustable kits unlock consumption tuning.",
+      "description": "Matched Injector Kit. More capable fueling. Useful when we're asking the engine to work harder.",
       "effects": [],
       "carPart": {
         "slot": "fuel-system",
@@ -919,7 +1042,7 @@
     {
       "id": "race-fuel-system",
       "name": "Programmable Fuel System",
-      "description": "Game-calibrated fuel-metering upgrade; adjustable kits unlock consumption tuning.",
+      "description": "Programmable Fuel System. More capable fueling. Useful when we're asking the engine to work harder.",
       "effects": [],
       "carPart": {
         "slot": "fuel-system",
@@ -958,8 +1081,8 @@
     },
     {
       "id": "street-weight",
-      "name": "Street Weight Reduction",
-      "description": "Lighter body components reduce vehicle mass.",
+      "name": "Trim Removal",
+      "description": "Trim Removal. We can take out the spare, loose cargo, and nonessential trim. That's 2% less vehicle weight without stripping the whole cabin.",
       "effects": [],
       "carPart": {
         "slot": "weight",
@@ -975,12 +1098,15 @@
           }
         ],
         "tuning": []
-      }
+      },
+      "aliases": [
+        "Street Weight Reduction"
+      ]
     },
     {
       "id": "race-weight",
-      "name": "Race Weight and Ballast",
-      "description": "Reduces vehicle mass. Race kit also unlocks total race-weight and ballast adjustment.",
+      "name": "Stripped Cabin",
+      "description": "Stripped Cabin. Remove the rear seats, carpet, and sound insulation, then use lightweight seats and panels. That's 10% less vehicle weight in total. Probably won't be a quiet ride.",
       "effects": [],
       "carPart": {
         "slot": "weight",
@@ -1003,12 +1129,15 @@
             "step": 1
           }
         ]
-      }
+      },
+      "aliases": [
+        "Race Weight and Ballast"
+      ]
     },
     {
       "id": "street-transmission",
       "name": "Street Final Drive",
-      "description": "Unlocks final-drive adjustment.",
+      "description": "Street gearbox. Revised ratios and final drive make a useful starting point for daily driving.",
       "effects": [],
       "carPart": {
         "slot": "transmission",
@@ -1019,8 +1148,58 @@
         "modifiers": [
           {
             "field": "gearFinalDrive",
-            "operation": "multiply",
-            "value": 1.02
+            "operation": "set",
+            "value": 3.9
+          },
+          {
+            "field": "gearRatios.0",
+            "operation": "set",
+            "value": 3.2
+          },
+          {
+            "field": "gearRatios.1",
+            "operation": "set",
+            "value": 2.1
+          },
+          {
+            "field": "gearRatios.2",
+            "operation": "set",
+            "value": 1.5
+          },
+          {
+            "field": "gearRatios.3",
+            "operation": "set",
+            "value": 1.16
+          },
+          {
+            "field": "gearRatios.4",
+            "operation": "set",
+            "value": 0.94
+          },
+          {
+            "field": "gearRatios.5",
+            "operation": "set",
+            "value": 0.76
+          },
+          {
+            "field": "gearRatios.6",
+            "operation": "set",
+            "value": 0.64
+          },
+          {
+            "field": "gearRatios.7",
+            "operation": "set",
+            "value": 0.54
+          },
+          {
+            "field": "gearRatios.8",
+            "operation": "set",
+            "value": 0.46
+          },
+          {
+            "field": "gearRatios.9",
+            "operation": "set",
+            "value": 0.39
           }
         ],
         "tuning": [
@@ -1036,7 +1215,7 @@
     {
       "id": "race-transmission",
       "name": "Race Close-Ratio Gearbox",
-      "description": "Unlocks final drive and every gear fitted to this car; tune ratios for the course.",
+      "description": "Race gearbox. A close-ratio gear set and tall final drive for dry-tarmac racing. Installing it changes the gearing; fine-tuning is optional.",
       "effects": [],
       "carPart": {
         "slot": "transmission",
@@ -1047,8 +1226,58 @@
         "modifiers": [
           {
             "field": "gearFinalDrive",
-            "operation": "multiply",
-            "value": 1.06
+            "operation": "set",
+            "value": 3.15
+          },
+          {
+            "field": "gearRatios.0",
+            "operation": "set",
+            "value": 3
+          },
+          {
+            "field": "gearRatios.1",
+            "operation": "set",
+            "value": 2.12
+          },
+          {
+            "field": "gearRatios.2",
+            "operation": "set",
+            "value": 1.62
+          },
+          {
+            "field": "gearRatios.3",
+            "operation": "set",
+            "value": 1.28
+          },
+          {
+            "field": "gearRatios.4",
+            "operation": "set",
+            "value": 1
+          },
+          {
+            "field": "gearRatios.5",
+            "operation": "set",
+            "value": 0.78
+          },
+          {
+            "field": "gearRatios.6",
+            "operation": "set",
+            "value": 0.65
+          },
+          {
+            "field": "gearRatios.7",
+            "operation": "set",
+            "value": 0.55
+          },
+          {
+            "field": "gearRatios.8",
+            "operation": "set",
+            "value": 0.47
+          },
+          {
+            "field": "gearRatios.9",
+            "operation": "set",
+            "value": 0.4
           }
         ],
         "tuning": [
@@ -1124,11 +1353,11 @@
     {
       "id": "street-suspension",
       "name": "Street Suspension",
-      "description": "Adjustable springs and ride height.",
+      "description": "Street Suspension. Different springs and ride height. We should think about the bumps before we make it too stiff.",
       "effects": [],
       "carPart": {
         "slot": "suspension",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "street",
         "price": 350,
         "forSale": true,
@@ -1152,6 +1381,36 @@
             "field": "rideHeightRear",
             "operation": "add",
             "value": -0.025
+          },
+          {
+            "field": "bumpFront",
+            "operation": "set",
+            "value": 0.5
+          },
+          {
+            "field": "reboundFront",
+            "operation": "set",
+            "value": 0.58
+          },
+          {
+            "field": "antiRollFront",
+            "operation": "set",
+            "value": 0.5
+          },
+          {
+            "field": "bumpRear",
+            "operation": "set",
+            "value": 0.5
+          },
+          {
+            "field": "reboundRear",
+            "operation": "set",
+            "value": 0.58
+          },
+          {
+            "field": "antiRollRear",
+            "operation": "set",
+            "value": 0.5
           }
         ],
         "tuning": [
@@ -1179,17 +1438,18 @@
             "max": 0.7,
             "step": 0.01
           }
-        ]
+        ],
+        "suspensionImpactStrength": 1.05
       }
     },
     {
       "id": "race-suspension",
       "name": "Race Coilovers",
-      "description": "Adjustable springs, ride height, dampers, bump/rebound and anti-roll bars.",
+      "description": "Race Coilovers. Different springs and ride height. We should think about the bumps before we make it too stiff.",
       "effects": [],
       "carPart": {
         "slot": "suspension",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "race",
         "price": 1600,
         "forSale": true,
@@ -1213,6 +1473,36 @@
             "field": "rideHeightRear",
             "operation": "add",
             "value": -0.07500000000000001
+          },
+          {
+            "field": "bumpFront",
+            "operation": "set",
+            "value": 0.64
+          },
+          {
+            "field": "reboundFront",
+            "operation": "set",
+            "value": 0.76
+          },
+          {
+            "field": "antiRollFront",
+            "operation": "set",
+            "value": 0.72
+          },
+          {
+            "field": "bumpRear",
+            "operation": "set",
+            "value": 0.64
+          },
+          {
+            "field": "reboundRear",
+            "operation": "set",
+            "value": 0.76
+          },
+          {
+            "field": "antiRollRear",
+            "operation": "set",
+            "value": 0.72
           }
         ],
         "tuning": [
@@ -1300,17 +1590,18 @@
             "max": 1,
             "step": 0.01
           }
-        ]
+        ],
+        "suspensionImpactStrength": 1.3
       }
     },
     {
       "id": "street-alignment",
       "name": "Street Alignment Kit",
-      "description": "Unlocks camber adjustment.",
+      "description": "Camber Bolts. An adjustable camber hardware kit gives us a modest adjustment range. Choose the alignment settings in Geometry.",
       "effects": [],
       "carPart": {
         "slot": "alignment",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "street",
         "price": 250,
         "forSale": true,
@@ -1344,12 +1635,12 @@
     },
     {
       "id": "sport-alignment",
-      "name": "Adjustable Camber Plates",
-      "description": "Unlocks front/rear camber and toe adjustment.",
+      "name": "Adjustable Geometry Links",
+      "description": "Adjustable Links. Camber and toe hardware gives us more room to set the wheels up. Rally, drift and road alignment are settings we apply to this hardware.",
       "effects": [],
       "carPart": {
         "slot": "alignment",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "sport",
         "price": 600,
         "forSale": true,
@@ -1391,16 +1682,19 @@
             "step": 0.1
           }
         ]
-      }
+      },
+      "aliases": [
+        "Adjustable Camber Plates"
+      ]
     },
     {
       "id": "race-alignment",
       "name": "Race Alignment Arms",
-      "description": "Unlocks front/rear camber and toe adjustment.",
+      "description": "Race Geometry Kit. Adjustable arms and mounts unlock front and rear camber/toe plus front caster. Pick the discipline in Setup, then fine-tune it under Geometry.",
       "effects": [],
       "carPart": {
         "slot": "alignment",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "race",
         "price": 1300,
         "forSale": true,
@@ -1453,7 +1747,7 @@
     {
       "id": "street-aero",
       "name": "Street Aero Kit",
-      "description": "Fixed front and rear aero setup.",
+      "description": "Street Aero Kit. Adds 6 kg; base drag coefficient changes by +0.012. A modest splitter and spoiler for road speeds.",
       "effects": [],
       "carPart": {
         "slot": "aero",
@@ -1471,6 +1765,16 @@
             "field": "aeroRear",
             "operation": "set",
             "value": 0.2
+          },
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 6
+          },
+          {
+            "field": "dragCoefficient",
+            "operation": "add",
+            "value": 0.012
           }
         ],
         "tuning": []
@@ -1479,7 +1783,7 @@
     {
       "id": "sport-aero",
       "name": "Adjustable Splitter and Wing",
-      "description": "Adjustable front and rear aero balance.",
+      "description": "Adjustable Splitter and Wing. Adds 10 kg; base drag coefficient changes by +0.025. Adjustable splitter and wing with moderate downforce.",
       "effects": [],
       "carPart": {
         "slot": "aero",
@@ -1497,6 +1801,16 @@
             "field": "aeroRear",
             "operation": "set",
             "value": 0.4
+          },
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 10
+          },
+          {
+            "field": "dragCoefficient",
+            "operation": "add",
+            "value": 0.025
           }
         ],
         "tuning": [
@@ -1518,7 +1832,7 @@
     {
       "id": "race-aero",
       "name": "Race Aero Package",
-      "description": "Adjustable front and rear aero balance.",
+      "description": "Race Aero Package. Adds 14 kg; base drag coefficient changes by +0.045. The largest downforce range; wing angle trades straight-line speed for cornering load.",
       "effects": [],
       "carPart": {
         "slot": "aero",
@@ -1536,6 +1850,16 @@
             "field": "aeroRear",
             "operation": "set",
             "value": 0.65
+          },
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 14
+          },
+          {
+            "field": "dragCoefficient",
+            "operation": "add",
+            "value": 0.045
           }
         ],
         "tuning": [
@@ -1557,7 +1881,7 @@
     {
       "id": "street-differential",
       "name": "Street Limited-Slip Differential",
-      "description": "Fixed acceleration and deceleration locking.",
+      "description": "Street Limited-Slip Differential. This changes how the driven wheels share the work. Getting the locking right could help us out of corners.",
       "effects": [],
       "carPart": {
         "slot": "differential",
@@ -1583,7 +1907,7 @@
     {
       "id": "sport-differential",
       "name": "Adjustable Limited-Slip Differential",
-      "description": "Unlocks acceleration and deceleration differential locking.",
+      "description": "Adjustable Limited-Slip Differential. This changes how the driven wheels share the work. Getting the locking right could help us out of corners.",
       "effects": [],
       "carPart": {
         "slot": "differential",
@@ -1622,7 +1946,7 @@
     {
       "id": "race-differential",
       "name": "Race Plate Differential",
-      "description": "Unlocks acceleration and deceleration differential locking.",
+      "description": "Race Plate Differential. This changes how the driven wheels share the work. Getting the locking right could help us out of corners.",
       "effects": [],
       "carPart": {
         "slot": "differential",
@@ -1697,7 +2021,7 @@
     {
       "id": "street-tires",
       "name": "Street Tires",
-      "description": "Dry-road compound. More dry grip trades away wet/loose-surface performance and durability at higher tiers.",
+      "description": "Street Tires. A sensible step up. They'll handle everyday roads without being too fussy about the weather.",
       "effects": [],
       "carPart": {
         "slot": "tires",
@@ -1707,29 +2031,29 @@
         "forSale": true,
         "modifiers": [],
         "tuning": [],
-        "tireRef": "builtin:street"
+        "tireRef": "Street"
       }
     },
     {
       "id": "sport-tires",
       "name": "Sport Tires",
-      "description": "Dry-road compound. More dry grip trades away wet/loose-surface performance and durability at higher tiers.",
+      "description": "Legacy Sport Tires. Retained for saved cars; uses the saved Street tire.",
       "effects": [],
       "carPart": {
         "slot": "tires",
         "section": "Tires",
         "tier": "sport",
         "price": 500,
-        "forSale": true,
+        "forSale": false,
         "modifiers": [],
         "tuning": [],
-        "tireRef": "builtin:sport"
+        "tireRef": "Street"
       }
     },
     {
       "id": "race-tires",
-      "name": "Race Tarmac Tires",
-      "description": "Dry-road compound. More dry grip trades away wet/loose-surface performance and durability at higher tiers.",
+      "name": "Tarmac Race Tires",
+      "description": "Race Tires. If we're racing on dry asphalt, you can't get much better than these. I'd watch out for rain, though.",
       "effects": [],
       "carPart": {
         "slot": "tires",
@@ -1739,13 +2063,16 @@
         "forSale": true,
         "modifiers": [],
         "tuning": [],
-        "tireRef": "builtin:tarmac"
-      }
+        "tireRef": "Tarmac"
+      },
+      "aliases": [
+        "Race Tarmac Tires"
+      ]
     },
     {
       "id": "rain-tires",
       "name": "Rain Tires",
-      "description": "Specialist rain tires; choose for the surface and driving style, not as a universal higher tier.",
+      "description": "Rain Tires. If the road's soaked, these are the ones I'd want underneath us.",
       "effects": [],
       "carPart": {
         "slot": "tires",
@@ -1755,13 +2082,13 @@
         "forSale": true,
         "modifiers": [],
         "tuning": [],
-        "tireRef": "builtin:rain"
+        "tireRef": "Rain"
       }
     },
     {
       "id": "snow-tires",
       "name": "Snow Tires",
-      "description": "Specialist snow tires; choose for the surface and driving style, not as a universal higher tier.",
+      "description": "Snow Tires. We might actually keep some grip when the road turns white. Still wouldn't rush the corners.",
       "effects": [],
       "carPart": {
         "slot": "tires",
@@ -1771,13 +2098,13 @@
         "forSale": true,
         "modifiers": [],
         "tuning": [],
-        "tireRef": "builtin:snow"
+        "tireRef": "Snow"
       }
     },
     {
       "id": "offroad-tires",
       "name": "Offroad Tires",
-      "description": "Specialist offroad tires; choose for the surface and driving style, not as a universal higher tier.",
+      "description": "Offroad Tires. These are meant for loose ground. Probably a good idea if we're leaving the pavement.",
       "effects": [],
       "carPart": {
         "slot": "tires",
@@ -1787,13 +2114,13 @@
         "forSale": true,
         "modifiers": [],
         "tuning": [],
-        "tireRef": "builtin:offroad"
+        "tireRef": "Offroad"
       }
     },
     {
       "id": "drift-tires",
       "name": "Drift Tires",
-      "description": "Specialist drift tires; choose for the surface and driving style, not as a universal higher tier.",
+      "description": "Drift Tires. If we're planning to slide through the corners, these should help. On purpose, this time.",
       "effects": [],
       "carPart": {
         "slot": "tires",
@@ -1803,17 +2130,17 @@
         "forSale": true,
         "modifiers": [],
         "tuning": [],
-        "tireRef": "builtin:drift"
+        "tireRef": "Drift"
       }
     },
     {
       "id": "rally-suspension",
       "name": "Rally Suspension",
-      "description": "Rally starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
+      "description": "Rally Suspension. Rally starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "suspension",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "custom",
         "price": 1450,
         "forSale": true,
@@ -1964,20 +2291,21 @@
             "max": 1,
             "step": 0.01
           }
-        ]
+        ],
+        "suspensionImpactStrength": 1.8
       }
     },
     {
       "id": "rally-alignment",
       "name": "Rally Alignment Kit",
-      "description": "Rally starting setup with adjustable alignment settings. Fit independently or as a matching setup package.",
+      "description": "Rally Alignment Kit. Rally starting setup with adjustable alignment settings. Fit independently or as a matching setup package. Legacy preset package: retained for saved cars. New discipline setups use adjustable race hardware with their own tuning settings.",
       "effects": [],
       "carPart": {
         "slot": "alignment",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "custom",
         "price": 1150,
-        "forSale": true,
+        "forSale": false,
         "modifiers": [
           {
             "field": "camberFront",
@@ -2042,7 +2370,7 @@
     {
       "id": "rally-differential",
       "name": "Rally Differential",
-      "description": "Rally starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
+      "description": "Rally Differential. Rally starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "differential",
@@ -2147,7 +2475,7 @@
     {
       "id": "rally-transmission",
       "name": "Rally Gearbox",
-      "description": "Rally starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
+      "description": "Rally Gearbox. Rally starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "transmission",
@@ -2235,7 +2563,7 @@
     {
       "id": "rally-aero",
       "name": "Rally Aero Kit",
-      "description": "Rally starting setup with adjustable aero settings. Fit independently or as a matching setup package.",
+      "description": "Rally Aero Kit. Adds 12 kg; base drag coefficient changes by +0.030. A raised splitter and rear wing with less front downforce than the tarmac package.",
       "effects": [],
       "carPart": {
         "slot": "aero",
@@ -2253,19 +2581,29 @@
             "field": "aeroRear",
             "operation": "set",
             "value": 0.36000000000000004
+          },
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 12
+          },
+          {
+            "field": "dragCoefficient",
+            "operation": "add",
+            "value": 0.03
           }
         ],
         "tuning": [
           {
             "field": "aeroFront",
             "min": 0,
-            "max": 1,
+            "max": 0.45,
             "step": 0.01
           },
           {
             "field": "aeroRear",
             "min": 0,
-            "max": 1,
+            "max": 0.65,
             "step": 0.01
           }
         ]
@@ -2274,14 +2612,14 @@
     {
       "id": "rally-brakes",
       "name": "Rally Brakes",
-      "description": "Rally starting setup with adjustable brakes settings. Fit independently or as a matching setup package.",
+      "description": "Rally Brakes. Rally starting setup with adjustable brakes settings. Fit independently or as a matching setup package. Legacy preset package: retained for saved cars. New discipline setups use adjustable race hardware with their own tuning settings.",
       "effects": [],
       "carPart": {
         "slot": "brakes",
-        "section": "Brakes",
+        "section": "Handling",
         "tier": "custom",
         "price": 1350,
-        "forSale": true,
+        "forSale": false,
         "modifiers": [
           {
             "field": "brakeBalance",
@@ -2313,11 +2651,11 @@
     {
       "id": "drift-suspension",
       "name": "Drift Suspension",
-      "description": "Drift starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
+      "description": "Drift Suspension. Drift starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "suspension",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "custom",
         "price": 1450,
         "forSale": true,
@@ -2468,20 +2806,21 @@
             "max": 1,
             "step": 0.01
           }
-        ]
+        ],
+        "suspensionImpactStrength": 1.1
       }
     },
     {
       "id": "drift-alignment",
       "name": "Drift Alignment Kit",
-      "description": "Drift starting setup with adjustable alignment settings. Fit independently or as a matching setup package.",
+      "description": "Drift Alignment Kit. Drift starting setup with adjustable alignment settings. Fit independently or as a matching setup package. Legacy preset package: retained for saved cars. New discipline setups use adjustable race hardware with their own tuning settings.",
       "effects": [],
       "carPart": {
         "slot": "alignment",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "custom",
         "price": 1150,
-        "forSale": true,
+        "forSale": false,
         "modifiers": [
           {
             "field": "camberFront",
@@ -2546,7 +2885,7 @@
     {
       "id": "drift-differential",
       "name": "Drift Differential",
-      "description": "Drift starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
+      "description": "Drift Differential. Drift starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "differential",
@@ -2651,7 +2990,7 @@
     {
       "id": "drift-transmission",
       "name": "Drift Gearbox",
-      "description": "Drift starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
+      "description": "Drift Gearbox. Drift starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "transmission",
@@ -2739,7 +3078,7 @@
     {
       "id": "drift-aero",
       "name": "Drift Aero Kit",
-      "description": "Drift starting setup with adjustable aero settings. Fit independently or as a matching setup package.",
+      "description": "Drift Aero Kit. Adds 8 kg; base drag coefficient changes by +0.018. A mild front lip and rear wing; limited downforce keeps this a lighter package.",
       "effects": [],
       "carPart": {
         "slot": "aero",
@@ -2757,19 +3096,29 @@
             "field": "aeroRear",
             "operation": "set",
             "value": 0.2
+          },
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 8
+          },
+          {
+            "field": "dragCoefficient",
+            "operation": "add",
+            "value": 0.018
           }
         ],
         "tuning": [
           {
             "field": "aeroFront",
             "min": 0,
-            "max": 1,
+            "max": 0.3,
             "step": 0.01
           },
           {
             "field": "aeroRear",
             "min": 0,
-            "max": 1,
+            "max": 0.45,
             "step": 0.01
           }
         ]
@@ -2778,14 +3127,14 @@
     {
       "id": "drift-brakes",
       "name": "Drift Brakes",
-      "description": "Drift starting setup with adjustable brakes settings. Fit independently or as a matching setup package.",
+      "description": "Drift Brakes. Drift starting setup with adjustable brakes settings. Fit independently or as a matching setup package. Legacy preset package: retained for saved cars. New discipline setups use adjustable race hardware with their own tuning settings.",
       "effects": [],
       "carPart": {
         "slot": "brakes",
-        "section": "Brakes",
+        "section": "Handling",
         "tier": "custom",
         "price": 1350,
-        "forSale": true,
+        "forSale": false,
         "modifiers": [
           {
             "field": "brakeBalance",
@@ -2817,11 +3166,11 @@
     {
       "id": "offroad-suspension",
       "name": "Off-road Suspension",
-      "description": "Off-road starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
+      "description": "Off-road Suspension. Off-road starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "suspension",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "custom",
         "price": 1450,
         "forSale": true,
@@ -2972,20 +3321,21 @@
             "max": 1,
             "step": 0.01
           }
-        ]
+        ],
+        "suspensionImpactStrength": 2
       }
     },
     {
       "id": "offroad-alignment",
       "name": "Off-road Alignment Kit",
-      "description": "Off-road starting setup with adjustable alignment settings. Fit independently or as a matching setup package.",
+      "description": "Off-road Alignment Kit. Off-road starting setup with adjustable alignment settings. Fit independently or as a matching setup package. Legacy preset package: retained for saved cars. New discipline setups use adjustable race hardware with their own tuning settings.",
       "effects": [],
       "carPart": {
         "slot": "alignment",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "custom",
         "price": 1150,
-        "forSale": true,
+        "forSale": false,
         "modifiers": [
           {
             "field": "camberFront",
@@ -3050,7 +3400,7 @@
     {
       "id": "offroad-differential",
       "name": "Off-road Differential",
-      "description": "Off-road starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
+      "description": "Off-road Differential. Off-road starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "differential",
@@ -3155,7 +3505,7 @@
     {
       "id": "offroad-transmission",
       "name": "Off-road Gearbox",
-      "description": "Off-road starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
+      "description": "Off-road Gearbox. Off-road starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "transmission",
@@ -3243,7 +3593,7 @@
     {
       "id": "offroad-aero",
       "name": "Off-road Aero Kit",
-      "description": "Off-road starting setup with adjustable aero settings. Fit independently or as a matching setup package.",
+      "description": "Off-road Aero Kit. Adds 9 kg; base drag coefficient changes by +0.022. High-clearance bodywork with only modest aerodynamic loading.",
       "effects": [],
       "carPart": {
         "slot": "aero",
@@ -3261,19 +3611,29 @@
             "field": "aeroRear",
             "operation": "set",
             "value": 0.16
+          },
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 9
+          },
+          {
+            "field": "dragCoefficient",
+            "operation": "add",
+            "value": 0.022
           }
         ],
         "tuning": [
           {
             "field": "aeroFront",
             "min": 0,
-            "max": 1,
+            "max": 0.2,
             "step": 0.01
           },
           {
             "field": "aeroRear",
             "min": 0,
-            "max": 1,
+            "max": 0.3,
             "step": 0.01
           }
         ]
@@ -3282,14 +3642,14 @@
     {
       "id": "offroad-brakes",
       "name": "Off-road Brakes",
-      "description": "Off-road starting setup with adjustable brakes settings. Fit independently or as a matching setup package.",
+      "description": "Off-road Brakes. Off-road starting setup with adjustable brakes settings. Fit independently or as a matching setup package. Legacy preset package: retained for saved cars. New discipline setups use adjustable race hardware with their own tuning settings.",
       "effects": [],
       "carPart": {
         "slot": "brakes",
-        "section": "Brakes",
+        "section": "Handling",
         "tier": "custom",
         "price": 1350,
-        "forSale": true,
+        "forSale": false,
         "modifiers": [
           {
             "field": "brakeBalance",
@@ -3321,11 +3681,11 @@
     {
       "id": "drag-suspension",
       "name": "Drag Suspension",
-      "description": "Drag starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
+      "description": "Drag Suspension. Drag starting setup with adjustable suspension settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "suspension",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "custom",
         "price": 1450,
         "forSale": true,
@@ -3476,20 +3836,21 @@
             "max": 1,
             "step": 0.01
           }
-        ]
+        ],
+        "suspensionImpactStrength": 1.1
       }
     },
     {
       "id": "drag-alignment",
       "name": "Drag Alignment Kit",
-      "description": "Drag starting setup with adjustable alignment settings. Fit independently or as a matching setup package.",
+      "description": "Drag Alignment Kit. Drag starting setup with adjustable alignment settings. Fit independently or as a matching setup package. Legacy preset package: retained for saved cars. New discipline setups use adjustable race hardware with their own tuning settings.",
       "effects": [],
       "carPart": {
         "slot": "alignment",
-        "section": "Suspension",
+        "section": "Handling",
         "tier": "custom",
         "price": 1150,
-        "forSale": true,
+        "forSale": false,
         "modifiers": [
           {
             "field": "camberFront",
@@ -3554,7 +3915,7 @@
     {
       "id": "drag-differential",
       "name": "Drag Differential",
-      "description": "Drag starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
+      "description": "Drag Differential. Drag starting setup with adjustable differential settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "differential",
@@ -3659,7 +4020,7 @@
     {
       "id": "drag-transmission",
       "name": "Drag Gearbox",
-      "description": "Drag starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
+      "description": "Drag Gearbox. Drag starting setup with adjustable transmission settings. Fit independently or as a matching setup package.",
       "effects": [],
       "carPart": {
         "slot": "transmission",
@@ -3747,7 +4108,7 @@
     {
       "id": "drag-aero",
       "name": "Drag Aero Kit",
-      "description": "Drag starting setup with adjustable aero settings. Fit independently or as a matching setup package.",
+      "description": "Drag Aero Kit. Adds 5 kg; base drag coefficient changes by -0.015. Low-drag bodywork and a small rear spoiler prioritize straight-line speed.",
       "effects": [],
       "carPart": {
         "slot": "aero",
@@ -3765,19 +4126,29 @@
             "field": "aeroRear",
             "operation": "set",
             "value": 0.08
+          },
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 5
+          },
+          {
+            "field": "dragCoefficient",
+            "operation": "add",
+            "value": -0.015
           }
         ],
         "tuning": [
           {
             "field": "aeroFront",
             "min": 0,
-            "max": 1,
+            "max": 0.12,
             "step": 0.01
           },
           {
             "field": "aeroRear",
             "min": 0,
-            "max": 1,
+            "max": 0.25,
             "step": 0.01
           }
         ]
@@ -3786,14 +4157,14 @@
     {
       "id": "drag-brakes",
       "name": "Drag Brakes",
-      "description": "Drag starting setup with adjustable brakes settings. Fit independently or as a matching setup package.",
+      "description": "Drag Brakes. Drag starting setup with adjustable brakes settings. Fit independently or as a matching setup package. Legacy preset package: retained for saved cars. New discipline setups use adjustable race hardware with their own tuning settings.",
       "effects": [],
       "carPart": {
         "slot": "brakes",
-        "section": "Brakes",
+        "section": "Handling",
         "tier": "custom",
         "price": 1350,
-        "forSale": true,
+        "forSale": false,
         "modifiers": [
           {
             "field": "brakeBalance",
@@ -3825,7 +4196,7 @@
     {
       "id": "street-flywheel",
       "name": "Street Flywheel",
-      "description": "Reduces rotational inertia for faster RPM response.",
+      "description": "Street Flywheel. Less rotating weight, so the engine can pick up and lose revs faster. Won't add power by itself, though.",
       "effects": [],
       "carPart": {
         "slot": "flywheel",
@@ -3847,7 +4218,7 @@
     {
       "id": "sport-flywheel",
       "name": "Sport Flywheel",
-      "description": "Reduces rotational inertia for faster RPM response.",
+      "description": "Sport Flywheel. Less rotating weight, so the engine can pick up and lose revs faster. Won't add power by itself, though.",
       "effects": [],
       "carPart": {
         "slot": "flywheel",
@@ -3869,7 +4240,7 @@
     {
       "id": "race-flywheel",
       "name": "Race Flywheel",
-      "description": "Reduces rotational inertia for faster RPM response.",
+      "description": "Race Flywheel. Less rotating weight, so the engine can pick up and lose revs faster. Won't add power by itself, though.",
       "effects": [],
       "carPart": {
         "slot": "flywheel",
@@ -3898,7 +4269,7 @@
     {
       "id": "street-clutch",
       "name": "Street Clutch",
-      "description": "Shortens the clutch torque interruption during gear changes.",
+      "description": "Street Clutch. Quicker shifts. Less time waiting for the next gear to get back to work.",
       "effects": [],
       "carPart": {
         "slot": "clutch",
@@ -3920,7 +4291,7 @@
     {
       "id": "sport-clutch",
       "name": "Sport Clutch",
-      "description": "Shortens the clutch torque interruption during gear changes.",
+      "description": "Sport Clutch. Quicker shifts. Less time waiting for the next gear to get back to work.",
       "effects": [],
       "carPart": {
         "slot": "clutch",
@@ -3942,7 +4313,7 @@
     {
       "id": "race-clutch",
       "name": "Race Clutch",
-      "description": "Shortens the clutch torque interruption during gear changes.",
+      "description": "Race Clutch. Quicker shifts. Less time waiting for the next gear to get back to work.",
       "effects": [],
       "carPart": {
         "slot": "clutch",
@@ -3971,7 +4342,7 @@
     {
       "id": "engine-swap-turbo",
       "name": "Turbo Conversion",
-      "description": "Replaces the engine curve, RPM limits and rotating inertia; includes engine mass.",
+      "description": "Turbo Conversion. A different engine, with its own power curve and weight. We should check the gearing once it's in.",
       "effects": [],
       "carPart": {
         "slot": "engine-swap",
@@ -3988,7 +4359,7 @@
     {
       "id": "engine-swap-six",
       "name": "Six Conversion",
-      "description": "Replaces the engine curve, RPM limits and rotating inertia; includes engine mass.",
+      "description": "Six Conversion. A different engine, with its own power curve and weight. We should check the gearing once it's in.",
       "effects": [],
       "carPart": {
         "slot": "engine-swap",
@@ -4005,7 +4376,7 @@
     {
       "id": "engine-swap-v8",
       "name": "V8 Conversion",
-      "description": "Replaces the engine curve, RPM limits and rotating inertia; includes engine mass.",
+      "description": "V8 Conversion. A different engine, with its own power curve and weight. We should check the gearing once it's in.",
       "effects": [],
       "carPart": {
         "slot": "engine-swap",
@@ -4022,7 +4393,7 @@
     {
       "id": "drive-swap-fwd",
       "name": "FWD Conversion",
-      "description": "Changes driven wheels, driveline mass and transmission efficiency.",
+      "description": "FWD Conversion. This changes which wheels put the power down. It's going to change how the car feels coming out of a corner.",
       "effects": [],
       "carPart": {
         "slot": "drive-swap",
@@ -4039,7 +4410,7 @@
     {
       "id": "drive-swap-rwd",
       "name": "RWD Conversion",
-      "description": "Changes driven wheels, driveline mass and transmission efficiency.",
+      "description": "RWD Conversion. This changes which wheels put the power down. It's going to change how the car feels coming out of a corner.",
       "effects": [],
       "carPart": {
         "slot": "drive-swap",
@@ -4056,7 +4427,7 @@
     {
       "id": "drive-swap-awd",
       "name": "AWD Conversion",
-      "description": "Changes driven wheels, driveline mass and transmission efficiency.",
+      "description": "AWD Conversion. This changes which wheels put the power down. It's going to change how the car feels coming out of a corner.",
       "effects": [],
       "carPart": {
         "slot": "drive-swap",
@@ -4073,7 +4444,7 @@
     {
       "id": "street-rigidity",
       "name": "Braces",
-      "description": "Reinforces suspension mounting stiffness with added chassis mass. Does not repair damaged components.",
+      "description": "Braces. A stiffer chassis should let the suspension do its job more consistently. We do have to carry the extra weight.",
       "effects": [],
       "carPart": {
         "slot": "rigidity",
@@ -4100,7 +4471,7 @@
     {
       "id": "sport-rigidity",
       "name": "Cage",
-      "description": "Reinforces suspension mounting stiffness with added chassis mass. Does not repair damaged components.",
+      "description": "Cage. A stiffer chassis should let the suspension do its job more consistently. We do have to carry the extra weight.",
       "effects": [],
       "carPart": {
         "slot": "rigidity",
@@ -4127,7 +4498,7 @@
     {
       "id": "race-rigidity",
       "name": "Welded Cage",
-      "description": "Reinforces suspension mounting stiffness with added chassis mass. Does not repair damaged components.",
+      "description": "Welded Cage. A stiffer chassis should let the suspension do its job more consistently. We do have to carry the extra weight.",
       "effects": [],
       "carPart": {
         "slot": "rigidity",
@@ -4161,7 +4532,7 @@
     {
       "id": "street-ballast",
       "name": "Street Ballast",
-      "description": "Adjustable ballast with fore/aft placement. Changes mass, center of gravity and rotational inertia.",
+      "description": "Adjustable Ballast. Extra weight to help balance the car. This kit starts at 20 kg; we can adjust it from 0 to 50 kg and move it toward the front or rear. More weight isn't always better.",
       "effects": [],
       "carPart": {
         "slot": "ballast",
@@ -4196,7 +4567,7 @@
     {
       "id": "sport-ballast",
       "name": "Sport Ballast",
-      "description": "Adjustable ballast with fore/aft placement. Changes mass, center of gravity and rotational inertia.",
+      "description": "Adjustable Ballast. Extra weight to help balance the car. This kit starts at 20 kg; we can adjust it from 0 to 100 kg and move it toward the front or rear. More weight isn't always better.",
       "effects": [],
       "carPart": {
         "slot": "ballast",
@@ -4231,7 +4602,7 @@
     {
       "id": "race-ballast",
       "name": "Race Ballast",
-      "description": "Adjustable ballast with fore/aft placement. Changes mass, center of gravity and rotational inertia.",
+      "description": "Adjustable Ballast. Extra weight to help balance the car. This kit starts at 20 kg; we can adjust it from 0 to 200 kg and move it toward the front or rear. More weight isn't always better.",
       "effects": [],
       "carPart": {
         "slot": "ballast",
@@ -4266,7 +4637,7 @@
     {
       "id": "street-cooling",
       "name": "Street Cooling",
-      "description": "Radiator and oil heat exchanger improve thermal rejection. Failed pumps, leaks and electrical faults still impair cooling.",
+      "description": "Street Cooling. Better cooling. Might give the engine a little breathing room when we're pushing it hard.",
       "effects": [],
       "carPart": {
         "slot": "cooling",
@@ -4293,7 +4664,7 @@
     {
       "id": "sport-cooling",
       "name": "Sport Cooling",
-      "description": "Radiator and oil heat exchanger improve thermal rejection. Failed pumps, leaks and electrical faults still impair cooling.",
+      "description": "Sport Cooling. Better cooling. Might give the engine a little breathing room when we're pushing it hard.",
       "effects": [],
       "carPart": {
         "slot": "cooling",
@@ -4320,7 +4691,7 @@
     {
       "id": "race-cooling",
       "name": "Race Cooling",
-      "description": "Radiator and oil heat exchanger improve thermal rejection. Failed pumps, leaks and electrical faults still impair cooling.",
+      "description": "Race Cooling. Better cooling. Might give the engine a little breathing room when we're pushing it hard.",
       "effects": [],
       "carPart": {
         "slot": "cooling",
@@ -4360,7 +4731,7 @@
     {
       "id": "street-wheels",
       "name": "Street Width",
-      "description": "Wider tires alter contact-patch stiffness and surface grip.",
+      "description": "Wider Tires. These add 10 mm of width to the tires. A different contact patch to work with, but we'll still need the right compound for the road.",
       "effects": [],
       "carPart": {
         "slot": "wheels",
@@ -4382,7 +4753,7 @@
     {
       "id": "sport-wheels",
       "name": "Sport Width",
-      "description": "Wider tires alter contact-patch stiffness and surface grip.",
+      "description": "Wider Tires. These add 20 mm of width to the tires. A different contact patch to work with, but we'll still need the right compound for the road.",
       "effects": [],
       "carPart": {
         "slot": "wheels",
@@ -4404,7 +4775,7 @@
     {
       "id": "race-wheels",
       "name": "Race Width",
-      "description": "Wider tires alter contact-patch stiffness and surface grip.",
+      "description": "Wider Tires. These add 35 mm of width to the tires. A different contact patch to work with, but we'll still need the right compound for the road.",
       "effects": [],
       "carPart": {
         "slot": "wheels",
@@ -4433,7 +4804,7 @@
     {
       "id": "street-driveline",
       "name": "Street Driveline",
-      "description": "Reduced driveline losses increase torque delivered to driven wheels.",
+      "description": "Street Driveline. Less power lost on its way to the wheels. I'll take a little more of what we're already making.",
       "effects": [],
       "carPart": {
         "slot": "driveline",
@@ -4455,7 +4826,7 @@
     {
       "id": "sport-driveline",
       "name": "Sport Driveline",
-      "description": "Reduced driveline losses increase torque delivered to driven wheels.",
+      "description": "Sport Driveline. Less power lost on its way to the wheels. I'll take a little more of what we're already making.",
       "effects": [],
       "carPart": {
         "slot": "driveline",
@@ -4477,7 +4848,7 @@
     {
       "id": "race-driveline",
       "name": "Race Driveline",
-      "description": "Reduced driveline losses increase torque delivered to driven wheels.",
+      "description": "Race Driveline. Less power lost on its way to the wheels. I'll take a little more of what we're already making.",
       "effects": [],
       "carPart": {
         "slot": "driveline",
@@ -4502,6 +4873,862 @@
         ],
         "torqueCurve": []
       }
+    },
+    {
+      "id": "street-skid-plates",
+      "name": "Street Skid Plates",
+      "description": "Street Skid Plates. A little extra weight underneath us, but less damage when the underside hits rough ground. It won't save us from every bad landing.",
+      "effects": [],
+      "carPart": {
+        "slot": "skid-plates",
+        "section": "Chassis",
+        "tier": "street",
+        "price": 350,
+        "forSale": true,
+        "underbodyProtection": 0.3,
+        "modifiers": [
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 8
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "sport-skid-plates",
+      "name": "Sport Skid Plates",
+      "description": "Sport Skid Plates. A little extra weight underneath us, but less damage when the underside hits rough ground. It won't save us from every bad landing.",
+      "effects": [],
+      "carPart": {
+        "slot": "skid-plates",
+        "section": "Chassis",
+        "tier": "sport",
+        "price": 750,
+        "forSale": true,
+        "underbodyProtection": 0.55,
+        "modifiers": [
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 14
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "race-skid-plates",
+      "name": "Race Skid Plates",
+      "description": "Race Skid Plates. A little extra weight underneath us, but less damage when the underside hits rough ground. It won't save us from every bad landing.",
+      "effects": [],
+      "carPart": {
+        "slot": "skid-plates",
+        "section": "Chassis",
+        "tier": "race",
+        "price": 1400,
+        "forSale": true,
+        "underbodyProtection": 0.75,
+        "modifiers": [
+          {
+            "field": "weightKg",
+            "operation": "add",
+            "value": 20
+          }
+        ],
+        "tuning": [],
+        "torqueCurve": []
+      }
+    },
+    {
+      "id": "wheel-diameter-15",
+      "name": "Rim 15 in",
+      "description": "15 in. Wheel diameter. Larger rims add rotating mass; pair them with a shorter sidewall to keep the overall tire diameter close to stock.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-diameter",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 250,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelDiameterIn",
+            "operation": "set",
+            "value": 15
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-diameter-16",
+      "name": "Rim 16 in",
+      "description": "16 in. Wheel diameter. Larger rims add rotating mass; pair them with a shorter sidewall to keep the overall tire diameter close to stock.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-diameter",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 375,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelDiameterIn",
+            "operation": "set",
+            "value": 16
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-diameter-17",
+      "name": "Rim 17 in",
+      "description": "17 in. Wheel diameter. Larger rims add rotating mass; pair them with a shorter sidewall to keep the overall tire diameter close to stock.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-diameter",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 500,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelDiameterIn",
+            "operation": "set",
+            "value": 17
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-diameter-18",
+      "name": "Rim 18 in",
+      "description": "18 in. Wheel diameter. Larger rims add rotating mass; pair them with a shorter sidewall to keep the overall tire diameter close to stock.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-diameter",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 625,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelDiameterIn",
+            "operation": "set",
+            "value": 18
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-diameter-19",
+      "name": "Rim 19 in",
+      "description": "19 in. Wheel diameter. Larger rims add rotating mass; pair them with a shorter sidewall to keep the overall tire diameter close to stock.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-diameter",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 750,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelDiameterIn",
+            "operation": "set",
+            "value": 19
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-diameter-20",
+      "name": "Rim 20 in",
+      "description": "20 in. Wheel diameter. Larger rims add rotating mass; pair them with a shorter sidewall to keep the overall tire diameter close to stock.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-diameter",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 875,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelDiameterIn",
+            "operation": "set",
+            "value": 20
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-diameter-21",
+      "name": "Rim 21 in",
+      "description": "21 in. Wheel diameter. Larger rims add rotating mass; pair them with a shorter sidewall to keep the overall tire diameter close to stock.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-diameter",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 1000,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelDiameterIn",
+            "operation": "set",
+            "value": 21
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "tire-profile-30",
+      "name": "Sidewall 30 %",
+      "description": "30 %. Sidewall height as a percentage of tire width. Taller sidewalls soften road impacts and steering response; they also increase rolling diameter.",
+      "effects": [],
+      "carPart": {
+        "slot": "tire-profile",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 250,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "tireAspectRatio",
+            "operation": "set",
+            "value": 30
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "tire-profile-35",
+      "name": "Sidewall 35 %",
+      "description": "35 %. Sidewall height as a percentage of tire width. Taller sidewalls soften road impacts and steering response; they also increase rolling diameter.",
+      "effects": [],
+      "carPart": {
+        "slot": "tire-profile",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 375,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "tireAspectRatio",
+            "operation": "set",
+            "value": 35
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "tire-profile-40",
+      "name": "Sidewall 40 %",
+      "description": "40 %. Sidewall height as a percentage of tire width. Taller sidewalls soften road impacts and steering response; they also increase rolling diameter.",
+      "effects": [],
+      "carPart": {
+        "slot": "tire-profile",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 500,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "tireAspectRatio",
+            "operation": "set",
+            "value": 40
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "tire-profile-45",
+      "name": "Sidewall 45 %",
+      "description": "45 %. Sidewall height as a percentage of tire width. Taller sidewalls soften road impacts and steering response; they also increase rolling diameter.",
+      "effects": [],
+      "carPart": {
+        "slot": "tire-profile",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 625,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "tireAspectRatio",
+            "operation": "set",
+            "value": 45
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "tire-profile-50",
+      "name": "Sidewall 50 %",
+      "description": "50 %. Sidewall height as a percentage of tire width. Taller sidewalls soften road impacts and steering response; they also increase rolling diameter.",
+      "effects": [],
+      "carPart": {
+        "slot": "tire-profile",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 750,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "tireAspectRatio",
+            "operation": "set",
+            "value": 50
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "tire-profile-55",
+      "name": "Sidewall 55 %",
+      "description": "55 %. Sidewall height as a percentage of tire width. Taller sidewalls soften road impacts and steering response; they also increase rolling diameter.",
+      "effects": [],
+      "carPart": {
+        "slot": "tire-profile",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 875,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "tireAspectRatio",
+            "operation": "set",
+            "value": 55
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "tire-profile-65",
+      "name": "Sidewall 65 %",
+      "description": "65 %. Sidewall height as a percentage of tire width. Taller sidewalls soften road impacts and steering response; they also increase rolling diameter.",
+      "effects": [],
+      "carPart": {
+        "slot": "tire-profile",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 1000,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "tireAspectRatio",
+            "operation": "set",
+            "value": 65
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-offset-5",
+      "name": "Outset +5 mm",
+      "description": "5 mm. Outward spacing per wheel. Widens each axle by twice this amount, changes load transfer and adds spacer mass.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-offset",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 250,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelOutsetMm",
+            "operation": "set",
+            "value": 5
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-offset-10",
+      "name": "Outset +10 mm",
+      "description": "10 mm. Outward spacing per wheel. Widens each axle by twice this amount, changes load transfer and adds spacer mass.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-offset",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 375,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelOutsetMm",
+            "operation": "set",
+            "value": 10
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-offset-15",
+      "name": "Outset +15 mm",
+      "description": "15 mm. Outward spacing per wheel. Widens each axle by twice this amount, changes load transfer and adds spacer mass.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-offset",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 500,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelOutsetMm",
+            "operation": "set",
+            "value": 15
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-offset-20",
+      "name": "Outset +20 mm",
+      "description": "20 mm. Outward spacing per wheel. Widens each axle by twice this amount, changes load transfer and adds spacer mass.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-offset",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 625,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelOutsetMm",
+            "operation": "set",
+            "value": 20
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-offset-25",
+      "name": "Outset +25 mm",
+      "description": "25 mm. Outward spacing per wheel. Widens each axle by twice this amount, changes load transfer and adds spacer mass.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-offset",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 750,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelOutsetMm",
+            "operation": "set",
+            "value": 25
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-offset-30",
+      "name": "Outset +30 mm",
+      "description": "30 mm. Outward spacing per wheel. Widens each axle by twice this amount, changes load transfer and adds spacer mass.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-offset",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 875,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelOutsetMm",
+            "operation": "set",
+            "value": 30
+          }
+        ],
+        "tuning": []
+      }
+    },
+    {
+      "id": "wheel-offset-35",
+      "name": "Outset +35 mm",
+      "description": "35 mm. Outward spacing per wheel. Widens each axle by twice this amount, changes load transfer and adds spacer mass.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheel-offset",
+        "section": "Tires",
+        "tier": "custom",
+        "price": 1000,
+        "forSale": true,
+        "modifiers": [
+          {
+            "field": "wheelOutsetMm",
+            "operation": "set",
+            "value": 35
+          }
+        ],
+        "tuning": []
+      }
+    }
+  ],
+  "stockItems": [
+    {
+      "id": "stock-description-turbo",
+      "name": "Stock Turbo",
+      "description": "Stock Turbo. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "turbo",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-ecu",
+      "name": "Stock ECU",
+      "description": "Stock ECU. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "ecu",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-weight",
+      "name": "Stock Weight",
+      "description": "Stock Weight. The original seats, trim, and body panels. Comfortable enough, but we're carrying all of it with us.",
+      "effects": [],
+      "carPart": {
+        "slot": "weight",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-transmission",
+      "name": "Stock Transmission",
+      "description": "Stock Transmission. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "transmission",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-suspension",
+      "name": "Stock Suspension",
+      "description": "Stock Suspension. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "suspension",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-tires",
+      "name": "Stock Tires",
+      "description": "Stock Tires. We probably should replace them at some point. They've gotten us this far, though.",
+      "effects": [],
+      "carPart": {
+        "slot": "tires",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-brakes",
+      "name": "Stock Brakes",
+      "description": "Stock Brakes. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "brakes",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-intake",
+      "name": "Stock Intake",
+      "description": "Stock Intake. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "intake",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-exhaust",
+      "name": "Stock Exhaust",
+      "description": "Stock Exhaust. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "exhaust",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-ignition",
+      "name": "Stock Ignition",
+      "description": "Stock Ignition. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "ignition",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-camshaft",
+      "name": "Stock Cams",
+      "description": "Stock Cams. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "camshaft",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-fuel-system",
+      "name": "Stock Fuel",
+      "description": "Stock Fuel. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "fuel-system",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-alignment",
+      "name": "Stock Alignment",
+      "description": "Stock Alignment. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "alignment",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-aero",
+      "name": "Stock Aero",
+      "description": "Stock Aero. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "aero",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-differential",
+      "name": "Stock Differential",
+      "description": "Stock Differential. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "differential",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-flywheel",
+      "name": "Stock Flywheel",
+      "description": "Stock Flywheel. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "flywheel",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-clutch",
+      "name": "Stock Clutch",
+      "description": "Stock Clutch. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "clutch",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-engine-swap",
+      "name": "Stock Engine",
+      "description": "Stock Engine. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "engine-swap",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-drive-swap",
+      "name": "Stock Drivetrain",
+      "description": "Stock Drivetrain. That's what this car came with. We can put it back without spending any scrap.",
+      "effects": [],
+      "carPart": {
+        "slot": "drive-swap",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-rigidity",
+      "name": "Stock Chassis",
+      "description": "Stock Chassis. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "rigidity",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-ballast",
+      "name": "Stock Ballast",
+      "description": "Stock Ballast. Back to the car's original weight setup. We can leave the extra ballast out if we don't need it.",
+      "effects": [],
+      "carPart": {
+        "slot": "ballast",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-cooling",
+      "name": "Stock Cooling",
+      "description": "Stock Cooling. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "cooling",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-wheels",
+      "name": "Stock Wheels",
+      "description": "Stock Tire Width. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "wheels",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-driveline",
+      "name": "Stock Driveline",
+      "description": "Stock Driveline. That's the original equipment. We can put it back if we want to keep things simple.",
+      "effects": [],
+      "carPart": {
+        "slot": "driveline",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    },
+    {
+      "id": "stock-description-skid-plates",
+      "name": "Stock Skid plates",
+      "description": "No Skid Plates. Saves us some weight, but there's no extra protection underneath.",
+      "effects": [],
+      "carPart": {
+        "slot": "skid-plates",
+        "stock": true,
+        "forSale": false,
+        "price": 0
+      }
+    }
+  ],
+  "tireChoices": [
+    {
+      "label": "Street",
+      "refs": [
+        "street"
+      ]
+    },
+    {
+      "label": "Drift",
+      "refs": [
+        "drift"
+      ]
+    },
+    {
+      "label": "Rally",
+      "refs": [
+        "rally"
+      ]
+    },
+    {
+      "label": "Offroad",
+      "refs": [
+        "offroad"
+      ]
+    },
+    {
+      "label": "Rain",
+      "refs": [
+        "rain"
+      ]
+    },
+    {
+      "label": "Snow",
+      "refs": [
+        "snow"
+      ]
+    },
+    {
+      "label": "Tarmac",
+      "refs": [
+        "tarmac"
+      ]
     }
   ]
 }

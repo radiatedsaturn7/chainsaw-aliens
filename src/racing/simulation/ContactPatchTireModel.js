@@ -1052,7 +1052,9 @@ export function calculateBrushTireForce({
   const pressureScale = clamp(32 / Math.max(18, Number(tire.effectivePressurePsi
     ?? tire.pressurePsi ?? 32)), 0.7, 1.35);
   const longitudinalStiffness = Math.max(1000, Number(tire.longitudinalStiffnessN || referenceLoad * 18) * widthScale);
-  const corneringStiffness = Math.max(1000, Number(tire.corneringStiffnessNPerRad || referenceLoad * 17) * widthScale * pressureScale);
+  const sidewallM=Number(tire.widthMm??245)*Number(tire.aspectRatio??40)/100000;
+  const sidewallStiffness=clamp(Math.sqrt(.098/Math.max(.03,sidewallM)),.65,1.4);
+  const corneringStiffness = Math.max(1000, Number(tire.corneringStiffnessNPerRad || referenceLoad * 17) * widthScale * pressureScale * sidewallStiffness);
   const camberStiffness = Math.max(0, Number(tire.camberStiffnessNPerRad || referenceLoad * 0.65));
   const contactMotionMps = Math.max(
     Math.abs(Number(kinematics.longitudinalVelocityMps || 0)),

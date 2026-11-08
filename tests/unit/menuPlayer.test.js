@@ -1,3 +1,5 @@
+import {CampaignSaves} from '../../src/menus/CampaignSaves.js';
+import {savedTireForRef} from '../helpers/savedGarageTires.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import MenuPlayer from '../../src/menus/MenuPlayer.js';
@@ -11,11 +13,11 @@ function fixture(){const calls=[];const game={input:{},canvas:{style:{}},audio:{
 const input=(codes=[],buttons=[])=>({wasPressedCode:code=>codes.includes(code),wasGamepadPressed:button=>buttons.includes(button)});
 test('keyboard and controller Start navigate the splash, choices retain typed parameters',async()=>{
  for(const controls of [input(['Space']),input([],['gamepadStart'])]){
-  const {player}=fixture();await player.open(createMenuDocument());player.resources.choices=source=>source==='cars'?[{label:'WRX',value:'WRX4'},{label:'BRZ',value:'BRZ'}]:[];
+  const {player,game}=fixture();game.campaignSaves=new CampaignSaves(game,{load:async()=>null,save:async()=>({ok:true})});await player.open(createMenuDocument());player.resources.choices=source=>source==='cars'?[{label:'WRX',value:'WRX4'},{label:'BRZ',value:'BRZ'}]:[];
   player.flow.goTo('settings');
   await player.activate(player.flow.screen.elements.find(e=>e.id==='difficulty'));
   player.flow.back();
-  player.update(controls,0.1);await Promise.resolve();assert.equal(player.flow.screenId,'cars');assert.equal(player.flow.parameters.carRef,'WRX4');
+  player.update(controls,0.1);await new Promise(resolve=>setImmediate(resolve));assert.equal(player.flow.screenId,'saves-start');await player.activate(player.interactive()[0]);assert.equal(player.flow.screenId,'cars');assert.equal(player.flow.parameters.carRef,'WRX4');
   await player.activate(player.flow.screen.elements.find(e=>e.id==='car'));assert.equal(player.flow.parameters.carRef,'BRZ');
   assert.equal(player.flow.parameters.difficulty,'hard');
  }
@@ -180,16 +182,17 @@ test('controller choice popups use held navigation without repeating confirmatio
  assert.ok(player.choicePopup);
 });
 
-test('splash defaults to Game Start and Option Mode contains difficulty',async()=>{
- const {player}=fixture();await player.open(createMenuDocument());
- assert.deepEqual(player.interactive().map(e=>e.label),['Game Start','Option Mode']);
+test('splash defaults to New Game and Option Mode contains difficulty',async()=>{
+ const {player,game}=fixture();game.campaignSaves=new CampaignSaves(game,{load:async()=>null,save:async()=>({ok:true})});await player.open(createMenuDocument());
+ assert.deepEqual(player.interactive().map(e=>e.label),['Start','Option Mode']);
  assert.equal(player.interactive()[player.focus].id,'start');
  player.focus=1;player.update(input(['Enter']),0.01);await Promise.resolve();
  assert.equal(player.flow.screenId,'settings','confirm activates Settings instead of splash startAction');
  assert.equal(player.interactive()[player.focus].id,'difficulty');
  player.update(input(['ArrowRight']),0.01);assert.equal(player.flow.parameters.difficulty,'hard');
  player.flow.back();assert.equal(player.flow.screenId,'splash');
- player.focus=0;player.update(input([],['gamepadStart']),0.01);await Promise.resolve();
+ player.focus=0;player.update(input([],['gamepadStart']),0.01);await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(player.flow.screenId,'saves-start');await player.activate(player.interactive()[0]);
  assert.equal(player.flow.screenId,'cars');assert.equal(player.flow.parameters.difficulty,'hard');
  assert.deepEqual(player.interactive().map(e=>e.id),['car']);
 });
@@ -197,4 +200,17 @@ test('splash defaults to Game Start and Option Mode contains difficulty',async()
 test('race launch preserves the detailed startup failure in the menu',async()=>{
  const {player,game}=fixture();game.startRaceTravel=async()=>{game.lastRaceTravelError='Race preparation failed during art pack: texture decode failed';return false;};
  await assert.rejects(()=>player.launchRace('p1',{}),/Race preparation failed during art pack: texture decode failed/);
+});
+
+test('Back restores the selected garage button instead of returning focus to Drive',async()=>{
+ const {player,game}=fixture();game.resolveRaceTravelCarAsync=async()=>({car:{tuning:{}}});
+ await player.open(createMenuDocument());player.flow.goTo('garage');
+ for(const id of ['garage-upgrade','garage-tune']){
+  const button=player.interactive().find(e=>e.id===id);assert.ok(button);
+  player.focus=player.interactive().findIndex(e=>e.id===id);
+  await player.activate(button,1,{choose:true});
+  if(player.screenEntryTask)await player.screenEntryTask;
+  player.flow.back();if(player.screenEntryTask)await player.screenEntryTask;
+  assert.equal(player.flow.screenId,'garage');assert.equal(player.interactive()[player.focus]?.id,id);
+ }
 });

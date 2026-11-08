@@ -4,7 +4,7 @@
   "item": {
     "id": "drift-tires",
     "name": "Drift Tires",
-    "description": "Drift tires. Uses the saved Drift tire definition.",
+    "description": "Drift Tires. If we're planning to slide through the corners, these should help. On purpose, this time.",
     "carPart": {
       "slot": "tires",
       "section": "Tires",

@@ -9,7 +9,7 @@ import {normalizeItemProgress,planItemEffects,applyItemPlan,syncItemGrantsToPlay
 export const ITEM_PROGRESS_KEY='rtg-item-progress';
 export class ItemSystem {
   constructor(game,{load=loadServerPreferenceAsync,save=saveServerPreference,library=itemLibrary}={}) {
-    this.library=library;this.game=game;this.garage=new GarageSystem(this);this.runtime=new ItemRuntime(game);this.selectedItemId='';this.loadPreference=load;this.savePreference=save;
+    this.library=library;this.game=game;this.garage=new GarageSystem(this);this.runtime=new ItemRuntime(game);this.selectedItemId='';this.loadPreference=load;this.savePreference=(key,value)=>key===ITEM_PROGRESS_KEY&&game.campaignSaves?.hasActive&&!game.menuPlayer?.preview ? game.campaignSaves.save({items:value}) : save(key,value);
     this.progress=normalizeItemProgress();this.revision=0;this.events=[];this.sessionCollected=new Set();this.pending=new Map();this.retryAt=new Map();this.queue=Promise.resolve();this.appliedPlayers=new WeakSet();
   }
   async load() {

@@ -1,3 +1,4 @@
+import {savedTireForRef} from '../helpers/savedGarageTires.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {normalizeItemDocument,serializeItemDocument} from '../../src/items/ItemDocument.js';
@@ -6,7 +7,7 @@ import {ItemSystem} from '../../src/items/ItemSystem.js';
 import {applyTireDefinition,createTireDefinition} from '../../src/racing/raceTires.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 const stock=()=>({id:'custom',name:'Test car',setup:{tirePressurePsi:{fl:32,fr:32,rl:30,rr:30}},tuning:{weightKg:1400,gearFinalDrive:4,gearRatios:[3,2,1],springFront:0.5,engineCurve:{rpmMin:1000,rpmMax:6000,torquePoints:[{rpm:1000,torqueLbFt:100},{rpm:4000,torqueLbFt:200},{rpm:6000,torqueLbFt:150}]}},transmissions:{automatic:{weightKg:1500,gearFinalDrive:4.5,gearRatios:[3.5,2,1]}}});
-const stockBaseline=car=>{const result=structuredClone(car),pressure=result.setup?.tirePressurePsi;applyTireDefinition(result,createTireDefinition('stock'),'Stock');if(pressure)result.setup.tirePressurePsi=pressure;return result;};
+const stockBaseline=car=>{const result=structuredClone(car),pressure=result.setup?.tirePressurePsi;applyTireDefinition(result,savedTireForRef('Stock'),'Stock');if(pressure)result.setup.tirePressurePsi=pressure;return result;};
 const part=(id,definition={})=>normalizeItemDocument({id,name:id,carPart:{slot:id,price:100,...definition}});
 function fixture({save=async()=>({ok:true}),load=async()=>({}),catalog=[]}={}){
  const game={player:{credits:1000},abilities:{}};
@@ -164,7 +165,7 @@ test('catalog brakes appear in Upgrade, affect physical pressure and unlock only
   const car=stock();car.tuning.frontBrakeBias=.64;
   const {garage,game}=fixture({catalog:brakes});game.player.credits=5000;await garage.load();
   const resources={garage,stockCar:()=>car,garageCatalog:()=>brakes.map(item=>({ref:item.id,item}))};
-  assert.ok(garageBrowserRows(resources,{carRef:'test'}).some(r=>r.value==='Brakes'));
+  assert.ok(garageBrowserRows(resources,{carRef:'test'}).some(r=>r.value==='Handling'));
   await garage.purchase(kit.id,{carRef:'test'});
   const built=await garage.build('test',car),rows=tuningRows(garage,'test',car,built);
   const adjustable=kit.carPart.tier!=='street';

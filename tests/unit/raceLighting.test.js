@@ -43,7 +43,7 @@ test('headlight initial state follows the race, while pause settings override we
  const e=new RaceEditor({},{mode:'car'});e.selectedRace.timeOfDay='day';e.selectedRace.brightness=1;
  e.playtestSession={mechanical:{headlights:false}};e.raceInput.pauseMenuMode='main';
  assert.ok(!e.getRacePauseMenuRows().some(r=>r.id==='race-headlights'));
- e.raceInput.pauseMenuMode='settings';const rows=e.getRacePauseMenuRows();const index=rows.findIndex(r=>r.id==='race-headlights');assert.equal(rows[index-1].id,'race-toggle-tc');
+ e.raceInput.pauseMenuMode='car-controls';const rows=e.getRacePauseMenuRows();const index=rows.findIndex(r=>r.id==='race-headlights');assert.equal(rows[index-1].id,'race-toggle-tc');
  rows[index].onClick();assert.equal(e.raceHeadlightsEnabled(),true);assert.equal(e.playtestSession.mechanical.headlights,true);
  e.selectedRace.timeOfDay='night';rows[index].onAdjust();assert.equal(e.raceHeadlightsEnabled(),false);assert.equal(e.playtestSession.mechanical.headlights,false);
  const renderer={scene:{traverse(){}}};

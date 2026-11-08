@@ -1,6 +1,10 @@
+import {setMenuProgress} from '../menus/MenuProgress.js';
+import {raceCompletionKey} from '../menus/MenuWorldMap.js';
+import {getRaceTerrainBounds} from '../racing/RaceTerrainBounds.js';
+import {roadContinuationExtent, roadContinuationSamples, sampleRoadContinuation} from '../racing/RaceRoadContinuations.js';
 import {resolveChassisMass} from '../racing/simulation/ChassisUpgrades.js';
-import {analyzeRaceDrivingRoute, racePaceNotes, nextRacePaceNote, updateRaceDrivingAssists} from '../racing/RaceDrivingAssists.js';
-import {drawRaceDrivingLine, drawRaceDrivingAssistHud, syncRaceThreeDrivingLine, disposeRaceThreeDrivingLine} from '../racing/RaceDrivingGuideRenderer.js';
+import {analyzeRaceDrivingRoute, racePaceNotes, nextRacePaceNote, updateRaceDrivingAssists, racePaceNoteModeLabel} from '../racing/RaceDrivingAssists.js';
+import {drawRaceDrivingLine, drawRaceDrivingAssistHud, raceTimingPanelBounds, syncRaceThreeDrivingLine, disposeRaceThreeDrivingLine} from '../racing/RaceDrivingGuideRenderer.js';
 import { appendRaceProjectedQuadPath, drawRaceProjectedVehicleQuad } from '../racing/RaceProjectedPolygon.js';
 import { acquireRaceTireFxProjection, projectRaceTireFxParticles, releaseRaceTireFxProjection, acquireRaceTireFxParticle, trimRaceTireFxParticles, advanceRaceTireFxParticles } from '../racing/RaceTireFxParticles.js';
 import { prepareRaceLoadingSurfaceSlice } from '../racing/RaceAheadPreparation.js';
@@ -741,6 +745,7 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'race-radio',
   'race-music',
   'race-countdown',
+  'race-auto-extend',
   'race-driving-guide',
   'race-pace-notes',
   'race-rolling-start',
@@ -2120,11 +2125,11 @@ export default class RaceEditor {
       };
     }
     const drawExtension = this.getRaceDestinationDrawExtension();
-    const startVisualExtension = Math.max(
+    const startVisualExtension = this.selectedRace?.road?.autoExtend === false ? roadContinuationExtent(this.selectedRace.road, 'start') : Math.max(
       drawExtension,
       Math.max(0, Number(startBackDistance || 0))
     );
-    const finishVisualExtension = drawExtension;
+    const finishVisualExtension = this.selectedRace?.road?.autoExtend === false ? roadContinuationExtent(this.selectedRace.road, 'finish') : drawExtension;
     return {
       minVisualDistance: -startVisualExtension,
       maxVisualDistance: routeEnd + finishVisualExtension,
@@ -2134,6 +2139,7 @@ export default class RaceEditor {
   }
 
   getRaceDestinationDrawExtension({ viewDistance = 0 } = {}) {
+    if (this.selectedRace?.road?.autoExtend === false) return Math.max(roadContinuationExtent(this.selectedRace.road, 'start'), roadContinuationExtent(this.selectedRace.road, 'finish'));
     return Math.max(
       RACE_DESTINATION_VISUAL_EXTENSION_M,
       RACE_DESTINATION_DRAW_EXTENSION_M,
@@ -4212,6 +4218,7 @@ export default class RaceEditor {
     this.raceTerrainBakeCache = null;
     this.raceEditorSurfacePreviewBake = null;
     this.raceRouteProjectionIndex = null;
+    this.raceContinuationProjectionCache = null;
   }
 
   getRaceSurfaceModel() {
@@ -4986,6 +4993,8 @@ export default class RaceEditor {
       allowVisualExtension,
       step: effectiveStep,
       elevationScaleM: RACE_THREE_ELEVATION_M,
+      autoExtend: this.selectedRace?.road?.autoExtend !== false,
+      continuationRange: this.getRaceVisualDistanceRange({routeLength: effectiveRouteLength, runtimeType}),
       absoluteRouteElevation: Number(this.selectedRace?.source?.importVersion) > 0,
       elevationSmoothingRadiusM: this.selectedRace?.source?.elevationSmoothingRadiusM,
       adapter: {
@@ -7205,7 +7214,8 @@ export default class RaceEditor {
       'race-radio': `Radio: ${this.selectedRace?.radioEnabled !== false ? 'On' : 'Off'}`,
       'race-music': `Music: ${this.getRaceStartSettings().musicTrackId || 'None'}`,
       'race-driving-guide': `Driving line: ${this.selectedRace?.drivingGuide?.line !== false ? 'On' : 'Off'}`,
-      'race-pace-notes': `Pace notes: ${!this.selectedRace?.codriver?.enabled ? 'Off' : this.selectedRace.codriver.spoken ? 'Voice' : 'Text'}`,
+      'race-pace-notes': `Pace notes: ${racePaceNoteModeLabel(this.selectedRace)}`,
+      'race-auto-extend': `Auto road extension: ${this.selectedRace?.road?.autoExtend !== false ? 'On' : 'Off'}`,
       'race-countdown': `Countdown: ${this.getRaceStartSettings().countdown ? 'On' : 'Off'}`,
       'race-rolling-start': `Rolling Start: ${this.getRaceStartSettings().rollingStart ? 'On' : 'Off'}`,
       'race-rolling-speed': `Rolling Speed: ${Math.round(this.getRaceStartSettings().rollingStartSpeedMps * 2.23694)} mph`,
@@ -10095,6 +10105,10 @@ export default class RaceEditor {
       this.toggleRaceDrivingLine();
     } else if (action === 'race-pace-notes') {
       this.cycleRacePaceNotes();
+    } else if (action === 'race-auto-extend') {
+      this.selectedRace.road.autoExtend = this.selectedRace.road.autoExtend === false;
+      this.clearRaceRuntimeSurfaceCaches();
+      this.status = `Auto road extension ${this.selectedRace.road.autoExtend ? 'on' : 'off'}`;
     } else if (action === 'race-countdown') {
       const settings = this.getRaceStartSettings();
       settings.countdown = !settings.countdown;
@@ -10796,7 +10810,7 @@ export default class RaceEditor {
     const car = this.selectedCar, rating = calculateCarPerformance(car);
     const result = await openEditorForm(`Category · ${rating.class} · ${rating.points} PP (estimated)`, [
       {id:'category',label:'Vehicle category',value:carCategory(car),options:CAR_CATEGORIES.map(value=>({value,label:value.toUpperCase()}))}
-    ], {description:`Estimated game-balance rating, recalculated from current tuning.\nEngine / weight: ${rating.components.engineWeight}/350 · Acceleration: ${rating.components.acceleration}/180 · Top speed: ${rating.components.speed}/180\nGrip: ${rating.components.grip}/140 · Brakes: ${rating.components.brakes}/100 · Suspension: ${rating.components.suspension}/50\nE: 0–199 · D: 200–399 · C: 400–599 · B: 600–799 · A: 800–1000 PP`});
+    ], {description:`Estimated game-balance rating, recalculated from current tuning.\nEngine / weight: ${rating.components.engineWeight}/350 · Acceleration: ${rating.components.acceleration}/180 · Top speed: ${rating.components.speed}/180\nGrip: ${rating.components.grip}/140 · Brakes: ${rating.components.brakes}/100 · Suspension: ${rating.components.suspension}/50\nE1: 0–100 · E2: 101–200 · E3: 201–300 · E4: 301–400 · F: 401–500 · D: 501–600 · C: 601–700 · B: 701–800 · A: 801–900 · S: 901–1000 PI`});
     if (!result) return;
     this.captureRaceHistory('Car category');car.category=result.category;
     this.status=`${rating.class} · ${rating.points} PP · ${result.category}. Save the car to keep its category.`;
@@ -11221,19 +11235,14 @@ export default class RaceEditor {
     const sourceCellSize = Math.max(1, Number(tileMap.cellSizeM) || RACE_TILE_MAP_CELL_SIZE_M);
     const gridSize = Math.max(sourceCellSize, RACE_COMPLETE_HEIGHTMAP_GRID_SIZE_M);
     const gridRadius = Math.SQRT2 * gridSize * 0.5;
-    const authoredCoords = entries
-      .map(([cellKey]) => String(cellKey).split(',').map((value) => Number(value)))
-      .filter(([cellX, cellY]) => Number.isFinite(cellX) && Number.isFinite(cellY));
-    if (!authoredCoords.length) return [];
-    let minWorldX = Math.min(...authoredCoords.map(([cellX]) => cellX * sourceCellSize));
-    let maxWorldX = Math.max(...authoredCoords.map(([cellX]) => (cellX + 1) * sourceCellSize));
-    let minWorldZ = Math.min(...authoredCoords.map(([, cellY]) => cellY * sourceCellSize));
-    let maxWorldZ = Math.max(...authoredCoords.map(([, cellY]) => (cellY + 1) * sourceCellSize));
+    const terrainBounds = getRaceTerrainBounds(entries, sourceCellSize);
+    if (!terrainBounds) return [];
+    let {minX:minWorldX, maxX:maxWorldX, minZ:minWorldZ, maxZ:maxWorldZ} = terrainBounds;
     (surfaceBake?.sections || []).forEach((section) => {
       const center = section?.center;
       if (!center) return;
       const sectionDistance = Number(center.routeDistance ?? center.distance ?? section.deck?.distance);
-      if (runtimeType !== 'circuit' && Number.isFinite(sectionDistance) && (sectionDistance < 0 || sectionDistance > routeLength)) return;
+      if (this.selectedRace?.road?.autoExtend !== false && runtimeType !== 'circuit' && Number.isFinite(sectionDistance) && (sectionDistance < 0 || sectionDistance > routeLength)) return;
       const reach = Math.max(gridSize, Number(section.metrics?.outerHalfWidth || 0));
       minWorldX = Math.min(minWorldX, Number(center.x || 0) - reach);
       maxWorldX = Math.max(maxWorldX, Number(center.x || 0) + reach);
@@ -12015,7 +12024,9 @@ export default class RaceEditor {
       point.elevation = point.terrainFanCorners.reduce((sum, corner) => sum + corner.elevation, 0) / point.terrainFanCorners.length;
       delete point.terrainFanCorners;
     });
-    cells.splice(0, cells.length, ...conformingCells);
+    // Preserve the array identity without passing every terrain cell as an argument.
+    cells.length = 0;
+    for (const cell of conformingCells) cells.push(cell);
     cells.constrainedRoadFirst = true;
     cells.adaptiveTerrainGrid = false;
     cells.uniformTerrainGrid = true;
@@ -12557,7 +12568,10 @@ export default class RaceEditor {
       ? surfaceBake
       : (() => {
         const visualRange = this.getRaceVisualDistanceRange({ routeLength: routeEnd, runtimeType });
-        const sections = [...(surfaceBake.sections || [])];
+        const sections = (surfaceBake.sections || []).filter(section => {
+          const d = Number(section.center?.routeDistance ?? section.center?.distance ?? section.deck?.distance ?? 0);
+          return d >= 0 && d <= routeEnd;
+        });
         const minDistance = Number(visualRange.minVisualDistance || 0);
         const maxDistance = Number(visualRange.maxVisualDistance || routeEnd);
         const extensionStep = 10;
@@ -12591,15 +12605,9 @@ export default class RaceEditor {
     if (terrainTopology === 'road-origin-indexed') {
       const surfaceModel = this.getRaceSurfaceModel();
       const sourceCellSize = Math.max(1, Number(tileMap?.cellSizeM) || RACE_TILE_MAP_CELL_SIZE_M);
-      const authoredTerrainCoords = this.getRaceTileMapEntries(tileMap)
-        .map(([cellKey]) => cellKey)
-        .map((cellKey) => String(cellKey).split(',').map((value) => Number(value)))
-        .filter(([cellX, cellZ]) => Number.isFinite(cellX) && Number.isFinite(cellZ));
-      const authoredTerrainDiagonalM = authoredTerrainCoords.length
-        ? Math.hypot(
-          (Math.max(...authoredTerrainCoords.map(([cellX]) => cellX)) - Math.min(...authoredTerrainCoords.map(([cellX]) => cellX)) + 1) * sourceCellSize,
-          (Math.max(...authoredTerrainCoords.map(([, cellZ]) => cellZ)) - Math.min(...authoredTerrainCoords.map(([, cellZ]) => cellZ)) + 1) * sourceCellSize
-        )
+      const terrainBounds = getRaceTerrainBounds(this.getRaceTileMapEntries(tileMap), sourceCellSize);
+      const authoredTerrainDiagonalM = terrainBounds
+        ? Math.hypot(terrainBounds.maxX - terrainBounds.minX, terrainBounds.maxZ - terrainBounds.minZ)
         : 0;
       const guardDistanceM = Math.max(
         effectiveTerrainSize * 8,
@@ -13899,7 +13907,7 @@ export default class RaceEditor {
       } else if (payload.type === 'cells') {
         if (!preparation.worldBake) return;
         const cells = payload.cells || [];
-        preparation.worldBake.terrainCells.push(...cells);
+        for (const cell of cells) preparation.worldBake.terrainCells.push(cell);
         appendRaceBakedSurfaceSamplerTerrainCells(preparation.worldBake.surfaceSampler, cells);
         const total = Math.max(1, Number(payload.total || preparation.totalCells || 1));
         preparation.progress = Math.max(preparation.progress, 0.15 + 0.84 * clamp(Number(payload.loaded || 0) / total, 0, 1));
@@ -14186,7 +14194,16 @@ export default class RaceEditor {
       && options?.carEditorPreview !== true
       && typeof Worker !== 'undefined';
     const playtestCarId = this.getRaceCarProjectIdentity(car) || car?.id || '';
-    const transmissionType = this.getRaceTransmissionType(car);
+    const savedDriving=options?.carEditorPreview!==true&&this.game.campaignSaves?.hasActive&&!this.game.menuPlayer?.preview ? this.game.menuProgress||{} : null;
+    if(savedDriving){
+      if(typeof savedDriving.raceDrivingLine==='boolean')this.selectedRace.drivingGuide={...this.selectedRace.drivingGuide,line:savedDriving.raceDrivingLine};
+      if(['Off','Voice','Icons','Both'].includes(savedDriving.racePaceMode)){
+        const mode=savedDriving.racePaceMode;
+        this.selectedRace.codriver={...this.selectedRace.codriver,enabled:mode!=='Off',spoken:mode==='Voice'||mode==='Both',icons:mode==='Icons'||mode==='Both'};
+      }
+    }
+    const preferredTransmission=savedDriving?.raceTransmission;
+    const transmissionType = preferredTransmission&&car.transmissions?.[preferredTransmission]?preferredTransmission:this.getRaceTransmissionType(car);
     const tuning = this.getRaceCarTuning(car, { transmissionType });
     const initialGear = 1;
     const runtimeType = this.getSelectedRaceRuntimeType();
@@ -14475,6 +14492,24 @@ export default class RaceEditor {
     this.status = `Ended playtest for ${car.name}`;
   }
 
+  saveCampaignRaceResult(session=this.playtestSession){
+    if(!session || session.campaignProgressSaved || !this.game?.campaignSaves?.hasActive
+      || this.game.menuPlayer?.preview || this.mode!=='race' || !this.game.raceTravelSession)return Promise.resolve();
+    if(session.campaignSaveTask)return session.campaignSaveTask;
+    session.campaignSaveTask=(async()=>{
+      await this.persistRaceMechanicalCondition(session);
+      await this.game.items?.queue;
+      const ref=session.raceDocumentName||session.raceId;
+      const finish=resolveRaceNodeFinish(this.selectedRace,session.networkProgress?.finishNodeId);
+      const mission=mechanicalMissionVariables(session.mechanical,this.selectedRace?.mechanicalMission,this.game.items?.progress?.bags?.items);
+      await setMenuProgress(this.game,{...(ref?{[raceCompletionKey(ref)]:mission.success,lastCompletedRace:ref,
+        garageReturnCount:Number(this.game.menuProgress?.garageReturnCount||0)+1,garageDialogueEvent:''}:{}),...finish.variables,...mission.variables});
+      session.campaignProgressSaved=true;
+    })().finally(()=>{session.campaignSaveTask=null;});
+    this.game.campaignSavePending=session.campaignSaveTask;
+    return session.campaignSaveTask;
+  }
+
   showRaceResults() {
     const session=this.playtestSession;
     if(!session||session.raceResults)return;
@@ -14482,6 +14517,7 @@ export default class RaceEditor {
     const mission=mechanicalMissionVariables(session.mechanical,this.selectedRace?.mechanicalMission,this.game?.items?.progress?.bags?.items);
     session.mechanicalMissionSuccess=mission.success;
     session.raceResults=true;
+    void this.saveCampaignRaceResult(session).catch(error=>this.game?.showSystemToast?.(`Autosave failed: ${error.message}`));
     this.raceInput.paused=true;this.raceInput.pauseMenuMode='main';this.raceInput.pauseMenuIndex=this.getRacePauseMenuRows().length-1;
     this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);
     this.game?.stopSfxById?.('',{key:'race-engine'});
@@ -14492,7 +14528,7 @@ export default class RaceEditor {
     const finishedSession = this.playtestSession;
     finishedSession.finishing=true;
     this.raceInput.paused=true;
-    try{if(this.game?.raceTravelSession && finishedSession.mechanical)await this.persistRaceMechanicalCondition(finishedSession);}catch(error){finishedSession.finishing=false;this.game?.showSystemToast?.(`Condition save failed: ${error.message}`);return;}
+    try{if(this.game?.campaignSaves?.hasActive)await this.saveCampaignRaceResult(finishedSession);if(!finishedSession.campaignProgressSaved&&this.game?.raceTravelSession && finishedSession.mechanical)await this.persistRaceMechanicalCondition(finishedSession);}catch(error){finishedSession.finishing=false;this.game?.showSystemToast?.(`Condition save failed: ${error.message}`);return;}
     if(this.playtestSession!==finishedSession)return;
     const name = this.selectedRace?.name || 'race';
     const engineSoundId = this.playtestSession.activeEngineSoundId || this.playtestSession.engineSoundId;
@@ -14505,6 +14541,7 @@ export default class RaceEditor {
     const mission=mechanicalMissionVariables(finishedSession.mechanical,this.selectedRace?.mechanicalMission,this.game?.items?.progress?.bags?.items);
     finishBehavior.variables={...finishBehavior.variables,...mission.variables};
     finishBehavior.mechanicalMissionSuccess=mission.success;
+    finishBehavior.progressSaved=finishedSession.campaignProgressSaved===true;
     this.completeRaceGhost({ finished: true });
     // Menu travel awaits progress storage and sometimes asset hydration. Keep
     // the frozen driving camera until that promise settles, never authoring view.
@@ -14989,6 +15026,7 @@ export default class RaceEditor {
     ].join(':')).join('|');
     const signature = [
       race.id || '',
+      road.autoExtend === false ? 'finite' : 'auto',
       Math.round((Number(step) || 18) * 100),
       Math.round(Number(road.width || 0) * 100),
       nodes.length,
@@ -15043,7 +15081,8 @@ export default class RaceEditor {
       Math.round(this.getRaceShoulderWidthWorld() * 100),
       Math.round(this.getRaceRoadTerrainBlendWidthWorld() * 100),
       Number(tileMap?.revision) || 0,
-      segmentWidthSignature
+      segmentWidthSignature,
+      JSON.stringify([road.autoExtend, road.continuations])
     ].join('~surf~');
     if (frame) frame.surfaceSignatures.set(frameKey, signature);
     return signature;
@@ -15069,6 +15108,11 @@ export default class RaceEditor {
       samples = this.racePathSampleCache.get(key);
       if (!samples) {
         samples = this.getRacePathSamples({ step: sampleStep });
+        if (this.selectedRace?.road?.autoExtend === false && sampleStep !== 18 && samples.length) {
+          // All tessellations must meet the timing line at the same distance.
+          const length = this.getRaceRouteLength(), sampledLength = samples.at(-1).distance;
+          samples = samples.map(p => ({...p, distance:p.distance * length / Math.max(.001,sampledLength)}));
+        }
         if (this.racePathSampleCache.size > 8) this.racePathSampleCache.clear();
         this.racePathSampleCache.set(key, samples);
       }
@@ -15112,6 +15156,9 @@ export default class RaceEditor {
     const routeLength = Math.max(1, Number(providedRouteLength || samples.at(-1)?.distance || this.getRaceRouteLength()) || 1);
     const requestedDistance = Number(distance) || 0;
     if (runtimeType !== 'circuit' && allowVisualExtension) {
+      if (this.selectedRace?.road?.autoExtend === false && (requestedDistance < 0 || requestedDistance > routeLength)) {
+        return sampleRoadContinuation(this.selectedRace.road, requestedDistance, samples, routeLength);
+      }
       if (requestedDistance < 0) {
         const first = samples[0];
         const next = samples.find((sample) => Math.hypot(
@@ -15200,7 +15247,14 @@ export default class RaceEditor {
           segment: { ...edge, roadWidthM: edge.widthM, length } };
       }
     }
-    const samples = this.getRacePathSamplesCached({ step: 4 });
+    const routeSamples = this.getRacePathSamplesCached({ step: 4 });
+    const road = this.selectedRace?.road;
+    const cachedContinuations = this.raceContinuationProjectionCache;
+    if (cachedContinuations?.source !== routeSamples || cachedContinuations?.road !== road || cachedContinuations?.continuations !== road?.continuations || cachedContinuations?.autoExtend !== road?.autoExtend) {
+      this.raceContinuationProjectionCache = {source:routeSamples, road, continuations:road?.continuations, autoExtend:road?.autoExtend,
+        samples:roadContinuationSamples(road, routeSamples, routeSamples.at(-1)?.distance || 1)};
+    }
+    const samples = this.raceContinuationProjectionCache.samples;
     if (samples.length < 2) {
       return {
         distance: 0,
@@ -15287,7 +15341,7 @@ export default class RaceEditor {
         x: bestX, z: bestZ, yaw,
         lateral: bestOffsetX * right.x + bestOffsetZ * right.z,
         distanceToRoute: Math.sqrt(bestDistanceSq),
-        segment: next.segment || previous.segment || null,
+        segment: road?.autoExtend === false && ((bestIndex === 1 && bestT === 0 && bestOffsetX*bestDx+bestOffsetZ*bestDz < 0) || (bestIndex === samples.length-1 && bestT === 1 && bestOffsetX*bestDx+bestOffsetZ*bestDz > 0)) ? null : next.segment || previous.segment || null,
         index: next.index ?? previous.index ?? 0,
         progress: bestT
       };
@@ -16464,8 +16518,9 @@ export default class RaceEditor {
     const far = Math.max(120, Number(viewDistance) || 1200);
     const minRawDistance = travel - back;
     const maxRawDistance = travel + far;
-    const minAllowed = routeRuntimeType === 'circuit' ? minRawDistance : -visualExtension;
-    const maxAllowed = routeRuntimeType === 'circuit' ? maxRawDistance : routeEnd + visualExtension;
+    const finiteRange = this.getRaceVisualDistanceRange({routeLength:routeEnd,runtimeType:routeRuntimeType});
+    const minAllowed = routeRuntimeType === 'circuit' ? minRawDistance : this.selectedRace?.road?.autoExtend === false ? finiteRange.minVisualDistance : -visualExtension;
+    const maxAllowed = routeRuntimeType === 'circuit' ? maxRawDistance : this.selectedRace?.road?.autoExtend === false ? finiteRange.maxVisualDistance : routeEnd + visualExtension;
     const sectionsByKey = new Map();
     const renderDebug = this.getRaceRenderDebugSettings();
     const detailEnabled = renderDebug.detailEnabled === true;
@@ -16933,15 +16988,18 @@ export default class RaceEditor {
     if (sideOn || sampleDirection < 0 || (allowVisualExtension && samplingTravel <= visualExtension + near)) {
       offsetEntries.push(-near * sampleDirection);
     }
+    const finiteRange = this.getRaceVisualDistanceRange({routeLength:routeEnd,runtimeType:routeRuntimeType});
+    const minAllowed = this.selectedRace?.road?.autoExtend === false ? finiteRange.minVisualDistance : -visualExtension;
+    const maxAllowed = this.selectedRace?.road?.autoExtend === false ? finiteRange.maxVisualDistance : routeEnd + visualExtension;
     const seenDistances = new Set();
     offsetEntries
       .sort((a, b) => a - b)
       .forEach((signedOffset, index) => {
         const rawDistance = samplingTravel + signedOffset;
-        if (routeRuntimeType !== 'circuit' && (rawDistance < -visualExtension || rawDistance > routeEnd + visualExtension)) return;
+        if (routeRuntimeType !== 'circuit' && (rawDistance < minAllowed || rawDistance > maxAllowed)) return;
         const routeDistance = routeRuntimeType === 'circuit'
           ? ((rawDistance % routeEnd) + routeEnd) % routeEnd
-          : clamp(rawDistance, -visualExtension, routeEnd + visualExtension);
+          : clamp(rawDistance, minAllowed, maxAllowed);
         const key = Math.round(routeDistance * 100) / 100;
         if (seenDistances.has(key)) return;
         seenDistances.add(key);
@@ -18636,6 +18694,7 @@ export default class RaceEditor {
       physics: merged.physics || tuning.physics || {},
       bodyShapePreset: merged.physics?.bodyShapePreset || tuning.physics?.bodyShapePreset || 'car',
       bodyProfile: resolveVehicleBodyProfile({ ...merged, physics: merged.physics || tuning.physics }),
+      underbodyProtection: clamp(Number(merged.underbodyProtection)||0,0,.85),
       drivetrain: merged.drivetrain || 'awd',
       transmissionType: selectedTransmissionType,
       shiftMode: merged.shiftMode || selectedTransmissionType || 'manual',
@@ -18658,6 +18717,8 @@ export default class RaceEditor {
       reverseRatio: Math.max(0.1, Number(merged.reverseRatio) || 3.33),
       finalDrive: Math.max(0.5, Number(merged.gearFinalDrive) || 4.11),
       wheelRadiusM: Math.max(0.18, Number(merged.wheelRadiusM) || 0.337),
+      wheelInertiaKgM2: merged.wheelInertiaKgM2,
+      unsprungMassKg: merged.unsprungMassKg,
       topSpeedMps: Math.max(20, (Number(merged.topSpeedMph) || 135) * 0.44704),
       zeroToSixtySec: Math.max(2.5, Number(merged.zeroToSixtySec) || 6),
       dragCoefficient: clamp(Number(merged.dragCoefficient) || 0.43, 0.08, 0.7),
@@ -18665,6 +18726,8 @@ export default class RaceEditor {
       drivetrainEfficiency: clamp(Number(merged.drivetrainEfficiency) || 0.84, 0.55, 0.96),
       chassisRigidityNmDeg: clamp(Number(merged.chassisRigidityNmDeg)||20000,1000,100000),
       engineInertiaKgM2: clamp(Number(merged.engineInertiaKgM2) || 0.3, 0.05, 2),
+      suspensionImpactStrength: clamp(Number(merged.suspensionImpactStrength)||1,.5,4),
+      pedalResponse: clamp(Number(merged.pedalResponse) || 1, .5, 1.5),
       shiftTimeMs: Math.max(80, Number(merged.shiftTimeMs) || 420),
       autoUpshiftRpm: Math.max(2500, Number(merged.autoUpshiftRpm) || 5800),
       autoDownshiftRpm: Math.max(900, Number(merged.autoDownshiftRpm) || 1700),
@@ -20315,16 +20378,7 @@ export default class RaceEditor {
       if (canReset && !state.gamepadSelectHoldTriggered && state.gamepadSelectHoldMs >= RACE_SELECT_RESET_HOLD_MS) {
         state.gamepadSelectHoldTriggered = true;
         state.gamepadSelectHoldActive = false;
-        const distance = Number(this.playtestSession.distance || 0);
-        const pose = this.getRaceWorldPoseAtDistance(distance, {
-          runtimeType: this.playtestSession.routeRuntimeType || this.getSelectedRaceRuntimeType()
-        });
-        this.resetRaceCarToRouteCenter({
-          projection: { distance },
-          roadYaw: Number(pose?.yaw || 0),
-          preserveMotion: false,
-          reason: 'select-hold-reset'
-        });
+        this.resetRacePosition();
         return true;
       }
       return false;
@@ -20772,6 +20826,24 @@ export default class RaceEditor {
     this.raceInput.autoShift = autoShift;
   }
 
+  resetRacePosition(){
+    const session=this.playtestSession;
+    if(!session||session.raceResults||Number(session.countdownRemainingMs||0)>0||session.pendingEdgeCenterReset)return false;
+    const distance=Number(session.distance||0);
+    const pose=this.getRaceWorldPoseAtDistance(distance,{runtimeType:session.routeRuntimeType||this.getSelectedRaceRuntimeType()});
+    this.resetRaceCarToRouteCenter({projection:{distance},roadYaw:Number(pose?.yaw||0),preserveMotion:false,reason:'select-hold-reset'});
+    return true;
+  }
+
+  async toggleRaceFullscreen(){
+    const doc=globalThis.document;
+    try{
+      if(doc?.fullscreenElement)await doc.exitFullscreen();
+      else if(doc?.documentElement?.requestFullscreen)await doc.documentElement.requestFullscreen();
+      else throw Error('Full screen is unavailable in this browser.');
+    }catch(error){this.game.showSystemToast?.(error.message);}
+  }
+
   getRacePauseMenuRows() {
     if(this.playtestSession?.raceResults)return [
       ...(this.playtestSession.mechanicalMissionSuccess===false?[{id:'mission-failed',label:'Mechanical mission incomplete',value:'Salvage / condition requirement unmet',disabled:true}]:[]),
@@ -20861,8 +20933,8 @@ export default class RaceEditor {
       const group=this.raceInput.pauseMenuMode.slice(6);
       return [...debugRows.filter(row=>row.id!=='race-pause-back'&&groupFor(row.id)===group),back];
     }
-    if (this.raceInput.pauseMenuMode === 'settings') {
-      return [
+    if (['settings','car-controls'].includes(this.raceInput.pauseMenuMode)) {
+      const settingsRows = [
         {
           id: 'race-toggle-abs',
           label: 'ABS',
@@ -20889,7 +20961,7 @@ export default class RaceEditor {
           onClick: () => this.toggleRaceTransmissionMode()
         },
         {id:'race-driving-guide',label:'Driving line',value:this.selectedRace?.drivingGuide?.line !== false ? 'On' : 'Off',onClick:()=>this.toggleRaceDrivingLine(),onAdjust:()=>this.toggleRaceDrivingLine()},
-        {id:'race-pace-notes',label:'Pace notes',value:!this.selectedRace?.codriver?.enabled ? 'Off' : this.selectedRace.codriver.spoken ? 'Voice' : 'Text',onClick:()=>this.cycleRacePaceNotes(),onAdjust:()=>this.cycleRacePaceNotes()},
+        {id:'race-pace-notes',label:'Pace notes',value:racePaceNoteModeLabel(this.selectedRace),onClick:()=>this.cycleRacePaceNotes(),onAdjust:()=>this.cycleRacePaceNotes()},
         {
           id: 'race-toggle-telemetry',
           label: 'Telemetry',
@@ -20901,11 +20973,17 @@ export default class RaceEditor {
           id: 'race-pause-back',
           label: 'Back',
           value: '',
-          onClick: () => {
-            this.raceInput.pauseMenuMode = 'main';
-            this.raceInput.pauseMenuIndex = 0;
-          }
+          onClick: () => this.backRacePauseMenu()
         }
+      ];
+      const open = mode => {this.raceInput.pauseMenuMode=mode;this.raceInput.pauseMenuIndex=0;};
+      const back=settingsRows.at(-1);
+      if(this.raceInput.pauseMenuMode==='car-controls')return [...settingsRows.slice(0,9),back];
+      return [
+        {id:'race-car-controls',label:'Car Controls',value:'›',onClick:()=>open('car-controls')},
+        ...settingsRows.slice(9,-1),
+        {id:'race-fullscreen',label:'Full Screen',value:globalThis.document?.fullscreenElement?'On':'Off',onClick:()=>this.toggleRaceFullscreen()},
+        {id:'race-debug',label:'Debug',value:'›',onClick:()=>open('debug')},back
       ];
     }
     return [
@@ -20924,15 +21002,9 @@ export default class RaceEditor {
           this.raceInput.pauseMenuIndex = 0;
         }
       },
-      {
-        id: 'race-debug',
-        label: 'Debug',
-        value: '',
-        onClick: () => {
-          this.raceInput.pauseMenuMode = 'debug';
-          this.raceInput.pauseMenuIndex = 0;
-        }
-      },
+      {id:'race-reset-position',label:'Reset Position',value:'',
+        disabled:Number(this.playtestSession?.countdownRemainingMs||0)>0||!!this.playtestSession?.pendingEdgeCenterReset,
+        onClick:()=>{if(this.resetRacePosition()&&this.raceInput.paused)this.toggleRacePause();}},
       ...(this.game.items?[{id:'race-inventory',label:'Inventory',value:'',onClick:()=>{this.raceInput.pauseMenuMode='inventory';this.raceInput.pauseMenuIndex=0;}}]:[]),
       ...(this.game.radio?.available ? [{id:'race-radio',label:'Radio',value:'',onClick:()=>{this.raceInput.pauseMenuMode='radio';this.raceInput.pauseMenuIndex=0;if(this.radioMenu)this.radioMenu.page='main';}}] : []),
       {
@@ -20980,7 +21052,13 @@ export default class RaceEditor {
       if(this.radioMenu?.page !== 'main')this.radioMenu.page='main';else this.raceInput.pauseMenuMode='main';
       this.raceInput.pauseMenuIndex=0;return;
     }
-    if (this.raceInput.pauseMenuMode === 'settings' || this.raceInput.pauseMenuMode === 'debug') {
+    if (['debug','car-controls'].includes(this.raceInput.pauseMenuMode)) {
+      const id=this.raceInput.pauseMenuMode==='debug'?'race-debug':'race-car-controls';
+      this.raceInput.pauseMenuMode='settings';
+      this.raceInput.pauseMenuIndex=Math.max(0,this.getRacePauseMenuRows().findIndex(row=>row.id===id));
+      return;
+    }
+    if (this.raceInput.pauseMenuMode === 'settings') {
       this.raceInput.pauseMenuMode = 'main';
       this.raceInput.pauseMenuIndex = 0;
       return;
@@ -21017,6 +21095,7 @@ export default class RaceEditor {
         this.playtestSession.gear = 1;
       }
     }
+    void this.saveDrivingPreference({raceTransmission:next});
     this.status = `${car.name} transmission: ${next === 'manual' ? 'Manual' : 'Automatic'}`;
   }
 
@@ -21101,18 +21180,25 @@ export default class RaceEditor {
     return (2 * Math.atan((Number(bounds.w || 1) * 0.5) / focal)) * (180 / Math.PI);
   }
 
+  saveDrivingPreference(values){
+    if(!this.game.campaignSaves?.hasActive||this.game.menuPlayer?.preview||this.playtestSession?.carEditorPreview||!this.game.raceTravelSession)return;
+    return setMenuProgress(this.game,{raceDrivingLine:this.selectedRace?.drivingGuide?.line!==false,racePaceMode:racePaceNoteModeLabel(this.selectedRace),raceTransmission:this.raceInput.transmissionMode,...values}).catch(error=>{this.game.showSystemToast?.(error.message);});
+  }
+
   toggleRaceDrivingLine() {
     this.selectedRace.drivingGuide ||= {};
     this.selectedRace.drivingGuide.line = this.selectedRace.drivingGuide.line === false;
+    void this.saveDrivingPreference({raceDrivingLine:this.selectedRace.drivingGuide.line});
     this.status = `Driving line ${this.selectedRace.drivingGuide.line ? 'on' : 'off'}`;
   }
 
   cycleRacePaceNotes() {
     const notes = this.selectedRace.codriver ||= {};
-    if (!notes.enabled) { notes.enabled = true; notes.spoken = false; }
-    else if (!notes.spoken) notes.spoken = true;
-    else { notes.enabled = false; notes.spoken = false; }
-    this.status = `Pace notes: ${!notes.enabled ? 'Off' : notes.spoken ? 'Voice (with text)' : 'Text'}`;
+    const modes = ['Off', 'Voice', 'Icons', 'Both'];
+    const next = modes[(modes.indexOf(racePaceNoteModeLabel(this.selectedRace)) + 1) % modes.length];
+    Object.assign(notes, {enabled:next !== 'Off', spoken:next === 'Voice' || next === 'Both', icons:next === 'Icons' || next === 'Both'});
+    void this.saveDrivingPreference({racePaceMode:next});
+    this.status = `Pace notes: ${next}`;
   }
 
   getNextCoDriverCall() {
@@ -24736,7 +24822,7 @@ export default class RaceEditor {
     this.drawRaceCarStatusPanel(ctx, bounds);
     this.drawRaceTachPanel(ctx, bounds, { speedMph });
     }
-    drawRaceDrivingAssistHud(this, ctx, bounds);
+    drawRaceDrivingAssistHud(this, ctx, bounds, layout);
     this.drawRaceSelectResetProgress(ctx, bounds);
     if (this.raceInput.telemetryVisible || this.playtestSession?.diagnosticMode) {
       this.drawRaceDiagnosticsHud(ctx, bounds);
@@ -25238,8 +25324,7 @@ export default class RaceEditor {
 
   drawRaceTimePanel(ctx, bounds) {
     const session = this.playtestSession;
-    const panelW = Math.min(86, Math.max(66, bounds.w * 0.2));
-    const panel = { x: bounds.x + bounds.w - panelW - 4, y: bounds.y + 4, w: panelW, h: 25 };
+    const panel = raceTimingPanelBounds(bounds);
     ctx.fillStyle = 'rgba(5,8,7,0.58)';
     ctx.fillRect(panel.x, panel.y, panel.w, panel.h);
     ctx.fillStyle = UI_SUITE.colors.text;
@@ -25381,10 +25466,11 @@ export default class RaceEditor {
     const selectedIndex = clamp(Math.round(Number(this.raceInput.pauseMenuIndex || 0)), 0, Math.max(0, rows.length - 1));
     const pauseTitle = this.playtestSession?.raceResults ? 'Race Results' : this.raceInput.pauseMenuMode === 'inventory' ? 'Inventory' : this.raceInput.pauseMenuMode === 'radio' ? 'Radio' : this.raceInput.pauseMenuMode === 'settings'
       ? 'Settings'
+      : this.raceInput.pauseMenuMode === 'car-controls' ? 'Car Controls'
       : this.raceInput.pauseMenuMode?.startsWith('debug')
         ? ({'debug-performance':'Recording','debug-ai':'AI racers','debug-weather':'Weather & lighting','debug-vehicle':'Vehicle & indicators','debug-overlays':'Debug overlays'}[this.raceInput.pauseMenuMode]||'Debug')
         : 'Paused';
-    const footer = this.raceInput.pauseMenuMode === 'settings' || this.raceInput.pauseMenuMode?.startsWith('debug')
+    const footer = ['settings','car-controls'].includes(this.raceInput.pauseMenuMode) || this.raceInput.pauseMenuMode?.startsWith('debug')
       ? 'D-pad: Navigate   Left/Right: Change   B: Back'
       : 'D-pad: Navigate   A: Select   START: Return';
     const menu = drawInGameTextMenu(ctx, {
@@ -38819,7 +38905,10 @@ export default class RaceEditor {
       )
     }) : 0;
     for (let distance = Math.ceil(minDistance / markerDimensions.edgePostInterval) * markerDimensions.edgePostInterval; distance <= maxDistance; distance += markerDimensions.edgePostInterval) {
-      if (routeRuntimeType !== 'circuit' && (distance < -visualExtension || distance > Number(routeLength || 1) + visualExtension)) continue;
+      const finiteRange = this.getRaceVisualDistanceRange({routeLength,runtimeType:routeRuntimeType});
+      if (routeRuntimeType !== 'circuit' && (this.selectedRace?.road?.autoExtend === false
+        ? distance < finiteRange.minVisualDistance || distance > finiteRange.maxVisualDistance
+        : distance < -visualExtension || distance > Number(routeLength || 1) + visualExtension)) continue;
       if (!fullRoute) {
         const projected = this.getRaceInterpolatedMarkerSlice(slices, distance);
         const depth = Number(projected?.center?.cameraZ ?? projected?.center?.renderZ);
@@ -40084,7 +40173,7 @@ export default class RaceEditor {
     const destinationDrawExtension = this.getRaceDestinationDrawExtension({ viewDistance: destinationBaseViewDistance });
     const viewDistance = routeRuntimeType === 'circuit'
       ? Math.min(Math.max(routeLength * 1.5, absSpeed * 20 + 720, 1100), 1800)
-      : Math.min(Math.max(destinationBaseViewDistance, routeLength - visualTravel + destinationDrawExtension), destinationDrawExtension);
+      : Math.min(Math.max(destinationBaseViewDistance, routeLength - visualTravel + destinationDrawExtension), Math.max(1400, destinationDrawExtension));
     const nearDistance = Math.max(
       camera.nearPlane * 0.64,
       0.86 + speedFactor * 1.35 + pitchProfile.nearPlaneBoost * 1.65
@@ -41339,7 +41428,7 @@ export default class RaceEditor {
     if (
       this.playtestSession
       && hit?.id
-      && ['race-pause-return-editor', 'race-resume', 'race-car-settings', 'race-debug', 'race-pause-back', 'race-toggle-abs', 'race-toggle-tc', 'race-toggle-transmission', 'race-toggle-telemetry', 'race-driving-guide', 'race-pace-notes', 'race-toggle-debug-hud', 'race-toggle-physics-surface', 'race-exit-main', 'end-playtest'].includes(hit.id)
+      && ['race-pause-return-editor', 'race-resume', 'race-car-settings', 'race-car-controls', 'race-debug', 'race-pause-back', 'race-toggle-abs', 'race-toggle-tc', 'race-toggle-transmission', 'race-toggle-telemetry', 'race-driving-guide', 'race-pace-notes', 'race-toggle-debug-hud', 'race-toggle-physics-surface', 'race-exit-main', 'end-playtest'].includes(hit.id)
       && !hit.desktopDropdownItem
     ) {
       if (this.isDesktopMode()) {

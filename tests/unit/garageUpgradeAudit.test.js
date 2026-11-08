@@ -1,3 +1,4 @@
+import {savedTireForRef} from '../helpers/savedGarageTires.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import catalog from '../../src/content/garage-parts.json' with {type:'json'};
@@ -13,7 +14,7 @@ import {GARAGE_CATEGORIES} from '../../src/garage/GarageCategories.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 const editor=new RaceEditor({}),engine=new PowertrainModel();
 const parts=catalog.items.map(normalizeItemDocument).filter(isGarageUpgrade);
-const tires=Object.fromEntries(parts.filter(i=>i.carPart.tireRef).map(i=>[i.carPart.tireRef,createTireDefinition(i.carPart.tireRef.slice(8))]));
+const tires=Object.fromEntries(parts.filter(i=>i.carPart.tireRef).map(i=>[i.carPart.tireRef,savedTireForRef(i.carPart.tireRef)]));
 function fingerprint(car){
  const tuning=editor.getRaceCarTuning(car),setup=editor.getRaceCarSetup(car),config=createVehicleDynamicsConfigFromTuning(tuning);
  return JSON.stringify({config,mechanics:normalizeMechanicalConfig(car.mechanics),
@@ -23,9 +24,11 @@ function fingerprint(car){
   differential:[tuning.frontDifferentialAccel,tuning.frontDifferentialDecel,tuning.rearDifferentialAccel,tuning.rearDifferentialDecel,tuning.centerDifferentialBalance,tuning.centerDifferentialLock],
   tires:setup.tireSize,compound:editor.getRaceTireCompound(setup.defaultTireCompound,car)});
 }
-test('every purchasable built-in part changes a simulator input on at least one production car',()=>{
- for(const part of parts){
-  assert.ok(createBuiltInRaceCars().some(stock=>{applyTireDefinition(stock,createTireDefinition('stock'),'Stock');return fingerprint(buildGarageCar(stock,{parts:[part],tires}))!==fingerprint(stock);}),part.id);
+test('every purchasable built-in part changes a simulator input on at least one car configuration',()=>{
+ const cars=createBuiltInRaceCars(),alternate=structuredClone(cars[0]);
+ applyTireDefinition(alternate,savedTireForRef('Stock'),'Stock');alternate.setup.tireSize={widthMm:225,aspectRatio:50,wheelDiameterIn:17};cars.push(alternate);
+ for(const part of parts.filter(p=>p.carPart.forSale)){
+  assert.ok(cars.some(stock=>{return fingerprint(buildGarageCar(stock,{parts:[part],tires}))!==fingerprint(stock);}),part.id);
  }
 });
 test('all eight one-word shop sections and their built-in subsections fit eight cards',()=>{

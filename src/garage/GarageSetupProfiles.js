@@ -22,6 +22,11 @@ export const GARAGE_SETUP_PROFILES=[
  profile('wet','Wet Road','rain','rally',[.58,.6],.48,.58,.48,.6,[.42,.46],[-1.6,-1.2],[.2,.32,.12],.95,[30,29],.5),
  profile('snow','Snow','snow','offroad',[.38,.4],.72,.82,.34,.46,[.25,.28],[-.5,-.3],[.3,.42,.15],1.05,[26,25],.12)
 ];
+// Upgrade packages have a factory reset; the existing wet tune remains compatible with saves.
+export const GARAGE_UPGRADE_PRESETS=[
+ {id:'stock',label:'Stock',description:'Stock setup. Back to the factory parts and tuning. We’ll keep your upgrades in the garage.'},
+ ...GARAGE_SETUP_PROFILES.filter(p=>p.id!=='wet').map(p=>p.id==='race'?{...p,label:'Road'}:p)
+];
 export function getGarageSetupProfile(id){const p=GARAGE_SETUP_PROFILES.find(p=>p.id===id);if(!p)throw Error('Choose a driving setup');return p;}
 export function garageSetupTargets(profile,stock){
  const t={...stock.tuning,...stock.transmissions?.[stock.defaultTransmissionType]},values={...profile.values};
@@ -32,7 +37,7 @@ export function garageSetupTargets(profile,stock){
  return values;
 }
 export function garageSetupPartIds(profile){
- const ids=['suspension','transmission','differential','alignment','aero','brakes'].map(slot=>profile.kit+'-'+slot);
+ const ids=['suspension','transmission','differential','alignment','aero','brakes'].map(slot=>(['alignment','brakes'].includes(slot)&&!['street','race'].includes(profile.kit)?'race':profile.kit)+'-'+slot);
  // Wet/snow packages share loose-surface hardware, with dedicated tires and tune.
  ids.push(({tarmac:'race-tires',dirt:'rally-tires'})[profile.tire]||profile.tire+'-tires');
  return ids;

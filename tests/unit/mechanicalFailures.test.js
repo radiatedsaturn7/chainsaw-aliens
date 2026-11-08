@@ -1,3 +1,4 @@
+import {savedTireForRef} from '../helpers/savedGarageTires.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createMechanicalState,stepMechanicalState,repairMechanicalComponent,applyMechanicalMission,mechanicalConditionsMet} from '../../src/racing/simulation/MechanicalModel.js';
@@ -49,12 +50,12 @@ test('repair all cannot partially debit or consume parts when resources are insu
  const m=applyMechanicalMission(createMechanicalState(),{components:{alternator:{failed:true},radiator:{failed:true}}});await items.garage.saveCondition('car',{mechanical:m});const before=structuredClone(items.progress);
  await assert.rejects(items.garage.repair('car','all',{}),/scrap/);assert.deepEqual(items.progress,before);assert.equal(game.player.credits,1);
 });
-test('Tires retains pressure and type; Repair has confirmation, condition and costs',async()=>{
+test('Tires groups pressure by axle; Repair has confirmation, condition and costs',async()=>{
  const game={player:{credits:1000},abilities:{}};const items=new ItemSystem(game,{load:async()=>({}),save:async()=>({ok:true})});await items.load();
  await items.garage.saveCondition('car',{mechanical:applyMechanicalMission(createMechanicalState(),{components:{alternator:{failed:true}}})});
  const tuner=new GarageTuner({garage:items.garage,carRef:'car',resolveCar:async()=>({setup:{tirePressurePsi:{fl:32,fr:32,rl:32,rr:32}}})});await tuner.readyTask;
- assert.ok(tuner.sectionRows(0).some(r=>r.id==='pressure.fl'));assert.ok(tuner.sectionRows(0).some(r=>r.id==='tireType'));
- tuner.index=1;await tuner.confirm();tuner.rowIndex=tuner.sectionRows().findIndex(r=>r.id==='alternator');await tuner.confirm();assert.equal(tuner.mode,'repair');assert.equal(game.player.credits,1000);await tuner.confirm();assert.equal(game.player.credits,840);assert.equal(tuner.mode,'list');
+ assert.ok(tuner.sectionRows(6).find(r=>r.label==='Front').children.some(r=>r.id==='pressure.fl'));assert.ok(!tuner.rows.some(r=>r.id==='tireType'));
+ tuner.index=0;await tuner.confirm();tuner.rowIndex=tuner.sectionRows().findIndex(r=>r.label==='Electrics');await tuner.confirm();tuner.rowIndex=tuner.sectionRows().findIndex(r=>r.id==='alternator');await tuner.confirm();assert.equal(tuner.mode,'repair');assert.equal(game.player.credits,1000);await tuner.confirm();assert.equal(game.player.credits,840);assert.equal(tuner.mode,'list');
 });
 test('mission results publish real measurements and require the correct salvaged item',()=>{
  const s=createMechanicalState(),mission={requiredInventory:'m3-alternator',minimumVoltage:10,completionConditions:[{component:'bearings',operational:true}]};
@@ -107,4 +108,34 @@ test('repair everything restores all panel groups, worn tread and fluids while p
  await items.garage.repair('car','all',{});const after=items.garage.configuration('car');
  assert.equal(after.condition.damage.suspensionPull,0);assert.deepEqual(after.tune,before.tune);assert.deepEqual(after.installed,before.installed);assert.ok(Object.values(after.condition.damage.panels).every(v=>v===0));
  assert.ok(Object.values(after.condition.mechanical.components).every(c=>c.damage===0&&!c.failed));assert.equal(after.condition.mechanical.tires.fl.tread,1);assert.equal(after.condition.mechanical.coolant,1);assert.equal(after.condition.mechanical.coolantTemperatureC,85);
+});
+
+test('healthy repair items remain selectable and free without consuming required salvage',async()=>{
+ const game={player:{credits:0},abilities:{}};
+ const items=new ItemSystem(game,{load:async()=>({}),save:async()=>({ok:true})});await items.load();
+ const mechanical=createMechanicalState();mechanical.config.components.alternator.requiredPart='replacement';
+ await items.garage.saveCondition('car',{mechanical});
+ const before=structuredClone(items.garage.configuration('car').condition);
+ const rows=items.garage.repairRows('car',{});
+ assert.ok(rows.every(r=>r.enabled&&r.cost===0&&r.value===100));
+ for(const id of ['alternator','battery','service','all'])await items.garage.repair('car',id,{});
+ assert.equal(game.player.credits,0);assert.equal(items.progress.bags.items.replacement,undefined);
+ assert.deepEqual(items.garage.configuration('car').condition,before);
+ const tuner=new GarageTuner({garage:items.garage,carRef:'car',resolveCar:async()=>({})});await tuner.readyTask;tuner.index=0;await tuner.confirm();
+ assert.ok(tuner.sectionRows().every(r=>r.enabled));
+ tuner.rowIndex=tuner.sectionRows().findIndex(r=>r.label==='Electrics');await tuner.confirm();
+ tuner.rowIndex=tuner.sectionRows().findIndex(r=>r.id==='alternator');await tuner.confirm();assert.equal(tuner.mode,'repair');assert.equal(tuner.row.cost,0);
+ await tuner.confirm();assert.equal(tuner.mode,'list');assert.equal(game.player.credits,0);
+});
+test('paid repair needs never show 100 percent and a healthy repair cannot refill fluids for free',async()=>{
+ const game={player:{credits:1000},abilities:{}};
+ const items=new ItemSystem(game,{load:async()=>({}),save:async()=>({ok:true})});await items.load();
+ const mechanical=createMechanicalState({oil:.5,tires:{fl:{tread:.4}},components:{alternator:{damage:.01}}});
+ await items.garage.saveCondition('car',{mechanical,damage:{suspensionPull:.1}});
+ const rows=items.garage.repairRows('car',{});assert.ok(rows.every(r=>r.enabled));
+ assert.ok(rows.filter(r=>r.cost>0).every(r=>Math.round(r.value)<100));
+ assert.equal(rows.find(r=>r.id==='tire_fl').value,40);
+ await items.garage.repair('car','oilPump',{});assert.equal(items.garage.configuration('car').condition.mechanical.oil,.5);assert.equal(game.player.credits,1000);
+ const total=rows.find(r=>r.id==='all').cost;await items.garage.repair('car','all',{});assert.equal(game.player.credits,1000-total);
+ assert.equal(items.garage.repairRows('car',{}).find(r=>r.id==='all').cost,0);
 });

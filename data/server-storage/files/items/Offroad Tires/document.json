@@ -4,7 +4,7 @@
   "item": {
     "id": "offroad-tires",
     "name": "Offroad Tires",
-    "description": "Offroad tires. Uses the saved Offroad tire definition.",
+    "description": "Offroad Tires. These are meant for loose ground. Probably a good idea if we're leaving the pavement.",
     "carPart": {
       "slot": "tires",
       "section": "Tires",

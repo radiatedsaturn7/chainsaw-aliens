@@ -4,7 +4,7 @@
   "item": {
     "id": "rally-tires",
     "name": "Rally Tires",
-    "description": "Rally tires. Uses the saved Rally tire definition.",
+    "description": "Rally Tires. These should give us a better bite on gravel. You know, for when the pavement gives up.",
     "carPart": {
       "slot": "tires",
       "section": "Tires",

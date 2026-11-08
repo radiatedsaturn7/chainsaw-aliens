@@ -53,3 +53,39 @@ test('pause Restart Race starts a fresh attempt with the same car and baked trac
   assert.equal(closed, 2);
   assert.equal(stopped, 1);
 });
+
+test('racing pause nests Debug and the first nine car controls under Settings, with parent-aware Back',()=>{
+ const e=new RaceEditor({});e.playtestSession={};e.raceInput.paused=true;e.raceInput.pauseMenuMode='main';
+ assert.ok(!e.getRacePauseMenuRows().some(r=>r.id==='race-debug'));
+ e.getRacePauseMenuRows().find(r=>r.id==='race-car-settings').onClick();
+ const settings=e.getRacePauseMenuRows();
+ assert.deepEqual(settings.map(r=>r.id),['race-car-controls','race-toggle-transmission','race-driving-guide','race-pace-notes','race-toggle-telemetry','race-fullscreen','race-debug','race-pause-back']);
+ settings[0].onClick();
+ assert.deepEqual(e.getRacePauseMenuRows().slice(0,-1).map(r=>r.id),['race-toggle-abs','race-toggle-tc','race-headlights','race-highBeams','race-auxLights','race-wipers','race-signal-left','race-signal-right','race-signal-hazards']);
+ const abs=e.raceInput.absEnabled;e.getRacePauseMenuRows()[0].onClick();assert.equal(e.raceInput.absEnabled,!abs);
+ e.getRacePauseMenuRows().at(-1).onClick();assert.equal(e.raceInput.pauseMenuMode,'settings');
+ e.getRacePauseMenuRows().find(r=>r.id==='race-debug').onClick();
+ e.getRacePauseMenuRows().find(r=>r.id==='race-debug-menu-ai').onClick();
+ e.backRacePauseMenu();assert.equal(e.raceInput.pauseMenuMode,'debug');
+ e.backRacePauseMenu();assert.equal(e.raceInput.pauseMenuMode,'settings');assert.equal(e.getRacePauseMenuRows()[e.raceInput.pauseMenuIndex].id,'race-debug');
+ e.backRacePauseMenu();assert.equal(e.raceInput.pauseMenuMode,'main');assert.equal(e.raceInput.paused,true);
+});
+
+test('pause Reset Position uses the route-center reset and resumes without restarting',()=>{
+ const e=new RaceEditor({});e.playtestSession={distance:123,routeRuntimeType:'road',elapsedMs:456};e.raceInput.paused=true;
+ e.getRaceWorldPoseAtDistance=(distance)=>{assert.equal(distance,123);return {yaw:1.2};};
+ let reset;e.resetRaceCarToRouteCenter=value=>{reset=value;};e.toggleRacePause=()=>{e.raceInput.paused=false;};
+ e.getRacePauseMenuRows().find(r=>r.id==='race-reset-position').onClick();
+ assert.deepEqual(reset,{projection:{distance:123},roadYaw:1.2,preserveMotion:false,reason:'select-hold-reset'});
+ assert.equal(e.raceInput.paused,false);assert.equal(e.playtestSession.elapsedMs,456);
+ e.playtestSession.countdownRemainingMs=1000;assert.equal(e.resetRacePosition(),false);
+});
+test('pause Full Screen enters and exits browser fullscreen',async()=>{
+ const prior=globalThis.document;let entered=0,exited=0;
+ try{
+  globalThis.document={documentElement:{requestFullscreen:async()=>{entered++;}},exitFullscreen:async()=>{exited++;}};
+  const e=new RaceEditor({});e.playtestSession={};e.raceInput.pauseMenuMode='settings';
+  await e.getRacePauseMenuRows().find(r=>r.id==='race-fullscreen').onClick();assert.equal(entered,1);
+  globalThis.document.fullscreenElement={};await e.toggleRaceFullscreen();assert.equal(exited,1);
+ }finally{if(prior===undefined)delete globalThis.document;else globalThis.document=prior;}
+});

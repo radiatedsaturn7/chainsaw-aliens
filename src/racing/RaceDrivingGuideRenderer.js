@@ -1,3 +1,4 @@
+import {drawPaceNoteIcon} from './RacePaceNoteIcons.js';
 import {sampleRaceRacingLine} from './RaceRacingLine.js';
 import {RACE_THREE_ELEVATION_M} from './simulation/RaceSimulationConfig.js';
 import * as THREE from '../vendorBridge/three.js';
@@ -78,27 +79,54 @@ export function drawRaceDrivingLine(editor,ctx,bounds) {
   ctx.restore();
 }
 
-export function drawRaceDrivingAssistHud(editor, ctx, bounds) {
+// Anchor to the actual car HUD when it supplies time/progress widgets.
+export function raceTimingPanelBounds(bounds, layout = null) {
+  const widgets = layout?.enabled ? (layout.widgets || []).filter(g => g.enabled !== false
+    && ['raceTime', 'lapTime', 'raceProgress', 'lap', 'completion'].includes(g.source)
+    && g.x >= .5 && g.y < .35) : [];
+  if (widgets.length) {
+    const left = Math.min(...widgets.map(g => g.x));
+    const top = Math.min(...widgets.map(g => g.y));
+    return {x: bounds.x + left * bounds.w, y: bounds.y + top * bounds.h,
+      w: (Math.max(...widgets.map(g => g.x + g.width)) - left) * bounds.w,
+      h: (Math.max(...widgets.map(g => g.y + g.height)) - top) * bounds.h};
+  }
+  const w = Math.min(86, Math.max(66, bounds.w * .2));
+  return {x: bounds.x + bounds.w - w - 4, y: bounds.y + 4, w, h: 25};
+}
+
+export function drawRaceDrivingAssistHud(editor, ctx, bounds, layout = null) {
   const session = editor.playtestSession, state = session?.drivingAssists;
   if (!state?.active) return;
   const settings = drivingGuideSettings(editor.selectedRace);
   const wrong = state.wrongWay;
-  const note = (settings.notes || settings.line) ? (state.upcomingTurn || state.note) : null;
+  const note = settings.notes && settings.icons ? state.note : null;
   // Wrong-way takes precedence, with the same centred presentation as GO.
   if (wrong && Math.floor(Number(session.elapsedMs || 0)/450)%2) return;
-  const text = wrong ? 'WRONG WAY' : note ? `${Math.round(note.remaining / 10) * 10} m · ${note.text}` : null;
-  if (!text) return;
-  const width = Math.min(bounds.w-20, note ? 420 : Math.max(140,text.length*8+24));
-  const x = bounds.x+bounds.w/2, y = bounds.y+bounds.h*.2;
-  const lines=[];let line='';
-  for(const word of text.split(' ')){
-    if(note && (line+' '+word).length*7.5>width-24 && line){lines.push(line);line=word;}
-    else line+=(line?' ':'')+word;
+  const x=bounds.x+bounds.w/2,y=bounds.y+bounds.h*.2;
+  if(wrong){
+    ctx.save();ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(x-90,y-20,180,40);
+    ctx.fillStyle='#ff6464';ctx.font='900 22px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('WRONG WAY',x,y,168);ctx.restore();return;
   }
-  if(line)lines.push(line);
-  const height=Math.max(36,lines.length*18+16);
-  ctx.save(); ctx.fillStyle = 'rgba(0,0,0,.72)'; ctx.fillRect(x-width/2,y-height/2,width,height);
-  ctx.fillStyle = wrong ? '#ff6464' : '#ffffff';
-  ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.font=`900 ${wrong ? 22 : 14}px sans-serif`;
-  lines.forEach((line,i)=>ctx.fillText(line,x,y+(i-(lines.length-1)/2)*18,width-12)); ctx.restore();
+  if(!note)return;
+  const notes=state.notes?.length?state.notes:[note];
+  const panel = raceTimingPanelBounds(bounds, layout);
+  const size = panel.h * 2.5, gap = 4;
+  const count = notes.length;
+  const left = panel.x - gap - count * size - (count - 1) * gap;
+  const centerY = panel.y + size / 2;
+  const icons=notes.map((call,i)=>drawPaceNoteIcon(ctx,call,left+size/2+i*(size+gap),centerY,size));
+  ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+  const fontSize = Math.max(8, Math.min(16, size * .16));
+  ctx.font=`700 ${fontSize}px sans-serif`;
+  // The announced distance stays fixed and overlaps the bottom of the first tile.
+  if(Number.isFinite(note.announcedDistance)&&note.announcedDistance>0){
+    const labelHeight = fontSize + 4;
+    ctx.fillStyle='rgba(0,0,0,.72)';ctx.fillRect(left,panel.y+size-labelHeight,size,labelHeight);
+    ctx.fillStyle='#ffffff';ctx.fillText(`${note.announcedDistance} m`,left+size/2,panel.y+size-labelHeight/2,size-4);
+  }
+  ctx.fillStyle='#ffffff';ctx.textBaseline='top';
+  const detail=icons.map(icon=>icon.kind==='caution'?icon.text:icon.modifiers.join(' · ')).filter(Boolean).join(' / ');
+  if(detail){ctx.textAlign='right';ctx.fillText(detail,panel.x-gap,panel.y+size+3,Math.min(180,panel.x-bounds.x-gap));}
+  ctx.restore();
 }

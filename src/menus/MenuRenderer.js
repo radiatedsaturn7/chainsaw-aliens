@@ -12,7 +12,7 @@ import {worldMapNodes,worldMapRaceNodes,worldMapSelection} from './MenuWorldMap.
 import {showroomPage,garageBrowserRows,garageCardBounds} from './MenuGarageWidgets.js';
 import {menuPaintOrder,menuElementVisible} from './MenuLayout.js';
 import {menuElementPose,resolveMenuBackground} from './MenuDocument.js';
-import {calculateCarPerformance} from '../racing/CarPerformance.js';
+import {drawCarComponent} from './MenuCarStats.js';
 
 export const menuElementBounds=(element,bounds,pose=element)=>({x:bounds.x+pose.x*bounds.w,y:bounds.y+pose.y*bounds.h,w:element.w*bounds.w,h:element.h*bounds.h});
 export const menuElementInteractive=e=>['garage-tuner','code-entry','world-map','car-showroom','garage-browser','button','choice','slider','toggle','keybind'].includes(e.type);
@@ -147,7 +147,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
       const car=resources?.car(element.assetRef||value);
       drawCarDescription(ctx,b,car?.description?.trim()||'No description yet.',fontFamily,element);
     }
-    else if(['car-preview','car-stats','power-curve'].includes(element.type))drawCarComponent(ctx,b,element,resources?.car(element.assetRef||value),resources,time,parameters,fontFamily);
+    else if(['car-preview','car-stats','power-curve'].includes(element.type))drawCarComponent(ctx,b,element,(element.property==='stock'?resources?.stockCar(element.assetRef||value):resources?.car(element.assetRef||value)),resources,time,parameters,fontFamily);
     else{
       if(element.type==='choice'){const options=element.source?resources?.choices(element.source,document,parameters)||[]:element.options;label+=`: ${options.find(o=>JSON.stringify(o.value)===JSON.stringify(value))?.label||'Choose…'}`;}
       if(element.type==='toggle')label+=value?' ✓':' —';
@@ -156,7 +156,7 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
         const number=Number.isFinite(Number(value))?Number(value):element.min,ratio=Math.max(0,Math.min(1,(number-element.min)/(element.max-element.min||1)));
         ctx.fillStyle='#18242d';ctx.fillRect(b.x+10,b.y+b.h*0.7,b.w-20,5);ctx.fillStyle=element.color;ctx.fillRect(b.x+10,b.y+b.h*0.7,(b.w-20)*ratio,5);
         label+=`: ${Number(number.toFixed(2))}`;ctx.fillStyle=menuTextFill(ctx,element,b,label,textSize,b.y+b.h*.35);drawText(label,b.x+b.w/2,b.y+b.h*0.35,b.w-16);
-      }else {ctx.fillStyle=menuTextFill(ctx,element,b,label,textSize);cursorLabelWidth=Math.min(ctx.measureText(label)?.width||0,Math.max(1,b.w-16));drawText(label,b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-16));}
+      }else {ctx.fillStyle=menuTextFill(ctx,element,b,label,textSize);cursorLabelWidth=label?Math.min(ctx.measureText(label)?.width||0,Math.max(1,b.w-16)):null;drawText(label,b.x+b.w/2,b.y+b.h/2,Math.max(1,b.w-16));}
     }
     ctx.restore();
     if(!(editing&&element.id===worldMapEditingId)&&((element.id===focus&&!element.disabled&&element.type!=='world-map')||element.id===selected)){
@@ -173,26 +173,6 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     }
   }
   ctx.restore();
-}
-function drawCarComponent(ctx,b,e,car,resources,time,parameters,fontFamily='system-ui'){
-  const drawText=(...args)=>drawMenuText(ctx,e,...args);
-  if(!car){drawText('Choose a car',b.x+b.w/2,b.y+b.h/2,b.w-10);return;}
-  const renderer=resources.game.carEditor,tuning=resources.tuning(car);
-  if(e.type==='car-preview'){
-    ctx.save();const yaw=e.angleBinding?Number(parameters[e.angleBinding]??e.angle)*Math.PI/180:e.animation==='spin'?(e.loop?time/e.duration:Math.min(1,time/e.duration))*Math.PI*2:e.angle*Math.PI/180;
-    const choice=renderer.getRaceCarProjectedArtRef(car,0,yaw);
-    if(car.art?.bodyModel?.ref||!choice.artRef){resources.carPreview.draw(ctx,b,car,yaw+Math.PI,time);ctx.restore();return;}
-    resources.carPreview.drawSprite(ctx,b,car,choice);ctx.restore();return;
-  }
-  if(e.type==='car-stats'){
-    const performance=calculateCarPerformance({...car,tuning:{...car.tuning,...tuning,topSpeedMph:tuning.topSpeedMps!=null?tuning.topSpeedMps/0.44704:car.tuning?.topSpeedMph}});const lines=[car.name||'Car',`${Math.round(tuning.powerHp||0)} HP · ${Math.round(Number(tuning.torqueLbFt||0)*1.355817948)} Nm`,`${Math.round(tuning.weightKg||0)} kg · ${tuning.drivetrain||car.tuning?.drivetrain||''}`,`Class ${performance.class} · ${performance.points} PI`];
-    lines.forEach((line,i)=>drawText(line,b.x+b.w/2,b.y+(i+0.5)*b.h/lines.length,b.w-10));return;
-  }
-  const min=Number(tuning.idleRpm||800),max=Number(tuning.redlineRpm||7000),points=Array.from({length:41},(_,i)=>{const rpm=min+(max-min)*i/40,torque=renderer.getRaceTorqueNmAtRpm(rpm,tuning);return {rpm,torque,hp:torque*rpm/7127}}),peak=Math.max(1,...points.flatMap(p=>[p.torque,p.hp]));
-  const compact=b.h<80,plotTop=b.y+(compact?4:25),plotBottom=b.y+b.h-(compact?4:20),plotHeight=Math.max(1,plotBottom-plotTop);
-  ctx.font=`${Math.max(10,Math.min(14,b.h/8))}px ${fontFamily}`;if(!compact)drawText('HP (gold) · Torque Nm (blue)',b.x+b.w/2,b.y+12,b.w-12);
-  for(const [key,color] of [['hp','#ffd467'],['torque','#72caff']]){ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();points.forEach((p,i)=>{const x=b.x+10+i/40*(b.w-20),y=plotBottom-p[key]/peak*plotHeight;i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();}
-  if(!compact)drawText(`${min} — ${max} RPM`,b.x+b.w/2,b.y+b.h-7,b.w-12);
 }
 
 export function drawCarDescription(ctx,b,description,fontFamily='system-ui',element=null,{time=0,editing=false}={}){
