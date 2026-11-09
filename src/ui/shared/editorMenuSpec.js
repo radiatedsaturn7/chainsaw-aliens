@@ -154,6 +154,7 @@ const EDITOR_ACTION_LABEL_OVERRIDES = {
   'car-art-settings': 'Settings',
   'car-art-exterior': 'Exterior',
   'car-art-interior': 'Interior',
+  'car-smoke': 'Smoke',
   'race-fuel': 'Starting fuel',
   'car-indicators': 'Indicators',
   'car-gauges-exterior': 'Exterior Gauges',
@@ -259,7 +260,7 @@ export const EDITOR_MENU_SPECS = {
       draw: section('draw', 'Draw', ['pencil', 'brush', 'fill', 'line', 'shape', 'brush-settings']),
       select: section('select', 'Select', ['select-rect', 'select-ellipse', 'select-lasso', 'select-magic', 'move']),
       tools: section('tools', 'Tools', ['eraser', 'eyedropper', 'gradient', 'clone', 'dither', 'color-replace', 'hue-shift', 'saturation-shift', 'brightness-shift', 'contrast-shift']),
-      canvas: section('canvas', 'Canvas', ['wrap', 'symmetry', 'resize', 'scale', 'crop', 'offset', 'import-image', 'export-image']),
+      canvas: section('canvas', 'Canvas', ['wrap', 'symmetry', 'resize', 'scale', 'crop', 'offset', 'canvas-filters', 'import-image', 'export-image']),
       layers: section('layers', 'Layers', ['layer-add', 'layer-duplicate', 'layer-delete', 'layer-rename', 'layer-visibility', 'layer-up', 'layer-down', 'layer-merge-up', 'layer-merge-down', 'layer-flatten']),
       frames: section('frames', 'Frames', ['frame-add', 'frame-duplicate', 'frame-delete', 'frame-delay', 'frame-loop', 'frame-play', 'frame-step', 'frame-rewind', 'frame-up', 'frame-down']),
       rigging: section('rigging', 'Rigging', ['bone-add', 'bone-bind-layer', 'bone-bind-selection', 'bone-bake'])
@@ -458,7 +459,7 @@ export const EDITOR_MENU_SPECS = {
         'ground-brush-strength-100'
       ]),
       sprites: section('sprites', 'Paint', ['paint-kind-doodad', 'paint-kind-fence', 'paint-kind-decal', 'paint-kind-tile', 'paint-kind-sprite']),
-      settings: section('settings', 'Settings', ['race-reverse', 'race-ground-texture', 'race-radio', 'race-music', 'race-countdown', 'race-auto-extend', 'race-driving-guide', 'race-pace-notes', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-weather', 'race-mechanics', 'race-fuel', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
+      settings: section('settings', 'Settings', ['race-reverse', 'race-ground-texture', 'race-radio', 'race-music', 'race-cutscenes', 'race-countdown', 'race-auto-extend', 'race-driving-guide', 'race-pace-notes', 'race-rolling-start', 'race-rolling-speed', 'ai-count', 'race-ai-cars', 'race-complete', 'skybox-next', 'race-weather', 'race-mechanics', 'race-fuel', 'race-road-textures', 'race-margin', 'race-tiles', 'race-tire-fx', 'race-texture-scale', 'race-debug'])
     }
   },
   model3d: {
@@ -529,7 +530,7 @@ export const EDITOR_MENU_SPECS = {
       file: section('file', 'File', ['new', 'save', 'save-as', 'open', 'export', 'import', 'car-load-preset', 'car-description', 'exit-main']),
       edit: section('edit', 'Edit', ['undo', 'redo']),
       view: section('view', 'View', ['zoom-fit']),
-      art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-gauges-exterior', 'car-gauges-interior', 'car-indicators', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),
+      art: section('art', 'Art', ['car-art-exterior', 'car-art-interior', 'car-gauges-exterior', 'car-gauges-interior', 'car-indicators', 'car-smoke', 'car-import-graphic', 'car-body-model', 'car-wheel-model', 'car-clear-body-model', 'car-clear-wheel-model', 'car-art-settings', 'car-camera-settings']),
       drivetrain: section('drivetrain', 'Drivetrain', ['drivetrain-menu', 'engine-sfx', 'car-sound-effects', 'car-mechanics', 'power-curve', 'weight-balance', 'summary-sheet', 'car-category', 'car-installable-parts']),
       tuning: {
         ...section('tuning', 'Tuning', ['default-tires', 'tire-pressure', 'tire-size', 'brake-balance', 'final-drive', 'diff-accel', 'diff-decel', 'physics-body']),

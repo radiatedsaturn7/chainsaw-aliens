@@ -7,6 +7,8 @@ import {analyzeRaceDrivingRoute, racePaceNotes} from '../../src/racing/RaceDrivi
 // surveyed terrain intact. The canonical road/terrain solver applies the blend.
 const editor = new RaceEditor({deviceIsMobile:true,isMobile:true,exitRaceEditor(){}});
 export function prepareAmericaRace(race, stage) {
+  race.margin={...race.margin,marginMode:'hidden'};
+  race.snowClouds={...race.snowClouds,enabled:true,artRef:'snowcloud'};
   Object.assign(race.source, {elevationSmoothingRadiusM:45,
     shoulderFlatJoinM:8, shoulderBlendWidthM:32, shoulderMaxSlope:.22});
   applyAmericaRoughness(race,stage);

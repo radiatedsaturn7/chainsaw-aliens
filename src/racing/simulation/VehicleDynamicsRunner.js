@@ -6581,7 +6581,7 @@ export class VehicleDynamicsRunner {
       rpm:this.state.engineRpm, maxRpm:this.config.maxRpm,
       throttle:controls.throttle, brake:controls.brake, headlights:controls.headlights,highBeams:controls.highBeams,auxLights:controls.auxLights,
       clutchCoupling:this.state.powertrainState?.clutchCoupling,
-      gear:this.state.gear, speedMps:this.state.speedMps, tires:this.state.tireState,
+      gear:this.state.gear, speedMps:this.state.speedMps, distanceSpeedMps:this.state.groundSpeedMps, tires:this.state.tireState,
       lateralAccelerationMps2:this.state.lateralAccelerationMps2,
       wheelAngularVelocityRadps:this.state.wheelAngularVelocityRadps,
       impact:impactStarted?Math.min(4,(bodyNormalImpulseNs+tireVerticalImpulseNs)/Math.max(1,this.config.massKg)/10):0,

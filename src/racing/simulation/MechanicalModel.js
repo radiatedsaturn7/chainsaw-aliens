@@ -55,6 +55,11 @@ export function applyMechanicalMission(state,mission={}){
  for(const [id,value] of Object.entries(mission.components||{}))if(Object.hasOwn(state.components,id)){const c=state.components[id];c.damage=clamp(value.damage??(value.failed?100:c.damage),0,100);c.failed=value.failed===true;}
  for(const key of ['charge','fuel','oil','coolant'])if(Number.isFinite(mission[key]))state[key]=clamp(mission[key]);
  state.fuel=startingFuelFraction(mission.startingFuel,state.config.fuelTankGallons,state.fuel);
+ // Optional opening-mission allowance: consume the small reserve above the
+ // warning threshold by distance, then resume the ordinary load-based model.
+ const warningDistance=Number(mission.fuelWarningAfterDistanceM);
+ state.fuelWarningRun=warningDistance>0&&Number.isFinite(warningDistance)&&state.fuel>.15
+  ?{distanceM:0,targetDistanceM:warningDistance,startFuel:state.fuel}:null;
  state.fuelLitersRemaining=state.fuel*state.config.fuelLiters;
  if(typeof mission.headlights==='boolean')state.headlights=mission.headlights;
  for(const [id,part] of Object.entries(mission.requiredParts||{}))if(Object.hasOwn(state.config.components,id)&&typeof part==='string')state.config.components[id].requiredPart=part.slice(0,100);
@@ -93,7 +98,16 @@ function mechanicalTick(s,t){
  s.coolant=clamp(s.coolant-scaled*(failed('radiator')?.003:Math.max(0,c.radiator.damage-50)*.000008));
  s.oil=clamp(s.oil-scaled*(failed('oilSeals')?.002:Math.max(0,c.oilSeals.damage-65)*.000004));
  const fuelBurn=fuelBurnGallons(s.config,dt,{engineRunning:s.engineRunning,speedMps:speed,rpm,maxRpm:t.maxRpm,throttle:load});
- s.fuel=clamp(s.fuel-fuelBurn/s.config.fuelTankGallons-scaled*(failed('fuelTank')?.001:Math.max(0,c.fuelTank.damage-60)*.000002));
+ let fuelUsed=fuelBurn/s.config.fuelTankGallons;
+ const allowance=s.fuelWarningRun;
+ if(allowance && allowance.distanceM<allowance.targetDistanceM){
+  const traveled=Math.abs(number(t.distanceSpeedMps,speed))*dt,remaining=allowance.targetDistanceM-allowance.distanceM;
+  allowance.distanceM=Math.min(allowance.targetDistanceM,allowance.distanceM+traveled);
+  const scheduled=allowance.startFuel-(allowance.startFuel-.15)*(allowance.distanceM/allowance.targetDistanceM);
+  fuelUsed=Math.max(0,s.fuel-scheduled);
+  if(traveled>remaining)fuelUsed+=fuelBurn/s.config.fuelTankGallons*(traveled-remaining)/traveled;
+ }
+ s.fuel=clamp(s.fuel-fuelUsed-scaled*(failed('fuelTank')?.001:Math.max(0,c.fuelTank.damage-60)*.000002));
  // Thermal mass follows real seconds, not the accelerated wear/leak clock.
  // A healthy radiator/fan can reject full-load heat; the thermostat prevents
  // overcooling. Loss of circulation/coolant still removes that reserve.

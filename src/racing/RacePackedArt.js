@@ -187,7 +187,7 @@ export function packRaceArtDocumentForRuntime(document = {}, {
   const frames = sources
     .map((frame, index) => {
       const pixels = getFramePixels(frame, data);
-      return pixels ? { index, pixels: toRgbaPixels(pixels, width, height) } : null;
+      return pixels ? { index, durationMs: Math.max(1, Number(frame?.durationMs || data?.editor?.frames?.[index]?.durationMs) || 1000 / (Number(data?.fps) || 10)), pixels: toRgbaPixels(pixels, width, height) } : null;
     })
     .filter(Boolean);
   if (!frames.length) return null;

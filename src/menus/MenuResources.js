@@ -14,7 +14,7 @@ import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared} from '../ui/sha
 export class MenuResources {
   constructor(game){this.appearance=new MenuAppearanceResources();this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.showroomFrames=new WeakMap();this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.garageCars=new Map();this.partCatalog=[];this.autoQuotes=new Map();this.pending=new Map();this.errors=new Map();this.missingRaces=new Set();}
   prepareScreen(document,screen,parameters,options){return prepareMenuScreen(this,document,screen,parameters,options);}
-  exteriorArtRefs(car){return this.game.carEditor.collectRaceCarArtRefs({...car,art:{...car.art,gauges:{},interior:{}}});}
+  exteriorArtRefs(car){return this.game.carEditor.collectRaceCarArtRefs({...car,art:{...car.art,gauges:{},interior:{},smoke:{}}});}
   font(element){return this.appearance.font(element);}
   cursor(element){return element.cursorArtRef?this.art(element.cursorArtRef):this.appearance.cursor(element);}
   get garage(){return this.garageOverride||this.game.items?.garage;}

@@ -122,6 +122,7 @@ test('slot cards show a static car, saved condition and time instead of descript
  const condition=normalizeCarCondition();
  for(const c of Object.values(condition.mechanical.components)){c.damage=100;c.failed=true;}
  saves.slots[0].items.garage.cars['RTG-001']={condition};
+ await saves.persist(saves.slots);
  saves.playTimes.set(0,3661);await saves.startNew(1);
  assert.ok(saves.describeSlot(0).condition<25);assert.equal(saves.describeSlot(0).time,'01:01:01');
  const player=new MenuPlayer(game);player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};player.resources.prepareScreen=async()=>{};
@@ -163,4 +164,45 @@ test('driving preferences survive slot reload and apply to the next race without
  assert.equal(next.raceInput.transmissionMode,'manual');assert.equal(next.raceInput.autoShift,false);
  await loaded.saves.startNew(1);assert.equal(loaded.game.menuProgress.racePaceMode,undefined);
  await loaded.saves.resume(0);assert.equal(loaded.game.menuProgress.racePaceMode,'Both');
+});
+
+test('new game waits for car selection then launches opening race; continue keeps the car and returns to map',async()=>{
+ const {game,saves}=await fixture();
+ const player=new MenuPlayer(game);game.menuPlayer=player;
+ player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};player.resources.prepareScreen=async()=>{};
+ const document=createMenuDocument();document.parameters.campaignOpeningRace='Tower Hill Road';document.parameters.campaignStartingCar='RTG-001';
+ document.screens.find(s=>s.id==='world-map').elements.find(e=>e.type==='world-map').nodes=[{id:'opening',kind:'race',raceRef:'Tower Hill Road',label:'Tower Hill Road'}];
+ const launches=[];player.launchRace=async(ref,params)=>launches.push({ref,params});
+ await player.open(document);
+ const visited=[],goTo=player.flow.goTo.bind(player.flow);player.flow.goTo=(id,options)=>{visited.push(id);return goTo(id,options);};
+ await player.selectSaveSlot('new',0);
+ assert.equal(player.flow.screenId,'cars');assert.equal(launches.length,0);assert.equal(player.flow.lockedCarRef,'');
+ assert.equal(saves.slots[0].progress.selectedGameCar,undefined);
+ player.resources.choices=()=>[{value:'RTG-001',label:'RTG-001'},{value:'CT-86',label:'CT-86'}];
+ player.flow.setParameter('carRef','CT-86');
+ await player.activate(player.flow.screen.elements.find(e=>e.type==='car-showroom'),1,{choose:true});
+ assert.equal(visited.includes('world-map'),false,'new game must not enter the map or start its music');
+ assert.equal(launches.length,1);assert.equal(launches[0].ref,'Tower Hill Road');assert.equal(launches[0].params.carRef,'CT-86');
+ assert.equal(saves.slots[0].progress.selectedGameCar,'CT-86');assert.equal(saves.slots[0].parameters.raceRef,'Tower Hill Road');
+ await player.selectSaveSlot('continue',0);
+ assert.equal(launches.length,1);assert.equal(player.flow.screenId,'world-map');assert.equal(player.flow.lockedCarRef,'CT-86');
+});
+
+test('slot display reads persisted summary without touching component health',async()=>{
+ const {game,saves,store}=await fixture();await saves.startNew(0);await commitMenuCar(game,'RTG-001');await saves.save();
+ assert.deepEqual(store.get(CAMPAIGN_SAVE_KEY).slots[0].summary,{car:'RTG-001',condition:100});
+ const reloaded=await fixture(store),slot=reloaded.saves.slots[0];
+ Object.defineProperty(slot,'items',{get(){throw Error('Slot display must not inspect saved components');}});
+ for(let i=0;i<10;i++)assert.equal(reloaded.saves.describeSlot(0).condition,100);
+});
+
+test('legacy saves derive their condition summary once during load',async()=>{
+ const {game,saves,store}=await fixture();await saves.startNew(0);await commitMenuCar(game,'RTG-001');await saves.save();
+ const saved=store.get(CAMPAIGN_SAVE_KEY);delete saved.slots[0].summary;
+ const {normalizeCarCondition}=await import('../../src/garage/GarageRepairs.js');const condition=normalizeCarCondition();
+ for(const component of Object.values(condition.mechanical.components)){component.damage=100;component.failed=true;}
+ saved.slots[0].items.garage.cars['RTG-001']={condition};
+ const loaded=await fixture(store);assert.ok(loaded.saves.describeSlot(0).condition<25);
+ Object.defineProperty(loaded.saves.slots[0],'items',{get(){throw Error('Migration must not repeat');}});
+ assert.ok(loaded.saves.describeSlot(0).condition<25);
 });

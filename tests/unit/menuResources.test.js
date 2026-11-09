@@ -61,11 +61,12 @@ test('animated car choices do not parse unrelated art and music or unchanged car
  }finally{JSON.parse=parse;resetProjectFilesForTests();}
 });
 
-test('showroom dependencies exclude interior and gauge art but retain exterior FX',()=>{
+test('showroom dependencies exclude smoke, interior and gauge art but retain exterior FX',()=>{
  let received;
  const resources=new MenuResources({carEditor:{collectRaceCarArtRefs(car){received=car;return [car.art.body,car.art.fx];}}});
- const car={art:{body:'body',fx:'lights',gauges:{exterior:{widgets:[{artRef:'huge-dial'}]}},interior:{dashboard:{artRef:'dash'}}}};
+ const car={art:{body:'body',fx:'lights',smoke:{snow:'snowsmoke'},gauges:{exterior:{widgets:[{artRef:'huge-dial'}]}},interior:{dashboard:{artRef:'dash'}}}};
  assert.deepEqual(resources.exteriorArtRefs(car),['body','lights']);
+ assert.deepEqual(received.art.smoke,{});assert.equal(car.art.smoke.snow,'snowsmoke');
  assert.deepEqual(received.art.gauges,{});assert.deepEqual(received.art.interior,{});
  assert.equal(car.art.interior.dashboard.artRef,'dash','saved car remains intact');
 });
@@ -112,4 +113,19 @@ test('missing optional world map descriptions are fetched once instead of keepin
   for(let i=0;i<4;i++){assert.equal(resources.race('Missing description'),null);await Promise.all(resources.pending.values());}
   assert.equal(reads,1);assert.equal(resources.pending.size,0);
  }finally{globalThis.fetch=original;clearCachedProjectFilesForTests();}
+});
+
+test('stock save-slot icons prepare without garage builds or tuning calculations',async()=>{
+ const {normalizeMenuDocument}=await import('../../src/menus/MenuDocument.js');
+ const previous=globalThis.document;
+ const ctx=new Proxy({measureText:()=>({width:20})},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
+ globalThis.document={createElement:()=>({getContext:()=>ctx})};
+ try{
+  const resources=new MenuResources({carEditor:{getRaceCarProjectedArtRef:()=>({artRef:'body'})}});
+  resources.car=()=>{throw Error('No garage build for a stock icon');};
+  resources.tuning=()=>{throw Error('No tuning required for an icon');};
+  resources.stockCar=()=>({art:{body:'body'}});resources.exteriorArtRefs=()=>[];resources.carPreview.drawSprite=()=>true;
+  const doc=normalizeMenuDocument({screens:[{id:'saves-start',elements:[{id:'car-a',type:'car-preview',property:'stock',assetRef:'RTG-001',animation:'none'}]}]});
+  await resources.prepareScreen(doc,doc.screens[0],{});
+ }finally{globalThis.document=previous;}
 });

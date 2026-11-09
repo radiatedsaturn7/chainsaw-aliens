@@ -214,3 +214,16 @@ test('Back restores the selected garage button instead of returning focus to Dri
   assert.equal(player.flow.screenId,'garage');assert.equal(player.interactive()[player.focus]?.id,id);
  }
 });
+
+test('intro cutscenes ignore screen taps and Back but accept held simulated G',async()=>{
+ const {player,game}=fixture();game.deviceIsMobile=true;await player.open(createMenuDocument());
+ player.surface.layout(390,844);player.raceIntroCutscene=true;
+ player.cutscene.play({durationMs:10000,clips:[]});
+ player.handlePointerDown({id:9,x:195,y:100});player.handlePointerUp({id:9,x:195,y:100});
+ player.update(input(['Escape'],['cancel']),.1);assert.equal(player.cutscene.active,true);assert.equal(player.flow.active,true);
+ const g=player.surface.controls.buttons.find(b=>b.id==='jump');
+ player.handlePointerDown({id:10,x:g.x,y:g.y});
+ for(let i=0;i<10;i++)player.update(input(),.1);
+ assert.equal(player.cutscene.active,false);
+ player.handlePointerUp({id:10,x:g.x,y:g.y});assert.equal(player.surface.controls.isHeld('jump'),false);
+});

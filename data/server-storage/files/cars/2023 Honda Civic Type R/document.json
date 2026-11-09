@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "kind": "race-car",
-  "savedAt": 1788813564165,
+  "savedAt": 1794188290231,
   "selectedCarId": "honda-civic-type-r-2023",
   "car": {
     "id": "honda-civic-type-r-2023",
@@ -106,10 +106,31 @@
         "rearWheels": true,
         "brakes": true,
         "shadow": true
+      },
+      "smoke": {
+        "asphalt": "burnoutsmoke",
+        "wet-asphalt": "waterspray",
+        "water": "waterspray",
+        "dirt": "dirtsmoke",
+        "mud": "dirtsmoke",
+        "gravel": "gravelsmoke",
+        "wet-gravel": "gravelsmoke",
+        "grass": "dirtsmoke",
+        "sand": "dirtsmoke",
+        "rock-solid": "gravelsmoke",
+        "snow": "snowsmoke",
+        "slush": "snowsmoke",
+        "ice": "snowsmoke",
+        "skidSmoke": "burnoutsmoke",
+        "dirtDust": "dirtsmoke",
+        "gravelDust": "gravelsmoke",
+        "grassDust": "dirtsmoke",
+        "snowDust": "snowsmoke",
+        "wetSpray": "waterspray"
       }
     },
     "camera": {
-      "trackingMode": "dynamic"
+      "trackingMode": "fixed-rear"
     },
     "dimensions": {
       "lengthM": 4.6,

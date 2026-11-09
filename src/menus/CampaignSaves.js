@@ -8,6 +8,14 @@ const freshStats = () => ({health:5,maxHealth:5,armor:0,credits:0});
 const copy = value => structuredClone(value);
 const validSlot = index => Number.isInteger(index) && index >= 0 && index < 3;
 
+// Compute at save/load migration time, never while opening the slot menu.
+function savedCarSummary(slot){
+  const car=slot.progress?.selectedGameCar||'';
+  const condition=normalizeCarCondition(slot.items?.garage?.cars?.[car]?.condition);
+  const garage={configuration:()=>({condition}),items:{progress:{bags:{items:{}}}}};
+  return {car,condition:Math.round(repairConditionSummary(repairRows(garage,car,{})).average)};
+}
+
 export class CampaignSaves {
   constructor(game, {load=loadServerPreferenceAsync, save=saveServerPreference, now=Date.now}={}) {
     this.game=game;this.loadPreference=load;this.savePreference=save;this.now=now;
@@ -38,11 +46,13 @@ export class CampaignSaves {
           await this.persist(slots);this.slots=slots;
         }
       }
+      for(const slot of this.slots)if(slot && (!slot.summary || !Number.isFinite(slot.summary.condition)))slot.summary=savedCarSummary(slot);
       return this;
     })().catch(error=>{this.loading=null;throw error;});
     return this.loading;
   }
   async persist(slots){
+    for(const slot of slots)if(slot)slot.summary=savedCarSummary(slot);
     const result=await this.savePreference(CAMPAIGN_SAVE_KEY,{version:1,slots});
     if(!result?.ok)throw Error('Could not save game progress. Please try again.');
   }
@@ -113,10 +123,7 @@ export class CampaignSaves {
   }
   describeSlot(index){
     const slot=this.slots[index];if(!slot)return null;
-    const car=slot.progress?.selectedGameCar||'';
-    const condition=normalizeCarCondition(slot.items?.garage?.cars?.[car]?.condition);
-    const garage={configuration:()=>({condition}),items:{progress:{bags:{items:{}}}}};
-    const health=Math.round(repairConditionSummary(repairRows(garage,car,{})).average);
+    const {car,condition:health}=slot.summary||{car:slot.progress?.selectedGameCar||'',condition:100};
     const seconds=Math.floor(this.playSeconds(index));
     const time=[Math.floor(seconds/3600),Math.floor(seconds/60)%60,seconds%60].map(n=>String(n).padStart(2,'0')).join(':');
     return {car,condition:health,time};

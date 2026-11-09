@@ -32,11 +32,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run opening, cutscene, smoke and image-import regressions
+        run: node --test tests/unit/raceFinishCutscene.test.js tests/unit/cutsceneSkip.test.js tests/unit/raceSnowClouds.test.js tests/unit/carSmoke.test.js tests/unit/raceLighting.test.js tests/unit/raceFinishPresentation.test.js tests/unit/menuResources.test.js tests/unit/menuPlayer.test.js tests/unit/pixelStudio.animatedImageImport.test.js tests/unit/pixelStudio.gifImport.test.js
+
+      - name: Run handling and tire-surface regressions
+        run: node --test tests/unit/handlingAssistOrientation.test.js tests/unit/tireSurfaceRuntime.test.js tests/unit/raceControllerMapping.test.js tests/unit/stabilityBrakeDirection.test.js tests/unit/stockRtgBraking.test.js tests/unit/tireSupportForce.test.js tests/unit/stockRtgYawRecovery.test.js
+
       - name: Run editor and race regression unit tests
         run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js tests/unit/raceImageTrace.test.js tests/unit/raceTrackImport.test.js tests/unit/raceRouteImport.test.js tests/unit/raceTrackImportIntegration.test.js tests/unit/raceTerrainGuardBudget.test.js tests/unit/reverseRaceRoute.test.js tests/unit/raceImportedCircuitRegression.test.js tests/unit/raceTireTrackRenderer.test.js tests/unit/steeringCommandMapping.test.js tests/unit/racePauseRestart.test.js
       - name: Validate GPS America campaign
         run: |
-          node --test tests/unit/americaCampaign.test.js tests/unit/raceDrivingAssists.test.js tests/unit/raceRecce.test.js tests/unit/raceDrivingGuideThree.test.js tests/unit/raceRacingLine.test.js tests/unit/raceAiRacingLinePhysics.test.js tests/unit/raceAiControls.test.js tests/unit/raceImportedElevationSmoothing.test.js
+          node --test tests/unit/towerHillOpening.test.js tests/unit/campaignSaves.test.js tests/unit/americaCampaign.test.js tests/unit/raceDrivingAssists.test.js tests/unit/raceRecce.test.js tests/unit/raceDrivingGuideThree.test.js tests/unit/raceRacingLine.test.js tests/unit/raceAiRacingLinePhysics.test.js tests/unit/raceAiControls.test.js tests/unit/raceImportedElevationSmoothing.test.js
           python3 -m unittest discover -s tests/python -p 'test_campaign_terrain_tiles.py'
 
       - name: Run race frame pacing and resource lifecycle regressions

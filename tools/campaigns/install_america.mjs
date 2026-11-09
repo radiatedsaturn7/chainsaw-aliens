@@ -32,13 +32,15 @@ for(const stage of catalog){
  manifest.folders.races[stage.name]=`races/${encodeURIComponent(stage.name).replace(/%20/g,' ')}/document.json`;
 }
 const menuPath=`${root}/menus/Game Menu/document.json`,menu=decode(JSON.parse(fs.readFileSync(menuPath)));
+menu.parameters.campaignOpeningRace='Tower Hill Road';
+menu.parameters.campaignStartingCar='RTG-001';
 const screen=menu.screens.find(s=>s.id==='world-map');
 if(!screen)throw Error('Game Menu world-map screen is missing');
 const map=screen.elements.find(e=>e.type==='world-map');
 Object.assign(map,createAmericaWorldMap(catalog),{showSelectedLabel:true,fontSize:16});
 screen.elements=screen.elements.filter(e=>!e.id.startsWith('america-'));
 const label=(id,text,x,y,w,color='#ffffff')=>({id:`america-${id}`,type:'text',label:text,x,y,w,h:.035,fontSize:16,color,visible:true,useDefaultFont:true});
-screen.elements.push(label('heading','PROVIDENCE TO LA · 24 RACES · WESTBOUND ←',.08,.07,.84),
+screen.elements.push(label('heading','CUMBERLAND TO LA · 25 RACES · WESTBOUND ←',.08,.07,.84),
  label('north','NORTHERN ROUTE',.34,.15,.32,'#7dd9ed'),
  label('middle','MIDDLE ROUTE',.34,.34,.32,'#efc36b'),
  label('south','SOUTHERN ROUTE',.34,.53,.32,'#f59987'));

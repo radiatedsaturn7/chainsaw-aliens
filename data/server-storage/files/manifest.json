@@ -157,7 +157,18 @@
       "pz-steeringwheel": "art/pz-steeringwheel/document.json",
       "rearicon": "art/rearicon/document.json",
       "righticon": "art/righticon/document.json",
-      "turnsignal-amber": "art/turnsignal-amber/document.json"
+      "turnsignal-amber": "art/turnsignal-amber/document.json",
+      "burnoutsmoke": "art/burnoutsmoke/document.json",
+      "dirtsmoke": "art/dirtsmoke/document.json",
+      "gravelsmoke": "art/gravelsmoke/document.json",
+      "snowsmoke": "art/snowsmoke/document.json",
+      "waterspray": "art/waterspray/document.json",
+      "snowcloud": "art/snowcloud/document.json",
+      "snowroad": "art/snowroad/document.json",
+      "house1": "art/house1/document.json",
+      "house2": "art/house2/document.json",
+      "house3": "art/house3/document.json",
+      "house4": "art/house4/document.json"
     },
     "music": {
       "1": "music/1/document.json",
@@ -192,7 +203,9 @@
       "Python King-7ced7f92-2452-41d6-b778-6c6d003e3341.mp3": "music/Python King-7ced7f92-2452-41d6-b778-6c6d003e3341.mp3/document.json",
       "Am I Still Here-1ee37aa5-068d-482d-ad1c-22caeea28bd5.mp3": "music/Am I Still Here-1ee37aa5-068d-482d-ad1c-22caeea28bd5.mp3/document.json",
       "We Learn to Live-052dbcc3-4072-4b61-8921-6f668e435ab8.mp3": "music/We Learn to Live-052dbcc3-4072-4b61-8921-6f668e435ab8.mp3/document.json",
-      "Everything You Said I'd Never-067d9317-0acc-4360-bc1e-dd6fdafaa9": "music/Everything You Said I%27d Never-067d9317-0acc-4360-bc1e-dd6fdafaa9/document.json"
+      "Everything You Said I'd Never-067d9317-0acc-4360-bc1e-dd6fdafaa9": "music/Everything You Said I%27d Never-067d9317-0acc-4360-bc1e-dd6fdafaa9/document.json",
+      "Butteryfly.mp3": "music/Butteryfly.mp3/document.json",
+      "SomethingLeftUnsaid.mp3": "music/SomethingLeftUnsaid.mp3/document.json"
     },
     "actors": {
       "Head.json": "actors/Head.json/document.json",
@@ -215,7 +228,9 @@
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
       "c2": "cutscenes/c2/document.json",
-      "c3": "cutscenes/c3/document.json"
+      "c3": "cutscenes/c3/document.json",
+      "introtowerhill": "cutscenes/introtowerhill/document.json",
+      "lastongridintro": "cutscenes/lastongridintro/document.json"
     },
     "races": {
       "Col de Turini": "races/Col de Turini/document.json",
@@ -230,8 +245,8 @@
       "Demo Track": "races/Demo Track/document.json",
       "p1": "races/p1/document.json",
       "p2loadtest": "races/p2loadtest/document.json",
-      "Mount Washington Auto Road — point-to-point": "races/Mount Washington Auto Road %E2%80%94 point-to-point/document.json",
-      "Mount Washington Auto Road — point-to-point Copy": "races/Mount Washington Auto Road %E2%80%94 point-to-point Copy/document.json",
+      "Mount Washington Auto Road \u2014 point-to-point": "races/Mount Washington Auto Road %E2%80%94 point-to-point/document.json",
+      "Mount Washington Auto Road \u2014 point-to-point Copy": "races/Mount Washington Auto Road %E2%80%94 point-to-point Copy/document.json",
       "North 01 - Providence - Blackstone": "races/North 01 - Providence - Blackstone/document.json",
       "North 02 - Mohawk Trail": "races/North 02 - Mohawk Trail/document.json",
       "North 03 - Tunnel of Trees": "races/North 03 - Tunnel of Trees/document.json",
@@ -255,7 +270,8 @@
       "South 05 - Big Bend River Road": "races/South 05 - Big Bend River Road/document.json",
       "South 06 - Coronado Trail": "races/South 06 - Coronado Trail/document.json",
       "South 07 - Palms to Pines": "races/South 07 - Palms to Pines/document.json",
-      "South 08 - LA - Sunset": "races/South 08 - LA - Sunset/document.json"
+      "South 08 - LA - Sunset": "races/South 08 - LA - Sunset/document.json",
+      "Tower Hill Road": "races/Tower Hill Road/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -283,7 +299,11 @@
       "fencebushes": "doodads/fencebushes/document.json",
       "fencetrees": "doodads/fencetrees/document.json",
       "frozenbush": "doodads/frozenbush/document.json",
-      "frozenrock": "doodads/frozenrock/document.json"
+      "frozenrock": "doodads/frozenrock/document.json",
+      "house1": "doodads/house1/document.json",
+      "house2": "doodads/house2/document.json",
+      "house3": "doodads/house3/document.json",
+      "house4": "doodads/house4/document.json"
     },
     "tires": {
       "Offroad": "tires/Offroad/document.json",

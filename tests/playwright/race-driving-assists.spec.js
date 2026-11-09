@@ -18,9 +18,11 @@ for (const [mode,size] of [['portrait',{width:390,height:844}],['landscape',{wid
         item.onSelect();
       };
       select('race-driving-guide'); select('race-pace-notes');
-      const text=editor.normalizeLoadedRaceDocument(editor.serializeSelectedRaceDocument());
-      select('race-pace-notes');
       const voice=editor.normalizeLoadedRaceDocument(editor.serializeSelectedRaceDocument());
+      select('race-pace-notes');
+      const icons=editor.normalizeLoadedRaceDocument(editor.serializeSelectedRaceDocument());
+      select('race-pace-notes');
+      const both=editor.normalizeLoadedRaceDocument(editor.serializeSelectedRaceDocument());
       select('race-pace-notes');
       const off=editor.selectedRace.codriver.enabled;
       const {drawRaceDrivingAssistHud}=await import('/src/racing/RaceDrivingGuideRenderer.js');
@@ -34,9 +36,9 @@ for (const [mode,size] of [['portrait',{width:390,height:844}],['landscape',{wid
       ctx.clearRect(0,0,canvas.width,canvas.height);preview.playtestSession.elapsedMs=500;
       drawRaceDrivingAssistHud(preview,ctx,bounds);const hidden=pixels();
       preview.playtestSession.elapsedMs=0;drawRaceDrivingAssistHud(preview,ctx,bounds);
-      return {line:text.drivingGuide.line,text:text.codriver.enabled,spoken:text.codriver.spoken,voice:voice.codriver.spoken,off,visible,hidden};
+      return {line:voice.drivingGuide.line,voice:voice.codriver,icons:icons.codriver,both:both.codriver,off,visible,hidden};
     },mode);
-    expect(result).toMatchObject({line:false,text:true,spoken:false,voice:true,off:false,hidden:0});
+    expect(result).toMatchObject({line:false,voice:{enabled:true,spoken:true,icons:false},icons:{enabled:true,spoken:false,icons:true},both:{enabled:true,spoken:true,icons:true},off:false,hidden:0});
     expect(result.visible).toBeGreaterThan(1000);
     await page.screenshot({path:`test-results/driving-assists-${mode}.png`});
   });
@@ -115,7 +117,7 @@ test('apex guide renders an upcoming turn when optional pace notes are off',asyn
   for(let i=0;i<pixels.length;i+=4)if(pixels[i+1]>150&&pixels[i+1]>pixels[i]*1.3&&pixels[i+1]>pixels[i+2]*1.15)green++;
   return {text,offsets,green,vertices:renderer.drivingGuideMesh.geometry.drawRange.count};
  });
- expect(result.text.join(' ')).toMatch(/left/i);
+ expect(result.text).toEqual([]); // Optional pace-note HUD stays hidden; the 3D line remains visible.
  expect(result.text.some(t=>/^(BRAKE|COAST|ACCELERATE)$/.test(t))).toBe(false);
  expect(result.offsets[0]).toBeLessThan(-2);expect(result.offsets[1]).toBeGreaterThan(2);expect(result.offsets[2]).toBeLessThan(-2);
  expect(result.green).toBeGreaterThan(20);expect(result.vertices).toBeGreaterThan(0);

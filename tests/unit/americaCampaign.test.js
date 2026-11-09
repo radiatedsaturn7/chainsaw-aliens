@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import zlib from 'node:zlib';
-import {createAmericaWorldMap} from '../../src/menus/AmericaWorldMap.js';
+import {createAmericaWorldMap,AMERICA_OPENING_RACE} from '../../src/menus/AmericaWorldMap.js';
 import {normalizeMenuElement} from '../../src/menus/MenuDocument.js';
 import {worldMapNodes,worldMapSelectableNodes,raceCompletionKey,worldMapDirectionalNode} from '../../src/menus/MenuWorldMap.js';
 const read=path=>JSON.parse(fs.readFileSync(new URL(path,import.meta.url)));
@@ -19,7 +19,8 @@ test('24 real-road races have GPS provenance and installed playable documents',(
   assert.equal(race.source.shoulderFlatJoinM,8);
   assert.equal(race.source.shoulderBlendWidthM,32);
   assert.equal(race.source.shoulderMaxSlope,.22);
-  assert.ok(race.road.segments.every(s=>s.bumpiness<=.035));
+  // Paved stages remain smooth; authored loose surfaces have higher roughness.
+  assert.ok(race.road.segments.every(s=>s.bumpiness>=0 && s.bumpiness<=(['asphalt','wet-asphalt'].includes(s.surface)?.035:.4)));
   assert.equal(race.drivingGuide.line,true);
   assert.equal(race.codriver.enabled,false);
   assert.ok(race.codriver.calls.every(c=>c.generated==='steering-recce-v3' && c.at>=0 && c.at<=stage.lengthM));
@@ -39,10 +40,10 @@ test('24 real-road races have GPS provenance and installed playable documents',(
 });
 test('three independent eight-race branches run right to left between shared endpoints',()=>{
  assert.equal(map.nodes.length,26);assert.equal(map.connections.length,27);
- assert.equal(worldMapSelectableNodes(worldMapNodes(map,null,null,{})).length,3);
+ assert.equal(worldMapSelectableNodes(worldMapNodes(map,null,null,{})).length,1);
  for(const branch of ['north','middle','south']){
   const stages=catalog.filter(s=>s.branch===branch);assert.equal(stages.length,8);
-  let previous=map.nodes.find(n=>n.id==='providence');const parameters={};
+  let previous=map.nodes.find(n=>n.id==='providence');const parameters={[raceCompletionKey(AMERICA_OPENING_RACE)]:true};
   for(const [i,stage] of stages.entries()){
    const node=map.nodes.find(n=>n.id===stage.id);assert.ok(node.x<previous.x);
    assert.equal(stage.stage,i+1);assert.equal(stage.difficulty,i+1);
@@ -53,7 +54,7 @@ test('three independent eight-race branches run right to left between shared end
   }
   assert.ok(map.connections.some(c=>c.from===previous.id&&c.to==='los-angeles'));
   const available=worldMapSelectableNodes(worldMapNodes(map,null,null,parameters));
-  assert.equal(available.length,10); // eight on this branch + two other starting races
+  assert.equal(available.length,11); // opening + eight on this branch + two other starting races
  }
 });
 test('saved menu matches campaign and direction controls follow westward progress',()=>{
@@ -61,7 +62,7 @@ test('saved menu matches campaign and direction controls follow westward progres
  const saved=normalizeMenuElement(menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.type==='world-map'));
  assert.deepEqual(saved.nodes,map.nodes);assert.deepEqual(saved.connections,map.connections);
  const north=catalog.filter(s=>s.branch==='north');
- const parameters={[raceCompletionKey(north[0].name)]:true};
+ const parameters={[raceCompletionKey(AMERICA_OPENING_RACE)]:true,[raceCompletionKey(north[0].name)]:true};
  const nodes=worldMapNodes(saved,null,null,parameters);
  assert.equal(worldMapDirectionalNode(nodes,north[0].name,'left',{x:0,y:0,w:960,h:500},saved).raceRef,north[1].name);
 });
@@ -73,7 +74,7 @@ test('dense map keeps endpoint labels and selection rings legible at phone and d
   const labels=[];const stack=[];
   const ctx=new Proxy({globalAlpha:1,save(){stack.push(this.globalAlpha);},restore(){this.globalAlpha=stack.pop();}},{get:(o,k)=>k in o?o[k]:()=>{}});
   drawWorldMap(ctx,b,map,null,{}, {},catalog[0].name,{drawText:(text,x,y,width)=>labels.push({text,x,y,width})});
-  for(const name of ['Providence','Los Angeles']){
+  for(const name of ['Los Angeles']){
    const label=labels.find(l=>l.text===name);assert.ok(label);
    assert.ok(label.x-label.width/2>=b.x&&label.x+label.width/2<=b.x+b.w);
   }

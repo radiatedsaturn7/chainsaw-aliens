@@ -12330,7 +12330,7 @@ test('Race d-pad separates steering diagonals from vertical gear shifts', () => 
 
   editor.handleRaceDpadPoint(dpad, { x: 86, y: 12 });
   assert.equal(editor.raceInput.gear, 1);
-  assert.equal(editor.raceInput.binarySteer, 1);
+  assert.ok(editor.raceInput.binarySteer > .8 && editor.raceInput.binarySteer < 1);
 
   editor.handleRaceDpadPoint(dpad, { x: 50, y: 8 });
   assert.equal(editor.raceInput.gear, 2);
@@ -19037,6 +19037,7 @@ test('Race Editor mobile playtest maps G, R, d-pad, and Select camera controls',
   editor.startPlaytest('starter-rwd');
   editor.playtestSession.countdownRemainingMs = 0;
   editor.playtestSession.launchLockMs = 0;
+  Object.assign(editor.playtestSession, {startupFramePending:false,startupPhase:'running',elapsedMs:3000,startBackDistance:0});
   editor.draw(ctx, 844, 390);
 
   const go = editor.buttons.find((button) => button.id === 'race-go');
@@ -19051,7 +19052,7 @@ test('Race Editor mobile playtest maps G, R, d-pad, and Select camera controls',
 
   editor.handlePointerDown({ id: 'g', x: go.bounds.x + go.bounds.w / 2, y: go.bounds.y + go.bounds.h / 2 });
   editor.handlePointerDown({ id: 'dpad', x: dpad.bounds.x + dpad.bounds.w * 0.9, y: dpad.bounds.y + dpad.bounds.h / 2 });
-  editor.updatePlaytest(0.25);
+  for(let frame=0;frame<15;frame++)editor.updatePlaytest(1/60);
   assert.equal(editor.playtestSession.steeringWheel > 0, true);
 
   editor.handleRaceDpadPoint(dpad.bounds, { x: dpad.bounds.x + dpad.bounds.w / 2, y: dpad.bounds.y + dpad.bounds.h * 0.1 });
@@ -19068,9 +19069,9 @@ test('Race Editor mobile playtest maps G, R, d-pad, and Select camera controls',
   editor.handlePointerDown({ id: 'r1', x: brake.bounds.x + brake.bounds.w / 2, y: brake.bounds.y + brake.bounds.h / 2 });
   editor.handlePointerUp({ id: 'r1', x: brake.bounds.x + brake.bounds.w / 2, y: brake.bounds.y + brake.bounds.h / 2 });
   editor.handlePointerDown({ id: 'r2', x: brake.bounds.x + brake.bounds.w / 2, y: brake.bounds.y + brake.bounds.h / 2 });
-  assert.equal(editor.raceInput.handbrakeHoldSequence, 1);
+  assert.equal(editor.raceInput.handbrakeHoldSequence, 0);
   editor.updatePlaytest(1 / 60);
-  assert.equal(editor.playtestSession.authoritativeHandbrakeActive, true);
+  assert.equal(editor.playtestSession.authoritativeHandbrakeActive, false);
 
   editor.handlePointerDown({ id: 'start', x: start.bounds.x + start.bounds.w / 2, y: start.bounds.y + start.bounds.h / 2 });
   assert.equal(editor.raceInput.paused, true);

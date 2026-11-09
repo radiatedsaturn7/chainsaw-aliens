@@ -18,6 +18,7 @@ for(const mode of ['keyboard','gamepad','touch'])test(`in-game tuner: ${mode} lo
    const point=await page.evaluate(pad=>{const g=window.__game,b=g.menuPlayer.surface.controls.buttons.find(b=>b.id===(pad==='jump'?'jump':'attack')),r=g.canvas.getBoundingClientRect();return {x:r.x+b.x*r.width/g.viewport.width,y:r.y+b.y*r.height/g.viewport.height};},pad);
    await page.mouse.click(point.x,point.y,{delay:80});
   }else await page.keyboard.press(key);
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
  };
  await press('ArrowDown','dpadDown');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.index)).toBe(4);
@@ -35,6 +36,7 @@ for(const mode of ['keyboard','gamepad','touch'])test(`in-game tuner: ${mode} lo
  await press('ArrowRight','dpadRight');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.draft)).toBe(32.5);
  await press('Escape','gamepadB');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.row.value)).toBe(32);
  await press('Enter','jump');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.mode)).toBe('edit');
  await page.keyboard.down('ArrowRight');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.tuner.draft)).toBeGreaterThan(40);await page.keyboard.up('ArrowRight');
  expect(await page.evaluate(()=>window.__game.menuPlayer.tuner.hitAreas.map(a=>a.kind))).toEqual(['slider']);
  const value=await page.evaluate(()=>window.__game.menuPlayer.tuner.draft);await page.screenshot({path:`test-results/tuning-${mode}-slider.png`});
@@ -73,6 +75,7 @@ for(const mode of ['keyboard','touch'])test(`setup packages: ${mode} shows packa
   g.player.credits=50000;g.deviceIsMobile=g.isMobile=mode==='touch';
   g.setViewport({width:innerWidth,height:innerHeight,scale:1,dpr:1,isMobile:g.isMobile});
   g.items=new ItemSystem(g,{load:async()=>({}),save:async()=>({ok:true})});g.menuProgress={};g.resolveRaceTravelCarAsync=async()=>({car,name:'Setup Car'});
+  const {saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');await saveProjectFileAndConfirm('cars','Setup Car',car);
   const doc=createMenuDocument();doc.parameters.carRef='Setup Car';g.menuPlayer.settings.load=async()=>{};
   await g.menuPlayer.open(doc,{preview:true,screenId:'upgrades'});g.menuPlayer.resources.stockCar=()=>car;
  },mode);

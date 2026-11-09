@@ -23,29 +23,30 @@ export function prepareMenuScreen(resources,document,screen,parameters,{bounds={
     }
     const art=ref=>resources.request(`art:${ref}`,()=>resources.prepareArt(ref));
     const visualLoads=[...refs].filter(Boolean).map(art);
-    const carRefs=new Set();
+    const carRefs=new Set(),liveCarRefs=new Set();
+    const screenCar=ref=>liveCarRefs.has(ref)?resources.car(ref):resources.stockCar(ref);
     if(elements.some(e=>e.type==='car-showroom')){
       // Enumeration must never issue synchronous XHR while drawing the fade.
       await Promise.all(listProjectFiles('cars',{includeSystem:true}).map(entry=>resources.request(`car:${entry.name}`,async()=>{
         if(!loadProjectFile('cars',entry.name,{allowSyncFetch:false}))await hydrateProjectFilePayload('cars',entry.name);
       })));
-      for(const choice of resources.choices('cars',document,parameters))carRefs.add(choice.value);
+      for(const choice of resources.choices('cars',document,parameters)){carRefs.add(choice.value);liveCarRefs.add(choice.value);}
     }
     for(const e of elements)if(e.type.startsWith('car-')||(['property-display','asset-preview'].includes(e.type)&&e.dataSource==='cars')){
-      const ref=e.assetRef||parameters[e.binding];if(typeof ref==='string'&&ref)carRefs.add(ref);
+      const ref=e.assetRef||parameters[e.binding];if(typeof ref==='string'&&ref){carRefs.add(ref);if(e.property!=='stock')liveCarRefs.add(ref);}
     }
     await Promise.all(visualLoads);
     const missing=[...refs].filter(ref=>ref&&resources.errors.has(`art:${ref}`));
     if(missing.length)throw Error(`Artwork unavailable: ${missing.join(', ')}`);
     // Fetch the page together rather than serializing four cars' requests.
-    for(const ref of carRefs)resources.car(ref);
+    for(const ref of carRefs)screenCar(ref);
     await Promise.all([...resources.pending.values()]);
-    for(const ref of carRefs)resources.car(ref);
+    for(const ref of carRefs)screenCar(ref);
     await Promise.all([...resources.pending.values()]);
     const preparedRefs=new Set();
     for(const ref of carRefs){
       if(!isCurrent())return;
-      const readyCar=resources.car(ref);if(!readyCar)continue;
+      const readyCar=screenCar(ref);if(!readyCar)continue;
       for(const artRef of resources.exteriorArtRefs(readyCar)){
         if(!isCurrent())return;
         if(preparedRefs.has(artRef))continue;preparedRefs.add(artRef);

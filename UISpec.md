@@ -985,3 +985,14 @@ Save-menu Clear, Copy and Back share the left label column with CAR A/B/C.
 Racing pause Settings includes Full Screen (toggle browser fullscreen). The main racing pause menu includes Reset Position, sharing Select-hold route-center recovery and resuming the same attempt without resetting race time. Recovery is unavailable during countdown or an already pending reset.
 
 Campaign saves retain raceDrivingLine, racePaceMode (Off/Voice/Icons/Both), and raceTransmission. Changing a racing preference saves all three to the active slot; subsequent races apply them without replacing route-authored calls. Editor previews do not write preferences. Pace calls become eligible at 100 m or closer regardless of speed, speak a fixed distance without “meters/metres,” and announce each marker only once per lap. Nearby eligible notes can be delivered together; all their icons remain visible until their individual markers are passed. Driving-line preview still looks farther ahead independently.
+
+### Handling audit — 2026-11-08
+- The racing touch D-pad retains its centre dead zone and vertical gear shifts. Horizontal position scales steering progressively from zero to full lock at the outer pad; physical gamepad and keyboard mappings are unchanged.
+- Roll assistance acts about the car's longitudinal axis, including on slopes and after spinouts. Simulation mode and disabled stability control retain their existing exclusions.
+- Tire surface-grip values multiply the actual ground coefficient and the Track State change from that ground baseline once. Matching rally tires to dirt or snow tires to snow must not cancel the ground's lower grip.
+- Imported road driving sections default to 2.5 m regardless of route length. Explicit authored spacing still takes precedence; surrounding terrain survey resolution remains independent.
+
+### Braking stability — 2026-11-08
+- Repeated touch or keyboard service-brake presses remain service braking; they no longer trigger a hidden timed handbrake. Dedicated gamepad handbrake input retains its behavior.
+- Stability-control wheel selection must produce yaw in the direction of the requested correction, including countersteer. Its target turn rate is bounded by supported tire force divided by vehicle mass and speed, so saturated turns do not request impossible extra rotation.
+- RTG-001 and the built-in WRX baseline use 70% front brake balance, calibrated against stock-tire corner-braking tests. This is game tuning, not a claimed factory hydraulic ratio; player-authored tuning remains authoritative.

@@ -285,7 +285,7 @@ test('authoritative powertrain follows the torque curve and physically modulates
     stateOverrides: { angularVelocityWorld: { y: 0 }, bodyLateralSpeedMps: 0 }
   });
   assert.equal(understeer.telemetry.stabilityClassification, 'understeer');
-  assert.ok(['rl', 'fl'].includes(understeer.telemetry.stabilityBrakeWheelId));
+  assert.ok(['rr', 'fr'].includes(understeer.telemetry.stabilityBrakeWheelId));
 
   const stabilityWithAbsAndDamage = run({
     previous: peak.state,
@@ -294,7 +294,7 @@ test('authoritative powertrain follows the torque curve and physically modulates
     damage: { brakes: { fl: 50 } },
     stateOverrides: { angularVelocityWorld: { y: 1 } }
   });
-  assert.equal(stabilityWithAbsAndDamage.telemetry.stabilityBrakeWheelId, 'fr');
+  assert.equal(stabilityWithAbsAndDamage.telemetry.stabilityBrakeWheelId, 'fl');
   assert.equal(stabilityWithAbsAndDamage.telemetry.stabilityClassification, 'oversteer');
   assert.ok(stabilityWithAbsAndDamage.telemetry.requestedStabilityBrakeTorqueNm > 0);
   assert.ok(stabilityWithAbsAndDamage.telemetry.stabilityBrakeTorqueNm
@@ -375,7 +375,7 @@ test('tires and brakes produce no ground force without wheel load', () => {
   assert.ok(Object.values(braking.absInterventionByWheel).every((value) => value > 0));
 });
 
-test('legacy brakeBalance and the WRX authored 0.56 bias reach exact wheel torque', () => {
+test('legacy brakeBalance and the WRX authored 0.70 bias reach exact wheel torque', () => {
   const brakes = new BrakeModel();
   const result = brakes.calculate({
     tuning: { ...WRX_2022_SHARED_TUNING, brakeForceN: 10000, absEnabled: false },
@@ -383,12 +383,12 @@ test('legacy brakeBalance and the WRX authored 0.56 bias reach exact wheel torqu
     limitByWheel: { fl: 10000, fr: 10000, rl: 10000, rr: 10000 },
     speedMps: 20
   });
-  assert.ok(Math.abs(result.requestedByWheel.fl - 2800) < 1e-9);
-  assert.ok(Math.abs(result.requestedByWheel.fr - 2800) < 1e-9);
-  assert.ok(Math.abs(result.requestedByWheel.rl - 2200) < 1e-9);
-  assert.ok(Math.abs(result.requestedByWheel.rr - 2200) < 1e-9);
+  assert.ok(Math.abs(result.requestedByWheel.fl - 3500) < 1e-9);
+  assert.ok(Math.abs(result.requestedByWheel.fr - 3500) < 1e-9);
+  assert.ok(Math.abs(result.requestedByWheel.rl - 1500) < 1e-9);
+  assert.ok(Math.abs(result.requestedByWheel.rr - 1500) < 1e-9);
   assert.ok(Math.abs(
-    (result.requestedByWheel.fl + result.requestedByWheel.fr) / result.requested - 0.56
+    (result.requestedByWheel.fl + result.requestedByWheel.fr) / result.requested - 0.70
   ) < 1e-12);
 });
 

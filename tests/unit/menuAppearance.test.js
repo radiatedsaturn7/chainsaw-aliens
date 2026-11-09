@@ -72,17 +72,17 @@ test('splash cursor sits immediately left of its centered label at wide and port
  for(const bounds of [{x:0,y:0,w:960,h:540},{x:0,y:0,w:390,h:220}]){
   const labels=[],ctx=new Proxy({measureText:()=>({width:80}),fillText(text,x,y){labels.push({text,x,y});}},{get:(o,k)=>k in o?o[k]:(()=>{})});
   drawMenuScreen(ctx,bounds,doc,screen,{}, {focus:'start'});
-  const label=labels.find(l=>l.text==='Game Start'),cursor=labels.find(l=>l.text==='>');
+  const label=labels.find(l=>l.text==='Start'),cursor=labels.find(l=>l.text==='>');
   assert.ok(label.x-40-cursor.x>=8);assert.ok(label.x-40-cursor.x<30);assert.equal(cursor.y,label.y);
  }
 });
 
 test('splash controls move up and transparent backgrounds omit control fills while preserving labels and cursor',()=>{
  const doc=createMenuDocument(),screen=doc.screens[0],start=screen.elements.find(e=>e.id==='start');
- assert.equal(start.y,.52);assert.equal(start.transparentBackground,true);assert.equal(screen.elements.find(e=>e.id==='settings').y,.67);
+ assert.equal(start.y,.56);assert.equal(start.transparentBackground,true);assert.equal(screen.elements.find(e=>e.id==='settings').y,.7);
  const fills=[],texts=[],ctx=new Proxy({fillRect:(...r)=>fills.push(r),fillText:t=>texts.push(t),measureText:()=>({width:80})},{get:(o,k)=>k in o?o[k]:(()=>{})});
  drawMenuScreen(ctx,{x:0,y:0,w:960,h:540},doc,screen,{}, {focus:'start'});
- assert.equal(fills.length,1,'only the screen background is painted');assert.ok(texts.includes('Game Start'));assert.ok(texts.includes('>'));
+ assert.equal(fills.length,1,'only the screen background is painted');assert.ok(texts.includes('Start'));assert.ok(texts.includes('>'));
  assert.equal(normalizeMenuDocument(JSON.parse(JSON.stringify(doc))).screens[0].elements.find(e=>e.id==='start').transparentBackground,true);
 });
 
@@ -162,7 +162,7 @@ test('garage grids draw assigned panel artwork beneath their labels',async()=>{
  drawGarageTuner(ctx,b,null,'system-ui',element,resources);
  assert.equal(calls.filter(c=>c[0]==='drawImage'&&c[1]===panel).length,8);
  calls.length=0;drawUpgradeGrid(ctx,b,element,resources,{});
- assert.equal(calls.filter(c=>c[0]==='drawImage'&&c[1]===panel).length,1);
+ assert.equal(calls.filter(c=>c[0]==='drawImage'&&c[1]===panel).length,2);
  assert.ok(calls.findIndex(c=>c[0]==='drawImage')<calls.findIndex(c=>c[0]==='fillText'&&c[1]==='Engine'));
 });
 

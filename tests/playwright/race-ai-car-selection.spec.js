@@ -11,7 +11,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} car catego
   if(!item||item.disabled)throw Error('Category menu unavailable');item.onSelect();
  },mobile);
  const category=page.getByRole('dialog');await expect(category).toBeVisible();
- await expect(category).toContainText('Suspension:');await expect(category).toContainText('A: 800–1000 PP');
+ await expect(category).toContainText('Suspension:');await expect(category).toContainText('A: 801–900');await expect(category).toContainText('S: 901–1000 PI');
  await category.getByLabel('Vehicle category',{exact:true}).selectOption('suv');
  await category.getByRole('button',{name:'Apply',exact:true}).click();
  expect(await page.evaluate(()=>{const e=window.__game.carEditor;return e.normalizeLoadedCarDocument(e.serializeSelectedCarDocument()).category})).toBe('suv');

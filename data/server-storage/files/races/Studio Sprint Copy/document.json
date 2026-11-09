@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1792343751554,
+  "savedAt": 1794194669984,
   "selectedRaceId": "test-loop",
   "race": {
     "id": "test-loop",
@@ -49,7 +49,7 @@
       "shoulderWidthM": 12,
       "collisionMode": "shoulder",
       "artRef": "apron",
-      "marginMode": "on",
+      "marginMode": "hidden",
       "shoulderMode": "hidden",
       "collisionEdge": "shoulder",
       "collisionEffect": "reset"
@@ -169,6 +169,10 @@
           "hazardIds": []
         }
       ]
+    },
+    "snowClouds": {
+      "enabled": true,
+      "artRef": "snowcloud"
     }
   }
 }

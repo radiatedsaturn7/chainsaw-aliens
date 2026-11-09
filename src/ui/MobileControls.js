@@ -198,6 +198,7 @@ export default class MobileControls {
       if (hit) {
         if (button.pulse) {
           this.pulseAction(button.action);
+          this.pointerButtonMap.set(id, button.action);
           return true;
         }
         this.buttonStates.set(button.action, true);
@@ -370,6 +371,8 @@ export default class MobileControls {
   pulseAction(action) {
     this.pulseActions.add(action);
   }
+
+  isHeld(action) { return [...this.pointerButtonMap.values()].includes(action); }
 
   getActions(state, facing = 1) {
     this.facing = facing;

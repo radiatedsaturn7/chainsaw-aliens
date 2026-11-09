@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1783855400000,
+  "savedAt": 1794194669087,
   "selectedRaceId": "ouninpohja",
   "race": {
     "id": "ouninpohja",
@@ -657,7 +657,7 @@
       "shoulderWidthM": 12,
       "collisionMode": "shoulder",
       "artRef": "apron",
-      "marginMode": "on",
+      "marginMode": "hidden",
       "shoulderMode": "hidden",
       "collisionEdge": "shoulder",
       "collisionEffect": "reset"
@@ -672,6 +672,10 @@
       "terrainBudgetEnabled": true,
       "farRoadDecimationEnabled": true,
       "rawTerrainPolygonsEnabled": false
+    },
+    "snowClouds": {
+      "enabled": true,
+      "artRef": "snowcloud"
     }
   }
 }

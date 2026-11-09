@@ -1,3 +1,4 @@
+import {captureRaceHandling, captureRaceHandlingSetup} from './RaceHandlingCapture.js';
 import {createTrackEventQueueProbe} from './TrackEventQueueProbe.js';
 import {getRaceRecoveryHistoryDiagnostics} from './RaceRecoveryHistory.js';
 import {attachDetailedPerformance} from './RaceDetailedPerformance.js';
@@ -168,6 +169,11 @@ export class RacePerformanceCapture {
   const finishStarted=this.now();
   const e=this.editor,s=e.playtestSession||{},stats=e.lastRaceRenderStats||{},row=this.current;
   row.context={elapsedMs:s.elapsedMs,countdownMs:s.countdownRemainingMs,intro:s.raceIntro?.active===true,aiCars:s.aiRuntime?.length||0,submittedCarSprites:stats.threeCarDepthSpriteCount||0,camera:e.raceInput?.cameraView||s.cameraView,viewport:e.lastRaceRenderCamera?.bounds?{...e.lastRaceRenderCamera.bounds}:null,cameraYaw:e.lastRaceRenderCamera?.cameraYaw,position:{x:s.worldX,z:s.worldZ},weather:s.debugEnvironment?.weather||e.selectedRace?.weather,intensity:s.debugEnvironment?.weatherIntensity??e.selectedRace?.weatherIntensity,workerPhysics:!!e.vehicleDynamicsAuthority?.workerBridge,paused:e.raceInput?.paused===true};
+  if(this.detailed && (this.lastHandlingSampleMs == null || row.atMs-this.lastHandlingSampleMs >= 100)) {
+   this.metadata.handlingSetup ||= captureRaceHandlingSetup(e);
+   row.handling = captureRaceHandling(e);
+   this.lastHandlingSampleMs = row.atMs;
+  }
   row.context.frameBudget = s.frameBudget ? { ...s.frameBudget.stats,
     debtSeconds: s.frameSimulationClock?.debtSeconds || 0,
     discardedSeconds: s.frameSimulationClock?.discardedSeconds || 0,

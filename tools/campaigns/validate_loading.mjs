@@ -6,6 +6,7 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 const catalog=JSON.parse(fs.readFileSync(new URL('../../data/campaigns/america/catalog.json',import.meta.url)));
+catalog.unshift({id:'america-opening-tower-hill',name:'Tower Hill Road'});
 const id=process.argv.find(a=>a.startsWith('--stage='))?.slice(8);
 if(id){
  const stage=catalog.find(s=>s.id===id);assert.ok(stage,`Unknown stage ${id}`);

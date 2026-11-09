@@ -4,13 +4,14 @@ import {garageCarPerformance} from '../garage/GarageAutoUpgrade.js';
 export function drawCarComponent(ctx,b,e,car,resources,time,parameters,fontFamily='system-ui'){
   const drawText=(...args)=>drawMenuText(ctx,e,...args);
   if(!car){drawText('Choose a car',b.x+b.w/2,b.y+b.h/2,b.w-10);return;}
-  const renderer=resources.game.carEditor,tuning=resources.tuning(car);
+  const renderer=resources.game.carEditor;
   if(e.type==='car-preview'){
     ctx.save();const yaw=e.angleBinding?Number(parameters[e.angleBinding]??e.angle)*Math.PI/180:e.animation==='spin'?(e.loop?time/e.duration:Math.min(1,time/e.duration))*Math.PI*2:e.angle*Math.PI/180;
     const choice=renderer.getRaceCarProjectedArtRef(car,0,yaw);
     if(car.art?.bodyModel?.ref||!choice.artRef){resources.carPreview.draw(ctx,b,car,yaw+Math.PI,time);ctx.restore();return;}
     resources.carPreview.drawSprite(ctx,b,car,choice);ctx.restore();return;
   }
+  const tuning=resources.tuning(car);
   if(e.type==='car-stats'){
     const performance=garageCarPerformance(car,tuning);const lines=[car.name||'Car',`${Math.round(tuning.powerHp||0)} HP · ${Math.round(Number(tuning.torqueLbFt||0)*1.355817948)} Nm`,`${Math.round(tuning.weightKg||0)} kg · ${tuning.drivetrain||car.tuning?.drivetrain||''}`,`Class ${performance.class} · ${performance.points} PI`];
     lines.forEach((line,i)=>drawText(line,b.x+b.w/2,b.y+(i+0.5)*b.h/lines.length,b.w-10));return;

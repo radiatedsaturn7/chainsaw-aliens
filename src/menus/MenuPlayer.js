@@ -167,6 +167,8 @@ export default class MenuPlayer {
     const car=snapshot.progress.selectedGameCar;
     if(car)flow.lockCar(car);else flow.newGameSelection=true;
     this.refreshSaveButtons();
+    // A slot with no chosen car is still an unfinished new game.
+    flow.pendingOpeningRace=!car?flow.document.parameters.campaignOpeningRace||'':'';
     flow.goTo(car?'world-map':target,{remember:!car});
   }
   restorePreview(){const snapshot=this.previewSnapshot;if(!snapshot)return;this.previewSnapshot=null;if(snapshot.worldData)this.game.applyWorldData(snapshot.worldData);for(const key of ['menuParameters','storyData','gameMode','playtestActive','simulationActive'])this.game[key]=snapshot[key];this.game.raceEditorPlaytestReturn=false;this.game.raceTravelSession=null;}
@@ -298,11 +300,19 @@ export default class MenuPlayer {
       const index=Math.max(0,choices.findIndex(c=>c.value===this.flow.parameters[element.binding]));
       if(!choices.some(c=>c.value===this.flow.parameters[element.binding]))this.flow.setParameter(element.binding,choices[index].value);
       if(choose){
-        const flow=this.flow,ref=flow.parameters[element.binding];flow.busy=true;
+        const flow=this.flow,ref=flow.parameters[element.binding],openingRace=flow.pendingOpeningRace;flow.busy=true;
         try{
+          if(openingRace)flow.setParameter('raceRef',openingRace);
           const committed=this.preview?ref:await commitMenuCar(this.game,ref,{newGame:flow.newGameSelection});
           if(!flow.active||this.flow!==flow)return;
           flow.lockCar(committed);
+          if(openingRace){
+            await this.game.campaignSaves.save();
+            if(!flow.active||this.flow!==flow)return;
+            await this.launchRace(openingRace,{...flow.parameters,carRef:committed});
+            flow.pendingOpeningRace='';
+            return;
+          }
         }catch(error){flow.error=error.message;return;}
         finally{flow.busy=false;}
         return flow.run(element.action);
@@ -360,6 +370,11 @@ export default class MenuPlayer {
     if(this.preview&&(input?.wasGamepadPressed?.('gamepadSelect')||touch('nextWeapon'))){flow.stop();return;}
     if(this.preview&&pressed('KeyP'))this.togglePause();
     if(this.paused){if(pressed('Escape')||pad('cancel'))flow.stop();return;}
+    if(this.cutscene.active){
+      this.cutscene.handleInput(input,dt,{skipHeld:this.surface.controls.isHeld('jump'),confirmPressed:pressed('KeyG')||pad('jump')});
+      this.cutscene.update(dt);return;
+    }
+    if(this.raceFinishCutscene||this.raceIntroCutscene)return;
     flow.update(dt);
     if(this.screenTransition.active||this.pendingScreenEntry||this.movie||this.cutscene.active||flow.busy)this.tuner?.stopRev();
     if(this.screenTransition.active){
@@ -375,7 +390,6 @@ export default class MenuPlayer {
       this.tuner.update({held:directions,confirmHeld:Boolean(input?.isDownCode?.('Enter')||input?.isDownCode?.('Space')||input?.isGamepadDown?.('jump')||touchHeld.jump),confirm:pressed('Enter')||pressed('Space')||pad('jump'),cancel:pressed('Escape')||pad('cancel')},dt);return;
     }
     if(pressed('Escape')||pad('cancel')){if(flow.busy){flow.stop();return;}if(!this.backGarageWidget())flow.back();return;}
-    if(this.cutscene.active){this.cutscene.update(dt);if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump')){if(this.cutscene.waitingPauseClipId)this.cutscene.waitingPauseClipId=null;else this.cutscene.stop();}return;}
     if(this.movie){if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump'))void this.resumeMovie();return;}
     if(flow.busy)return;
     for(const element of flow.screen.elements.filter(e=>e.type==='car-showroom')){
@@ -413,6 +427,11 @@ export default class MenuPlayer {
   }
   draw(ctx,width,height){
     this.viewportBounds={x:0,y:0,w:width,h:height};const handheld=this.surface.layout(width,height);this.bounds=fitMenuCanvas(handheld?.screen||this.viewportBounds);if(!this.flow)return;ctx.fillStyle='#060b10';ctx.fillRect(0,0,width,height);this.surface.draw(ctx);
+    if(this.raceFinishCutscene||this.raceIntroCutscene){
+      const b=this.bounds;ctx.fillStyle='#000';ctx.fillRect(b.x,b.y,b.w,b.h);
+      if(this.cutscene.active){ctx.save();ctx.translate(b.x,b.y);this.cutscene.draw(ctx,b.w,b.h);ctx.restore();}
+      drawDisplayModeInBounds(this.game,ctx,b);return;
+    }
     if(!this.pendingScreenEntry){
     for(const e of this.flow.screen.elements.filter(e=>e.type==='garage-dialogue'))this.widgetStates.set(e.id,{text:this.garageDialogue.text(this.dialogueContext())});
     if(this.tunerModal)drawGarageTuner(ctx,this.bounds,this.tuner,this.resources.font(this.flow.document.defaultFont),{},this.resources);
@@ -436,12 +455,14 @@ export default class MenuPlayer {
   }
   hitElement(point,includeDisabled=false){return menuPaintOrder(this.flow.screen.elements).reverse().find(e=>{if(!menuElementVisible(e,this.flow.screen.elements)||(!includeDisabled&&e.disabled)||!menuElementInteractive(e))return false;const pose=menuElementPose(e,this.flow.time),b=menuElementBounds(e,this.bounds,pose),dx=point.x-(b.x+b.w/2),dy=point.y-(b.y+b.h/2),a=-pose.rotation*Math.PI/180;return menuHit({x:(dx*Math.cos(a)-dy*Math.sin(a))/pose.scale+b.x+b.w/2,y:(dx*Math.sin(a)+dy*Math.cos(a))/pose.scale+b.y+b.h/2},b)})}
   handlePointerDown(point){
+    if(this.cutscene.active||this.raceFinishCutscene||this.raceIntroCutscene){
+      this.surface.down(point);return;
+    }
     if(!this.flow||!this.bounds)return;if(this.preview&&this.playPauseBounds&&menuHit(point,this.playPauseBounds)){this.flow.stop();return;}if(this.preview&&point.x>=(this.viewportBounds?.w||this.bounds.w)-130&&point.y<36){this.flow.stop();return;}
     if(this.screenTransition.active||this.pendingScreenEntry)return;
     if(!menuHit(point,this.bounds)&&this.surface.down(point))return;
     if(this.paused)return;
     if(this.choicePopup){const row=this.choiceRows?.find(row=>menuHit(point,row));if(row){if(row.page){this.choicePopup.index=Math.max(0,Math.min(this.choicePopup.choices.length-1,this.choicePopup.index+row.page));}else this.choosePopupItem(row.index);}else this.choicePopup=null;return;}
-    if(this.cutscene.active){if(this.cutscene.waitingPauseClipId)this.cutscene.waitingPauseClipId=null;else this.cutscene.stop();return;}
     if(this.movie){void this.resumeMovie();return;}if(this.flow.busy||!menuHit(point,this.bounds))return;
     for(const video of this.videos.values())if(video.paused)void video.play().catch(()=>{});
     if(this.tuner){this.tuner.pointerDown(point);return;}
@@ -492,11 +513,11 @@ this.flow.setParameter(popup.element.binding,popup.choices[index].value);this.ch
   }
   handlePointerMove(point){if(this.screenTransition.active||this.pendingScreenEntry)return;this.surface.move(point);if(!this.paused&&!this.flow?.busy&&this.bounds&&(!point.buttons)&&(point.pointerType==='mouse'||point.buttons===0))this.hoverGarage(point);if(this.tuner){this.tuner.pointerMove(point);return;}if(!this.slider||!this.bounds)return;if(this.slider.id!==undefined&&point.id!==undefined&&point.id!==this.slider.id)return;const e=this.slider.element,b=menuElementBounds(e,this.bounds,menuElementPose(e,this.flow.time));if(!e.binding)return;const fraction=Math.max(0,Math.min(1,(point.x-b.x)/b.w)),value=e.min+Math.round(fraction*(e.max-e.min)/e.step)*e.step;this.flow.setParameter(e.binding,Math.min(e.max,value));}
   handlePointerUp(point={}){this.surface.up(point);this.tuner?.pointerUp();const action=this.slider?.element.action;this.slider=null;if(action)void this.flow.run(action);}
-  async playMovie(ref){
+  async playMovie(ref,{restoreScreen=true}={}){
     this.cleanupScreen();const flow=this.flow,generation=flow.generation;
     if(/^(https?:|\/|data:video\/|blob:)/i.test(ref)){
       const video=document.createElement('video');video.src=ref;video.playsInline=true;video.volume=musicMediaVolume(this.game.audio);this.movie=video;
-      return new Promise((resolve,reject)=>{this.resolveMovie=resolve;this.rejectMovie=reject;video.onended=()=>{video.pause();video.removeAttribute('src');video.load();this.movie=null;this.resolveMovie=null;this.rejectMovie=null;this.message='';if(flow.active&&generation===flow.generation)this.enterScreen();resolve()};video.onerror=()=>{this.movie=null;this.rejectMovie=null;reject(Error(`Movie could not load: ${ref}`))};void this.resumeMovie();});
+      return new Promise((resolve,reject)=>{this.resolveMovie=resolve;this.rejectMovie=reject;video.onended=()=>{video.pause();video.removeAttribute('src');video.load();this.movie=null;this.resolveMovie=null;this.rejectMovie=null;this.message='';if(restoreScreen&&flow.active&&generation===flow.generation)this.enterScreen();resolve()};video.onerror=()=>{this.movie=null;this.rejectMovie=null;reject(Error(`Movie could not load: ${ref}`))};void this.resumeMovie();});
     }
     const payload=await hydrateProjectFilePayload('cutscenes',ref);if(!flow.active||flow.generation!==generation)return;if(!payload?.data)throw Error(`Movie not found: ${ref}`);
     const assets=payload.data.assets||[],references=new Map();
@@ -506,13 +527,20 @@ this.flow.setParameter(popup.element.binding,popup.choices[index].value);this.ch
     const failure=loads.find(result=>result.status==='rejected');if(failure)throw failure.reason;
     await this.game.prepareCutsceneAudioResources?.(payload.data);
     if(!flow.active||flow.generation!==generation)return;
-    return new Promise((resolve,reject)=>{this.rejectMovie=reject;this.cutscene.play(payload.data,{onDone:()=>{this.rejectMovie=null;if(flow.active&&generation===flow.generation)this.enterScreen();resolve()},skippable:true})});
+    return new Promise((resolve,reject)=>{this.rejectMovie=reject;this.cutscene.play(payload.data,{onDone:()=>{this.rejectMovie=null;if(restoreScreen&&flow.active&&generation===flow.generation)this.enterScreen();resolve()},skippable:true})});
   }
   async resumeMovie(){try{await this.movie?.play();this.message=''}catch{this.message='Tap / press Space to play movie'}}
   async launchRace(ref,parameters){
+    const flow=this.flow;
     if(this.preview)this.game.playtestActive=true;
-    this.cleanupScreen({keepMusic:true});this.game.menuParameters=structuredClone(parameters);
-    const ok=await this.game.startRaceTravel({raceName:ref,carSelection:parameters.carRef?'specific':'choose',carRef:parameters.carRef,menuConfiguration:parameters,menuFlow:this.flow,garage:this.resources.garage});if(!ok)throw Error(this.game.lastRaceTravelError||`Could not start race: ${ref}`);
+    this.raceIntroCutscene=true;
+    this.cleanupScreen();this.game.menuParameters=structuredClone(parameters);
+    try{
+      const ok=await this.game.startRaceTravel({raceName:ref,carSelection:parameters.carRef?'specific':'choose',carRef:parameters.carRef,menuConfiguration:parameters,menuFlow:flow,garage:this.resources.garage});
+      if(!ok)throw Error(this.game.lastRaceTravelError||`Could not start race: ${ref}`);
+    }finally{
+      this.raceIntroCutscene=false;
+    }
   }
   async launchLevel(ref,parameters){
     const flow=this.flow,generation=flow.generation;

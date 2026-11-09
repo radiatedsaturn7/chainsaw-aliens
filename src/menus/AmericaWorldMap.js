@@ -1,9 +1,10 @@
 import {raceCompletionKey} from './MenuWorldMap.js';
 
 // Ordered from east to west. Each branch has eight playable stages;
-// Providence and LA are shared junctions, not extra races.
+// Tower Hill is the playable opening junction; LA is the shared finish.
+export const AMERICA_OPENING_RACE = 'Tower Hill Road';
 export function createAmericaWorldMap(catalog) {
- const nodes=[{id:'providence',kind:'junction',label:'Providence',x:.97,y:.5},
+ const nodes=[{id:'providence',kind:'race',label:AMERICA_OPENING_RACE,raceRef:AMERICA_OPENING_RACE,completedParameter:raceCompletionKey(AMERICA_OPENING_RACE),x:.97,y:.5},
   {id:'los-angeles',kind:'junction',label:'Los Angeles',x:.03,y:.5}];
  const connections=[];
  const colors=['#7dd9ed','#efc36b','#f59987'];
@@ -13,7 +14,7 @@ export function createAmericaWorldMap(catalog) {
   for(const [i,stage] of stages.entries()){
    nodes.push({id:stage.id,kind:'race',label:stage.name,raceRef:stage.name,
     x:.86-i*(.72/7),y:[.15,.5,.85][row],
-    unlockParameter:i?raceCompletionKey(stages[i-1].name):'',unlockValue:true,
+    unlockParameter:raceCompletionKey(i?stages[i-1].name:AMERICA_OPENING_RACE),unlockValue:true,
     completedParameter:raceCompletionKey(stage.name)});
    connections.push({id:`${branch}-${i}`,from:previous,to:stage.id,color:colors[row],width:3});
    previous=stage.id;

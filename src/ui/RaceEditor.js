@@ -1,3 +1,7 @@
+import {normalizeSnowClouds,syncSnowClouds,disposeSnowClouds} from '../racing/RaceSnowClouds.js';
+import {editSnowClouds} from './RaceSnowCloudEditor.js';
+import {normalizeCarSmoke,carSmokeArtRef,carSmokeArtRefs,smokeAnimationFrame} from '../racing/CarSmoke.js';
+import {editCarSmoke} from './CarSmokeEditor.js';
 import {setMenuProgress} from '../menus/MenuProgress.js';
 import {raceCompletionKey} from '../menus/MenuWorldMap.js';
 import {getRaceTerrainBounds} from '../racing/RaceTerrainBounds.js';
@@ -660,6 +664,7 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'car-clear-body-model',
   'car-clear-wheel-model',
   'car-import-graphic',
+  'car-smoke',
   'car-indicators',
   'car-art-settings',
   'car-art-exterior',
@@ -744,6 +749,7 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'delete-trigger',
   'race-radio',
   'race-music',
+  'race-cutscenes',
   'race-countdown',
   'race-auto-extend',
   'race-driving-guide',
@@ -1125,8 +1131,6 @@ export default class RaceEditor {
       activeBrakePointerId: null,
       activeSelectPointerId: null,
       throttlePulseMs: 0,
-      lastBrakeTapMs: 0,
-      hasBrakeTap: false,
       gamepadSelectHoldActive: false,
       gamepadSelectHoldMs: 0,
       gamepadSelectHoldTriggered: false
@@ -1139,6 +1143,7 @@ export default class RaceEditor {
 
   update(input, dt) {
     if (this.playtestSession?.finishing) return;
+    if (this.playtestSession?.finishFade) { this.updatePlaytest(dt); return; }
     if (this.raceImageImportOpen) return;
     this.syncRacePhysicalGamepad();
     this.previewOffset = (this.previewOffset + dt * 60) % 240;
@@ -1506,8 +1511,6 @@ export default class RaceEditor {
     this.raceInput.handbrake = false;
     this.raceInput.handbrakeHoldSequence = 0;
     this.raceInput.inputClockMs = 0;
-    this.raceInput.lastBrakeTapMs = 0;
-    this.raceInput.hasBrakeTap = false;
     this.raceInput.rawThrottleAxis = 0;
     this.raceInput.rawBrakeAxis = 0;
     this.raceInput.throttleAxis = 0;
@@ -1776,6 +1779,11 @@ export default class RaceEditor {
     if (!clean) return null;
     const payload = await hydrateRaceArtSpriteShared(clean);
     if (payload) {
+      const data = payload.data || payload;
+      const {frames, source} = getArtDocumentFrames(data);
+      const document = source || data;
+      this.raceSmokeFrameDurations ||= new Map();
+      this.raceSmokeFrameDurations.set(clean, frames.map((frame,index)=>Math.max(1,Number(frame?.durationMs || document.editor?.frames?.[index]?.durationMs) || 1000/(Number(document.fps)||10))));
       this.raceArtSpriteCache.clear();
       this.raceArtTextureCache.clear();
       this.raceArtTextureMipCache.clear();
@@ -2890,6 +2898,7 @@ export default class RaceEditor {
   openRaceWeatherDialog() {
     this.raceSettingsDialog = 'weather';
     this.raceSettingsDialogDraft = {
+      snowClouds: normalizeSnowClouds(this.selectedRace?.snowClouds),
       weather: String(this.selectedRace?.weather || 'clear'),
       intensity: this.getRaceWeatherAuthoringIntensity(),
       weatherVisibilityM:this.selectedRace?.weatherVisibilityM||0,
@@ -3129,6 +3138,7 @@ export default class RaceEditor {
       this.setRaceSunSettings(draft);
     } else if (accept && dialog === 'weather') {
       this.captureRaceHistory('Race weather');
+      this.selectedRace.snowClouds = normalizeSnowClouds(draft.snowClouds);
       Object.assign(this.selectedRace,{weatherVisibilityM:clamp(Number(draft.weatherVisibilityM)||0,0,10000),weatherTemperatureC:clamp(Number(draft.weatherTemperatureC),-80,60)});
       this.setRaceWeather(draft.weather);
       if (this.selectedRace) this.selectedRace.weatherIntensity = draft.weather === 'clear' ? 0 : clamp(Number(draft.intensity) || 0.75, 0.05, 1);
@@ -7212,6 +7222,7 @@ export default class RaceEditor {
       'race-fuel': 'Starting fuel',
       'car-mechanics': 'Mechanical systems',
       'race-radio': `Radio: ${this.selectedRace?.radioEnabled !== false ? 'On' : 'Off'}`,
+      'race-cutscenes': 'Cutscenes',
       'race-music': `Music: ${this.getRaceStartSettings().musicTrackId || 'None'}`,
       'race-driving-guide': `Driving line: ${this.selectedRace?.drivingGuide?.line !== false ? 'On' : 'Off'}`,
       'race-pace-notes': `Pace notes: ${racePaceNoteModeLabel(this.selectedRace)}`,
@@ -7256,6 +7267,7 @@ export default class RaceEditor {
       'delete-sprite': 'Delete Sprite',
       'body-art': this.getCarBodyArtMenuLabel(),
       'car-import-graphic': 'Import Graphic',
+      'car-smoke': 'Smoke',
       'car-indicators': 'Indicators',
       'car-art-settings': 'Settings',
       'car-art-exterior': 'Exterior',
@@ -7311,6 +7323,7 @@ export default class RaceEditor {
     const source = value && typeof value === 'object' ? value : {};
     return {
       musicTrackId: String(source.musicTrackId || ''),
+      cutsceneRef: String(source.cutsceneRef || '').trim(),
       countdown: source.countdown !== false,
       rollingStart: source.rollingStart === true,
       rollingStartSpeedMps: clamp(Number(source.rollingStartSpeedMps) || 13.4, 1, 55)
@@ -7440,6 +7453,24 @@ export default class RaceEditor {
     triggers.splice(clamp(this.selectedRaceTriggerIndex, 0, triggers.length - 1), 1);
     this.selectedRaceTriggerIndex = clamp(this.selectedRaceTriggerIndex, 0, Math.max(0, triggers.length - 1));
     this.status = 'Trigger deleted';
+  }
+
+  async editRaceCutscenes() {
+    const race=this.selectedRace;if(!race)return;
+    const pick=async field=>{
+      const result=await openProjectBrowser({mode:'open',fixedFolder:'cutscenes',initialFolder:'cutscenes',title:'Choose Cutscene'});
+      return result?.action==='open'?{[field]:result.name}:{};
+    };
+    const result=await openEditorForm('Race Cutscenes',[
+      {id:'intro',label:'Before race',type:'text',value:race.raceStart?.cutsceneRef||'',required:false},
+      {id:'pickIntro',label:'Choose intro',type:'button',onClick:()=>pick('intro')},
+      {id:'outro',label:'After race',type:'text',value:race.finishBehavior?.cutsceneRef||'',required:false},
+      {id:'pickOutro',label:'Choose outro',type:'button',onClick:()=>pick('outro')}
+    ],{description:'Intro plays on menu race launches. Outro plays before the menu destination. Leave blank for none.'});
+    if(!result||this.selectedRace!==race)return;
+    race.raceStart=this.normalizeRaceStartSettings({...race.raceStart,cutsceneRef:result.intro});
+    race.finishBehavior=normalizeRaceFinishBehavior({...race.finishBehavior,cutsceneRef:result.outro});
+    this.status='Race cutscenes updated';
   }
 
   async pickRaceMusic() {
@@ -8736,6 +8767,7 @@ export default class RaceEditor {
     clone.decals = Array.isArray(clone.decals) ? clone.decals : [];
     clone.triggers = normalizeRaceTriggers(clone.triggers);
     clone.raceStart = this.normalizeRaceStartSettings(clone.raceStart);
+    clone.snowClouds = normalizeSnowClouds(clone.snowClouds);
     applyStudioSprintGraphicSettings(clone);
     this.normalizeStudioSprintRace(clone);
     this.migrateRaceSceneryDefinitionsToDoodads(clone);
@@ -8982,6 +9014,7 @@ export default class RaceEditor {
     clone.art.rearTireOffsetY = clamp(Number(clone.art.rearTireOffsetY || 0), -16, 16);
     clone.art.angleLayers = normalizeCarAngleLayers(clone.art.angleLayers);
     clone.art.fx = migrateCarFx(clone.art);
+    clone.art.smoke = normalizeCarSmoke(clone.art.smoke);
     clone.art.gauges = normalizeCarGauges(clone.art.gauges);
     clone.art.indicators = normalizeIndicators(clone.art.indicators);
     clone.art.mirrorAngleEdits = clone.art.mirrorAngleEdits !== false;
@@ -9868,6 +9901,8 @@ export default class RaceEditor {
       const apply=binding=>{this.captureRaceHistory('Change tile model');map.models||={};map.models[tileId]=binding;map.revision++;this.status=binding?`${tileId}: ${binding.ref}`:`${tileId}: default artwork`;};
       if(action==='race-clear-tile-model')apply(null);
       else void pickModelBinding(map.models?.[tileId]||this.getRaceTileDefinition(tileId)?.model).then(binding=>{if(binding)apply(binding);}).catch(error=>{this.status=error.message;});
+    } else if (action === 'car-smoke') {
+      void editCarSmoke(this);
     } else if (action === 'car-indicators') {
       openCarIndicators(this).catch(error=>{this.status=error.message;});
     } else if (action === 'car-import-graphic') {
@@ -10099,6 +10134,8 @@ export default class RaceEditor {
       this.enterRaceTriggerMode();
     } else if (action === 'delete-trigger') {
       this.deleteSelectedRaceTrigger();
+    } else if (action === 'race-cutscenes') {
+      this.editRaceCutscenes().catch(error=>{this.status=error.message;});
     } else if (action === 'race-music') {
       this.pickRaceMusic().catch(() => { this.status = 'Music picker failed'; });
     } else if (action === 'race-driving-guide') {
@@ -10896,6 +10933,7 @@ export default class RaceEditor {
     add(car.art.brakeLightArtRef);
     getCarAngleArtRefs(car).forEach(add);
     getCarFxArtRefs(car).forEach(add);
+    carSmokeArtRefs(car).forEach(add);
     gaugeArtRefs(car).forEach(add);
     addFrameEntry(car.art.tireSurfaces?.tread);
     addFrameEntry(car.art.tireSurfaces?.wheel);
@@ -10933,6 +10971,7 @@ export default class RaceEditor {
       add(car.art.brakeLightArtRef);
       getCarAngleArtRefs(car).forEach(add);
     getCarFxArtRefs(car).forEach(add);
+    carSmokeArtRefs(car).forEach(add);
     gaugeArtRefs(car).forEach(add);
       addFrameEntry(car.art.tireSurfaces?.tread);
       addFrameEntry(car.art.tireSurfaces?.wheel);
@@ -10948,6 +10987,7 @@ export default class RaceEditor {
     };
     add(race.skyboxArtRef || race.visuals?.skyboxArtRef);
     add(race.visualFx?.speedLineArtRef);
+    add(race.snowClouds?.artRef);
     Object.values(race.surfaceArt || {}).forEach(add);
     add(race.margin?.artRef);
     add(race.roadTextures?.road?.artRef);
@@ -11004,6 +11044,8 @@ export default class RaceEditor {
   } = {}) {
     if (!(this.racePreparedArtFrames instanceof Map)) this.racePreparedArtFrames = new Map();
     if (!append) this.racePreparedArtFrames.clear();
+    this.raceSmokeFrameDurations ||= new Map();
+    if (!append) this.raceSmokeFrameDurations.clear();
     let frameCount = 0;
     let textureCount = 0;
     (Array.isArray(assets) ? assets : []).forEach((asset) => {
@@ -11011,6 +11053,7 @@ export default class RaceEditor {
       const width = Math.max(1, Math.round(Number(asset?.width) || 1));
       const height = Math.max(1, Math.round(Number(asset?.height) || 1));
       if (!artRef) return;
+      this.raceSmokeFrameDurations.set(artRef, (asset.frames || []).map(frame => Number(frame.durationMs) || 100));
       (asset.frames || []).forEach((frame) => {
         if (!(frame?.pixels instanceof Uint8ClampedArray)
           || frame.pixels.length !== width * height * 4
@@ -11169,7 +11212,18 @@ export default class RaceEditor {
     this.racePreloadingArt = true;
     this.raceRuntimeArtCacheMisses = 0;
     this.raceRuntimeTextureCacheMisses = 0;
+    const smokeRefs = new Set(carSmokeArtRefs(this.getRaceSessionCar(this.playtestSession)));
     refs.forEach((artRef) => {
+      if (smokeRefs.has(artRef)) {
+        const payload = loadProjectFile('art', artRef, {allowSyncFetch:false});
+        if (payload) {
+          const {frames,source} = getArtDocumentFrames(payload.data || payload);
+          const data = source || payload.data || payload;
+          this.raceSmokeFrameDurations ||= new Map();
+          this.raceSmokeFrameDurations.set(artRef, frames.map((frame,index)=>Math.max(1,Number(frame?.durationMs || data.editor?.frames?.[index]?.durationMs) || 1000/(Number(data.fps)||10))));
+          frames.forEach((_,frameIndex)=>this.getRaceArtSpriteCanvas(artRef,{frameIndex}));
+        }
+      }
       this.getRaceArtSpriteCanvas(artRef);
       if (textureRefs.has(artRef)) this.getRaceArtTextureSampler(artRef);
     });
@@ -11217,9 +11271,9 @@ export default class RaceEditor {
   getRaceWorldBakeSurfaceStep({ renderDebug = this.getRaceRenderDebugSettings() } = {}) {
     const configured = Number(this.selectedRace?.renderSurfaceStepM ?? this.selectedRace?.road?.renderSurfaceStepM);
     if (Number.isFinite(configured) && configured > 0) return clamp(configured, 1.25, 16);
-    // Kilometre-scale imported roads do not need 2.5 m cross-sections across
-    // the entire surrounding mountain. Authored nodes remain unchanged.
-    if (this.selectedRace?.source?.importVersion && Number(this.selectedRace.source.mappedLengthM) > 5000) return 10;
+    // Keep the driving mesh fine on long roads too: 10 m sections turn
+    // smoothed mountain profiles into abrupt tire-contact slope changes.
+    // Surrounding terrain retains its independent coarse survey grid.
     return 2.5;
   }
 
@@ -14510,10 +14564,35 @@ export default class RaceEditor {
     return session.campaignSaveTask;
   }
 
+  drawRaceFinishFade(ctx,bounds) {
+    const finishFade=this.playtestSession?.finishFade;
+    if(finishFade){
+      const t=clamp(finishFade.elapsedMs/finishFade.durationMs,0,1);
+      ctx.save();ctx.globalAlpha=1;
+      ctx.fillStyle=`rgba(0,0,0,${t*t*(3-2*t)})`;
+      ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);
+      ctx.restore();
+      if(t>=1)finishFade.blackDrawn=true;
+    }
+  }
+
+  beginRaceFinishFade(reason='finish') {
+    const session=this.playtestSession;
+    if(!session||session.finishFade||session.finishing)return;
+    const finish=resolveRaceNodeFinish(this.selectedRace,session.networkProgress?.finishNodeId);
+    session.finishReason=reason;
+    session.finishFade={elapsedMs:0,durationMs:finish.fadeOutMs||800,blackDrawn:false,submitted:false};
+    this.raceInput.paused=true;
+    this.vehicleDynamicsAuthority?.workerBridge?.setPaused?.(true);
+    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);
+    this.game?.stopSfxById?.('',{key:'race-engine'});
+  }
+
   showRaceResults() {
     const session=this.playtestSession;
     if(!session||session.raceResults)return;
     if(session.carEditorPreview){this.finishPlaytest();return;}
+    if(resolveRaceNodeFinish(this.selectedRace,session.networkProgress?.finishNodeId).skipResults){this.beginRaceFinishFade();return;}
     const mission=mechanicalMissionVariables(session.mechanical,this.selectedRace?.mechanicalMission,this.game?.items?.progress?.bags?.items);
     session.mechanicalMissionSuccess=mission.success;
     session.raceResults=true;
@@ -14528,7 +14607,7 @@ export default class RaceEditor {
     const finishedSession = this.playtestSession;
     finishedSession.finishing=true;
     this.raceInput.paused=true;
-    try{if(this.game?.campaignSaves?.hasActive)await this.saveCampaignRaceResult(finishedSession);if(!finishedSession.campaignProgressSaved&&this.game?.raceTravelSession && finishedSession.mechanical)await this.persistRaceMechanicalCondition(finishedSession);}catch(error){finishedSession.finishing=false;this.game?.showSystemToast?.(`Condition save failed: ${error.message}`);return;}
+    try{if(this.game?.campaignSaves?.hasActive)await this.saveCampaignRaceResult(finishedSession);if(!finishedSession.campaignProgressSaved&&this.game?.raceTravelSession && finishedSession.mechanical)await this.persistRaceMechanicalCondition(finishedSession);}catch(error){finishedSession.finishing=false;finishedSession.finishFade=null;this.game?.showSystemToast?.(`Condition save failed: ${error.message}`);return;}
     if(this.playtestSession!==finishedSession)return;
     const name = this.selectedRace?.name || 'race';
     const engineSoundId = this.playtestSession.activeEngineSoundId || this.playtestSession.engineSoundId;
@@ -14542,7 +14621,7 @@ export default class RaceEditor {
     finishBehavior.variables={...finishBehavior.variables,...mission.variables};
     finishBehavior.mechanicalMissionSuccess=mission.success;
     finishBehavior.progressSaved=finishedSession.campaignProgressSaved===true;
-    this.completeRaceGhost({ finished: true });
+    this.completeRaceGhost({ finished: finishedSession.finishReason !== 'time-limit' });
     // Menu travel awaits progress storage and sometimes asset hydration. Keep
     // the frozen driving camera until that promise settles, never authoring view.
     const awaitMenu = this.mode === 'race' && finishBehavior.type === 'menu'
@@ -14572,6 +14651,7 @@ export default class RaceEditor {
       }).catch(error => {
         if (this.playtestSession !== finishedSession) return;
         finishedSession.finishing = false;
+        finishedSession.finishFade = null;
         finishedSession.raceResults = true;
         this.raceInput.paused = true;
         this.status = `Could not leave race: ${error?.message || error}`;
@@ -17453,6 +17533,7 @@ export default class RaceEditor {
     const cached = frame?.weatherState;
     if (cached && cached.weather === race?.weather
       && cached.intensity === race?.weatherIntensity
+      && cached.weatherRamp === race?.weatherRamp
       && cached.visibility === race?.weatherVisibilityM
       && cached.trigger === session?.triggerWeather
       && cached.elapsedMs === session?.elapsedMs
@@ -17475,14 +17556,21 @@ export default class RaceEditor {
     }
     const id = String(race?.weather || 'clear');
     const preset = RACE_WEATHER_PRESET_BY_ID[id] || RACE_WEATHER_PRESET_BY_ID.clear;
+    const ramp = sourceRace?.weatherRamp;
+    const rampActive = ramp?.enabled === true && Number(ramp.durationSeconds) > 0
+      && !debug?.weather && debug?.weatherIntensity == null && !session?.triggerWeather;
+    const rampProgress = clamp(Math.max(0, Number(session?.elapsedMs || 0)) / (Number(ramp?.durationSeconds) * 1000 || 1), 0, 1);
+    const rampStart = clamp(Number(ramp?.startIntensity) || 0, 0, 1);
+    const rampEnd = clamp(Number.isFinite(Number(ramp?.endIntensity)) ? Number(ramp.endIntensity) : 1, 0, 1);
     const visualIntensity = preset.id === 'clear'
       ? 0
+      : rampActive ? rampStart + (rampEnd - rampStart) * rampProgress
       : debug?.weatherIntensity!=null?clamp(Number(debug.weatherIntensity),0,1):this.getRaceWeatherAuthoringIntensity(race);
     const targetIntensity = Math.min(Number(preset.maxIntensity) || 0, visualIntensity);
     const elapsedSeconds = Math.max(0, Number(session?.elapsedMs || 0) / 1000);
     const buildup = preset.id === 'clear'
       ? 0
-      : debug?.weather ? 1 : clamp(elapsedSeconds / Math.max(1, Number(preset.buildupSeconds) || 1), 0, 1);
+      : debug?.weather || rampActive ? 1 : clamp(elapsedSeconds / Math.max(1, Number(preset.buildupSeconds) || 1), 0, 1);
     const effectiveIntensity = clamp(targetIntensity * buildup, 0, 1);
     const snowDepthInches = preset.id === 'snow' ? effectiveIntensity * 6 : 0;
     const visibility = this.getRaceWeatherVisibilityProfile(preset.id, visualIntensity);
@@ -17499,7 +17587,7 @@ export default class RaceEditor {
       ...visibility
     };
     if (frame) frame.weatherState = {
-      weather: sourceRace?.weather, intensity: sourceRace?.weatherIntensity,
+      weather: sourceRace?.weather, intensity: sourceRace?.weatherIntensity, weatherRamp: sourceRace?.weatherRamp,
       visibility: sourceRace?.weatherVisibilityM, trigger: session?.triggerWeather,
       elapsedMs: session?.elapsedMs, debugWeather: debug?.weather,
       debugIntensity: debug?.weatherIntensity, autoVisibility: debug?.autoVisibility,
@@ -19347,6 +19435,15 @@ export default class RaceEditor {
   }
 
   updatePlaytest(dt = 0) {
+    const fade=this.playtestSession?.finishFade;
+    if(fade){
+      fade.elapsedMs=Math.min(fade.durationMs,fade.elapsedMs+Math.max(0,Number(dt)||0)*1000);
+      // Present a fully black frame before asynchronous saving/menu travel.
+      if(fade.elapsedMs>=fade.durationMs && fade.blackDrawn && !fade.submitted){
+        fade.submitted=true;void this.finishPlaytest();
+      }
+      return;
+    }
     return runBudgetedRaceFrame(this, () => this.withRaceGeometryReadCache(() => updateRaceSimulation({
       editor: this,
       systems: this.raceSimulationSystems,
@@ -19957,6 +20054,9 @@ export default class RaceEditor {
         speedMps: speed
       });
       if (!slotId) return;
+      // Airborne plumes start at the rear tire contacts; ground marks still
+      // follow every slipping wheel. Front plumes overlay the body in chase view.
+      if (slotId !== 'asphaltSkid' && !isRear) return;
       const slot = RACE_TIRE_FX_SLOT_BY_ID[slotId] || RACE_TIRE_FX_SLOTS[0];
       const settings = fxSettings[slotId] || this.getRaceTireFxDefaults(slotId);
       if (settings.enabled === false) return;
@@ -19987,13 +20087,17 @@ export default class RaceEditor {
         const particle = acquireRaceTireFxParticle(session);
         particle.id = `${slotId}-${session.elapsedMs}-${wheelId}-${session.tireFxParticleSequence}`;
         particle.slotId = slotId;
-        particle.artRef = String(settings.artRef || '');
+        particle.wheelId = wheelId;
+        particle.rearContactPlume = !isMark;
+        const smokeRef = carSmokeArtRef(this.getRaceSessionCar(session), surfaceId, slotId);
+        particle.artRef = smokeRef || String(settings.artRef || '');
+        particle.preserveArtColor = Boolean(smokeRef);
         particle.color = surfaceTint;
         particle.tintColor = surfaceTint;
         particle.visualMaterialId = visualMaterial.materialId || visualMaterial.surfaceId || '';
         particle.visualSurfaceId = visualMaterial.surfaceId || '';
-        particle.x = Number(wheel.x || 0) + (Math.random() - 0.5) * (isMark ? 0.08 : 0.22);
-        particle.z = Number(wheel.z || 0) + (Math.random() - 0.5) * (isMark ? 0.08 : 0.22);
+        particle.x = Number(wheel.x || 0) + (isMark ? (Math.random() - 0.5) * 0.08 : 0);
+        particle.z = Number(wheel.z || 0) + (isMark ? (Math.random() - 0.5) * 0.08 : 0);
         particle.elevation = Number(wheel.elevation || 0)
             + (isMark ? RACE_TIRE_FX_MARK_SURFACE_BIAS_M : RACE_TIRE_FX_PARTICLE_SURFACE_BIAS_M)
               / RACE_THREE_ELEVATION_M;
@@ -20002,7 +20106,7 @@ export default class RaceEditor {
         particle.vy = isMark ? 0 : 0.018 + Math.random() * (slotId === 'skidSmoke' ? 0.055 : 0.085);
         particle.ageMs = 0;
         particle.lifetimeMs = (isMark ? clamp(Number(settings.lifetimeMs ?? 1100), 420, 1800) : clamp(Number(settings.lifetimeMs ?? 620), 120, 1800)) * (0.72 + ageSeed * 0.56);
-        particle.sizeM = clamp(Number(settings.scale ?? 1), 0.25, 4) * (isMark ? 0.22 : 0.32 + slotIntensity * 0.95) * (0.75 + Math.random() * 0.65);
+        particle.sizeM = clamp(Number(settings.scale ?? 1), 0.25, 4) * (isMark ? 0.22 : 2 * (0.32 + slotIntensity * 0.95)) * (0.75 + Math.random() * 0.65);
         particle.alpha = isMark ? clamp(0.18 + slotIntensity * 0.36, 0.14, 0.48) : clamp(0.18 + slotIntensity * 0.64, 0.14, 0.82);
         particles.push(particle);
       }
@@ -20492,17 +20596,6 @@ export default class RaceEditor {
     if (rawGamepadActive) {
       this.raceInput.handbrake = isGamepadDown('gamepadA');
     }
-    if ((wasPressedCode('KeyR') || (!rawGamepadActive && wasGamepadPressed('dash'))) && this.raceInput.keyboardBrake) {
-      const now = Number(this.raceInput.inputClockMs || 0);
-      if (this.raceInput.hasBrakeTap === true
-        && now - Number(this.raceInput.lastBrakeTapMs || 0) < 260) {
-        this.raceInput.handbrakeHoldSequence = Math.max(0, Math.trunc(Number(
-          this.raceInput.handbrakeHoldSequence || 0
-        ))) + 1;
-      }
-      this.raceInput.lastBrakeTapMs = now;
-      this.raceInput.hasBrakeTap = true;
-    }
   }
 
   getRaceMaxSteerForSpeed(speedMps = 0) {
@@ -20788,6 +20881,7 @@ export default class RaceEditor {
   }
 
   toggleRacePause() {
+    if(this.playtestSession?.finishFade)return;
     if(this.playtestSession?.raceResults){this.finishPlaytest();return;}
     this.clearRaceGamepadSelectHold();
     this.raceInput.paused = !this.raceInput.paused;
@@ -21405,6 +21499,7 @@ export default class RaceEditor {
         { id: 'car-art-exterior', label: 'Exterior', contextPanelCommand: true, onClick: () => this.handleMenuAction('car-art-exterior') },
         { id: 'car-art-interior', label: 'Interior', contextPanelCommand: true, onClick: () => this.handleMenuAction('car-art-interior') },
         ...['exterior','interior'].map(side=>({id:'car-gauges-'+side,label:(side==='exterior'?'Exterior':'Interior')+' Gauges',contextPanelCommand:true,onClick:()=>this.handleMenuAction('car-gauges-'+side)})),
+        { id: 'car-smoke', label: 'Smoke', contextPanelCommand: true, onClick: () => this.handleMenuAction('car-smoke') },
         { id: 'car-indicators', label: 'Indicators', contextPanelCommand: true, onClick: () => this.handleMenuAction('car-indicators') },
         { id: 'car-camera-settings', label: 'Camera', contextPanelCommand: true, onClick: () => this.handleMenuAction('car-camera-settings') }
       ];
@@ -21900,8 +21995,9 @@ export default class RaceEditor {
       // particular, do not render provisional reset placement/camera state.
       ctx.fillStyle = '#000';
       ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
-      if (this.raceInput.paused) this.drawRacePauseOverlay(ctx, bounds);
+      if (this.raceInput.paused && !this.playtestSession?.finishFade) this.drawRacePauseOverlay(ctx, bounds);
       this.drawRaceDisplayModeFilter(ctx, bounds);
+      this.drawRaceFinishFade(ctx,bounds);
       ctx.restore();
       this.lastRaceRenderStats = {
         resetBlackHold: true, physicsInDraw: false,
@@ -21971,8 +22067,9 @@ export default class RaceEditor {
       this.drawRaceCountdown(ctx, bounds);
     }
     this.drawRaceEdgeResetFade(ctx, bounds);
-    if (this.raceInput.paused) this.drawRacePauseOverlay(ctx, bounds);
+    if (this.raceInput.paused && !this.playtestSession?.finishFade) this.drawRacePauseOverlay(ctx, bounds);
     this.drawRaceDisplayModeFilter(ctx, bounds);
+    this.drawRaceFinishFade(ctx,bounds);
     ctx.restore();
     if (renderStartMs > 0) {
       const elapsedMs = Math.max(0, performance.now() - renderStartMs);
@@ -25585,7 +25682,9 @@ export default class RaceEditor {
       if (relY < -0.18) this.shiftRaceGear(1);
       if (relY > 0.18) this.shiftRaceGear(-1);
     } else if (Math.abs(relX) > 0.18) {
-      this.raceInput.binarySteer = relX < 0 ? -1 : 1;
+      // Touch position supplies proportional steering. The outer pad still
+      // reaches full lock; moving near the centre allows small corrections.
+      this.raceInput.binarySteer = Math.sign(relX) * clamp((Math.abs(relX) - 0.18) / 0.62, 0, 1);
     } else {
       this.raceInput.binarySteer = 0;
     }
@@ -25612,15 +25711,7 @@ export default class RaceEditor {
         this.backRacePauseMenu();
         return true;
       }
-      const now = Number(this.raceInput.inputClockMs || 0);
-      if (this.raceInput.hasBrakeTap === true
-        && now - Number(this.raceInput.lastBrakeTapMs || 0) < 280) {
-        this.raceInput.handbrakeHoldSequence = Math.max(0, Math.trunc(Number(
-          this.raceInput.handbrakeHoldSequence || 0
-        ))) + 1;
-      }
-      this.raceInput.lastBrakeTapMs = now;
-      this.raceInput.hasBrakeTap = true;
+      // Repeated service-brake taps must not silently engage the handbrake.
       this.raceInput.brake = true;
       this.raceInput.activeBrakePointerId = payload.id ?? 'pointer';
       return true;
@@ -27191,13 +27282,14 @@ export default class RaceEditor {
         value:draft.weatherVisibilityM || Math.min(10000,this.getRaceWeatherVisibilityProfile(draft.weather,draft.intensity).visibilityDistanceM),
         format:value=>draft.weatherVisibilityM>0?`${Math.round(value)} m`:'Auto'
       });
-      this.registerDrawnButton(ctx,{x:panel.x+14,y:panel.y+220,w:(panel.w-36)/2,h:32},{id:'race-settings-visibility-auto',label:'Auto visibility',active:!draft.weatherVisibilityM,onClick:()=>{draft.weatherVisibilityM=0;}});
-      this.registerDrawnButton(ctx,{x:panel.x+18+(panel.w-28)/2,y:panel.y+220,w:(panel.w-36)/2,h:32},{id:'race-settings-environment',label:'Temperature',onClick:async()=>{
+      this.registerDrawnButton(ctx,{x:panel.x+14,y:panel.y+220,w:(panel.w-44)/3,h:32},{id:'race-settings-visibility-auto',label:'Auto visibility',active:!draft.weatherVisibilityM,onClick:()=>{draft.weatherVisibilityM=0;}});
+      this.registerDrawnButton(ctx,{x:panel.x+22+(panel.w-44)/3,y:panel.y+220,w:(panel.w-44)/3,h:32},{id:'race-settings-environment',label:'Temperature',onClick:async()=>{
         const result=await openEditorForm('Weather conditions',[
           {id:'weatherTemperatureC',label:'Air temperature (°C)',value:draft.weatherTemperatureC,min:-80,max:60}
         ],{description:'Lighting is in Skybox. Apply Weather to keep changes.'});
         if(result&&this.raceSettingsDialogDraft===draft)Object.assign(draft,result);
       }});
+      this.registerDrawnButton(ctx,{x:panel.x+30+2*(panel.w-44)/3,y:panel.y+220,w:(panel.w-44)/3,h:32},{id:'race-snow-clouds',label:'Snow Clouds',onClick:()=>editSnowClouds(this)});
     } else if (this.raceSettingsDialog === 'skybox') {
       this.registerDrawnButton(ctx, {
         x: panel.x + 14,
@@ -33928,17 +34020,21 @@ export default class RaceEditor {
         const size = clamp(
           Number(particle.sizeM || 0.5) * roadWidthScale * (focal / Math.max(1.2, Number(point.renderZ || point.cameraZ || 1))) * (1 + life * 1.2),
           2,
-          bounds.w * 0.22
+          bounds.w * (particle.rearContactPlume ? 0.44 : 0.22)
         );
-        const sourceArtCanvas = particle.artRef ? this.getRaceArtSpriteCanvas(particle.artRef) : null;
+        const durations = this.raceSmokeFrameDurations?.get(particle.artRef) || [];
+        const frameIndex = smokeAnimationFrame(durations, particle.ageMs);
+        const sourceArtCanvas = particle.artRef ? this.getRaceArtSpriteCanvas(particle.artRef, {frameIndex}) : null;
         const artCanvas = sourceArtCanvas
-          ? this.getRaceTintedTireFxArtCanvas(sourceArtCanvas, particle.artRef, particle.tintColor || particle.color)
+          ? (particle.preserveArtColor ? sourceArtCanvas : this.getRaceTintedTireFxArtCanvas(sourceArtCanvas, `${particle.artRef}:${frameIndex}`, particle.tintColor || particle.color))
           : null;
         ctx.globalAlpha = alpha;
         if (artCanvas && typeof ctx.drawImage === 'function') {
           const previousSmoothing = ctx.imageSmoothingEnabled;
           ctx.imageSmoothingEnabled = false;
-          ctx.drawImage(artCanvas, point.screenX - size * 0.5, point.screenY - size * 0.55, size, size);
+          const aspect = particle.preserveArtColor ? Math.max(0.01,Number(artCanvas.width)||1) / Math.max(1,Number(artCanvas.height)||1) : 1;
+          const drawWidth = size * Math.min(1,aspect), drawHeight = size / Math.max(1,aspect);
+          ctx.drawImage(artCanvas, point.screenX - drawWidth * 0.5, point.screenY - drawHeight * (particle.rearContactPlume ? 0.5 : 0.55), drawWidth, drawHeight);
           ctx.imageSmoothingEnabled = previousSmoothing;
         } else {
           ctx.fillStyle = particle.color || 'rgba(228,232,222,0.72)';
@@ -36757,6 +36853,7 @@ export default class RaceEditor {
   clearRaceThreeScene(renderer = null) {
     if (!renderer?.scene) return;
     disposeRaceThreeDrivingLine(renderer);
+    disposeSnowClouds(renderer);
     renderer.staticWorldObjects=[];
     renderer.staticWorldKey=null;
     renderer.carDepthSprites?.dispose();
@@ -37374,11 +37471,12 @@ export default class RaceEditor {
     transparent = false,
     opacity = 1,
     depthWrite = true,
+    raceCarLighting = false,
     polygonOffset = false
   } = {}) {
     if (!renderer || !THREE?.MeshBasicMaterial) return null;
     renderer.solidMaterialCache = renderer.solidMaterialCache instanceof Map ? renderer.solidMaterialCache : new Map();
-    const key = `${color}:${transparent ? 1 : 0}:${Math.round(Number(opacity || 1) * 1000)}:${depthWrite ? 1 : 0}:${polygonOffset ? 1 : 0}`;
+    const key = `${raceCarLighting ? 'car:' : ''}${color}:${transparent ? 1 : 0}:${Math.round(Number(opacity || 1) * 1000)}:${depthWrite ? 1 : 0}:${polygonOffset ? 1 : 0}`;
     const cached = renderer.solidMaterialCache.get(key);
     if (cached) return cached;
     const material = new THREE.MeshBasicMaterial({
@@ -37391,6 +37489,7 @@ export default class RaceEditor {
       polygonOffsetFactor: polygonOffset ? -1 : 0,
       polygonOffsetUnits: polygonOffset ? -1 : 0
     });
+    material.userData.raceCarLighting = raceCarLighting;
     material.__raceSharedMaterial = true;
     renderer.solidMaterialCache.set(key, material);
     return material;
@@ -38056,8 +38155,8 @@ export default class RaceEditor {
     const bodyY = Number(elevation || 0) * RACE_THREE_ELEVATION_M;
     const lightY = bodyY + bodyHeightM * 0.12;
     const wheelCenters = this.getRaceWheelVisualCenterPositions({ session, car, tuning: car.tuning });
-    const bodyMaterial = this.getRaceThreeSolidMaterial(renderer, color);
-    const wheelMaterial = this.getRaceThreeSolidMaterial(renderer, '#050807');
+    const bodyMaterial = this.getRaceThreeSolidMaterial(renderer, color, {raceCarLighting:true});
+    const wheelMaterial = this.getRaceThreeSolidMaterial(renderer, '#050807', {raceCarLighting:true});
     const headlightMaterial = this.getRaceThreeSolidMaterial(renderer, '#f7f4c8');
     const brakeMaterial = this.getRaceThreeSolidMaterial(renderer, braking ? '#ff4f4f' : '#7c1018');
     const shadowElevation = this.getRaceCompositedSurfaceAtWorldPoint({ x, z }, elevation).elevation;
@@ -38714,12 +38813,14 @@ export default class RaceEditor {
       stats
     });
     if (stats) stats.weatherFxEnvironmentRenderedInThree = environmentSnowRendered ? 1 : 0;
+    syncSnowClouds(this, renderer, {camera,cameraYaw,weatherState});
     this.syncRaceThreeCarSprites(renderer, bounds, { camera, cameraYaw, cameraView, stats });
     const lightCar=this.getRaceSessionCar(this.playtestSession)||this.selectedCar;
     const lightPose=this.playtestSession?this.getRacePlayerRenderPose(this.playtestSession,lightCar):null;
     const lightDimensions=this.getRaceCarDimensions(lightCar);
     const brightness=this.playtestSession?this.getRaceLightingBrightness():1;
-    updateRaceLighting(renderer,{brightness,highBeams:this.playtestSession?.mechanical?.highBeams===true,auxIntensity:this.playtestSession?.mechanical?.auxLights?(this.playtestSession?.mechanical?.effects?.lights??1):0,visibilityDistanceM:weatherState.visibilityDistanceM,cameraPosition:{x:Number(camera.x||0),y:cameraY,z:Number(camera.z||0)},headlightIntensity:this.raceHeadlightsEnabled()?(this.playtestSession?.mechanical?.effects?.lights??1):0,pose:lightPose?{...lightPose,y:lightPose.elevation*RACE_THREE_ELEVATION_M}:null,dimensions:{width:lightDimensions.widthM,length:lightDimensions.lengthM}});
+    const rearLights=carFxDrivingState(this.playtestSession,this.raceInput);
+    updateRaceLighting(renderer,{brightness,braking:rearLights.braking,reverse:rearLights.reverse,lampPower:this.playtestSession?.mechanical?.effects?.lights??1,highBeams:this.playtestSession?.mechanical?.highBeams===true,auxIntensity:this.playtestSession?.mechanical?.auxLights?(this.playtestSession?.mechanical?.effects?.lights??1):0,visibilityDistanceM:weatherState.visibilityDistanceM,cameraPosition:{x:Number(camera.x||0),y:cameraY,z:Number(camera.z||0)},headlightIntensity:this.raceHeadlightsEnabled()?(this.playtestSession?.mechanical?.effects?.lights??1):0,pose:lightPose?{...lightPose,y:lightPose.elevation*RACE_THREE_ELEVATION_M}:null,dimensions:{width:lightDimensions.widthM,length:lightDimensions.lengthM}});
     renderer.threeRenderer.clear(true, true, true);
     syncRaceThreeDrivingLine(this, renderer);
     const renderStartMs = this.getNowMs();
@@ -41344,7 +41445,7 @@ export default class RaceEditor {
   }
 
   handlePointerDown(payload = {}) {
-    if (this.playtestSession?.finishing) return;
+    if (this.playtestSession?.finishing || this.playtestSession?.finishFade) return;
     if (this.raceImageImportOpen) return;
     this.pendingDesktopDropdownHit = null;
     this.pendingDesktopCommandHit = null;

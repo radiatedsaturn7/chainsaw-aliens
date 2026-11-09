@@ -68,10 +68,10 @@ test('legacy non-imported maps still migrate to their original 5-metre editing g
  const map=editor.ensureRaceTileMap();assert.equal(map.cellSizeM,5);assert.equal(Object.keys(map.cells).length,4);
 });
 
-test('long imported routes use bounded build detail while respecting an explicit surface step',()=>{
+test('long imported roads retain fine driving sections and respect an explicit surface step',()=>{
  const editor=new RaceEditor({});const mountain=structuredClone(race);mountain.source.mappedLengthM=12314;
  editor.applyLoadedRaceDocument(mountain);
- assert.equal(editor.getRaceWorldBakeSurfaceStep(),10);
+ assert.equal(editor.getRaceWorldBakeSurfaceStep(),2.5);
  editor.selectedRace.road.renderSurfaceStepM=5;
  assert.equal(editor.getRaceWorldBakeSurfaceStep(),5);
 });

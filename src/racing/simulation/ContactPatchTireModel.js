@@ -1054,7 +1054,13 @@ export function calculateBrushTireForce({
   const longitudinalStiffness = Math.max(1000, Number(tire.longitudinalStiffnessN || referenceLoad * 18) * widthScale);
   const sidewallM=Number(tire.widthMm??245)*Number(tire.aspectRatio??40)/100000;
   const sidewallStiffness=clamp(Math.sqrt(.098/Math.max(.03,sidewallM)),.65,1.4);
-  const corneringStiffness = Math.max(1000, Number(tire.corneringStiffnessNPerRad || referenceLoad * 17) * widthScale * pressureScale * sidewallStiffness);
+  // Tire construction sets nominal cornering stiffness, not the axle's share
+  // of vehicle weight. Scaling this by staticLoad made identical rear tires
+  // softer on a front-heavy car and removed its passive yaw recovery.
+  // Width, pressure and sidewall remain tire-specific; load still sets the
+  // friction limit, load sensitivity and brush saturation below.
+  const nominalTireLoadN = Math.max(1, Number(tire.nominalLoadN) || 4000);
+  const corneringStiffness = Math.max(1000, Number(tire.corneringStiffnessNPerRad || nominalTireLoadN * 17) * widthScale * pressureScale * sidewallStiffness);
   const camberStiffness = Math.max(0, Number(tire.camberStiffnessNPerRad || referenceLoad * 0.65));
   const contactMotionMps = Math.max(
     Math.abs(Number(kinematics.longitudinalVelocityMps || 0)),
@@ -1865,7 +1871,12 @@ export class ContactPatchTireModel {
         ?? staticLoad * Number(environment.normalLoadScaleByWheel?.[wheelId] ?? 1);
       const maxNormalLoadN = staticLoad * config.maxSuspensionLoadFactor;
       const normalLoadN = clamp(
-        Number(suspensionLoadN ?? fallbackLoadN),
+        // A hard-stop penalty is an internal suspension demand. The coupled
+        // solver may deliver much less road support while the wheel moves;
+        // do not turn the undelivered penalty into extra tire grip.
+        hardStopForceN > 0 && tireSupportForceN !== null
+          ? Math.min(Number(suspensionLoadN ?? fallbackLoadN), tireSupportForceN)
+          : Number(suspensionLoadN ?? fallbackLoadN),
         0,
         maxNormalLoadN
       ) * contactScale;

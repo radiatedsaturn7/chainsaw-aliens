@@ -6847,7 +6847,7 @@
       "shoulderWidthM": 12,
       "collisionMode": "shoulder",
       "artRef": "apron",
-      "marginMode": "on",
+      "marginMode": "hidden",
       "shoulderMode": "hidden",
       "collisionEdge": "shoulder",
       "collisionEffect": "reset"
@@ -6875,6 +6875,11 @@
         "bottomM": -1,
         "color": "#287fa3"
       }
-    ]
-  }
+    ],
+    "snowClouds": {
+      "enabled": true,
+      "artRef": "snowcloud"
+    }
+  },
+  "savedAt": 1794194665421
 }

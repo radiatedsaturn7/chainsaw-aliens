@@ -1959,7 +1959,11 @@ function advanceVehicleDynamicsAuthority(editor, {
         || wheelSurfaceState.baseSurfaceByWheel?.[wheelId] || 'asphalt';
       const nominalBaseGrip = Math.max(0.025, Number(getSurfaceById(baseSurfaceId)?.grip || 1));
       const localBaseGrip = Number(cell?.baseGrip ?? contact.friction ?? nominalBaseGrip);
-      const surfaceGripScale = localBaseGrip / nominalBaseGrip
+      // Tire surface values describe suitability, not a replacement for the
+      // ground coefficient. Dividing by nominal grip made matched dirt and
+      // snow tires behave like dry asphalt. Track State supplies only the
+      // change from this surface baseline, so apply that multiplier once.
+      const surfaceGripScale = localBaseGrip
         * Number(trackSample?.effectiveGripMultiplier ?? 1);
       const material = materialByWheel[wheelId];
       updateRaceEnvironmentRecord(material, cell, RACE_MATERIAL_OVERLAY_KEYS);
@@ -2805,6 +2809,11 @@ export function updateRaceSimulation({
   }
   if (!countdownActive) {
     editor.playtestSession.elapsedMs += seconds * 1000;
+    const limit=Number(editor.selectedRace?.finishBehavior?.timeLimitSeconds);
+    if(limit>0 && editor.playtestSession.elapsedMs>=limit*1000){
+      editor.playtestSession.elapsedMs=limit*1000;
+      editor.beginRaceFinishFade('time-limit');return;
+    }
   }
   if (!countdownActive) editor.updateRaceTriggers();
   editor.playtestSession.launchLockMs = Math.max(0, Number(editor.playtestSession.launchLockMs || 0) - seconds * 1000);
@@ -3784,7 +3793,7 @@ export function updateRaceSimulation({
     wheelRadiusM: tuning.wheelRadiusM,
     steeringInputMode: (editor.raceInput.wheelSteeringActive || String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation')
       ? 'simulation-wheel'
-      : editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard',
+      : editor.raceInput.controllerSteeringMode || (editor.raceInput.analogSteeringActive || editor.raceInput.lastSteeringInputMode === 'analog' ? 'gamepad' : 'keyboard'),
     seconds,
     activeTurnInput,
     launchAligning
