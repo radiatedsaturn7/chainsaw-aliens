@@ -79,14 +79,14 @@ test('garage power upgrades increase real fuel burn, preserve stock and undo cle
 });
 
 
-test('authored turbo curves and economy tuning reach the running fuel config',async()=>{
+test('authored turbo curves and fixed fuel parts reach runtime without exposing economy sliders',async()=>{
  const {buildGarageCar,normalizeCarPart}=await import('../../src/garage/CarPart.js');
  const stock={mechanics:{fuelMpg:30},tuning:{idleRpm:1000,revLimitRpm:6000,engineCurve:{torquePoints:[{rpm:1000,torqueLbFt:100},{rpm:6000,torqueLbFt:200}]}}};
- const turbo={carPart:normalizeCarPart({slot:'turbo',torqueCurve:[{rpm:1000,multiplier:1},{rpm:6000,multiplier:1.6}],tuning:[{field:'fuelConsumptionScale',min:.8,max:1.2,step:.01}]})};
+ const turbo={carPart:normalizeCarPart({slot:'turbo',torqueCurve:[{rpm:1000,multiplier:1},{rpm:6000,multiplier:1.6}],modifiers:[{field:'fuelConsumptionScale',operation:'set',value:1.1}],tuning:[{field:'fuelConsumptionScale',min:.8,max:1.2,step:.01}]})};
  const car=buildGarageCar(stock,{parts:[turbo],tune:{fuelConsumptionScale:1.1}});
  const state=createMechanicalState(null,null,car.mechanics);
  assert.ok(state.config.fuelMpg<30);assert.ok(state.config.fuelPowerLoadScale>1);assert.equal(state.config.fuelConsumptionScale,1.1);
- assert.throws(()=>buildGarageCar(stock,{parts:[turbo],tune:{fuelConsumptionScale:10}}));
+ assert.equal(buildGarageCar(stock,{parts:[turbo],tune:{fuelConsumptionScale:10}}).mechanics.fuelConsumptionScale,1.1,'legacy tune cannot override a fixed part property');
 });
 
 test('saved donor car capacities and filler directions retain verified US units',async()=>{

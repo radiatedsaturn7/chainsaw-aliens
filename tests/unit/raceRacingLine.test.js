@@ -60,14 +60,14 @@ test('guide, AI steering and surface choices follow the same optimized apex with
  const firstDistance=Math.ceil((distance+8)/8)*8+2,tip=arrows[0].points[1],expected=sampleRaceRacingLine(p,firstDistance);
  assert.ok(Math.hypot(tip.x-expected.x,tip.z-expected.z)<1e-8);
 });
-test('turn preview is visible with campaign pace-note audio/text disabled and never becomes a pedal banner',()=>{
+test('turn analysis remains available with pace notes disabled while the optional HUD stays hidden',()=>{
  const t=racingLineTrack(),e=t.editor;e.selectedRace.codriver={enabled:false};
  e.raceInput={paused:false};e.getRaceSessionCar=()=>null;e.getRaceCarTuning=()=>({});
  Object.assign(e.playtestSession,{distance:0,worldX:0,worldZ:0,speedMps:5,codriverCalls:analyzeRaceRecce(e)});
  updateRaceDrivingAssists(e,.016);assert.ok(e.playtestSession.drivingAssists.upcomingTurn);
  const text=[],ctx=new Proxy({fillText:t=>text.push(t)},{get:(o,k)=>o[k]||(()=>{})});
  drawRaceDrivingAssistHud(e,ctx,{x:0,y:0,w:390,h:844});
- assert.match(text.join(' '),/left/i);assert.ok(!text.some(t=>/^(BRAKE|COAST|ACCELERATE)$/.test(t)));
+ assert.deepEqual(text,[]);
  e.playtestSession.distance=t.length;updateRaceDrivingAssists(e,.016);text.length=0;drawRaceDrivingAssistHud(e,ctx,{x:0,y:0,w:390,h:844});assert.equal(text.length,0);
 });
 test('pace-note left/right agrees with the actual Three camera rather than the opposite lateral convention',()=>{
