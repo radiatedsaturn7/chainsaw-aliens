@@ -25,6 +25,9 @@ export function normalizeRaceFinishBehavior(value = {}) {
     : 'return-to-origin';
   return {
     type,
+    ...(typeof source.cutsceneRef==='string' && source.cutsceneRef.trim()?{cutsceneRef:source.cutsceneRef.trim()}:{}),
+    ...(source.skipResults===true?{skipResults:true,fadeOutMs:Math.max(100,Math.min(5000,Number(source.fadeOutMs)||800))}:{}),
+    ...(Number(source.timeLimitSeconds)>0?{timeLimitSeconds:Math.min(86400,Number(source.timeLimitSeconds))}:{}),
     ...(type==='menu'?{menuRef:typeof source.menuRef==='string'?source.menuRef.trim():'',menuScreen:typeof source.menuScreen==='string'?source.menuScreen.trim():'world-map'}:{}),
     ...(Object.keys(normalizeMenuVariables(source.variables)).length?{variables:normalizeMenuVariables(source.variables)}:{}),
     targetLevel: type === 'level' && typeof source.targetLevel === 'string' && source.targetLevel.trim()
@@ -108,6 +111,11 @@ export const RACE_TIRE_COMPOUNDS = [
     id: 'street', label: 'Street',
     surfaceGrip: { asphalt: 1.02, 'wet-asphalt': 0.92, dirt: 0.68, gravel: 0.60, mud: 0.40, 'wet-gravel': 0.46, snow: 0.25, slush: 0.32 },
     wetEvacuationFactor: 1, treadDepthMm: 7, wearRate: 1
+  },
+  {
+    id: 'sport', label: 'Sport',
+    surfaceGrip: { asphalt: 1.10, 'wet-asphalt': 0.85, dirt: 0.62, gravel: 0.53, mud: 0.35, 'wet-gravel': 0.40, snow: 0.20, slush: 0.27 },
+    wetEvacuationFactor: 0.85, treadDepthMm: 5.5, wearRate: 1.15
   }
 ];
 
@@ -300,7 +308,10 @@ export const WRX_2022_SHARED_TUNING = {
   engineDisplacementL: 2.4,
   aspiration: 'Turbocharged',
   tireGrip: 1,
-  brakeBalance: 0.56,
+  // Front-heavy road-car baseline; the former 56% overloaded the rear
+  // tires during braking in a turn. This is a game calibration, not a
+  // claim about the real WRX hydraulic brake ratio.
+  brakeBalance: 0.70,
   brakePressure: 1,
   redlineRpm: 6100,
   revLimitRpm: 6300,

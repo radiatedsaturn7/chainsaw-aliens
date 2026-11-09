@@ -159,3 +159,34 @@ test('touch brake applies and releases fully in one frame with or without gamepa
   assert.equal(editor.raceInput.brakeAxis,0);
  }
 });
+
+
+test('touch steering preserves small corrections through analog sampling and keeps full lock at pad edges',()=>{
+ const editor=new RaceEditor({input:{getGamepadAxes:()=>({leftX:0})}});
+ const bounds={x:0,y:0,w:100,h:100};
+ editor.raceInput.activeDpadPointerId=1;
+ const values=[];
+ for(const x of [50,59,60,65,75,90,100]){
+  editor.handleRaceDpadPoint(bounds,{x,y:50});editor.applyRaceAnalogInput();
+  values.push(editor.raceInput.analogSteeringIntent);
+ }
+ assert.equal(values[0],0);assert.ok(Math.abs(values[1])<1e-12);
+ assert.ok(values[2]>0&&values[2]<.05);
+ assert.ok(values[3]>.1&&values[3]<.3);
+ assert.ok(values[4]>.4&&values[4]<.6);
+ assert.equal(values[5],1);assert.equal(values[6],1);
+ editor.handleRaceDpadPoint(bounds,{x:35,y:50});editor.applyRaceAnalogInput();
+ assert.ok(Math.abs(editor.raceInput.analogSteeringIntent+values[3])<1e-12);
+});
+
+
+test('repeated keyboard service-brake taps never issue a timed handbrake command',()=>{
+ const editor=new RaceEditor({});editor.playtestSession={running:true};
+ const keyboard={isDownCode:code=>code==='KeyR',wasPressedCode:code=>code==='KeyR'};
+ for(const time of [1000,1100,1200]){
+  editor.raceInput.inputClockMs=time;editor.updateRaceKeyboardInput(keyboard,1/60);
+  assert.equal(editor.raceInput.keyboardBrake,true);
+  assert.equal(editor.raceInput.handbrakeHoldSequence,0);
+  assert.equal(editor.raceInput.handbrake,false);
+ }
+});

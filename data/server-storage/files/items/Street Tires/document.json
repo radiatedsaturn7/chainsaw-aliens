@@ -4,7 +4,7 @@
   "item": {
     "id": "street-tires",
     "name": "Street Tires",
-    "description": "Street tires. Uses the saved Street tire definition.",
+    "description": "Street Tires. A sensible step up. They'll handle everyday roads without being too fussy about the weather.",
     "carPart": {
       "slot": "tires",
       "section": "Tires",

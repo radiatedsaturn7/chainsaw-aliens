@@ -24,6 +24,7 @@ test('debug submenus preserve actions and hierarchical Back',()=>{
   const rows=editor.getRacePauseMenuRows();assert.ok(rows.some(r=>r.id===id));assert.ok(rows.length<=7);
   editor.backRacePauseMenu();assert.equal(editor.raceInput.pauseMenuMode,'debug');
  }
+ editor.backRacePauseMenu();assert.equal(editor.raceInput.pauseMenuMode,'settings');
  editor.backRacePauseMenu();assert.equal(editor.raceInput.pauseMenuMode,'main');
 });
 

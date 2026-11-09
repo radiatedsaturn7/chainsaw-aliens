@@ -346,3 +346,16 @@ test('steering limits vary continuously with speed, including former threshold s
     assert.ok(Math.abs(angle(7.500001) - angle(7.499999)) < 1e-5);
   }
 });
+
+test('touch/gamepad release stays player-directed under tire aligning torque',()=>{
+ const assist=new HandlingAssist(RACE_CONTROLLER_STEERING);
+ const contactPatches={fl:{normalLoadN:20000,lateralForceN:10000,selfAligningMomentNm:-500},fr:{normalLoadN:0,lateralForceN:0,selfAligningMomentNm:0}};
+ for(const rackAngleRad of [-.3,0,.3])for(const activeTurnInput of [false,true]){
+  assert.equal(assist.getSelfAligningSteeringCorrection({contactPatches,rackAngleRad,casterRad:.1,seconds:1/60,activeTurnInput,steeringInputMode:'gamepad'}),0);
+ }
+ // The normal input filter returns toward the player's centre without crossing it.
+ for(const currentOutput of [-.7,.7]){
+  const next=assist.stepControllerToRackInput({mode:'gamepad',intent:0,currentOutput,seconds:1/60});
+  assert.equal(Math.sign(next),Math.sign(currentOutput));assert.ok(Math.abs(next)<Math.abs(currentOutput));
+ }
+});

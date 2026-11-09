@@ -1,9 +1,12 @@
+import {RACE_TIRE_COMPOUNDS} from './raceData.js';
 import {RACE_MAX_AI_DRIVERS} from './simulation/RaceSimulationConfig.js';
 import { isUserRaceCar } from './CarPresets.js';
 import {clamp} from './simulation/SimulationMath.js';
 
 export const CAR_CATEGORIES = ['car', 'truck', 'van', 'suv'];
-export const CAR_PERFORMANCE_CLASSES = ['E', 'D', 'C', 'B', 'A'];
+export const CAR_PERFORMANCE_CLASSES = ['E1', 'E2', 'E3', 'E4', 'F', 'D', 'C', 'B', 'A', 'S'];
+export const CAR_PERFORMANCE_LIMITS = CAR_PERFORMANCE_CLASSES.map((label,i)=>({label,limit:(i+1)*100}));
+export const carPerformanceClass = points => CAR_PERFORMANCE_LIMITS.find(c=>points<=c.limit)?.label || 'S';
 const finite = (value, fallback) => Number.isFinite(Number(value)) && value !== null ? Number(value) : fallback;
 export const carCatalogId = car => String(car?.__playtestId || car?.id || '');
 export const carCategory = car => CAR_CATEGORIES.includes(car?.category) ? car.category : 'car';
@@ -11,15 +14,32 @@ export const carCategory = car => CAR_CATEGORIES.includes(car?.category) ? car.c
 // Versioned game-balance estimate, not a lap-time prediction. Recomputed from
 // current tuning rather than trusting a stale saved rating after an upgrade.
 export function calculateCarPerformance(car = {}) {
-  const t = car.tuning || {}, p = t.physics || {};
+  const t = {...car.tuning,...car.transmissions?.[car.defaultTransmissionType]}, p = t.physicalVehicleProfile || car.physicalVehicleProfile || t.physics || {};
   const mass = Math.max(100, finite(t.weightKg, 1500));
   const power = Math.max(1, finite(t.powerHp, 150));
-  const grip = clamp(finite(t.tireGrip, 1), 0.1, 3);
+  const compound=car.setup?.tireDefinition?.tire?.compound||RACE_TIRE_COMPOUNDS.find(c=>c.id===(car.setup?.defaultTireCompound||'stock'));
+  const width=clamp(Math.sqrt(finite(car.setup?.tireSize?.widthMm,245)/245),.8,1.2);
+  const grip = clamp(finite(t.tireGrip, 1)*finite(compound?.surfaceGrip?.asphalt,1)*width, 0.1, 3);
   const powerPerTonne = power * 1000 / mass;
-  const estimatedAcceleration = Math.max(26.8224 / (9.81 * grip),
-    0.5 * mass * 26.8224 ** 2 / (power * 745.7 * clamp(finite(t.drivetrainEfficiency, 0.8), 0.1, 1) * 0.65)) + 0.5;
-  const zeroToSixtySec = Math.max(0.5, finite(t.zeroToSixtySec, estimatedAcceleration));
-  const topSpeedMph = Math.max(1, finite(t.topSpeedMph, 120));
+  const efficiency=clamp(finite(t.drivetrainEfficiency,.84),.1,1),drive=String(t.drivetrain||'awd').toLowerCase();
+  const front=clamp(finite(t.frontWeightDistribution,.54),.3,.75);
+  const transfer=clamp(finite(t.cgHeightM,.55)/finite(t.wheelbaseM,2.65)*grip,0,.25);
+  const drivenLoad=drive==='fwd'?front-transfer:drive==='rwd'?1-front+transfer:1;
+  const lock=clamp(finite(t[drive==='fwd'?'frontDifferentialAccel':'rearDifferentialAccel'],finite(t.differentialAccel,0)),0,1);
+  const traction=grip*9.81*drivenLoad*(.88+.12*lock);
+  const validGears=(Array.isArray(t.gearRatios)?t.gearRatios:[]).filter(r=>Number.isFinite(r)&&r>0);
+  const gears=validGears.length?validGears:[3.45,1.95,1.37,.97,.74,.67];
+  const finalDrive=finite(t.finalDrive,finite(t.gearFinalDrive,4.11)),radius=finite(t.wheelRadiusM,.337),redline=finite(t.redlineRpm,6500);
+  const gearing=clamp(gears[0]*finalDrive*.337/radius/12,.45,1.15);
+  const shifts=gears.filter(r=>redline*2*Math.PI*radius/(60*r*finalDrive)<26.8224).length;
+  const zeroToSixtySec=Math.max(26.8224/Math.max(.1,traction),.5*mass*26.8224**2/(power*745.7*efficiency*.65*gearing))+.2+shifts*finite(t.shiftTimeMs,420)/1000;
+  const area=finite(p.frontalAreaM2,finite(t.frontalAreaM2,Math.max(1.55,finite(t.widthM,1.8)*finite(t.lengthM,4.5)*.26)));
+  const drag=.5*1.225*clamp(finite(p.dragCoefficient,finite(t.dragCoefficient,.35)),.08,.9)*area;
+  const wheelPower=power*745.7*efficiency;
+  let lo=0,hi=180;
+  for(let i=0;i<32;i++){const speed=(lo+hi)/2;if(drag*speed**3+mass*.12*speed>wheelPower)hi=speed;else lo=speed;}
+  const gearLimit=redline*2*Math.PI*radius/(60*Math.min(...gears)*finalDrive);
+  const topSpeedMph=Math.min(lo,gearLimit)/.44704;
   const brakeG = grip * clamp(finite(t.brakePressure, 1), 0.1, 2);
   const dampingQuality = ['Front', 'Rear'].reduce((sum, axle) => {
     const spring = Math.max(1000, finite(p[`suspensionSpringRate${axle}Npm`], 32000));
@@ -31,13 +51,13 @@ export function calculateCarPerformance(car = {}) {
     engineWeight: Math.round(350 * clamp(powerPerTonne / 500, 0, 1)),
     acceleration: Math.round(180 * clamp((18 - zeroToSixtySec) / 15, 0, 1)),
     speed: Math.round(180 * clamp((topSpeedMph - 50) / 170, 0, 1)),
-    grip: Math.round(140 * clamp((grip - 0.4) / 1.2, 0, 1)),
+    grip: Math.round(140 * clamp((grip - 0.4) / .78, 0, 1)),
     brakes: Math.round(100 * clamp((brakeG - 0.3) / 1.1, 0, 1)),
     suspension: Math.round(50 * dampingQuality)
   };
   const points = Object.values(components).reduce((sum, n) => sum + n, 0);
-  return {version:1, points, class:CAR_PERFORMANCE_CLASSES[Math.min(4, Math.floor(points / 200))],
-    components, zeroToSixtySec, accelerationEstimated:t.zeroToSixtySec == null || !Number.isFinite(Number(t.zeroToSixtySec)), powerPerTonne, topSpeedMph};
+  return {version:3, points, class:carPerformanceClass(points),
+    components, zeroToSixtySec, accelerationEstimated:true, powerPerTonne, topSpeedMph};
 }
 
 export function normalizeAiCarSelection(value = {}) {

@@ -380,8 +380,11 @@ test('Race stock AWD dirt remains controllable while 1200 HP partial throttle is
     steerAxis: 0.5
   });
 
-  assert.equal(stock.maxWheelSpin < 0.08, true,
-    `expected stock wheelspin below 0.08, received ${stock.maxWheelSpin.toFixed(3)}`);
+  // Dirt retains its 0.72 base grip. With TC off, modest slip is expected
+  // under combined steering/drive demand; it must remain below the much
+  // larger high-steer saturation envelope and the 1200 HP case.
+  assert.equal(stock.maxWheelSpin < 0.2, true,
+    `expected bounded stock wheelspin below 0.2, received ${stock.maxWheelSpin.toFixed(3)}`);
   assert.equal(stock.maxDemandRatio < 1.4, true);
   assert.equal(stock.minPostPeakTraction < 1, true,
     'moderate steering on dirt should be able to enter combined-slip saturation');

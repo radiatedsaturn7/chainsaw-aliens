@@ -30,6 +30,7 @@ function hash(text){let h=2166136261;for(const ch of text)h=Math.imul(h^ch.charC
 export function normalizeMechanicalConfig(value={}){
  value ||= {};
  return {enabled:value.enabled!==false,timeScale:clamp(value.timeScale??8,.1,60),failureRate:clamp(value.failureRate??1,0,10),
+ engineHeatScale:clamp(value.engineHeatScale??1,.25,4),coolingEfficiency:clamp(value.coolingEfficiency??1,.5,3),oilCoolingEfficiency:clamp(value.oilCoolingEfficiency??1,.5,3),
  batteryAh:clamp(value.batteryAh??45,5,150),...normalizeFuelConfig(value),boostBar:clamp(value.boostBar??0,0,4),
  components:Object.fromEntries(MECHANICAL_COMPONENTS.map(({id,cost})=>[id,{durability:clamp(value.components?.[id]?.durability??1,.1,10),
  requiredPart:typeof value.components?.[id]?.requiredPart==='string'?value.components[id].requiredPart.slice(0,100):'',
@@ -54,6 +55,11 @@ export function applyMechanicalMission(state,mission={}){
  for(const [id,value] of Object.entries(mission.components||{}))if(Object.hasOwn(state.components,id)){const c=state.components[id];c.damage=clamp(value.damage??(value.failed?100:c.damage),0,100);c.failed=value.failed===true;}
  for(const key of ['charge','fuel','oil','coolant'])if(Number.isFinite(mission[key]))state[key]=clamp(mission[key]);
  state.fuel=startingFuelFraction(mission.startingFuel,state.config.fuelTankGallons,state.fuel);
+ // Optional opening-mission allowance: consume the small reserve above the
+ // warning threshold by distance, then resume the ordinary load-based model.
+ const warningDistance=Number(mission.fuelWarningAfterDistanceM);
+ state.fuelWarningRun=warningDistance>0&&Number.isFinite(warningDistance)&&state.fuel>.15
+  ?{distanceM:0,targetDistanceM:warningDistance,startFuel:state.fuel}:null;
  state.fuelLitersRemaining=state.fuel*state.config.fuelLiters;
  if(typeof mission.headlights==='boolean')state.headlights=mission.headlights;
  for(const [id,part] of Object.entries(mission.requiredParts||{}))if(Object.hasOwn(state.config.components,id)&&typeof part==='string')state.config.components[id].requiredPart=part.slice(0,100);
@@ -92,7 +98,16 @@ function mechanicalTick(s,t){
  s.coolant=clamp(s.coolant-scaled*(failed('radiator')?.003:Math.max(0,c.radiator.damage-50)*.000008));
  s.oil=clamp(s.oil-scaled*(failed('oilSeals')?.002:Math.max(0,c.oilSeals.damage-65)*.000004));
  const fuelBurn=fuelBurnGallons(s.config,dt,{engineRunning:s.engineRunning,speedMps:speed,rpm,maxRpm:t.maxRpm,throttle:load});
- s.fuel=clamp(s.fuel-fuelBurn/s.config.fuelTankGallons-scaled*(failed('fuelTank')?.001:Math.max(0,c.fuelTank.damage-60)*.000002));
+ let fuelUsed=fuelBurn/s.config.fuelTankGallons;
+ const allowance=s.fuelWarningRun;
+ if(allowance && allowance.distanceM<allowance.targetDistanceM){
+  const traveled=Math.abs(number(t.distanceSpeedMps,speed))*dt,remaining=allowance.targetDistanceM-allowance.distanceM;
+  allowance.distanceM=Math.min(allowance.targetDistanceM,allowance.distanceM+traveled);
+  const scheduled=allowance.startFuel-(allowance.startFuel-.15)*(allowance.distanceM/allowance.targetDistanceM);
+  fuelUsed=Math.max(0,s.fuel-scheduled);
+  if(traveled>remaining)fuelUsed+=fuelBurn/s.config.fuelTankGallons*(traveled-remaining)/traveled;
+ }
+ s.fuel=clamp(s.fuel-fuelUsed-scaled*(failed('fuelTank')?.001:Math.max(0,c.fuelTank.damage-60)*.000002));
  // Thermal mass follows real seconds, not the accelerated wear/leak clock.
  // A healthy radiator/fan can reject full-load heat; the thermostat prevents
  // overcooling. Loss of circulation/coolant still removes that reserve.
@@ -100,11 +115,11 @@ function mechanicalTick(s,t){
  const airflow=.45+Math.min(2,speed/15)+(fanOn&&s.voltage>10?.9*thermalHealth('fans'):0);
  const thermostatOpening=clamp((s.coolantTemperatureC-80)/15);
  const circulation=thermalHealth('waterPump')*thermalHealth('thermostat');
- const cooling=circulation*Math.max(.02,thermalHealth('radiator'))*Math.max(.02,s.coolant)*airflow*thermostatOpening;
- const heat=s.engineRunning?(3+load*rpmRatio*12):0;
+ const cooling=s.config.coolingEfficiency*circulation*Math.max(.02,thermalHealth('radiator'))*Math.max(.02,s.coolant)*airflow*thermostatOpening;
+ const heat=s.engineRunning?(3+load*rpmRatio*12)*s.config.engineHeatScale:0;
  const thermalMass=25+20*s.coolant;
  s.coolantTemperatureC=clamp(s.coolantTemperatureC+dt*(heat-cooling*Math.max(0,s.coolantTemperatureC-ambient)*.16)/thermalMass,ambient,240);
- const oilTarget=s.coolantTemperatureC+(s.engineRunning?load*rpmRatio*12:0);
+ const oilTarget=s.coolantTemperatureC+(s.engineRunning?load*rpmRatio*12:0)/s.config.oilCoolingEfficiency;
  s.oilTemperatureC=clamp(s.oilTemperatureC+(oilTarget-s.oilTemperatureC)*dt/90,ambient,250);
  s.oilPressureBar=s.engineRunning?clamp((1+rpm/1800)*health('oilPump')*Math.min(1,s.oil*2)*clamp(1-(s.oilTemperatureC-110)*.009,.05,1),0,6):0;
  const fuelSlosh=s.fuel<.06?clamp(1-Math.abs(number(t.lateralAccelerationMps2,0))/12,.1,1):1;

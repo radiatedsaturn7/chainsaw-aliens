@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {seedRaceRuntimeFixtures} from './helpers/race-runtime-fixtures.js';
 
 // Keep the launch preference private to each browser test, including reloads.
-test.beforeEach(async({page})=>{const preferences=new Map();await page.route('**/__storage/file*',async route=>{const request=route.request(),url=new URL(request.url());if(request.method()==='POST'){const body=request.postDataJSON();if(body?.folder==='settings'&&['menu-launch','menu-settings','menu-progress'].includes(body.name)){preferences.set(body.name,body.data);return route.fulfill({json:{ok:true}});}}else if(url.searchParams.get('folder')==='settings'&&['menu-launch','menu-settings','menu-progress'].includes(url.searchParams.get('name')))return route.fulfill({json:{ok:true,file:{data:preferences.get(url.searchParams.get('name'))||{value:null}}}});return route.continue();});});
+test.beforeEach(async({page})=>{const preferences=new Map();await page.route('**/__storage/file*',async route=>{const request=route.request(),url=new URL(request.url());if(request.method()==='POST'){const body=request.postDataJSON();if(body?.folder==='settings'&&['menu-launch','menu-settings','menu-progress','campaign-save-slots'].includes(body.name)){preferences.set(body.name,body.data);return route.fulfill({json:{ok:true}});}}else if(url.searchParams.get('folder')==='settings'&&['menu-launch','menu-settings','menu-progress','campaign-save-slots'].includes(url.searchParams.get('name')))return route.fulfill({json:{ok:true,file:{data:preferences.get(url.searchParams.get('name'))||{value:null}}}});return route.continue();});});
 
 async function ready(page,mobile){await page.goto('/index.html');await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');await page.evaluate(mobile=>{const g=window.__game;g.displayMode='color';g.deviceIsMobile=mobile;g.isMobile=mobile;g.setViewport({width:innerWidth,height:innerHeight,scale:1,dpr:1,isMobile:mobile});g.title.setScreen('graphics');g.handleTitleMenuAction('menu-editor');},mobile);await page.waitForFunction(()=>window.__game.menuEditor.menuBounds?.w>0);}
 async function menuReady(page){await page.waitForFunction(()=>{const g=window.__game,p=g?.menuPlayer;return g?.state!=='menu-player'||(!p.screenTransition.active&&!p.pendingScreenEntry&&!p.flow?.busy);});}
@@ -22,7 +22,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} menu desig
   g.startRaceTravel=async params=>{g.__menuRaceLaunch={raceName:params.raceName,carRef:params.carRef,configuration:params.menuConfiguration};return true;};
   g.transitionTo('title');await g.playStartingMenu();
  });
- await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');await pressKey(page,'Space');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
+ await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');await pressKey(page,'Space');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('saves-start');await pressKey(page,'Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.resources.cars.has('Menu Test Car'))).toBe(true);
  const previewPixels=()=>page.evaluate(()=>{const g=window.__game,p=g.menuPlayer,e=p.flow.screen.elements.find(e=>e.id==='car'),w=Math.round(e.w*p.bounds.w),h=Math.round(e.h*p.bounds.h),pixels=g.ctx.getImageData(Math.round(p.bounds.x+e.x*p.bounds.w),Math.round(p.bounds.y+e.y*p.bounds.h),w,h).data;let colored=0,hash=0;for(let i=0;i<pixels.length;i+=4){if(pixels[i+1]>100&&pixels[i+2]>100)colored++;hash=(Math.imul(hash,31)+pixels[i]+pixels[i+1]*3+pixels[i+2]*7)>>>0;}return {colored,hash}});
  await expect.poll(async()=>(await previewPixels()).colored).toBeGreaterThan(100);const before=(await previewPixels()).hash;await expect.poll(async()=>(await previewPixels()).hash).not.toBe(before);
@@ -303,8 +303,9 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
  await press('Enter','jump');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
  expect(await page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus].id})).toBe('garage-play');
  expect(await page.evaluate(()=>window.__game.menuPlayer.interactive().map(e=>e.label))).toEqual(['Drive','Tune','Upgrade']);
- for(const [steps,destination] of [[1,'tuning'],[2,'upgrades']]){
-  for(let i=0;i<steps;i++){
+ for(const [target,destination] of [[1,'tuning'],[2,'upgrades']]){
+  const initialFocus=await page.evaluate(()=>window.__game.menuPlayer.focus);
+  for(let i=initialFocus;i<target;i++){
    await press('ArrowDown','dpadDown');
    await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.focus)).toBe(i+1);
   }
@@ -312,6 +313,8 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
   expect(await page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef)).toBe('Showroom 1');
   await page.screenshot({path:`test-results/menu-${mode}-${destination}.png`});
   await press('Escape','gamepadB');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
+  await menuReady(page);
+  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.focus)).toBe(target);
  }
  await press('Escape','gamepadB');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('world-map');
  await page.evaluate(()=>window.__game.menuPlayer.flow.goTo('cars'));await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('world-map');
@@ -322,7 +325,7 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
 for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} splash Option Mode difficulty and warm car listing`,async({page})=>{
  await page.setViewportSize(mobile?{width:390,height:844}:{width:1280,height:800});await ready(page,mobile);
  await page.evaluate(async()=>{const g=window.__game;await g.previewMenu(g.menuEditor.menu)});
- await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus]?.label})).toBe('Game Start');
+ await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus]?.label})).toBe('Start');
  await pressKey(page,'ArrowDown');
  await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus]?.label})).toBe('Option Mode');
  await pressKey(page,'Enter');
@@ -333,6 +336,8 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} splash Opt
  await page.screenshot({path:`test-results/menu-settings-options-${mobile?'portrait':'desktop'}.png`});
  await pressKey(page,'Escape');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('splash');
  await page.screenshot({path:`test-results/menu-splash-options-${mobile?'portrait':'desktop'}.png`});
+ await pressKey(page,'ArrowUp');
+ await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus]?.label})).toBe('Start');
  await pressKey(page,'Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
  const result=await page.evaluate(async()=>{
   const {upsertCachedProjectFile}=await import('/src/ui/serverStorage.js');

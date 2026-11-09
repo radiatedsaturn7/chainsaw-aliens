@@ -182,3 +182,35 @@ test('stopped summaries remain detached when the physics frame pool wraps before
  assert.deepEqual(c.report().latestPhysicsSummary,expected);
  assert.equal(c.report().latestWorkerSummary.worker.p95,4);
 });
+
+test('detailed handling samples retain inputs and wheel evidence without live references',()=>{
+ const {e,c,advance}=fixture({detailed:true});
+ e.raceInput.brakeAxis=1;
+ e.playtestSession.vehicleDynamicsRunner={config:{massKg:1495,tuning:{brakeBalance:.7}},state:{groundSpeedMps:44.7,wheelLoadsN:{rl:300},contactPatches:{rl:{rawSlipRatio:-.8,absModulation:.2}},powertrainState:{stabilityClassification:'oversteer'}}};
+ e.update();e.draw();
+ e.raceInput.brakeAxis=0;e.playtestSession.vehicleDynamicsRunner.state.contactPatches.rl.rawSlipRatio=0;
+ e.update();e.draw();advance(110);e.update();e.draw();
+ assert.equal(c.frames[0].handling.inputs.brakeAxis,1);
+ assert.equal(c.frames[0].handling.state.wheels.rl.rawSlipRatio,-.8);
+ assert.equal(c.frames[0].handling.state.wheels.rl.loadN,300);
+ assert.equal(c.frames[1].handling,undefined);
+ assert.equal(c.frames[2].handling.inputs.brakeAxis,0);
+ assert.equal(c.metadata.handlingSetup.tuning.brakeBalance,.7);
+ c.stop();assert.doesNotThrow(()=>JSON.stringify(c.report()));
+});
+test('standard capture omits handling payload and missing physics stays explicit',()=>{
+ const standard=fixture({detailed:false});standard.e.update();standard.e.draw();
+ assert.equal(standard.c.frames[0].handling,undefined);standard.c.stop();
+ const detailed=fixture({detailed:true});detailed.e.update();detailed.e.draw();
+ assert.equal(detailed.c.frames[0].handling.source,'unavailable');
+ assert.equal(detailed.c.frames[0].handling.state,null);detailed.c.stop();
+});
+test('worker recordings use delivered state rather than stale local runner',()=>{
+ const {e,c}=fixture({detailed:true});e.vehicleDynamicsAuthority={workerBridge:{}};
+ e.playtestSession.vehicleDynamicsRunner={state:{groundSpeedMps:0}};
+ e.playtestSession.vehicleDynamicsPresentationState={groundSpeedMps:40,wheelLoadsN:{fl:4000},contactPatches:{fl:{steeringAngleRad:.04}}};
+ e.update();e.draw();const sample=c.frames[0].handling;
+ assert.equal(sample.source,'worker-presentation');assert.equal(sample.state.groundSpeedMps,40);
+ assert.equal(sample.state.wheels.fl.loadN,4000);assert.equal(sample.state.wheels.fl.rawSlipRatio,null);
+ c.stop();
+});

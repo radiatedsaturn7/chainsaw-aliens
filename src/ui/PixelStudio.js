@@ -1,3 +1,6 @@
+import { decodeAnimatedImage } from './pixel-editor/animatedImageImport.js';
+import { decodeGif } from './pixel-editor/gifImport.js';
+import { colorToAlpha } from './pixel-editor/filters.js';
 import {pickModelBinding} from './ModelPicker.js';
 import {
   buildPalette,
@@ -201,6 +204,7 @@ export function buildPixelPortraitCanvasActions() {
     { id: 'canvas-view', label: 'View' },
     { id: 'canvas-bg', label: 'BG' },
     { id: 'canvas-transform', label: 'Transform' },
+    { id: 'canvas-filters', label: 'Filters' },
     { id: 'canvas-export', label: 'Export' }
   ];
 }
@@ -239,6 +243,7 @@ export function buildPixelLandscapeFrameActions() {
 
 export function buildPixelPortraitCanvasActionGroups() {
   return {
+    'canvas-filters': { title: 'Filters', actions: [{ id: 'color-to-alpha', label: 'Color to Alpha' }] },
     'canvas-view': {
       title: 'View',
       actions: [
@@ -1098,7 +1103,7 @@ export default class PixelStudio {
     });
     this.imageFileInput = document.createElement('input');
     this.imageFileInput.type = 'file';
-    this.imageFileInput.accept = 'image/*';
+    this.imageFileInput.accept = 'image/*,.apng,.webp';
     this.imageFileInput.style.display = 'none';
     document.body.appendChild(this.imageFileInput);
     this.imageFileInput.addEventListener('change', (event) => {
@@ -1106,6 +1111,7 @@ export default class PixelStudio {
       if (!file) return;
       this.importImageFromFile(file).catch((error) => {
         console.warn('[PixelStudio] Failed to import image.', error);
+        this.statusMessage = `Import failed: ${error.message || 'Unable to read image'}`;
       });
       event.target.value = '';
     });
@@ -1123,37 +1129,54 @@ export default class PixelStudio {
 
   async importImageFromFile(file) {
     if (!file) return;
-    const image = await new Promise((resolve, reject) => {
-      const next = new Image();
-      next.onload = () => resolve(next);
-      next.onerror = reject;
-      next.src = URL.createObjectURL(file);
-    });
-    const sourceWidth = clamp(Math.round(image.width || 16), 1, ART_DIMENSION_MAX);
-    const sourceHeight = clamp(Math.round(image.height || 16), 1, ART_DIMENSION_MAX);
-    const scale = Math.min(1, IMPORT_DIMENSION_MAX / Math.max(sourceWidth, sourceHeight));
-    const width = Math.max(1, Math.round(sourceWidth * scale));
-    const height = Math.max(1, Math.round(sourceHeight * scale));
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const drawCtx = canvas.getContext('2d');
-    drawCtx.imageSmoothingEnabled = false;
-    drawCtx.drawImage(image, 0, 0, width, height);
-    const pixels = drawCtx.getImageData(0, 0, width, height).data;
-    const layer = createLayer(width, height, 'Layer 1');
-    for (let i = 0; i < width * height; i += 1) {
-      const offset = i * 4;
-      layer.pixels[i] = rgbaToUint32({
-        r: pixels[offset],
-        g: pixels[offset + 1],
-        b: pixels[offset + 2],
-        a: pixels[offset + 3]
+    const header = new Uint8Array(await file.slice(0, 6).arrayBuffer());
+    const isGif = /^GIF8[79]a$/.test(String.fromCharCode(...header));
+    let width, height, scale, frames, loop = true;
+    const decoded = isGif
+      ? decodeGif(await file.arrayBuffer(), { maxDimension: IMPORT_DIMENSION_MAX })
+      : await decodeAnimatedImage(await file.arrayBuffer(), { maxDimension: IMPORT_DIMENSION_MAX });
+    if (decoded) {
+      ({ width, height, scale, loop } = decoded);
+      frames = decoded.frames.map(({ pixels, durationMs }) => {
+        const layer = createLayer(width, height, 'Layer 1');
+        layer.pixels.set(pixels);
+        return createFrame([layer], durationMs);
       });
+    } else {
+      const url = URL.createObjectURL(file);
+      try {
+        const image = await new Promise((resolve, reject) => {
+          const next = new Image();
+          next.onload = () => resolve(next);
+          next.onerror = () => reject(Error('Unable to decode image'));
+          next.src = url;
+        });
+        const sourceWidth = image.naturalWidth || image.width;
+        const sourceHeight = image.naturalHeight || image.height;
+        scale = Math.min(1, IMPORT_DIMENSION_MAX / Math.max(sourceWidth, sourceHeight));
+        width = Math.max(1, Math.round(sourceWidth * scale));
+        height = Math.max(1, Math.round(sourceHeight * scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const drawCtx = canvas.getContext('2d');
+        drawCtx.imageSmoothingEnabled = false;
+        drawCtx.drawImage(image, 0, 0, width, height);
+        const pixels = drawCtx.getImageData(0, 0, width, height).data;
+        const layer = createLayer(width, height, 'Layer 1');
+        for (let i = 0; i < width * height; i++) {
+          const offset = i * 4;
+          layer.pixels[i] = rgbaToUint32({ r: pixels[offset], g: pixels[offset + 1], b: pixels[offset + 2], a: pixels[offset + 3] });
+        }
+        frames = [createFrame([layer], DEFAULT_FRAME_DURATION_MS)];
+      } finally { URL.revokeObjectURL(url); }
     }
+    this.animation.playing = false;
+    this.animation.previewElapsed = 0;
+    this.animation.loop = loop;
     this.canvasState.width = width;
     this.canvasState.height = height;
-    this.animation.frames = [createFrame([layer], DEFAULT_FRAME_DURATION_MS)];
+    this.animation.frames = frames;
     this.animation.currentFrameIndex = 0;
     this.canvasState.activeLayerIndex = 0;
     this.artSizeDraft.width = width;
@@ -1172,6 +1195,44 @@ export default class PixelStudio {
     this.statusMessage = scale < 1
       ? `Imported ${file.name} (scaled to ${width}x${height})`
       : `Imported ${file.name}`;
+    if (frames.length > 1) this.statusMessage += ` — ${frames.length} frames`;
+  }
+
+  async chooseCanvasFilter() {
+    const filter = await openChoiceOverlay({ title: 'Filters', choices: [{ label: 'Color to Alpha', value: 'color-to-alpha' }] });
+    if (filter === 'color-to-alpha') await this.chooseColorToAlpha();
+  }
+
+  async chooseColorToAlpha() {
+    const color = await openChoiceOverlay({
+      title: 'Color to Alpha',
+      message: 'Remove background color from every layer.',
+      choices: [
+        { label: 'White', value: 0xffffffff, primary: true },
+        { label: 'Black', value: 0xff000000 },
+        { label: 'Selected drawing color', value: this.getActiveColorValue() }
+      ]
+    });
+    if (color == null) return;
+    const scope = await openChoiceOverlay({
+      title: 'Color to Alpha',
+      choices: [
+        { label: 'All frames', value: 'all', primary: true },
+        { label: 'Current frame', value: 'current' }
+      ]
+    });
+    if (scope == null) return;
+    this.applyColorToAlpha(color, scope);
+  }
+
+  applyColorToAlpha(color, scope = 'all') {
+    this.animation.playing = false;
+    this.startHistory('color to alpha', { includeFrames: true });
+    const frames = scope === 'all' ? this.animation.frames : [this.currentFrame];
+    let changed = 0;
+    for (const frame of frames) for (const layer of frame.layers) changed += colorToAlpha(layer.pixels, color);
+    this.commitHistory();
+    this.statusMessage = `Color to alpha: ${changed} pixels across ${frames.length} frame(s)`;
   }
 
   get activeLayer() {
@@ -4271,11 +4332,13 @@ export default class PixelStudio {
           action('bone-bake', 'Bake Copy', () => this.bakeBoneAnimationToCopiedFrames())
         ]
       },
+      'canvas-filters': { id: 'canvas-filters', title: 'Filters', items: [action('color-to-alpha', 'Color to Alpha', () => this.chooseColorToAlpha())] },
       canvas: {
         id: 'canvas',
         title: 'Canvas',
         items: [
-          action('resize', 'Resize Canvas', () => this.resizeArtDocumentPrompt())
+          action('resize', 'Resize Canvas', () => this.resizeArtDocumentPrompt()),
+          { id: 'canvas-filters', label: 'Filters', submenu: 'canvas-filters', onSelect: () => this.chooseCanvasFilter() }
         ]
       },
       view: {
@@ -15832,7 +15895,7 @@ export default class PixelStudio {
     }
     if (this.leftPanelTab === 'canvas') {
       const groups = buildPixelPortraitCanvasActionGroups();
-      const subpanelId = ['canvas-view', 'canvas-bg', 'canvas-transform'].includes(this.pixelLandscapeSubpanel)
+      const subpanelId = ['canvas-view', 'canvas-bg', 'canvas-transform', 'canvas-filters'].includes(this.pixelLandscapeSubpanel)
         ? this.pixelLandscapeSubpanel
         : 'canvas-view';
       return (groups[subpanelId]?.actions || []).map((entry) => this.getPixelPortraitCanvasAction(entry));
@@ -17104,6 +17167,8 @@ export default class PixelStudio {
       'canvas-view': { action: () => openSubpanel('canvas-view') },
       'canvas-bg': { action: () => openSubpanel('canvas-bg') },
       'canvas-transform': { action: () => openSubpanel('canvas-transform') },
+      'canvas-filters': { action: () => openSubpanel('canvas-filters') },
+      'color-to-alpha': { action: () => this.chooseColorToAlpha() },
       'sprite-sheet': { action: () => this.exportSpriteSheet('horizontal') },
       'export-gif': { action: () => this.exportGif() }
     };
@@ -17633,11 +17698,11 @@ export default class PixelStudio {
     }
     const landscape = this.activeViewportMode === 'landscape-touch';
     if (landscape) {
-      if (!['canvas-view', 'canvas-bg', 'canvas-transform'].includes(this.pixelLandscapeSubpanel)) {
+      if (!['canvas-view', 'canvas-bg', 'canvas-transform', 'canvas-filters'].includes(this.pixelLandscapeSubpanel)) {
         this.pixelLandscapeSubpanel = 'canvas-view';
       }
       const actions = buildPixelPortraitCanvasActions()
-        .filter((entry) => ['canvas-view', 'canvas-bg', 'canvas-transform'].includes(entry.id))
+        .filter((entry) => ['canvas-view', 'canvas-bg', 'canvas-transform', 'canvas-filters'].includes(entry.id))
         .map((entry) => ({
           ...entry,
           active: this.pixelLandscapeSubpanel === entry.id,

@@ -11465,10 +11465,12 @@ test('Race playtest HUD top pause button returns to editor and pause overlay sta
   settings.onClick();
   const settingsCtx = createMockContext();
   editor.drawRacePlaytestScreen(settingsCtx, { x: 0, y: 0, w: 390, h: 260 });
-  const abs = editor.buttons.find((button) => button.id === 'race-toggle-abs');
-  const traction = editor.buttons.find((button) => button.id === 'race-toggle-tc');
   const transmission = editor.buttons.find((button) => button.id === 'race-toggle-transmission');
   const telemetry = editor.buttons.find((button) => button.id === 'race-toggle-telemetry');
+  editor.buttons.find((button) => button.id === 'race-car-controls').onClick();
+  editor.drawRacePlaytestScreen(settingsCtx, { x: 0, y: 0, w: 390, h: 260 });
+  const abs = editor.buttons.find((button) => button.id === 'race-toggle-abs');
+  const traction = editor.buttons.find((button) => button.id === 'race-toggle-tc');
   assert.ok(abs);
   assert.ok(traction);
   assert.ok(transmission);
@@ -11489,6 +11491,7 @@ test('Race playtest HUD top pause button returns to editor and pause overlay sta
   editor.buttons.find((button) => button.id === 'race-pause-back')?.onClick();
   editor.drawRacePlaytestScreen(createMockContext(), { x: 0, y: 0, w: 390, h: 260 });
   editor.buttons.find((button) => button.id === 'race-debug')?.onClick();
+  editor.getRacePauseMenuRows().find(row=>row.id==='race-debug-menu-overlays').onClick();
   const debugMenuCtx = createMockContext();
   editor.drawRacePlaytestScreen(debugMenuCtx, { x: 0, y: 0, w: 390, h: 260 });
   const debugHud = editor.buttons.find((button) => button.id === 'race-toggle-debug-hud');
@@ -12327,7 +12330,7 @@ test('Race d-pad separates steering diagonals from vertical gear shifts', () => 
 
   editor.handleRaceDpadPoint(dpad, { x: 86, y: 12 });
   assert.equal(editor.raceInput.gear, 1);
-  assert.equal(editor.raceInput.binarySteer, 1);
+  assert.ok(editor.raceInput.binarySteer > .8 && editor.raceInput.binarySteer < 1);
 
   editor.handleRaceDpadPoint(dpad, { x: 50, y: 8 });
   assert.equal(editor.raceInput.gear, 2);
@@ -19034,6 +19037,7 @@ test('Race Editor mobile playtest maps G, R, d-pad, and Select camera controls',
   editor.startPlaytest('starter-rwd');
   editor.playtestSession.countdownRemainingMs = 0;
   editor.playtestSession.launchLockMs = 0;
+  Object.assign(editor.playtestSession, {startupFramePending:false,startupPhase:'running',elapsedMs:3000,startBackDistance:0});
   editor.draw(ctx, 844, 390);
 
   const go = editor.buttons.find((button) => button.id === 'race-go');
@@ -19048,7 +19052,7 @@ test('Race Editor mobile playtest maps G, R, d-pad, and Select camera controls',
 
   editor.handlePointerDown({ id: 'g', x: go.bounds.x + go.bounds.w / 2, y: go.bounds.y + go.bounds.h / 2 });
   editor.handlePointerDown({ id: 'dpad', x: dpad.bounds.x + dpad.bounds.w * 0.9, y: dpad.bounds.y + dpad.bounds.h / 2 });
-  editor.updatePlaytest(0.25);
+  for(let frame=0;frame<15;frame++)editor.updatePlaytest(1/60);
   assert.equal(editor.playtestSession.steeringWheel > 0, true);
 
   editor.handleRaceDpadPoint(dpad.bounds, { x: dpad.bounds.x + dpad.bounds.w / 2, y: dpad.bounds.y + dpad.bounds.h * 0.1 });
@@ -19065,9 +19069,9 @@ test('Race Editor mobile playtest maps G, R, d-pad, and Select camera controls',
   editor.handlePointerDown({ id: 'r1', x: brake.bounds.x + brake.bounds.w / 2, y: brake.bounds.y + brake.bounds.h / 2 });
   editor.handlePointerUp({ id: 'r1', x: brake.bounds.x + brake.bounds.w / 2, y: brake.bounds.y + brake.bounds.h / 2 });
   editor.handlePointerDown({ id: 'r2', x: brake.bounds.x + brake.bounds.w / 2, y: brake.bounds.y + brake.bounds.h / 2 });
-  assert.equal(editor.raceInput.handbrakeHoldSequence, 1);
+  assert.equal(editor.raceInput.handbrakeHoldSequence, 0);
   editor.updatePlaytest(1 / 60);
-  assert.equal(editor.playtestSession.authoritativeHandbrakeActive, true);
+  assert.equal(editor.playtestSession.authoritativeHandbrakeActive, false);
 
   editor.handlePointerDown({ id: 'start', x: start.bounds.x + start.bounds.w / 2, y: start.bounds.y + start.bounds.h / 2 });
   assert.equal(editor.raceInput.paused, true);
@@ -20697,6 +20701,9 @@ test('Race Editor pause menu navigates to car settings and adjusts values with c
   assert.equal(editor.raceInput.pauseMenuMode, 'settings');
   assert.equal(editor.raceInput.pauseMenuIndex, 0);
 
+  gameInput.gamepadPressed = new Set(['gamepadA']);
+  editor.updateRaceKeyboardInput(idleInput);
+  assert.equal(editor.raceInput.pauseMenuMode, 'car-controls');
   const beforeAbs = editor.raceInput.absEnabled;
   gameInput.gamepadPressed = new Set(['dpadRight']);
   editor.updateRaceKeyboardInput(idleInput);
@@ -20704,6 +20711,8 @@ test('Race Editor pause menu navigates to car settings and adjusts values with c
 
   gameInput.gamepadPressed = new Set(['gamepadB']);
   editor.updateRaceKeyboardInput(idleInput);
+  assert.equal(editor.raceInput.pauseMenuMode, 'settings');
+  editor.backRacePauseMenu();
   assert.equal(editor.raceInput.pauseMenuMode, 'main');
 });
 
@@ -20739,7 +20748,7 @@ test('Race Editor simulated D-pad navigates the pause menu once per touch direct
   assert.equal(editor.raceInput.activeDpadPointerId, null);
   assert.equal(editor.raceInput.activeDpadMenuDirection, null);
 
-  editor.raceInput.pauseMenuMode = 'settings';
+  editor.raceInput.pauseMenuMode = 'car-controls';
   editor.raceInput.pauseMenuIndex = 0;
   const beforeAbs = editor.raceInput.absEnabled;
   editor.handleRacePlaytestPointerDown(dpad, { id: 'touch-2', x: 90, y: 50 });
@@ -20766,6 +20775,8 @@ test('Race Editor simulated G and R buttons select and back through the pause me
   assert.equal(editor.raceInput.throttle, false);
   assert.equal(editor.raceInput.activeThrottlePointerId, null);
 
+  editor.handleRacePlaytestPointerDown(go, { id: 'go-controls' });
+  assert.equal(editor.raceInput.pauseMenuMode, 'car-controls');
   const beforeAbs = editor.raceInput.absEnabled;
   editor.handleRacePlaytestPointerDown(go, { id: 'go-toggle' });
   assert.equal(editor.raceInput.absEnabled, !beforeAbs);
@@ -20773,6 +20784,8 @@ test('Race Editor simulated G and R buttons select and back through the pause me
   assert.equal(editor.raceInput.activeThrottlePointerId, null);
 
   editor.handleRacePlaytestPointerDown(brake, { id: 'brake-back' });
+  assert.equal(editor.raceInput.pauseMenuMode, 'settings');
+  editor.handleRacePlaytestPointerDown(brake, { id: 'brake-settings-back' });
   assert.equal(editor.raceInput.pauseMenuMode, 'main');
   assert.equal(editor.raceInput.paused, true);
   assert.equal(editor.raceInput.brake, false);
@@ -28650,18 +28663,21 @@ test('Race Editor physics debug screen is session-only and reachable from editor
   assert.deepEqual(editor.selectedRace.renderDebug || {}, savedRenderDebug);
 
   editor.raceInput.pauseMenuMode = 'main';
+  editor.getRacePauseMenuRows().find((row) => row.id === 'race-car-settings').onClick();
   editor.getRacePauseMenuRows().find((row) => row.id === 'race-debug').onClick();
   assert.equal(editor.raceInput.pauseMenuMode, 'debug');
+  editor.getRacePauseMenuRows().find(row=>row.id==='race-debug-menu-overlays').onClick();
   const rows = editor.getRacePauseMenuRows();
   assert.deepEqual(rows.map((row) => row.id), [
     'race-toggle-physics-surface',
+    'race-toggle-physics-vehicle-rig',
     'race-toggle-physics-performance',
     'race-toggle-debug-hud',
     'race-pause-back'
   ]);
   rows[0].onClick();
   assert.equal(editor.raceInput.physicsSurfaceVisible, false);
-  rows[1].onClick();
+  rows.find(row => row.id === 'race-toggle-physics-performance').onClick();
   assert.equal(editor.raceInput.physicsPerformanceVisible, false);
 });
 

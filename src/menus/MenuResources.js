@@ -1,7 +1,10 @@
+import {hydrateServerStorage} from '../ui/serverStorage.js';
+import {planAutoUpgrade,garageCarPerformance} from '../garage/GarageAutoUpgrade.js';
+import {loadGarageSetupCatalog} from '../garage/GarageSetups.js';
 import {getArtDocumentFrames} from '../ui/shared/artDocumentPixels.js';
 import {prepareMenuScreen} from './MenuScreenPreparation.js';
 import {MenuAppearanceResources} from './MenuAppearance.js';
-import {partFits,isGarageUpgrade} from '../garage/CarPart.js';
+import {partFits,isGarageUpgrade,isStockPart} from '../garage/CarPart.js';
 import {itemLibrary} from '../items/ItemLibrary.js';
 import {safeProperty} from './MenuWidgets.js';
 import {MenuCarPreview} from './MenuCarPreview.js';
@@ -9,17 +12,31 @@ import {listProjectFiles,loadProjectFile,hydrateProjectFilePayload} from '../ui/
 import {getRaceArtSpriteCanvasShared,hydrateRaceArtSpriteShared} from '../ui/shared/raceArtSpriteCanvas.js';
 
 export class MenuResources {
-  constructor(game){this.appearance=new MenuAppearanceResources();this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.showroomFrames=new WeakMap();this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.garageCars=new Map();this.partCatalog=[];this.pending=new Map();this.errors=new Map();this.missingRaces=new Set();}
+  constructor(game){this.appearance=new MenuAppearanceResources();this.game=game;this.carPreview=new MenuCarPreview(game.carEditor);this.showroomFrames=new WeakMap();this.cars=new Map();this.carSources=new Map();this.artCache=new Map();this.tunings=new WeakMap();this.garageCars=new Map();this.partCatalog=[];this.autoQuotes=new Map();this.pending=new Map();this.errors=new Map();this.missingRaces=new Set();}
   prepareScreen(document,screen,parameters,options){return prepareMenuScreen(this,document,screen,parameters,options);}
-  exteriorArtRefs(car){return this.game.carEditor.collectRaceCarArtRefs({...car,art:{...car.art,gauges:{},interior:{}}});}
+  exteriorArtRefs(car){return this.game.carEditor.collectRaceCarArtRefs({...car,art:{...car.art,gauges:{},interior:{},smoke:{}}});}
   font(element){return this.appearance.font(element);}
   cursor(element){return element.cursorArtRef?this.art(element.cursorArtRef):this.appearance.cursor(element);}
   get garage(){return this.garageOverride||this.game.items?.garage;}
   async prepareGarage(){
     await this.garage?.load();
+    await hydrateServerStorage({folder:'tires'}).catch(()=>null);
+    this.autoQuotes.clear();
+    this.setupCatalog=await loadGarageSetupCatalog(this.garage);
     const entries=await itemLibrary.list();
     this.partCatalog=(await Promise.all(entries.map(async e=>{try{return {ref:e.name,item:await itemLibrary.load(e.name)};}catch{return null;}}))).filter(e=>e?.item.carPart);
   }
+  performance(car){return garageCarPerformance(car,this.game.carEditor.getRaceCarTuning(car));}
+  autoUpgradeQuote(ref,target){
+    const stock=this.stockCar(ref);if(!stock)return null;
+    const key=`${ref}:${target}:${this.garage.revision}:${this.garage.items.revision}`;
+    const cached=this.autoQuotes.get(key);if(cached?.stock===stock)return cached.result;
+    this.request('auto:'+key,async()=>{
+      let result;try{result=await planAutoUpgrade(this.garage,ref,stock,target,new Map(this.garageCatalog().map(e=>[e.ref,e.item])),car=>this.performance(car));}catch(error){result={error:error.message};}
+      this.autoQuotes.set(key,{stock,result});
+    });return null;
+  }
+  stockPart(slot){return this.partCatalog.find(({item})=>(item.carPart.stock||isStockPart(item))&&item.carPart.slot===slot)?.item;}
   garageCatalog(){
     const owned=this.garage?.owned()||[];
     return [...this.partCatalog,...owned.filter(item=>!this.partCatalog.some(e=>e.item.id===item.id)).map(item=>({ref:'owned:'+item.id,item}))].filter(({item})=>isGarageUpgrade(item));

@@ -61,3 +61,20 @@ test('menu race completion returns the actual asynchronous destination promise',
   game.ensureRaceTravelSession=()=>session;game.openMenuDestination=()=>pending;
   assert.equal(game.completeRaceTravel({type:'menu',menuScreen:'world-map'}),pending);
 });
+
+test('handheld completion fades only the game display, leaving controls visible',()=>{
+ const e=new RaceEditor({deviceIsMobile:true,isMobile:true}),screen={x:24,y:30,w:342,h:430};
+ e.playtestSession={running:true,finishFade:{elapsedMs:800,durationMs:800,blackDrawn:false}};
+ e.raceInput.paused=true;e.raceInput.physicsSurfaceVisible=true;e.raceInput.cameraView='third-person';
+ Object.assign(e,{syncRacePhysicalGamepad(){},enforceRaceDoodadBrushSize(){},finishRaceLoadingFrame(){},
+  resolveRaceViewportMode:()=>({mode:'portrait',isDesktop:false,isMobilePortrait:true}),isLivePlaytestSession:()=>true,
+  hasPhysicalRaceGamepad:()=>false,getRaceHandheldLayout:()=>({screen}),drawRaceHandheldShell(){},
+  drawRacePhysicsSurfaceView(){},getRaceLightingBrightness:()=>1,getRaceLightningFlash:()=>0,
+  drawRacePlaytestHud(){},drawRaceCountdown(){},drawRaceEdgeResetFade(){},drawRaceDisplayModeFilter(){},
+  drawRaceHandheldControls(ctx){ctx.fillStyle='controls';ctx.fillRect(0,500,390,344);}
+ });
+ const draws=[],ctx=new Proxy({save(){},restore(){},fillRect(x,y,w,h){draws.push({color:this.fillStyle,x,y,w,h});}}, {get:(o,k)=>k in o?o[k]:()=>{}});
+ e.draw(ctx,390,844);
+ assert.deepEqual(draws.filter(d=>d.color==='rgba(0,0,0,1)'),[{color:'rgba(0,0,0,1)',...screen}]);
+ assert.equal(draws.at(-1).color,'controls');assert.equal(e.playtestSession.finishFade.blackDrawn,true);
+});

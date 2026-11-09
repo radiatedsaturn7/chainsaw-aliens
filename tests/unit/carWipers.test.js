@@ -29,5 +29,5 @@ test('wiper settings survive car save normalization and participate in art prelo
  const e=new RaceEditor({},{mode:'car'});e.selectedCar.art.interior.wipers=config();
  const car=e.normalizeLoadedCarDocument(e.serializeSelectedCarDocument());assert.deepEqual(car.art.interior.wipers,config());
  assert.ok(e.collectRaceCarArtRefs(car).includes('windshieldwiper'));
- e.playtestSession={};e.raceInput.pauseMenuMode='settings';const row=()=>e.getRacePauseMenuRows().find(r=>r.id==='race-wipers');assert.equal(row().value,'Off');row().onClick();assert.equal(row().value,'On');row().onAdjust();assert.equal(row().value,'Off');
+ e.playtestSession={};e.raceInput.pauseMenuMode='car-controls';const row=()=>e.getRacePauseMenuRows().find(r=>r.id==='race-wipers');assert.equal(row().value,'Off');row().onClick();assert.equal(row().value,'On');row().onAdjust();assert.equal(row().value,'Off');
 });

@@ -6,6 +6,8 @@ export async function editCarMechanics(editor,showForm=openEditorForm){
  const cfg=normalizeMechanicalConfig(car.mechanics);
  const fields=[{id:'enabled',label:'Mechanical failures enabled',type:'checkbox',value:cfg.enabled},
  slider('timeScale','Wear / fluid / battery time scale',cfg.timeScale,.1,60),slider('failureRate','Failure frequency',cfg.failureRate,0,10),
+ slider('engineHeatScale','Engine heat multiplier',cfg.engineHeatScale,.25,4,.05),
+ slider('coolingEfficiency','Radiator efficiency',cfg.coolingEfficiency,.5,3,.05),slider('oilCoolingEfficiency','Oil cooling efficiency',cfg.oilCoolingEfficiency,.5,3,.05),
  slider('batteryAh','Battery capacity (Ah)',cfg.batteryAh,5,150,1),slider('fuelTankGallons','Fuel tank capacity (US gallons)',cfg.fuelTankGallons,1,100,.1),slider('fuelMpg','Reference cruise economy (US MPG)',cfg.fuelMpg,1,200,1),slider('fuelIdleGallonsPerHour','Idle fuel use (US gallons/hour)',cfg.fuelIdleGallonsPerHour,0,5,.05),slider('fuelConsumptionScale','Fuel consumption multiplier',cfg.fuelConsumptionScale,0,20,.1),{id:'fuelDoorSide',label:'Fuel filler door side',value:cfg.fuelDoorSide,options:['left','right']},slider('boostBar','Rated turbo boost (bar; 0 = no turbo)',cfg.boostBar,0,4),
  {id:'component',label:'Component to configure',value:MECHANICAL_COMPONENTS[0].id,options:MECHANICAL_COMPONENTS.map(c=>({value:c.id,label:c.label}))},
  {id:'component-settings',label:'Component durability, repair cost & replacement part',type:'button',onClick:async values=>{

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794253339973,
+  "selectedDoodadId": "house3",
+  "doodad": {
+    "id": "house3",
+    "name": "house3",
+    "artRef": "house3",
+    "isFence": false,
+    "itemType": "scenery",
+    "unlockTrackId": "",
+    "model": null,
+    "widthM": 18,
+    "heightM": 9,
+    "groundOffsetM": 0.3515625,
+    "hitboxWidthM": 14.4,
+    "hitboxHeightM": 7.38,
+    "weightKg": 100000,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 10,
+        "engine": 6
+      }
+    },
+    "rules": []
+  }
+}

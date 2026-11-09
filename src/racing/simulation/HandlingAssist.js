@@ -1,5 +1,7 @@
 import { getGamepadSpeedSteeringScale } from './RaceSimulationConfig.js';
 import { clamp } from './SimulationMath.js';
+import {rotateVectorByQuaternion} from './RigidBodyMath.js';
+const BODY_ROLL_AXIS=Object.freeze({x:0,y:0,z:1});
 
 export const HANDLING_ASSIST_PRESETS = Object.freeze({
   simulation: Object.freeze({ yawDamping: 0, rollDamping: 0, countersteerMoment: 0, steeringResponse: 0, slipAlignment: 0, handbrakeRotation: 0 }),
@@ -13,6 +15,7 @@ export class HandlingAssist {
     this.interventionScratchCursor = 0;
     this.interventionScratch = Array.from({ length: 8 }, () => ({
       list: [],
+      rollAxisWorld: {x:0,y:0,z:1},
       roll: {
         source: 'handling-assist',
         trigger: 'roll-stability',
@@ -47,7 +50,11 @@ export class HandlingAssist {
     if (policy === HANDLING_ASSIST_PRESETS.simulation
       || controls.assists?.stabilityControlEnabled === false) return interventions;
     const physicalSupport = clamp(Number(supportScale), 0, 1);
-    const rollRate = Number(state.angularVelocityWorld?.z || 0);
+    // Roll is about the car's longitudinal axis, including on slopes and
+    // after a spin. A fixed world-Z damper accidentally damps pitch at 90° yaw.
+    const axis=rotateVectorByQuaternion(BODY_ROLL_AXIS,state.orientation,scratch.rollAxisWorld);
+    const omega=state.angularVelocityWorld||{};
+    const rollRate = Number(omega.x||0)*axis.x+Number(omega.y||0)*axis.y+Number(omega.z||0)*axis.z;
     const rollInertia = Math.max(1, Number(config.rollInertiaKgM2 || config.yawInertiaKgM2 || 1));
     // Yaw stabilization is owned by the coordinated per-wheel ESC brake
     // controller in PowertrainModel. Do not add a second body-yaw controller.
@@ -59,7 +66,9 @@ export class HandlingAssist {
       intervention.appliedValue = appliedValue;
       intervention.supportScale = physicalSupport;
       intervention.suppressionReason = physicalSupport <= 0.001 ? 'airborne-contact' : null;
-      intervention.momentWorldNm.z = appliedValue;
+      intervention.momentWorldNm.x = appliedValue*axis.x;
+      intervention.momentWorldNm.y = appliedValue*axis.y;
+      intervention.momentWorldNm.z = appliedValue*axis.z;
       interventions.push(intervention);
     }
     return interventions;
@@ -241,7 +250,9 @@ export class HandlingAssist {
     activeTurnInput = false,
     launchAligning = false
   } = {}) {
-    if (steeringInputMode === 'simulation-wheel' || activeTurnInput || launchAligning || seconds <= 0) return 0;
+    // A stick/touch pad commands rack position. Tire aligning torque must
+    // not rewrite that command when the player releases or centres the pad.
+    if (steeringInputMode === 'gamepad' || steeringInputMode === 'simulation-wheel' || activeTurnInput || launchAligning || seconds <= 0) return 0;
     let frontLoadN = 0;
     let rackMomentNm = 0;
     ['fl', 'fr'].forEach((wheelId) => {

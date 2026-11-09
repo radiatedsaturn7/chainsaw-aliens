@@ -8,7 +8,7 @@ export class MenuFlow {
   lockCar(ref){this.lockedCarRef=ref;this.parameters.carRef=ref;this.newGameSelection=false;this.history=[];}
   isCarSelection(id){return this.document.screens.find(s=>s.id===id)?.elements.some(e=>e.type==='car-showroom');}
   setParameter(key,value){if(this.lockedCarRef&&key==='carRef')value=this.lockedCarRef;if(!validMenuParameter(key))throw Error('Invalid parameter');this.parameters[key]=structuredClone(value);this.adapter.parameterChanged?.(key,value);}
-  goTo(id,{remember=true}={}){if(this.lockedCarRef&&this.isCarSelection(id)){id=this.document.screens.some(s=>s.id==='world-map')?'world-map':this.screenId;if(id===this.screenId)return;}if(!this.document.screens.some(s=>s.id===id))throw Error(`Menu screen not found: ${id}`);if(remember&&id!==this.screenId&&!(this.lockedCarRef&&this.isCarSelection(this.screenId)))this.history.push(this.screenId);this.screenId=id;this.time=0;this.error='';this.adapter.screenChanged?.(this.screen,this.parameters);}
+  goTo(id,{remember=true}={}){if(this.lockedCarRef&&this.isCarSelection(id)){id=this.document.screens.some(s=>s.id==='world-map')?'world-map':this.screenId;if(id===this.screenId)return;}if(!this.document.screens.some(s=>s.id===id))throw Error(`Menu screen not found: ${id}`);if(remember&&id!==this.screenId&&!(this.lockedCarRef&&this.isCarSelection(this.screenId)))this.history.push(this.screenId);this.adapter.screenLeaving?.(this.screen,this.parameters);this.screenId=id;this.time=0;this.error='';this.adapter.screenChanged?.(this.screen,this.parameters);}
   back(){if(this.busy)return;const id=this.history.pop();if(id)this.goTo(id,{remember:false});else this.stop();}
   stop(){this.active=false;this.generation++;this.adapter.stop?.();}
   update(dt){if(this.active)this.time+=Math.max(0,Number(dt)||0);}
@@ -22,10 +22,13 @@ export class MenuFlow {
     if(!this.active||generation!==this.generation)return;if(depth>12)throw Error('Too many chained menu actions');
     const target=resolveMenuValue(action.target,this.parameters),configuration={...structuredClone(this.parameters),...(this.lockedCarRef?{carRef:this.lockedCarRef}:{})};
     switch(action.type){
+      case 'save-slot':await this.adapter.saveSlot?.(target,action.value);return;
       case 'wheel-settings':await this.adapter.wheelSettings?.();break;
-      case 'haptics':await this.adapter.haptics?.();break;
+      case 'haptics':await this.adapter.haptics?.(target);break;
       case 'cheat-code':await this.adapter.cheatCode(target,configuration);break;
+      case 'continue-game':await this.adapter.continueGame?.();return;
       case 'new-game':
+        if(this.adapter.newGame){await this.adapter.newGame(target);return;}
         if(!this.document.screens.some(s=>s.id===target))throw Error(`Menu screen not found: ${target}`);
         this.lockedCarRef='';this.newGameSelection=true;this.history=[];delete this.parameters.selectedGameCar;this.goTo(target);break;
       case 'screen':this.goTo(target);break;

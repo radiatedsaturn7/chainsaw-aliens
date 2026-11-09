@@ -1,3 +1,6 @@
+import {contactTireWear,applySuspensionContactDamage,applySuspensionLandingDamage} from './SurfaceWearModel.js';
+import {mapThrottlePedal} from './PowertrainModel.js';
+import {chassisComplianceScale} from './ChassisUpgrades.js';
 import {stepMechanicalState} from './MechanicalModel.js';
 import { getRaceServiceBrakeForceN } from './RaceSimulationConfig.js';
 import { calculateRaceWaterForces } from './RaceWater.js';
@@ -919,6 +922,8 @@ export function createVehicleDynamicsConfig(config = {}) {
   const suspensionDamperRateNsM = Math.max(100, Number(config.suspensionDamperRateNsM) || 3200);
   const suspensionTravelM = Math.max(0.05, Number(config.suspensionTravelM) || 0.22);
   const staticSagRatio = clamp(Number(config.staticSagRatio ?? 0.42), 0.2, 0.7);
+  const frontCompliance=chassisComplianceScale(config.chassisRigidityNmDeg,Number(config.suspensionSpringRateFrontNpm)||suspensionSpringRateNpm,Number(config.frontTrackWidthM||config.trackWidthM)||1.58);
+  const rearCompliance=chassisComplianceScale(config.chassisRigidityNmDeg,Number(config.suspensionSpringRateRearNpm)||suspensionSpringRateNpm,Number(config.rearTrackWidthM||config.trackWidthM)||1.58);
   const explicitPitchStiffness = Number(config.pitchStiffnessNmPerRad);
   const explicitRollStiffness = Number(config.rollStiffnessNmPerRad);
   const explicitPitchDamping = Number(config.pitchDampingNmsPerRad);
@@ -1096,22 +1101,22 @@ export function createVehicleDynamicsConfig(config = {}) {
     suspensionSpringRateNpm,
     suspensionDamperRateNsM,
     suspensionTravelM,
-    suspensionSpringRateFrontNpm: Math.max(1000, Number(config.suspensionSpringRateFrontNpm) || suspensionSpringRateNpm),
-    suspensionSpringRateRearNpm: Math.max(1000, Number(config.suspensionSpringRateRearNpm) || suspensionSpringRateNpm),
-    suspensionBumpDamperFrontNsM: Math.max(100, Number(config.suspensionBumpDamperFrontNsM) || suspensionDamperRateNsM),
-    suspensionReboundDamperFrontNsM: Math.max(100, Number(config.suspensionReboundDamperFrontNsM) || suspensionDamperRateNsM),
-    suspensionBumpDamperRearNsM: Math.max(100, Number(config.suspensionBumpDamperRearNsM) || suspensionDamperRateNsM),
-    suspensionReboundDamperRearNsM: Math.max(100, Number(config.suspensionReboundDamperRearNsM) || suspensionDamperRateNsM),
+    suspensionSpringRateFrontNpm: Math.max(1000, Number(config.suspensionSpringRateFrontNpm) || suspensionSpringRateNpm) * frontCompliance,
+    suspensionSpringRateRearNpm: Math.max(1000, Number(config.suspensionSpringRateRearNpm) || suspensionSpringRateNpm) * rearCompliance,
+    suspensionBumpDamperFrontNsM: Math.max(100, Number(config.suspensionBumpDamperFrontNsM) || suspensionDamperRateNsM) * frontCompliance ** 2,
+    suspensionReboundDamperFrontNsM: Math.max(100, Number(config.suspensionReboundDamperFrontNsM) || suspensionDamperRateNsM) * frontCompliance ** 2,
+    suspensionBumpDamperRearNsM: Math.max(100, Number(config.suspensionBumpDamperRearNsM) || suspensionDamperRateNsM) * rearCompliance ** 2,
+    suspensionReboundDamperRearNsM: Math.max(100, Number(config.suspensionReboundDamperRearNsM) || suspensionDamperRateNsM) * rearCompliance ** 2,
     suspensionTravelFrontM: Math.max(0.05, Number(config.suspensionTravelFrontM) || suspensionTravelM),
     suspensionTravelRearM: Math.max(0.05, Number(config.suspensionTravelRearM) || suspensionTravelM),
     staticSagRatioFront: clamp(Number(config.staticSagRatioFront ?? staticSagRatio), 0.2, 0.7),
     staticSagRatioRear: clamp(Number(config.staticSagRatioRear ?? staticSagRatio), 0.2, 0.7),
-    suspensionRestLengthFrontM: Math.max(0.05, Number(config.suspensionRestLengthFrontM)
+    suspensionRestLengthFrontM: Math.max(0.05, (Number(config.suspensionRestLengthFrontM)
       || Math.max(0.05, (Number(config.cgHeightM) || 0.55) - (Number(config.wheelRadiusM) || 0.337)
-        + Math.max(0.05, Number(config.suspensionTravelFrontM) || suspensionTravelM) * clamp(Number(config.staticSagRatioFront ?? staticSagRatio), 0.2, 0.7))),
-    suspensionRestLengthRearM: Math.max(0.05, Number(config.suspensionRestLengthRearM)
+        + Math.max(0.05, Number(config.suspensionTravelFrontM) || suspensionTravelM) * clamp(Number(config.staticSagRatioFront ?? staticSagRatio), 0.2, 0.7))) + Number(config.rideHeightAdjustmentFrontM || 0)),
+    suspensionRestLengthRearM: Math.max(0.05, (Number(config.suspensionRestLengthRearM)
       || Math.max(0.05, (Number(config.cgHeightM) || 0.55) - (Number(config.wheelRadiusM) || 0.337)
-        + Math.max(0.05, Number(config.suspensionTravelRearM) || suspensionTravelM) * clamp(Number(config.staticSagRatioRear ?? staticSagRatio), 0.2, 0.7))),
+        + Math.max(0.05, Number(config.suspensionTravelRearM) || suspensionTravelM) * clamp(Number(config.staticSagRatioRear ?? staticSagRatio), 0.2, 0.7))) + Number(config.rideHeightAdjustmentRearM || 0)),
     antiRollFront: clamp(Number(config.antiRollFront) || 0.5, 0.1, 1),
     antiRollRear: clamp(Number(config.antiRollRear) || 0.5, 0.1, 1),
     antiRollStiffnessFrontNpm: Math.max(0, Number(config.antiRollStiffnessFrontNpm) || 0),
@@ -1244,6 +1249,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     physicsIncidentRecordingEnabled,
     massKg,
     physicalProfileId: physical?.id,
+    chassisRigidityNmDeg: tuning.chassisRigidityNmDeg,
     cgLocationBodyM: physical?.cgLocationBodyM,
     inertiaTensorBodyKgM2: physical?.inertiaTensorBodyKgM2,
     wheelbaseM: tuning.wheelbaseM,
@@ -1301,7 +1307,9 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     staticSagRatioFront: physical?.staticSagRatioFront ?? tuning.staticSagRatioFront ?? tuning.staticSagRatio,
     staticSagRatioRear: physical?.staticSagRatioRear ?? tuning.staticSagRatioRear ?? tuning.staticSagRatio,
     suspensionRestLengthFrontM: tuning.suspensionRestLengthFrontM,
+    rideHeightAdjustmentFrontM: physical?.garageRideHeightAdjustmentFrontM || 0,
     suspensionRestLengthRearM: tuning.suspensionRestLengthRearM,
+    rideHeightAdjustmentRearM: physical?.garageRideHeightAdjustmentRearM || 0,
     antiRollFront: frontBump.antiRollNormalized,
     antiRollRear: rearBump.antiRollNormalized,
     antiRollStiffnessFrontNpm: physical?.antiRollStiffnessFrontNpm,
@@ -3430,8 +3438,12 @@ export class VehicleDynamicsRunner {
         dt,
         target: this.tireThermalScratch[wheelId]
       });
-      const slipWorkJ = Number(thermal.frictionHeatingWorkJ || 0) / 0.78;
-      const wear = quantize(clamp(Number(previous.wear || 0) + slipWorkJ * 1e-9, 0, 1));
+      const wearDelta=contactTireWear({patch,thermal,dt});
+      const wear = clamp(Number(previous.wear || 0) + wearDelta.wear, 0, 1);
+      if(state.mechanical?.config?.enabled&&wearDelta.damage>0){
+        const component=state.mechanical.components['tire_'+wheelId];
+        component.damage=clamp(component.damage+wearDelta.damage/state.mechanical.config.components['tire_'+wheelId].durability,0,100);
+      }
       const damage = quantize(clamp(
         Number(patch.tireParameters?.damage ?? previous.damage ?? 0),
         0,
@@ -4641,6 +4653,7 @@ export class VehicleDynamicsRunner {
     const ownsCostStep = this.physicsCostAccounting.beginStep(beginCostMetadata);
     this.physicsCostAccounting.count('backlogSteps', Math.max(0, Number(backlogSteps) || 0));
     const chassisStepPreImpactKineticEnergyJ = calculateKineticEnergyJ(this.state, this.config);
+    const preImpactVelocityX=Number(this.state.velocity?.x)||0,preImpactVelocityZ=Number(this.state.velocity?.z)||0;
     const preImpactVerticalVelocityMps = Number(this.state.velocity?.y || 0);
     const scheduledReplayCollisions = this.scheduledReplayCollisions.get(nextStepIndex);
     for (let collisionIndex = 0;
@@ -4687,6 +4700,7 @@ export class VehicleDynamicsRunner {
     const directHandbrake = Number(sampledControls.handbrake || 0) > 0.001;
     const authoritativeHandbrakeActive = directHandbrake || handbrakeRemainingSeconds > EPSILON;
     const controls = sampledControls;
+    controls.throttle = mapThrottlePedal(controls.throttle,this.config.powertrainTuning?.pedalResponse);
     if (this.stationaryResetHold || suppressThrottleForResetRelease) controls.throttle = 0;
     controls.handbrake = authoritativeHandbrakeActive
       ? Math.max(1, Number(sampledControls.handbrake || 0)) : 0;
@@ -6362,6 +6376,7 @@ export class VehicleDynamicsRunner {
     }
     this.terrainImpactContactActive = Boolean(terrainImpactContactQualifies);
     if (impactStarted && (!this.activeImpact || this.activeImpact.complete === true)) {
+      applySuspensionLandingDamage(this.state,this.config,{x:preImpactVelocityX,y:preImpactVerticalVelocityMps,z:preImpactVelocityZ});
       const impact = {
         sequence: Math.max(0, Number(this.impactHistory.at(-1)?.sequence || 0)) + 1,
         stepIndex: nextStepIndex,
@@ -6561,11 +6576,12 @@ export class VehicleDynamicsRunner {
         + Number(this.state.wheelAngularVelocityRadps?.[wheelId] || 0) * chassisStepDt
       ) % (Math.PI * 2), 12);
     }
+    applySuspensionContactDamage(this.state,this.config,chassisStepDt);
     if (this.state.mechanical) stepMechanicalState(this.state.mechanical, chassisStepDt, {
       rpm:this.state.engineRpm, maxRpm:this.config.maxRpm,
       throttle:controls.throttle, brake:controls.brake, headlights:controls.headlights,highBeams:controls.highBeams,auxLights:controls.auxLights,
       clutchCoupling:this.state.powertrainState?.clutchCoupling,
-      gear:this.state.gear, speedMps:this.state.speedMps, tires:this.state.tireState,
+      gear:this.state.gear, speedMps:this.state.speedMps, distanceSpeedMps:this.state.groundSpeedMps, tires:this.state.tireState,
       lateralAccelerationMps2:this.state.lateralAccelerationMps2,
       wheelAngularVelocityRadps:this.state.wheelAngularVelocityRadps,
       impact:impactStarted?Math.min(4,(bodyNormalImpulseNs+tireVerticalImpulseNs)/Math.max(1,this.config.massKg)/10):0,

@@ -1068,7 +1068,10 @@ export function applyRaceVehicleImpactEvents(editor, session, events = []) {
     const panel = Math.abs(rightDot) > Math.abs(forwardDot)
       ? (rightDot > 0 ? 'left' : 'right')
       : (forwardDot < 0 ? 'front' : 'rear');
-    const severity = clamp(normalImpulseNs / (massKg * 18) * 14, 0.2, 14);
+    // Armor protects identified underside contacts, not side/roof or wheel impacts.
+    const underside=/underbody|underside|underfloor|subframe|lower-chassis|lower-frame|rocker/i.test(String(impact.impactFeatureId||''))&&Number(normal.y)>0.35;
+    const protection=underside?clamp(Number(editor.getRaceCarTuning?.(editor.getRaceSessionCar?.(session))?.underbodyProtection)||0,0,.85):0;
+    const severity = clamp(normalImpulseNs / (massKg * 18) * 14, 0.2, 14)*(1-protection);
     editor.applyRaceDamage('panels', severity, {
       keys: [panel],
       source: 'terrain-impact'
@@ -1956,11 +1959,16 @@ function advanceVehicleDynamicsAuthority(editor, {
         || wheelSurfaceState.baseSurfaceByWheel?.[wheelId] || 'asphalt';
       const nominalBaseGrip = Math.max(0.025, Number(getSurfaceById(baseSurfaceId)?.grip || 1));
       const localBaseGrip = Number(cell?.baseGrip ?? contact.friction ?? nominalBaseGrip);
-      const surfaceGripScale = localBaseGrip / nominalBaseGrip
+      // Tire surface values describe suitability, not a replacement for the
+      // ground coefficient. Dividing by nominal grip made matched dirt and
+      // snow tires behave like dry asphalt. Track State supplies only the
+      // change from this surface baseline, so apply that multiplier once.
+      const surfaceGripScale = localBaseGrip
         * Number(trackSample?.effectiveGripMultiplier ?? 1);
       const material = materialByWheel[wheelId];
       updateRaceEnvironmentRecord(material, cell, RACE_MATERIAL_OVERLAY_KEYS);
       material.baseSurfaceId = baseSurfaceId;
+      material.roughness = Math.max(0,Math.min(1,Number(contact.segment?.bumpiness)||0));
       material.surfaceId = contact.surfaceId || wheelSurfaceState.surfaceByWheel?.[wheelId];
       material.effectiveGrip = trackSample?.effectiveGrip ?? contact.friction
         ?? wheelSurfaceState.frictionByWheel?.[wheelId] ?? 1;
@@ -2801,6 +2809,11 @@ export function updateRaceSimulation({
   }
   if (!countdownActive) {
     editor.playtestSession.elapsedMs += seconds * 1000;
+    const limit=Number(editor.selectedRace?.finishBehavior?.timeLimitSeconds);
+    if(limit>0 && editor.playtestSession.elapsedMs>=limit*1000){
+      editor.playtestSession.elapsedMs=limit*1000;
+      editor.beginRaceFinishFade('time-limit');return;
+    }
   }
   if (!countdownActive) editor.updateRaceTriggers();
   editor.playtestSession.launchLockMs = Math.max(0, Number(editor.playtestSession.launchLockMs || 0) - seconds * 1000);
@@ -3780,7 +3793,7 @@ export function updateRaceSimulation({
     wheelRadiusM: tuning.wheelRadiusM,
     steeringInputMode: (editor.raceInput.wheelSteeringActive || String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation')
       ? 'simulation-wheel'
-      : editor.raceInput.analogSteeringActive ? 'gamepad' : 'keyboard',
+      : editor.raceInput.controllerSteeringMode || (editor.raceInput.analogSteeringActive || editor.raceInput.lastSteeringInputMode === 'analog' ? 'gamepad' : 'keyboard'),
     seconds,
     activeTurnInput,
     launchAligning

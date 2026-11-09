@@ -761,6 +761,8 @@ themedTest('controls', 'control timeline interpolates axes and holds discrete co
     brake: 0,
     clutch: 0,
     headlights: null,
+    highBeams: null,
+    auxLights: null,
     handbrake: 0,
     handbrakeHoldSequence: 0,
     handbrakeHoldSeconds: 0.36,

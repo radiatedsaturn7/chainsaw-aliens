@@ -1000,6 +1000,7 @@ export class CutscenePlayer {
     this.startTimeMs = this.timeMs;
     this.onDone = onDone;
     this.skippable = skippable !== false;
+    this.skipHoldMs = 0;
     this.ignorePauseMarkers = Boolean(ignorePauseMarkers);
     this.firedAudio.clear();
     this.stopLoopingAudio();
@@ -1051,17 +1052,16 @@ export class CutscenePlayer {
     }
   }
 
-  handleInput(input) {
+  handleInput(input, dt=0, {skipHeld=false,confirmPressed=false}={}) {
     if (!this.active) return false;
-    if (this.waitingPauseClipId && (input.wasPressed?.('attack') || input.wasPressed?.('jump') || input.wasPressed?.('interact') || input.wasPressed?.('pause') || input.wasPressed?.('cancel'))) {
+    if (this.waitingPauseClipId && (confirmPressed || input?.wasPressed?.('attack') || input?.wasPressed?.('jump') || input?.wasPressed?.('interact') || input?.wasPressed?.('pause') || input?.wasPressed?.('cancel'))) {
       this.waitingPauseClipId = null;
+      this.skipHoldMs=0;
       return true;
     }
-    if (!this.skippable) return false;
-    if (input.wasPressed?.('attack') || input.wasPressed?.('jump') || input.wasPressed?.('interact') || input.wasPressed?.('pause') || input.wasPressed?.('cancel')) {
-      this.stop();
-      return true;
-    }
+    const held=skipHeld || input?.isDownCode?.('KeyG') || input?.isGamepadDown?.('jump');
+    this.skipHoldMs=this.skippable && held?(this.skipHoldMs||0)+Math.min(.1,Math.max(0,Number(dt)||0))*1000:0;
+    if(this.skipHoldMs>=1000){this.stop();return true;}
     return false;
   }
 
@@ -1154,6 +1154,12 @@ export class CutscenePlayer {
   draw(ctx, width, height) {
     if (!this.active || !this.doc) return;
     drawCutsceneDocument(ctx, this.doc, this.timeMs, { x: 0, y: 0, w: width, h: height }, this, { fit: 'contain', drawBorder: false });
+    if(this.skippable){
+      const size=Math.max(10,Math.min(18,height*.035)),w=size*9,x=width-w-12,y=height-size-20;
+      ctx.save();ctx.fillStyle='rgba(0,0,0,.65)';ctx.fillRect(x-6,y-4,w+12,size+14);
+      ctx.fillStyle='#fff';ctx.font=`${size}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('Hold G to skip',x+w/2,y);
+      ctx.fillStyle='#666';ctx.fillRect(x,y+size+4,w,3);ctx.fillStyle='#fff';ctx.fillRect(x,y+size+4,w*Math.min(1,(this.skipHoldMs||0)/1000),3);ctx.restore();
+    }
   }
 
   getImageForAsset(asset) {

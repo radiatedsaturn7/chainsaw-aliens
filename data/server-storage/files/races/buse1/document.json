@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1792497729441,
+  "savedAt": 1794194670514,
   "selectedRaceId": "drawing-34f46410-dd4a-49bf-8e30-02d3d14a8800",
   "race": {
     "id": "drawing-34f46410-dd4a-49bf-8e30-02d3d14a8800",
@@ -1172,7 +1172,7 @@
       "shoulderWidthM": 12,
       "collisionMode": "shoulder",
       "artRef": "apron",
-      "marginMode": "on",
+      "marginMode": "hidden",
       "shoulderMode": "hidden",
       "collisionEdge": "shoulder",
       "collisionEffect": "reset"
@@ -1247,6 +1247,10 @@
         "scale": 1
       }
     },
-    "description": "Are you really sure about this?"
+    "description": "Are you really sure about this?",
+    "snowClouds": {
+      "enabled": true,
+      "artRef": "snowcloud"
+    }
   }
 }

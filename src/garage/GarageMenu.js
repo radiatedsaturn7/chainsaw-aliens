@@ -1,3 +1,6 @@
+import {applyAutoUpgrade} from './GarageAutoUpgrade.js';
+import {applyGarageSetup} from './GarageSetups.js';
+import {isOriginalDrivetrain} from './GarageLabels.js';
 import {partFits} from './CarPart.js';
 
 export const GARAGE_ACTION_LABELS={
@@ -5,15 +8,26 @@ export const GARAGE_ACTION_LABELS={
  'garage-buy':'Buy car part','garage-install':'Install car part','garage-remove':'Remove car part',
  'garage-tune':'Tune car','garage-reset':'Reset car tuning'
 };
-export async function runGarageAction(garage,type,partRef,parameters,{resolveCar,openTuner}={}){
+export async function runGarageAction(garage,type,partRef,parameters,{resolveCar,openTuner,autoCatalog,evaluate}={}){
  const ref=parameters.carRef;
  const selectedPart=()=>partRef?.startsWith('owned:')?Promise.resolve(garage.progress.parts[partRef.slice(6)]):garage.items.library.load(partRef);
  if(type==='garage-buy'){if(partRef?.startsWith('owned:'))throw Error('This part is no longer in the shop');return garage.purchase(partRef);}
  if(!ref)throw Error('Choose a car first');
+ if(type==='garage-fit'&&partRef?.startsWith('auto:')){
+  const stock=await resolveCar?.(ref);if(!stock||!autoCatalog||!evaluate)throw Error('Auto upgrade unavailable');
+  const entries=await Promise.all(autoCatalog().map(async e=>{try{return [e.ref,e.ref.startsWith('owned:')?e.item:await garage.items.library.load(e.ref)];}catch{return [e.ref,null];}}));
+  return applyAutoUpgrade(garage,ref,stock,partRef.slice(5),new Map(entries),evaluate,parameters.packageQuote);
+ }
+ if(type==='garage-fit'&&partRef?.startsWith('package:')){
+  const stock=await resolveCar?.(ref);if(!stock)throw Error('Car unavailable');
+  if(partRef==='package:stock')return garage.resetStock(ref);
+  return applyGarageSetup(garage,ref,stock,partRef.slice(8),{packageParts:true,expectedCost:parameters.packageCost});
+ }
  if(type==='garage-fit'){
   if(!partRef)return garage.remove(ref,parameters.partSlot);
   const item=await selectedPart();if(!item?.carPart)throw Error('Part unavailable');
   const stock=await resolveCar?.(ref);if(!partFits(item.carPart,ref,stock))throw Error('This upgrade is disabled for the selected car');
+  if(isOriginalDrivetrain(item.carPart,stock))return garage.remove(ref,'drive-swap');
   if(garage.configuration(ref).installed[item.carPart.slot]===item.id)return;
   if(garage.availableCount(item.id)>0)return garage.equip(ref,item.id);
   if(partRef.startsWith('owned:'))throw Error('This part is installed on another car');

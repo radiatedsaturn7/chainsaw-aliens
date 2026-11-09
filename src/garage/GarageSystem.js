@@ -1,18 +1,19 @@
+import {savedGarageTireRef} from './GarageSavedTires.js';
+import {normalizeMechanicalConfig} from '../racing/simulation/MechanicalModel.js';
 import {saveCarCondition,repairCar,repairRows} from './GarageRepairs.js';
 import {unlockBestUpgrades} from './GarageCheats.js';
-import {applyTireDefinition,createTireDefinition} from '../racing/raceTires.js';
+import {applyTireDefinition} from '../racing/raceTires.js';
 import {buildGarageCar,garageTuningRanges,normalizeCarPart,partFits,safeGarageKey,isGarageUpgrade} from './CarPart.js';
 import {normalizeItemDocument} from '../items/ItemDocument.js';
 import {normalizeItemProgress,syncItemGrantsToPlayer} from '../items/ItemEffects.js';
-import {listProjectFiles} from '../ui/projectFiles.js';
 import {loadSavedTire} from '../ui/TireLibrary.js';
 
 export class GarageSystem {
- constructor(items,{loadTire=ref=>ref.startsWith('builtin:')?Promise.resolve(createTireDefinition(ref.slice(8))):loadSavedTire(ref)}={}){this.items=items;this.loadTire=loadTire;this.revision=0;}
+ constructor(items,{loadTire=ref=>loadSavedTire(savedGarageTireRef(ref))}={}){this.items=items;this.loadTire=loadTire;this.revision=0;}
  get progress(){return this.items.progress.garage;}
  async load(){await this.items.load();return this;}
  configuration(ref,progress=this.items.progress){return progress.garage.cars[ref]||{installed:{},tune:{}};}
- installed(ref,progress=this.items.progress){return Object.values(this.configuration(ref,progress).installed).map(id=>progress.garage.parts[id]).filter(isGarageUpgrade);}
+ installed(ref,progress=this.items.progress){return Object.values(this.configuration(ref,progress).installed).map(id=>progress.garage.parts[id]).filter(isGarageUpgrade).map(item=>item.carPart.tireRef?{...item,carPart:{...item.carPart,tireRef:savedGarageTireRef(item.carPart.tireRef)}}:item);}
  owned(progress=this.items.progress){return Object.values(progress.garage.parts).filter(item=>progress.bags.items[item.id]>0);}
  availableCount(id,progress=this.items.progress){return (Number(progress.bags.items[id])||0)-Object.values(progress.garage.cars).reduce((n,setup)=>n+Object.values(setup.installed).filter(value=>value===id).length,0);}
  transaction(change){
@@ -36,6 +37,7 @@ export class GarageSystem {
   const item=normalizeItemDocument(await this.items.library.load(ref)),part=item.carPart;
   if(!isGarageUpgrade(item)||!part.forSale)throw Error('This item is not for sale');
   if(part.unlockKey&&!next.unlocks[part.unlockKey])throw Error('This part has not been unlocked');
+  if(part.tireRef)await this.loadTire(part.tireRef);
   next.garage.parts[item.id]=item;next.bags.items[item.id]=(Number(next.bags.items[item.id])||0)+1;
   next.inventory[item.id]=next.bags.items[item.id];next.contentNames[item.id]=item.name;
   if(carRef){
@@ -70,12 +72,13 @@ export class GarageSystem {
   for(const item of parts)for(const id of item.carPart.requires)if(!ids.includes(id))throw Error(`${item.name} requires another installed part`);
   garageTuningRanges(parts);
  }
- pruneTune(ref,progress){const ranges=garageTuningRanges(this.installed(ref,progress)),setup=progress.garage.cars[ref];
+ pruneTune(ref,progress){delete progress.garage.cars[ref]?.setupId;const ranges=garageTuningRanges(this.installed(ref,progress)),setup=progress.garage.cars[ref];
   setup.tune=Object.fromEntries(Object.entries(setup.tune).filter(([id,value])=>ranges[id]&&value>=ranges[id].min&&value<=ranges[id].max));
  }
  tune(carRef,field,value){return this.setTune(carRef,{[field]:value});}
  setTune(carRef,values){if(!safeGarageKey(carRef))return Promise.reject(Error('Choose a car first'));return this.transaction(next=>{
   next.garage.cars[carRef]||={installed:{},tune:{}};
+  delete next.garage.cars[carRef].setupId;
   const ranges=garageTuningRanges(this.installed(carRef,next));
   for(const [field,value] of Object.entries(values)){
    const range=ranges[field];if(!range)throw Error('Install a part that unlocks this setting');
@@ -95,10 +98,27 @@ export class GarageSystem {
    this.validateSetup(carRef,next);this.pruneTune(carRef,next);
   });
  }
- resetTune(carRef){return this.transaction(next=>{if(next.garage.cars[carRef])next.garage.cars[carRef].tune={};});}
+ resetStock(carRef){
+  if(!safeGarageKey(carRef))return Promise.reject(Error('Choose a car first'));
+  return this.transaction(next=>{
+   const setup=next.garage.cars[carRef];
+   if(setup){setup.installed={};setup.tune={};delete setup.setupId;}
+   return {debit:0,label:'Stock'};
+  });
+ }
+ resetTune(carRef){return this.transaction(next=>{if(next.garage.cars[carRef]){next.garage.cars[carRef].tune={};delete next.garage.cars[carRef].setupId;}});}
  saveCondition(ref,condition){return saveCarCondition(this,ref,condition);}
  repair(ref,id,car){return repairCar(this,ref,id,car);}
  repairRows(ref,car){return repairRows(this,ref,car);}
+ async stockBaseline(stock){
+  const baseline=structuredClone(stock);
+  const tire=await this.loadTire('Stock');
+  const pressure=baseline.setup?.tirePressurePsi,size=structuredClone(baseline.setup?.tireSize);
+  applyTireDefinition(baseline,tire,'Stock');
+  if(pressure)baseline.setup.tirePressurePsi=pressure;
+  if(size)baseline.setup.tireSize=size;
+  return baseline;
+ }
  async build(carRef,stock){
   await this.load();
   await this.items.queue;
@@ -107,17 +127,14 @@ export class GarageSystem {
   for(const item of parts)if(!partFits(item.carPart,carRef,stock))throw Error('An installed part is no longer compatible');
   this.validateSetup(carRef,this.items.progress);
   const tires={};for(const item of parts)if(item.carPart.tireRef)tires[item.carPart.tireRef]=await this.loadTire(item.carPart.tireRef);
-  // Every unmodified car starts on Stock tires; installed tires override this baseline.
-  let baseline=stock;
-  if(!parts.some(item=>item.carPart.tireRef)){
-   baseline=structuredClone(stock);
-   const tire=listProjectFiles('tires').some(f=>f.name==='Stock'&&!f.deleted)?await this.loadTire('Stock'):createTireDefinition('stock');
-   const pressure=baseline.setup?.tirePressurePsi;
-   applyTireDefinition(baseline,tire,'Stock');
-   if(pressure)baseline.setup.tirePressurePsi=pressure;
-  }
+  const baseline=await this.stockBaseline(stock);
   const built=buildGarageCar(baseline,{parts,tune:this.configuration(carRef).tune,tires});
-  if(this.configuration(carRef).condition)built.condition=structuredClone(this.configuration(carRef).condition);
+  // Always supply current equipment defaults, even when Stock has no authored
+  // mechanics. Saved condition retains wear/fluids, not removed upgrade ratings.
+  if(this.configuration(carRef).condition){
+   built.mechanics=normalizeMechanicalConfig(built.mechanics);
+   built.condition=structuredClone(this.configuration(carRef).condition);
+  }
   return built;
  }
 }

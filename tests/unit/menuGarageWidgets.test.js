@@ -1,3 +1,4 @@
+import {savedTireForRef} from '../helpers/savedGarageTires.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import MenuPlayer from '../../src/menus/MenuPlayer.js';
@@ -41,7 +42,7 @@ test('parts drill down and back one level, use compatibility, and expose stock r
  ];
  p.resources.stockCar=()=>({garagePartSlots:['turbo']});
  const e=p.flow.screen.elements.find(e=>e.type==='garage-browser');p.focus=p.interactive().indexOf(e);
- await p.activate(e,1,{choose:true});await p.activate(e,1,{choose:true});
+ await p.activate(e,1);await p.activate(e,1,{choose:true});await p.activate(e,1,{choose:true});
  const state=p.widgetStates.get(e.id);
  assert.equal(state.section,'Engine');assert.equal(state.slot,'turbo');
  assert.deepEqual(garageBrowserRows(p.resources,p.flow.parameters,state).map(r=>r.value),['','street','race']);
@@ -261,22 +262,22 @@ test('upgrade cards use four columns and two rows with vertical navigation and s
  assert.equal(screen.elements.find(e=>e.type==='garage-browser').w,.9);
 });
 
-test('upgrade controller rows, horizontal paging, and touch use the same selected cards',async()=>{
+test('large upgrade libraries use submenus with shared controller and touch targets',async()=>{
  const p=await player();p.flow.goTo('upgrades');
  p.resources.garageCatalog=()=>Array.from({length:10},(_,i)=>({ref:'part'+i,item:{id:'part'+i,name:'Part '+i,carPart:normalizeCarPart({section:'Section '+i,slot:'engine'})}}));
  const e=p.flow.screen.elements.find(e=>e.type==='garage-browser');p.focus=p.interactive().indexOf(e);
- p.widgetStates.set(e.id,{index:1});
- p.update({wasGamepadPressed:action=>action==='dpadDown'},.016);assert.equal(p.widgetStates.get(e.id).index,5);
- p.update({},.016);p.update({wasGamepadPressed:action=>action==='dpadUp'},.016);assert.equal(p.widgetStates.get(e.id).index,1);
- p.update({},.016);p.update({wasGamepadPressed:action=>action==='dpadUp'},.016);assert.equal(p.widgetStates.get(e.id).index,1);
- await p.activate(e,7);assert.equal(p.widgetStates.get(e.id).index,8);
+ p.widgetStates.set(e.id,{index:0});
+ const roots=garageBrowserRows(p.resources,p.flow.parameters,{});assert.ok(roots.length<=8);assert.ok(roots.every(r=>r.children));
+ p.update({wasGamepadPressed:action=>action==='dpadDown'},.016);assert.equal(p.widgetStates.get(e.id).index,4);
+ await p.activate(e,1,{choose:true});assert.equal(p.widgetStates.get(e.id).path.length,1);
  p.bounds={x:0,y:0,w:1000,h:500};
  const {menuElementBounds}=await import('../../src/menus/MenuRenderer.js');
  const {menuElementPose}=await import('../../src/menus/MenuDocument.js');
- const {garageGridBounds}=await import('../../src/menus/MenuGarageWidgets.js');
- const b=menuElementBounds(e,p.bounds,menuElementPose(e,p.flow.time)),card=garageGridBounds(b,1);
+ const {garageGridBounds,upgradeGridArea}=await import('../../src/menus/MenuGarageWidgets.js');
+ const b=menuElementBounds(e,p.bounds,menuElementPose(e,p.flow.time)),card=garageGridBounds(upgradeGridArea(b),1);
  p.pointerGarageWidget(e,{x:card.x+card.w/2,y:card.y+card.h/2});
- assert.equal(p.widgetStates.get(e.id).section,'Section 9');
+ assert.equal(p.widgetStates.get(e.id).section,'Section 8');
+ assert.equal(p.backGarageWidget(),true);assert.equal(p.widgetStates.get(e.id).section,undefined);
 });
 
 test('upgrade tire list has one free Stock choice and recognizes existing stock installations',()=>{
@@ -287,35 +288,35 @@ test('upgrade tire list has one free Stock choice and recognizes existing stock 
  for(const id of [undefined,'stock-tires','race-tires']){
   setup.installed.tires=id;
   const rows=garageBrowserRows(resources,{carRef:'car'},{section:'Tires',slot:'tires'});
-  assert.equal(rows.length,2);assert.equal(rows[0].value,'');assert.equal(rows[0].label,id==='race-tires'?'Stock · Install':'Stock · Installed');assert.equal(rows[1].value,'Race Tires');
+  assert.equal(rows.length,2);assert.equal(rows[0].value,'');assert.equal(rows[0].label,'Stock');assert.equal(rows[0].installed,id!=='race-tires');assert.equal(rows[1].installed,id==='race-tires');assert.equal(rows[1].value,'Race Tires');
  }
 });
 
 test('retired tire pressure kits are absent from the shop even when previously installed',()=>{
  const kit=normalizeItemDocument({id:'kit',name:'Tire Pressure Kit',carPart:{section:'Handling',slot:'tire-pressure',forSale:true}});
  const resources={garageCatalog:()=>[{ref:'kit',item:kit}],garage:{configuration:()=>({installed:{'tire-pressure':'kit'}}),items:{progress:{bags:{items:{kit:1}}}}}};
- assert.deepEqual(garageBrowserRows(resources,{carRef:'car'}),[]);
+ assert.deepEqual(garageBrowserRows(resources,{carRef:'car'}).map(r=>r.value),['Presets']);
 });
 
-test('upgrade selection skips unavailable rows in either direction and on hover/touch',async()=>{
+test('unavailable upgrade descriptions remain inspectable without allowing purchases',async()=>{
  const p=await player();p.flow.goTo('upgrades');p.preview=false;p.bounds={x:0,y:0,w:960,h:540};
  const e=p.interactive().find(e=>e.type==='garage-browser');
  p.resources.garageCatalog=()=>[0,1,2].map(i=>({ref:'p'+i,item:{id:'p'+i,name:'Part '+i,carPart:normalizeCarPart({section:'Engine',slot:'engine',tier:'street',price:i===1?5000:10})}}));
  p.resources.garageOverride={configuration:()=>({installed:{}}),availableCount:()=>0,items:{progress:{unlocks:{},bags:{items:{}}},game:{player:{credits:100}}}};
  p.widgetStates.set(e.id,{section:'Engine',slot:'engine',index:1});
  await p.activate(e,1);assert.equal(p.widgetStates.get(e.id).index,2); // affordable parts sorted before expensive
- await p.activate(e,1);assert.equal(p.widgetStates.get(e.id).index,0); // skip the expensive final row
+ await p.activate(e,1);assert.equal(p.widgetStates.get(e.id).index,3); // inspect the expensive final row
  await p.activate(e,-1);assert.equal(p.widgetStates.get(e.id).index,2);
- const {menuElementBounds}=await import('../../src/menus/MenuRenderer.js'),{garageGridBounds}=await import('../../src/menus/MenuGarageWidgets.js');
- const b=garageGridBounds(menuElementBounds(e,p.bounds),3),point={x:b.x+b.w/2,y:b.y+b.h/2};
- p.hoverGarage(point);assert.equal(p.widgetStates.get(e.id).index,2);
- p.pointerGarageWidget(e,point);assert.equal(p.widgetStates.get(e.id).index,2);
+ const {menuElementBounds}=await import('../../src/menus/MenuRenderer.js'),{garageGridBounds,upgradeGridArea}=await import('../../src/menus/MenuGarageWidgets.js');
+ const b=garageGridBounds(upgradeGridArea(menuElementBounds(e,p.bounds)),3),point={x:b.x+b.w/2,y:b.y+b.h/2};
+ p.hoverGarage(point);assert.equal(p.widgetStates.get(e.id).index,3);
+ p.pointerGarageWidget(e,point);assert.equal(p.widgetStates.get(e.id).index,3);assert.match(p.flow.error,/scrap/);
 });
 
 test('owned spare upgrades remain installable without purchase unlocks or scrap',()=>{
  const item=normalizeItemDocument({id:'gift-turbo',name:'Gift Turbo',carPart:{section:'Engine',slot:'turbo',tier:'race',price:5000,unlockKey:'chapter2'}});
  let owned=1;const resources={garageCatalog:()=>[{ref:'gift',item}],garage:{configuration:()=>({installed:{}}),availableCount:()=>owned,items:{progress:{bags:{items:{'gift-turbo':1}},unlocks:{}},game:{player:{credits:0}}}}};
  const rows=()=>garageBrowserRows(resources,{carRef:'car'},{section:'Engine',slot:'turbo'});
- assert.equal(rows()[1].disabled,false);assert.match(rows()[1].label,/Install$/);
- owned=0;assert.equal(rows()[1].disabled,true);assert.match(rows()[1].label,/Locked$/);
+ assert.equal(rows()[1].disabled,false);assert.match(rows()[1].description,/Owned/);
+ owned=0;assert.equal(rows()[1].disabled,true);assert.match(rows()[1].description,/Locked/);
 });

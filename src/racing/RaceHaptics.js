@@ -101,6 +101,11 @@ export class RaceHaptics {
   if(this.settings.output==='controller'||!this.navigator?.vibrate)return;
   this.phoneOutput.play(cues||{road:weak>strong?0:strong,slip:weak>strong?weak:0},this.settings.phonePulse);
  }
+ async test(values=this.settings){
+    const saved=this.settings;this.settings=normalizeHaptics(values);this.testing=true;
+    try{if(!this.settings.enabled)return;for(const cue of [{road:.3},{slip:.65},{braking:.6},{impact:.9}]){if(this.suspended||this.document?.hidden)break;this.send(Math.max(cue.road||0,cue.impact||0)*this.settings.strength,Math.max(cue.slip||0,cue.braking||0)*this.settings.strength,undefined,Object.fromEntries(Object.entries(cue).map(([key,value])=>[key,value*this.settings.strength])));await new Promise(r=>setTimeout(r,450));}}
+    finally{this.stop();this.testing=false;this.settings=saved;}
+ }
  async options(){
   this.stop();
   const value=await openEditorForm('Driving vibration',[
@@ -110,11 +115,9 @@ export class RaceHaptics {
    ...[['strength','Overall strength'],['road','Road texture / off-road bumps'],['slip','Skids / wheelspin'],['braking','ABS chatter'],['impacts','Collisions / landings']].map(([id,label])=>({id,label,type:'range',min:0,max:1,step:.05,value:this.settings[id],format:v=>`${Math.round(v*100)}%`})),
    {id:'phonePulse',type:'range',label:'Phone minimum pulse (ms) — raise if taps are too faint',min:8,max:30,step:1,value:this.settings.phonePulse},
    {type:'button',label:'Test: road → skid → ABS → impact',onClick:async values=>{
-    const saved=this.settings;this.settings=normalizeHaptics(values);this.testing=true;
-    try{if(!this.settings.enabled)return;for(const cue of [{road:.3},{slip:.65},{braking:.6},{impact:.9}]){if(this.suspended||this.document?.hidden)break;this.send(Math.max(cue.road||0,cue.impact||0)*this.settings.strength,Math.max(cue.slip||0,cue.braking||0)*this.settings.strength,undefined,Object.fromEntries(Object.entries(cue).map(([key,value])=>[key,value*this.settings.strength])));await new Promise(r=>setTimeout(r,450));}}
-    finally{this.stop();this.testing=false;this.settings=saved;}
+    await this.test(values);
    }}
-  ],{description:drivingDeviceDescription(drivingDeviceStatus(this.navigator,this.gamepadIndex,this.failed))+'\n\nPhone vibration uses pulse patterns; supported controllers use separate low/high rumble motors. Some browsers/devices do not support vibration. Wheel steering resistance requires a native wheel driver and is not supplied by browser rumble.'});
+  ],{});
   this.stop();if(value){this.setSettings(value);const saved=await this.savePreference('race-haptics',this.settings);if(saved?.ok===false)throw Error('Could not save vibration settings');}
  }
 }

@@ -1,3 +1,4 @@
+import {savedTireForRef} from '../helpers/savedGarageTires.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {ItemSystem,ITEM_PROGRESS_KEY} from '../../src/items/ItemSystem.js';

@@ -6,6 +6,8 @@ export function buildRaceRoadbedProfile({
   routeLength = null,
   runtimeType = 'destination',
   allowVisualExtension = false,
+  autoExtend = true,
+  continuationRange = null,
   step = 2.5,
   elevationScaleM = 12,
   absoluteRouteElevation = false,
@@ -270,12 +272,42 @@ export function buildRaceRoadbedProfile({
     );
     return { ...sample, grade };
   });
+  if (runtimeType !== 'circuit' && allowVisualExtension && !autoExtend) {
+    // Keep the timed course solution intact. Blend each authored approach into
+    // its endpoint height and grade, fading the correction within 80 metres.
+    const extend = (start) => {
+      const edge = start ? profileSamples[0] : profileSamples.at(-1);
+      const bound = start ? continuationRange?.minVisualDistance : continuationRange?.maxVisualDistance;
+      const length = Math.max(0, start ? -Number(bound || 0) : Number(bound || effectiveRouteLength)-effectiveRouteLength);
+      const sign = start ? -1 : 1, result = [];
+      const anchor = sampleSupportAt(start ? 0 : effectiveRouteLength);
+      const near = sampleSupportAt((start ? 0 : effectiveRouteLength)+sign*Math.min(2.5,length));
+      const authoredGrade = (near.targetElevation-anchor.targetElevation)*elevationScaleM/(sign*Math.max(.001,Math.min(2.5,length)));
+      for(let offset=effectiveStep; offset<length+effectiveStep; offset+=effectiveStep) {
+        const d=Math.min(offset,length), sample=sampleSupportAt((start?0:effectiveRouteLength)+sign*d);
+        const t=Math.min(1,d/80), h00=2*t*t*t-3*t*t+1, h10=t*t*t-2*t*t+t;
+        const elevation=sample.targetElevation+(edge.elevation-anchor.targetElevation)*h00
+          + sign*(edge.grade-authoredGrade)/elevationScaleM*80*h10;
+        result.push({...sample,elevation,supportElevation:elevation});
+        if(d===length)break;
+      }
+      return start?result.reverse():result;
+    };
+    const before=extend(true), after=extend(false);
+    profileSamples=[...before,...profileSamples,...after];
+    profileSamples=profileSamples.map((sample,i)=>{
+      if(sample.distance>=0 && sample.distance<=effectiveRouteLength)return sample;
+      const a=profileSamples[Math.max(0,i-1)], b=profileSamples[Math.min(profileSamples.length-1,i+1)];
+      return {...sample,grade:(b.elevation-a.elevation)*elevationScaleM/Math.max(.001,b.distance-a.distance)};
+    });
+  }
   return {
     samples: profileSamples,
     routeLength: effectiveRouteLength,
     step: effectiveStep,
     runtimeType,
-    allowVisualExtension
+    allowVisualExtension,
+    autoExtend
   };
 }
 
@@ -287,7 +319,7 @@ export function sampleRaceRoadbedProfileAtDistance(distance = 0, profile = null,
   if (!profileSamples.length) return null;
   const routeLength = Math.max(1, Number(profile.routeLength || profileSamples.at(-1)?.distance || 1) || 1);
   const requestedDistance = Number(distance) || 0;
-  if (profile.runtimeType !== 'circuit' && profile.allowVisualExtension && requestedDistance < 0 && profileSamples.length >= 2) {
+  if (profile.runtimeType !== 'circuit' && profile.allowVisualExtension && profile.autoExtend !== false && requestedDistance < 0 && profileSamples.length >= 2) {
     const first = profileSamples[0];
     const next = profileSamples.find((sample) => Number(sample.distance || 0) > 0.001) || profileSamples[1];
     const span = Math.max(0.001, Number(next.distance || 0) - Number(first.distance || 0));
@@ -316,7 +348,7 @@ export function sampleRaceRoadbedProfileAtDistance(distance = 0, profile = null,
       progress: 0
     };
   }
-  if (profile.runtimeType !== 'circuit' && profile.allowVisualExtension && requestedDistance > routeLength && profileSamples.length >= 2) {
+  if (profile.runtimeType !== 'circuit' && profile.allowVisualExtension && profile.autoExtend !== false && requestedDistance > routeLength && profileSamples.length >= 2) {
     const last = profileSamples[profileSamples.length - 1];
     const previous = [...profileSamples].reverse().find((sample) => Number(sample.distance || 0) < routeLength - 0.001) || profileSamples[profileSamples.length - 2];
     const span = Math.max(0.001, Number(last.distance || 0) - Number(previous.distance || 0));
@@ -347,7 +379,7 @@ export function sampleRaceRoadbedProfileAtDistance(distance = 0, profile = null,
   }
   const target = profile.runtimeType === 'circuit'
     ? (requestedDistance % routeLength + routeLength) % routeLength
-    : clamp(requestedDistance, 0, routeLength);
+    : clamp(requestedDistance, profile.allowVisualExtension ? profileSamples[0].distance : 0, profile.allowVisualExtension ? profileSamples.at(-1).distance : routeLength);
   const span = getSampleSpanAtDistance
     ? getSampleSpanAtDistance(profileSamples, target)
     : (() => {

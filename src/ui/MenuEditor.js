@@ -290,7 +290,7 @@ export default class MenuEditor extends RaceEditor {
     if(result&&this.element===e)this.change(()=>{const before=structuredClone(this.element);for(const key of ['x','y','w','h'])result[key]/=100;Object.assign(this.element,result,{visible:result.visible==='true',selectionBorder:result.selectionIndicator==='border'});if(this.element.type==='container')transformMenuGroup(this.screen.elements,this.elementId,before,this.element);});
   }
   async editAction(action){
-    const names={'wheel-settings':'Steering wheel settings',haptics:'Driving vibration settings',...GARAGE_ACTION_LABELS,'cheat-code':'Redeem cheat code',screen:'Open screen','new-game':'Start new game',back:'Back', 'set-param':'Set a parameter',race:'Start race',level:'Load level',movie:'Play movie',quit:'Exit menu'};
+    const names={'wheel-settings':'Steering wheel settings',haptics:'Driving vibration settings',...GARAGE_ACTION_LABELS,'cheat-code':'Redeem cheat code',screen:'Open screen','new-game':'Start','continue-game':'Continue saved game',back:'Back', 'set-param':'Set a parameter',race:'Start race',level:'Load level',movie:'Play movie',quit:'Exit menu'};
     const kind=await openEditorForm('Widget Action',[select('type','When activated',action?.type||'screen',[{value:'none',label:'No action'},...MENU_ACTION_TYPES.map(type=>({value:type,label:names[type]}))])]);
     if(!kind)return undefined;if(kind.type==='none')return null;
     const a=action?.type===kind.type?action:{},fields=[];

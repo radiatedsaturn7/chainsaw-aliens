@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1783855400000,
+  "savedAt": 1794194665416,
   "selectedRaceId": "col-de-turini",
   "race": {
     "id": "col-de-turini",
@@ -676,7 +676,7 @@
       "shoulderWidthM": 12,
       "collisionMode": "shoulder",
       "artRef": "apron",
-      "marginMode": "on",
+      "marginMode": "hidden",
       "shoulderMode": "hidden",
       "collisionEdge": "shoulder",
       "collisionEffect": "reset"
@@ -691,6 +691,10 @@
       "terrainBudgetEnabled": true,
       "farRoadDecimationEnabled": true,
       "rawTerrainPolygonsEnabled": false
+    },
+    "snowClouds": {
+      "enabled": true,
+      "artRef": "snowcloud"
     }
   }
 }

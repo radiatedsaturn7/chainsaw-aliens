@@ -1908,6 +1908,17 @@ export default class Game {
     if (!raceName) {
       return fail('Choose a race first.');
     }
+    if(params.menuFlow){
+      const flow=params.menuFlow,generation=flow.generation;
+      try{
+        const payload=await hydrateProjectFilePayload('races',raceName);
+        if(!flow.active||flow!==this.menuPlayer?.flow||flow.generation!==generation)return false;
+        const race=payload?.data?.race||payload?.data;
+        const intro=String(race?.raceStart?.cutsceneRef||'').trim();
+        if(intro)await this.menuPlayer.playMovie(intro,{restoreScreen:false});
+        if(!flow.active||flow!==this.menuPlayer?.flow||flow.generation!==generation)return false;
+      }catch(error){return fail(`Race intro could not load: ${error.message}`);}
+    }
     const continuation = params.continuation === this.raceTravelSession ? params.continuation : null;
     let car = continuation?.carSelection || null;
     try {
@@ -2148,6 +2159,19 @@ export default class Game {
     player.flow.history=[];player.flow.goTo(menuScreen,{remember:false});return true;
   }
 
+  async playRaceFinishCutscene(destination) {
+    const player=this.menuPlayer;
+    // Cover the destination while assets load and while the scene plays.
+    player.raceFinishCutscene=true;
+    try {
+      await this.openMenuDestination(destination);
+      await player.playMovie(destination.cutsceneRef);
+      return true;
+    } finally {
+      player.raceFinishCutscene=false;
+    }
+  }
+
   completeRaceTravel(finishBehavior = {}, {
     carId = '',
     raceId = '',
@@ -2161,9 +2185,10 @@ export default class Game {
       if (raceDocumentName) session.trackStateByRace[raceDocumentName] = trackStateSnapshot;
     }
     const completedRef=raceDocumentName||raceId;
-    const variables={...(completedRef?{[raceCompletionKey(completedRef)]:finishBehavior.mechanicalMissionSuccess!==false,lastCompletedRace:completedRef,garageReturnCount:Number(this.menuProgress?.garageReturnCount||0)+1,garageDialogueEvent:''}:{}),...finishBehavior.variables};
+    const variables={...(completedRef?{[raceCompletionKey(completedRef)]:finishBehavior.mechanicalMissionSuccess!==false,lastCompletedRace:completedRef,garageReturnCount:Number(this.menuProgress?.garageReturnCount||0)+(finishBehavior.progressSaved?0:1),garageDialogueEvent:''}:{}),...finishBehavior.variables};
     if(finishBehavior.type==='menu'){
       // Keep the race presentation alive until progress and menu assets are ready.
+      if(finishBehavior.cutsceneRef)return this.playRaceFinishCutscene({...finishBehavior,variables});
       return this.openMenuDestination({...finishBehavior,variables});
     }
     void setMenuProgress(this,variables).catch(error=>this.showSystemToast?.(error.message));
@@ -3725,7 +3750,7 @@ export default class Game {
     }
 
     if (this.state === 'playing' && this.cutscenePlayer?.active) {
-      this.cutscenePlayer.handleInput(this.input);
+      this.cutscenePlayer.handleInput(this.input,dt,{skipHeld:this.mobileControls?.isHeld('jump')});
       this.cutscenePlayer.update(dt);
       this.updateActiveMusicPlayers(dt);
       this.input.flush();
@@ -6959,7 +6984,7 @@ export default class Game {
     const createLayerPlayer = () => {
       const entry = this.cutsceneMidiLayers.get(key);
       if (!entry || entry.token !== token) return;
-      const player = new MidiSongPlayer(this.audio);
+      const player = isAudioMusic(libraryEntry.song)?new AudioMusicPlayer(this.audio):new MidiSongPlayer(this.audio);
       player.setSong(libraryEntry.song, resolvedTrackId, { loop, offsetMs });
       player.layerKey = key;
       player.setFade(targetVolume, Math.max(0, Number(fadeMs || 0)) / 1000);
@@ -7027,6 +7052,8 @@ export default class Game {
     const preparedMusic = new Map();
     const preparedSfx = new Map();
     const loads = [];
+    await Promise.all([...musicIds].map(id=>hydrateProjectFilePayload('music',id)));
+    await Promise.all([...sfxIds].map(id=>hydrateProjectFilePayload('sfx',id)));
     musicIds.forEach((trackId) => {
       const libraryEntry = this.getLibrarySong(trackId);
       if (libraryEntry?.song) {
@@ -11341,6 +11368,7 @@ export default class Game {
   }
 
   update(dt) {
+    this.campaignSaves?.tick(dt);
     this.updatePlaytestFps(dt);
     const wheelFrame=this.wheelService?.readInput();
     if(this.state==='race-editor'&&this.raceEditor?.playtestSession?.running&&wheelFrame?.pressed.pause){

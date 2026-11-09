@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1792343751513,
+  "savedAt": 1794194665418,
   "selectedRaceId": "daytona-tri-oval",
   "race": {
     "id": "daytona-tri-oval",
@@ -243,7 +243,7 @@
       "shoulderWidthM": 12,
       "collisionMode": "shoulder",
       "artRef": "apron",
-      "marginMode": "on",
+      "marginMode": "hidden",
       "shoulderMode": "hidden",
       "collisionEdge": "shoulder",
       "collisionEffect": "reset"
@@ -258,6 +258,10 @@
       "terrainBudgetEnabled": true,
       "farRoadDecimationEnabled": true,
       "rawTerrainPolygonsEnabled": false
+    },
+    "snowClouds": {
+      "enabled": true,
+      "artRef": "snowcloud"
     }
   }
 }

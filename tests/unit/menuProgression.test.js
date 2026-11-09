@@ -1,3 +1,4 @@
+import {CampaignSaves} from '../../src/menus/CampaignSaves.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import MenuPlayer from '../../src/menus/MenuPlayer.js';
@@ -126,24 +127,22 @@ test('saved car bypasses selection on reopening while previews remain independen
  player.flow.goTo('cars');assert.equal(player.flow.screenId,'world-map');
 });
 
-test('Game Start allows a new choice but committed games cannot back into the splash or showroom',async()=>{
+test('New Game selects a slot before choosing a car and preserves the other saved game',async()=>{
  const {game,player}=await fixture();game.menuProgress={selectedGameCar:'old-car'};
- const originalFetch=globalThis.fetch;let saved;
- globalThis.fetch=async(_url,options)=>({ok:true,json:async()=>{saved=JSON.parse(options.body).data.value;return {ok:true};}});
- try{
-  await player.open(createMenuDocument());
-  assert.equal(player.flow.lockedCarRef,'old-car');
-  await player.activate(player.interactive().find(e=>e.id==='start'));
-  assert.equal(player.flow.screenId,'cars');assert.equal(player.flow.lockedCarRef,'');
-  assert.equal(game.menuProgress.selectedGameCar,'old-car','opening selection alone does not overwrite the saved car');
-  await player.activate(player.interactive()[0],1,{choose:true});
-  assert.equal(player.flow.screenId,'world-map');assert.equal(player.flow.lockedCarRef,'car');assert.equal(saved.selectedGameCar,'car');
-  player.flow.goTo('garage');player.flow.back();assert.equal(player.flow.screenId,'world-map');
-  player.flow.goTo('cars');assert.equal(player.flow.screenId,'world-map');
-  player.flow.back();assert.equal(player.flow.active,false);assert.equal(player.flow.screenId,'world-map');
-  await player.open(createMenuDocument());assert.equal(player.flow.lockedCarRef,'car');
-  await player.activate(player.interactive().find(e=>e.id==='start'));assert.equal(player.flow.screenId,'cars');assert.equal(player.flow.lockedCarRef,'');
- }finally{globalThis.fetch=originalFetch;}
+ let saved;
+ game.campaignSaves=new CampaignSaves(game,{load:async()=>({}),save:async(_key,value)=>{saved=structuredClone(value);return {ok:true};}});
+ await player.open(createMenuDocument());
+ await player.activate(player.interactive().find(e=>e.id==='start'));
+ assert.equal(player.flow.screenId,'saves-start');
+ assert.equal(game.menuProgress.selectedGameCar,'old-car');
+ await player.activate(player.interactive()[1]);
+ assert.equal(player.flow.screenId,'cars');assert.equal(player.flow.lockedCarRef,'');
+ await player.activate(player.interactive()[0],1,{choose:true});
+ assert.equal(player.flow.screenId,'world-map');assert.equal(player.flow.lockedCarRef,'car');
+ assert.equal(saved.slots[0].progress.selectedGameCar,'old-car');assert.equal(saved.slots[1].progress.selectedGameCar,'car');
+ player.flow.goTo('garage');player.flow.back();assert.equal(player.flow.screenId,'world-map');
+ player.flow.goTo('cars');assert.equal(player.flow.screenId,'world-map');
+ player.flow.back();assert.equal(player.flow.active,false);
 });
 
 test('a failed new-game car save preserves the previous game car',async()=>{

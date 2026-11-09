@@ -1,3 +1,4 @@
+import '../helpers/savedGarageTires.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {GARAGE_DIALOGUE,GarageDialogueState,garageDialogueText,garageDialogueContext} from '../../src/garage/GarageDialogue.js';
@@ -67,4 +68,54 @@ test('garage button highlights speak the requested lines and mouse hover does no
   assert.equal(garageDialogueText(p.dialogueContext()),lines[i]);assert.equal(p.flow.screenId,'garage');
  }
  assert.equal(p.flow.screen.elements.find(e=>e.id==='garage-play').label,'Drive');p.cleanup();
+});
+
+test('highlighted upgrade parts speak specific descriptions, including Stock and nested tires',async()=>{
+ const {default:catalog}=await import('../../src/content/garage-parts.json',{with:{type:'json'}});
+ const {normalizeItemDocument}=await import('../../src/items/ItemDocument.js');
+ const {garageBrowserRows}=await import('../../src/menus/MenuGarageWidgets.js');
+ const parts=catalog.items.map(normalizeItemDocument),screen={id:'upgrades',elements:[{id:'parts',type:'garage-browser'}]};
+ const resources={stockPart:slot=>catalog.stockItems.find(i=>i.carPart.slot===slot),garageCatalog:()=>parts.map(item=>({ref:item.id,item})),garage:{configuration:()=>({installed:{}}),availableCount:()=>0,items:{progress:{bags:{items:{}},unlocks:{}},game:{player:{credits:0}}}}};
+ function contextFor(slot,id){
+  const section=parts.find(p=>p.carPart.slot===slot).carPart.section;
+  const root={section,slot};
+  function find(state){const rows=garageBrowserRows(resources,{},state);for(let index=0;index<rows.length;index++){const row=rows[index];if(row.children){const result=find({...state,path:[...(state.path||[]),row.id]});if(result)return result;}else if(row.value===id)return garageDialogueContext(screen,resources,{},new Map([['parts',{...state,index}]]));}}
+  return find(root);
+ }
+ const stock=contextFor('tires',''),street=contextFor('tires','street-tires'),race=contextFor('tires','race-tires');
+ assert.match(garageDialogueText(stock),/^Stock Tires\..*replace/);
+ assert.match(garageDialogueText(street),/^Street Tires\./);
+ assert.match(garageDialogueText(race),/^Race Tires\..*dry asphalt/);
+ assert.match(garageDialogueText(race),/rain/);assert.equal(race.insufficient,true);
+ assert.notEqual(garageDialogueText(race),GARAGE_DIALOGUE.events.insufficient);
+ const state=new GarageDialogueState();state.say('installed',stock,100);
+ assert.equal(state.text(race,101),garageDialogueText(race));
+ assert.notEqual(contextFor('brakes','').selection,stock.selection);
+ const custom=parts.find(p=>p.id==='snow-tires'),original=custom.description;custom.description='Snow Tires. This is my edited commentary.';assert.equal(garageDialogueText(contextFor('tires',custom.id)),custom.description);custom.description=original;
+ for(const item of parts.filter(p=>p.carPart.slot!=='tire-pressure')){
+  const context=contextFor(item.carPart.slot,item.id);if(!context)continue;
+  const line=garageDialogueText(context);assert.equal(line,item.description,item.id);
+  for(const width of [354,960]){
+   const b={x:0,y:0,w:width*.95,h:width*9/16*.28},drawn=[];
+   const ctx={font:'',measureText(t){return {width:t.length*parseFloat(this.font)*.5};},fillText(text,x,y){drawn.push({text,y});}};
+   drawGarageDialogueText(ctx,b,line,'sans-serif',{fontSize:34,color:'#fff'});
+   assert.equal(drawn.map(l=>l.text).join(' '),line,item.id);assert.ok(drawn.every(l=>l.y+parseFloat(ctx.font)<=b.h),item.id);
+  }
+ }
+});
+
+test('part commentary is saved item data and stock descriptions are editable non-purchasable items',async()=>{
+ const {ItemLibrary}=await import('../../src/items/ItemLibrary.js');
+ const {normalizeItemDocument,serializeItemDocument}=await import('../../src/items/ItemDocument.js');
+ const {isGarageUpgrade}=await import('../../src/garage/CarPart.js');
+ const {MenuResources}=await import('../../src/menus/MenuResources.js');
+ const library=new ItemLibrary(),defaults=await library.loadDefaults();
+ const stock=normalizeItemDocument(defaults.find(i=>i.id==='stock-description-tires'));
+ stock.description='Stock Tires. My saved commentary.';
+ const serialized=serializeItemDocument(stock),restored=normalizeItemDocument(serialized);
+ assert.equal(restored.description,stock.description);assert.equal(restored.carPart.stock,true);assert.equal(isGarageUpgrade(restored),false);
+ const resources=new MenuResources({});resources.partCatalog=[{ref:restored.name,item:restored}];
+ assert.equal(resources.stockPart('tires').description,stock.description);assert.deepEqual(resources.garageCatalog(),[]);
+ const race=normalizeItemDocument(defaults.find(i=>i.id==='race-tires'));race.description='Race Tires. Edited in Item Properties.';
+ assert.equal(normalizeItemDocument(serializeItemDocument(race)).description,race.description);
 });

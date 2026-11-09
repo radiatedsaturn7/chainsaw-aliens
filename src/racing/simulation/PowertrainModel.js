@@ -1,5 +1,10 @@
 import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
 
+// Shape pedal travel without changing zero or full-throttle output.
+export function mapThrottlePedal(throttle,response=1){
+ return clamp(Number(throttle)||0,0,1)**(2-clamp(Number(response)||1,.5,1.5));
+}
+
 export class PowertrainModel {
   getDrivenWheelIds(tuning = {}) {
     if (tuning.drivetrain === 'fwd') return ['fl', 'fr'];
@@ -560,8 +565,12 @@ export class PowertrainModel {
         + freeRpmTarget * (1 - clutchCoupling)
       : freeRpmTarget;
     let engineRpm = clamp(Number(previous.engineRpm ?? state.engineRpm ?? idleRpm), idleRpm, maxRpm);
+    // Calibrated rotational response: torque-equivalent response stays constant,
+    // so a lower combined crank/flywheel inertia accelerates and decelerates RPM
+    // faster. The 0.3 kg m² baseline preserves existing authored cars.
+    const engineInertia = clamp(Number(tuning.engineInertiaKgM2) || 0.3, 0.05, 2);
     engineRpm += (clamp(rpmTarget, idleRpm, maxRpm) - engineRpm)
-      * Math.min(1, seconds * (overallRatio > 0 ? 12 : 7.5));
+      * Math.min(1, seconds * (overallRatio > 0 ? 12 : 7.5) * 0.3 / engineInertia);
     const limiterActive = engineRpm >= maxRpm - Math.max(40, Number(config.revLimiterDropRpm || 280) * 0.35)
       && controls.throttle > 0.05;
     const limiterPhase = Math.floor(Number(previous.limiterSequence || 0)) % 4;
@@ -679,8 +688,18 @@ export class PowertrainModel {
     const stabilityEnabled = controls.assists?.stabilityControlEnabled !== false
       && !handbrakeEscSuppressed;
     const steeringAngle = Number(controls.centerSteeringAngleRad || 0);
-    const desiredYawRate = groundSpeedMps * Math.tan(steeringAngle)
+    const requestedYawRate = groundSpeedMps * Math.tan(steeringAngle)
       / Math.max(0.5, Number(config.wheelbaseM || 2.65));
+    // Lateral acceleration is speed * yaw rate. ESC cannot recover an
+    // unreachable steering target by braking harder into the turn: its
+    // reference must stay within the supported tires' force budget.
+    const massKg = Number(config.massKg ?? tuning.weightKg);
+    const lateralCapacityN = RACE_WHEEL_IDS.reduce((sum, id) => (
+      sum + Math.max(0, Number(capacityByWheel[id]) || 0)
+    ), 0);
+    const maximumYawRate = massKg > 0 && groundSpeedMps > 0.1
+      ? lateralCapacityN / (massKg * groundSpeedMps) : Infinity;
+    const desiredYawRate = clamp(requestedYawRate, -maximumYawRate, maximumYawRate);
     const yawRate = Number(state.angularVelocityWorld?.y || state.yawRateRadps || 0);
     const yawError = desiredYawRate - yawRate;
     const bodySlipAngleRad = Math.atan2(
@@ -698,9 +717,13 @@ export class PowertrainModel {
       stabilityClassification = countersteerRecovery
         ? 'countersteer-recovery'
         : yawError * turnSign > 0 ? 'understeer' : 'oversteer';
+      // Body +X is right and forward travel is +Z. Braking a right
+      // wheel generates positive yaw; braking a left wheel generates
+      // negative yaw. Choose from the requested correction, including
+      // countersteer, rather than the steering direction.
       const candidates = stabilityClassification === 'understeer'
-        ? (turnSign > 0 ? ['rl', 'fl'] : ['rr', 'fr'])
-        : (turnSign > 0 ? ['fr', 'rr'] : ['fl', 'rl']);
+        ? (yawError > 0 ? ['rr', 'fr'] : ['rl', 'fl'])
+        : (yawError > 0 ? ['fr', 'rr'] : ['fl', 'rl']);
       stabilityBrakeWheelId = candidates.reduce((best, wheelId) => (
         Number(capacityByWheel[wheelId] || 0) > Number(capacityByWheel[best] || 0)
           ? wheelId : best

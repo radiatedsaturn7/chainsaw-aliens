@@ -176,15 +176,15 @@ test('Pixel portrait root menu exposes every major panel and file utility', () =
 });
 
 test('Pixel landscape bottom rails use contextual groups instead of portrait palette actions', () => {
-  assert.deepEqual(buildPixelPortraitCanvasActions().map((entry) => entry.id), ['canvas-view', 'canvas-bg', 'canvas-transform', 'canvas-export']);
+  assert.deepEqual(buildPixelPortraitCanvasActions().map((entry) => entry.id), ['canvas-view', 'canvas-bg', 'canvas-transform', 'canvas-filters', 'canvas-export']);
   assert.deepEqual(buildPixelLandscapeLayerActions().map((entry) => entry.id), ['layers-manage', 'layer-add', 'layers-order']);
   assert.deepEqual(buildPixelLandscapeFrameActions().map((entry) => entry.id), ['frames-manage', 'frame-add', 'frames-playback']);
   assert.deepEqual(buildPixelPortraitFrameActionGroups()['frames-order'].actions.map((entry) => entry.id), ['frame-up', 'frame-down', 'frame-rewind', 'frame-last']);
 
   assert.equal(pixelStudioSource.includes("if (this.leftPanelTab === 'canvas') {\n      const groups = buildPixelPortraitCanvasActionGroups();"), true);
-  assert.equal(pixelStudioSource.includes("['canvas-view', 'canvas-bg', 'canvas-transform'].includes(this.pixelLandscapeSubpanel)"), true);
+  assert.equal(pixelStudioSource.includes("['canvas-view', 'canvas-bg', 'canvas-transform', 'canvas-filters'].includes(this.pixelLandscapeSubpanel)"), true);
   assert.equal(pixelStudioSource.includes('return (groups[subpanelId]?.actions || []).map((entry) => this.getPixelPortraitCanvasAction(entry));'), true);
-  assert.equal(pixelStudioSource.includes("buildPixelPortraitCanvasActions()\n        .filter((entry) => ['canvas-view', 'canvas-bg', 'canvas-transform'].includes(entry.id))"), true);
+  assert.equal(pixelStudioSource.includes("buildPixelPortraitCanvasActions()\n        .filter((entry) => ['canvas-view', 'canvas-bg', 'canvas-transform', 'canvas-filters'].includes(entry.id))"), true);
   assert.equal(pixelStudioSource.includes("if (this.leftPanelTab === 'layers') {\n      return buildPixelLandscapeLayerActions()"), true);
   assert.equal(pixelStudioSource.includes("if (this.leftPanelTab === 'animation') {\n      return buildPixelLandscapeFrameActions()"), true);
   assert.equal(pixelStudioSource.includes("openPixelLandscapeActionModal(id)"), true);
@@ -810,6 +810,7 @@ test('Pixel portrait canvas, layer, and frame menus use drill-down action groups
     'canvas-view',
     'canvas-bg',
     'canvas-transform',
+    'canvas-filters',
     'canvas-export'
   ]);
   assert.deepEqual(layerActions, ['layer-add', 'layers-manage', 'layers-order']);
@@ -3618,7 +3619,7 @@ test('Pixel landscape touch keeps a fixed four-button rail, left root drawer, an
   assert.equal(landscapeBottomBody.includes('this.drawMobileToolbar(ctx, toolBounds.x, toolBounds.y, toolBounds.w, toolBounds.h);'), false);
   assert.equal(pixelStudioSource.includes('  getPixelLandscapeBottomRailActions() {'), true);
   assert.equal(pixelStudioSource.includes("if (this.leftPanelTab === 'canvas') {\n      const groups = buildPixelPortraitCanvasActionGroups();"), true);
-  assert.equal(pixelStudioSource.includes("buildPixelPortraitCanvasActions()\n        .filter((entry) => ['canvas-view', 'canvas-bg', 'canvas-transform'].includes(entry.id))"), true);
+  assert.equal(pixelStudioSource.includes("buildPixelPortraitCanvasActions()\n        .filter((entry) => ['canvas-view', 'canvas-bg', 'canvas-transform', 'canvas-filters'].includes(entry.id))"), true);
   assert.equal(pixelStudioSource.includes("if (this.leftPanelTab === 'layers') {\n      return buildPixelLandscapeLayerActions()"), true);
   assert.equal(pixelStudioSource.includes("if (this.leftPanelTab === 'animation') {\n      return buildPixelLandscapeFrameActions()"), true);
   assert.equal(pixelStudioSource.includes("if (this.leftPanelTab === 'bones') {\n      return buildPixelPortraitBoneActions()"), true);

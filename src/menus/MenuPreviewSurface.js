@@ -9,7 +9,6 @@ export class MenuPreviewSurface {
     const touch=Boolean(this.game.deviceIsMobile&&!this.game.input?.isGamepadConnected?.());
     const key=`${width}:${height}:${touch}`;
     if(key!==this.key){this.reset();this.key=key;this.handheld=touch?(height>width?getPortraitHandheldLayout(width,height):getLandscapeHandheldLayout(width,height)):null;this.controls.setViewport({width,height,isMobile:touch,controlsBounds:this.handheld?.controlsDeck,controlsLayout:this.handheld});
-      for(const b of this.controls.buttons){if(b.id==='jump')b.label='A';if(b.id==='attack')b.label='B';}
     }
     return this.handheld;
   }
