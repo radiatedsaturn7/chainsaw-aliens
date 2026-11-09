@@ -68,7 +68,7 @@ export function planRaceAiDriving(editor, ai, tuning, {
   // Long straight-line lookahead cuts inside an apex. Bound the chord's
   // sagitta on bends to keep the driven body near the optimized path.
   const upcomingCurvature=roadPlan?.racingLine ? Math.max(roadPlan.curvature[raceAiRoadPlanIndex(roadPlan,distance)],roadPlan.curvature[raceAiRoadPlanIndex(roadPlan,distance+nominalLookahead)]) : 0;
-  const lookahead=Math.min(nominalLookahead,Math.max(7,Math.sqrt(8*.4/Math.max(.00001,upcomingCurvature))));
+  const lookahead=Math.min(nominalLookahead,Math.max(6,Math.sqrt(8*.25/Math.max(.00001,upcomingCurvature))));
   const racingTarget=session.debugAiCenterSlow?null:sampleRaceRacingLine(roadPlan,distance+lookahead);
   const targetPose = samplePose(lookahead);
   const halfWidth = Math.max(1, editor.getRaceRoadHalfWidthWorld(targetPose.segment));
