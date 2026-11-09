@@ -274,7 +274,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
  expect(go.time).toBeGreaterThan(11.65);expect(go.time).toBeCloseTo(go.beforeTime,1);expect(go.gain).toBeGreaterThan(.9);
  await page.evaluate(()=>window.__game.raceEditor.showRaceResults());
  await expect.poll(()=>page.evaluate(()=>window.__game.radio.audio?.currentTime||0)).toBeGreaterThanOrEqual(20);
- expect(await page.evaluate(()=>window.__game.radio.gain)).toBe(1);
+ await expect.poll(()=>page.evaluate(()=>window.__game.radio.gain)).toBe(1);
  expect(await page.evaluate(()=>window.__game.raceEditor.raceInput.paused)).toBe(true);
  await page.screenshot({path:`test-results/radio-race-results-${mobile?'portrait':'desktop'}.png`});
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.buttons.some(b=>b.id==='race-results-continue'))).toBe(true);

@@ -313,7 +313,8 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
   expect(await page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef)).toBe('Showroom 1');
   await page.screenshot({path:`test-results/menu-${mode}-${destination}.png`});
   await press('Escape','gamepadB');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
-  expect(await page.evaluate(()=>window.__game.menuPlayer.focus)).toBe(target);
+  await menuReady(page);
+  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.focus)).toBe(target);
  }
  await press('Escape','gamepadB');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('world-map');
  await page.evaluate(()=>window.__game.menuPlayer.flow.goTo('cars'));await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('world-map');
@@ -335,6 +336,8 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} splash Opt
  await page.screenshot({path:`test-results/menu-settings-options-${mobile?'portrait':'desktop'}.png`});
  await pressKey(page,'Escape');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('splash');
  await page.screenshot({path:`test-results/menu-splash-options-${mobile?'portrait':'desktop'}.png`});
+ await pressKey(page,'ArrowUp');
+ await expect.poll(()=>page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus]?.label})).toBe('Start');
  await pressKey(page,'Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
  const result=await page.evaluate(async()=>{
   const {upsertCachedProjectFile}=await import('/src/ui/serverStorage.js');
