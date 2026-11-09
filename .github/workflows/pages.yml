@@ -35,6 +35,9 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_STEP_DEBUG: true
+      RUNNER_DEBUG: 1
     permissions:
       pages: write
       id-token: write
@@ -42,6 +45,64 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Start authenticated Pages diagnostics
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/pages-diagnostics"
+          cat > "$RUNNER_TEMP/pages-diagnostics/monitor.py" <<'PY'
+          import datetime, json, os, pathlib, time, urllib.request, urllib.error
+          root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'pages-diagnostics'
+          url = (os.environ['GITHUB_API_URL'] + '/repos/' + os.environ['GITHUB_REPOSITORY']
+                 + '/pages/deployments/' + os.environ['GITHUB_SHA'])
+          token = os.environ['GH_TOKEN']
+          headers = {'Authorization': 'Bearer ' + token, 'Accept': 'application/vnd.github+json'}
+          deadline = time.monotonic() + 720
+          with (root / 'responses.jsonl').open('a', buffering=1) as log:
+              while time.monotonic() < deadline:
+                  record = {'time': datetime.datetime.now(datetime.timezone.utc).isoformat()}
+                  try:
+                      request = urllib.request.Request(url, headers=headers)
+                      try:
+                          response = urllib.request.urlopen(request, timeout=15)
+                      except urllib.error.HTTPError as error:
+                          response = error
+                      with response:
+                          record['http_status'] = response.code
+                          record['request_id'] = response.headers.get('X-GitHub-Request-Id')
+                          body = response.read().decode('utf-8', errors='replace')
+                          try:
+                              record['response'] = json.loads(body)
+                          except ValueError:
+                              record['response'] = body[:4000]
+                  except Exception as error:
+                      record['error'] = str(error)
+                  log.write(json.dumps(record).replace(token, '[REDACTED]') + '\n')
+                  if (root / 'stop').exists():
+                      break
+                  time.sleep(10)
+          PY
+          nohup python3 -u "$RUNNER_TEMP/pages-diagnostics/monitor.py" > "$RUNNER_TEMP/pages-diagnostics/monitor.log" 2>&1 &
+          echo "$!" > "$RUNNER_TEMP/pages-diagnostics/pid"
       - name: Deploy validated website
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Collect Pages diagnostics
+        if: always()
+        run: |
+          touch "$RUNNER_TEMP/pages-diagnostics/stop"
+          for attempt in 1 2 3 4 5 6; do
+            if ! kill -0 "$(cat "$RUNNER_TEMP/pages-diagnostics/pid")" 2>/dev/null; then break; fi
+            sleep 5
+          done
+          cat "$RUNNER_TEMP/pages-diagnostics/responses.jsonl"
+          cat "$RUNNER_TEMP/pages-diagnostics/monitor.log"
+      - name: Save Pages diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pages-diagnostics-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/pages-diagnostics/responses.jsonl
+            ${{ runner.temp }}/pages-diagnostics/monitor.log
+          retention-days: 14
