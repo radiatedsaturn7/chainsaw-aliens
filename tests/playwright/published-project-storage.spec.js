@@ -41,19 +41,41 @@ test.beforeAll(async()=>{
  server=http.createServer(async(req,res)=>{
   try{
    const url=new URL(req.url,'http://localhost');
-   if(!url.pathname.startsWith('/published/')){res.writeHead(404);res.end('outside project');return;}
-   const file=decodeURIComponent(url.pathname.slice('/published'.length));
+   const prefix=url.pathname.startsWith('/artifact/')?'/artifact':'/published';
+   if(!url.pathname.startsWith(prefix+'/')){res.writeHead(404);res.end('outside project');return;}
+   const file=decodeURIComponent(url.pathname.slice(prefix.length));
    if(file.startsWith('/__storage/')){res.writeHead(404,{'Content-Type':'text/html'});res.end('<html>No API</html>');return;}
    if(file==='/test.html'){res.writeHead(200,{'Content-Type':'text/html'});res.end('<!doctype html><html><body></body></html>');return;}
    const full=path.resolve(root,'.'+file);
    if(!full.startsWith(root+path.sep)){res.writeHead(403);res.end();return;}
-   const body=published.has(file)?published.get(file):await fs.readFile(full);
+   const body=prefix==='/published'&&published.has(file)?published.get(file):await fs.readFile(full);
    res.writeHead(200,{'Content-Type':file.endsWith('.js')?'text/javascript':file.endsWith('.json')?'application/json':file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':'application/octet-stream'});res.end(body);
   }catch{res.writeHead(404);res.end('missing');}
  });
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));origin=`http://127.0.0.1:${server.address().port}/published`;
 });
 test.afterAll(async()=>{server?.closeAllConnections();await new Promise(resolve=>server.close(resolve));});
+
+test('optimized deployment restores real cutscene media from the shared asset pool',async({page})=>{
+ test.skip(!process.env.STATIC_PROJECT_ROOT,'Requires the generated deployment artifact');
+ await page.goto(origin.replace('/published','/artifact')+'/test.html');
+ const result=await page.evaluate(async()=>{
+  const report=await fetch('./project-build.json').then(r=>r.json());
+  const {hydrateProjectFilePayload}=await import('./src/ui/projectFiles.js');
+  const payload=await hydrateProjectFilePayload('cutscenes','introtowerhill');
+  const pending=[payload.data];let imageUrl='';
+  while(pending.length&&!imageUrl){const value=pending.pop();
+   if(typeof value==='string'&&value.startsWith('data:image/'))imageUrl=value;
+   else if(value&&typeof value==='object')pending.push(...Object.values(value));
+  }
+  if(!imageUrl)throw Error('Optimized opening scene lost its image');
+  const image=new Image();image.src=imageUrl;await image.decode();
+  return {width:image.naturalWidth,height:image.naturalHeight,optimization:report.optimization};
+ });
+ expect(result.width).toBeGreaterThan(0);expect(result.height).toBeGreaterThan(0);
+ expect(result.optimization.sharedMediaFiles).toBeGreaterThan(0);
+ expect(result.optimization.savedBytes).toBeGreaterThan(0);
+});
 
 test('all editor folders, assets and preferences load below a Pages-style subdirectory',async({page})=>{
  await page.goto(origin+'/test.html');
