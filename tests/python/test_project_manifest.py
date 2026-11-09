@@ -31,7 +31,8 @@ class ProjectManifestTests(unittest.TestCase):
                 (source / 'assets/media.bin').write_bytes(binary)
                 (source / 'assets/unused.png').write_bytes(binary)
                 (source / 'assets/keep.bin').write_bytes(b'keep')
-                (source / 'metadata.json').write_text(json.dumps({'name': name}))
+                (source / 'assets/thumb.bin').write_bytes(b'thumbnail')
+                (source / 'metadata.json').write_text(json.dumps({'name': name, 'thumbnail': 'assets/thumb.bin'}))
                 raw = json.dumps(original).encode() if name == 'One' else encode_document(original)
                 (source / 'document.json').write_bytes(raw)
                 target = output / 'art' / name / 'document.json'
@@ -41,6 +42,7 @@ class ProjectManifestTests(unittest.TestCase):
                 self.assertFalse((target.parent / 'assets/unused.png').exists())
                 self.assertFalse((target.parent / 'assets/media.bin').exists())
                 self.assertEqual((target.parent / 'assets/keep.bin').read_bytes(), b'keep')
+                self.assertEqual((target.parent / 'assets/thumb.bin').read_bytes(), b'thumbnail')
                 self.assertLess(target.stat().st_size, 1500)
                 decoded = decode_document(target.read_bytes())
                 for field in ['image', 'copy', 'audio']:

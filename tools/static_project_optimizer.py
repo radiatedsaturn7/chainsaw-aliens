@@ -74,6 +74,20 @@ def publish_document(source, destination, root):
         return value
 
     optimized = visit(document)
+    # Thumbnail/support URLs in metadata must survive even when the document
+    # itself does not reference that media. Metadata is copied verbatim.
+    metadata = source_dir / 'metadata.json'
+    pending = [json.loads(metadata.read_text())] if metadata.exists() else []
+    while pending:
+        value = pending.pop()
+        if isinstance(value, dict):
+            if isinstance(value.get('__chainsawAssetRef'), str):
+                referenced.add((source_dir / unquote(value['__chainsawAssetRef'])).resolve())
+            pending.extend(value.values())
+        elif isinstance(value, list):
+            pending.extend(value)
+        elif isinstance(value, str):
+            strings.add(value)
     destination.write_bytes(encode_document(optimized))
     # Keep metadata/support files. Media in assets/ is included only when used;
     # legacy exports often retain an identical PNG alongside an embedded URL.
