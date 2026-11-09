@@ -3,6 +3,7 @@ import argparse
 import base64
 import gzip
 import json
+import re
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -29,7 +30,7 @@ def build_manifest(root):
     return {'folders': folders}
 
 
-def validate_assets(root, manifest):
+def validate_assets(root, manifest, *, shared_assets=False):
     """Check every current document, including compressed audio/font payloads."""
     documents = assets = 0
     for folder, entries in manifest['folders'].items():
@@ -50,7 +51,9 @@ def validate_assets(root, manifest):
                             if not isinstance(ref, str) or not ref:
                                 raise ValueError('Invalid asset reference')
                             target = (document.parent / unquote(ref)).resolve()
-                            if not target.is_relative_to(document.parent.resolve()) or not target.is_file():
+                            shared = (shared_assets and target.parent == (root / '_assets').resolve()
+                                      and re.fullmatch(r'[0-9a-f]{64}\.bin', target.name))
+                            if (not target.is_relative_to(document.parent.resolve()) and not shared) or not target.is_file():
                                 raise ValueError(f'Missing or invalid asset: {ref}')
                             assets += 1
                         else:
