@@ -1,0 +1,168 @@
+{
+  "assets": [
+    {
+      "file": "metal-guardrail-intact.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One intact short galvanized metal highway guardrail section on three short steel posts, weathered zinc gray, tiny frost patches. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-87b0cfac-5a3d-427c-8fca-3269f9db56a9.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "metal-guardrail-damaged.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One short galvanized highway guardrail section on three posts, visibly bent impact damage in center, oxidized scuffs and tiny frost patches. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-2fa47c85-0780-43e1-8667-5feb4a919dc6.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "concrete-barrier-clean.png",
+      "prompt": "Use case: stylized-concept. New standalone game prop sprite of ONE CLEAN INTACT gray concrete Jersey highway barrier. Smooth unbroken solid concrete, only fine material grain, NO cracks, NO chips, NO stains, NO rust, NO damaged edges. Rectangular long base and angled Jersey-barrier profile, tiny sparse dusting of frost along upper edge. Reference image is style/camera reference only: detailed crisp pixel art, muted palette, slightly elevated three-quarter frontal view, neutral diffuse soft light. Isolated entire object fully visible, tightly framed with small 3 percent margin, transparent alpha background, no ground plane, no shadow glow, no text, no other objects.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-de3d9143-394a-44aa-9c1d-bd5454584035.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "concrete-barrier-damaged.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One damaged concrete Jersey highway barrier with chipped corner, small exposed rusty rebar and cracks, no scattered separate debris. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-eca766a1-53cf-405a-bcc3-b96a413abdd5.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "wooden-fence-intact.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One short intact rustic wooden roadside rail fence section, three posts and two rails, weathered dark timber with sparse frost. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-cc2ee845-45b6-4825-b135-807e8dbff907.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "wooden-fence-broken.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One short broken rustic wooden roadside rail fence section, three posts and two rails, one rail snapped, weathered timber sparse frost. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-4a1bf908-ccb9-4454-8c68-f170d4a3e0bc.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "reflector-post.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One slim white roadside reflector delineator post, black upper panel and small amber rectangular reflector, weathered gray base. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-ccbb52da-bad1-46ca-bd61-c49b685b60db.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "snow-depth-marker-pole.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One slender red and white striped snow-depth marker pole with tiny reflective bands and pointed cap, full pole visible. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-7d028814-b242-4258-adb9-1bfbef8e2ff1.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "chevron-left.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One black LEFT-pointing chevron symbol on a yellow rectangular highway chevron board mounted on a slim steel pole. Exact single chevron points LEFT. No letters. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-3c0f4c5f-5f2e-46cd-a169-64f4aa859179.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "chevron-right.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One black RIGHT-pointing chevron symbol on yellow rectangular highway chevron board mounted on slim steel pole. Exact single chevron points RIGHT. No letters. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-59de86d8-6cac-4d9a-831f-29a5a3862226.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "hairpin-warning-sign.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One yellow diamond road warning sign on metal post, clear black hairpin U-turn arrow pictogram. No text. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-b1832919-667b-4c4e-8cd6-267ae02eac69.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "steep-grade-warning-sign.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One yellow diamond road warning sign on metal post, black truck descending a steep slope pictogram. No text. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-7afd2827-7606-45a9-a85c-4777b9b96985.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "rockfall-warning-sign.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One yellow diamond road warning sign on metal post, black falling rocks from cliff pictogram. No text. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-5deabf40-d865-46e9-af3f-0d807cbaccae.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "road-closed-barricade.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One portable road barricade with worn orange and white diagonal striped horizontal board, two metal support legs, small centered white plate reading exactly ROAD CLOSED. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-3a43d272-12b4-412e-b9a9-935d9c6ed6d7.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "traffic-cone.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One weathered orange traffic cone with two white reflective bands and square black rubber base. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-616a0f5b-4e08-47a4-9409-a3a50cc40907.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "wooden-utility-pole.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One full wooden roadside utility pole with a short crossarm and three ceramic insulators, aged timber, no cables trailing outside canvas. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-c6a81ded-653a-4720-ad01-4415db62ea63.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "streetlight.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One full weathered metal roadside streetlight pole with curved upper arm and unlit lamp head, subtle frost, no light glow. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-b1eb5875-8840-4734-819d-054f0529a22a.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "drainage-culvert-entrance.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One small circular roadside drainage culvert entrance set in a low stone-and-concrete headwall, dark pipe opening, small frost on upper stones. Isolated short entrance only, not a landscape. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-2de8b8e7-4559-4dfe-a961-049248ddc8f2.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "snowbank-mound.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One low irregular compact roadside snowbank mound, dirty gray snow along bottom, subtle cool blue shadow, no ground rectangle. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-039d2ae5-60e2-4487-8833-a8bfdf484e2e.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "rubble-pile.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One small low pile of broken concrete and gray masonry rubble, a few rusty rebar ends, isolated no ground rectangle. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-b40b5755-0a00-4efe-99b5-6168c8238e51.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "abandoned-car-01.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One abandoned compact blue 1980s hatchback, faded paint, rusty lower panels, flat tires and broken windows, lightly frosted roof. No logos or license text. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-3242178a-e0e4-4739-a3a4-73ba6da41f13.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "abandoned-car-02.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One abandoned faded beige long sedan, dented hood, cracked windows, rusty wheel arches, flat tires and light frost. No logos or license text. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-c5749644-1fef-4d84-acc8-d97f2c046402.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    },
+    {
+      "file": "abandoned-car-03.png",
+      "prompt": "Use case: stylized-concept. NEW standalone game sprite PNG for detailed retro racing game. Subject: One abandoned dark green station wagon, sagging suspension, damaged rear hatch, corroded panels and light frost. No logos or license text. Input image is house1, STYLE AND CAMERA REFERENCE ONLY, do not reproduce the house. Match its detailed crisp pixel-art clusters, muted colors, slightly elevated three-quarter frontal view and neutral soft diffuse light. Subject fills canvas tightly with small 3% transparent margin, entire object including all posts/ends/base inside image. Genuine transparent alpha background, NO ground plane, no scenery, no checkerboard, no broad shadow, no other objects, no watermark. Weathered post-apocalyptic roadside prop, grounded readable silhouette. Preserve subtle shading for day/night game lighting.",
+      "source": "/workspace/scratch/893b3860b735/generated_images/exec-a6aab989-9c37-4e3a-a496-f0d731a798c6.png",
+      "generator": "built-in imagegen",
+      "pixelProcessing": "None; original generated PNG preserved"
+    }
+  ],
+  "reuse": {
+    "short-retaining-wall": "../regions/laurel-highlands/stone-retaining-wall.png"
+  }
+}
