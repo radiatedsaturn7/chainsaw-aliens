@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "file": "barn.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: a weathered Ozarks farm barn, faded red timber siding, stone foundation, broad gambrel roof with sparse patchy snow, dark upper hayloft opening and large closed wooden doors, aged natural abandonment, no boards covering windows. Existing house image is reference for crisp detailed pixel-art rendering and near-frontal three-quarter view only. Match muted gray-brown and faded material colors with restrained icy accents and subdued diffuse lighting. Entire object including roof and base inside canvas, tightly framed with a small transparent margin. Genuine alpha background, no scene, landscape, people, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          51,
+          6,
+          1486,
+          1007
+        ],
+        "bytes": 2988777,
+        "sha256": "d5db7cfae909aa4e1c322b866b90659abd0263a33343b4c47ed62191b26877ac",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "farm-gate.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one rustic Ozarks farm gate made of aged timber rails between two stout posts, shut gate, rusty iron hinges, sparse frost on top, both ends fully visible. Existing house and bush images are references for crisp detailed pixel-art style and near-frontal subtle three-quarter view only. Muted natural gray-brown material colors, subdued diffuse lighting. Whole object and base visible, tight framing with small transparent margin. Genuine alpha background outside silhouette and through gaps. No scene, landscape, people, ground rectangle, dramatic shadows, glow, checkerboard or text. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1866,
+        "height": 843,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaAbove32": [
+          24,
+          108,
+          1842,
+          808
+        ],
+        "bytes": 2321280,
+        "sha256": "31f9fb7f6fd74c61cf569faaeee9ae5185c4fe989389b6cdf8f3c3d0b14607f4",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "timber-shed.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one small Ozarks timber equipment shed with rough unpainted planks, sagging corrugated metal roof and a wide dark open doorway, sparse moss, a little frost, no equipment inside. Existing house and bush images are references for crisp detailed pixel-art style and near-frontal subtle three-quarter view only. Muted natural gray-brown material colors, subdued diffuse lighting. Whole object and base visible, tight framing with small transparent margin. Genuine alpha background outside silhouette and through gaps. No scene, landscape, people, ground rectangle, dramatic shadows, glow, checkerboard or text. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          123,
+          75,
+          1406,
+          952
+        ],
+        "bytes": 2577966,
+        "sha256": "8984abd069922e5a98dffa1fb1b2af3f042db69f10659f8493a616435911fe90",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "exposed-limestone.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one low irregular Ozarks limestone outcrop, pale gray weathered layered rock with natural fissures and sparse moss, small traces of frost in recesses. Existing house and bush images are references for crisp detailed pixel-art style and near-frontal subtle three-quarter view only. Muted natural gray-brown material colors, subdued diffuse lighting. Whole object and base visible, tight framing with small transparent margin. Genuine alpha background outside silhouette and through gaps. No scene, landscape, people, ground rectangle, dramatic shadows, glow, checkerboard or text. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1774,
+        "height": 887,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaAbove32": [
+          54,
+          66,
+          1720,
+          786
+        ],
+        "bytes": 1956348,
+        "sha256": "8ed2bc74f30aebc20ec38543aa14f3296c27c2df47620e4d4c1cf03eff44718f",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "creekside-brush.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one compact Ozarks creekside brush clump with thin bare brown branches, tawny dried grass and a few dead leaves, a little frost near roots, no water. Existing house and bush images are references for crisp detailed pixel-art style and near-frontal subtle three-quarter view only. Muted natural gray-brown material colors, subdued diffuse lighting. Whole object and base visible, tight framing with small transparent margin. Genuine alpha background outside silhouette and through gaps. No scene, landscape, people, ground rectangle, dramatic shadows, glow, checkerboard or text. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          202,
+          19,
+          1338,
+          968
+        ],
+        "bytes": 2237238,
+        "sha256": "4625066e8cccdb22392a590d7fdec07f3e6ceec1abd56737d3ad0ffd9b1de3f7",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    }
+  ]
+}
