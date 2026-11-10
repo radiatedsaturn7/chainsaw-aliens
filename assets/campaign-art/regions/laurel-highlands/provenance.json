@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "file": "forest-cabin.png",
+      "prompt": "Use case: stylized-concept. New standalone game sprite PNG: Laurel Highlands forest cabin, a compact old Appalachian timber cabin abandoned through age, weathered gray-brown timber, small stone chimney, snow patches on pitched roof, delicate icicles, dark windows, little snow at foundation. Reference house image is STYLE AND VIEWING ANGLE ONLY: reproduce its crisp detailed frozen pixel-art rendering, frontal three-quarter view with subtly visible left wall, desaturated brown gray and icy blue palette, diffuse subdued lighting. The new building is one story, distinct from the reference suburban house. No boards across windows, no foreclosure signs, no people, no surrounding forest or scene. Whole cabin and chimney completely inside canvas, tight framing with small transparent margin. Genuine alpha transparent background including openings outside silhouette, no floor rectangle, no ground shadow extending beyond object, no black or checkerboard backdrop.",
+      "generator": "built-in image_gen",
+      "reference": "existing art/house1 (decoded without modification)",
+      "postprocessing": "None. Generated PNG copied at native dimensions; alpha preserved.",
+      "visualReview": "Subject complete, style matches frozen reference, no cropping of meaningful silhouette; sign lettering correct.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          147,
+          68,
+          1358,
+          929
+        ],
+        "bytes": 2379417,
+        "sha256": "2b05897c18fc435b99c2ee85e8790aa79f8cece4f3e2d4c0b265faf1ec8b378a"
+      }
+    },
+    {
+      "file": "stone-retaining-wall.png",
+      "prompt": "Use case: stylized-concept. New standalone game sprite PNG: a short low Laurel Highlands stone retaining-wall section, rough stacked weathered gray Appalachian fieldstone with irregular capstones and light frozen snow on top, tiny icicles and moss in a few joints. Reference house image is STYLE AND VIEWING ANGLE ONLY: reproduce crisp detailed pixel-art rendering, near frontal subtle three-quarter side view, desaturated gray-brown and icy blue palette, diffuse subdued lighting. Wide short wall approximately 3:1 silhouette, both ends visibly finished and whole object fully inside canvas with little padding. No house, no people, no plants, no landscape, no road, no text. This is a short standalone scenery prop, not a drive-through structure. Genuine alpha transparent background around silhouette, no black or checkerboard backdrop, no broad ground plane or shadow.",
+      "generator": "built-in image_gen",
+      "reference": "existing art/house1 (decoded without modification)",
+      "postprocessing": "None. Generated PNG copied at native dimensions; alpha preserved.",
+      "visualReview": "Subject complete, style matches frozen reference, no cropping of meaningful silhouette; sign lettering correct.",
+      "validation": {
+        "format": "PNG",
+        "width": 2172,
+        "height": 724,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaAbove32": [
+          72,
+          148,
+          2102,
+          640
+        ],
+        "bytes": 1779637,
+        "sha256": "3e54da48a1c008e5acb01bd88750e320b74b32c66322893abb91275d896a6698"
+      }
+    },
+    {
+      "file": "park-sign.png",
+      "prompt": "Use case: stylized-concept. New standalone game sprite PNG: one weathered wooden Laurel Highlands park entrance sign on two stout timber posts, simple brown rectangular wooden board with slightly uneven edges and pale cream block lettering exactly 'LAUREL' on the first line and 'HIGHLANDS' on the second. A subtle carved leaf emblem beneath lettering. Dusting of frozen snow on board top and post tops, tiny icicles. Reference house image is STYLE AND VIEWING ANGLE ONLY: match its crisp detailed pixel-art rendering, nearly frontal subtle three-quarter view, desaturated brown-gray palette with icy blue-white snow, diffuse subdued lighting. Whole sign and post bottoms fully inside canvas, tightly framed with small transparent margin. No additional text, no people, no trees, no landscape. Genuine alpha transparent background around silhouette and between posts, no floor rectangle or ground shadow, no black or checkerboard background.",
+      "generator": "built-in image_gen",
+      "reference": "existing art/house1 (decoded without modification)",
+      "postprocessing": "None. Generated PNG copied at native dimensions; alpha preserved.",
+      "visualReview": "Subject complete, style matches frozen reference, no cropping of meaningful silhouette; sign lettering correct.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          168,
+          32,
+          1371,
+          992
+        ],
+        "bytes": 2244002,
+        "sha256": "fd4419f92b5f27995367353edbeca25e7fac63318766046ee3ab62a372eac067"
+      }
+    }
+  ]
+}
