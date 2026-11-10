@@ -1,0 +1,2017 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Source PNG import handoff; no game registration or physics changes",
+  "assetCount": 134,
+  "notes": [
+    "Native generated dimensions are preserved. Resize appropriately during import.",
+    "Textures are not certified seamless. Inspect repetition and finish edges before production.",
+    "Use ground -v2 files; road-like first attempts are excluded.",
+    "Bridge, mesa and mountain silhouettes are distant scenery, not drive-through geometry.",
+    "Shared short retaining wall reuses regions/laurel-highlands/stone-retaining-wall.png.",
+    "Existing four houses and smoke/spray effects are reused without replacement."
+  ],
+  "regionalKits": {
+    "Tower Hill": [
+      "regions/tower-hill/mailbox.png",
+      "regions/tower-hill/short-stone-wall.png",
+      "regions/tower-hill/small-shed.png",
+      "roadside/wooden-utility-pole.png"
+    ],
+    "Mount Washington": [
+      "regions/mount-washington/summit-building-silhouette.png",
+      "regions/mount-washington/weather-instruments.png",
+      "rocks/alpine-rock-outcrop-01.png",
+      "roadside/snow-depth-marker-pole.png"
+    ],
+    "Laurel Highlands": [
+      "regions/laurel-highlands/forest-cabin.png",
+      "regions/laurel-highlands/stone-retaining-wall.png",
+      "regions/laurel-highlands/park-sign.png",
+      "vegetation/leafless-tree-01.png",
+      "vegetation/leafless-tree-02.png",
+      "vegetation/leafless-tree-03.png"
+    ],
+    "Ohio River Crossing": [
+      "regions/ohio-river-crossing/distant-bridge-silhouette.png",
+      "regions/ohio-river-crossing/flood-marker.png",
+      "regions/ohio-river-crossing/riverside-building.png",
+      "regions/ohio-river-crossing/riverbank-vegetation.png"
+    ],
+    "Ozarks": [
+      "regions/ozarks/barn.png",
+      "regions/ozarks/farm-gate.png",
+      "regions/ozarks/timber-shed.png",
+      "regions/ozarks/exposed-limestone.png",
+      "regions/ozarks/creekside-brush.png"
+    ],
+    "Data Center City": [
+      "regions/data-center-city/server-building.png",
+      "regions/data-center-city/cooling-units.png",
+      "regions/data-center-city/transformer.png",
+      "regions/data-center-city/security-fencing.png",
+      "regions/data-center-city/loading-dock.png",
+      "regions/data-center-city/shipping-container.png"
+    ],
+    "Route 66": [
+      "regions/route-66/abandoned-gas-station.png",
+      "regions/route-66/motel-sign.png",
+      "regions/route-66/diner.png",
+      "regions/route-66/water-tower.png",
+      "regions/route-66/billboard.png",
+      "regions/route-66/rusted-pickup.png"
+    ],
+    "Pikes Peak": [
+      "regions/pikes-peak/granite-outcrop.png",
+      "regions/pikes-peak/alpine-vegetation.png",
+      "regions/pikes-peak/snow-fence.png",
+      "regions/pikes-peak/summit-sign.png"
+    ],
+    "Moki Dugway": [
+      "regions/moki-dugway/sandstone-outcrop.png",
+      "regions/moki-dugway/desert-scrub.png",
+      "regions/moki-dugway/warning-sign.png",
+      "regions/moki-dugway/mesa-silhouette.png"
+    ],
+    "Oak Creek": [
+      "regions/oak-creek/red-rock-formation.png",
+      "regions/oak-creek/creekside-tree.png",
+      "regions/oak-creek/canyon-cabin.png",
+      "regions/oak-creek/stone-wall.png"
+    ],
+    "Angeles Crest": [
+      "regions/angeles-crest/dry-mountain-pine.png",
+      "regions/angeles-crest/chaparral.png",
+      "regions/angeles-crest/pale-rock-cut.png",
+      "regions/angeles-crest/turnout-sign.png",
+      "regions/angeles-crest/mountain-silhouette.png"
+    ]
+  },
+  "assets": [
+    {
+      "id": "cracks-repair-patches",
+      "path": "decals/cracks-repair-patches.png",
+      "category": "decals",
+      "width": 1774,
+      "height": 887,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 802660,
+      "sha256": "9ec2abe024b6a31fd6fdcb4570befb9e664c9b45bb7b75301f39dd001411f09a",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "dirt-drag",
+      "path": "decals/dirt-drag.png",
+      "category": "decals",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 631859,
+      "sha256": "b6c61213f40c352cf61a1bebb0594924153ab2e65e9c48d0e369214fe89f78a4",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "fallen-leaves-needles",
+      "path": "decals/fallen-leaves-needles.png",
+      "category": "decals",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1709182,
+      "sha256": "f4a97d4c6bf8c3675b752de4d83a0fd3d86b8c092002797b02f286f8c5d426df",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "gravel-spill",
+      "path": "decals/gravel-spill.png",
+      "category": "decals",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1925093,
+      "sha256": "ce0dbd0b5597c074e3c436ccaebd918b80689a62c74fb14b1e0a0b375b4776be",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "puddle",
+      "path": "decals/puddle.png",
+      "category": "decals",
+      "width": 1278,
+      "height": 1230,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1710808,
+      "sha256": "89f87ee4a8868b8698323754edee1928f02d639e79001044be36308831a43fde",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "road-edge-debris",
+      "path": "decals/road-edge-debris.png",
+      "category": "decals",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 765629,
+      "sha256": "7cc94366705fb42936096739471be7ae8894235bc5c8a04fee1618d4259f054a",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "snow-patch",
+      "path": "decals/snow-patch.png",
+      "category": "decals",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2293190,
+      "sha256": "de3d32c4e7fdf3ceeab222211803a7a8ad075866b2729a9de6d2bfcb5f7fa89b",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "tire-skid-marks",
+      "path": "decals/tire-skid-marks.png",
+      "category": "decals",
+      "width": 1024,
+      "height": 1536,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1610857,
+      "sha256": "99a0a88a29ac9e09c24c65979f9929588e0d14ae8fd23c406ff6ec122152465a",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "ground-alpine-rock",
+      "path": "ground/ground-alpine-rock-v2.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4147451,
+      "sha256": "2a8c958752066761d105ba23d8db9011afe709d230f45ed6b2e96085eb6a8d41",
+      "alpha": null
+    },
+    {
+      "id": "ground-brown-dirt",
+      "path": "ground/ground-brown-dirt-v2.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3449722,
+      "sha256": "8dcdeff88d1a9f1fa7edd89fd3c49f3ad4040926390663f8bb3c62fc7d08c5f8",
+      "alpha": null
+    },
+    {
+      "id": "ground-canyon-rock",
+      "path": "ground/ground-canyon-rock-v2.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3822693,
+      "sha256": "0397ab17b21ef393e39b84ae9c47473323b92ad75eefb5a4a4a7cbaedb4cca21",
+      "alpha": null
+    },
+    {
+      "id": "ground-clean-snow",
+      "path": "ground/ground-clean-snow-v2.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 2497988,
+      "sha256": "cebeef519bf4bc0c4987b6e822c1b96c6789ef54ce418fbd998f2bf372bdea60",
+      "alpha": null
+    },
+    {
+      "id": "ground-desert-scrub",
+      "path": "ground/ground-desert-scrub-v2.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4415858,
+      "sha256": "e1474fac483ff6ec54a02c3ade38c74c1161e942b19edc9395b92f4b9e422efe",
+      "alpha": null
+    },
+    {
+      "id": "ground-dirty-snow",
+      "path": "ground/ground-dirty-snow-v2.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3677855,
+      "sha256": "55ac987ab96164d816ca40a8fceb4768d3a22b40a925f62108badd7483959209",
+      "alpha": null
+    },
+    {
+      "id": "ground-frozen-forest",
+      "path": "ground/ground-frozen-forest.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4000560,
+      "sha256": "c5d0d43a3de4b7821487ab4807703476252b734f3a9bac02c94ce32b839e05b2",
+      "alpha": null
+    },
+    {
+      "id": "ground-gray-gravel",
+      "path": "ground/ground-gray-gravel-v2.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4348681,
+      "sha256": "746d503b83beeee35ed2cea7719549719934578306d360931de8d42dcf41874f",
+      "alpha": null
+    },
+    {
+      "id": "ground-industrial-concrete",
+      "path": "ground/ground-industrial-concrete-v2.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3994472,
+      "sha256": "4883ec9767b7eece823669c8c59fe8d5a390342fd83301124bf681585dcc540c",
+      "alpha": null
+    },
+    {
+      "id": "ground-industrial-rubble",
+      "path": "ground/ground-industrial-rubble-v2.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3871878,
+      "sha256": "7ef96587d21aea2bdc416840300b8c5693eff1bacd7a1b7bd2f5e86b4508cca6",
+      "alpha": null
+    },
+    {
+      "id": "ground-red-gravel",
+      "path": "ground/ground-red-gravel-v2.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4057678,
+      "sha256": "4cfc862f619221e567c342fdb5dac8ce7aa0b1ea409eb81dddc69adc52479649",
+      "alpha": null
+    },
+    {
+      "id": "ground-snow-dead-grass",
+      "path": "ground/ground-snow-dead-grass.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3688823,
+      "sha256": "92034336e769c14a693e7b872a1f1a9ba3e3554bb461aa7fb41ed4755219e356",
+      "alpha": null
+    },
+    {
+      "id": "shoulder-asphalt-gravel",
+      "path": "ground/shoulder-asphalt-gravel.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4229470,
+      "sha256": "fdfba89254258de6bac3b9471d9ef97066350e5cc2bac0f261686465134f149a",
+      "alpha": null
+    },
+    {
+      "id": "shoulder-dirt-grass",
+      "path": "ground/shoulder-dirt-grass.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3650054,
+      "sha256": "8f554b5215e1a113751a6b823c33c8ba071f41bd4b9635d128b011493fbd717b",
+      "alpha": null
+    },
+    {
+      "id": "shoulder-snowbank-edge",
+      "path": "ground/shoulder-snowbank-edge.png",
+      "category": "ground",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3315872,
+      "sha256": "13e6fc543108930016e1d6a1a7cd2990a45e1ce26f37c967a8fb3c86d8046993",
+      "alpha": null
+    },
+    {
+      "id": "chaparral",
+      "path": "regions/angeles-crest/chaparral.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2129411,
+      "sha256": "4b329ceb527eba59260db536d56f80f84787aebb412483944ad3dce701df15de",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "dry-mountain-pine",
+      "path": "regions/angeles-crest/dry-mountain-pine.png",
+      "category": "regions",
+      "width": 1312,
+      "height": 1199,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1354111,
+      "sha256": "4f1488861dd747397b765b48be45bf0e90622219dde3eea3e4f7d3ef87d62bd0",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "mountain-silhouette",
+      "path": "regions/angeles-crest/mountain-silhouette.png",
+      "category": "regions",
+      "width": 2171,
+      "height": 724,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1526156,
+      "sha256": "09f6fc3bda4fe408b1bb8b2f4ecfd2e352899684fce9e0afd39c1db482541fcd",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "pale-rock-cut",
+      "path": "regions/angeles-crest/pale-rock-cut.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2413491,
+      "sha256": "2f38a865e77dd68a130392a01209abe8f12a64fb017a639384fceec5c279d99f",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "turnout-sign",
+      "path": "regions/angeles-crest/turnout-sign.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1693590,
+      "sha256": "30f260cad30da2f6055adb748afdf7fe91296e64a60136f500bad84a77e78a6a",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "cooling-units",
+      "path": "regions/data-center-city/cooling-units.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2609768,
+      "sha256": "df9bb95183bdb53c439fdd5c2668d6dc70cde2315bcdc99092e3f662052bfe83",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "loading-dock",
+      "path": "regions/data-center-city/loading-dock.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2609782,
+      "sha256": "9f64646c8329d7dfafec4b307bf3dc604ab2fc5bc64c45a93e90bc45eccafcb8",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "security-fencing",
+      "path": "regions/data-center-city/security-fencing.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2542414,
+      "sha256": "ea3cdad2739d9db9914cb8cef2b4ce48ad592ec67b87cf6d28599f43c4c8c778",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "server-building",
+      "path": "regions/data-center-city/server-building.png",
+      "category": "regions",
+      "width": 1752,
+      "height": 897,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2483495,
+      "sha256": "493a4cb91492cae50e01690e5320345f52e4482c654e40caae7d6cdb93c76b4e",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "shipping-container",
+      "path": "regions/data-center-city/shipping-container.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2524452,
+      "sha256": "6c3159ccfdd024dd5c0ecafaf7f1f1ee085ef998d8832d6461653e5c0c5e402d",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "transformer",
+      "path": "regions/data-center-city/transformer.png",
+      "category": "regions",
+      "width": 1312,
+      "height": 1199,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1984108,
+      "sha256": "501682932c88e7685ba448cb9dccca6c917258d0b688a5be9179258343e48646",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "forest-cabin",
+      "path": "regions/laurel-highlands/forest-cabin.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2379417,
+      "sha256": "2b05897c18fc435b99c2ee85e8790aa79f8cece4f3e2d4c0b265faf1ec8b378a",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "park-sign",
+      "path": "regions/laurel-highlands/park-sign.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2244002,
+      "sha256": "fd4419f92b5f27995367353edbeca25e7fac63318766046ee3ab62a372eac067",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "stone-retaining-wall",
+      "path": "regions/laurel-highlands/stone-retaining-wall.png",
+      "category": "regions",
+      "width": 2172,
+      "height": 724,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1779637,
+      "sha256": "3e54da48a1c008e5acb01bd88750e320b74b32c66322893abb91275d896a6698",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "desert-scrub",
+      "path": "regions/moki-dugway/desert-scrub.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1774708,
+      "sha256": "158f812f79678293154a1691f5160ff819b5b35cbb6ec2c56d114a324f3c76f9",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "mesa-silhouette",
+      "path": "regions/moki-dugway/mesa-silhouette.png",
+      "category": "regions",
+      "width": 2172,
+      "height": 724,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1840869,
+      "sha256": "5541e501827fe516b4e9e459dd86bba357c6cea068af482d40c74ff5e40d0868",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "sandstone-outcrop",
+      "path": "regions/moki-dugway/sandstone-outcrop.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2278107,
+      "sha256": "181cca38bfb1e35fe2b3d3614cf579c480bc00daa93fc157bc0f34cab15ed220",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "warning-sign",
+      "path": "regions/moki-dugway/warning-sign.png",
+      "category": "regions",
+      "width": 1312,
+      "height": 1199,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 897171,
+      "sha256": "5e5f87652010566a81de8a4b5d8a307eb0a2f34f1c53089e78a5085469377b65",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "summit-building-silhouette",
+      "path": "regions/mount-washington/summit-building-silhouette.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2368302,
+      "sha256": "5cd6abd860a40d2806c5351dee318a2ae70e2b13804e50e2fe8bbba5f7b3a8cd",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "weather-instruments",
+      "path": "regions/mount-washington/weather-instruments.png",
+      "category": "regions",
+      "width": 1024,
+      "height": 1536,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1688171,
+      "sha256": "0296dd0d5e34d882c6404a3823883906054c1a4b7b268d608ed6917871a968f7",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "canyon-cabin",
+      "path": "regions/oak-creek/canyon-cabin.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 3005640,
+      "sha256": "5583fb5f00abf4f7edad6d71099c8d0fceee7e13ca7f59b73c71467dec86ebed",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "creekside-tree",
+      "path": "regions/oak-creek/creekside-tree.png",
+      "category": "regions",
+      "width": 1312,
+      "height": 1199,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1957078,
+      "sha256": "cd15546f4bb83571c5a546f0e9349e118db75a81c7f4a4b3d9b358a9d88e2b77",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "red-rock-formation",
+      "path": "regions/oak-creek/red-rock-formation.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2492097,
+      "sha256": "3c028de96311e1dd3591c0acf7f3c26c26ce7fc10801fda93412b2cf3b850725",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "stone-wall",
+      "path": "regions/oak-creek/stone-wall.png",
+      "category": "regions",
+      "width": 1774,
+      "height": 887,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1737646,
+      "sha256": "605cfea88d6da47370c547ff4c9c2c745bf4c3965cce4002f8218f5d2a3544dc",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "distant-bridge-silhouette",
+      "path": "regions/ohio-river-crossing/distant-bridge-silhouette.png",
+      "category": "regions",
+      "width": 2172,
+      "height": 724,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1214203,
+      "sha256": "5e17e2ff1505d6a87eaef9f7df25813d353e5a22e5bebac812c4b61fdfe9c9b2",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "flood-marker",
+      "path": "regions/ohio-river-crossing/flood-marker.png",
+      "category": "regions",
+      "width": 1024,
+      "height": 1536,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1895881,
+      "sha256": "a3d7478388ca95f2f384ab39c8df54c6df3cfb447f1735cbb3899d5b962d04c9",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "riverbank-vegetation",
+      "path": "regions/ohio-river-crossing/riverbank-vegetation.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2334917,
+      "sha256": "32a6c3355dd223fc04cf97ee67aac135cf7550df1b74d01658b8481ee79c05a2",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "riverside-building",
+      "path": "regions/ohio-river-crossing/riverside-building.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2682209,
+      "sha256": "3adeddbf9a31c7e712cc63bb817cfbadfda0edeb47e45eaa68703566fff93778",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "barn",
+      "path": "regions/ozarks/barn.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2988777,
+      "sha256": "d5db7cfae909aa4e1c322b866b90659abd0263a33343b4c47ed62191b26877ac",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "creekside-brush",
+      "path": "regions/ozarks/creekside-brush.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2237238,
+      "sha256": "4625066e8cccdb22392a590d7fdec07f3e6ceec1abd56737d3ad0ffd9b1de3f7",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "exposed-limestone",
+      "path": "regions/ozarks/exposed-limestone.png",
+      "category": "regions",
+      "width": 1774,
+      "height": 887,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1956348,
+      "sha256": "8ed2bc74f30aebc20ec38543aa14f3296c27c2df47620e4d4c1cf03eff44718f",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "farm-gate",
+      "path": "regions/ozarks/farm-gate.png",
+      "category": "regions",
+      "width": 1866,
+      "height": 843,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2321280,
+      "sha256": "31f9fb7f6fd74c61cf569faaeee9ae5185c4fe989389b6cdf8f3c3d0b14607f4",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "timber-shed",
+      "path": "regions/ozarks/timber-shed.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2577966,
+      "sha256": "8984abd069922e5a98dffa1fb1b2af3f042db69f10659f8493a616435911fe90",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "alpine-vegetation",
+      "path": "regions/pikes-peak/alpine-vegetation.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1880376,
+      "sha256": "3f896eac07b14587316597462c11cda224c6011acfa81266bb07df7e3fc93c08",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "granite-outcrop",
+      "path": "regions/pikes-peak/granite-outcrop.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2236723,
+      "sha256": "09c3d985c219663b94cd72bd70ba18872ba6ad7a30d525663e8f117746d20b17",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "snow-fence",
+      "path": "regions/pikes-peak/snow-fence.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2015802,
+      "sha256": "ff68213208a6f38c19e3abb7339daabfc1b989f29c31678c46a6b6434e73640a",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "summit-sign",
+      "path": "regions/pikes-peak/summit-sign.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2446914,
+      "sha256": "5e5f2f219a4780f72d0e98caf0935371d444606a633e162f72390b10edeaa493",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "abandoned-gas-station",
+      "path": "regions/route-66/abandoned-gas-station.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2590339,
+      "sha256": "5760f3533c601b55d63851bd70d352ba41ac27e1bf54f18dc1a3221b5ab7a788",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "billboard",
+      "path": "regions/route-66/billboard.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2386003,
+      "sha256": "65cd7fcf4e39f96d479b4e5e040174a5e95aa3e99df035e58d924f492180a1d6",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "diner",
+      "path": "regions/route-66/diner.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2643321,
+      "sha256": "21c7aaf709537d7c9aba4daeb012698bf3f3b06d7cc2c1eeb8f56252a5aabdec",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "motel-sign",
+      "path": "regions/route-66/motel-sign.png",
+      "category": "regions",
+      "width": 1312,
+      "height": 1199,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2084802,
+      "sha256": "95d4e8f7ccb03e3cddb7b9098b3735fd5f0a01c6ffd1e534aca2eaf11e0f50f5",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "rusted-pickup",
+      "path": "regions/route-66/rusted-pickup.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2556095,
+      "sha256": "55408a1b0f04a9d39f35dc6caf20fc33578db0ef675be893da925904e790f949",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "water-tower",
+      "path": "regions/route-66/water-tower.png",
+      "category": "regions",
+      "width": 1024,
+      "height": 1536,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2252492,
+      "sha256": "29585bcd14ec34958a3d43f7a9a7fdbf3d5872ef8c292be15f48f0c55f5379b9",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "mailbox",
+      "path": "regions/tower-hill/mailbox.png",
+      "category": "regions",
+      "width": 1312,
+      "height": 1199,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1052888,
+      "sha256": "e3c6b99ea5d04c986206c813fda61a21f35a1c0322d1d8da5988d612b600809e",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "short-stone-wall",
+      "path": "regions/tower-hill/short-stone-wall.png",
+      "category": "regions",
+      "width": 2172,
+      "height": 724,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1807175,
+      "sha256": "267679dbe432c8f0cb2e98828461b3ec63efee4ae8baa125f6cd4444a15f7c8f",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "small-shed",
+      "path": "regions/tower-hill/small-shed.png",
+      "category": "regions",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2449035,
+      "sha256": "ea6eba02b2ff558e4aab4d7c17b2ebadca4216402c25a2550ee8fab91ba5c73d",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "road-asphalt-faded66",
+      "path": "roads/road-asphalt-faded66.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4177710,
+      "sha256": "6e5f5f3ef26a691ffc6c8a9d9d98c262335eb9862770ef8cfe1069d471269f1f",
+      "alpha": null
+    },
+    {
+      "id": "road-asphalt-industrial",
+      "path": "roads/road-asphalt-industrial.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3624679,
+      "sha256": "96c69fe0f171ac79d94c863cd518d8bd4fdef1a9cdd254f37d35eac5d2a4ccde",
+      "alpha": null
+    },
+    {
+      "id": "road-asphalt-patched",
+      "path": "roads/road-asphalt-patched.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3775712,
+      "sha256": "c2da77fd71de8d154ab59ea62668bd7ced62cce432cbcd7984cf0efb39fbba1b",
+      "alpha": null
+    },
+    {
+      "id": "road-asphalt-wet",
+      "path": "roads/road-asphalt-wet.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3797865,
+      "sha256": "285d1bfe725de5620519fee07038fa2bbf85713b381486b37a48e27109c97a20",
+      "alpha": null
+    },
+    {
+      "id": "road-asphalt-worn",
+      "path": "roads/road-asphalt-worn.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3781302,
+      "sha256": "7261674221132deaba17d0835ac19a90109bd596b65620bf4cfb246fa5732124",
+      "alpha": null
+    },
+    {
+      "id": "road-dirt-loose",
+      "path": "roads/road-dirt-loose.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3694483,
+      "sha256": "e38d19cb7babb1939ac819306dea57f8fd9bf55821f3744154a4d652357195a0",
+      "alpha": null
+    },
+    {
+      "id": "road-dirt-packed",
+      "path": "roads/road-dirt-packed.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3543205,
+      "sha256": "cefd593b4df85b6cd3130f7ad239157b7aba611f85cc72bb017c3911b8ae91a0",
+      "alpha": null
+    },
+    {
+      "id": "road-gravel-gray",
+      "path": "roads/road-gravel-gray.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4527840,
+      "sha256": "2601ab9725e01ab996d8751004faed051e4541121f6de1e67f63c585194463e5",
+      "alpha": null
+    },
+    {
+      "id": "road-gravel-red",
+      "path": "roads/road-gravel-red.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4298238,
+      "sha256": "88b7147cee671b9262fe210ed201326d2d65b2df79f2f5cadb78317a4e54cbd3",
+      "alpha": null
+    },
+    {
+      "id": "road-gravel-rutted",
+      "path": "roads/road-gravel-rutted.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4099799,
+      "sha256": "020fcb5bf841d142d08eae219d02ea2db22ca0492d7dea89d3a15e91c27ae94b",
+      "alpha": null
+    },
+    {
+      "id": "road-slush",
+      "path": "roads/road-slush.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3529572,
+      "sha256": "a2993c51ed3ddc32fa550a8eb51cd237e6b81dd3039739aaec1599647a373928",
+      "alpha": null
+    },
+    {
+      "id": "road-snow-packed",
+      "path": "roads/road-snow-packed.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 3632269,
+      "sha256": "4849e18263f8bc749bbfa91b438ce25ee9942287950f07e310954bb3033dca74",
+      "alpha": null
+    },
+    {
+      "id": "road-snow-patchy",
+      "path": "roads/road-snow-patchy.png",
+      "category": "roads",
+      "width": 1254,
+      "height": 1254,
+      "format": "PNG",
+      "mode": "RGB",
+      "bytes": 4085799,
+      "sha256": "6512c44bbbed38e051fe444877c3ae576f8b13fe161acbb7444e39cd98db8a66",
+      "alpha": null
+    },
+    {
+      "id": "abandoned-car-01",
+      "path": "roadside/abandoned-car-01.png",
+      "category": "roadside",
+      "width": 1719,
+      "height": 915,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2344708,
+      "sha256": "ef4bbe6024af49f9d13b4cc5ca9eb791fd8902f510395c88cdda92e2cebec934",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "abandoned-car-02",
+      "path": "roadside/abandoned-car-02.png",
+      "category": "roadside",
+      "width": 1774,
+      "height": 887,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2185689,
+      "sha256": "33a747b2690073005bb9d38991e28bf9ded7610f0b513f34960d69654c315b53",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "abandoned-car-03",
+      "path": "roadside/abandoned-car-03.png",
+      "category": "roadside",
+      "width": 1774,
+      "height": 887,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2530727,
+      "sha256": "2301addf4b54612836e8982225d90ee7c3106a748d2dc4b506a86c4c04949d73",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "chevron-left",
+      "path": "roadside/chevron-left.png",
+      "category": "roadside",
+      "width": 1024,
+      "height": 1536,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1671669,
+      "sha256": "ec07496647fd142c8dc2b9000f6e80ddf0444ba3b0c70841893e0ba0b63162f3",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "chevron-right",
+      "path": "roadside/chevron-right.png",
+      "category": "roadside",
+      "width": 1315,
+      "height": 1196,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 760185,
+      "sha256": "e5d0df034d82915ac3392e79dbec073ae2b9dffecfbec712c3249fb1eef6cd2a",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "concrete-barrier-clean",
+      "path": "roadside/concrete-barrier-clean.png",
+      "category": "roadside",
+      "width": 1774,
+      "height": 887,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1611052,
+      "sha256": "9ea5981a05296adcefa013d0af7f02550eca01445e4b2f076e4d8aad0908ff59",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "concrete-barrier-damaged",
+      "path": "roadside/concrete-barrier-damaged.png",
+      "category": "roadside",
+      "width": 1754,
+      "height": 897,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2267681,
+      "sha256": "b218647ee1c806e371d3a390c0cd3f0711857747491993166e9469784e5fc0ff",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "drainage-culvert-entrance",
+      "path": "roadside/drainage-culvert-entrance.png",
+      "category": "roadside",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2102661,
+      "sha256": "969d15d083eaf4975884cad4a70497d10503d20272741d58058db6a562a5b64a",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "hairpin-warning-sign",
+      "path": "roadside/hairpin-warning-sign.png",
+      "category": "roadside",
+      "width": 1263,
+      "height": 1246,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 827052,
+      "sha256": "e5aed416c050d964a0f9a801915fe729d2dfa0464dbbd2e69ec17bd7f2e63dcb",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "metal-guardrail-damaged",
+      "path": "roadside/metal-guardrail-damaged.png",
+      "category": "roadside",
+      "width": 2172,
+      "height": 724,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1760234,
+      "sha256": "e7dd339ac32498a7c011ff661576e69318a78703e922136e4b1e4f5d5891e222",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "metal-guardrail-intact",
+      "path": "roadside/metal-guardrail-intact.png",
+      "category": "roadside",
+      "width": 2172,
+      "height": 724,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1361783,
+      "sha256": "f1bb28f7352d1a432858351673bfafece970096451b47dd1e550e586b3e20196",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "reflector-post",
+      "path": "roadside/reflector-post.png",
+      "category": "roadside",
+      "width": 1024,
+      "height": 1536,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1559621,
+      "sha256": "db087da0661fd6660ce1d9d41aaa78dea02e3e37f657f2658fe1220aab04408f",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "road-closed-barricade",
+      "path": "roadside/road-closed-barricade.png",
+      "category": "roadside",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2161882,
+      "sha256": "11d06835ca0987ff11fd075e3007c75bf6a1570f6f973316fc430280f6c420b2",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "rockfall-warning-sign",
+      "path": "roadside/rockfall-warning-sign.png",
+      "category": "roadside",
+      "width": 1230,
+      "height": 1278,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 822902,
+      "sha256": "e24d124771167373bf624a65135fb730fc7fcd35bc09174cb1d11086c5db39e0",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "rubble-pile",
+      "path": "roadside/rubble-pile.png",
+      "category": "roadside",
+      "width": 1774,
+      "height": 887,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1528812,
+      "sha256": "8d9a1ecf961e9d605e429174f9762804e4a4d5eddf128f5c09bad96dbecf2a2f",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "snow-depth-marker-pole",
+      "path": "roadside/snow-depth-marker-pole.png",
+      "category": "roadside",
+      "width": 1025,
+      "height": 1535,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 463126,
+      "sha256": "1539eb6e46a7e89bfc4400559392e7be3dfd932691108b9157ea12312a4e7cdf",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "snowbank-mound",
+      "path": "roadside/snowbank-mound.png",
+      "category": "roadside",
+      "width": 2172,
+      "height": 724,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1605306,
+      "sha256": "98fe33689aedf1bea255cbf68af2bfdf2fb1270c45a7b245a838fc934db58f48",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "steep-grade-warning-sign",
+      "path": "roadside/steep-grade-warning-sign.png",
+      "category": "roadside",
+      "width": 1246,
+      "height": 1263,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1023324,
+      "sha256": "e0d3d136e736c3c7178df1dcba02dd5f46c43cb02e48db0407556f3f99702fce",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "streetlight",
+      "path": "roadside/streetlight.png",
+      "category": "roadside",
+      "width": 1024,
+      "height": 1536,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1363663,
+      "sha256": "d97d10e50514f62c724136379d37f38e66b07f0a7f800b64c17928fc06b64644",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "traffic-cone",
+      "path": "roadside/traffic-cone.png",
+      "category": "roadside",
+      "width": 1268,
+      "height": 1240,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1242240,
+      "sha256": "bea7c04fa322059fb279594cb7fa3f564105c90b6f54065d9f3c6ef46a01bada",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "wooden-fence-broken",
+      "path": "roadside/wooden-fence-broken.png",
+      "category": "roadside",
+      "width": 1774,
+      "height": 887,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1794791,
+      "sha256": "3c0fbbacde613ae5f7fbe6014cb94f19aeb0136dc14abfa5b1cd5c2858b958a0",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "wooden-fence-intact",
+      "path": "roadside/wooden-fence-intact.png",
+      "category": "roadside",
+      "width": 1774,
+      "height": 887,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1408746,
+      "sha256": "b9ff7e3b63afd314cc7cf02c8f359dddafbfd52139fab844fba47e41e933439c",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "wooden-utility-pole",
+      "path": "roadside/wooden-utility-pole.png",
+      "category": "roadside",
+      "width": 1024,
+      "height": 1536,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1515977,
+      "sha256": "9638c0bee2837e172042e051325fa49f6d94eff0bfff22b51b083f98325af9ce",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "alpine-rock-outcrop-01",
+      "path": "rocks/alpine-rock-outcrop-01.png",
+      "category": "rocks",
+      "width": 1421,
+      "height": 1107,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2078499,
+      "sha256": "7867ef924ada71d17753e22abdba90d4a7d4b41c21c01abca61eab5b2ad5c8cd",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "alpine-rock-outcrop-02",
+      "path": "rocks/alpine-rock-outcrop-02.png",
+      "category": "rocks",
+      "width": 1421,
+      "height": 1107,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1241283,
+      "sha256": "fa6fd5614ff047dd1e19f89caaf001156dd33a942aaf2abcdb301c4c39bda651",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "gray-boulder-01",
+      "path": "rocks/gray-boulder-01.png",
+      "category": "rocks",
+      "width": 1421,
+      "height": 1107,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2393852,
+      "sha256": "339643f6f93dce1832c557224f1e9677429d1aabf5966647e2332a08818ab989",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "gray-boulder-02",
+      "path": "rocks/gray-boulder-02.png",
+      "category": "rocks",
+      "width": 1421,
+      "height": 1107,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1293446,
+      "sha256": "9a7ea663e25ad1cc43b731dd3463ec398f5c0810e2c1cefe7440de06512015b5",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "gray-boulder-03",
+      "path": "rocks/gray-boulder-03.png",
+      "category": "rocks",
+      "width": 1421,
+      "height": 1107,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1379940,
+      "sha256": "9570f735a9eb4617e6e0372ded6bc82b58c5db2e37ff0561248e05bfdfd62db5",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "gray-rock-01",
+      "path": "rocks/gray-rock-01.png",
+      "category": "rocks",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1486641,
+      "sha256": "96f4487013d5253abf9b91c56b44e586b6f1a42621fcbc83f9e8ce91692a1cd5",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "gray-rock-02",
+      "path": "rocks/gray-rock-02.png",
+      "category": "rocks",
+      "width": 1448,
+      "height": 1086,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 550364,
+      "sha256": "96a471236d1d8802a09f2bb06b56e799fb06e0773f673c8bccf4a8da5f9399f3",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "gray-rock-03",
+      "path": "rocks/gray-rock-03.png",
+      "category": "rocks",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1354755,
+      "sha256": "9d9c5d5cb9d5f717e0ff53e2f50c4567b16df43d1c95e55bd021edb40bd1bf05",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "red-sandstone-boulder-01",
+      "path": "rocks/red-sandstone-boulder-01.png",
+      "category": "rocks",
+      "width": 1421,
+      "height": 1107,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1426918,
+      "sha256": "1847611f98ec7db8afe61e2aec4e3430fc5a36b55e808f3591d677ea59df4b26",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "red-sandstone-boulder-02",
+      "path": "rocks/red-sandstone-boulder-02.png",
+      "category": "rocks",
+      "width": 1421,
+      "height": 1107,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1422503,
+      "sha256": "5f2ccd1c5fa6a6df1528038d985f1c0d8ed704827e0c06fc7aa98ae4818ae27c",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "red-sandstone-boulder-03",
+      "path": "rocks/red-sandstone-boulder-03.png",
+      "category": "rocks",
+      "width": 1421,
+      "height": 1107,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1417934,
+      "sha256": "d0a424e1d7ac6b46b47ad55e229f7bb02cedfdb08abb19b7232069bd906cc0cb",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "dead-broken-tree-01",
+      "path": "vegetation/dead-broken-tree-01.png",
+      "category": "vegetation",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1539536,
+      "sha256": "a877907fd015173b2c7b6490a8ed07764884631060178a872991309a34caeb9d",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "dead-broken-tree-02",
+      "path": "vegetation/dead-broken-tree-02.png",
+      "category": "vegetation",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1615215,
+      "sha256": "31dc28dcc38303a61df4216a2115644f3119b70b13ba7e2c92af600f3babfe47",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "dry-scrub-bush-01",
+      "path": "vegetation/dry-scrub-bush-01.png",
+      "category": "vegetation",
+      "width": 1421,
+      "height": 1107,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1715417,
+      "sha256": "7b68d4d5ebcbc5440f91c17a4c2dd8669f966bec52b0fd616a1e8a6875c1cc4f",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "dry-scrub-bush-02",
+      "path": "vegetation/dry-scrub-bush-02.png",
+      "category": "vegetation",
+      "width": 1421,
+      "height": 1107,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1774315,
+      "sha256": "e5c377154b94aef6349273792a6f5c9acf88d86de8cb0db9f025bbb9afb4faf0",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "dry-scrub-bush-03",
+      "path": "vegetation/dry-scrub-bush-03.png",
+      "category": "vegetation",
+      "width": 1421,
+      "height": 1107,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1819876,
+      "sha256": "0c1e4a88c520eeb047e047ac28d178dd76a29d07e02e7b9e1877376148dab0e7",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "fallen-log-01",
+      "path": "vegetation/fallen-log-01.png",
+      "category": "vegetation",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1672367,
+      "sha256": "abdacd38ab6b8ced2dad955040309bfdd50d29cf53d08625547116a01cfdcb45",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "frozen-bush-01",
+      "path": "vegetation/frozen-bush-01.png",
+      "category": "vegetation",
+      "width": 1897,
+      "height": 829,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1429399,
+      "sha256": "382c0b89fff431e75a0de79fec756c3c586151f246e1e194d88940ff71432305",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "frozen-bush-02",
+      "path": "vegetation/frozen-bush-02.png",
+      "category": "vegetation",
+      "width": 1317,
+      "height": 1194,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1531115,
+      "sha256": "d48e532f6d55271b530815f8a3c45f206681df767507daad0ab47dcd4a644336",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "frozen-bush-03",
+      "path": "vegetation/frozen-bush-03.png",
+      "category": "vegetation",
+      "width": 1537,
+      "height": 1023,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1761663,
+      "sha256": "5206f34632cf1c4afdd346f58ff895eed4598ad1f38aaec8d96c62d58fce8306",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "leafless-tree-01",
+      "path": "vegetation/leafless-tree-01.png",
+      "category": "vegetation",
+      "width": 1024,
+      "height": 1536,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1813072,
+      "sha256": "8ed355e4e635333a87ec4b0b50617d40e907f618f15beaa7451ade98b0cd9944",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "leafless-tree-02",
+      "path": "vegetation/leafless-tree-02.png",
+      "category": "vegetation",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2165249,
+      "sha256": "f5bf5f2cd4fefaa46b862a9d3833bb8c8004b252b19b428a67ed1e5e11429f45",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "leafless-tree-03",
+      "path": "vegetation/leafless-tree-03.png",
+      "category": "vegetation",
+      "width": 1305,
+      "height": 1206,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2377228,
+      "sha256": "4315d949d2c4cfc2943dcb5cc8d69339dd5da567bab92bded184fd312426f05a",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "mostly-bare-pine-01",
+      "path": "vegetation/mostly-bare-pine-01.png",
+      "category": "vegetation",
+      "width": 1024,
+      "height": 1536,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1680833,
+      "sha256": "ff7325659355b3522e759a32a1c0a20d37ff2134a0450a134fca03a0e1bdcb66",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "mostly-bare-pine-02",
+      "path": "vegetation/mostly-bare-pine-02.png",
+      "category": "vegetation",
+      "width": 1024,
+      "height": 1536,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1807324,
+      "sha256": "705965b883a5ed55c83426018be9508c77d1f2fdcf6e324f2e120ff60ad71791",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "snow-covered-pine-01",
+      "path": "vegetation/snow-covered-pine-01.png",
+      "category": "vegetation",
+      "width": 1262,
+      "height": 1246,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1984387,
+      "sha256": "b68c96897092d5c47363e89b30349d7bd3b3ae5606008b430d8a71d73a07d90f",
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "snow-covered-pine-02",
+      "path": "vegetation/snow-covered-pine-02.png",
+      "category": "vegetation",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1701927,
+      "sha256": "9ffe127c0de1bab18b777311f2748e4c61413e5d9dcb72fc75187eaa91aa85aa",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "snow-covered-pine-03",
+      "path": "vegetation/snow-covered-pine-03.png",
+      "category": "vegetation",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 2153047,
+      "sha256": "5ad3c240f9ef9948301480ecb90592766208dbc73c60c023bea0bdb564d3869a",
+      "alpha": [
+        0,
+        254
+      ]
+    },
+    {
+      "id": "stump-01",
+      "path": "vegetation/stump-01.png",
+      "category": "vegetation",
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "mode": "RGBA",
+      "bytes": 1812680,
+      "sha256": "7922e5a01a509963972e149ac4d2d784d58e0a7dc5f2046aa80fe9f250faebf7",
+      "alpha": [
+        0,
+        254
+      ]
+    }
+  ]
+}

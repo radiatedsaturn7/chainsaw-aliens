@@ -1,0 +1,15 @@
+{
+  "generator": "built-in imagegen",
+  "assets": [
+    {
+      "path": "ground-frozen-forest.png",
+      "promptSummary": "Orthographic overhead frozen forest floor with fine dead oak leaves, pine needles, muted brown soil and frost; no large objects, diffuse low contrast lighting, requested four-edge repetition."
+    },
+    {
+      "path": "ground-snow-dead-grass.png",
+      "promptSummary": "Orthographic overhead small patchy snow over dead grass, muted frost white/gray/brown fine pixel-art ground, diffuse low contrast lighting and requested four-edge repetition."
+    }
+  ],
+  "nativeOutputPreserved": true,
+  "tileSeams": "Not certified"
+}
