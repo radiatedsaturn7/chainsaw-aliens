@@ -1,0 +1,357 @@
+{
+  "schemaVersion": 1,
+  "reviewedAssetCount": 17,
+  "result": "pass",
+  "scope": "Independent visual review of each PNG, decoding, alpha availability and meaningful bounds. No in-game integration or scale validation performed.",
+  "criticalIssues": [],
+  "notes": [
+    "Native dimensions retained. Match game-scale sampling during integration.",
+    "RGBA transparent pixels may retain hidden RGB color; composite with alpha when previewing."
+  ],
+  "assets": [
+    {
+      "path": "regions/pikes-peak/alpine-vegetation.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1536,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixelFraction": 0.67544,
+      "meaningfulAlphaBounds": [
+        212,
+        133,
+        1324,
+        894
+      ],
+      "sha256": "3f896eac07b14587316597462c11cda224c6011acfa81266bb07df7e3fc93c08",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/pikes-peak/granite-outcrop.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1536,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixelFraction": 0.5368,
+      "meaningfulAlphaBounds": [
+        44,
+        137,
+        1486,
+        909
+      ],
+      "sha256": "09c3d985c219663b94cd72bd70ba18872ba6ad7a30d525663e8f117746d20b17",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/pikes-peak/snow-fence.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1536,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixelFraction": 0.60735,
+      "meaningfulAlphaBounds": [
+        188,
+        109,
+        1343,
+        934
+      ],
+      "sha256": "ff68213208a6f38c19e3abb7339daabfc1b989f29c31678c46a6b6434e73640a",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/pikes-peak/summit-sign.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1536,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixelFraction": 0.51714,
+      "meaningfulAlphaBounds": [
+        103,
+        104,
+        1435,
+        954
+      ],
+      "sha256": "5e5f2f219a4780f72d0e98caf0935371d444606a633e162f72390b10edeaa493",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed.",
+      "textVerified": "PIKES PEAK"
+    },
+    {
+      "path": "regions/moki-dugway/desert-scrub.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1536,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixelFraction": 0.72555,
+      "meaningfulAlphaBounds": [
+        263,
+        138,
+        1265,
+        875
+      ],
+      "sha256": "158f812f79678293154a1691f5160ff819b5b35cbb6ec2c56d114a324f3c76f9",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/moki-dugway/mesa-silhouette.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 2172,
+      "height": 724,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixelFraction": 0.56001,
+      "meaningfulAlphaBounds": [
+        42,
+        101,
+        2135,
+        646
+      ],
+      "sha256": "5541e501827fe516b4e9e459dd86bba357c6cea068af482d40c74ff5e40d0868",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed.",
+      "usage": "Distant background artwork only, not traversable geometry."
+    },
+    {
+      "path": "regions/moki-dugway/sandstone-outcrop.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1536,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixelFraction": 0.50627,
+      "meaningfulAlphaBounds": [
+        34,
+        90,
+        1498,
+        931
+      ],
+      "sha256": "181cca38bfb1e35fe2b3d3614cf579c480bc00daa93fc157bc0f34cab15ed220",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/moki-dugway/warning-sign.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1312,
+      "height": 1199,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixelFraction": 0.78849,
+      "meaningfulAlphaBounds": [
+        315,
+        22,
+        994,
+        1171
+      ],
+      "sha256": "5e5f87652010566a81de8a4b5d8a307eb0a2f34f1c53089e78a5085469377b65",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/oak-creek/canyon-cabin.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1536,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixelFraction": 0.39761,
+      "meaningfulAlphaBounds": [
+        82,
+        24,
+        1449,
+        997
+      ],
+      "sha256": "5583fb5f00abf4f7edad6d71099c8d0fceee7e13ca7f59b73c71467dec86ebed",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/oak-creek/creekside-tree.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1312,
+      "height": 1199,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixelFraction": 0.58734,
+      "meaningfulAlphaBounds": [
+        76,
+        8,
+        1222,
+        1183
+      ],
+      "sha256": "cd15546f4bb83571c5a546f0e9349e118db75a81c7f4a4b3d9b358a9d88e2b77",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/oak-creek/red-rock-formation.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1536,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixelFraction": 0.47831,
+      "meaningfulAlphaBounds": [
+        110,
+        19,
+        1431,
+        1001
+      ],
+      "sha256": "3c028de96311e1dd3591c0acf7f3c26c26ce7fc10801fda93412b2cf3b850725",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/oak-creek/stone-wall.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1774,
+      "height": 887,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixelFraction": 0.49907,
+      "meaningfulAlphaBounds": [
+        103,
+        113,
+        1678,
+        779
+      ],
+      "sha256": "605cfea88d6da47370c547ff4c9c2c745bf4c3965cce4002f8218f5d2a3544dc",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/angeles-crest/chaparral.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1536,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixelFraction": 0.52322,
+      "meaningfulAlphaBounds": [
+        137,
+        25,
+        1401,
+        917
+      ],
+      "sha256": "4b329ceb527eba59260db536d56f80f84787aebb412483944ad3dce701df15de",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/angeles-crest/dry-mountain-pine.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1312,
+      "height": 1199,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixelFraction": 0.6592,
+      "meaningfulAlphaBounds": [
+        139,
+        39,
+        1234,
+        1160
+      ],
+      "sha256": "4f1488861dd747397b765b48be45bf0e90622219dde3eea3e4f7d3ef87d62bd0",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/angeles-crest/mountain-silhouette.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 2171,
+      "height": 724,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixelFraction": 0.5111,
+      "meaningfulAlphaBounds": [
+        25,
+        45,
+        2145,
+        682
+      ],
+      "sha256": "09f6fc3bda4fe408b1bb8b2f4ecfd2e352899684fce9e0afd39c1db482541fcd",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed.",
+      "usage": "Distant background artwork only, not traversable geometry."
+    },
+    {
+      "path": "regions/angeles-crest/pale-rock-cut.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1536,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixelFraction": 0.46532,
+      "meaningfulAlphaBounds": [
+        39,
+        63,
+        1488,
+        964
+      ],
+      "sha256": "2f38a865e77dd68a130392a01209abe8f12a64fb017a639384fceec5c279d99f",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed."
+    },
+    {
+      "path": "regions/angeles-crest/turnout-sign.png",
+      "format": "PNG",
+      "mode": "RGBA",
+      "width": 1536,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixelFraction": 0.76321,
+      "meaningfulAlphaBounds": [
+        384,
+        60,
+        1127,
+        974
+      ],
+      "sha256": "30f260cad30da2f6055adb748afdf7fe91296e64a60136f500bad84a77e78a6a",
+      "visualReview": "Viewed individually. Complete meaningful silhouette inside canvas; consistent detailed pixel-art material rendering; no critical correction needed.",
+      "textVerified": "TURNOUT"
+    }
+  ]
+}
