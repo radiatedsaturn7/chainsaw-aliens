@@ -1,0 +1,37 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-11-10",
+  "reference": "Existing art/frozenbush/document.json rendered to PNG without artwork changes",
+  "assets": [
+    {
+      "path": "assets/campaign-art/vegetation/frozen-bush-01.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a low wide bramble bush with tangled bare arching brown twigs and small clumps of white snow. Laurel Highlands frozen woodland. Reference image is style/angle reference only, not edit target. Match crisp detailed pixel-art shading, cold muted gray-brown branches, blue-white frost, front-facing slightly elevated game camera, soft even lighting. Distinct new silhouette. Genuinely transparent background alpha=0 outside object, opaque bush pixels, no backdrop or gradient haze. Entire isolated single bush fully inside canvas with 3 percent margin. No scenery, ground rectangle, text, frame or cast shadow. Tightly framed.",
+      "validation": "PNG RGBA with transparent background; full visible silhouette inside canvas; native generated dimensions and alpha retained."
+    },
+    {
+      "path": "assets/campaign-art/vegetation/frozen-bush-02.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a compact rounded dormant shrub with upright forked twigs, heavy rounded snow clumps and a few subtle icicles. Laurel Highlands frozen woodland. Reference image is style/angle reference only, not edit target. Match crisp detailed pixel-art shading, cold muted gray-brown branches, blue-white frost, front-facing slightly elevated game camera, soft even lighting. Distinct new silhouette. Genuinely transparent background alpha=0 outside object, opaque bush pixels, no backdrop or gradient haze. Entire isolated single bush fully inside canvas with 3 percent margin. No scenery, ground rectangle, text, frame or cast shadow. Tightly framed.",
+      "validation": "PNG RGBA with transparent background; full visible silhouette inside canvas; native generated dimensions and alpha retained."
+    },
+    {
+      "path": "assets/campaign-art/vegetation/frozen-bush-03.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a sparse asymmetrical windswept bush, several broken dark woody stems leaning sideways, thin frost and scattered small snow caps. Laurel Highlands frozen woodland. Reference image is style/angle reference only, not edit target. Match crisp detailed pixel-art shading, cold muted gray-brown branches, blue-white frost, front-facing slightly elevated game camera, soft even lighting. Distinct new silhouette. Genuinely transparent background alpha=0 outside object, opaque bush pixels, no backdrop or gradient haze. Entire isolated single bush fully inside canvas with 3 percent margin. No scenery, ground rectangle, text, frame or cast shadow. Tightly framed.",
+      "validation": "PNG RGBA with transparent background; full visible silhouette inside canvas; native generated dimensions and alpha retained."
+    },
+    {
+      "path": "assets/campaign-art/rocks/gray-rock-01.png",
+      "prompt": "Use case: stylized-concept. NEW isolated game prop sprite: one small low rounded weathered gray limestone rock with a thin uneven snow cap. Laurel Highlands frozen woodland roadside. Reference image is pixel-art style, lighting and camera-angle reference only; depict rock, not bush. Crisp detailed pixel-art shading, muted cold gray stone, restrained blue-white frost, front-facing slight elevated game camera, soft even lighting. Transparent background alpha=0 outside solid object, no gradient or haze. Entire single rock fully inside canvas with 3 percent clear margin; no scenery, ground rectangle, text, frame or extending cast shadow. Tight framing.",
+      "validation": "PNG RGBA with transparent background; full visible silhouette inside canvas; native generated dimensions and alpha retained."
+    },
+    {
+      "path": "assets/campaign-art/rocks/gray-rock-02.png",
+      "prompt": "Use case: stylized-concept. NEW isolated game prop sprite: one small angular fractured dark gray stone with two planar faces, a little pale frost on upper edge. Laurel Highlands frozen woodland roadside. Reference image is pixel-art style, lighting and camera-angle reference only; depict rock, not bush. Crisp detailed pixel-art shading, muted cold gray stone, restrained blue-white frost, front-facing slight elevated game camera, soft even lighting. Transparent background alpha=0 outside solid object, no gradient or haze. Entire single rock fully inside canvas with 3 percent clear margin; no scenery, ground rectangle, text, frame or extending cast shadow. Tight framing.",
+      "validation": "PNG RGBA with transparent background; full visible silhouette inside canvas; native generated dimensions and alpha retained."
+    },
+    {
+      "path": "assets/campaign-art/rocks/gray-rock-03.png",
+      "prompt": "Use case: stylized-concept. NEW isolated game prop sprite: one small flat squat slate-gray rock, layered chipped edge, patchy small snow deposits. Laurel Highlands frozen woodland roadside. Reference image is pixel-art style, lighting and camera-angle reference only; depict rock, not bush. Crisp detailed pixel-art shading, muted cold gray stone, restrained blue-white frost, front-facing slight elevated game camera, soft even lighting. Transparent background alpha=0 outside solid object, no gradient or haze. Entire single rock fully inside canvas with 3 percent clear margin; no scenery, ground rectangle, text, frame or extending cast shadow. Tight framing.",
+      "validation": "PNG RGBA with transparent background; full visible silhouette inside canvas; native generated dimensions and alpha retained."
+    }
+  ]
+}
