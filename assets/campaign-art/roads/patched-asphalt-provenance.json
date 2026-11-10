@@ -1,0 +1,8 @@
+{
+  "path": "roads/road-asphalt-patched.png",
+  "generator": "built-in imagegen",
+  "reference": "existing saved asphaltRoad artwork",
+  "promptSummary": "New orthographic overhead patched gray asphalt, frost damage and fine cracks, vertical faded dashed center marking, low contrast diffuse lighting, requested top/bottom repetition, no perspective or roadside objects.",
+  "nativeOutputPreserved": true,
+  "tileSeams": "Not certified"
+}
