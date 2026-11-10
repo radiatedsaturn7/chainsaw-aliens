@@ -1,0 +1,22 @@
+{
+  "generator": "built-in image_gen",
+  "date": "2026-11-10",
+  "reference": "Existing art/tree/document.json rendered to PNG without artwork changes",
+  "assets": [
+    {
+      "path": "assets/campaign-art/vegetation/leafless-tree-01.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite, a tall slender leafless beech tree, smooth pale gray trunk and fine upward forked bare branches, light snow on branch tops. Laurel Highlands frozen post-apocalyptic woodland. Input image is style/angle reference only, not edit target. Match its crisp detailed pixel-art shading, cold muted gray-brown bark, blue-white frost, front-facing slight elevated game camera, soft even lighting. Make a distinctly new silhouette. Transparent background, entire single tree including all branch tips and exposed root base fully inside canvas with 3 percent margin. No scenery, ground rectangle, text, frame or shadows extending beyond object. Isolated sprite, tightly framed, no other trees.",
+      "validation": "PNG RGBA; visible tree silhouette fits within canvas at alpha >128; native generated dimensions retained; faint near-transparent residual pixels outside silhouette."
+    },
+    {
+      "path": "assets/campaign-art/vegetation/leafless-tree-02.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite, a broad old leafless oak, sturdy split trunk and asymmetrical spreading crown, sparse snow caught on thick branches. Laurel Highlands frozen post-apocalyptic woodland. Input image is style/angle reference only, not edit target. Match its crisp detailed pixel-art shading, cold muted gray-brown bark, blue-white frost, front-facing slight elevated game camera, soft even lighting. Make a distinctly new silhouette. Transparent background, entire single tree including all branch tips and exposed root base fully inside canvas with 3 percent margin. No scenery, ground rectangle, text, frame or shadows extending beyond object. Isolated sprite, tightly framed, no other trees.",
+      "validation": "PNG RGBA; visible tree silhouette fits within canvas at alpha >128; native generated dimensions retained; faint near-transparent residual pixels outside silhouette."
+    },
+    {
+      "path": "assets/campaign-art/vegetation/leafless-tree-03.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite, a medium-height leafless maple with three main trunks, dense delicate bare twigs and lightly icy branches. Laurel Highlands frozen post-apocalyptic woodland. Input image is style/angle reference only, not edit target. Match its crisp detailed pixel-art shading, cold muted gray-brown bark, blue-white frost, front-facing slight elevated game camera, soft even lighting. Make a distinctly new silhouette. Transparent background, entire single tree including all branch tips and exposed root base fully inside canvas with 3 percent margin. No scenery, ground rectangle, text, frame or shadows extending beyond object. Isolated sprite, tightly framed, no other trees.",
+      "validation": "PNG RGBA; visible tree silhouette fits within canvas at alpha >128; native generated dimensions retained; faint near-transparent residual pixels outside silhouette."
+    }
+  ]
+}
