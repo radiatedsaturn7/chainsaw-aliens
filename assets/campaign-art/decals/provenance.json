@@ -1,0 +1,184 @@
+{
+  "generator": "built-in image_gen",
+  "referenceArt": "asphaltRoad (detail scale only)",
+  "assets": [
+    {
+      "path": "assets/campaign-art/decals/cracks-repair-patches.png",
+      "prompt": "Use case: stylized-concept. NEW road-surface DECAL PNG: fine irregular branching dark asphalt cracks with a few small muted gray tar repair patches. Camera absolutely straight overhead, orthographic flat 2D, NO perspective. Reference asphalt image is detail scale/style reference ONLY, do NOT include its pavement or road markings. Fine detailed pixel texture, muted colors, subtle flat lighting suitable for night/weather. Render only the requested patch on genuinely transparent alpha background. Irregular natural patch edge, whole patch inside canvas with 4 percent margin, no opaque rectangular ground/backdrop, no shadow, no text, no frame.",
+      "revisionPrompt": "Create a road DECAL PNG, orthographic straight overhead. Only a fine network of narrow charcoal-black branching asphalt cracks plus two small dark gray tar repair patches. All the empty space BETWEEN cracks must be transparent alpha zero, not filled pavement. Absolutely no broad asphalt slab or road background. Detailed fine pixel-art texture, neutral flat lighting, minimal shading. Entire decal contained in canvas with 5 percent margin. No text or border.",
+      "validation": {
+        "dimensions": [
+          1774,
+          887
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          91,
+          71,
+          1680,
+          804
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/decals/gravel-spill.png",
+      "prompt": "Use case: stylized-concept. NEW road-surface DECAL PNG: a scattered irregular spill of small gray gravel stones, denser at one end, sparse at the edges. Camera absolutely straight overhead, orthographic flat 2D, NO perspective. Reference asphalt image is detail scale/style reference ONLY, do NOT include its pavement or road markings. Fine detailed pixel texture, muted colors, subtle flat lighting suitable for night/weather. Render only the requested patch on genuinely transparent alpha background. Irregular natural patch edge, whole patch inside canvas with 4 percent margin, no opaque rectangular ground/backdrop, no shadow, no text, no frame.",
+      "validation": {
+        "dimensions": [
+          1254,
+          1254
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          65,
+          51,
+          1212,
+          1200
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/decals/dirt-drag.png",
+      "prompt": "Use case: stylized-concept. NEW road-surface DECAL PNG: an irregular thin brown dirt smear dragged longitudinally onto a road by tires, narrow streaks run vertically. Camera absolutely straight overhead, orthographic flat 2D, NO perspective. Reference asphalt image is detail scale/style reference ONLY, do NOT include its pavement or road markings. Fine detailed pixel texture, muted colors, subtle flat lighting suitable for night/weather. Render only the requested patch on genuinely transparent alpha background. Irregular natural patch edge, whole patch inside canvas with 4 percent margin, no opaque rectangular ground/backdrop, no shadow, no text, no frame.",
+      "validation": {
+        "dimensions": [
+          1254,
+          1254
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          502,
+          40,
+          720,
+          1222
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/decals/snow-patch.png",
+      "prompt": "Use case: stylized-concept. NEW road-surface DECAL PNG: one irregular low flat patch of dirty compact snow, feathered granular edges. Camera absolutely straight overhead, orthographic flat 2D, NO perspective. Reference asphalt image is detail scale/style reference ONLY, do NOT include its pavement or road markings. Fine detailed pixel texture, muted colors, subtle flat lighting suitable for night/weather. Render only the requested patch on genuinely transparent alpha background. Irregular natural patch edge, whole patch inside canvas with 4 percent margin, no opaque rectangular ground/backdrop, no shadow, no text, no frame.",
+      "validation": {
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaOver128": [
+          83,
+          164,
+          1475,
+          866
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/decals/puddle.png",
+      "prompt": "Use case: stylized-concept. NEW road-surface DECAL PNG: one flat shallow irregular gray-blue rain puddle, subtle low contrast highlights without reflected scenery. Camera absolutely straight overhead, orthographic flat 2D, NO perspective. Reference asphalt image is detail scale/style reference ONLY, do NOT include its pavement or road markings. Fine detailed pixel texture, muted colors, subtle flat lighting suitable for night/weather. Render only the requested patch on genuinely transparent alpha background. Irregular natural patch edge, whole patch inside canvas with 4 percent margin, no opaque rectangular ground/backdrop, no shadow, no text, no frame.",
+      "validation": {
+        "dimensions": [
+          1278,
+          1230
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          60,
+          106,
+          1206,
+          1104
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/decals/tire-skid-marks.png",
+      "prompt": "Use case: stylized-concept. NEW road-surface DECAL PNG: a pair of faded dark rubber tire skid marks, mostly vertical with a slight bend, edges naturally broken. Camera absolutely straight overhead, orthographic flat 2D, NO perspective. Reference asphalt image is detail scale/style reference ONLY, do NOT include its pavement or road markings. Fine detailed pixel texture, muted colors, subtle flat lighting suitable for night/weather. Render only the requested patch on genuinely transparent alpha background. Irregular natural patch edge, whole patch inside canvas with 4 percent margin, no opaque rectangular ground/backdrop, no shadow, no text, no frame.",
+      "revisionPrompt": "Create a road DECAL PNG, orthographic straight overhead. Two dark charcoal-black rubber tire skid streaks, parallel mostly vertical with a gentle curve. Faded irregular worn edges, thin rubber scratches, dark enough to darken gray asphalt. All space around and between streaks is transparent alpha zero. No pavement texture, no gray gravel, no dirt, no road background. Detailed fine pixel-art, flat lighting, no perspective. Entire streaks contained in canvas with 5 percent margin. No text.",
+      "validation": {
+        "dimensions": [
+          1024,
+          1536
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaOver128": [
+          269,
+          56,
+          750,
+          1470
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/decals/fallen-leaves-needles.png",
+      "prompt": "Use case: stylized-concept. NEW road-surface DECAL PNG: an irregular loose scattering of small brown dead leaves and pine needles. Camera absolutely straight overhead, orthographic flat 2D, NO perspective. Reference asphalt image is detail scale/style reference ONLY, do NOT include its pavement or road markings. Fine detailed pixel texture, muted colors, subtle flat lighting suitable for night/weather. Render only the requested patch on genuinely transparent alpha background. Irregular natural patch edge, whole patch inside canvas with 4 percent margin, no opaque rectangular ground/backdrop, no shadow, no text, no frame.",
+      "validation": {
+        "dimensions": [
+          1254,
+          1254
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          82,
+          65,
+          1178,
+          1199
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/decals/road-edge-debris.png",
+      "prompt": "Use case: stylized-concept. NEW road-surface DECAL PNG: an irregular narrow scatter of tiny stone chips, dried twigs and road grit along a vertical strip. Camera absolutely straight overhead, orthographic flat 2D, NO perspective. Reference asphalt image is detail scale/style reference ONLY, do NOT include its pavement or road markings. Fine detailed pixel texture, muted colors, subtle flat lighting suitable for night/weather. Render only the requested patch on genuinely transparent alpha background. Irregular natural patch edge, whole patch inside canvas with 4 percent margin, no opaque rectangular ground/backdrop, no shadow, no text, no frame.",
+      "validation": {
+        "dimensions": [
+          1254,
+          1254
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          470,
+          17,
+          757,
+          1225
+        ]
+      }
+    }
+  ]
+}

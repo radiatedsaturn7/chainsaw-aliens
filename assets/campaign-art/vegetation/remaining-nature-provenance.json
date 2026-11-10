@@ -1,0 +1,451 @@
+{
+  "generator": "built-in image_gen",
+  "referenceArt": [
+    "tree",
+    "frozenbush"
+  ],
+  "assets": [
+    {
+      "path": "assets/campaign-art/vegetation/snow-covered-pine-01.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a full conical spruce with thick layered snow on spreading dark green branches. Reference image is style and viewing-angle reference only. Match crisp detailed pixel-art shading, muted natural colors, front-facing slightly elevated game camera, subdued even lighting. Entire object including all tips and base must fit with only 2\u20133 percent transparent margin. Enlarge subject to fill canvas tightly; no broad padding. Genuinely transparent alpha background, no gradients, halo, backdrop, scenery, ground rectangle, text or frame. Single isolated object.",
+      "validation": {
+        "dimensions": [
+          1262,
+          1246
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          7,
+          4,
+          1256,
+          1240
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/vegetation/snow-covered-pine-02.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a tall narrow pine with uneven tiered branches and light patches of snow. Reference image is style and viewing-angle reference only. Match crisp detailed pixel-art shading, muted natural colors, front-facing slightly elevated game camera, subdued even lighting. Entire object including all tips and base must fit with only 2\u20133 percent transparent margin. Enlarge subject to fill canvas tightly; no broad padding. Genuinely transparent alpha background, no gradients, halo, backdrop, scenery, ground rectangle, text or frame. Single isolated object.",
+      "editPrompt": "Edit this sprite to fix canvas framing ONLY. Preserve the tree design, pixel-art detail, color and lighting. Fit the entire tree, including topmost tip and every root, within the canvas with a clear transparent margin of 6 percent on all four sides. Do not clip anything. Transparent alpha background, no scenery or visible backdrop. Do not enlarge the tree to touch canvas edges.",
+      "validation": {
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaOver128": [
+          388,
+          34,
+          1151,
+          990
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/vegetation/snow-covered-pine-03.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a stout asymmetrical pine with a forked top and heavy snow on lower boughs. Reference image is style and viewing-angle reference only. Match crisp detailed pixel-art shading, muted natural colors, front-facing slightly elevated game camera, subdued even lighting. Entire object including all tips and base must fit with only 2\u20133 percent transparent margin. Enlarge subject to fill canvas tightly; no broad padding. Genuinely transparent alpha background, no gradients, halo, backdrop, scenery, ground rectangle, text or frame. Single isolated object.",
+      "editPrompt": "Edit this sprite to fix canvas framing ONLY. Preserve the tree design, pixel-art detail, color and lighting. Fit the entire tree, including topmost tip and every root, within the canvas with a clear transparent margin of 6 percent on all four sides. Do not clip anything. Transparent alpha background, no scenery or visible backdrop. Do not enlarge the tree to touch canvas edges.",
+      "validation": {
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaOver128": [
+          267,
+          42,
+          1281,
+          980
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/vegetation/mostly-bare-pine-01.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a tall sparse pine with widely spaced drooping boughs and only a few dark needles. Reference is style and viewing-angle reference only. Match crisp detailed pixel-art shading, muted natural colors, front-facing slightly elevated game camera, subdued even lighting. Entire object including all tips and base must fit with 6 percent transparent margin. Choose portrait canvas for tall object. No cropping. Genuinely transparent alpha background, no gradients, halo, backdrop, scenery, ground rectangle, text or frame. Single isolated object.",
+      "validation": {
+        "dimensions": [
+          1024,
+          1536
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaOver128": [
+          109,
+          49,
+          890,
+          1488
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/vegetation/mostly-bare-pine-02.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a weathered short pine with a crooked trunk and ragged sparse needle clusters. Reference is style and viewing-angle reference only. Match crisp detailed pixel-art shading, muted natural colors, front-facing slightly elevated game camera, subdued even lighting. Entire object including all tips and base must fit with 6 percent transparent margin. Choose portrait canvas for tall object. No cropping. Genuinely transparent alpha background, no gradients, halo, backdrop, scenery, ground rectangle, text or frame. Single isolated object.",
+      "validation": {
+        "dimensions": [
+          1024,
+          1536
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaOver128": [
+          96,
+          182,
+          932,
+          1284
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/vegetation/dead-broken-tree-01.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a dead snapped hardwood tree, jagged broken top and two bare side branches, lightly frosted bark. Reference is style/angle only. Crisp detailed pixel-art shading, muted natural colors, front-facing slightly elevated camera, subdued even lighting. Entire object with all tips and roots inside canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients or halo, scenery, ground rectangle, text, frame. Single isolated object.",
+      "validation": {
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaOver128": [
+          340,
+          39,
+          1196,
+          986
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/vegetation/dead-broken-tree-02.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a leaning dead tree snag with a split hollow trunk and broken limbs, lightly frosted bark. Reference is style/angle only. Crisp detailed pixel-art shading, muted natural colors, front-facing slightly elevated camera, subdued even lighting. Entire object with all tips and roots inside canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients or halo, scenery, ground rectangle, text, frame. Single isolated object.",
+      "validation": {
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaOver128": [
+          290,
+          43,
+          1249,
+          982
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/vegetation/dry-scrub-bush-01.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a low rounded dry sagebrush with gray-green tiny leaves and tan twigs, DRY snow-free desert vegetation. Reference is pixel-art rendering and camera-angle only; do NOT copy its snow or ice. Crisp detailed pixel-art shading, muted natural tan/olive colors, front-facing slightly elevated camera, subdued diffuse lighting. Entire single bush fits canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients or halo, scenery, ground rectangle, text, frame.",
+      "validation": {
+        "dimensions": [
+          1421,
+          1107
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          32,
+          25,
+          1389,
+          958
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/vegetation/dry-scrub-bush-02.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a sparse broad desert scrub bush with wiry branching brown stems, DRY snow-free desert vegetation. Reference is pixel-art rendering and camera-angle only; do NOT copy its snow or ice. Crisp detailed pixel-art shading, muted natural tan/olive colors, front-facing slightly elevated camera, subdued diffuse lighting. Entire single bush fits canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients or halo, scenery, ground rectangle, text, frame.",
+      "validation": {
+        "dimensions": [
+          1421,
+          1107
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          59,
+          35,
+          1361,
+          977
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/vegetation/dry-scrub-bush-03.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a compact dry chaparral shrub with muted olive leaves and weathered woody stems, DRY snow-free desert vegetation. Reference is pixel-art rendering and camera-angle only; do NOT copy its snow or ice. Crisp detailed pixel-art shading, muted natural tan/olive colors, front-facing slightly elevated camera, subdued diffuse lighting. Entire single bush fits canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients or halo, scenery, ground rectangle, text, frame.",
+      "validation": {
+        "dimensions": [
+          1421,
+          1107
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          26,
+          20,
+          1387,
+          992
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/rocks/gray-boulder-01.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a massive rounded gray granite boulder with weathered fissures and sparse snow. Reference is pixel-art rendering and camera-angle only. Crisp detailed pixel-art shading, subdued diffuse lighting, muted colors, front-facing slightly elevated camera. Entire single boulder fits canvas with 4 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients or halo, scenery, ground rectangle, text or frame.",
+      "validation": {
+        "dimensions": [
+          1421,
+          1107
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          53,
+          22,
+          1373,
+          1088
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/rocks/gray-boulder-02.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a tall angular gray boulder with fractured planes and a little frost. Reference is pixel-art rendering and camera-angle only. Crisp detailed pixel-art shading, subdued diffuse lighting, muted colors, front-facing slightly elevated camera. Entire single boulder fits canvas with 4 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients or halo, scenery, ground rectangle, text or frame.",
+      "validation": {
+        "dimensions": [
+          1421,
+          1107
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          256,
+          17,
+          1162,
+          1093
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/rocks/gray-boulder-03.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a wide flattened gray limestone boulder with stratified layers and scattered snow. Reference is pixel-art rendering and camera-angle only. Crisp detailed pixel-art shading, subdued diffuse lighting, muted colors, front-facing slightly elevated camera. Entire single boulder fits canvas with 4 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients or halo, scenery, ground rectangle, text or frame.",
+      "validation": {
+        "dimensions": [
+          1421,
+          1107
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          28,
+          278,
+          1393,
+          902
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/rocks/red-sandstone-boulder-01.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a rounded red sandstone boulder with orange weathered facets and pale strata. Desert rock, no snow. Reference is pixel-art rendering and camera-angle only. Crisp detailed pixel-art shading, muted terracotta and rusty natural colors, front-facing slightly elevated camera, subdued diffuse lighting. Entire single boulder fits canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients, halo, scenery, ground rectangle, text or frame.",
+      "validation": {
+        "dimensions": [
+          1421,
+          1107
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          190,
+          131,
+          1220,
+          1007
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/rocks/red-sandstone-boulder-02.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a tall angular rust-red sandstone boulder with a split face. Desert rock, no snow. Reference is pixel-art rendering and camera-angle only. Crisp detailed pixel-art shading, muted terracotta and rusty natural colors, front-facing slightly elevated camera, subdued diffuse lighting. Entire single boulder fits canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients, halo, scenery, ground rectangle, text or frame.",
+      "validation": {
+        "dimensions": [
+          1421,
+          1107
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          238,
+          22,
+          1151,
+          1087
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/rocks/red-sandstone-boulder-03.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a wide low red sandstone boulder with curved layered bands. Desert rock, no snow. Reference is pixel-art rendering and camera-angle only. Crisp detailed pixel-art shading, muted terracotta and rusty natural colors, front-facing slightly elevated camera, subdued diffuse lighting. Entire single boulder fits canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients, halo, scenery, ground rectangle, text or frame.",
+      "validation": {
+        "dimensions": [
+          1421,
+          1107
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          32,
+          299,
+          1389,
+          905
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/rocks/alpine-rock-outcrop-01.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a compact group of jagged pale alpine granite pinnacles with snow in crevices. Reference is pixel-art rendering and camera-angle only. Crisp detailed pixel-art shading, cold pale gray natural colors, front-facing slightly elevated camera, subdued diffuse lighting. Entire outcrop fits canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients, halo, scenery, ground rectangle, text or frame.",
+      "validation": {
+        "dimensions": [
+          1421,
+          1107
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          29,
+          23,
+          1392,
+          1083
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/rocks/alpine-rock-outcrop-02.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a low broad alpine gray stone outcrop with sharp layered slabs and light frost. Reference is pixel-art rendering and camera-angle only. Crisp detailed pixel-art shading, cold pale gray natural colors, front-facing slightly elevated camera, subdued diffuse lighting. Entire outcrop fits canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients, halo, scenery, ground rectangle, text or frame.",
+      "validation": {
+        "dimensions": [
+          1421,
+          1107
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaOver128": [
+          21,
+          314,
+          1400,
+          875
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/vegetation/fallen-log-01.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a single fallen weathered hardwood log with cracked bark and broken branch stubs, a little snow on top. Reference is pixel-art style and camera-angle only. Crisp detailed pixel-art shading, muted brown weathered wood, front-facing slightly elevated camera, subdued diffuse lighting. Entire object fits canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients, halo, scenery, ground rectangle, text or frame.",
+      "validation": {
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaOver128": [
+          66,
+          209,
+          1484,
+          752
+        ]
+      }
+    },
+    {
+      "path": "assets/campaign-art/vegetation/stump-01.png",
+      "prompt": "Use case: stylized-concept. NEW individual game sprite: a single old rough tree stump with jagged broken top and spreading roots, a little snow. Reference is pixel-art style and camera-angle only. Crisp detailed pixel-art shading, muted brown weathered wood, front-facing slightly elevated camera, subdued diffuse lighting. Entire object fits canvas with 5 percent clear transparent margin, tightly framed but never clipped. Transparent alpha background, no gradients, halo, scenery, ground rectangle, text or frame.",
+      "validation": {
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "format": "PNG",
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaOver128": [
+          174,
+          59,
+          1347,
+          972
+        ]
+      }
+    }
+  ]
+}
