@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "file": "abandoned-gas-station.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: a small abandoned midcentury Route 66 gas station, faded cream stucco walls, worn red flat canopy attached over two old fuel pumps, dark glass storefront, small patches of windblown snow, weathered through age, no boarded windows, no words or logos. Existing house image is reference for crisp detailed pixel-art rendering and near-frontal three-quarter view only. Match muted gray-brown and faded material colors with restrained icy accents and subdued diffuse lighting. Entire object including roof and base inside canvas, tightly framed with a small transparent margin. Genuine alpha background, no scene, landscape, people, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          38,
+          170,
+          1491,
+          931
+        ],
+        "bytes": 2590339,
+        "sha256": "5760f3533c601b55d63851bd70d352ba41ac27e1bf54f18dc1a3221b5ab7a788",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "motel-sign.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one tall aged roadside motel sign on two steel supports, faded turquoise rectangular panel with large cream block letters exactly 'MOTEL', a small faded red arrow below, broken unlit neon trim, rust and tiny frost deposits. Existing house image is a style reference only for crisp detailed pixel-art rendering and near-frontal three-quarter angle. Muted dusty faded colors and rust browns, subdued diffuse lighting, only minimal frost. Whole object fully inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette and through structure gaps. No scene, landscape, people, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1312,
+        "height": 1199,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaAbove32": [
+          90,
+          13,
+          1226,
+          1172
+        ],
+        "bytes": 2084802,
+        "sha256": "95d4e8f7ccb03e3cddb7b9098b3735fd5f0a01c6ffd1e534aca2eaf11e0f50f5",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "diner.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one small abandoned midcentury American roadside diner building, rounded silver metal exterior, faded red trim, dark front windows and closed glass door, flat roof with small sign exactly 'DINER', weathered naturally, no boarded windows, no people, no cars. Existing house image is a style reference only for crisp detailed pixel-art rendering and near-frontal three-quarter angle. Muted dusty faded colors and rust browns, subdued diffuse lighting, only minimal frost. Whole object fully inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette and through structure gaps. No scene, landscape, people, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          24,
+          155,
+          1506,
+          948
+        ],
+        "bytes": 2643321,
+        "sha256": "21c7aaf709537d7c9aba4daeb012698bf3f3b06d7cc2c1eeb8f56252a5aabdec",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "water-tower.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one old roadside water tower, cylindrical riveted gray steel tank with conical cap on four slender cross-braced legs, rust streaks, ladder up one side, no words or logos. Existing house image is a style reference only for crisp detailed pixel-art rendering and near-frontal three-quarter angle. Muted dusty faded colors and rust browns, subdued diffuse lighting, only minimal frost. Whole object fully inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette and through structure gaps. No scene, landscape, people, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1024,
+        "height": 1536,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          127,
+          27,
+          883,
+          1503
+        ],
+        "bytes": 2252492,
+        "sha256": "29585bcd14ec34958a3d43f7a9a7fdbf3d5872ef8c292be15f48f0c55f5379b9",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "billboard.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one weathered roadside billboard on two timber supports, sun-bleached pale wood advertising panel with peeling abstract faded blue and red paint remnants, no readable lettering, a few chipped edges, entire structure visible. Existing house image is a style reference only for crisp detailed pixel-art rendering and near-frontal three-quarter angle. Muted dusty faded colors and rust browns, subdued diffuse lighting, only minimal frost. Whole object fully inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette and through structure gaps. No scene, landscape, people, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          222,
+          13,
+          1308,
+          1011
+        ],
+        "bytes": 2386003,
+        "sha256": "65cd7fcf4e39f96d479b4e5e040174a5e95aa3e99df035e58d924f492180a1d6",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "rusted-pickup.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one abandoned vintage midcentury pickup truck, faded turquoise paint heavily mottled with rust, intact but dirty dark windows, deflated tires, empty bed, near side and front visible, no driver, no logos or lettering. Existing house image is a style reference only for crisp detailed pixel-art rendering and near-frontal three-quarter angle. Muted dusty faded colors and rust browns, subdued diffuse lighting, only minimal frost. Whole object fully inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette and through structure gaps. No scene, landscape, people, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          38,
+          107,
+          1494,
+          920
+        ],
+        "bytes": 2556095,
+        "sha256": "55408a1b0f04a9d39f35dc6caf20fc33578db0ef675be893da925904e790f949",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    }
+  ]
+}
