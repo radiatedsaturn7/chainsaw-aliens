@@ -1,0 +1,141 @@
+{
+  "png_count": 9,
+  "assets": [
+    {
+      "path": "assets/campaign-art/ground/ground-frozen-forest.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGB",
+      "bytes": 4000560,
+      "sha256": "c5d0d43a3de4b7821487ab4807703476252b734f3a9bac02c94ce32b839e05b2",
+      "tile_seams": "Not certified seamless; repeated preview and finishing required before production."
+    },
+    {
+      "path": "assets/campaign-art/ground/ground-snow-dead-grass.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGB",
+      "bytes": 3688823,
+      "sha256": "92034336e769c14a693e7b872a1f1a9ba3e3554bb461aa7fb41ed4755219e356",
+      "tile_seams": "Not certified seamless; repeated preview and finishing required before production."
+    },
+    {
+      "path": "assets/campaign-art/regions/laurel-highlands/forest-cabin.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "bytes": 2379417,
+      "sha256": "2b05897c18fc435b99c2ee85e8790aa79f8cece4f3e2d4c0b265faf1ec8b378a",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "visible_bounds_alpha_32": [
+        147,
+        68,
+        1358,
+        929
+      ]
+    },
+    {
+      "path": "assets/campaign-art/regions/laurel-highlands/park-sign.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "bytes": 2244002,
+      "sha256": "fd4419f92b5f27995367353edbeca25e7fac63318766046ee3ab62a372eac067",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "visible_bounds_alpha_32": [
+        168,
+        32,
+        1371,
+        992
+      ]
+    },
+    {
+      "path": "assets/campaign-art/regions/laurel-highlands/stone-retaining-wall.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "bytes": 1779637,
+      "sha256": "3e54da48a1c008e5acb01bd88750e320b74b32c66322893abb91275d896a6698",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        72,
+        148,
+        2102,
+        640
+      ]
+    },
+    {
+      "path": "assets/campaign-art/roads/road-asphalt-patched.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGB",
+      "bytes": 3775712,
+      "sha256": "c2da77fd71de8d154ab59ea62668bd7ced62cce432cbcd7984cf0efb39fbba1b",
+      "tile_seams": "Not certified seamless; repeated preview and finishing required before production."
+    },
+    {
+      "path": "assets/campaign-art/vegetation/leafless-tree-01.png",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "bytes": 1813072,
+      "sha256": "8ed355e4e635333a87ec4b0b50617d40e907f618f15beaa7451ade98b0cd9944",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "visible_bounds_alpha_32": [
+        150,
+        12,
+        855,
+        1499
+      ]
+    },
+    {
+      "path": "assets/campaign-art/vegetation/leafless-tree-02.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "bytes": 2165249,
+      "sha256": "f5bf5f2cd4fefaa46b862a9d3833bb8c8004b252b19b428a67ed1e5e11429f45",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "visible_bounds_alpha_32": [
+        49,
+        12,
+        1494,
+        995
+      ]
+    },
+    {
+      "path": "assets/campaign-art/vegetation/leafless-tree-03.png",
+      "width": 1305,
+      "height": 1206,
+      "mode": "RGBA",
+      "bytes": 2377228,
+      "sha256": "4315d949d2c4cfc2943dcb5cc8d69339dd5da567bab92bded184fd312426f05a",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        30,
+        17,
+        1276,
+        1175
+      ]
+    }
+  ],
+  "scope": "Laurel Highlands initial source artwork handoff; not integrated into game; texture seams not certified."
+}
