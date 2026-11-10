@@ -1,0 +1,256 @@
+{
+  "scope": "13 road source textures and 2 ground source textures",
+  "method": "Each PNG opened individually with view_image; Pillow metadata and edge inspection only. No images modified.",
+  "summary": "All 15 content/orientation/framing checks pass as source artwork. Exact seams are not certified and import sizing/visual repetition still need in-game checks.",
+  "production_limitations": [
+    "Native resolution is 1254x1254, not 512x512.",
+    "Opposite edge differences exist; do not label these perfectly seamless.",
+    "Source art only; no in-game integration or repeated-tile rendered QA was performed."
+  ],
+  "assets": [
+    {
+      "path": "assets/campaign-art/ground/ground-frozen-forest.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "overhead ground",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 20.28,
+      "edge_mae_left_right": 22.02,
+      "sha256": "c5d0d43a3de4b7821487ab4807703476252b734f3a9bac02c94ce32b839e05b2"
+    },
+    {
+      "path": "assets/campaign-art/ground/ground-snow-dead-grass.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "overhead ground",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 27.83,
+      "edge_mae_left_right": 19.07,
+      "sha256": "92034336e769c14a693e7b872a1f1a9ba3e3554bb461aa7fb41ed4755219e356",
+      "note": "Coarser visible pixel treatment than road textures; inspect texture scale in game."
+    },
+    {
+      "path": "assets/campaign-art/roads/road-asphalt-faded66.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 14.55,
+      "edge_mae_left_right": 16.32,
+      "sha256": "6e5f5f3ef26a691ffc6c8a9d9d98c262335eb9862770ef8cfe1069d471269f1f"
+    },
+    {
+      "path": "assets/campaign-art/roads/road-asphalt-industrial.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 8.81,
+      "edge_mae_left_right": 11.78,
+      "sha256": "96c69fe0f171ac79d94c863cd518d8bd4fdef1a9cdd254f37d35eac5d2a4ccde",
+      "note": "Two parallel solid white markings, unlike the single dashed center line in the existing reference. Confirm desired lane interpretation on import."
+    },
+    {
+      "path": "assets/campaign-art/roads/road-asphalt-patched.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 12.44,
+      "edge_mae_left_right": 16.94,
+      "sha256": "c2da77fd71de8d154ab59ea62668bd7ced62cce432cbcd7984cf0efb39fbba1b",
+      "note": "Repair patches are subtle; could be stronger for visual differentiation from worn asphalt."
+    },
+    {
+      "path": "assets/campaign-art/roads/road-asphalt-wet.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 11.75,
+      "edge_mae_left_right": 10.43,
+      "sha256": "285d1bfe725de5620519fee07038fa2bbf85713b381486b37a48e27109c97a20"
+    },
+    {
+      "path": "assets/campaign-art/roads/road-asphalt-worn.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 10.76,
+      "edge_mae_left_right": 11.45,
+      "sha256": "7261674221132deaba17d0835ac19a90109bd596b65620bf4cfb246fa5732124"
+    },
+    {
+      "path": "assets/campaign-art/roads/road-dirt-loose.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 9.64,
+      "edge_mae_left_right": 12.24,
+      "sha256": "e38d19cb7babb1939ac819306dea57f8fd9bf55821f3744154a4d652357195a0"
+    },
+    {
+      "path": "assets/campaign-art/roads/road-dirt-packed.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 9.25,
+      "edge_mae_left_right": 11.09,
+      "sha256": "cefd593b4df85b6cd3130f7ad239157b7aba611f85cc72bb017c3911b8ae91a0"
+    },
+    {
+      "path": "assets/campaign-art/roads/road-gravel-gray.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 18.5,
+      "edge_mae_left_right": 24.08,
+      "sha256": "2601ab9725e01ab996d8751004faed051e4541121f6de1e67f63c585194463e5"
+    },
+    {
+      "path": "assets/campaign-art/roads/road-gravel-red.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 18.19,
+      "edge_mae_left_right": 21.21,
+      "sha256": "88b7147cee671b9262fe210ed201326d2d65b2df79f2f5cadb78317a4e54cbd3",
+      "note": "Strong warm red saturation; evaluate under in-game lighting."
+    },
+    {
+      "path": "assets/campaign-art/roads/road-gravel-rutted.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 18.6,
+      "edge_mae_left_right": 24.45,
+      "sha256": "020fcb5bf841d142d08eae219d02ea2db22ca0492d7dea89d3a15e91c27ae94b"
+    },
+    {
+      "path": "assets/campaign-art/roads/road-slush.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 16.57,
+      "edge_mae_left_right": 18.39,
+      "sha256": "a2993c51ed3ddc32fa550a8eb51cd237e6b81dd3039739aaec1599647a373928"
+    },
+    {
+      "path": "assets/campaign-art/roads/road-snow-packed.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 12.9,
+      "edge_mae_left_right": 11.53,
+      "sha256": "4849e18263f8bc749bbfa91b438ce25ee9942287950f07e310954bb3033dca74"
+    },
+    {
+      "path": "assets/campaign-art/roads/road-snow-patchy.png",
+      "dimensions": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "png_decode": "pass",
+      "visual_content": "pass",
+      "orientation": "vertical road wear/markings",
+      "perspective_or_frame": "none",
+      "seams_certified": false,
+      "edge_mae_top_bottom": 17.16,
+      "edge_mae_left_right": 19.96,
+      "sha256": "6512c44bbbed38e051fe444877c3ae576f8b13fe161acbb7444e39cd98db8a66"
+    }
+  ]
+}

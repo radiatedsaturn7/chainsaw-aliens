@@ -1,0 +1,86 @@
+[
+  {
+    "path": "assets/campaign-art/roads/road-asphalt-worn.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-asphalt-worn. Faded gray pavement with fine small cracks; general campaign road. Thin faded vertical white dashed center line. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-1397b358-06fa-40d0-9bd3-4bf4ff37c1a5.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  },
+  {
+    "path": "assets/campaign-art/roads/road-asphalt-wet.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-asphalt-wet. Dark wet asphalt with subtle damp glints, no strong sky reflections; Ohio and Oak Creek. Thin faded vertical white dashed center line. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-90e01e38-3ad1-431b-921f-3bc716b7d3aa.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  },
+  {
+    "path": "assets/campaign-art/roads/road-asphalt-industrial.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-asphalt-industrial. Weathered industrial concrete/asphalt repair panels, worn thin vertical road markings; Data Center City. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-ab1a7560-c42e-4fbd-b630-293d3366d852.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  },
+  {
+    "path": "assets/campaign-art/roads/road-asphalt-faded66.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-asphalt-faded66. Sunbleached pale asphalt and faint faded yellow center lines running vertically; Route 66. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-7ce0dc4d-3a30-45f8-b960-49acbde8d152.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  },
+  {
+    "path": "assets/campaign-art/roads/road-dirt-packed.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-dirt-packed. Firm muted brown packed dirt with longitudinal wheel tracks running vertically; Ozarks. No painted markings. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-e328a718-a665-4ddb-a089-d94c14199fb0.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  },
+  {
+    "path": "assets/campaign-art/roads/road-dirt-loose.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-dirt-loose. Loose brown dirt with tiny scattered stones and faint longitudinal wear running vertically. No painted markings. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-8b40c0f4-6734-4d93-b258-fc4cd2b3cf32.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  },
+  {
+    "path": "assets/campaign-art/roads/road-gravel-gray.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-gravel-gray. Fine compact gray gravel for eastern and industrial stages, longitudinal tire wear running vertically. No markings. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-f7546ce9-d9e6-4909-9ae4-7d13fe704a4c.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  },
+  {
+    "path": "assets/campaign-art/roads/road-gravel-red.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-gravel-red. Fine compact reddish gravel for Moki/western mountain roads, longitudinal tire wear vertically. No markings. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-e7ecebed-b38e-4b1e-b8cc-c99d863f7ed6.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  },
+  {
+    "path": "assets/campaign-art/roads/road-gravel-rutted.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-gravel-rutted. Eroded muted gray-brown gravel with shallow subtle ruts running vertically. No markings. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-d760cf4e-b706-4b9e-9626-b22d99902f92.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  },
+  {
+    "path": "assets/campaign-art/roads/road-snow-packed.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-snow-packed. Compact old snow with subtle parallel vehicle tracks running vertically. No markings. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-50f64da3-28ba-4b1e-b6f3-7186f33fd9c1.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  },
+  {
+    "path": "assets/campaign-art/roads/road-snow-patchy.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-snow-patchy. Irregular thin snow patches over exposed dark asphalt, faint tracks vertically. No markings. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-7e11231a-87fa-4dbe-b6fe-60564726ef70.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  },
+  {
+    "path": "assets/campaign-art/roads/road-slush.png",
+    "prompt": "Use case: stylized-concept. New game terrain texture source PNG, target 512x512. Asset road-slush. Dirty gray-white slush with two dark longitudinal wheel-track bands vertically. No markings. Orthographic overhead view, image width across road, image height along road. Fill entire canvas with surface, no roadside border, no objects, no perspective. Fine realistic pixel-texture density matching retro detailed racing game. Subtle low-contrast highlights/shadows, neutral diffuse lighting for day/night weather. TOP and BOTTOM should join seamlessly when repeated; matching edge features. No labels, text, watermark or frame.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-ef638708-4f01-4e72-ba1d-0def06b2ca27.png",
+    "generator": "built-in imagegen",
+    "tileSeams": "Not certified; original output"
+  }
+]
