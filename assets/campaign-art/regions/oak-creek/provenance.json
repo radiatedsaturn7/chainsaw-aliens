@@ -1,0 +1,26 @@
+[
+  {
+    "path": "assets/campaign-art/regions/oak-creek/red-rock-formation.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for oak-creek. Subject: Tall layered sandstone red-rock formation landmark. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-8598aa96-2825-4fd7-b94f-8827ae31d88e.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/oak-creek/creekside-tree.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for oak-creek. Subject: Leafless creekside cottonwood tree with twisting fine branches and trace frost. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-00b39d2a-a8b9-409c-8eb8-5c17e879a9ac.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/oak-creek/canyon-cabin.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for oak-creek. Subject: Abandoned small rustic canyon cabin, muted weathered timber and red-stone base, naturally aged not boarded up. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-7d8c2623-c84f-404e-918b-a26308e33172.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/oak-creek/stone-wall.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for oak-creek. Subject: Short red-gray local stone wall section, weathered masonry. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-ed0a6bd2-b6cc-48cc-a7ba-db9568b168e9.png",
+    "generator": "built-in imagegen"
+  }
+]

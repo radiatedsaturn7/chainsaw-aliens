@@ -1,0 +1,32 @@
+[
+  {
+    "path": "assets/campaign-art/regions/angeles-crest/dry-mountain-pine.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for angeles-crest. Subject: Dry mountain pine with sparse dark needles and rough trunk. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-62b17a03-e2f7-4218-a490-4c807deede50.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/angeles-crest/chaparral.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for angeles-crest. Subject: Small dense chaparral shrub, dry green-brown foliage. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-952b50a5-cabf-4f00-94e3-0de99d8bf047.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/angeles-crest/pale-rock-cut.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for angeles-crest. Subject: Pale rugged mountain rock-cut face as a small roadside outcrop. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-9145e7e5-c338-437f-a7f9-40eb0e58d9ff.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/angeles-crest/turnout-sign.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for angeles-crest. Subject: Weathered rectangular roadside sign on pole with exact legible text TURNOUT. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-d782d1cd-1bbb-4d34-bf70-6fe068309fb4.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/angeles-crest/mountain-silhouette.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for angeles-crest. Subject: Distant mountain silhouette with multiple rugged ridges, muted hazy gray blue, BACKGROUND SCENERY ONLY. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-911ec017-fda8-48e7-875c-921dfe25cfe2.png",
+    "generator": "built-in imagegen"
+  }
+]
