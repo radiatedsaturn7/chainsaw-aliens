@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "file": "small-shed.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: a small weathered New England wooden garden shed, faded gray shingles, pitched roof with patchy snow, simple closed plank door and tiny dark window. No boarded windows or signs. Use reference house only for matching crisp detailed frozen pixel-art rendering and near-frontal three-quarter angle. Desaturated gray-brown and icy blue palette, restrained diffuse lighting. Entire object visible, tight framing with small margin. Genuine transparent alpha outside silhouette. No backdrop, scene, people, cars, large cast shadows, glow, or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          254,
+          60,
+          1276,
+          961
+        ],
+        "bytes": 2449035,
+        "sha256": "ea6eba02b2ff558e4aab4d7c17b2ebadca4216402c25a2550ee8fab91ba5c73d",
+        "visualReview": "Subject complete, style consistent, meaningful silhouette inside canvas."
+      }
+    },
+    {
+      "file": "mailbox.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one weathered rural New England roadside metal mailbox on a plain wooden post, arched dark gray box, faded red lowered flag, patchy snow and tiny icicles, no numbers or text. Reference house is style reference only: match crisp detailed frozen pixel-art rendering and near-frontal subtle three-quarter angle. Desaturated gray-brown and icy blue palette, subdued diffuse lighting. Entire object and base visible, tightly framed with small transparent margin. Genuine alpha background outside object. No scene, people, landscape, large cast shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite.",
+      "validation": {
+        "format": "PNG",
+        "width": 1312,
+        "height": 1199,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaAbove32": [
+          319,
+          64,
+          990,
+          1157
+        ],
+        "bytes": 1052888,
+        "sha256": "e3c6b99ea5d04c986206c813fda61a21f35a1c0322d1d8da5988d612b600809e",
+        "visualReview": "Subject complete, style consistent, meaningful silhouette inside canvas."
+      }
+    },
+    {
+      "file": "short-stone-wall.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one short low New England dry-stone boundary wall section with rounded mixed gray granite fieldstones and snow on capstones, both ends visible, 3:1 wide low silhouette, isolated prop, not landscape. Reference house is style reference only: match crisp detailed frozen pixel-art rendering and near-frontal subtle three-quarter angle. Desaturated gray-brown and icy blue palette, subdued diffuse lighting. Entire object and base visible, tightly framed with small transparent margin. Genuine alpha background outside object. No scene, people, landscape, large cast shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite.",
+      "validation": {
+        "format": "PNG",
+        "width": 2172,
+        "height": 724,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaAbove32": [
+          49,
+          136,
+          2110,
+          626
+        ],
+        "bytes": 1807175,
+        "sha256": "267679dbe432c8f0cb2e98828461b3ec63efee4ae8baa125f6cd4444a15f7c8f",
+        "visualReview": "Subject complete, style consistent, meaningful silhouette inside canvas."
+      }
+    }
+  ]
+}
