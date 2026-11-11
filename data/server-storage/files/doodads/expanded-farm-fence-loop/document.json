@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-farm-fence-loop",
+    "name": "expanded-farm-fence-loop",
+    "artRef": "expanded-farm-fence-loop",
+    "widthM": 2.1020527859237537,
+    "heightM": 1.4,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 1.7867448680351905,
+    "hitboxHeightM": 1.26,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": [],
+    "isFence": true,
+    "fenceThicknessM": 0.4
+  }
+}

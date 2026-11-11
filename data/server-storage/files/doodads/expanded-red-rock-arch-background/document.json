@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-red-rock-arch-background",
+    "name": "expanded-red-rock-arch-background",
+    "artRef": "expanded-red-rock-arch-background",
+    "isFence": false,
+    "fenceThicknessM": 0.3,
+    "itemType": "scenery",
+    "unlockTrackId": "",
+    "model": null,
+    "widthM": 44,
+    "heightM": 22,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 0,
+    "hitboxHeightM": 0,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "decoration",
+      "speedDrainPercent": 0,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

@@ -324,11 +324,25 @@ def elevation(lat,lon,fetch=request_json):
     return value
 
 
-def build(layout, width=12, use_elevation=True, reverse=False, fetch=request_json):
+def densify(points, max_segment_length_m):
+    """Add collinear survey points without changing the imported road plan."""
+    if max_segment_length_m is None:return points
+    spacing=float(max_segment_length_m)
+    if not math.isfinite(spacing) or spacing<20:raise ValueError('Survey spacing must be at least 20 metres.')
+    result=[]
+    for a,b in zip(points,points[1:]):
+        count=max(1,math.ceil(math.hypot(b['x']-a['x'],b['y']-a['y'])/spacing))
+        for i in range(count):
+            t=i/count
+            result.append({**a,**{k:a[k]*(1-t)+b[k]*t for k in ('x','y','lat','lon')}})
+    return result+[points[-1]]
+
+
+def build(layout, width=12, use_elevation=True, reverse=False, fetch=request_json, max_segment_length_m=None):
     width=float(width)
     if not math.isfinite(width) or not 3<=width<=30: raise ValueError('Road width must be 3–30 metres.')
     is_open=bool(layout.get('open'))
-    pts=simplify(layout['points'])
+    pts=densify(simplify(layout['points']),max_segment_length_m)
     if reverse:
         pts=[{**p,'tags':pts[i-1].get('tags',{})} for i,p in reversed(list(enumerate(pts)))]
     if len(pts)>600: raise ValueError('This circuit has too many editable points (limit 600).')

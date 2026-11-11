@@ -25,7 +25,7 @@ export function drawWorldMap(ctx,b,element,resources,document,parameters,value,{
    ctx.beginPath();ctx.arc(p.x,p.y,radius,0,Math.PI*2);ctx.fill();
    if(!junction){ctx.fillStyle='#10212b';drawText(node.completed?'✓':String(raceIndex),p.x,p.y,radius*1.6);}
   }
-  if(junction||(b.w>=600&&nodes.length<=16)){
+  if(junction||(style.labels!=='selected'&&b.w>=600&&nodes.length<=16)){
    const labelWidth=junction?Math.min(100,b.w*.18):b.w/4-8;
    const labelX=Math.max(b.x+labelWidth/2,Math.min(b.x+b.w-labelWidth/2,p.x));
    ctx.fillStyle=element.color;drawText(node.label,labelX,p.y+radius+17,labelWidth);

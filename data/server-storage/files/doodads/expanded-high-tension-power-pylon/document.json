@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-high-tension-power-pylon",
+    "name": "expanded-high-tension-power-pylon",
+    "artRef": "expanded-high-tension-power-pylon",
+    "widthM": 14.65234375,
+    "heightM": 22,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 12.4544921875,
+    "hitboxHeightM": 19.8,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

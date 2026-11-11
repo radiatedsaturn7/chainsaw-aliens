@@ -112,6 +112,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -198,6 +199,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -289,6 +291,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -402,6 +405,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -493,6 +497,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -601,6 +606,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -687,6 +693,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -773,6 +780,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -864,6 +872,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -977,6 +986,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -1076,6 +1086,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -1162,6 +1173,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -1248,6 +1260,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -1334,6 +1347,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -1420,6 +1434,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -1506,6 +1521,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -1597,6 +1613,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -1616,7 +1633,9 @@
           "onSelect": null,
           "action": {
             "type": "haptics",
-            "target": ""
+            "target": "",
+            "parameter": "",
+            "value": null
           },
           "visible": true,
           "disabled": false,
@@ -1686,6 +1705,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -1777,6 +1797,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -1890,6 +1911,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -1976,6 +1998,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -2012,7 +2035,7 @@
           "fill": "#49758c",
           "stroke": "#ffffff",
           "strokeWidth": 0,
-          "label": "\u2191 / \u2193 LETTER   \u2190 / \u2192 POSITION   CONFIRM TO ENTER",
+          "label": "↑ / ↓ LETTER   ← / → POSITION   CONFIRM TO ENTER",
           "x": 0.04,
           "y": 0.7,
           "w": 0.92,
@@ -2067,6 +2090,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -2153,6 +2177,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -2266,6 +2291,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -2352,6 +2378,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -2438,6 +2465,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -2524,6 +2552,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -2610,6 +2639,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -2696,6 +2726,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -2782,6 +2813,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -2868,6 +2900,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -2981,6 +3014,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -3067,6 +3101,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -3153,6 +3188,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -3244,6 +3280,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -3335,6 +3372,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -3426,6 +3464,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -3512,6 +3551,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -3598,6 +3638,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -3684,6 +3725,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -3792,6 +3834,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -3878,6 +3921,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -3964,6 +4008,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -4050,6 +4095,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -4136,6 +4182,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -4222,6 +4269,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -4308,6 +4356,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -4416,6 +4465,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -4502,6 +4552,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -4588,6 +4639,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -4679,6 +4731,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -4765,6 +4818,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -4851,6 +4905,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -4937,6 +4992,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -5043,486 +5099,265 @@
           "duration": 2,
           "nodes": [
             {
-              "id": "providence",
-              "kind": "race",
+              "id": "america-opening-tower-hill",
               "label": "Tower Hill Road",
               "raceRef": "Tower Hill Road",
-              "completedParameter": "raceCompleted.Tower_Hill_Road",
-              "x": 0.97,
-              "y": 0.5
-            },
-            {
-              "id": "los-angeles",
-              "kind": "junction",
-              "label": "Los Angeles",
-              "x": 0.03,
-              "y": 0.5
-            },
-            {
-              "id": "america-north-01",
               "kind": "race",
-              "label": "North 01 - Providence - Blackstone",
-              "raceRef": "North 01 - Providence - Blackstone",
-              "x": 0.86,
-              "y": 0.15,
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.9273575237062116,
+              "y": 0.24475946388804606,
+              "unlockParameter": "",
+              "unlockValue": true,
+              "completedParameter": "raceCompleted.Tower_Hill_Road"
+            },
+            {
+              "id": "osm-cf573fba73e0",
+              "label": "Mount Washington Auto Road",
+              "raceRef": "Mount Washington Auto Road — point-to-point",
+              "kind": "race",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.8971265243902437,
+              "y": 0,
               "unlockParameter": "raceCompleted.Tower_Hill_Road",
               "unlockValue": true,
-              "completedParameter": "raceCompleted.North_01_-_Providence_-_Blackstone"
+              "completedParameter": "raceCompleted.Mount_Washington_Auto_Road___point-to-point"
             },
             {
-              "id": "america-north-02",
+              "id": "america-middle-laurel",
+              "label": "Laurel Highlands Scenic Byway",
+              "raceRef": "Laurel Highlands Scenic Byway",
               "kind": "race",
-              "label": "North 02 - Mohawk Trail",
-              "raceRef": "North 02 - Mohawk Trail",
-              "x": 0.7571428571428571,
-              "y": 0.15,
-              "unlockParameter": "raceCompleted.North_01_-_Providence_-_Blackstone",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.785507923058218,
+              "y": 0.4249508218314143,
+              "unlockParameter": "raceCompleted.Mount_Washington_Auto_Road___point-to-point",
               "unlockValue": true,
-              "completedParameter": "raceCompleted.North_02_-_Mohawk_Trail"
+              "completedParameter": "raceCompleted.Laurel_Highlands_Scenic_Byway"
             },
             {
-              "id": "america-north-03",
+              "id": "america-middle-ohio",
+              "label": "Ohio River Crossing",
+              "raceRef": "Ohio River Crossing",
               "kind": "race",
-              "label": "North 03 - Tunnel of Trees",
-              "raceRef": "North 03 - Tunnel of Trees",
-              "x": 0.6542857142857142,
-              "y": 0.15,
-              "unlockParameter": "raceCompleted.North_02_-_Mohawk_Trail",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.7512237507468629,
+              "y": 0.4558773564932377,
+              "unlockParameter": "raceCompleted.Laurel_Highlands_Scenic_Byway",
               "unlockValue": true,
-              "completedParameter": "raceCompleted.North_03_-_Tunnel_of_Trees"
+              "completedParameter": "raceCompleted.Ohio_River_Crossing"
             },
             {
-              "id": "america-north-04",
+              "id": "america-middle-ozark",
+              "label": "Ozark Backroads",
+              "raceRef": "Ozark Backroads",
               "kind": "race",
-              "label": "North 04 - Badlands Loop",
-              "raceRef": "North 04 - Badlands Loop",
-              "x": 0.5514285714285714,
-              "y": 0.15,
-              "unlockParameter": "raceCompleted.North_03_-_Tunnel_of_Trees",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.5618746466399696,
+              "y": 0.6223675220280677,
+              "unlockParameter": "raceCompleted.Ohio_River_Crossing",
               "unlockValue": true,
-              "completedParameter": "raceCompleted.North_04_-_Badlands_Loop"
+              "completedParameter": "raceCompleted.Ozark_Backroads"
             },
             {
-              "id": "america-north-05",
+              "id": "america-middle-city",
+              "label": "Data Center City",
+              "raceRef": "Data Center City",
               "kind": "race",
-              "label": "North 05 - Beartooth Pass",
-              "raceRef": "North 05 - Beartooth Pass",
-              "x": 0.44857142857142857,
-              "y": 0.15,
-              "unlockParameter": "raceCompleted.North_04_-_Badlands_Loop",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.584435100356145,
+              "y": 0.5113420783161281,
+              "unlockParameter": "raceCompleted.Ozark_Backroads",
               "unlockValue": true,
-              "completedParameter": "raceCompleted.North_05_-_Beartooth_Pass"
+              "completedParameter": "raceCompleted.Data_Center_City"
             },
             {
-              "id": "america-north-06",
+              "id": "america-middle-route66",
+              "label": "Historic Route 66",
+              "raceRef": "Historic Route 66",
               "kind": "race",
-              "label": "North 06 - Sawtooth Scenic Byway",
-              "raceRef": "North 06 - Sawtooth Scenic Byway",
-              "x": 0.34571428571428575,
-              "y": 0.15,
-              "unlockParameter": "raceCompleted.North_05_-_Beartooth_Pass",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.46600949611190895,
+              "y": 0.7652399229209768,
+              "unlockParameter": "raceCompleted.Data_Center_City",
               "unlockValue": true,
-              "completedParameter": "raceCompleted.North_06_-_Sawtooth_Scenic_Byway"
+              "completedParameter": "raceCompleted.Historic_Route_66"
             },
             {
-              "id": "america-north-07",
+              "id": "america-middle-pikes",
+              "label": "Pikes Peak Highway",
+              "raceRef": "Pikes Peak Highway",
               "kind": "race",
-              "label": "North 07 - Tioga Pass",
-              "raceRef": "North 07 - Tioga Pass",
-              "x": 0.24285714285714288,
-              "y": 0.15,
-              "unlockParameter": "raceCompleted.North_06_-_Sawtooth_Scenic_Byway",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.3686348556080759,
+              "y": 0.35919089394176335,
+              "unlockParameter": "raceCompleted.Historic_Route_66",
               "unlockValue": true,
-              "completedParameter": "raceCompleted.North_07_-_Tioga_Pass"
+              "completedParameter": "raceCompleted.Pikes_Peak_Highway"
             },
             {
-              "id": "america-north-08",
+              "id": "america-middle-moki",
+              "label": "Moki Dugway",
+              "raceRef": "Moki Dugway",
               "kind": "race",
-              "label": "North 08 - LA - Angeles Crest",
-              "raceRef": "North 08 - LA - Angeles Crest",
-              "x": 0.14,
-              "y": 0.15,
-              "unlockParameter": "raceCompleted.North_07_-_Tioga_Pass",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.2749079334666531,
+              "y": 0.42611075096553463,
+              "unlockParameter": "raceCompleted.Pikes_Peak_Highway",
               "unlockValue": true,
-              "completedParameter": "raceCompleted.North_08_-_LA_-_Angeles_Crest"
+              "completedParameter": "raceCompleted.Moki_Dugway"
             },
             {
-              "id": "america-middle-01",
+              "id": "america-middle-oak",
+              "label": "Oak Creek Canyon",
+              "raceRef": "Oak Creek Canyon",
               "kind": "race",
-              "label": "Middle 01 - Providence - River Road",
-              "raceRef": "Middle 01 - Providence - River Road",
-              "x": 0.86,
-              "y": 0.5,
-              "unlockParameter": "raceCompleted.Tower_Hill_Road",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.23780165164510614,
+              "y": 0.6710438490283561,
+              "unlockParameter": "raceCompleted.Moki_Dugway",
               "unlockValue": true,
-              "completedParameter": "raceCompleted.Middle_01_-_Providence_-_River_Road"
+              "completedParameter": "raceCompleted.Oak_Creek_Canyon"
             },
             {
-              "id": "america-middle-02",
+              "id": "america-middle-angeles",
+              "label": "Angeles Crest Highway",
+              "raceRef": "Angeles Crest Highway",
               "kind": "race",
-              "label": "Middle 02 - Hawks Nest",
-              "raceRef": "Middle 02 - Hawks Nest",
-              "x": 0.7571428571428571,
-              "y": 0.5,
-              "unlockParameter": "raceCompleted.Middle_01_-_Providence_-_River_Road",
+              "disabled": false,
+              "artRef": "",
+              "selectedArtRef": "",
+              "disabledArtRef": "",
+              "x": 0.10823266006097561,
+              "y": 0.389803041396707,
+              "unlockParameter": "raceCompleted.Oak_Creek_Canyon",
               "unlockValue": true,
-              "completedParameter": "raceCompleted.Middle_02_-_Hawks_Nest"
-            },
-            {
-              "id": "america-middle-03",
-              "kind": "race",
-              "label": "Middle 03 - Hocking Hills",
-              "raceRef": "Middle 03 - Hocking Hills",
-              "x": 0.6542857142857142,
-              "y": 0.5,
-              "unlockParameter": "raceCompleted.Middle_02_-_Hawks_Nest",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.Middle_03_-_Hocking_Hills"
-            },
-            {
-              "id": "america-middle-04",
-              "kind": "race",
-              "label": "Middle 04 - Ozark Pig Trail",
-              "raceRef": "Middle 04 - Ozark Pig Trail",
-              "x": 0.5514285714285714,
-              "y": 0.5,
-              "unlockParameter": "raceCompleted.Middle_03_-_Hocking_Hills",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.Middle_04_-_Ozark_Pig_Trail"
-            },
-            {
-              "id": "america-middle-05",
-              "kind": "race",
-              "label": "Middle 05 - Trail Ridge Road",
-              "raceRef": "Middle 05 - Trail Ridge Road",
-              "x": 0.44857142857142857,
-              "y": 0.5,
-              "unlockParameter": "raceCompleted.Middle_04_-_Ozark_Pig_Trail",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.Middle_05_-_Trail_Ridge_Road"
-            },
-            {
-              "id": "america-middle-06",
-              "kind": "race",
-              "label": "Middle 06 - Utah Scenic 12",
-              "raceRef": "Middle 06 - Utah Scenic 12",
-              "x": 0.34571428571428575,
-              "y": 0.5,
-              "unlockParameter": "raceCompleted.Middle_05_-_Trail_Ridge_Road",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.Middle_06_-_Utah_Scenic_12"
-            },
-            {
-              "id": "america-middle-07",
-              "kind": "race",
-              "label": "Middle 07 - Death Valley",
-              "raceRef": "Middle 07 - Death Valley",
-              "x": 0.24285714285714288,
-              "y": 0.5,
-              "unlockParameter": "raceCompleted.Middle_06_-_Utah_Scenic_12",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.Middle_07_-_Death_Valley"
-            },
-            {
-              "id": "america-middle-08",
-              "kind": "race",
-              "label": "Middle 08 - LA - Mulholland",
-              "raceRef": "Middle 08 - LA - Mulholland",
-              "x": 0.14,
-              "y": 0.5,
-              "unlockParameter": "raceCompleted.Middle_07_-_Death_Valley",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.Middle_08_-_LA_-_Mulholland"
-            },
-            {
-              "id": "america-south-01",
-              "kind": "race",
-              "label": "South 01 - Providence - Harbor",
-              "raceRef": "South 01 - Providence - Harbor",
-              "x": 0.86,
-              "y": 0.85,
-              "unlockParameter": "raceCompleted.Tower_Hill_Road",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.South_01_-_Providence_-_Harbor"
-            },
-            {
-              "id": "america-south-02",
-              "kind": "race",
-              "label": "South 02 - Skyline Drive",
-              "raceRef": "South 02 - Skyline Drive",
-              "x": 0.7571428571428571,
-              "y": 0.85,
-              "unlockParameter": "raceCompleted.South_01_-_Providence_-_Harbor",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.South_02_-_Skyline_Drive"
-            },
-            {
-              "id": "america-south-03",
-              "kind": "race",
-              "label": "South 03 - Blue Ridge Parkway",
-              "raceRef": "South 03 - Blue Ridge Parkway",
-              "x": 0.6542857142857142,
-              "y": 0.85,
-              "unlockParameter": "raceCompleted.South_02_-_Skyline_Drive",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.South_03_-_Blue_Ridge_Parkway"
-            },
-            {
-              "id": "america-south-04",
-              "kind": "race",
-              "label": "South 04 - Natchez Trace",
-              "raceRef": "South 04 - Natchez Trace",
-              "x": 0.5514285714285714,
-              "y": 0.85,
-              "unlockParameter": "raceCompleted.South_03_-_Blue_Ridge_Parkway",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.South_04_-_Natchez_Trace"
-            },
-            {
-              "id": "america-south-05",
-              "kind": "race",
-              "label": "South 05 - Big Bend River Road",
-              "raceRef": "South 05 - Big Bend River Road",
-              "x": 0.44857142857142857,
-              "y": 0.85,
-              "unlockParameter": "raceCompleted.South_04_-_Natchez_Trace",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.South_05_-_Big_Bend_River_Road"
-            },
-            {
-              "id": "america-south-06",
-              "kind": "race",
-              "label": "South 06 - Coronado Trail",
-              "raceRef": "South 06 - Coronado Trail",
-              "x": 0.34571428571428575,
-              "y": 0.85,
-              "unlockParameter": "raceCompleted.South_05_-_Big_Bend_River_Road",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.South_06_-_Coronado_Trail"
-            },
-            {
-              "id": "america-south-07",
-              "kind": "race",
-              "label": "South 07 - Palms to Pines",
-              "raceRef": "South 07 - Palms to Pines",
-              "x": 0.24285714285714288,
-              "y": 0.85,
-              "unlockParameter": "raceCompleted.South_06_-_Coronado_Trail",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.South_07_-_Palms_to_Pines"
-            },
-            {
-              "id": "america-south-08",
-              "kind": "race",
-              "label": "South 08 - LA - Sunset",
-              "raceRef": "South 08 - LA - Sunset",
-              "x": 0.14,
-              "y": 0.85,
-              "unlockParameter": "raceCompleted.South_07_-_Palms_to_Pines",
-              "unlockValue": true,
-              "completedParameter": "raceCompleted.South_08_-_LA_-_Sunset"
+              "completedParameter": "raceCompleted.Angeles_Crest_Highway"
             }
           ],
           "mapManual": true,
           "connections": [
             {
-              "id": "north-0",
-              "from": "providence",
-              "to": "america-north-01",
-              "color": "#7dd9ed",
-              "width": 3
-            },
-            {
-              "id": "north-1",
-              "from": "america-north-01",
-              "to": "america-north-02",
-              "color": "#7dd9ed",
-              "width": 3
-            },
-            {
-              "id": "north-2",
-              "from": "america-north-02",
-              "to": "america-north-03",
-              "color": "#7dd9ed",
-              "width": 3
-            },
-            {
-              "id": "north-3",
-              "from": "america-north-03",
-              "to": "america-north-04",
-              "color": "#7dd9ed",
-              "width": 3
-            },
-            {
-              "id": "north-4",
-              "from": "america-north-04",
-              "to": "america-north-05",
-              "color": "#7dd9ed",
-              "width": 3
-            },
-            {
-              "id": "north-5",
-              "from": "america-north-05",
-              "to": "america-north-06",
-              "color": "#7dd9ed",
-              "width": 3
-            },
-            {
-              "id": "north-6",
-              "from": "america-north-06",
-              "to": "america-north-07",
-              "color": "#7dd9ed",
-              "width": 3
-            },
-            {
-              "id": "north-7",
-              "from": "america-north-07",
-              "to": "america-north-08",
-              "color": "#7dd9ed",
-              "width": 3
-            },
-            {
-              "id": "north-finish",
-              "from": "america-north-08",
-              "to": "los-angeles",
-              "color": "#7dd9ed",
-              "width": 3
-            },
-            {
-              "id": "middle-0",
-              "from": "providence",
-              "to": "america-middle-01",
+              "id": "middle-osm-cf573fba73e0",
+              "from": "america-opening-tower-hill",
+              "to": "osm-cf573fba73e0",
               "color": "#efc36b",
-              "width": 3
+              "width": 3,
+              "pattern": ""
             },
             {
-              "id": "middle-1",
-              "from": "america-middle-01",
-              "to": "america-middle-02",
+              "id": "middle-america-middle-laurel",
+              "from": "osm-cf573fba73e0",
+              "to": "america-middle-laurel",
               "color": "#efc36b",
-              "width": 3
+              "width": 3,
+              "pattern": ""
             },
             {
-              "id": "middle-2",
-              "from": "america-middle-02",
-              "to": "america-middle-03",
+              "id": "middle-america-middle-ohio",
+              "from": "america-middle-laurel",
+              "to": "america-middle-ohio",
               "color": "#efc36b",
-              "width": 3
+              "width": 3,
+              "pattern": ""
             },
             {
-              "id": "middle-3",
-              "from": "america-middle-03",
-              "to": "america-middle-04",
+              "id": "middle-america-middle-ozark",
+              "from": "america-middle-ohio",
+              "to": "america-middle-ozark",
               "color": "#efc36b",
-              "width": 3
+              "width": 3,
+              "pattern": ""
             },
             {
-              "id": "middle-4",
-              "from": "america-middle-04",
-              "to": "america-middle-05",
+              "id": "middle-america-middle-city",
+              "from": "america-middle-ozark",
+              "to": "america-middle-city",
               "color": "#efc36b",
-              "width": 3
+              "width": 3,
+              "pattern": ""
             },
             {
-              "id": "middle-5",
-              "from": "america-middle-05",
-              "to": "america-middle-06",
+              "id": "middle-america-middle-route66",
+              "from": "america-middle-city",
+              "to": "america-middle-route66",
               "color": "#efc36b",
-              "width": 3
+              "width": 3,
+              "pattern": ""
             },
             {
-              "id": "middle-6",
-              "from": "america-middle-06",
-              "to": "america-middle-07",
+              "id": "middle-america-middle-pikes",
+              "from": "america-middle-route66",
+              "to": "america-middle-pikes",
               "color": "#efc36b",
-              "width": 3
+              "width": 3,
+              "pattern": ""
             },
             {
-              "id": "middle-7",
-              "from": "america-middle-07",
-              "to": "america-middle-08",
+              "id": "middle-america-middle-moki",
+              "from": "america-middle-pikes",
+              "to": "america-middle-moki",
               "color": "#efc36b",
-              "width": 3
+              "width": 3,
+              "pattern": ""
             },
             {
-              "id": "middle-finish",
-              "from": "america-middle-08",
-              "to": "los-angeles",
+              "id": "middle-america-middle-oak",
+              "from": "america-middle-moki",
+              "to": "america-middle-oak",
               "color": "#efc36b",
-              "width": 3
+              "width": 3,
+              "pattern": ""
             },
             {
-              "id": "south-0",
-              "from": "providence",
-              "to": "america-south-01",
-              "color": "#f59987",
-              "width": 3
-            },
-            {
-              "id": "south-1",
-              "from": "america-south-01",
-              "to": "america-south-02",
-              "color": "#f59987",
-              "width": 3
-            },
-            {
-              "id": "south-2",
-              "from": "america-south-02",
-              "to": "america-south-03",
-              "color": "#f59987",
-              "width": 3
-            },
-            {
-              "id": "south-3",
-              "from": "america-south-03",
-              "to": "america-south-04",
-              "color": "#f59987",
-              "width": 3
-            },
-            {
-              "id": "south-4",
-              "from": "america-south-04",
-              "to": "america-south-05",
-              "color": "#f59987",
-              "width": 3
-            },
-            {
-              "id": "south-5",
-              "from": "america-south-05",
-              "to": "america-south-06",
-              "color": "#f59987",
-              "width": 3
-            },
-            {
-              "id": "south-6",
-              "from": "america-south-06",
-              "to": "america-south-07",
-              "color": "#f59987",
-              "width": 3
-            },
-            {
-              "id": "south-7",
-              "from": "america-south-07",
-              "to": "america-south-08",
-              "color": "#f59987",
-              "width": 3
-            },
-            {
-              "id": "south-finish",
-              "from": "america-south-08",
-              "to": "los-angeles",
-              "color": "#f59987",
-              "width": 3
+              "id": "middle-america-middle-angeles",
+              "from": "america-middle-oak",
+              "to": "america-middle-angeles",
+              "color": "#efc36b",
+              "width": 3,
+              "pattern": ""
             }
           ],
           "mapStyle": {
-            "nodeScale": 0.68,
+            "labels": "selected",
+            "lineColor": "#7893a1",
             "lineWidth": 3,
+            "linePattern": "solid",
             "selectedColor": "#fff0a8",
             "unselectedColor": "#e2b454",
             "disabledColor": "#728797",
             "unselectedOpacity": 0.9,
             "disabledOpacity": 0.75,
+            "nodeScale": 0.35,
             "cursor": "ring",
             "cursorColor": "#ffffff"
           },
@@ -5605,6 +5440,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -5631,54 +5467,89 @@
         {
           "id": "america-heading",
           "type": "text",
-          "label": "CUMBERLAND TO LA \u00b7 25 RACES \u00b7 WESTBOUND \u2190",
+          "parentId": "",
+          "shape": "rectangle",
+          "fill": "#49758c",
+          "stroke": "#ffffff",
+          "strokeWidth": 0,
+          "label": "MIDDLE ROUTE · 11 RACES",
           "x": 0.08,
           "y": 0.07,
           "w": 0.84,
           "h": 0.035,
-          "fontSize": 16,
+          "tabOrder": 0,
           "color": "#ffffff",
-          "visible": true,
-          "useDefaultFont": true
-        },
-        {
-          "id": "america-north",
-          "type": "text",
-          "label": "NORTHERN ROUTE",
-          "x": 0.34,
-          "y": 0.15,
-          "w": 0.32,
-          "h": 0.035,
+          "background": "#253c49",
+          "transparentBackground": false,
+          "showSelectedLabel": true,
+          "codeLength": 6,
           "fontSize": 16,
-          "color": "#7dd9ed",
+          "useDefaultFont": true,
+          "fontFamily": "system-ui",
+          "fontData": "",
+          "fontFileName": "",
+          "cursorText": ">",
+          "cursorArtRef": "",
+          "cursorData": "",
+          "cursorFileName": "",
+          "cursorSize": 24,
+          "selectionIndicator": "border",
+          "selectionBorder": true,
+          "dataSource": "cars",
+          "assetRef": "",
+          "property": "name",
+          "suffix": "",
+          "decimals": 0,
+          "angleBinding": "",
+          "angle": 180,
+          "imageFit": "contain",
+          "textOutlineWidth": 0,
+          "textOutlineColor": "#000000",
+          "textFill": "solid",
+          "textGradientDirection": "vertical",
+          "textGradientStart": "#70baff",
+          "textGradientMiddle": "#ffffff",
+          "textGradientEnd": "#70baff",
+          "artRef": "",
+          "videoUrl": "",
+          "binding": "",
+          "source": "",
+          "facts": [],
+          "options": [],
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "typewriterSpeed": 40,
+          "typewriterPause": 0.35,
+          "animation": "none",
+          "duration": 2,
+          "nodes": [],
+          "mapManual": false,
+          "connections": null,
+          "mapStyle": {
+            "labels": "auto",
+            "lineColor": "#7893a1",
+            "lineWidth": 2,
+            "linePattern": "solid",
+            "selectedColor": "#e2b454",
+            "unselectedColor": "#e2b454",
+            "disabledColor": "#52616b",
+            "unselectedOpacity": 0.55,
+            "disabledOpacity": 0.5,
+            "nodeScale": 1,
+            "cursor": "ring",
+            "cursorColor": "#ffffff"
+          },
+          "maxVisible": 4,
+          "selectedZoomDuration": 0.18,
+          "selectedScale": 1.25,
+          "inactiveOpacity": 0.4,
+          "onSelect": null,
+          "action": null,
           "visible": true,
-          "useDefaultFont": true
-        },
-        {
-          "id": "america-middle",
-          "type": "text",
-          "label": "MIDDLE ROUTE",
-          "x": 0.34,
-          "y": 0.34,
-          "w": 0.32,
-          "h": 0.035,
-          "fontSize": 16,
-          "color": "#efc36b",
-          "visible": true,
-          "useDefaultFont": true
-        },
-        {
-          "id": "america-south",
-          "type": "text",
-          "label": "SOUTHERN ROUTE",
-          "x": 0.34,
-          "y": 0.53,
-          "w": 0.32,
-          "h": 0.035,
-          "fontSize": 16,
-          "color": "#f59987",
-          "visible": true,
-          "useDefaultFont": true
+          "disabled": false,
+          "loop": true,
+          "keyframes": []
         }
       ]
     },
@@ -5765,6 +5636,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",
@@ -5851,6 +5723,7 @@
           "mapManual": false,
           "connections": null,
           "mapStyle": {
+            "labels": "auto",
             "lineColor": "#7893a1",
             "lineWidth": 2,
             "linePattern": "solid",

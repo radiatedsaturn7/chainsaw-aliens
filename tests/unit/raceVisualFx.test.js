@@ -169,3 +169,51 @@ test('streak picker is transactional, persists artwork/opacity and includes the 
  const race=e.normalizeLoadedRaceDocument(e.serializeSelectedRaceDocument());assert.equal(race.visualFx.speedLineArtRef,'Speed overlay');assert.equal(race.visualFx.speedLineOpacity,.4);assert.equal(race.visualFx.speedLines,1);
  e.undoRaceHistory();assert.equal(e.selectedRace.visualFx,before);
 });
+
+test('skybox brightness is independent of world darkness and the effects toggle',()=>{
+ const e=new RaceEditor({}),fills=[];
+ const ctx=new Proxy({fillRect(){fills.push(this.fillStyle);},createLinearGradient(){return {addColorStop(){}};}},{get:(o,k)=>o[k]||(()=>{})});
+ e.selectedRace.brightness=.05;e.selectedRace.timeOfDay='night';
+ e.selectedRace.visualFx={enabled:false,skyBrightness:1};
+ e.drawRaceParallaxBackground(ctx,{x:0,y:0,w:320,h:180},{horizon:100});
+ assert.ok(!fills.includes('rgba(0,0,0,0.95)'));
+ assert.ok(!fills.some(s=>typeof s==='string'&&s.startsWith('rgba(0,0,0,')));
+ fills.length=0;e.selectedRace.visualFx.skyBrightness=.25;
+ e.drawRaceParallaxBackground(ctx,{x:0,y:0,w:320,h:180},{horizon:100});
+ assert.ok(fills.includes('rgba(0,0,0,0.75)'));
+ assert.equal(e.selectedRace.brightness,.05);
+});
+
+test('changing sky brightness survives save/load without changing world brightness',async()=>{
+ const e=new RaceEditor({});e.selectedRace.brightness=.05;e.selectedRace.timeOfDay='night';
+ await editRaceVisualFx(e,{showForm:async(_,fields)=>{
+  assert.equal(fields.find(f=>f.id==='skyBrightness').format(1),'100%');
+  return {...Object.fromEntries(fields.filter(f=>!['button','preview'].includes(f.type)).map(f=>[f.id,f.value])),skyBrightness:.8};
+ }});
+ const saved=e.normalizeLoadedRaceDocument(e.serializeSelectedRaceDocument());
+ assert.equal(saved.brightness,.05);assert.equal(saved.timeOfDay,'night');assert.equal(saved.visualFx.skyBrightness,.8);
+});
+
+test('night world compositing leaves the sky on a separate undimmed destination',()=>{
+ const original=globalThis.OffscreenCanvas,operations=[];
+ const makeContext=canvas=>new Proxy({canvas,getTransform:()=>({a:1,b:0,c:0,d:1,e:0,f:0}),
+  fillRect(){operations.push({canvas,style:this.fillStyle,blend:this.globalCompositeOperation});},
+  drawImage(image){operations.push({canvas,image});},createLinearGradient:()=>({addColorStop(){}})
+ },{get:(o,k)=>o[k]||(()=>{})});
+ globalThis.OffscreenCanvas=class{constructor(w,h){this.width=w;this.height=h;this.ctx=makeContext(this);}getContext(){return this.ctx;}};
+ try{
+  const e=new RaceEditor({}),main={width:320,height:180},ctx=makeContext(main),bounds={x:0,y:0,w:320,h:180};
+  e.getRaceLightingBrightness=()=>.05;e.selectedRace.visualFx={enabled:false,skyBrightness:1};
+  e.raceInput.cameraView='third-person';
+  for(const name of ['drawRaceThirdPersonCar','drawRaceTireFxParticles','drawRacePlaytestHud','drawRaceCountdown','drawRaceEdgeResetFade','drawRaceDisplayModeFilter','drawRaceFinishFade'])e[name]=()=>{};
+  e.drawMode7Preview=(world,b)=>{e.drawRaceParallaxBackground(world,b,{horizon:100});world.fillStyle='#808080';world.fillRect(0,100,320,80);};
+  e.drawRacePlaytestScreenContents(ctx,bounds);
+  const dim=operations.find(o=>o.style==='rgba(0,0,0,0.95)');
+  assert.ok(dim);assert.notEqual(dim.canvas,main);assert.equal(dim.blend,'source-atop');
+  assert.ok(operations.some(o=>o.canvas===main&&o.image===e.raceLightingWorldLayer));
+  assert.equal(e.raceSkyboxCompositeTarget,null);
+  const layer=e.raceLightingWorldLayer;e.drawRacePlaytestScreenContents(ctx,bounds);assert.equal(e.raceLightingWorldLayer,layer);
+  operations.length=0;const draw=e.drawMode7Preview;e.drawMode7Preview=(...args)=>{draw(...args);e.raceHeadlightsRendered=true;};
+  e.drawRacePlaytestScreenContents(ctx,bounds);assert.ok(!operations.some(o=>o.style==='rgba(0,0,0,0.95)'),'lit Three world is not dimmed again');
+ }finally{globalThis.OffscreenCanvas=original;}
+});

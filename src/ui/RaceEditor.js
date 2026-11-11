@@ -1,3 +1,4 @@
+import {terrainBlendGrid,createTerrainBlendMaterial} from '../racing/RaceTerrainTextureBlend.js';
 import {normalizeSnowClouds,syncSnowClouds,disposeSnowClouds} from '../racing/RaceSnowClouds.js';
 import {editSnowClouds} from './RaceSnowCloudEditor.js';
 import {normalizeCarSmoke,carSmokeArtRef,carSmokeArtRefs,smokeAnimationFrame} from '../racing/CarSmoke.js';
@@ -10819,6 +10820,7 @@ export default class RaceEditor {
     if (!result || this.selectedRace !== race) return;
     this.captureRaceHistory('Road textures');
     race.roadTextures = { ...roadTextureSettings({ roadTextures: {
+      ...race.roadTextures,
       road: { mipmapDistance:result.roadMipmapDistance,filterMode:result.roadFilter,mipmaps:result.roadMipmaps,anisotropy:result.roadAnisotropy,artRef: result.roadArt, repeatM: result.roadRepeat, repeatWidthM: result.roadRepeatWidth || 0 },
       margin: { mipmapDistance:result.marginMipmapDistance,filterMode:result.marginFilter,mipmaps:result.marginMipmaps,anisotropy:result.marginAnisotropy,artRef: result.marginArt, repeatM: result.marginRepeat, repeatWidthM: result.marginRepeatWidth || 0 }
     }}), builtInLines: result.builtInLines !== false };
@@ -10992,6 +10994,9 @@ export default class RaceEditor {
     add(race.margin?.artRef);
     add(race.roadTextures?.road?.artRef);
     add(race.roadTextures?.margin?.artRef);
+    add(race.roadTextures?.shoulder?.artRef);
+    for(const entry of Object.values(race.roadTextures?.surfaceRoads||{})){add(entry.artRef);add(entry.roughArtRef);}
+    for(const entry of Object.values(race.roadTextures?.surfaceShoulders||{}))add(entry.artRef);
     (race.sceneryDefinitions || []).forEach((definition) => add(definition?.artRef));
     (race.scenery || []).forEach((sprite) => add(sprite?.artRef));
     (race.decals || []).forEach((decal) => add(decal?.artRef));
@@ -11025,6 +11030,9 @@ export default class RaceEditor {
     add(race.margin?.artRef);
     add(race.roadTextures?.road?.artRef);
     add(race.roadTextures?.margin?.artRef);
+    add(race.roadTextures?.shoulder?.artRef);
+    for(const entry of Object.values(race.roadTextures?.surfaceRoads||{})){add(entry.artRef);add(entry.roughArtRef);}
+    for(const entry of Object.values(race.roadTextures?.surfaceShoulders||{}))add(entry.artRef);
     (race.sceneryDefinitions || []).forEach((definition) => add(definition?.artRef));
     (race.scenery || []).forEach((sprite) => add(sprite?.artRef));
     (race.decals || []).forEach((decal) => add(decal?.artRef));
@@ -22009,6 +22017,24 @@ export default class RaceEditor {
       || this.playtestSession?.physicsSurfaceVisible === true;
     const physicsVehicleRigVisible = this.raceInput.physicsVehicleRigVisible === true
       || this.playtestSession?.physicsVehicleRigVisible === true;
+    // Keep the fallback world's darkness off the panorama. Reuse one transparent
+    // layer; the sky paints directly to the destination, then lit geometry goes over it.
+    const destinationCtx=ctx;
+    const brightness=clamp(Number(this.getRaceLightingBrightness()),0,1);
+    let worldLayer=null;
+    if(brightness<1&&ctx.canvas&&ctx.getTransform){
+      worldLayer=this.raceLightingWorldLayer;
+      if(!worldLayer){worldLayer=typeof OffscreenCanvas!=='undefined'?new OffscreenCanvas(ctx.canvas.width,ctx.canvas.height):globalThis.document?.createElement('canvas');this.raceLightingWorldLayer=worldLayer;}
+      if(worldLayer){
+        if(worldLayer.width!==ctx.canvas.width)worldLayer.width=ctx.canvas.width;
+        if(worldLayer.height!==ctx.canvas.height)worldLayer.height=ctx.canvas.height;
+        const layerCtx=worldLayer.getContext('2d');
+        layerCtx.setTransform(1,0,0,1,0,0);layerCtx.clearRect(0,0,worldLayer.width,worldLayer.height);
+        layerCtx.save();layerCtx.setTransform(ctx.getTransform());layerCtx.beginPath();layerCtx.rect(bounds.x,bounds.y,bounds.w,bounds.h);layerCtx.clip();
+        this.raceSkyboxCompositeTarget=ctx;ctx=layerCtx;
+      }
+    }
+    try {
     if (physicsSurfaceVisible || physicsVehicleRigVisible) {
       this.drawRacePhysicsSurfaceView(ctx, bounds);
     } else {
@@ -22034,8 +22060,11 @@ export default class RaceEditor {
         });
       }
     }
-    const brightness=clamp(Number(this.getRaceLightingBrightness()),0,1);
-    if(brightness<1&&!this.raceHeadlightsRendered){ctx.save();ctx.fillStyle=`rgba(0,0,0,${1-brightness})`;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.restore();}
+    if(brightness<1&&!this.raceHeadlightsRendered){ctx.save();if(worldLayer)ctx.globalCompositeOperation='source-atop';ctx.fillStyle=`rgba(0,0,0,${1-brightness})`;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.restore();}
+    } finally {
+      this.raceSkyboxCompositeTarget=null;
+      if(worldLayer){ctx.restore();ctx=destinationCtx;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(worldLayer,0,0);ctx.restore();}
+    }
     if (!physicsSurfaceVisible && !physicsVehicleRigVisible) drawRaceDrivingLine(this, ctx, bounds);
     if(!physicsSurfaceVisible&&!physicsVehicleRigVisible&&!this.playtestSession?.carEditorPreview){
       drawRaceSpeedFx(ctx,bounds,this.getRaceRenderVisualFx(),{speedMps:this.playtestSession?.speedMps,paused:this.raceInput.paused||Boolean(this.playtestSession?.raceIntro?.active),time:(this.playtestSession?.elapsedMs||0)/1000,state:this.raceVisualFxState||={},getArt:ref=>this.getRaceArtSpriteCanvas(ref)});
@@ -33134,6 +33163,13 @@ export default class RaceEditor {
   }
 
   drawRaceParallaxBackground(ctx, bounds, { firstPersonFrame=null,coverageBounds=null,horizon = 0, cameraYaw = 0, heading = 0, velocityYaw = 0, speedMps = 0, hillPitch = 0, suppressGroundFill = false, groundFillOverride = '' } = {}) {
+    const skyTarget=this.raceSkyboxCompositeTarget;
+    if(skyTarget&&ctx!==skyTarget){
+      ctx.clearRect(bounds.x,bounds.y,bounds.w,bounds.h);
+      skyTarget.save();skyTarget.setTransform(ctx.getTransform());
+      try{return this.drawRaceParallaxBackground(skyTarget,bounds,arguments[2]);}finally{skyTarget.restore();}
+    }
+
     if (firstPersonFrame) {
       const f = firstPersonFrame;
       const side = Math.hypot(bounds.w, bounds.h) * 2;
@@ -33257,7 +33293,7 @@ export default class RaceEditor {
     }
     this.drawRaceSkyVisibility(ctx, coverage);
     if(this.getRaceLightningFlash()>0)this.drawRaceWeatherLightning(ctx,{...bounds,h:Math.max(0,horizon-bounds.y)},this.playtestSession?.weatherFxState,{cameraYaw});
-    if(skyFx.enabled&&skyFx.skyBrightness<1){ctx.save();ctx.fillStyle=`rgba(0,0,0,${1-skyFx.skyBrightness})`;ctx.fillRect(coverage.x,coverage.y,coverage.w,coverage.h);ctx.restore();}
+    if(skyFx.skyBrightness<1){ctx.save();ctx.fillStyle=`rgba(0,0,0,${1-skyFx.skyBrightness})`;ctx.fillRect(coverage.x,coverage.y,coverage.w,coverage.h);ctx.restore();}
   }
 
   drawRaceSkyVisibility(ctx, bounds) {
@@ -34806,14 +34842,15 @@ export default class RaceEditor {
       }))
     ];
     const roadTextures = roadTextureSettings(this.selectedRace);
-    if (texturesEnabled && (roadTextures.road.artRef || roadTextures.margin.artRef)) {
+    if (texturesEnabled && (roadTextures.road.artRef || roadTextures.margin.artRef || roadTextures.shoulder.artRef)) {
       const strips = buildRoadTextureStrips(worldBake, roadTextures, {
-        marginWidth: this.getRaceBoundaryWidthWorld(), marginVisible: this.isRaceMarginVisible(), networkDefinition: this.selectedRace?.road?.network
+        marginWidth: this.getRaceBoundaryWidthWorld(), marginVisible: this.isRaceMarginVisible(), shoulderVisible:this.isRaceShoulderVisible(), networkDefinition: this.selectedRace?.road?.network
       });
       if (roadTextures.road.artRef) {
         roadMeshes.length = 0;
         roadMeshes.push(...strips.roadMeshes, ...strips.junctionMeshes);
       }
+      for (const mesh of strips.shoulderMeshes) shoulderMeshes.push(mesh);
       if (roadTextures.margin.artRef) {
         boundaryMeshes.length = 0;
         boundaryMeshes.push(...strips.boundaryMeshes);
@@ -36843,6 +36880,8 @@ export default class RaceEditor {
   }
 
   clearRaceThreeStaticWorld(renderer) {
+    renderer.materialCache?.get('terrain-world-blend')?.dispose();
+    renderer.materialCache?.delete('terrain-world-blend');
     for(const child of renderer.staticWorldObjects || []) {
       renderer.scene.remove(child);
       child.traverse?.(entry=>entry.geometry?.dispose?.());
@@ -37216,7 +37255,7 @@ export default class RaceEditor {
       cellKey,
       Math.round(Number(textureWorldM || 0) * 10000),
       artRef,
-      [...new Set([...(this.getRaceTileMapStats().artRefs || []), ...Object.values(this.ensureRaceSurfaceArt()), this.selectedRace?.roadTextures?.road?.artRef, this.selectedRace?.roadTextures?.margin?.artRef])].filter(Boolean)
+      [...new Set([...(this.getRaceTileMapStats().artRefs || []), ...Object.values(this.ensureRaceSurfaceArt()), ...[shoulderMeshes,roadMeshes,boundaryMeshes].flatMap(meshes=>meshes.map(mesh=>mesh.artRef)), this.selectedRace?.roadTextures?.road?.artRef, this.selectedRace?.roadTextures?.margin?.artRef])].filter(Boolean)
         .map((ref) => `${ref}:${Boolean(this.getRaceArtSpriteCanvas(ref))}`).join('|'),
       textured ? 1 : 0,
       useSunShading ? 1 : 0,
@@ -37424,6 +37463,7 @@ export default class RaceEditor {
     texture = null,
     depthWrite = true,
     polygonOffset = true,
+    vertexAlpha = false,
     opacity = 1
   } = {}) {
     if (!renderer || !THREE?.MeshBasicMaterial) return null;
@@ -37431,14 +37471,14 @@ export default class RaceEditor {
     opacity = clamp(Number(opacity), 0, 1);
     const mipmapBias = texture ? roadTextureMipBias(textureOptions) : 0;
     const textureKey = `${texture?.uuid || 'solid'}:${mipmapBias}`;
-    const key = `${textureKey}:${depthWrite ? 1 : 0}:${polygonOffset ? 1 : 0}:${opacity}`;
+    const key = `${textureKey}:${depthWrite ? 1 : 0}:${polygonOffset ? 1 : 0}:${opacity}:${vertexAlpha}`;
     const cached = renderer.materialCache.get(key);
     if (cached) return cached;
     const material = new THREE.MeshBasicMaterial({
       map: texture || null,
       vertexColors: true,
       side: THREE.DoubleSide,
-      transparent: opacity < 1,
+      transparent: vertexAlpha || opacity < 1,
       opacity,
       depthTest: true,
       depthWrite,
@@ -37672,6 +37712,18 @@ export default class RaceEditor {
   getRaceDecalTriangles(decal) {
     const surface = this.getRaceSurfaceModel();
     return buildRaceDecalTriangles(decal, point => surface.sampleWorld(point, 0));
+  }
+
+  getRaceWebGLDecalMeshes(){
+    if(this.getRaceRenderDebugSettings().overlaysEnabled===false)return [];
+    const decals=this.ensureRaceDecals().filter(d=>d.kind!=='tile'),surface=this.getRaceSurfaceModel();
+    const key=JSON.stringify(decals),cached=this.raceWebGLDecalMeshes;
+    if(cached?.key===key&&cached.surface===surface)return cached.meshes;
+    const meshes=decals.flatMap(decal=>this.getRaceDecalTriangles(decal).map(points=>({
+      source:'road-decal',points,artRef:decal.artRef,textured:true,color:'#ffffff',
+      textureWorldM:1,depthOffset:-.08001,elevationOffset:.02/RACE_THREE_ELEVATION_M
+    })));
+    this.raceWebGLDecalMeshes={key,surface,meshes};return meshes;
   }
 
   syncRaceThreeDecals(renderer, { stats = null } = {}) {
@@ -38347,7 +38399,7 @@ export default class RaceEditor {
   getRaceThreeSurfacePoint(point = {}, source = '') {
     const cleanSource = String(source || '');
     if (cleanSource === 'terrain' || cleanSource.includes('terrain-roadside') || cleanSource.includes('seam-underlap')) return point;
-    if (point?.roadDeckElevation === true || cleanSource === 'road-texture' || cleanSource.startsWith('boundary-texture')) return point;
+    if (point?.roadDeckElevation === true || cleanSource.startsWith('road-texture') || cleanSource.startsWith('boundary-texture')) return point;
     if (/^(bridge|tunnel|water):/.test(cleanSource)
       || (this.selectedRace?.road?.network && cleanSource === 'road-canonical')) return point;
     const x = Number(point?.x || 0);
@@ -38386,6 +38438,7 @@ export default class RaceEditor {
     textureWorldM = 2.5
   } = {}) {
     if (!Array.isArray(meshes) || !meshes.length || !THREE?.BufferGeometry) return null;
+    const vertexAlpha=meshes.some(m=>m.vertexAlpha);
     const positions = [];
     const uvs = [];
     const colors = [];
@@ -38404,7 +38457,7 @@ export default class RaceEditor {
         Number.isFinite(point.u) ? point.u : (Number(point.x || 0) - originX) / scale,
         Number.isFinite(point.v) ? point.v : -(Number(point.z || 0) - originZ) / scale
       );
-      colors.push(color[0], color[1], color[2]);
+      colors.push(color[0], color[1], color[2]);if(vertexAlpha)colors.push(Number(point.alpha??1));
     };
     meshes.forEach((mesh) => {
       const points = Array.isArray(mesh?.points)
@@ -38428,7 +38481,7 @@ export default class RaceEditor {
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, vertexAlpha?4:3));
     geometry.computeBoundingSphere();
     return geometry;
   }
@@ -38622,6 +38675,17 @@ export default class RaceEditor {
 
   addRaceThreeTerrainArtwork(renderer, baseGeometry, packed) {
     if (this.getRaceRenderDebugSettings().texturesEnabled === false || !packed?.artGroups?.length) return 0;
+    let blend=renderer.materialCache?.get('terrain-world-blend');
+    if(!blend){
+      const map=this.ensureRaceTileMap();
+      const grid=terrainBlendGrid(map,cell=>String(cell.artRef||cell.tileArtRef||this.getRaceSurfaceArtRefForSlot(cell.tileId||map.defaultTileId||'grass')||this.getRaceDefaultGroundArtRef(cell.tileId,cell.tileWeights,map)||'').trim());
+      if(grid)blend=createTerrainBlendMaterial({THREE,grid,getCanvas:ref=>this.getRaceArtSpriteCanvas(ref),textureWorldM:packed.textureWorldM||2.5,makeMaterial:texture=>new THREE.MeshBasicMaterial({map:texture,vertexColors:true,side:THREE.DoubleSide,depthWrite:false})});
+      if(blend)renderer.materialCache.set('terrain-world-blend',blend);
+    }
+    if(blend){
+      const geometry=baseGeometry.clone();geometry.setAttribute('color',new THREE.BufferAttribute(packed.textureColors,3));
+      const overlay=new THREE.Mesh(geometry,blend);overlay.name='terrain-art:blended';overlay.renderOrder=1;renderer.scene.add(overlay);return 1;
+    }
     const buckets = new Map();
     for (const group of packed.artGroups) {
       if (!buckets.has(group.artRef)) buckets.set(group.artRef, []);
@@ -38828,9 +38892,7 @@ export default class RaceEditor {
     const compositeStartMs = this.getNowMs();
     const previousSmoothing = ctx.imageSmoothingEnabled;
     ctx.imageSmoothingEnabled = false;
-    // Darken the already-painted sky, then composite lit world surfaces. Never
-    // darken the headlights a second time with the legacy full-screen overlay.
-    if(brightness<1){ctx.save();ctx.fillStyle=`rgba(0,0,0,${1-brightness})`;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.restore();}
+    // Sky brightness is applied by the background pass; world light affects only geometry.
     ctx.drawImage(renderer.canvas, Number(bounds.x || 0), Number(bounds.y || 0), Number(bounds.w || 1), Number(bounds.h || 1));
     this.raceHeadlightsRendered=true;
     ctx.imageSmoothingEnabled = previousSmoothing;
@@ -39628,11 +39690,12 @@ export default class RaceEditor {
     }
     if (!staticTrackMeshes && texturesEnabled) {
       const settings = roadTextureSettings(this.selectedRace);
-      if (settings.road.artRef || settings.margin.artRef) {
+      if (settings.road.artRef || settings.margin.artRef || settings.shoulder.artRef) {
         const strips = buildRoadTextureStrips({ surfaceBake: { paths: trackBands.map(({ near, far }) => ({ sections: [near, far] })) } }, settings,
-          { marginWidth: this.getRaceBoundaryWidthWorld(), marginVisible: this.isRaceMarginVisible() });
+          { marginWidth: this.getRaceBoundaryWidthWorld(), marginVisible: this.isRaceMarginVisible(), shoulderVisible:this.isRaceShoulderVisible() });
         if (settings.road.artRef) roadMeshes = strips.roadMeshes;
         if (settings.margin.artRef) boundaryMeshes = strips.boundaryMeshes;
+        for (const mesh of strips.shoulderMeshes) shoulderMeshes.push(mesh);
       }
     }
     const canDrawThreeTerrain = threeEnabled
@@ -39780,6 +39843,9 @@ export default class RaceEditor {
     });
     renderStats.trackFurniturePolygons = Math.max(0, Number(renderStats.polygons || 0) - furniturePolygonsBefore);
     renderStats.trackFurnitureDrawCalls = Math.max(0, Number(renderStats.drawCalls || 0) - furnitureDrawCallsBefore);
+    gl.depthMask(false);
+    this.drawRaceWebGLWorldMeshBatch(ctx,bounds,renderer,this.getRaceWebGLDecalMeshes(),{camera,cameraYaw,textureWorldM:1,stats:renderStats});
+    gl.depthMask(true);
     const doodadPolygonsBefore = Number(renderStats.polygons || 0);
     const doodadDrawCallsBefore = Number(renderStats.drawCalls || 0);
     this.drawRaceWebGLWorldMeshBatch(ctx, bounds, renderer, this.getRaceDoodadWorldMeshes(), {

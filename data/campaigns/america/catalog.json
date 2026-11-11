@@ -1,434 +1,417 @@
 [
   {
-    "id": "america-north-01",
-    "branch": "north",
+    "id": "america-opening-tower-hill",
+    "branch": "middle",
     "stage": 1,
     "difficulty": 1,
-    "name": "North 01 - Providence - Blackstone",
+    "name": "Tower Hill Road",
+    "label": "Tower Hill Road",
+    "documentPath": "races/Tower Hill Road/document.json",
     "location": {
-      "name": "Providence - Blackstone",
-      "pattern": "Blackstone Boulevard",
-      "lat": 41.84,
-      "lon": -71.385,
-      "ref": null
+      "lat": 41.9964,
+      "lon": -71.437,
+      "place": "Cumberland, Rhode Island"
     },
-    "lengthM": 2479.7217402138813,
-    "weather": "clear",
-    "surface": "asphalt",
-    "timeOfDay": "day"
+    "lengthM": 3920.470716387638,
+    "preserveExisting": true,
+    "estimatedDrivingSeconds": 210,
+    "durationMethod": "Existing opening ends at completion or 210 seconds, whichever comes first."
   },
   {
-    "id": "america-north-02",
-    "branch": "north",
+    "id": "osm-cf573fba73e0",
+    "branch": "middle",
     "stage": 2,
     "difficulty": 2,
-    "name": "North 02 - Mohawk Trail",
+    "name": "Mount Washington Auto Road — point-to-point",
+    "label": "Mount Washington Auto Road",
+    "documentPath": "races/Mount Washington Auto Road %E2%80%94 point-to-point/document.json",
     "location": {
-      "name": "Mohawk Trail",
-      "pattern": "Mohawk Trail",
-      "lat": 42.64,
-      "lon": -72.94,
-      "ref": null
+      "lat": 44.271,
+      "lon": -71.303,
+      "place": "Mount Washington, New Hampshire"
     },
-    "lengthM": 3148.8859558693734,
-    "weather": "clear",
-    "surface": "asphalt",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-north-03",
-    "branch": "north",
-    "stage": 3,
-    "difficulty": 3,
-    "name": "North 03 - Tunnel of Trees",
-    "location": {
-      "name": "Tunnel of Trees",
-      "pattern": "North Lake Shore Drive|Lake Shore Drive",
-      "lat": 45.48,
-      "lon": -85.08,
-      "ref": null
-    },
-    "lengthM": 3777.605445821782,
-    "weather": "rain",
-    "surface": "wet-asphalt",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-north-04",
-    "branch": "north",
-    "stage": 4,
-    "difficulty": 4,
-    "name": "North 04 - Badlands Loop",
-    "location": {
-      "name": "Badlands Loop",
-      "pattern": ".*",
-      "lat": 43.84,
-      "lon": -102.2,
-      "ref": "SD 240"
-    },
-    "lengthM": 4449.794162860475,
-    "weather": "rain",
-    "surface": "gravel",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-north-05",
-    "branch": "north",
-    "stage": 5,
-    "difficulty": 5,
-    "name": "North 05 - Beartooth Pass",
-    "location": {
-      "name": "Beartooth Pass",
-      "pattern": "Beartooth Highway",
-      "lat": 44.97,
-      "lon": -109.46,
-      "ref": null
-    },
-    "lengthM": 5095.273207487319,
-    "weather": "storm",
-    "surface": "wet-gravel",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-north-06",
-    "branch": "north",
-    "stage": 6,
-    "difficulty": 6,
-    "name": "North 06 - Sawtooth Scenic Byway",
-    "location": {
-      "name": "Sawtooth Scenic Byway",
-      "pattern": ".*",
-      "lat": 43.95,
-      "lon": -114.84,
-      "ref": "ID 75"
-    },
-    "lengthM": 5745.812800958251,
+    "lengthM": 12171.856444454244,
+    "preserveExisting": true,
+    "estimatedDrivingSeconds": null,
+    "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
     "weather": "snow",
+    "recommendedParts": [
+      "snow-tires"
+    ],
+    "conditionBriefing": "Snow tires recommended. Packed snow covers the climb from the start; slow down before the hairpins. You can attempt this with any equipment.",
+    "conditionsAuthored": true,
     "surface": "snow",
-    "timeOfDay": "day"
+    "preservationNote": "Existing geometry, scenery and race behavior retained; mission conditions and recce updated."
   },
   {
-    "id": "america-north-07",
-    "branch": "north",
-    "stage": 7,
-    "difficulty": 7,
-    "name": "North 07 - Tioga Pass",
-    "location": {
-      "name": "Tioga Pass",
-      "pattern": "Tioga Road",
-      "lat": 37.91,
-      "lon": -119.26,
-      "ref": null
-    },
-    "lengthM": 6396.185516023988,
-    "weather": "snow",
-    "surface": "slush",
-    "timeOfDay": "night"
-  },
-  {
-    "id": "america-north-08",
-    "branch": "north",
-    "stage": 8,
-    "difficulty": 8,
-    "name": "North 08 - LA - Angeles Crest",
-    "location": {
-      "name": "LA - Angeles Crest",
-      "pattern": ".*",
-      "lat": 34.25,
-      "lon": -118.17,
-      "ref": "CA 2"
-    },
-    "lengthM": 7034.474598001132,
-    "weather": "storm",
-    "surface": "wet-gravel",
-    "timeOfDay": "night"
-  },
-  {
-    "id": "america-middle-01",
-    "branch": "middle",
-    "stage": 1,
-    "difficulty": 1,
-    "name": "Middle 01 - Providence - River Road",
-    "location": {
-      "name": "Providence - River Road",
-      "pattern": "River Road",
-      "lat": 41.84,
-      "lon": -71.38,
-      "ref": null
-    },
-    "lengthM": 2499.8934461909444,
-    "weather": "clear",
-    "surface": "asphalt",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-middle-02",
-    "branch": "middle",
-    "stage": 2,
-    "difficulty": 2,
-    "name": "Middle 02 - Hawks Nest",
-    "location": {
-      "name": "Hawks Nest",
-      "pattern": ".*",
-      "lat": 41.42,
-      "lon": -74.735,
-      "ref": "NY 97"
-    },
-    "lengthM": 3146.343988259578,
-    "weather": "clear",
-    "surface": "asphalt",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-middle-03",
+    "id": "america-middle-laurel",
     "branch": "middle",
     "stage": 3,
     "difficulty": 3,
-    "name": "Middle 03 - Hocking Hills",
+    "name": "Laurel Highlands Scenic Byway",
     "location": {
-      "name": "Hocking Hills",
-      "pattern": ".*",
-      "lat": 39.43,
-      "lon": -82.54,
-      "ref": "SR 374"
+      "place": "Ohiopyle, Pennsylvania",
+      "lat": 39.8430562,
+      "lon": -79.5194493
     },
-    "lengthM": 3797.631802080573,
-    "weather": "rain",
-    "surface": "wet-asphalt",
-    "timeOfDay": "day"
+    "lengthM": 14466.799236914194,
+    "estimatedDrivingSeconds": 664,
+    "durationRangeSeconds": [
+      531,
+      863
+    ],
+    "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
+    "segmentDescription": "PA 381 through the wooded Ohiopyle / Mill Run hills, including the gorge approaches.",
+    "startGps": {
+      "lat": 39.8791752,
+      "lon": -79.4800172
+    },
+    "finishGps": {
+      "lat": 39.789282098061676,
+      "lon": -79.57628139883876
+    },
+    "weather": "clear",
+    "surface": "asphalt",
+    "timeOfDay": "day",
+    "sceneryTheme": "forest",
+    "sourceKey": "laurel",
+    "preserveExisting": false,
+    "paceCapMps": 28,
+    "documentPath": "races/Laurel Highlands Scenic Byway/document.json",
+    "recommendedParts": [
+      "rally-suspension"
+    ],
+    "conditionBriefing": "Rally suspension recommended. Long frost-damaged sections interrupt the pavement. Stock suspension can get through at a slower pace.",
+    "conditionsAuthored": true
   },
   {
-    "id": "america-middle-04",
+    "id": "america-middle-ohio",
     "branch": "middle",
     "stage": 4,
     "difficulty": 4,
-    "name": "Middle 04 - Ozark Pig Trail",
+    "name": "Ohio River Crossing",
     "location": {
-      "name": "Ozark Pig Trail",
-      "pattern": ".*",
-      "lat": 35.7,
-      "lon": -93.8,
-      "ref": "AR 23"
+      "place": "Marietta, Ohio",
+      "lat": 39.4460693,
+      "lon": -81.342806
     },
-    "lengthM": 4449.520723225552,
-    "weather": "rain",
-    "surface": "gravel",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-middle-05",
-    "branch": "middle",
-    "stage": 5,
-    "difficulty": 5,
-    "name": "Middle 05 - Trail Ridge Road",
-    "location": {
-      "name": "Trail Ridge Road",
-      "pattern": "Trail Ridge Road",
-      "lat": 40.42,
-      "lon": -105.75,
-      "ref": null
+    "lengthM": 13259.99625583758,
+    "estimatedDrivingSeconds": 662,
+    "durationRangeSeconds": [
+      530,
+      860
+    ],
+    "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
+    "segmentDescription": "SR 26, the Covered Bridge Scenic Byway along the Little Muskingum northeast of Marietta. The title denotes the campaign region; this stage does not cross the Ohio River.",
+    "startGps": {
+      "lat": 39.43119931969447,
+      "lon": -81.38146488267053
     },
-    "lengthM": 5098.532573200171,
+    "finishGps": {
+      "lat": 39.4817009,
+      "lon": -81.2888697
+    },
     "weather": "storm",
-    "surface": "wet-gravel",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-middle-06",
-    "branch": "middle",
-    "stage": 6,
-    "difficulty": 6,
-    "name": "Middle 06 - Utah Scenic 12",
-    "location": {
-      "name": "Utah Scenic 12",
-      "pattern": ".*",
-      "lat": 37.88,
-      "lon": -111.43,
-      "ref": "SR 12"
-    },
-    "lengthM": 5732.998237142862,
-    "weather": "storm",
-    "surface": "mud",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-middle-07",
-    "branch": "middle",
-    "stage": 7,
-    "difficulty": 7,
-    "name": "Middle 07 - Death Valley",
-    "location": {
-      "name": "Death Valley",
-      "pattern": "Artists Drive|Artist Drive|Artist's Drive",
-      "lat": 36.36,
-      "lon": -116.8,
-      "ref": null
-    },
-    "lengthM": 6399.74170748511,
-    "weather": "storm",
-    "surface": "wet-gravel",
-    "timeOfDay": "night"
-  },
-  {
-    "id": "america-middle-08",
-    "branch": "middle",
-    "stage": 8,
-    "difficulty": 8,
-    "name": "Middle 08 - LA - Mulholland",
-    "location": {
-      "name": "LA - Mulholland",
-      "pattern": "Mulholland Drive",
-      "lat": 34.12,
-      "lon": -118.43,
-      "ref": null
-    },
-    "lengthM": 7048.859058288006,
-    "weather": "storm",
-    "surface": "wet-gravel",
-    "timeOfDay": "night"
-  },
-  {
-    "id": "america-south-01",
-    "branch": "south",
-    "stage": 1,
-    "difficulty": 1,
-    "name": "South 01 - Providence - Harbor",
-    "location": {
-      "name": "Providence - Harbor",
-      "pattern": "Allens Avenue",
-      "lat": 41.8,
-      "lon": -71.402,
-      "ref": null
-    },
-    "lengthM": 2267.5019212145585,
-    "weather": "clear",
-    "surface": "asphalt",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-south-02",
-    "branch": "south",
-    "stage": 2,
-    "difficulty": 2,
-    "name": "South 02 - Skyline Drive",
-    "location": {
-      "name": "Skyline Drive",
-      "pattern": "Skyline Drive",
-      "lat": 38.59,
-      "lon": -78.38,
-      "ref": null
-    },
-    "lengthM": 3146.2330175556326,
-    "weather": "clear",
-    "surface": "asphalt",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-south-03",
-    "branch": "south",
-    "stage": 3,
-    "difficulty": 3,
-    "name": "South 03 - Blue Ridge Parkway",
-    "location": {
-      "name": "Blue Ridge Parkway",
-      "pattern": "Blue Ridge Parkway",
-      "lat": 35.98,
-      "lon": -81.83,
-      "ref": null
-    },
-    "lengthM": 3798.07324421406,
-    "weather": "rain",
     "surface": "wet-asphalt",
-    "timeOfDay": "day"
+    "timeOfDay": "day",
+    "sceneryTheme": "river",
+    "sourceKey": "ohio",
+    "preserveExisting": false,
+    "paceCapMps": 28,
+    "documentPath": "races/Ohio River Crossing/document.json",
+    "recommendedParts": [
+      "rain-tires"
+    ],
+    "conditionBriefing": "Rain tires recommended. A winter thaw has soaked the valley road. Leave braking room and ease off through wet corners.",
+    "conditionsAuthored": true
   },
   {
-    "id": "america-south-04",
-    "branch": "south",
-    "stage": 4,
-    "difficulty": 4,
-    "name": "South 04 - Natchez Trace",
-    "location": {
-      "name": "Natchez Trace",
-      "pattern": "Natchez Trace Parkway",
-      "lat": 32.43,
-      "lon": -90.14,
-      "ref": null
-    },
-    "lengthM": 4440.695516603151,
-    "weather": "rain",
-    "surface": "gravel",
-    "timeOfDay": "day"
-  },
-  {
-    "id": "america-south-05",
-    "branch": "south",
+    "id": "america-middle-ozark",
+    "branch": "middle",
     "stage": 5,
     "difficulty": 5,
-    "name": "South 05 - Big Bend River Road",
+    "name": "Ozark Backroads",
     "location": {
-      "name": "Big Bend River Road",
-      "pattern": ".*",
-      "lat": 29.3,
-      "lon": -103.99,
-      "ref": "FM 170"
+      "place": "Eminence, Missouri",
+      "lat": 37.3089267,
+      "lon": -91.4130785
     },
-    "lengthM": 5096.082112593678,
-    "weather": "storm",
-    "surface": "wet-gravel",
-    "timeOfDay": "day"
+    "lengthM": 13931.236493572598,
+    "estimatedDrivingSeconds": 665,
+    "durationRangeSeconds": [
+      532,
+      864
+    ],
+    "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
+    "segmentDescription": "Missouri Highway 19 through the forested ridges around Eminence and the Current River.",
+    "startGps": {
+      "lat": 37.2591,
+      "lon": -91.4012082
+    },
+    "finishGps": {
+      "lat": 37.3606788,
+      "lon": -91.4232627
+    },
+    "weather": "clear",
+    "surface": "dirt / gravel",
+    "timeOfDay": "day",
+    "sceneryTheme": "forest",
+    "sourceKey": "ozark",
+    "preserveExisting": false,
+    "paceCapMps": 28,
+    "documentPath": "races/Ozark Backroads/document.json",
+    "recommendedParts": [
+      "rally-tires"
+    ],
+    "conditionBriefing": "Rally tires recommended. Exposed dirt dominates this abandoned highway, with loose gravel sections between the wooded bends. Reuse your rally setup and keep the throttle measured.",
+    "conditionsAuthored": true
   },
   {
-    "id": "america-south-06",
-    "branch": "south",
+    "id": "america-middle-city",
+    "branch": "middle",
     "stage": 6,
     "difficulty": 6,
-    "name": "South 06 - Coronado Trail",
+    "name": "Data Center City",
     "location": {
-      "name": "Coronado Trail",
-      "pattern": ".*",
-      "lat": 33.57,
-      "lon": -109.35,
-      "ref": "US 191"
+      "place": "St. Louis, Missouri",
+      "lat": 38.7340992,
+      "lon": -90.2132317
     },
-    "lengthM": 5748.671081442943,
-    "weather": "storm",
-    "surface": "mud",
-    "timeOfDay": "day"
+    "lengthM": 10645.796172709302,
+    "estimatedDrivingSeconds": 663,
+    "durationRangeSeconds": [
+      530,
+      862
+    ],
+    "paceCapMps": 19,
+    "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
+    "segmentDescription": "North Broadway / Riverview Drive / Hall Street industrial riverfront network. Fictional automated data-center compounds, frozen cooling infrastructure and abandoned service yards are authored scenery, not surveyed buildings.",
+    "startGps": {
+      "lat": 38.7840947,
+      "lon": -90.1818026
+    },
+    "finishGps": {
+      "lat": 38.7036851,
+      "lon": -90.2298944
+    },
+    "weather": "clear",
+    "surface": "asphalt / gravel",
+    "timeOfDay": "night",
+    "sceneryTheme": "industrial",
+    "sourceKey": "city",
+    "preserveExisting": false,
+    "documentPath": "races/Data Center City/document.json",
+    "recommendedParts": [
+      "street-tires"
+    ],
+    "conditionBriefing": "A balanced road setup works here. Industrial straights and bends are interrupted by short rubble crossings. Brake before the rubble; a rally build trades asphalt grip for easier crossings.",
+    "conditionsAuthored": true
   },
   {
-    "id": "america-south-07",
-    "branch": "south",
+    "id": "america-middle-route66",
+    "branch": "middle",
     "stage": 7,
     "difficulty": 7,
-    "name": "South 07 - Palms to Pines",
+    "name": "Historic Route 66",
     "location": {
-      "name": "Palms to Pines",
-      "pattern": ".*",
-      "lat": 33.6,
-      "lon": -116.45,
-      "ref": "CA 74"
+      "place": "Texola, Oklahoma / Texas Panhandle",
+      "lat": 35.2194748,
+      "lon": -99.9951236
     },
-    "lengthM": 6396.130289083151,
-    "weather": "storm",
-    "surface": "wet-gravel",
-    "timeOfDay": "night"
+    "lengthM": 15655.10601408541,
+    "estimatedDrivingSeconds": 665,
+    "durationRangeSeconds": [
+      532,
+      864
+    ],
+    "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
+    "segmentDescription": "Historic Route 66 around Erick and Texola toward the Texas line; exposed plains and abandoned roadside industry.",
+    "startGps": {
+      "lat": 35.22634113375314,
+      "lon": -100.07003651575332
+    },
+    "finishGps": {
+      "lat": 35.214491944941784,
+      "lon": -99.90199843520575
+    },
+    "weather": "clear",
+    "surface": "asphalt",
+    "timeOfDay": "day",
+    "sceneryTheme": "plains",
+    "sourceKey": "route66",
+    "preserveExisting": false,
+    "paceCapMps": 28,
+    "documentPath": "races/Historic Route 66/document.json",
+    "recommendedParts": [
+      "race-tires"
+    ],
+    "conditionBriefing": "Tarmac tires recommended. Exposed dry pavement rewards road grip at speed. Cooling and gearing can help a powerful build, but are not entry requirements.",
+    "conditionsAuthored": true
   },
   {
-    "id": "america-south-08",
-    "branch": "south",
+    "id": "america-middle-pikes",
+    "branch": "middle",
     "stage": 8,
     "difficulty": 8,
-    "name": "South 08 - LA - Sunset",
+    "name": "Pikes Peak Highway",
     "location": {
-      "name": "LA - Sunset",
-      "pattern": "Sunset Boulevard",
-      "lat": 34.07,
-      "lon": -118.51,
-      "ref": null
+      "place": "Pikes Peak, Colorado",
+      "lat": 38.8669027,
+      "lon": -105.0630189
     },
-    "lengthM": 5944.320270273078,
-    "weather": "storm",
-    "surface": "wet-gravel",
-    "timeOfDay": "night"
+    "lengthM": 10427.295165882573,
+    "estimatedDrivingSeconds": 661,
+    "durationRangeSeconds": [
+      529,
+      859
+    ],
+    "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
+    "segmentDescription": "Upper Pikes Peak Highway: technical alpine hairpins and high-altitude climbs.",
+    "startGps": {
+      "lat": 38.8872562,
+      "lon": -105.0731591
+    },
+    "finishGps": {
+      "lat": 38.8456018,
+      "lon": -105.0528846
+    },
+    "weather": "clear",
+    "surface": "asphalt / snow",
+    "timeOfDay": "day",
+    "sceneryTheme": "alpine",
+    "sourceKey": "pikes",
+    "preserveExisting": false,
+    "paceCapMps": 28,
+    "documentPath": "races/Pikes Peak Highway/document.json",
+    "recommendedParts": [
+      "race-tires"
+    ],
+    "conditionBriefing": "Road tires recommended for this mostly dry climb. Use the gearbox through the uphill hairpins, then slow well down for the short snow-covered summit approach. Snow tires sacrifice grip over most of the route.",
+    "conditionsAuthored": true
+  },
+  {
+    "id": "america-middle-moki",
+    "branch": "middle",
+    "stage": 9,
+    "difficulty": 9,
+    "name": "Moki Dugway",
+    "location": {
+      "place": "Cedar Mesa, Utah",
+      "lat": 37.2733914,
+      "lon": -109.9369153
+    },
+    "lengthM": 12373.262548604438,
+    "estimatedDrivingSeconds": 663,
+    "durationRangeSeconds": [
+      531,
+      862
+    ],
+    "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
+    "segmentDescription": "Utah 261 through the gravel Moki Dugway switchbacks and their paved approaches; no repeated ascent or descent.",
+    "startGps": {
+      "lat": 37.21673415056848,
+      "lon": -109.8880699818678
+    },
+    "finishGps": {
+      "lat": 37.2808035,
+      "lon": -109.9402419
+    },
+    "weather": "clear",
+    "surface": "gravel / dirt",
+    "timeOfDay": "day",
+    "sceneryTheme": "mesa",
+    "sourceKey": "moki",
+    "preserveExisting": false,
+    "paceCapMps": 28,
+    "documentPath": "races/Moki Dugway/document.json",
+    "recommendedParts": [
+      "offroad-suspension",
+      "rally-tires"
+    ],
+    "conditionBriefing": "Off-road suspension and rally tires recommended. Long eroded stretches demand suspension travel. A road setup must crawl through the roughest sections.",
+    "conditionsAuthored": true
+  },
+  {
+    "id": "america-middle-oak",
+    "branch": "middle",
+    "stage": 10,
+    "difficulty": 10,
+    "name": "Oak Creek Canyon",
+    "location": {
+      "place": "Oak Creek Canyon, Arizona",
+      "lat": 35.0234889,
+      "lon": -111.7361826
+    },
+    "lengthM": 12869.842870124301,
+    "estimatedDrivingSeconds": 664,
+    "durationRangeSeconds": [
+      531,
+      864
+    ],
+    "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
+    "segmentDescription": "Arizona 89A through the upper Oak Creek Canyon and the Oak Creek Vista switchbacks.",
+    "startGps": {
+      "lat": 35.0308709,
+      "lon": -111.733943
+    },
+    "finishGps": {
+      "lat": 34.95467168319066,
+      "lon": -111.75437662524838
+    },
+    "weather": "clear",
+    "surface": "asphalt / wet-asphalt",
+    "timeOfDay": "day",
+    "sceneryTheme": "canyon",
+    "sourceKey": "oak",
+    "preserveExisting": false,
+    "paceCapMps": 28,
+    "documentPath": "races/Oak Creek Canyon/document.json",
+    "recommendedParts": [
+      "street-tires"
+    ],
+    "conditionBriefing": "A balanced road setup works here. Dry canyon bends alternate with shaded wet stretches left by the thaw. Adjust braking at each surface change; rain tires trade some dry grip for wet confidence.",
+    "conditionsAuthored": true
+  },
+  {
+    "id": "america-middle-angeles",
+    "branch": "middle",
+    "stage": 11,
+    "difficulty": 11,
+    "name": "Angeles Crest Highway",
+    "location": {
+      "place": "San Gabriel Mountains, California",
+      "lat": 34.2585694,
+      "lon": -118.1045935
+    },
+    "lengthM": 12157.005108511306,
+    "estimatedDrivingSeconds": 663,
+    "durationRangeSeconds": [
+      530,
+      862
+    ],
+    "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
+    "segmentDescription": "California 2 in the San Gabriel Mountains: sustained sweeping bends, ridge exposure and steep wooded slopes.",
+    "startGps": {
+      "lat": 34.2695498,
+      "lon": -118.1407479
+    },
+    "finishGps": {
+      "lat": 34.2707542,
+      "lon": -118.0525024
+    },
+    "weather": "clear",
+    "surface": "asphalt",
+    "timeOfDay": "day",
+    "sceneryTheme": "alpine",
+    "sourceKey": "angeles",
+    "preserveExisting": false,
+    "paceCapMps": 28,
+    "documentPath": "races/Angeles Crest Highway/document.json",
+    "recommendedParts": [
+      "race-tires",
+      "race-suspension"
+    ],
+    "conditionBriefing": "Tarmac tires and road suspension recommended. Dry technical corners reward a road setup; snow and off-road tires give up substantial asphalt grip.",
+    "conditionsAuthored": true
   }
 ]

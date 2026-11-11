@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794338060784,
+  "doodad": {
+    "id": "campaign-leafless-tree-03",
+    "name": "leafless-tree-03",
+    "artRef": "leafless-tree-03",
+    "widthM": 10.824524312896406,
+    "heightM": 10,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 1,
+    "hitboxHeightM": 9,
+    "weightKg": 350,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 45,
+      "damage": {
+        "panels": 14,
+        "suspension": 6,
+        "engine": 3.5
+      }
+    },
+    "rules": []
+  }
+}

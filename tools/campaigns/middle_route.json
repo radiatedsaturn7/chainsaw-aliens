@@ -1,0 +1,287 @@
+[
+  {
+    "key": "laurel",
+    "name": "Laurel Highlands Scenic Byway",
+    "place": "Ohiopyle, Pennsylvania",
+    "lat": 39.88,
+    "lon": -79.49,
+    "width": 6.8,
+    "focus": [
+      39.87,
+      -79.49
+    ],
+    "scenery": "forest",
+    "description": "PA 381 through the wooded Ohiopyle / Mill Run hills, including the gorge approaches.",
+    "osmSelector": {
+      "ref": "PA 381"
+    },
+    "bbox": [
+      39.72,
+      -79.65,
+      40.08,
+      -79.3
+    ]
+  },
+  {
+    "key": "ohio",
+    "name": "Ohio River Crossing",
+    "place": "Marietta, Ohio",
+    "lat": 39.43,
+    "lon": -81.42,
+    "width": 6.5,
+    "scenery": "river",
+    "description": "SR 26, the Covered Bridge Scenic Byway along the Little Muskingum northeast of Marietta. The title denotes the campaign region; this stage does not cross the Ohio River.",
+    "osmSelector": {
+      "ref": "SR 26"
+    },
+    "bbox": [
+      39.4,
+      -81.48,
+      39.65,
+      -81.15
+    ]
+  },
+  {
+    "key": "ozark",
+    "name": "Ozark Backroads",
+    "place": "Eminence, Missouri",
+    "lat": 37.2,
+    "lon": -91.35,
+    "width": 6.6,
+    "scenery": "forest",
+    "description": "Missouri Highway 19 through the forested ridges around Eminence and the Current River.",
+    "osmSelector": {
+      "ref": "MO 19"
+    },
+    "bbox": [
+      37.03,
+      -91.55,
+      37.42,
+      -91.25
+    ]
+  },
+  {
+    "key": "city",
+    "name": "Data Center City",
+    "place": "St. Louis, Missouri",
+    "lat": 38.71,
+    "lon": -90.22,
+    "width": 8,
+    "scenery": "industrial",
+    "description": "North Broadway / Riverview Drive / Hall Street industrial riverfront network. Fictional automated data-center compounds, frozen cooling infrastructure and abandoned service yards are authored scenery, not surveyed buildings.",
+    "osmSelector": {
+      "name": "North Broadway|Riverview Drive|Hall Street"
+    },
+    "bbox": [
+      38.64,
+      -90.27,
+      38.78,
+      -90.17
+    ],
+    "paceCapMps": 19,
+    "mapBoxes": [
+      [
+        38.65,
+        -90.23,
+        38.68,
+        -90.2
+      ],
+      [
+        38.68,
+        -90.24,
+        38.71,
+        -90.21
+      ],
+      [
+        38.71,
+        -90.25,
+        38.74,
+        -90.22
+      ],
+      [
+        38.74,
+        -90.24,
+        38.77,
+        -90.21
+      ],
+      [
+        38.77,
+        -90.23,
+        38.8,
+        -90.2
+      ],
+      [
+        38.74,
+        -90.21,
+        38.77,
+        -90.18
+      ],
+      [
+        38.77,
+        -90.21,
+        38.8,
+        -90.18
+      ],
+      [
+        38.65,
+        -90.21,
+        38.68,
+        -90.2
+      ]
+    ]
+  },
+  {
+    "key": "route66",
+    "name": "Historic Route 66",
+    "place": "Texola, Oklahoma / Texas Panhandle",
+    "lat": 35.22,
+    "lon": -99.99,
+    "width": 7,
+    "scenery": "plains",
+    "description": "Historic Route 66 around Erick and Texola toward the Texas line; exposed plains and abandoned roadside industry.",
+    "osmSelector": {
+      "ref": "US Historic 66|HR 66"
+    },
+    "bbox": [
+      35.18,
+      -100.08,
+      35.26,
+      -99.72
+    ]
+  },
+  {
+    "key": "pikes",
+    "name": "Pikes Peak Highway",
+    "place": "Pikes Peak, Colorado",
+    "lat": 38.86,
+    "lon": -105.04,
+    "width": 6.5,
+    "focus": [
+      38.852,
+      -105.052
+    ],
+    "scenery": "alpine",
+    "description": "Upper Pikes Peak Highway: technical alpine hairpins and high-altitude climbs.",
+    "osmSelector": {
+      "name": "Pikes Peak Highway"
+    },
+    "bbox": [
+      38.82,
+      -105.09,
+      38.96,
+      -104.94
+    ]
+  },
+  {
+    "key": "moki",
+    "name": "Moki Dugway",
+    "place": "Cedar Mesa, Utah",
+    "lat": 37.276,
+    "lon": -109.94,
+    "width": 6,
+    "focus": [
+      37.274,
+      -109.939
+    ],
+    "scenery": "mesa",
+    "description": "Utah 261 through the gravel Moki Dugway switchbacks and their paved approaches; no repeated ascent or descent.",
+    "osmSelector": {
+      "ref": "UT 261|SR 261"
+    },
+    "bbox": [
+      37.22,
+      -110.02,
+      37.37,
+      -109.88
+    ]
+  },
+  {
+    "key": "oak",
+    "name": "Oak Creek Canyon",
+    "place": "Oak Creek Canyon, Arizona",
+    "lat": 35.0,
+    "lon": -111.74,
+    "width": 6.6,
+    "focus": [
+      35.028,
+      -111.738
+    ],
+    "scenery": "canyon",
+    "description": "Arizona 89A through the upper Oak Creek Canyon and the Oak Creek Vista switchbacks.",
+    "osmSelector": {
+      "ref": "AZ 89A|SR 89A"
+    },
+    "bbox": [
+      34.88,
+      -111.79,
+      35.08,
+      -111.64
+    ],
+    "mapBoxes": [
+      [
+        34.92,
+        -111.76,
+        34.96,
+        -111.72
+      ],
+      [
+        34.96,
+        -111.76,
+        35.0,
+        -111.72
+      ],
+      [
+        35.0,
+        -111.76,
+        35.04,
+        -111.72
+      ],
+      [
+        35.04,
+        -111.76,
+        35.06,
+        -111.72
+      ]
+    ]
+  },
+  {
+    "key": "angeles",
+    "name": "Angeles Crest Highway",
+    "place": "San Gabriel Mountains, California",
+    "lat": 34.29,
+    "lon": -118.05,
+    "width": 7,
+    "scenery": "alpine",
+    "description": "California 2 in the San Gabriel Mountains: sustained sweeping bends, ridge exposure and steep wooded slopes.",
+    "osmSelector": {
+      "ref": "CA 2"
+    },
+    "bbox": [
+      34.22,
+      -118.22,
+      34.4,
+      -117.86
+    ],
+    "mapBoxes": [
+      [
+        34.25,
+        -118.13,
+        34.29,
+        -118.07
+      ],
+      [
+        34.27,
+        -118.08,
+        34.31,
+        -118.02
+      ],
+      [
+        34.28,
+        -118.03,
+        34.32,
+        -117.97
+      ]
+    ],
+    "includeArchivedRef": "CA 2"
+  }
+]

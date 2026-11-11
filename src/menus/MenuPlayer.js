@@ -10,9 +10,9 @@ import {musicMediaVolume} from '../audio/musicVolume.js';
 import {GarageTuner} from '../garage/GarageTuning.js';
 import {drawGarageTuner} from './MenuTuningRenderer.js';
 import {menuCodeValue,cycleCodeLetter} from './MenuCodeEntry.js';
-import {redeemGarageCheat} from '../garage/GarageCheats.js';
-import {loadMenuProgress,commitMenuCar} from './MenuProgress.js';
-import {worldMapNodes,worldMapNodePoint,worldMapRaceNodes,worldMapSelection,worldMapDirectionalNode} from './MenuWorldMap.js';
+import {redeemGarageCheat,GARAGE_CHEAT_CODES} from '../garage/GarageCheats.js';
+import {loadMenuProgress,commitMenuCar,setMenuProgress} from './MenuProgress.js';
+import {raceCompletionKey,worldMapNodes,worldMapNodePoint,worldMapRaceNodes,worldMapSelection,worldMapDirectionalNode} from './MenuWorldMap.js';
 import {showroomPage,garageBrowserRows,garageCardBounds,garageGridBounds,upgradeGridArea} from './MenuGarageWidgets.js';
 import {createMenuRepeatState,resetMenuRepeatState,getMenuRepeatDirection} from '../ui/shared/menuRepeat.js';
 import {ItemSystem} from '../items/ItemSystem.js';
@@ -51,13 +51,7 @@ export default class MenuPlayer {
       wheelSettings:()=>openWheelSettings(this.game.wheelService),
       haptics:target=>target==='test'?this.game.raceHaptics?.test():this.openHaptics(target==='effects'),
       saveSlot:(action,index)=>this.saveSlotAction(action,index),
-      cheatCode:async(code,params)=>{
-        const garage=this.resources.garage;if(!garage)throw Error('Garage unavailable');
-        const carRef=this.flow.lockedCarRef||'',stock=carRef?(await this.game.resolveRaceTravelCarAsync(carRef))?.car:null;
-        this.message=await redeemGarageCheat(garage,code,{carRef,stock});
-        this.resources.garageCars.clear();
-        if(this.preview)this.message+=' (preview only)';
-      },
+      cheatCode:code=>this.redeemCheat(code),
       parameterChanged:(key,value)=>{void (key.startsWith('haptics.')?this.setHaptic(key.slice(8),value):this.settings.set(key,value)).catch(error=>{if(this.flow)this.flow.error=error.message})},
       screenLeaving:screen=>{this.screenFocus.set(screen.id,this.interactive()[this.focus]?.id);},
       screenChanged:()=>this.enterScreen(),stop:()=>{this.cleanup();this.restorePreview();this.game.transitionTo(this.preview?'menu-editor':'title',{forceCleanup:true})},
@@ -157,6 +151,28 @@ export default class MenuPlayer {
       if(result?.ok===false)throw Error('Could not save vibration settings');
     });return this.hapticSave;
   }
+  async redeemCheat(code){
+    const normalized=String(code).toUpperCase();
+    if(!GARAGE_CHEAT_CODES.includes(normalized))throw Error('Invalid cheat code');
+    if(!this.preview&&!this.game.campaignSaves?.hasActive){
+      (this.game.pendingMenuCheats||=[]).push(normalized);
+      this.message=`${normalized} — Choose a save slot to apply`;return;
+    }
+    const garage=this.resources.garage;if(!garage)throw Error('Garage unavailable');
+    const carRef=this.flow.lockedCarRef||'',stock=carRef?(await this.game.resolveRaceTravelCarAsync(carRef))?.car:null;
+    this.message=await redeemGarageCheat(garage,normalized,{carRef,stock});
+    await this.applyOpeningSkip();
+    this.resources.garageCars.clear();
+    if(this.preview)this.message+=' (preview only)';
+  }
+  async applyOpeningSkip(){
+    if(!this.resources.garage?.items.progress.unlocks['cheat.skipme'])return;
+    const opening=this.flow.document.parameters.campaignOpeningRace||'Tower Hill Road';
+    const key=raceCompletionKey(opening);
+    if(this.preview)this.flow.setParameter(key,true);
+    else await setMenuProgress(this.game,{[key]:true});
+    this.flow.pendingOpeningRace='';
+  }
   async selectSaveSlot(mode,index,target='cars',overwrite=false){
     const flow=this.flow;
     const snapshot=mode==='new'?await this.game.campaignSaves.startNew(index,{overwrite}):await this.game.campaignSaves.resume(index);
@@ -166,9 +182,15 @@ export default class MenuPlayer {
     flow.lockedCarRef='';flow.history=[];
     const car=snapshot.progress.selectedGameCar;
     if(car)flow.lockCar(car);else flow.newGameSelection=true;
+    // Codes entered before selecting a save belong to the next selected slot.
+    while(this.game.pendingMenuCheats?.length){
+      await this.redeemCheat(this.game.pendingMenuCheats[0]);
+      this.game.pendingMenuCheats.shift();
+    }
     this.refreshSaveButtons();
     // A slot with no chosen car is still an unfinished new game.
     flow.pendingOpeningRace=!car?flow.document.parameters.campaignOpeningRace||'':'';
+    await this.applyOpeningSkip();
     flow.goTo(car?'world-map':target,{remember:!car});
   }
   restorePreview(){const snapshot=this.previewSnapshot;if(!snapshot)return;this.previewSnapshot=null;if(snapshot.worldData)this.game.applyWorldData(snapshot.worldData);for(const key of ['menuParameters','storyData','gameMode','playtestActive','simulationActive'])this.game[key]=snapshot[key];this.game.raceEditorPlaytestReturn=false;this.game.raceTravelSession=null;}

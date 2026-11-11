@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-abandoned-mall",
+    "name": "expanded-abandoned-mall",
+    "artRef": "expanded-abandoned-mall",
+    "widthM": 22.478048780487804,
+    "heightM": 9,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 19.106341463414633,
+    "hitboxHeightM": 8.1,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

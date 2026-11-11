@@ -1,5 +1,7 @@
 import {partFits,garageTuningRanges,isGarageUpgrade} from './CarPart.js';
 
+export const GARAGE_CHEAT_CODES = ['NOLOVE','LONELY','IGNORE','TRAVEL','SKIPME','HACKME'];
+
 // Rank authored upgrade tiers, then price within a tier. Dependencies and car
 // restrictions still apply; the cheat grants parts rather than bypassing physics.
 export function bestCheatParts(catalog,ref,stock){
@@ -21,7 +23,7 @@ export function bestCheatParts(catalog,ref,stock){
  }
  return [...chosen.values()];
 }
-export async function unlockBestUpgrades(garage,ref,stock){
+export async function unlockBestUpgrades(garage,ref,stock,{allCheats=false}={}){
  const entries=await garage.items.library.list();
  const catalog=(await Promise.all(entries.map(e=>garage.items.library.load(e.name)))).filter(isGarageUpgrade);
  return garage.transaction(next=>{
@@ -39,6 +41,12 @@ export async function unlockBestUpgrades(garage,ref,stock){
    garage.validateSetup(ref,next);garage.pruneTune(ref,next);
    next.unlocks[`cheat.lonely.equipped.${ref}`]=true;
   }
+  if(allCheats){
+   next.unlocks['cheat.ignore']=true;
+   next.unlocks['cheat.travel']=true;
+   next.unlocks['cheat.skipme']=true;
+   return {debit:-1000000};
+  }
  });
 }
 export async function redeemGarageCheat(garage,code,{carRef='',stock=null}={}){
@@ -46,5 +54,8 @@ export async function redeemGarageCheat(garage,code,{carRef='',stock=null}={}){
  if(normalized==='NOLOVE'){await garage.transaction(()=>({debit:-1000000}));return 'NOLOVE — 1,000,000 scrap added';}
  if(normalized==='LONELY'){await unlockBestUpgrades(garage,carRef,stock);return carRef&&stock?'LONELY — Upgrades unlocked and best compatible parts equipped':'LONELY — Upgrades unlocked; best parts equip when you choose a car';}
  if(normalized==='IGNORE'){await garage.transaction(next=>{next.unlocks['cheat.ignore']=true;});return 'IGNORE — Damage disabled';}
+ if(normalized==='TRAVEL'){await garage.transaction(next=>{next.unlocks['cheat.travel']=true;});return 'TRAVEL — All campaign missions unlocked';}
+ if(normalized==='SKIPME'){await garage.transaction(next=>{next.unlocks['cheat.skipme']=true;});return 'SKIPME — Opening race skipped';}
+ if(normalized==='HACKME'){await unlockBestUpgrades(garage,carRef,stock,{allCheats:true});return 'HACKME — 1,000,000 scrap added, upgrades unlocked, damage disabled, all campaign missions unlocked, opening race skipped';}
  throw Error('Invalid cheat code');
 }

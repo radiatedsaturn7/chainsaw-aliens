@@ -1,12 +1,14 @@
+import {applyMissionConditions} from './mission_conditions.mjs';
 import fs from 'node:fs';
 import zlib from 'node:zlib';
 import {applyAmericaRoughness} from './america_roughness.mjs';
 const catalog=JSON.parse(fs.readFileSync('data/campaigns/america/catalog.json'));
-for(const stage of catalog){
+for(const stage of catalog.filter(s=>!s.preserveExisting)){
  const file=`data/server-storage/files/races/${stage.name}/document.json`;
  const stored=JSON.parse(fs.readFileSync(file));
  const doc=stored.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(stored.data,'base64'))):stored;
  applyAmericaRoughness(doc.race,stage);
+ applyMissionConditions(doc.race);
  doc.savedAt=Date.now();
  const metadataFile=file.replace('document.json','metadata.json');
  if(fs.existsSync(metadataFile)){const metadata=JSON.parse(fs.readFileSync(metadataFile));metadata.savedAt=doc.savedAt;fs.writeFileSync(metadataFile,JSON.stringify(metadata,null,2)+'\n');}

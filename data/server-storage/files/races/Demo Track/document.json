@@ -6879,6 +6879,9 @@
     "snowClouds": {
       "enabled": true,
       "artRef": "snowcloud"
+    },
+    "visualFx": {
+      "skyBrightness": 1
     }
   },
   "savedAt": 1794194665421

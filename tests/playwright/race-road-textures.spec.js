@@ -64,3 +64,34 @@ for (const [name, width, height] of [['portrait',390,844],['landscape',844,390],
     await page.screenshot({path:`test-results/race-skybox-${name}.png`});
   });
 }
+
+test('painted terrain crossfades on the GPU and road decals remain visible above it',async({page})=>{
+ const errors=[];page.on('console',m=>{if(/shader error|VALIDATE_STATUS|shader.*compile/i.test(m.text()))errors.push(m.text());});
+ await page.goto('/index.html');await page.waitForFunction(()=>window.__gameReady);
+ const pixels=await page.evaluate(async()=>{
+  const THREE=await import('/src/vendorBridge/three.js');
+  const {terrainBlendGrid,createTerrainBlendMaterial}=await import('/src/racing/RaceTerrainTextureBlend.js');
+  const {default:RaceEditor}=await import('/src/ui/RaceEditor.js');
+  const art=color=>{const c=document.createElement('canvas');c.width=c.height=32;const x=c.getContext('2d');x.fillStyle=color;x.fillRect(0,0,32,32);return c;};
+  const grid=terrainBlendGrid({cellSizeM:40,cells:{'0,0':{artRef:'red'},'1,0':{artRef:'blue'}}},c=>c.artRef);
+  const images={red:art('#ff0000'),blue:art('#0000ff')};
+  const material=createTerrainBlendMaterial({THREE,grid,getCanvas:r=>images[r],makeMaterial:map=>new THREE.MeshBasicMaterial({map,side:THREE.DoubleSide})});
+  const renderer=new THREE.WebGLRenderer(),scene=new THREE.Scene(),target=new THREE.WebGLRenderTarget(128,64);
+  const geometry=new THREE.PlaneGeometry(80,40);geometry.rotateX(-Math.PI/2);geometry.translate(40,0,20);
+  scene.add(new THREE.Mesh(geometry,new THREE.MeshBasicMaterial({color:'white',side:THREE.DoubleSide})));
+  const overlay=new THREE.Mesh(geometry,material);overlay.renderOrder=1;scene.add(overlay);
+  const e=new RaceEditor({});e.selectedRace.decals=[{id:'visible',kind:'decal',artRef:'green',x:20,z:20,widthM:6,heightM:6}];
+  e.getRaceSurfaceModel=()=>({sampleWorld:()=>({elevation:0})});e.getRaceArtSpriteCanvas=()=>art('#00ff00');
+  const state={scene,textureCache:new Map()};e.syncRaceThreeDecals(state);
+  const camera=new THREE.OrthographicCamera(-40,40,20,-20,.1,200);camera.position.set(40,100,20);camera.up.set(0,0,-1);camera.lookAt(40,0,20);
+  renderer.setRenderTarget(target);renderer.render(scene,camera);
+  const sample=x=>{const p=new Uint8Array(4);renderer.readRenderTargetPixels(target,x,32,1,1,p);return [...p];};
+  const result=[sample(16),sample(64),sample(112),sample(32)];
+  e.clearRaceThreeDecals(state);material.dispose();geometry.dispose();target.dispose();renderer.dispose();return result;
+ });
+ expect(errors).toEqual([]);
+ expect(pixels[0][0]).toBeGreaterThan(200);expect(pixels[0][2]).toBeLessThan(15);
+ expect(pixels[1][0]).toBeGreaterThan(60);expect(pixels[1][2]).toBeGreaterThan(60);
+ expect(pixels[2][2]).toBeGreaterThan(200);expect(pixels[2][0]).toBeLessThan(15);
+ expect(pixels[3][1]).toBeGreaterThan(200);expect(pixels[3][0]).toBeLessThan(15);
+});

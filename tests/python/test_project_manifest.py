@@ -149,6 +149,8 @@ class ProjectManifestTests(unittest.TestCase):
             (root / 'manifest.json').write_text('{"folders":{}}')
             (source / 'data/server-storage/performance-captures').mkdir()
             (source / 'data/server-storage/performance-captures/recording.json').write_text('not game data')
+            (source / 'assets/campaign-art').mkdir()
+            (source / 'assets/campaign-art/source.png').write_bytes(b'authoring original')
             output = Path(tmp) / 'site'
             counts = build_site(source, output)
             self.assertEqual(len(counts), 15)
@@ -161,6 +163,9 @@ class ProjectManifestTests(unittest.TestCase):
             self.assertTrue((output / 'data/system/included.txt').exists())
             self.assertFalse((output / 'data/server-storage/performance-captures').exists())
             self.assertFalse(any(output.rglob('versions')))
+            self.assertFalse((output / 'assets/campaign-art').exists())
+            self.assertTrue((source / 'assets/campaign-art/source.png').exists())
+            self.assertTrue((output / 'assets/included.txt').exists())
             self.assertTrue((output / '.nojekyll').exists())
             with self.assertRaisesRegex(ValueError, 'deployment budget'):
                 build_site(source, Path(tmp) / 'oversized', max_site_bytes=1)

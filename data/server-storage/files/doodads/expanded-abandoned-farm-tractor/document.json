@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-abandoned-farm-tractor",
+    "name": "expanded-abandoned-farm-tractor",
+    "artRef": "expanded-abandoned-farm-tractor",
+    "widthM": 3.7536656891495603,
+    "heightM": 2.5,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 3.1906158357771264,
+    "hitboxHeightM": 2.25,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}
