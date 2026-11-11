@@ -97,14 +97,14 @@ export const RACE_TIRE_COMPOUNDS = [
   {
     id: 'snow',
     label: 'Snow',
-    surfaceGrip: { asphalt: 0.58, 'wet-asphalt': 0.62, dirt: 0.74, gravel: 0.76, mud: 0.62, 'wet-gravel': 0.72, snow: 1.08, slush: 0.95 },
+    surfaceGrip: { asphalt: 0.82, 'wet-asphalt': 0.85, dirt: 0.74, gravel: 0.76, mud: 0.62, 'wet-gravel': 0.72, snow: 1.08, slush: 0.95 },
     wetEvacuationFactor: 1.12,
     treadDepthMm: 10.5,
     wearRate: 1.3
   },
   {
     id: 'stock', label: 'Stock',
-    surfaceGrip: { asphalt: 0.90, 'wet-asphalt': 0.82, dirt: 0.70, gravel: 0.62, mud: 0.42, 'wet-gravel': 0.48, snow: 0.28, slush: 0.35 },
+    surfaceGrip: { asphalt: 0.90, 'wet-asphalt': 0.82, dirt: 0.70, gravel: 0.62, mud: 0.42, 'wet-gravel': 0.48, snow: 0.70, slush: 0.60 },
     wetEvacuationFactor: 0.95, treadDepthMm: 7.5, wearRate: 0.8
   },
   {
@@ -164,11 +164,11 @@ export const STUDIO_SPRINT_GRAPHIC_SETTINGS = Object.freeze({
     shoulderEnabled: true,
     widthM: 0.22,
     shoulderWidthM: 12,
-    collisionMode: 'shoulder',
+    collisionMode: 'none',
     artRef: 'apron',
     marginMode: 'on',
     shoulderMode: 'hidden',
-    collisionEdge: 'shoulder',
+    collisionEdge: 'none',
     collisionEffect: 'reset'
   }),
   renderDebug: Object.freeze({

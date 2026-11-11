@@ -25,6 +25,8 @@ const expanded=read('data/campaigns/america/expanded-art.json').assets;
 const report=[];
 for(const [ordinal,entry] of catalog.entries()){
  const key=entry.sourceKey||(ordinal===0?'tower':'mount'),path=root+entry.documentPath,doc=read(path),r=doc.race;
+ r.margin={...r.margin,collisionMode:'none',collisionEdge:'none'};
+ for(const segment of r.road.segments)segment.boundaryCollidable=false;
  // Use narrow native shoulders where the road has room; retain mountain
  // cliff corridors and Tower Hill's existing configuration elsewhere.
  if(['mount','ohio','ozark'].includes(key))r.margin={...r.margin,shoulderMode:'on',shoulderWidthM:2};
@@ -160,7 +162,12 @@ for(const [ordinal,entry] of catalog.entries()){
  }
  if(key!=='tower'){
   r.roadTextures.shoulder=texture(key==='mount'?'shoulder-snowbank-edge':'shoulder-asphalt-gravel');
-  r.roadTextures.surfaceShoulders={dirt:texture('shoulder-dirt-grass'),gravel:texture('shoulder-dirt-grass'),snow:texture('shoulder-snowbank-edge')};
+  r.roadTextures.surfaceShoulders={dirt:texture('shoulder-dirt-grass'),gravel:texture('shoulder-asphalt-gravel'),snow:texture('shoulder-snowbank-edge')};
+  if(key==='moki'){
+   r.roadTextures.shoulder=texture('ground-red-gravel-v2');
+   r.roadTextures.surfaceShoulders.dirt=texture('ground-canyon-rock-v2');
+   r.roadTextures.surfaceShoulders.gravel=texture('ground-red-gravel-v2');
+  }
  }
  // Small environment-specific landmark groups separated by open stretches.
  const landmarks={

@@ -186,9 +186,10 @@ test('road, shoulder and decal images are critical startup artwork',async()=>{
  const e=new RaceEditor({}),{network}=fixture();
  e.selectedRace.road.network=network;e.selectedRace.road.mode='network';
  e.selectedRace.roadTextures={road:{artRef:'main'},shoulder:{artRef:'edge'},surfaceRoads:{gravel:{artRef:'gravel',roughArtRef:'ruts'}}};
+ e.selectedRace.road.segments=[{surface:'asphalt',length:20,shoulderTexture:{artRef:'section shoulder',repeatM:6}}];
  e.selectedRace.decals=[{id:'mark',kind:'decal',artRef:'skids',x:0,z:10,widthM:2,heightM:3}];
  const p=await buildRaceTransferPackage(e.selectedRace,{includeArtAssets:false});
- for(const ref of ['main','edge','gravel','ruts','skids'])assert.ok(p.artPlan.criticalRefs.includes(ref),ref);
+ for(const ref of ['main','edge','gravel','ruts','skids','section shoulder'])assert.ok(p.artPlan.criticalRefs.includes(ref),ref);
 });
 
  test('surface crossfades stay on the road deck with a continuous half blend at the join',()=>{
@@ -203,4 +204,60 @@ test('road, shoulder and decal images are critical startup artwork',async()=>{
   for(const p of m.points){assert.ok(p.z>=12&&p.z<=28);assert.ok(p.alpha>=0&&p.alpha<=.5);assert.ok(Math.abs(p.elevation-(10+p.z*.1))<1e-8);if(p.z===20)assert.equal(p.alpha,.5);}
  }
  assert.ok(blends.some(m=>m.artRef==='asphalt'));assert.ok(blends.some(m=>m.artRef==='gravel'));
+});
+
+test('section shoulders override surface mappings and survive worker transfer',()=>{
+ const e=new RaceEditor({});
+ e.selectedRace.roadTextures={shoulder:{artRef:'default',repeatM:8},surfaceShoulders:{gravel:{artRef:'gravel edge',repeatM:8},dirt:{enabled:false}}};
+ const settings=roadTextureSettings(e.selectedRace);
+ const section=(distance,segment)=>({center:{distance,segment},left:{x:-4,z:distance},right:{x:4,z:distance},marginLeft:{x:-4.2,z:distance},marginRight:{x:4.2,z:distance},shoulderLeft:{x:-6,z:distance},shoulderRight:{x:6,z:distance}});
+ const sections=[section(0,{surface:'asphalt'}),section(20,{surface:'gravel'}),section(40,{surface:'dirt'}),section(60,{surface:'dirt',shoulderTexture:{artRef:'section edge',repeatM:8}}),section(80,{surface:'gravel',shoulderTexture:{enabled:false}}),section(100,{surface:'asphalt'})];
+ const transferred=prepareRaceSurfaceBakeForTransfer({sections});
+ const meshes=buildRoadTextureStrips({surfaceBake:transferred},settings).shoulderMeshes;
+ assert.deepEqual(meshes.filter(m=>!m.vertexAlpha).map(m=>m.artRef),['default','default','gravel edge','gravel edge','section edge','section edge']);
+ assert.ok(meshes.some(m=>m.vertexAlpha));
+ for(const mesh of meshes){
+  assert.ok(mesh.depthOffset < -.09,'art sits above the base shoulder in fallback WebGL');
+  if(mesh.vertexAlpha) for(const p of mesh.points){assert.ok(p.z>=12&&p.z<=28);assert.ok(p.alpha>=0&&p.alpha<=.5);}
+ }
+ assert.equal(buildRoadTextureStrips({surfaceBake:transferred},settings,{shoulderVisible:false}).shoulderMeshes.length,0);
+});
+
+test('shoulder editor saves surface and section overrides, removes inheritance overrides and cancels cleanly',async()=>{
+ const e=new RaceEditor({}),segment={length:100,surface:'gravel'};
+ e.selectedRace.road.segments=[segment];
+ e.selectedRace.road.nodes=[{x:0,y:0,elevation:0},{x:0,y:100,elevation:0}];
+ e.selectedRace.margin.shoulderMode='on';
+ await e.openRaceShoulderTextures(async()=>({default:'base',defaultRepeat:12,gravel:'edge',gravelRepeat:6}));
+ assert.equal(e.selectedRace.roadTextures.surfaceShoulders.gravel.artRef,'edge');
+ const before=JSON.stringify(e.selectedRace);
+ await e.openRaceShoulderTextures(async()=>null,segment);assert.equal(JSON.stringify(e.selectedRace),before);
+ const key=e.getRaceSurfaceGeometryRevisionKey();
+ await e.openRaceShoulderTextures(async()=>({section:'__none'}),segment);
+ assert.equal(e.getRaceShoulderWidthWorld(segment),0);
+ assert.equal(e.getRaceCollisionShoulderWidthWorld(segment,'shoulder'),0);
+ assert.equal(e.isRaceShoulderVisible(segment),false);
+ assert.notEqual(e.getRaceSurfaceGeometryRevisionKey(),key);
+ const loaded=e.normalizeLoadedRaceDocument(e.serializeSelectedRaceDocument());
+ assert.equal(loaded.road.segments[0].shoulderTexture.enabled,false);
+ await e.openRaceShoulderTextures(async()=>({section:'custom edge',sectionRepeat:7}),segment);
+ assert.ok(e.getRaceShoulderWidthWorld(segment)>0);
+ assert.ok(e.collectSelectedRaceTextureArtRefs().includes('custom edge'));
+ assert.equal(e.getRaceShoulderArtRef(segment),'custom edge');
+ await e.openRaceShoulderTextures(async()=>({section:''}),segment);
+ assert.equal(segment.shoulderTexture,undefined);
+ assert.equal(e.getRaceShoulderArtRef(segment),'edge');
+ await e.openRaceShoulderTextures(async()=>({default:'__none',gravel:'edge',gravelRepeat:6}));
+ assert.ok(e.getRaceShoulderWidthWorld(segment)>0,'surface can override a disabled default');
+ assert.equal(e.getRaceShoulderWidthWorld({surface:'asphalt'}),0);
+ await e.openRaceShoulderTextures(async()=>({section:'__none'}),segment);
+ const section=e.getRaceRoadCrossSectionAtDistance(50);
+ assert.ok(Math.hypot(section.shoulderLeft.x-section.marginLeft.x,section.shoulderLeft.z-section.marginLeft.z)<1e-6,'disabled shoulder has no strip width in the baked cross section');
+});
+
+test('surface-only shoulder textures render without a default road or shoulder texture',()=>{
+ const e=new RaceEditor({});e.selectedRace.margin.shoulderMode='on';e.selectedRace.roadTextures={surfaceShoulders:{gravel:{artRef:'gravel edge',repeatM:8}}};
+ const section=distance=>({center:{distance,segment:{surface:'gravel'}},left:{x:-4,z:distance},right:{x:4,z:distance},marginLeft:{x:-4.2,z:distance},marginRight:{x:4.2,z:distance},shoulderLeft:{x:-6,z:distance},shoulderRight:{x:6,z:distance}});
+ const bake={key:'shoulders-only',runtimeType:'destination',routeLength:20,surfaceBake:{sections:[section(0),section(20)]}};
+ assert.equal(e.getRaceStaticTrackSurfaceMeshes(bake).shoulderMeshes.filter(m=>m.artRef==='gravel edge').length,2);
 });

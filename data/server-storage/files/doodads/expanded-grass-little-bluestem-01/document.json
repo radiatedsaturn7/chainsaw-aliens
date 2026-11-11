@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-expanded-grass-little-bluestem-01",
+    "name": "expanded-grass-little-bluestem-01",
+    "artRef": "expanded-grass-little-bluestem-01",
+    "widthM": 1,
+    "heightM": 1,
+    "groundOffsetM": 0.0312,
+    "hitboxWidthM": 0.85,
+    "hitboxHeightM": 0.9,
+    "weightKg": 5,
+    "defaultRule": {
+      "behavior": "flatten",
+      "speedDrainPercent": 1,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

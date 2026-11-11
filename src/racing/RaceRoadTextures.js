@@ -16,6 +16,7 @@ export function roadTextureMipBias(source) {
 export function roadTextureSettings(race = {}) {
   const clean = source => ({
     ...roadTextureSampling(source),
+    enabled: source?.enabled !== false,
     artRef: String(source?.artRef || '').trim(),
     roughArtRef: String(source?.roughArtRef || '').trim(),
     repeatM: Math.max(.1, Math.min(1000, Number(source?.repeatM) || 5)),
@@ -26,6 +27,12 @@ export function roadTextureSettings(race = {}) {
     shoulder: clean(race.roadTextures?.shoulder), surfaceRoads:map(race.roadTextures?.surfaceRoads), surfaceShoulders:map(race.roadTextures?.surfaceShoulders) };
 }
 
+// A section override wins over its surface mapping, then the race default.
+// An explicit disabled entry must not fall through to the default shoulder.
+export function shoulderTextureForSegment(settings = {}, segment = {}) {
+  return segment?.shoulderTexture || settings?.surfaceShoulders?.[segment?.surface] || settings?.shoulder || {};
+}
+
 // Custom road artwork supplies its own lane paint. Margin-only art does not.
 export function showBuiltInRoadMarkings(race = {}) {
   return !roadTextureSettings(race).road.artRef && race.roadTextures?.builtInLines !== false;
@@ -34,14 +41,15 @@ export function showBuiltInRoadMarkings(race = {}) {
 export function texturedRoadStrip(nearLeft, nearRight, farLeft, farRight, nearDistance, farDistance, settings, source) {
   const width = (left,right) => settings.repeatWidthM > 0 ? Math.hypot(right.x-left.x,right.z-left.z) / settings.repeatWidthM : 1;
   const nearWidth=width(nearLeft,nearRight),farWidth=width(farLeft,farRight);
-  const point = (p, u, distance) => ({ ...p, u, v: -distance / settings.repeatM });
+  const repeatM = Math.max(.1, Math.min(1000, Number(settings.repeatM) || 5));
+  const point = (p, u, distance) => ({ ...p, u, v: -distance / repeatM });
   return {
     source, textureOptions:roadTextureSampling(settings), artRef: settings.artRef, textured: true, color: '#ffffff',
     points: [point(farLeft, .5-farWidth/2, farDistance), point(farRight, .5+farWidth/2, farDistance),
       point(nearRight, .5+nearWidth/2, nearDistance), point(nearLeft, .5-nearWidth/2, nearDistance)],
-    depthOffset: source.includes('boundary') ? -.09 : -.08,
+    depthOffset: source.includes('shoulder') ? -.091 : source.includes('boundary') ? -.09 : -.08,
     threeLiftM: source.includes('boundary') ? .035 : .012,
-    textureWorldM: settings.repeatM
+    textureWorldM: repeatM
   };
 }
 
@@ -74,8 +82,8 @@ export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22,
       const segment=a.center.segment || {};
       const road=roadTextureForSegment(settings,segment);
       if (road.artRef) roadMeshes.push(texturedRoadStrip(a.left, a.right, b.left, b.right, d0, d1, road, 'road-texture'));
-      const shoulder=settings.surfaceShoulders?.[segment.surface] || settings.shoulder;
-      if(shoulderVisible && shoulder?.artRef && a.shoulderLeft && b.shoulderLeft){
+      const shoulder=shoulderTextureForSegment(settings,segment);
+      if(shoulderVisible && shoulder.enabled !== false && shoulder?.artRef && a.shoulderLeft && b.shoulderLeft){
         // The texture's road-facing edge is U=0 on both sides.
         shoulderMeshes.push(texturedRoadStrip(a.marginLeft||a.left,a.shoulderLeft,b.marginLeft||b.left,b.shoulderLeft,d0,d1,shoulder,'shoulder-texture-left'));
         shoulderMeshes.push(texturedRoadStrip(a.marginRight||a.right,a.shoulderRight,b.marginRight||b.right,b.shoulderRight,d0,d1,shoulder,'shoulder-texture-right'));
@@ -92,30 +100,39 @@ export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22,
     }
   }
   // Cross-fade across real surface changes without moving the drivable ribbon.
-  for(const {sections,edgeId} of paths){
-    const offset=edgeOffsets.get(edgeId)||0;
-    for(let j=1;j<sections.length-1;j++){
-      const previous=roadTextureForSegment(settings,sections[j-1].center.segment||{}),next=roadTextureForSegment(settings,sections[j].center.segment||{});
-      if(!previous.artRef||!next.artRef||previous.artRef===next.artRef)continue;
-      const boundary=offset+Number(sections[j].center.distance||0);
-      let before=j-1,after=j+1;
-      while(before>0&&roadTextureForSegment(settings,sections[before-1].center.segment||{}).artRef===previous.artRef)before--;
-      while(after<sections.length-1&&roadTextureForSegment(settings,sections[after].center.segment||{}).artRef===next.artRef)after++;
-      const band=Math.min(8,(boundary-offset-Number(sections[before].center.distance||0))/2,(offset+Number(sections[after].center.distance||0)-boundary)/2);
-      if(band<=0)continue;
-      for(let i=before;i<after;i++){
-        const a=sections[i],b=sections[i+1],d0=offset+Number(a.center.distance||0),d1=offset+Number(b.center.distance||0);
-        const lo=Math.max(d0,boundary-band),hi=Math.min(d1,boundary+band);if(hi<=lo||d1<=d0)continue;
-        const current=roadTextureForSegment(settings,a.center.segment||{}),other=i<j?next:previous;
-        if(current.artRef!==(i<j?previous:next).artRef)continue;
-        const point=(side,d)=>{const t=(d-d0)/(d1-d0),p=a[side],q=b[side];return {...p,x:p.x+(q.x-p.x)*t,z:p.z+(q.z-p.z)*t,elevation:Number(p.elevation||0)+(Number(q.elevation||0)-Number(p.elevation||0))*t};};
-        const steps=Math.max(1,Math.ceil(hi-lo));
-        for(let step=0;step<steps;step++){
-          const start=lo+(hi-lo)*step/steps,end=lo+(hi-lo)*(step+1)/steps;
-          const mesh=texturedRoadStrip(point('left',start),point('right',start),point('left',end),point('right',end),start,end,other,'road-texture-blend');
-          const alpha=d=>{const t=Math.max(0,1-Math.abs(d-boundary)/band);return .5*t*t*(3-2*t);};
-          mesh.points.forEach((p,k)=>p.alpha=alpha(k<2?end:start));
-          Object.assign(mesh,{vertexAlpha:true,fallbackOpacity:(alpha(start)+alpha(end))/2,threeLiftM:.014,depthOffset:-.080005});roadMeshes.push(mesh);
+  for (const layer of ['road', 'shoulder']) {
+    if (layer === 'shoulder' && !shoulderVisible) continue;
+    const textureFor = layer === 'road' ? roadTextureForSegment : shoulderTextureForSegment;
+    const output = layer === 'road' ? roadMeshes : shoulderMeshes;
+    const sides = layer === 'road' ? [['left', 'right']] : [['marginLeft', 'shoulderLeft'], ['marginRight', 'shoulderRight']];
+    for(const {sections,edgeId} of paths){
+      const offset=edgeOffsets.get(edgeId)||0;
+      for(let j=1;j<sections.length-1;j++){
+        const previous=textureFor(settings,sections[j-1].center.segment||{}),next=textureFor(settings,sections[j].center.segment||{});
+        if(previous.enabled===false||next.enabled===false||!previous.artRef||!next.artRef||previous.artRef===next.artRef)continue;
+        const boundary=offset+Number(sections[j].center.distance||0);
+        let before=j-1,after=j+1;
+        while(before>0&&textureFor(settings,sections[before-1].center.segment||{}).artRef===previous.artRef)before--;
+        while(after<sections.length-1&&textureFor(settings,sections[after].center.segment||{}).artRef===next.artRef)after++;
+        const band=Math.min(8,(boundary-offset-Number(sections[before].center.distance||0))/2,(offset+Number(sections[after].center.distance||0)-boundary)/2);
+        if(band<=0)continue;
+        for(let i=before;i<after;i++){
+          const a=sections[i],b=sections[i+1],d0=offset+Number(a.center.distance||0),d1=offset+Number(b.center.distance||0);
+          const lo=Math.max(d0,boundary-band),hi=Math.min(d1,boundary+band);if(hi<=lo||d1<=d0)continue;
+          const current=textureFor(settings,a.center.segment||{}),other=i<j?next:previous;
+          if(current.artRef!==(i<j?previous:next).artRef)continue;
+          const point=(side,d)=>{const t=(d-d0)/(d1-d0),p=a[side],q=b[side];return {...p,x:p.x+(q.x-p.x)*t,z:p.z+(q.z-p.z)*t,elevation:Number(p.elevation||0)+(Number(q.elevation||0)-Number(p.elevation||0))*t};};
+          const steps=Math.max(1,Math.ceil(hi-lo));
+          for(let step=0;step<steps;step++){
+            const start=lo+(hi-lo)*step/steps,end=lo+(hi-lo)*(step+1)/steps;
+            for (const [left, right] of sides) {
+              if (!a[left] || !b[left] || !a[right] || !b[right]) continue;
+              const mesh=texturedRoadStrip(point(left,start),point(right,start),point(left,end),point(right,end),start,end,other,layer+'-texture-blend');
+              const alpha=d=>{const t=Math.max(0,1-Math.abs(d-boundary)/band);return .5*t*t*(3-2*t);};
+              mesh.points.forEach((p,k)=>p.alpha=alpha(k<2?end:start));
+              Object.assign(mesh,{vertexAlpha:true,fallbackOpacity:(alpha(start)+alpha(end))/2,threeLiftM:.014,depthOffset:layer === 'road' ? -.080005 : -.091005});output.push(mesh);
+            }
+          }
         }
       }
     }

@@ -2732,62 +2732,26 @@ export function updateRaceSimulation({
   const binarySteer = launchSteeringLocked ? 0 : clamp(Number(editor.raceInput.binarySteer || 0), -1, 1);
   const binaryActive = Math.abs(binarySteer) > 0.01;
   const simulationWheelInput = editor.raceInput.wheelSteeringActive || String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation';
-  if (launchSteeringLocked) {
-    editor.raceInput.digitalSteerHoldMs = 0;
-  } else if (editor.raceInput.analogSteeringActive) {
-    editor.raceInput.lastSteeringInputMode = 'analog';
-    editor.raceInput.digitalSteerHoldMs = 0;
-    const analogIntent = clamp(Number(editor.raceInput.analogSteeringIntent || 0), -1, 1);
-    // Analog intent is the target. A single controller response stage below
-    // produces the rack command; filtering this target first caused the old
-    // disconnected, cascaded response on dirt.
-    editor.raceInput.steeringTarget = analogIntent;
-  } else {
-    if (binaryActive) {
-      editor.raceInput.lastSteeringInputMode = 'binary';
-      editor.raceInput.digitalSteerHoldMs = Number(editor.raceInput.digitalSteerHoldMs || 0) + seconds * 1000;
-      const hold = clamp(
-        Number(editor.raceInput.digitalSteerHoldMs || 0) / RACE_CONTROLLER_STEERING.digitalTargetHoldRampMs,
-        0,
-        1
-      );
-      const speedFactor = clamp(
-        steeringSafetySpeedMps / RACE_CONTROLLER_STEERING.speedReferenceMps,
-        0,
-        1
-      );
-      const nudgeRate = (
-        RACE_CONTROLLER_STEERING.digitalTargetPressBase
-        + hold * RACE_CONTROLLER_STEERING.digitalTargetPressHoldBonus
-      ) * (1 - speedFactor * 0.35);
-      editor.raceInput.steeringTarget += binarySteer * seconds * nudgeRate;
-    } else {
-      editor.raceInput.digitalSteerHoldMs = 0;
-      const analogCentered = editor.raceInput.lastSteeringInputMode === 'analog';
-      const centeredMs = Number(editor.raceInput.analogSteeringCenteredMs || 0) + (analogCentered ? seconds * 1000 : 0);
-      if (analogCentered) editor.raceInput.analogSteeringCenteredMs = centeredMs;
-      if (analogCentered) {
-        editor.raceInput.steeringTarget = 0;
-      } else {
-        const returnRate = editor.getRaceSteeringReturnRate(steeringSafetySpeedMps);
-        editor.raceInput.steeringTarget += (0 - Number(editor.raceInput.steeringTarget || 0)) * Math.min(0.88, seconds * returnRate);
-      }
-    }
-  }
-  editor.raceInput.steeringTarget = clamp(editor.raceInput.steeringTarget, -1, 1);
+  const touchButtons = editor.raceInput.activeDpadPointerId != null;
+  if (touchButtons) editor.raceInput.lastSteeringInputMode = 'digital';
+  else if (editor.raceInput.analogSteeringActive) editor.raceInput.lastSteeringInputMode = 'analog';
+  else if (binaryActive) editor.raceInput.lastSteeringInputMode = 'binary';
+  const controllerInputMode = simulationWheelInput ? 'simulation-wheel'
+    : editor.raceInput.lastSteeringInputMode === 'digital' ? 'digital'
+      : editor.raceInput.lastSteeringInputMode === 'analog' ? 'gamepad' : 'keyboard';
+  const digitalInput = controllerInputMode === 'digital' || controllerInputMode === 'keyboard';
+  const intent = launchSteeringLocked ? 0 : touchButtons || !editor.raceInput.analogSteeringActive
+    ? binarySteer : clamp(Number(editor.raceInput.analogSteeringIntent || 0), -1, 1);
+  editor.raceInput.steeringTarget = intent;
   const activeTurnInput = !launchSteeringLocked && (binaryActive || editor.raceInput.analogSteeringActive);
-  const controllerInputMode = simulationWheelInput
-    ? 'simulation-wheel'
-    : editor.raceInput.analogSteeringActive || editor.raceInput.lastSteeringInputMode === 'analog'
-      ? 'gamepad'
-      : 'keyboard';
-  editor.raceInput.steeringWheel = controllerInputMode === 'keyboard'
-    ? editor.raceInput.steeringTarget
+  editor.raceInput.steeringWheel = launchSteeringLocked ? 0 : digitalInput
+    ? systems.handlingAssist.stepDigitalSteering({
+      intent, currentOutput: editor.raceInput.steeringWheel,
+      speedMps: steeringSafetySpeedMps, seconds
+    })
     : systems.handlingAssist.stepControllerToRackInput({
-      mode: controllerInputMode,
-      intent: editor.raceInput.steeringTarget,
-      currentOutput: editor.raceInput.steeringWheel,
-      seconds
+      mode: controllerInputMode, intent,
+      currentOutput: editor.raceInput.steeringWheel, seconds
     });
   editor.raceInput.controllerSteeringMode = controllerInputMode;
   if (!editor.raceInput.analogSteeringActive
@@ -3876,7 +3840,7 @@ export function updateRaceSimulation({
     counterSteerRecovery,
     selfAligningSteeringCorrection,
     frontTireAngle: steeringAngle,
-    steeringInputMode: editor.raceInput.analogSteeringActive ? 'analog' : binaryActive ? 'digital' : 'centered',
+    steeringInputMode: editor.raceInput.controllerSteeringMode || 'centered',
     requestedSteering: effectiveRoadSteer,
     rawSteeringAngle,
     usableFullLockTireAngle,

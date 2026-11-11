@@ -1,6 +1,14 @@
 export const RACE_THREE_ELEVATION_M = 12;
 
 export const RACE_CONTROLLER_STEERING = Object.freeze({
+  // Fastest candidate passing the saved RTG tap/reversal/turn-in calibration.
+  // Reproduce with npm run calibrate:steering; rates are normalized rack / s.
+  digitalCalibration: Object.freeze({
+    pressRateLowSpeed: 2.8,
+    pressRateHighSpeed: 1.4,
+    unwindRate: 7,
+    releaseRate: 3.5
+  }),
   responseProfiles: Object.freeze({
     keyboard: Object.freeze({ pressRatePerSecond: 3.6, releaseRatePerSecond: 7.8 }),
     gamepad: Object.freeze({ responseRatePerSecond: 14.0, releaseRatePerSecond: 18.0 }),

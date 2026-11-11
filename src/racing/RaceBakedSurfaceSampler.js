@@ -44,30 +44,43 @@ function buildPreparedSupportTopology(triangles, normals, elevationScaleM, layer
     if (firstRoot === secondRoot) return;
     parents[Math.max(firstRoot, secondRoot)] = Math.min(firstRoot, secondRoot);
   };
+  // Compact IDs preserve the same quantized geometric identity while avoiding
+  // repeating long coordinate strings for every incident edge in dense meshes.
+  const vertexIds = new Map();
+  const objectIds = new WeakMap();
   const vertexKey = (vertex) => {
-    if (!vertex || typeof vertex !== 'object') return 'invalid';
-    return [
+    if (!vertex || typeof vertex !== 'object') return 0;
+    const cached = objectIds.get(vertex);
+    if (cached !== undefined) return cached;
+    const key = [
       Math.round(Number(vertex.x || 0) * 10000),
       Math.round(pointZ(vertex) * 10000),
       layered ? Math.round(Number(vertex.elevation || 0) * elevationScaleM * 10000) : 0
     ].join(':');
+    let id = vertexIds.get(key);
+    if (id === undefined) { id = vertexIds.size + 1; vertexIds.set(key, id); }
+    objectIds.set(vertex, id);
+    return id;
   };
   const edges = new Map();
+  // Linked edge incidences use bounded typed storage instead of millions of
+  // short-lived objects and per-edge arrays on large terrain meshes.
+  const edgeTriangles = new Uint32Array(triangleCount * 3);
+  const edgeNext = new Uint32Array(triangleCount * 3);
+  const edgeFirstHeights = new Float64Array(triangleCount * 3);
+  const edgeSecondHeights = new Float64Array(triangleCount * 3);
+  let edgeCount = 0;
   const appendEdge = (triangleIndex, first, second) => {
     const firstKey = vertexKey(first);
     const secondKey = vertexKey(second);
     const forward = firstKey < secondKey;
-    const key = forward ? `${firstKey}|${secondKey}` : `${secondKey}|${firstKey}`;
-    let entries = edges.get(key);
-    if (!entries) {
-      entries = [];
-      edges.set(key, entries);
-    }
-    entries.push({
-      triangleIndex,
-      firstHeightM: Number((forward ? first : second)?.elevation || 0) * elevationScaleM,
-      secondHeightM: Number((forward ? second : first)?.elevation || 0) * elevationScaleM
-    });
+    const sum = firstKey + secondKey;
+    const key = sum * (sum + 1) / 2 + Math.max(firstKey, secondKey);
+    edgeTriangles[edgeCount] = triangleIndex;
+    edgeNext[edgeCount] = edges.get(key) || 0;
+    edgeFirstHeights[edgeCount] = Number((forward ? first : second)?.elevation || 0) * elevationScaleM;
+    edgeSecondHeights[edgeCount] = Number((forward ? second : first)?.elevation || 0) * elevationScaleM;
+    edges.set(key, ++edgeCount);
   };
   for (let triangleIndex = 0; triangleIndex < triangleCount; triangleIndex += 1) {
     const vertices = triangles[triangleIndex]?.vertices || [];
@@ -76,20 +89,22 @@ function buildPreparedSupportTopology(triangles, normals, elevationScaleM, layer
     appendEdge(triangleIndex, vertices[1], vertices[2]);
     appendEdge(triangleIndex, vertices[2], vertices[0]);
   }
-  for (const entries of edges.values()) {
+  for (const head of edges.values()) {
+    const entries = [];
+    for (let link = head; link; link = edgeNext[link - 1]) entries.push(link - 1);
     let maximumHeightMismatchM = 0;
     let maximumNormalAngleRad = 0;
     let containsVertical = false;
     for (let firstIndex = 0; firstIndex < entries.length; firstIndex += 1) {
       const first = entries[firstIndex];
-      const firstNormalOffset = first.triangleIndex * 3;
+      const firstNormalOffset = edgeTriangles[first] * 3;
       if (Number(normals[firstNormalOffset + 1] || 0) < 0.35) containsVertical = true;
       for (let secondIndex = firstIndex + 1; secondIndex < entries.length; secondIndex += 1) {
         const second = entries[secondIndex];
-        const secondNormalOffset = second.triangleIndex * 3;
+        const secondNormalOffset = edgeTriangles[second] * 3;
         maximumHeightMismatchM = Math.max(maximumHeightMismatchM,
-          Math.abs(first.firstHeightM - second.firstHeightM),
-          Math.abs(first.secondHeightM - second.secondHeightM));
+          Math.abs(edgeFirstHeights[first] - edgeFirstHeights[second]),
+          Math.abs(edgeSecondHeights[first] - edgeSecondHeights[second]));
         const normalDot = Math.max(-1, Math.min(1,
           Number(normals[firstNormalOffset] || 0) * Number(normals[secondNormalOffset] || 0)
             + Number(normals[firstNormalOffset + 1] || 0)
@@ -110,12 +125,12 @@ function buildPreparedSupportTopology(triangles, normals, elevationScaleM, layer
     }
     if (classification === SUPPORT_EDGE_CLASSIFICATION.smooth && entries.length > 1) {
       for (let index = 1; index < entries.length; index += 1) {
-        union(entries[0].triangleIndex, entries[index].triangleIndex);
+        union(edgeTriangles[entries[0]], edgeTriangles[entries[index]]);
       }
     } else if (classification !== SUPPORT_EDGE_CLASSIFICATION.smooth) {
       for (const entry of entries) {
-        edgeFlags[entry.triangleIndex] = Math.max(
-          edgeFlags[entry.triangleIndex], classification
+        edgeFlags[edgeTriangles[entry]] = Math.max(
+          edgeFlags[edgeTriangles[entry]], classification
         );
       }
     }
@@ -417,16 +432,18 @@ export function packRaceCanonicalSurfaceMesh(mesh = null, {
   // Large distant triangles can span millions of small index buckets. Choose
   // coarser buckets before allocation; triangle geometry and exact queries stay
   // unchanged. Bound index references rather than dropping terrain triangles.
-  const spans = triangles.map(triangle => {
+  const spans = new Float64Array(triangles.length * 2);
+  triangles.forEach((triangle, index) => {
     const points = triangle.vertices || (triangle.indices || []).map(i => mesh.vertices[i]);
-    const xs = points.map(p => Number(p.x || 0)), zs = points.map(pointZ);
-    return [Math.max(...xs)-Math.min(...xs), Math.max(...zs)-Math.min(...zs)];
+    let minX=Infinity,maxX=-Infinity,minZ=Infinity,maxZ=-Infinity;
+    for(const p of points){const x=Number(p.x||0),z=pointZ(p);minX=Math.min(minX,x);maxX=Math.max(maxX,x);minZ=Math.min(minZ,z);maxZ=Math.max(maxZ,z);}
+    spans[index*2]=maxX-minX;spans[index*2+1]=maxZ-minZ;
   });
   const referenceBudget = Math.max(1000000, triangles.length * 4);
   for (let iteration=0; iteration<32; iteration++) {
     let estimate=0;
-    for (const [width,depth] of spans) {
-      estimate+=(Math.ceil(width/bucketSize)+1)*(Math.ceil(depth/bucketSize)+1);
+    for (let index=0;index<spans.length;index+=2) {
+      estimate+=(Math.ceil(spans[index]/bucketSize)+1)*(Math.ceil(spans[index+1]/bucketSize)+1);
       if (estimate>referenceBudget) break;
     }
     if (estimate<=referenceBudget) break;
@@ -487,7 +504,9 @@ export function packRaceCanonicalSurfaceMesh(mesh = null, {
       }
     }
   });
-  const topologyTriangles = triangles.map((triangle) => ({
+  const topologyTriangles = triangles.every(triangle => Array.isArray(triangle?.vertices) && triangle.vertices.length >= 3)
+    ? triangles
+    : triangles.map((triangle) => ({
     ...triangle,
     vertices: Array.isArray(triangle?.vertices) && triangle.vertices.length >= 3
       ? triangle.vertices

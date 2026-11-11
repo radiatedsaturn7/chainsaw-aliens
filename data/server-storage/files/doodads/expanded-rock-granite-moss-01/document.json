@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-expanded-rock-granite-moss-01",
+    "name": "expanded-rock-granite-moss-01",
+    "artRef": "expanded-rock-granite-moss-01",
+    "isFence": false,
+    "fenceThicknessM": 0.3,
+    "itemType": "scenery",
+    "unlockTrackId": "",
+    "model": null,
+    "widthM": 1.1,
+    "heightM": 1.1,
+    "groundOffsetM": 0.1977,
+    "hitboxWidthM": 0.935,
+    "hitboxHeightM": 0.9900000000000001,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

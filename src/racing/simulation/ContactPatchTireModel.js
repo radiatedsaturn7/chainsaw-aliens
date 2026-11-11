@@ -456,42 +456,86 @@ export function getAckermannSteeringAngles({
   return output;
 }
 
-export function calculateAuthoritativeSteeringEnvelope(state = {}, config = {}) {
+// Forward and sideways travel can both require recovery. Do not mistake a
+// sideways slide for low speed just because its forward component is small.
+function recoveryMotionScale(state) {
+  const forward=Number(state.bodyLongitudinalSpeedMps)||0;
+  const lateral=Number(state.bodyLateralSpeedMps)||0;
+  const speed=Math.hypot(forward,lateral);
+  const smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
+  return smooth((speed-2)/4)*smooth((forward/Math.max(1,speed)+.25)/.35);
+}
+
+// The front axle's direction of travel includes the body's rotation. Matching
+// only CG velocity can put the front tires at a large slip angle in a spin.
+export function getMomentumSteeringReference(state = {}, config = {}) {
+  const forward=Number(state.bodyLongitudinalSpeedMps)||0;
+  const lateral=Number(state.bodyLateralSpeedMps)||0;
+  const yaw=Number(state.yawRateRadps)||0;
+  const axle=Number(config.frontAxleDistanceFromCgM)||Number(config.wheelbaseM||2.67)*.45;
+  const travel=Math.atan2(lateral+yaw*axle,Math.max(.5,forward));
+  // A bounded angular lead asks for force opposing rotation, without applying
+  // any body moment, changing grip, or choosing a direction for the driver.
+  return travel-clamp(yaw*.12,-8*Math.PI/180,8*Math.PI/180);
+}
+
+// Directional range permission, never an automatic steering command. Rear
+// axle motion detects a developing rotation before CG sideslip becomes large.
+export function getCountersteeringRange(state = {}, config = {}, direction = 0) {
+  const forward = Number(state.bodyLongitudinalSpeedMps || 0);
+  if (!direction || recoveryMotionScale(state)<=0) return 0;
+  const lateral = Number(state.bodyLateralSpeedMps || 0);
+  const yaw = Number(state.yawRateRadps || 0);
+  const rearDistance = Number(config.rearAxleDistanceFromCgM) || Number(config.wheelbaseM || 2.67) * .55;
+  const bodyAngle = Math.atan2(lateral, Math.max(.5,forward));
+  const rearAngle = Math.atan2(lateral - yaw * rearDistance, Math.max(.5,forward));
+  const smooth = (value, low, high) => { const t=clamp((value-low)/(high-low),0,1); return t*t*(3-2*t); };
+  const body = smooth(direction * bodyAngle, 2*Math.PI/180, 8*Math.PI/180);
+  const rear = smooth(direction * rearAngle, 1*Math.PI/180, 7*Math.PI/180);
+  // Opposing significant yaw is a deliberate catch even before the vehicle
+  // has accumulated appreciable sideways displacement.
+  const rotation = smooth(-direction * yaw, .2, .7);
+  return Math.max(body, rear, rotation)*recoveryMotionScale(state);
+}
+
+// Called exactly once per chassis step; scalar state survives worker/replay
+// snapshots. Fast opening and a 350ms decay avoid dropping range mid-recovery.
+export function updateCountersteeringRange(state, config, seconds) {
+  for (const [direction,key] of [[-1,'countersteerRangeLeft'],[1,'countersteerRangeRight']]) {
+    const target=getCountersteeringRange(state,config,direction);
+    const previous=clamp(Number(state[key])||0,0,1);
+    state[key]=recoveryMotionScale(state)>0
+      ? Math.max(target,previous*Math.exp(-Math.max(0,seconds)/.35)) : 0;
+  }
+}
+
+export function calculateAuthoritativeSteeringEnvelope(state = {}, config = {}, driverSteering = 0) {
   const maximumAngleRad = Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52);
   const speedMps = Math.max(0, Number(state.groundSpeedMps
     ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0))) || 0);
-  // Blend contact authority near rest rather than switching rack limits at 1 m/s.
-  const supportBlend = Math.min(1, speedMps) ** 2 * (3 - 2 * Math.min(1, speedMps));
-  let supportedLoadN = 0;
-  let supportedSuspensionLoadN = 0;
-  let supportedCount = 0;
-  for (let i = 0; i < 2; i++) {
-    const patch = state.contactPatches?.[i === 0 ? 'fl' : 'fr'];
-    if (!(Number(patch?.normalLoadN || 0) > 1)) continue;
-    const loadN = Math.max(0, Number(patch.normalLoadN || 0));
-    const suspensionLoadN = Math.max(loadN, Number(patch.suspensionNormalLoadN || loadN));
-    supportedLoadN += loadN;
-    supportedSuspensionLoadN += suspensionLoadN;
-    supportedCount++;
-  }
-  if (!supportedCount) return maximumAngleRad + (0.002 - maximumAngleRad) * supportBlend;
-  const contactScale = supportedCount / 2;
-  const frontReferenceLoadN = Math.max(1, Number(config.massKg || 1450) * 9.81
-    * clamp(Number(config.frontWeightDistribution ?? 0.55), 0.3, 0.75));
-  const loadSupportScale = clamp(supportedLoadN / frontReferenceLoadN, 0, 1);
-  const aquaplaningSupport = clamp(
-    supportedLoadN / Math.max(1, supportedSuspensionLoadN), 0, 1
-  );
-  // The controller envelope is a safety limit, not a no-slip target. Tire
-  // utilization and surface mu must remain free to create saturation and
-  // understeer after the rack has received the driver's command.
   const speedEnvelope = maximumAngleRad / (
     1 + Math.pow(speedMps / Math.max(8, Number(config.steeringEnvelopeSpeedMps || 23)), 1.35)
   );
-  const contactAuthority = contactScale * clamp(loadSupportScale / 0.35, 0, 1);
-  const hydroAuthority = clamp((aquaplaningSupport - 0.12) / 0.58, 0, 1);
-  const supportedEnvelope = clamp(speedEnvelope * contactAuthority * hydroAuthority, 0.002, maximumAngleRad);
-  return speedEnvelope + (supportedEnvelope - speedEnvelope) * supportBlend;
+  const amount=clamp(Math.abs(Number(driverSteering)||0),0,1);
+  if(amount<1e-8)return speedEnvelope;
+  const direction=Math.sign(driverSteering);
+  const retained=Number(state[direction<0?'countersteerRangeLeft':'countersteerRangeRight'])||0;
+  const permission=Math.max(getCountersteeringRange(state,config,direction),
+    clamp(retained,0,1)*recoveryMotionScale(state));
+  const smooth=t=>{t=clamp(t,0,1);return t*t*(3-2*t);};
+  // Only add the angle useful for the CURRENT momentum. Retaining permission
+  // must not retain a large gain after the car has already caught the slide.
+  const useful=clamp(direction*getMomentumSteeringReference(state,config)+2*Math.PI/180,
+    2*Math.PI/180,maximumAngleRad);
+  const engagement=smooth((amount-.15)/.5);
+  const ordinary=speedEnvelope*amount;
+  const correction=Math.min(useful,ordinary+Math.max(0,useful-speedEnvelope)*engagement);
+  // Strong input can request a little more tire slip, but a mild skid must
+  // never turn the end of the stick into a sudden 30-degree command.
+  const override=smooth((amount-.85)/.15)*Math.min(4*Math.PI/180,maximumAngleRad-correction);
+  const requested=ordinary+permission*(correction+override-ordinary);
+  // The caller multiplies by stick amount; return the equivalent envelope.
+  return requested/amount;
 }
 
 function maxNumericOwnValue(values) {
@@ -547,10 +591,25 @@ export function resolvePhysicalCenterSteeringAngle(controls = {}, config = {}, s
     ? getGamepadSpeedSteeringScale(state.groundSpeedMps
       ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0)))
     : 1;
-  const envelope = calculateAuthoritativeSteeringEnvelope(state, config)
+  const envelope = calculateAuthoritativeSteeringEnvelope(state, config, controls.steering)
     * (String(config.handlingPreset || 'sport').toLowerCase() === 'accessible' ? 1.08 : 1)
     * gamepadScale;
-  return clamp(Number(controls.steering) || 0, -1, 1) * Math.min(maximumAngleRad, envelope);
+  const input = clamp(Number(controls.steering) || 0, -1, 1);
+  let angle = input * Math.min(maximumAngleRad, envelope);
+  if (controls.steeringInputMode === 'digital' || controls.steeringInputMode === 'keyboard') {
+    // A held direction is not a deliberate request for extra opposite lock
+    // immediately after catching a slide. During the existing recovery memory,
+    // bound that extra angle relative to front-axle travel. Do not change sign,
+    // steer at neutral, alter grip, or restrict ordinary turn-in.
+    const direction = Math.sign(input);
+    const memory = Number(state[direction < 0 ? 'countersteerRangeLeft' : 'countersteerRangeRight']) || 0;
+    const t = clamp((memory - 0.15) / 0.35, 0, 1);
+    const blend = t * t * (3 - 2 * t);
+    const margin = Number(config.digitalRecoverySlipAngleRad) || 0.5 * Math.PI / 180;
+    const useful = clamp(direction * getMomentumSteeringReference(state, config) + margin, margin, maximumAngleRad);
+    angle = direction * (Math.abs(angle) + blend * (Math.min(Math.abs(angle), useful) - Math.abs(angle)));
+  }
+  return angle;
 }
 
 export function getContactPatchMaterialGrip(material = {}) {
@@ -2581,9 +2640,12 @@ export class ContactPatchTireModel {
         * Math.max(0.05, Number(config.maxSteerAngleRad) || 0.52)
     );
     steeringTelemetry.permittedRackAngleRad = q(
-      calculateAuthoritativeSteeringEnvelope(state, config)
+      calculateAuthoritativeSteeringEnvelope(state, config, controls.steering)
     );
     steeringTelemetry.resolvedCenterRackAngleRad = q(centerSteeringAngleRad);
+    steeringTelemetry.momentumReferenceAngleRad = q(getMomentumSteeringReference(state,config));
+    steeringTelemetry.countersteerRangeLeft = q(state.countersteerRangeLeft||0);
+    steeringTelemetry.countersteerRangeRight = q(state.countersteerRangeRight||0);
     steeringTelemetry.actualWheelAnglesRad.fl = q(outputs.fl?.steeringAngleRad || 0);
     steeringTelemetry.actualWheelAnglesRad.fr = q(outputs.fr?.steeringAngleRad || 0);
     steeringTelemetry.frontLoadsN.fl = q(outputs.fl?.normalLoadN || 0);

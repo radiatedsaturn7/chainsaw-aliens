@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-expanded-bush-blueberry-01",
+    "name": "expanded-bush-blueberry-01",
+    "artRef": "expanded-bush-blueberry-01",
+    "isFence": false,
+    "fenceThicknessM": 0.3,
+    "itemType": "scenery",
+    "unlockTrackId": "",
+    "model": null,
+    "widthM": 1.2,
+    "heightM": 1.2,
+    "groundOffsetM": 0.225,
+    "hitboxWidthM": 1.02,
+    "hitboxHeightM": 1.08,
+    "weightKg": 5,
+    "defaultRule": {
+      "behavior": "flatten",
+      "speedDrainPercent": 1,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

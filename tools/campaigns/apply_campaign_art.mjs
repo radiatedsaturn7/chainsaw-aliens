@@ -46,7 +46,7 @@ for(const [name,height] of Object.entries(dimensions)){
  const extra=expanded.find(a=>a.name===name);
  if(extra){
   const soft=extra.kind==='vegetation',background=extra.kind==='background';
-  Object.assign(def,{weightKg:soft?5:100000,hitboxWidthM:background?0:width*.85,hitboxHeightM:background?0:height*.9,
+  Object.assign(def,{groundOffsetM:Number(extra.groundOffsetM)||0,weightKg:soft?5:extra.kind==='tree'?350:100000,hitboxWidthM:background?0:extra.kind==='tree'?Math.min(.65,width*.18):width*.85,hitboxHeightM:background?0:height*.9,
    defaultRule:{behavior:soft?'flatten':background?'decoration':'collide',speedDrainPercent:soft?1:background?0:90,damage:{panels:soft||background?0:20,suspension:soft||background?0:8,engine:soft||background?0:4}}});
   if(extra.kind==='fence')Object.assign(def,{isFence:true,fenceThicknessM:.4});
  }

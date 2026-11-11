@@ -1,0 +1,123 @@
+[
+  {
+    "race": "Tower Hill Road",
+    "added": 595,
+    "bands": [
+      231,
+      220,
+      144
+    ],
+    "minimumRoadDistanceM": 66,
+    "maximumRoadDistanceM": 593
+  },
+  {
+    "race": "Mount Washington Auto Road — point-to-point",
+    "added": 431,
+    "bands": [
+      141,
+      140,
+      150
+    ],
+    "minimumRoadDistanceM": 67,
+    "maximumRoadDistanceM": 603
+  },
+  {
+    "race": "Laurel Highlands Scenic Byway",
+    "added": 1067,
+    "bands": [
+      360,
+      360,
+      347
+    ],
+    "minimumRoadDistanceM": 71,
+    "maximumRoadDistanceM": 607
+  },
+  {
+    "race": "Ohio River Crossing",
+    "added": 617,
+    "bands": [
+      215,
+      213,
+      189
+    ],
+    "minimumRoadDistanceM": 66,
+    "maximumRoadDistanceM": 615
+  },
+  {
+    "race": "Ozark Backroads",
+    "added": 1063,
+    "bands": [
+      360,
+      358,
+      345
+    ],
+    "minimumRoadDistanceM": 72,
+    "maximumRoadDistanceM": 618
+  },
+  {
+    "race": "Data Center City",
+    "added": 204,
+    "bands": [
+      76,
+      68,
+      60
+    ],
+    "minimumRoadDistanceM": 74,
+    "maximumRoadDistanceM": 607
+  },
+  {
+    "race": "Historic Route 66",
+    "added": 310,
+    "bands": [
+      120,
+      94,
+      96
+    ],
+    "minimumRoadDistanceM": 78,
+    "maximumRoadDistanceM": 620
+  },
+  {
+    "race": "Pikes Peak Highway",
+    "added": 269,
+    "bands": [
+      84,
+      100,
+      85
+    ],
+    "minimumRoadDistanceM": 67,
+    "maximumRoadDistanceM": 524
+  },
+  {
+    "race": "Moki Dugway",
+    "added": 372,
+    "bands": [
+      125,
+      131,
+      116
+    ],
+    "minimumRoadDistanceM": 65,
+    "maximumRoadDistanceM": 593
+  },
+  {
+    "race": "Oak Creek Canyon",
+    "added": 597,
+    "bands": [
+      213,
+      212,
+      172
+    ],
+    "minimumRoadDistanceM": 66,
+    "maximumRoadDistanceM": 614
+  },
+  {
+    "race": "Angeles Crest Highway",
+    "added": 606,
+    "bands": [
+      209,
+      205,
+      192
+    ],
+    "minimumRoadDistanceM": 65,
+    "maximumRoadDistanceM": 589
+  }
+]
