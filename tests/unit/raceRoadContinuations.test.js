@@ -20,8 +20,8 @@ test('legacy extrapolation is optional; finite authored bends preserve the timed
 });
 test('saved campaign roads have finite approaches, terrain and no Providence start reversal',()=>{
  const stages=JSON.parse(fs.readFileSync('data/campaigns/america/catalog.json'));
- const names=[...stages.map(s=>s.name),...fs.readdirSync('data/server-storage/files/races').filter(n=>n.startsWith('Mount Washington Auto Road'))];
- assert.equal(names.length,26);
+ const names=[...new Set([...stages.map(s=>s.documentPath?.split('/')[1]||s.name),...fs.readdirSync('data/server-storage/files/races').filter(n=>n.startsWith('Mount Washington Auto Road'))])];
+ assert.equal(names.length,12);
  for(const name of names){
   const race=read(name),road=race.road;assert.equal(road.autoExtend,false,name);
   for(const side of ['start','finish']){
@@ -34,7 +34,7 @@ test('saved campaign roads have finite approaches, terrain and no Providence sta
  }
  const race=read(stages[0].name),[a,b,c]=race.road.nodes;
  assert.ok((b.x-a.x)*(c.x-b.x)+(b.y-a.y)*(c.y-b.y)>0);
- assert.ok(race.source.startCorrection);assert.ok(race.source.routeReference.originalGeometry.length>0);
+ assert.ok(race.source.routeReference.originalGeometry.length>0);
 });
 test('Mount Washington continuation turns downhill, joins continuously and projects as road',()=>{
  const name=fs.readdirSync('data/server-storage/files/races').find(n=>n.startsWith('Mount Washington Auto Road')&&!n.endsWith('Copy'));

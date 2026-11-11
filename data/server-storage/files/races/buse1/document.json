@@ -1251,6 +1251,9 @@
     "snowClouds": {
       "enabled": true,
       "artRef": "snowcloud"
+    },
+    "visualFx": {
+      "skyBrightness": 1
     }
   }
 }

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-unfinished-human-building",
+    "name": "expanded-unfinished-human-building",
+    "artRef": "expanded-unfinished-human-building",
+    "widthM": 21.020527859237536,
+    "heightM": 14,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 17.867448680351906,
+    "hitboxHeightM": 12.6,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

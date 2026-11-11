@@ -1,27 +1,20 @@
 import {raceCompletionKey} from './MenuWorldMap.js';
 
-// Ordered from east to west. Each branch has eight playable stages;
-// Tower Hill is the playable opening junction; LA is the shared finish.
 export const AMERICA_OPENING_RACE = 'Tower Hill Road';
+export const AMERICA_ROUTE_NAME = 'Middle Route';
+// Geographic positions, with explicit ordered connections/unlocks. The catalog
+// owns the itinerary; no fixed stage count or synthetic endpoint is required.
 export function createAmericaWorldMap(catalog) {
- const nodes=[{id:'providence',kind:'race',label:AMERICA_OPENING_RACE,raceRef:AMERICA_OPENING_RACE,completedParameter:raceCompletionKey(AMERICA_OPENING_RACE),x:.97,y:.5},
-  {id:'los-angeles',kind:'junction',label:'Los Angeles',x:.03,y:.5}];
- const connections=[];
- const colors=['#7dd9ed','#efc36b','#f59987'];
- for(const [row,branch] of ['north','middle','south'].entries()){
-  const stages=catalog.filter(s=>s.branch===branch).sort((a,b)=>a.stage-b.stage);
-  let previous='providence';
-  for(const [i,stage] of stages.entries()){
-   nodes.push({id:stage.id,kind:'race',label:stage.name,raceRef:stage.name,
-    x:.86-i*(.72/7),y:[.15,.5,.85][row],
-    unlockParameter:raceCompletionKey(i?stages[i-1].name:AMERICA_OPENING_RACE),unlockValue:true,
-    completedParameter:raceCompletionKey(stage.name)});
-   connections.push({id:`${branch}-${i}`,from:previous,to:stage.id,color:colors[row],width:3});
-   previous=stage.id;
-  }
-  connections.push({id:`${branch}-finish`,from:previous,to:'los-angeles',color:colors[row],width:3});
- }
- return {nodes,connections,mapManual:true,mapStyle:{nodeScale:.68,lineWidth:3,
+ const stages=catalog.filter(s=>s.branch==='middle').sort((a,b)=>a.stage-b.stage);
+ const lons=stages.map(s=>s.location.lon),lats=stages.map(s=>s.location.lat);
+ const west=Math.min(...lons),east=Math.max(...lons),south=Math.min(...lats),north=Math.max(...lats);
+ const nodes=stages.map((stage,i)=>({id:stage.id,kind:'race',label:stage.label||stage.name,raceRef:stage.name,
+  x:.06+.88*(stage.location.lon-west)/Math.max(.01,east-west),
+  y:.08+.78*(north-stage.location.lat)/Math.max(.01,north-south),
+  ...(i?{unlockParameter:raceCompletionKey(stages[i-1].name),unlockValue:true}:{}),
+  completedParameter:raceCompletionKey(stage.name)}));
+ const connections=stages.slice(1).map((stage,i)=>({id:`middle-${stage.id}`,from:stages[i].id,to:stage.id,color:'#efc36b',width:3}));
+ return {nodes,connections,mapManual:true,mapStyle:{labels:'selected',nodeScale:.35,lineWidth:3,
   selectedColor:'#fff0a8',unselectedColor:'#e2b454',disabledColor:'#728797',
   unselectedOpacity:.9,disabledOpacity:.75,cursor:'ring',cursorColor:'#ffffff'}};
 }

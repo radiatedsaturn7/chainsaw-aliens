@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-stacked-new-england-stone-wall-loop",
+    "name": "expanded-stacked-new-england-stone-wall-loop",
+    "artRef": "expanded-stacked-new-england-stone-wall-loop",
+    "widthM": 1.9519061583577713,
+    "heightM": 1.3,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 1.6591202346041056,
+    "hitboxHeightM": 1.1700000000000002,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": [],
+    "isFence": true,
+    "fenceThicknessM": 0.4
+  }
+}

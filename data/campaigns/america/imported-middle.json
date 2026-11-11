@@ -1,0 +1,317 @@
+[
+  {
+    "id": "america-middle-laurel",
+    "branch": "middle",
+    "stage": 3,
+    "difficulty": 3,
+    "name": "Laurel Highlands Scenic Byway",
+    "location": {
+      "place": "Ohiopyle, Pennsylvania",
+      "lat": 39.8430562,
+      "lon": -79.5194493
+    },
+    "lengthM": 14466.799236914194,
+    "estimatedDrivingSeconds": 664,
+    "durationRangeSeconds": [
+      531,
+      863
+    ],
+    "durationMethod": "Curvature-limited winter pace (0.23\u20130.33 g), 85% visibility factor, 1.7 m/s\u00b2 acceleration and 3 m/s\u00b2 braking; estimate, not a measured gameplay lap.",
+    "segmentDescription": "PA 381 through the wooded Ohiopyle / Mill Run hills, including the gorge approaches.",
+    "startGps": {
+      "lat": 39.8791752,
+      "lon": -79.4800172
+    },
+    "finishGps": {
+      "lat": 39.789282098061676,
+      "lon": -79.57628139883876
+    },
+    "weather": "snow",
+    "surface": "mixed winter forest",
+    "timeOfDay": "day",
+    "sceneryTheme": "forest",
+    "sourceKey": "laurel",
+    "preserveExisting": false,
+    "paceCapMps": 28
+  },
+  {
+    "id": "america-middle-ohio",
+    "branch": "middle",
+    "stage": 4,
+    "difficulty": 4,
+    "name": "Ohio River Crossing",
+    "location": {
+      "place": "Marietta, Ohio",
+      "lat": 39.4460693,
+      "lon": -81.342806
+    },
+    "lengthM": 13259.99625583758,
+    "estimatedDrivingSeconds": 662,
+    "durationRangeSeconds": [
+      530,
+      860
+    ],
+    "durationMethod": "Curvature-limited winter pace (0.23\u20130.33 g), 85% visibility factor, 1.7 m/s\u00b2 acceleration and 3 m/s\u00b2 braking; estimate, not a measured gameplay lap.",
+    "segmentDescription": "SR 26, the Covered Bridge Scenic Byway along the Little Muskingum northeast of Marietta. The title denotes the campaign region; this stage does not cross the Ohio River.",
+    "startGps": {
+      "lat": 39.43119931969447,
+      "lon": -81.38146488267053
+    },
+    "finishGps": {
+      "lat": 39.4817009,
+      "lon": -81.2888697
+    },
+    "weather": "snow",
+    "surface": "mixed winter river",
+    "timeOfDay": "day",
+    "sceneryTheme": "river",
+    "sourceKey": "ohio",
+    "preserveExisting": false,
+    "paceCapMps": 28
+  },
+  {
+    "id": "america-middle-ozark",
+    "branch": "middle",
+    "stage": 5,
+    "difficulty": 5,
+    "name": "Ozark Backroads",
+    "location": {
+      "place": "Eminence, Missouri",
+      "lat": 37.3089267,
+      "lon": -91.4130785
+    },
+    "lengthM": 13931.236493572598,
+    "estimatedDrivingSeconds": 665,
+    "durationRangeSeconds": [
+      532,
+      864
+    ],
+    "durationMethod": "Curvature-limited winter pace (0.23\u20130.33 g), 85% visibility factor, 1.7 m/s\u00b2 acceleration and 3 m/s\u00b2 braking; estimate, not a measured gameplay lap.",
+    "segmentDescription": "Missouri Highway 19 through the forested ridges around Eminence and the Current River.",
+    "startGps": {
+      "lat": 37.2591,
+      "lon": -91.4012082
+    },
+    "finishGps": {
+      "lat": 37.3606788,
+      "lon": -91.4232627
+    },
+    "weather": "snow",
+    "surface": "mixed winter forest",
+    "timeOfDay": "day",
+    "sceneryTheme": "forest",
+    "sourceKey": "ozark",
+    "preserveExisting": false,
+    "paceCapMps": 28
+  },
+  {
+    "id": "america-middle-city",
+    "branch": "middle",
+    "stage": 6,
+    "difficulty": 6,
+    "name": "Data Center City",
+    "location": {
+      "place": "St. Louis, Missouri",
+      "lat": 38.7340992,
+      "lon": -90.2132317
+    },
+    "lengthM": 10645.796172709302,
+    "estimatedDrivingSeconds": 663,
+    "durationRangeSeconds": [
+      530,
+      862
+    ],
+    "paceCapMps": 19,
+    "durationMethod": "Curvature-limited winter pace (0.23\u20130.33 g), 85% visibility factor, 1.7 m/s\u00b2 acceleration and 3 m/s\u00b2 braking; estimate, not a measured gameplay lap.",
+    "segmentDescription": "North Broadway / Riverview Drive / Hall Street industrial riverfront network. Fictional automated data-center compounds, frozen cooling infrastructure and abandoned service yards are authored scenery, not surveyed buildings.",
+    "startGps": {
+      "lat": 38.7840947,
+      "lon": -90.1818026
+    },
+    "finishGps": {
+      "lat": 38.7036851,
+      "lon": -90.2298944
+    },
+    "weather": "snow",
+    "surface": "mixed winter industrial",
+    "timeOfDay": "night",
+    "sceneryTheme": "industrial",
+    "sourceKey": "city",
+    "preserveExisting": false
+  },
+  {
+    "id": "america-middle-route66",
+    "branch": "middle",
+    "stage": 7,
+    "difficulty": 7,
+    "name": "Historic Route 66",
+    "location": {
+      "place": "Texola, Oklahoma / Texas Panhandle",
+      "lat": 35.2194748,
+      "lon": -99.9951236
+    },
+    "lengthM": 15655.10601408541,
+    "estimatedDrivingSeconds": 665,
+    "durationRangeSeconds": [
+      532,
+      864
+    ],
+    "durationMethod": "Curvature-limited winter pace (0.23\u20130.33 g), 85% visibility factor, 1.7 m/s\u00b2 acceleration and 3 m/s\u00b2 braking; estimate, not a measured gameplay lap.",
+    "segmentDescription": "Historic Route 66 around Erick and Texola toward the Texas line; exposed plains and abandoned roadside industry.",
+    "startGps": {
+      "lat": 35.22634113375314,
+      "lon": -100.07003651575332
+    },
+    "finishGps": {
+      "lat": 35.214491944941784,
+      "lon": -99.90199843520575
+    },
+    "weather": "snow",
+    "surface": "mixed winter plains",
+    "timeOfDay": "day",
+    "sceneryTheme": "plains",
+    "sourceKey": "route66",
+    "preserveExisting": false,
+    "paceCapMps": 28
+  },
+  {
+    "id": "america-middle-pikes",
+    "branch": "middle",
+    "stage": 8,
+    "difficulty": 8,
+    "name": "Pikes Peak Highway",
+    "location": {
+      "place": "Pikes Peak, Colorado",
+      "lat": 38.8669027,
+      "lon": -105.0630189
+    },
+    "lengthM": 10427.295165882573,
+    "estimatedDrivingSeconds": 661,
+    "durationRangeSeconds": [
+      529,
+      859
+    ],
+    "durationMethod": "Curvature-limited winter pace (0.23\u20130.33 g), 85% visibility factor, 1.7 m/s\u00b2 acceleration and 3 m/s\u00b2 braking; estimate, not a measured gameplay lap.",
+    "segmentDescription": "Upper Pikes Peak Highway: technical alpine hairpins and high-altitude climbs.",
+    "startGps": {
+      "lat": 38.8456018,
+      "lon": -105.0528846
+    },
+    "finishGps": {
+      "lat": 38.8872562,
+      "lon": -105.0731591
+    },
+    "weather": "snow",
+    "surface": "mixed winter alpine",
+    "timeOfDay": "day",
+    "sceneryTheme": "alpine",
+    "sourceKey": "pikes",
+    "preserveExisting": false,
+    "paceCapMps": 28
+  },
+  {
+    "id": "america-middle-moki",
+    "branch": "middle",
+    "stage": 9,
+    "difficulty": 9,
+    "name": "Moki Dugway",
+    "location": {
+      "place": "Cedar Mesa, Utah",
+      "lat": 37.2733914,
+      "lon": -109.9369153
+    },
+    "lengthM": 12373.262548604438,
+    "estimatedDrivingSeconds": 663,
+    "durationRangeSeconds": [
+      531,
+      862
+    ],
+    "durationMethod": "Curvature-limited winter pace (0.23\u20130.33 g), 85% visibility factor, 1.7 m/s\u00b2 acceleration and 3 m/s\u00b2 braking; estimate, not a measured gameplay lap.",
+    "segmentDescription": "Utah 261 through the gravel Moki Dugway switchbacks and their paved approaches; no repeated ascent or descent.",
+    "startGps": {
+      "lat": 37.21673415056848,
+      "lon": -109.8880699818678
+    },
+    "finishGps": {
+      "lat": 37.2808035,
+      "lon": -109.9402419
+    },
+    "weather": "snow",
+    "surface": "mixed winter mesa",
+    "timeOfDay": "day",
+    "sceneryTheme": "mesa",
+    "sourceKey": "moki",
+    "preserveExisting": false,
+    "paceCapMps": 28
+  },
+  {
+    "id": "america-middle-oak",
+    "branch": "middle",
+    "stage": 10,
+    "difficulty": 10,
+    "name": "Oak Creek Canyon",
+    "location": {
+      "place": "Oak Creek Canyon, Arizona",
+      "lat": 35.0234889,
+      "lon": -111.7361826
+    },
+    "lengthM": 12869.842870124301,
+    "estimatedDrivingSeconds": 664,
+    "durationRangeSeconds": [
+      531,
+      864
+    ],
+    "durationMethod": "Curvature-limited winter pace (0.23\u20130.33 g), 85% visibility factor, 1.7 m/s\u00b2 acceleration and 3 m/s\u00b2 braking; estimate, not a measured gameplay lap.",
+    "segmentDescription": "Arizona 89A through the upper Oak Creek Canyon and the Oak Creek Vista switchbacks.",
+    "startGps": {
+      "lat": 35.0308709,
+      "lon": -111.733943
+    },
+    "finishGps": {
+      "lat": 34.95467168319066,
+      "lon": -111.75437662524838
+    },
+    "weather": "snow",
+    "surface": "mixed winter canyon",
+    "timeOfDay": "day",
+    "sceneryTheme": "canyon",
+    "sourceKey": "oak",
+    "preserveExisting": false,
+    "paceCapMps": 28
+  },
+  {
+    "id": "america-middle-angeles",
+    "branch": "middle",
+    "stage": 11,
+    "difficulty": 11,
+    "name": "Angeles Crest Highway",
+    "location": {
+      "place": "San Gabriel Mountains, California",
+      "lat": 34.2585694,
+      "lon": -118.1045935
+    },
+    "lengthM": 12157.005108511306,
+    "estimatedDrivingSeconds": 663,
+    "durationRangeSeconds": [
+      530,
+      862
+    ],
+    "durationMethod": "Curvature-limited winter pace (0.23\u20130.33 g), 85% visibility factor, 1.7 m/s\u00b2 acceleration and 3 m/s\u00b2 braking; estimate, not a measured gameplay lap.",
+    "segmentDescription": "California 2 in the San Gabriel Mountains: sustained sweeping bends, ridge exposure and steep wooded slopes.",
+    "startGps": {
+      "lat": 34.2695498,
+      "lon": -118.1407479
+    },
+    "finishGps": {
+      "lat": 34.2707542,
+      "lon": -118.0525024
+    },
+    "weather": "snow",
+    "surface": "mixed winter alpine",
+    "timeOfDay": "day",
+    "sceneryTheme": "alpine",
+    "sourceKey": "angeles",
+    "preserveExisting": false,
+    "paceCapMps": 28
+  }
+]

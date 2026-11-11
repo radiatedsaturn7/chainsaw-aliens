@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-small-pond",
+    "name": "expanded-small-pond",
+    "artRef": "expanded-small-pond",
+    "widthM": 1.501466275659824,
+    "heightM": 1,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 1.2762463343108503,
+    "hitboxHeightM": 0.9,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

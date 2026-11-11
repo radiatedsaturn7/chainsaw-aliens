@@ -5,12 +5,13 @@ import zlib from 'node:zlib';
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
+import path from 'node:path';
 const catalog=JSON.parse(fs.readFileSync(new URL('../../data/campaigns/america/catalog.json',import.meta.url)));
-catalog.unshift({id:'america-opening-tower-hill',name:'Tower Hill Road'});
+
 const id=process.argv.find(a=>a.startsWith('--stage='))?.slice(8);
 if(id){
  const stage=catalog.find(s=>s.id===id);assert.ok(stage,`Unknown stage ${id}`);
- const stored=JSON.parse(fs.readFileSync(new URL(`../../data/server-storage/files/races/${stage.name}/document.json`,import.meta.url)));
+ const stored=JSON.parse(fs.readFileSync(path.resolve(fileURLToPath(new URL('../../data/server-storage/files/',import.meta.url)),stage.documentPath||`races/${stage.name}/document.json`)));
  const doc=stored.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(stored.data,'base64'))):stored;
  const {buildRaceTransferPackage}=await import('../../src/ui/raceWorldBakeWorker.js');
  let phase='load';const started=Date.now();

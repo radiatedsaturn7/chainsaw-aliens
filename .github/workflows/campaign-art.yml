@@ -1,0 +1,32 @@
+name: Campaign artwork validation
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: campaign-art-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  artwork:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node --test tests/unit/campaignArtIntegration.test.js tests/unit/americaCampaign.test.js tests/unit/raceTerrainTextureBlend.test.js tests/unit/raceRoadTextures.test.js tests/unit/raceDecals.test.js tests/unit/raceVisualFx.test.js
+      - run: npx playwright test tests/playwright/race-road-textures.spec.js --workers=1 --reporter=line
+        env:
+          CI: 'true'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: campaign-art-browser-results
+          path: test-results

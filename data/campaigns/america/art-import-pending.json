@@ -1,0 +1,14 @@
+{
+  "invalidSources": {
+    "leafless-tree-02": {
+      "source": "assets/campaign-art/vegetation/leafless-tree-02.png",
+      "sourceSha256": "f3d574806bdbf89b8056e1a8eff8c5c5aff95db5a8d08271705bb70da5f78f3d",
+      "error": "FormatError: PNG file has invalid signature."
+    },
+    "leafless-tree-03": {
+      "source": "assets/campaign-art/vegetation/leafless-tree-03.png",
+      "sourceSha256": "236891d9f89c1821280f433cdf10fd90ece1fb04bed34c05619588cd88d5172e",
+      "error": "FormatError: PNG file has invalid signature."
+    }
+  }
+}

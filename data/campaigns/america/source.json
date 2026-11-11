@@ -1,11 +1,8 @@
 {
-  "name": "Providence to Los Angeles",
-  "raceCount": 24,
-  "stagesPerBranch": 8,
+  "name": "Middle Route \u2014 Cumberland to the San Gabriel Mountains",
+  "raceCount": 11,
   "branches": [
-    "north",
-    "middle",
-    "south"
+    "middle"
   ],
   "geometryProvider": "OpenStreetMap",
   "attribution": "\u00a9 OpenStreetMap contributors",
@@ -18,16 +15,17 @@
   ],
   "elevationProvider": "Mapzen / Tilezen Terrain Tiles, zoom 12, bilinear DEM samples",
   "elevationEndpoint": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
-  "authoredConditions": "Weather, time of day, road width, surface and bumps are fictional gameplay conditions. Incomplete terrain surveys are filled with editable terrain derived from road heights. Per-race source metadata records elevation gaps and fallback methods.",
-  "structure": "Local scenic road stages across three westbound branches, with shared Providence and LA map junctions; not a continuous drive across the connecting highways.",
+  "authoredConditions": "Frozen post-apocalyptic weather, snow patches, surface roughness and roadside scenery. OSM road widths are retained when available; missing widths use lane counts or explicitly estimated defaults. Bridge decks approximate approach heights; DEM is not a surveyed racing surface.",
+  "structure": "Eleven ordered local road stages joined geographically on the world map; travel between stages is not a playable connecting highway. Tower Hill is unchanged. Mount Washington retains its geometry and race implementation with authored snow conditions.",
   "rebuild": [
+    "python tools/campaigns/import_america.py --download # only missing OSM snapshots",
     "python tools/campaigns/import_america.py",
-    "python tools/campaigns/finish_america_terrain.py",
-    "node tools/campaigns/install_america.mjs"
+    "node tools/campaigns/install_america.mjs",
+    "python tools/campaigns/report_america.py"
   ],
-  "elevationAttribution": "Terrain Tiles (Mapzen/Tilezen), accessed 2026-11-05 from https://registry.opendata.aws/terrain-tiles/",
+  "elevationAttribution": "Mapzen/Tilezen Terrain Tiles, accessed 2026-11-10; see per-race metadata for coverage.",
   "elevationLicenseUrl": "https://github.com/tilezen/joerd/blob/master/docs/attribution.md",
-  "roadComfort": "45 m elevation smoothing radius; authored bumps reduced by 80 percent; 8 m flat terrain join, minimum 32 m blended transition, maximum cut/fill slope 0.22. GPS turns and raw DEM samples are retained. Reapply to installed tracks with node tools/campaigns/smooth_america.mjs.",
+  "roadComfort": "45 m runtime elevation smoothing; 8 m flat shoulder join, 32 m blend, 0.22 maximum cut/fill slope. New roads have collinear survey points no more than 80 m apart and DEM at every node. Finite 400 m untimed runouts are authored; timed GPS road plan is retained.",
   "paceNotes": {
     "version": "steering-recce-v3",
     "method": "Virtual recce of road-wheel steering, integrated heading, a braking envelope and power-limited acceleration. Checks inside-apex doodads for do-not-cut hazards. Numeric severity thresholds are game-specific calibration; not proprietary WRC Generations values.",
@@ -43,5 +41,6 @@
       "https://torcs.sourceforge.net/api/robot_tutorial_trajectories.html",
       "https://arxiv.org/abs/1902.00606"
     ]
-  }
+  },
+  "missionConditions": "tools/campaigns/mission_conditions.mjs defines optional preparation recommendations and varied snow, wet, gravel, rough-road and dry-road events. Reapply with node tools/campaigns/apply_mission_conditions.mjs. No equipment entry gates; original planning durations need playtesting under the authored conditions."
 }

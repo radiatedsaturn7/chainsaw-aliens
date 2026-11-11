@@ -1,0 +1,83 @@
+{
+  "checkedAt": "2026-11-11T01:58:20.341Z",
+  "stackSizeKB": 128,
+  "results": [
+    {
+      "id": "america-opening-tower-hill",
+      "name": "Tower Hill Road",
+      "ok": true,
+      "triangles": 32917,
+      "seconds": 14.69
+    },
+    {
+      "id": "osm-cf573fba73e0",
+      "name": "Mount Washington Auto Road — point-to-point",
+      "ok": true,
+      "triangles": 108182,
+      "seconds": 45.555
+    },
+    {
+      "id": "america-middle-laurel",
+      "name": "Laurel Highlands Scenic Byway",
+      "ok": true,
+      "triangles": 106196,
+      "seconds": 121.564
+    },
+    {
+      "id": "america-middle-ohio",
+      "name": "Ohio River Crossing",
+      "ok": true,
+      "triangles": 112524,
+      "seconds": 180.918
+    },
+    {
+      "id": "america-middle-ozark",
+      "name": "Ozark Backroads",
+      "ok": true,
+      "triangles": 96657,
+      "seconds": 130.336
+    },
+    {
+      "id": "america-middle-city",
+      "name": "Data Center City",
+      "ok": true,
+      "triangles": 61556,
+      "seconds": 57.519
+    },
+    {
+      "id": "america-middle-route66",
+      "name": "Historic Route 66",
+      "ok": true,
+      "triangles": 52033,
+      "seconds": 113.298
+    },
+    {
+      "id": "america-middle-pikes",
+      "name": "Pikes Peak Highway",
+      "ok": true,
+      "triangles": 69159,
+      "seconds": 98.141
+    },
+    {
+      "id": "america-middle-moki",
+      "name": "Moki Dugway",
+      "ok": true,
+      "triangles": 85780,
+      "seconds": 64.413
+    },
+    {
+      "id": "america-middle-oak",
+      "name": "Oak Creek Canyon",
+      "ok": true,
+      "triangles": 69399,
+      "seconds": 105.847
+    },
+    {
+      "id": "america-middle-angeles",
+      "name": "Angeles Crest Highway",
+      "ok": true,
+      "triangles": 67792,
+      "seconds": 85.057
+    }
+  ]
+}

@@ -158,6 +158,7 @@ export function prepareRaceSurfaceBakeForTransfer(surfaceBake = null) {
       compact.center = compact.center || compactPoint(section.center) || {};
       compact.center.segment = {
         surface: String(section.center?.segment?.surface || 'asphalt'),
+        bumpiness: Number(section.center?.segment?.bumpiness || 0),
         boundaryArtRef: String(section.center?.segment?.boundaryArtRef || '')
       };
       return compact;
@@ -266,6 +267,10 @@ export async function buildRaceTransferPackage(sourceRace = null, {
   addCritical(editor.selectedRace?.visualFx?.speedLineArtRef);
   Object.values(editor.selectedRace?.surfaceArt || {}).forEach(addCritical);
   addCritical(editor.selectedRace?.margin?.artRef);
+  for(const entry of [editor.selectedRace?.roadTextures?.road,editor.selectedRace?.roadTextures?.margin,editor.selectedRace?.roadTextures?.shoulder,...Object.values(editor.selectedRace?.roadTextures?.surfaceRoads||{}),...Object.values(editor.selectedRace?.roadTextures?.surfaceShoulders||{})]){
+    addCritical(entry?.artRef);addCritical(entry?.roughArtRef);
+  }
+  (editor.selectedRace?.decals||[]).forEach(decal=>addCritical(decal.artRef));
   (editor.selectedRace?.road?.segments || []).forEach((segment) => {
     addCritical(segment?.artRef);
     addCritical(segment?.boundaryArtRef);

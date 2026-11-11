@@ -17,7 +17,11 @@ def build_site(source, destination, *, max_site_bytes=850 * 1024 * 1024):
     for name in ['index.html', 'styles.css', 'src', 'ui', 'css', 'assets', 'vendor']:
         item = source / name
         if item.is_dir():
-            shutil.copytree(item, destination / name)
+            # Campaign originals are authoring inputs. Saved art documents are
+            # the runtime assets; do not ship a second full-resolution copy.
+            shutil.copytree(item, destination / name,
+                            ignore=lambda directory, names: ['campaign-art']
+                            if Path(directory) == source / 'assets' else [])
         elif item.is_file():
             shutil.copyfile(item, destination / name)
         else:

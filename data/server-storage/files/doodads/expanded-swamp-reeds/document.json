@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-swamp-reeds",
+    "name": "expanded-swamp-reeds",
+    "artRef": "expanded-swamp-reeds",
+    "widthM": 2.1880341880341883,
+    "heightM": 2,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 1.8598290598290599,
+    "hitboxHeightM": 1.8,
+    "weightKg": 5,
+    "defaultRule": {
+      "behavior": "flatten",
+      "speedDrainPercent": 1,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

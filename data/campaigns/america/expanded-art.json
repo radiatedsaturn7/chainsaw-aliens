@@ -1,0 +1,672 @@
+{
+  "assets": [
+    {
+      "name": "expanded-abandoned-business-building",
+      "source": "expanded/abandoned-buildings/abandoned-business-building.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.12,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-church",
+      "source": "expanded/abandoned-buildings/abandoned-church.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.22,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-civic-center",
+      "source": "expanded/abandoned-buildings/abandoned-civic-center.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.16,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-fire-station",
+      "source": "expanded/abandoned-buildings/abandoned-fire-station.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.24,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-hospital",
+      "source": "expanded/abandoned-buildings/abandoned-hospital.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.2,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-mall",
+      "source": "expanded/abandoned-buildings/abandoned-mall.png",
+      "heightM": 9,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.24,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-police-station",
+      "source": "expanded/abandoned-buildings/abandoned-police-station.png",
+      "heightM": 9,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.28,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-school",
+      "source": "expanded/abandoned-buildings/abandoned-school.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.26,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-solar-facility",
+      "source": "expanded/abandoned-buildings/abandoned-solar-facility.png",
+      "heightM": 5,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "route66",
+          "fraction": 0.65,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-waste-management-facility",
+      "source": "expanded/abandoned-buildings/abandoned-waste-management-facility.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.32,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-collapsed-barn",
+      "source": "expanded/abandoned-buildings/collapsed-barn.png",
+      "heightM": 7,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.18,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-graveyard",
+      "source": "expanded/abandoned-buildings/graveyard.png",
+      "heightM": 4,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.23,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-unfinished-human-building",
+      "source": "expanded/abandoned-buildings/unfinished-human-building.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.36,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-electrical-substation",
+      "source": "expanded/infrastructure/abandoned-electrical-substation.png",
+      "heightM": 7,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.4,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-farm-fence-loop",
+      "source": "expanded/infrastructure/farm-fence-loop.png",
+      "heightM": 1.4,
+      "kind": "fence",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.19,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-high-tension-power-pylon",
+      "source": "expanded/infrastructure/high-tension-power-pylon.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.44,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-highway-sign-gantry",
+      "source": "expanded/infrastructure/highway-sign-gantry.png",
+      "heightM": 7,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.48,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-oil-pipeline-loop",
+      "source": "expanded/infrastructure/oil-pipeline-loop.png",
+      "heightM": 2,
+      "kind": "fence",
+      "placements": [
+        {
+          "race": "route66",
+          "fraction": 0.67,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-robot-construction-vehicle",
+      "source": "expanded/infrastructure/robot-construction-vehicle.png",
+      "heightM": 3.5,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.52,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-stacked-new-england-stone-wall-loop",
+      "source": "expanded/infrastructure/stacked-new-england-stone-wall-loop.png",
+      "heightM": 1.3,
+      "kind": "fence",
+      "placements": [
+        {
+          "race": "laurel",
+          "fraction": 0.16,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-texas-oil-pumpjack",
+      "source": "expanded/infrastructure/texas-oil-pumpjack.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "route66",
+          "fraction": 0.69,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-dead-farm-crop-patch",
+      "source": "expanded/landscape/dead-farm-crop-patch.png",
+      "heightM": 2,
+      "kind": "vegetation",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.2,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-grass-clump",
+      "source": "expanded/landscape/grass-clump.png",
+      "heightM": 1,
+      "kind": "vegetation",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.21,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-red-rock-arch-background",
+      "source": "expanded/landscape/red-rock-arch-background.png",
+      "heightM": 22,
+      "kind": "background",
+      "placements": [
+        {
+          "race": "moki",
+          "fraction": 0.55,
+          "lateralM": 200
+        }
+      ]
+    },
+    {
+      "name": "expanded-rolling-hills-background",
+      "source": "expanded/landscape/rolling-hills-background.png",
+      "heightM": 30,
+      "kind": "background",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.42,
+          "lateralM": 200
+        }
+      ]
+    },
+    {
+      "name": "expanded-small-pond",
+      "source": "expanded/landscape/small-pond.png",
+      "heightM": 1,
+      "kind": "sprite",
+      "placements": [],
+      "deferredReason": "Needs a suitable watercourse and terrain integration; do not paste a water feature onto unrelated land."
+    },
+    {
+      "name": "expanded-swamp-reeds",
+      "source": "expanded/landscape/swamp-reeds.png",
+      "heightM": 2,
+      "kind": "vegetation",
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.6,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-waterfall",
+      "source": "expanded/landscape/waterfall.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": [],
+      "deferredReason": "Needs a suitable watercourse and terrain integration; do not paste a water feature onto unrelated land."
+    },
+    {
+      "name": "expanded-network-node",
+      "source": "expanded/robots/network-node.png",
+      "heightM": 4,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.56,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-robot-building",
+      "source": "expanded/robots/robot-building.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.6,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-robot-hub",
+      "source": "expanded/robots/robot-hub.png",
+      "heightM": 6,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.64,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-farm-tractor",
+      "source": "expanded/vehicles/abandoned-farm-tractor.png",
+      "heightM": 2.5,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.22,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-broken-old-pickup",
+      "source": "expanded/vehicles/broken-old-pickup.png",
+      "heightM": 2,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "route66",
+          "fraction": 0.7,
+          "lateralM": 30
+        }
+      ]
+    },
+    {
+      "name": "skybox-angeles-crest",
+      "source": "skyboxes/angeles-crest.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "angeles"
+        }
+      ]
+    },
+    {
+      "name": "skybox-badlands",
+      "source": "skyboxes/badlands.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-big-bend",
+      "source": "skyboxes/big-bend.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-col-de-turini",
+      "source": "skyboxes/col-de-turini.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-data-center-city",
+      "source": "skyboxes/data-center-city.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "city"
+        }
+      ]
+    },
+    {
+      "name": "skybox-daytona",
+      "source": "skyboxes/daytona.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-death-valley",
+      "source": "skyboxes/death-valley.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-eifel-circuit",
+      "source": "skyboxes/eifel-circuit.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-finnish-lakes",
+      "source": "skyboxes/finnish-lakes.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-la-basin",
+      "source": "skyboxes/la-basin.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-la-sunset-coast",
+      "source": "skyboxes/la-sunset-coast.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-laguna-seca",
+      "source": "skyboxes/laguna-seca.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-lake-michigan-woods",
+      "source": "skyboxes/lake-michigan-woods.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-laurel-highlands",
+      "source": "skyboxes/laurel-highlands.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "laurel"
+        }
+      ]
+    },
+    {
+      "name": "skybox-moki-dugway",
+      "source": "skyboxes/moki-dugway.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "moki"
+        }
+      ]
+    },
+    {
+      "name": "skybox-mount-washington",
+      "source": "skyboxes/mount-washington.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "mount"
+        }
+      ]
+    },
+    {
+      "name": "skybox-natchez",
+      "source": "skyboxes/natchez.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-oak-creek",
+      "source": "skyboxes/oak-creek.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "oak"
+        }
+      ]
+    },
+    {
+      "name": "skybox-ohio-river-crossing",
+      "source": "skyboxes/ohio-river-crossing.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "ohio"
+        }
+      ]
+    },
+    {
+      "name": "skybox-ozarks",
+      "source": "skyboxes/ozarks.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "ozark"
+        }
+      ]
+    },
+    {
+      "name": "skybox-palms-to-pines",
+      "source": "skyboxes/palms-to-pines.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-pikes-peak",
+      "source": "skyboxes/pikes-peak.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "pikes"
+        }
+      ]
+    },
+    {
+      "name": "skybox-providence-harbor",
+      "source": "skyboxes/providence-harbor.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-route-66",
+      "source": "skyboxes/route-66.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "route66"
+        }
+      ]
+    },
+    {
+      "name": "skybox-sawtooth",
+      "source": "skyboxes/sawtooth.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-tioga-pass",
+      "source": "skyboxes/tioga-pass.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-tower-hill",
+      "source": "skyboxes/tower-hill.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "tower"
+        }
+      ]
+    }
+  ]
+}

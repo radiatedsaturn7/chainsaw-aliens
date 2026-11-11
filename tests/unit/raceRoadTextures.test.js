@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {prepareRaceSurfaceBakeForTransfer} from '../../src/ui/raceWorldBakeWorker.js';
 import * as THREE from '../../src/vendorBridge/three.js';
 import assert from 'node:assert/strict';
 import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings, roadTextureMipBias } from '../../src/racing/RaceRoadTextures.js';
@@ -151,4 +152,55 @@ test('three- and four-way junctions retain textured coverage and match every roa
   assert.equal(rendered.filter(m=>m.source==='road-texture-junction').length,triangles.length);
   assert.ok(rendered.every(m=>m.textured&&m.artRef==='asphalt'));
  }
+});
+
+test('physical surface ribbons and mirrored shoulder UVs survive editing and preload', async()=>{
+ const e=new RaceEditor({});
+ e.selectedRace.roadTextures={road:{artRef:'asphalt'},shoulder:{artRef:'transition'},surfaceRoads:{gravel:{artRef:'gravel',roughArtRef:'ruts'}}};
+ const settings=roadTextureSettings(e.selectedRace);
+ const section=(distance,surface,bumpiness)=>({center:{distance,segment:{surface,bumpiness}},left:{x:-4,z:distance},right:{x:4,z:distance},marginLeft:{x:-4.2,z:distance},marginRight:{x:4.2,z:distance},shoulderLeft:{x:-6,z:distance},shoulderRight:{x:6,z:distance}});
+ const meshes=buildRoadTextureStrips({surfaceBake:{sections:[section(0,'asphalt',0),section(10,'gravel',.1),section(20,'gravel',.6),section(30,'asphalt',0)]}},settings);
+ assert.deepEqual(meshes.roadMeshes.filter(m=>!m.vertexAlpha).map(m=>m.artRef),['asphalt','gravel','ruts']);
+ const transferred=prepareRaceSurfaceBakeForTransfer({sections:[section(0,'gravel',.6),section(10,'gravel',.6)]});
+ assert.equal(buildRoadTextureStrips({surfaceBake:transferred},settings).roadMeshes[0].artRef,'ruts');
+ assert.equal(buildRoadTextureStrips({surfaceBake:transferred},settings,{shoulderVisible:false}).shoulderMeshes.length,0);
+ for(const shoulder of meshes.shoulderMeshes){assert.equal(shoulder.artRef,'transition');assert.deepEqual(shoulder.points.map(p=>p.u),[0,1,1,0]);assert.ok(Math.abs(shoulder.points[0].x)<Math.abs(shoulder.points[1].x));}
+ for(const ref of ['gravel','ruts','transition'])assert.ok(e.collectSelectedRaceTextureArtRefs().includes(ref));
+ await e.openRaceRoadTextures(async()=>({roadArt:'asphalt',roadRepeat:5}));
+ assert.equal(e.selectedRace.roadTextures.surfaceRoads.gravel.roughArtRef,'ruts');
+ assert.equal(e.selectedRace.roadTextures.shoulder.artRef,'transition');
+});
+
+test('static scene rebuilds when mixed road and shoulder artwork arrives',()=>{
+ const e=new RaceEditor({});e.getRaceSurfaceGeometryRevisionKey=()=> 'same';e.getRaceTileMapStats=()=>({artRefs:[]});
+ e.ensureRaceSurfaceArt=()=>({});e.ensureRaceTileMap=()=>({revision:1});e.getRaceGroundTextureFilterMode=()=> 'balanced';
+ const loaded=new Set(['main']);e.getRaceArtSpriteCanvas=ref=>loaded.has(ref)?{}:null;
+ const options={staticRevisionKey:'unchanged',roadMeshes:[{artRef:'main'},{artRef:'rough'}],shoulderMeshes:[{artRef:'edge'}]};
+ const first=e.getRaceThreeStaticWorldKey([],options);loaded.add('rough');
+ const second=e.getRaceThreeStaticWorldKey([],options);assert.notEqual(first,second);
+ loaded.add('edge');assert.notEqual(second,e.getRaceThreeStaticWorldKey([],options));
+});
+
+test('road, shoulder and decal images are critical startup artwork',async()=>{
+ const {buildRaceTransferPackage}=await import('../../src/ui/raceWorldBakeWorker.js');
+ const e=new RaceEditor({}),{network}=fixture();
+ e.selectedRace.road.network=network;e.selectedRace.road.mode='network';
+ e.selectedRace.roadTextures={road:{artRef:'main'},shoulder:{artRef:'edge'},surfaceRoads:{gravel:{artRef:'gravel',roughArtRef:'ruts'}}};
+ e.selectedRace.decals=[{id:'mark',kind:'decal',artRef:'skids',x:0,z:10,widthM:2,heightM:3}];
+ const p=await buildRaceTransferPackage(e.selectedRace,{includeArtAssets:false});
+ for(const ref of ['main','edge','gravel','ruts','skids'])assert.ok(p.artPlan.criticalRefs.includes(ref),ref);
+});
+
+ test('surface crossfades stay on the road deck with a continuous half blend at the join',()=>{
+ const section=(d,surface)=>({center:{distance:d,segment:{surface}},left:{x:-4,z:d,elevation:10+d*.1},right:{x:4,z:d,elevation:10+d*.1}});
+ const bake={surfaceBake:{sections:[section(0,'asphalt'),section(20,'gravel'),section(40,'gravel')]}};
+ const settings=roadTextureSettings({roadTextures:{road:{artRef:'asphalt'},surfaceRoads:{gravel:{artRef:'gravel'}}}});
+ const before=JSON.stringify(bake),meshes=buildRoadTextureStrips(bake,settings).roadMeshes,blends=meshes.filter(m=>m.vertexAlpha);
+ assert.ok(blends.length);assert.equal(JSON.stringify(bake),before);
+ const editor=new RaceEditor({});
+ for(const m of blends){
+  const geometry=editor.getRaceThreeMeshGeometry([m]);assert.equal(geometry.getAttribute('color').itemSize,4);
+  for(const p of m.points){assert.ok(p.z>=12&&p.z<=28);assert.ok(p.alpha>=0&&p.alpha<=.5);assert.ok(Math.abs(p.elevation-(10+p.z*.1))<1e-8);if(p.z===20)assert.equal(p.alpha,.5);}
+ }
+ assert.ok(blends.some(m=>m.artRef==='asphalt'));assert.ok(blends.some(m=>m.artRef==='gravel'));
 });

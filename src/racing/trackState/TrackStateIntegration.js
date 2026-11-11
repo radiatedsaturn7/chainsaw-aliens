@@ -55,7 +55,11 @@ export function createRaceTrackState({
         drainageRateMmPerS: sample.drainageRateMmPerS,
         sunExposure: sample.sunExposure,
         windExposure: sample.windExposure,
-        roughness: sample.roughness
+        // Road authoring must reach wear/contact materials, not only visuals.
+        // Terrain keeps its material profile when no explicit sample exists.
+        roughness: sample.roughness ?? (sample.region === 'road'
+          && Number.isFinite(sample.segment?.bumpiness)
+          ? clamp(sample.segment.bumpiness, 0, 1) : undefined)
       };
     },
     ...options

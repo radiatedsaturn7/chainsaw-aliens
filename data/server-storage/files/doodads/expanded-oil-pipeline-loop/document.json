@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-oil-pipeline-loop",
+    "name": "expanded-oil-pipeline-loop",
+    "artRef": "expanded-oil-pipeline-loop",
+    "widthM": 3.002932551319648,
+    "heightM": 2,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 2.5524926686217007,
+    "hitboxHeightM": 1.8,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": [],
+    "isFence": true,
+    "fenceThicknessM": 0.4
+  }
+}
