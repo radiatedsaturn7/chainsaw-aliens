@@ -201,6 +201,8 @@ test('race inventory boosts the player and fires a slowing projectile at an oppo
  expect(await page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier)).toBe(1);
  expect(await page.evaluate(()=>window.__game.items.progress.bags.items['slow-ci'])).toBe(0);
  await page.screenshot({path:'test-results/item-race-hit.png'});
- await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime[0].itemSpeedMultiplier),{timeout:8000}).toBe(1);
+ // Four admitted simulation seconds can exceed eight wall-clock seconds on
+ // software WebGL. Still require the real frame loop to expire the effect.
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime[0].itemSpeedMultiplier),{timeout:30000}).toBe(1);
  expect(errors).toEqual([]);
 });
