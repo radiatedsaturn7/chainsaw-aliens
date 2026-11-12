@@ -10,7 +10,7 @@ import {
   createContactFootprintScratch,
   resolveContactFootprint
 } from './ContactFootprint.js';
-import { resolveCompoundSurfaceGrip } from './SurfaceConditionGrip.js';
+import { getSurfaceConditionCoverage, resolveCompoundSurfaceGrip } from './SurfaceConditionGrip.js';
 import { createInvalidSurfaceSample, createSurfaceSample } from './SurfaceSample.js';
 
 const powertrainModel = new PowertrainModel();
@@ -1069,13 +1069,33 @@ function getTireGrip(tire, material, loadN, referenceLoadN) {
   const temperatureF = Number.isFinite(Number(tire.treadTemperatureC))
     ? Number(tire.treadTemperatureC) * 9 / 5 + 32
     : Number(tire.temperatureF ?? 180);
-  const temperatureScale = temperatureF < 70 ? clamp(0.72 + temperatureF / 250, 0.72, 1) : temperatureF > 280 ? clamp(1 - (temperatureF - 280) / 300, 0.55, 1) : 1;
+  let temperatureScale = temperatureF < 70 ? clamp(0.72 + temperatureF / 250, 0.72, 1) : temperatureF > 280 ? clamp(1 - (temperatureF - 280) / 300, 0.55, 1) : 1;
+  // Snow suitability is defined against a cold-weather reference. Applying
+  // the dry-road temperature penalty again understated both all-season and
+  // winter snow grip. Reference that response to freezing, retaining further
+  // cold loss and the normal warm-road response as coverage clears.
+  const snowCoverage = ['snow', 'slush'].includes(String(material.baseSurfaceId || material.surfaceId))
+    ? 1 : getSurfaceConditionCoverage(material).snow;
+  const freezingReferenceScale = 0.72 + 32 / 250;
+  const coldSnowScale = temperatureF < 70
+    ? Math.min(1, temperatureScale / freezingReferenceScale) : temperatureScale;
+  temperatureScale += (coldSnowScale - temperatureScale) * snowCoverage;
   const wearScale = clamp(1 - Number(tire.wear ?? 0) * 0.42, 0.5, 1);
   const damageScale = clamp(1 - Number(tire.damage ?? 0) / 150, 0.25, 1);
   const widthScale = clamp(Math.sqrt(Number(tire.widthMm ?? 245) / 245), 0.82, 1.18);
   const loadSensitivity = clamp(Math.pow(referenceLoadN / Math.max(1, loadN), Number(tire.loadSensitivityExponent ?? 0.08)), 0.72, 1.22);
   return clamp(compoundGrip * pressureScale * temperatureScale * wearScale * damageScale * widthScale
     * loadSensitivity * getContactPatchMaterialGrip(material), 0.02, 2.2);
+}
+
+// Engineering starting point for cold snow, not a measured tire identity.
+// Snow shearing supports a broader longitudinal response than the solid-road
+// brush. Keep the existing peak force; ice/slush blend back to their response.
+// Chalmers/VTI: https://research.chalmers.se/en/publication/511723
+export function getSnowResponseWeight(material = {}) {
+  const coverage = getSurfaceConditionCoverage(material);
+  const snow = String(material.baseSurfaceId || material.surfaceId) === 'snow' ? 1 : coverage.snow;
+  return snow * (1 - coverage.wet) * (1 - coverage.ice);
 }
 
 export function calculateBrushTireForce({
@@ -1097,6 +1117,8 @@ export function calculateBrushTireForce({
     output.postPeakSlidingForceN = 0;
     output.utilization = 0;
     output.gripCoefficient = 0;
+    output.peakLongitudinalSlipRatio = 0;
+    output.snowResponseWeight = 0;
     return output;
   }
   const referenceLoad = Math.max(1, Number(tire.referenceLoadN || load));
@@ -1132,14 +1154,22 @@ export function calculateBrushTireForce({
   const rawDemandY = -corneringStiffness * Math.tan(Number(kinematics.slipAngleRad || 0))
     + camberStiffness * Number(kinematics.camberAngleRad || 0) * camberActivation;
   const naturalPeakSlip = 3 * limit / longitudinalStiffness;
+  const snowResponseWeight = getSnowResponseWeight(material);
   const configuredPeakSlip = Number(tire.peakSlip);
   const peakSlipScale = Number.isFinite(configuredPeakSlip) && configuredPeakSlip > EPSILON
     ? naturalPeakSlip / configuredPeakSlip
     : 1;
-  const demandX = rawDemandX * peakSlipScale;
+  output.peakLongitudinalSlipRatio = naturalPeakSlip / peakSlipScale;
+  const snowPeak = Number(tire.compound?.snowPeakSlip ?? .18);
+  if (!(configuredPeakSlip > 0)) {
+    output.peakLongitudinalSlipRatio += (Math.max(naturalPeakSlip, snowPeak)
+      - output.peakLongitudinalSlipRatio) * snowResponseWeight;
+  }
+  output.snowResponseWeight = snowResponseWeight;
+  const demandX = rawDemandX * naturalPeakSlip / Math.max(EPSILON, output.peakLongitudinalSlipRatio);
   const demandY = rawDemandY * peakSlipScale;
   const demand = Math.hypot(demandX, demandY);
-  const slidingFrictionRatio = clamp(Number(tire.slidingFrictionRatio ?? 0.66), 0.35, 1);
+  const slidingFrictionRatio = clamp(Number(tire.slidingFrictionRatio ?? (0.66 + (Number(tire.compound?.snowSlidingRatio ?? .88) - .66) * snowResponseWeight)), 0.35, 1);
   const postPeakFalloff = clamp(Number(tire.postPeakFalloff ?? 1.8), 0.1, 8);
   const transition = Math.max(EPSILON, 3 * limit);
   let magnitude;
@@ -2030,7 +2060,7 @@ export class ContactPatchTireModel {
       // compatibility default short so vehicles without authored tire data do
       // not acquire an unintended large transient lag.
       const relaxationLengthM = clamp(Number(input.tire.relaxationLengthM ?? 0.03), 0.03, 3);
-      const peakSlip = clamp(Number(input.tire.peakSlip ?? 0.16), 0.03, 1.5);
+      const peakSlip = clamp(Number(input.tire.peakSlip ?? (getSnowResponseWeight(input.material) > 0 ? previousPatch.peakLongitudinalSlipRatio ?? .18 : .16)), 0.03, 1.5);
       const breakawayHysteresis = clamp(Number(input.tire.breakawayHysteresis ?? 0.025), 0, 0.3);
       const recoveryHysteresis = clamp(Number(input.tire.recoveryHysteresis ?? 0.04), 0, 0.3);
       const rawCombinedSlip = Math.hypot(
@@ -2116,6 +2146,8 @@ export class ContactPatchTireModel {
       capacityByWheel[wheelId] = wheelInputs[wheelId].aquaplaning.supportedNormalLoadN
         * Math.max(0.1, Number(wheelInputs[wheelId].force.gripCoefficient || 1));
       kinematicsByWheel[wheelId] = wheelInputs[wheelId].kinematics;
+      kinematicsByWheel[wheelId].peakLongitudinalSlipRatio = wheelInputs[wheelId].force.peakLongitudinalSlipRatio;
+      kinematicsByWheel[wheelId].snowResponseWeight = wheelInputs[wheelId].force.snowResponseWeight;
     }
     const powertrainTuning = scratch.powertrainTuning;
     const configuredPowertrain = config.powertrainTuning || {};
@@ -2198,6 +2230,32 @@ export class ContactPatchTireModel {
         && localLongitudinal * rollingVelocity > 0) {
         localLongitudinal = 0;
       }
+      // Velocity-only tire slip cannot represent static shear at zero speed.
+      // Solve the near-rest brake constraint within BOTH tire and brake limits.
+      // Gravity is included, so this supplies ordinary static friction rather
+      // than a hill-hold boost or an unconditional velocity clamp.
+      if (geometricContact && normalLoadN > 1 && dt > 0
+        && Number(controls.throttle || 0) <= .001
+        && Math.abs(rollingVelocity) < .1
+        && Math.abs(kinematics.lateralVelocityMps) < .02
+        && Math.abs(kinematics.wheelAngularVelocityRadps) < .5) {
+        let supportedLoad = 0;
+        for (const id of RACE_WHEEL_IDS) supportedLoad += Math.max(0, wheelInputs[id].normalLoadN);
+        const massShare = config.massKg * normalLoadN / Math.max(1, supportedLoad);
+        const holdForce = massShare * (9.81 * kinematics.wheelForwardWorld.y - rollingVelocity / dt);
+        const availableGrip = Math.sqrt(Math.max(0, force.combinedSlipLimitN ** 2 - force.lateralForceN ** 2));
+        const brakeLimit = Number(powertrainStep.wheelBrakeTorqueNm[wheelId] || 0);
+        const drive = Number(powertrainStep.wheelDriveTorqueNm[wheelId] || 0);
+        const radius = Math.max(.1, kinematics.effectiveRollingRadiusM);
+        const minimum = Math.max(-availableGrip, (drive - brakeLimit) / radius);
+        const maximum = Math.min(availableGrip, (drive + brakeLimit) / radius);
+        if (brakeLimit > 0 && minimum <= maximum) {
+          // Saturate the stopping impulse when one substep cannot stop the
+          // creep. Rejecting it would leave a stable nonzero downhill speed.
+          localLongitudinal = clamp(holdForce, minimum, maximum);
+          force.longitudinalForceN = localLongitudinal;
+        }
+      }
       const forceWorld = scratch.forceWorldByWheel[wheelId];
       forceWorld.x = kinematics.wheelForwardWorld.x * localLongitudinal
         + kinematics.wheelLateralWorld.x * force.lateralForceN;
@@ -2238,16 +2296,18 @@ export class ContactPatchTireModel {
       const brakeTorqueMagnitude = Math.max(0, Number(
         powertrainStep.wheelBrakeTorqueNm[wheelId] || 0
       ));
-      const angularReference = Math.abs(kinematics.wheelAngularVelocityRadps) > 0.05
-        ? kinematics.wheelAngularVelocityRadps
-        : Math.abs(kinematics.longitudinalVelocityMps) > 0.05
-          ? kinematics.longitudinalVelocityMps / Math.max(EPSILON, kinematics.effectiveRollingRadiusM)
-          : 0;
-      const angularSign = Math.sign(angularReference);
       const reactionTorque = force.longitudinalForceN * kinematics.effectiveRollingRadiusM;
-      const appliedWheelTorque = driveTorque - brakeTorqueMagnitude * angularSign;
-      let nextAngular = kinematics.wheelAngularVelocityRadps
-        + (appliedWheelTorque - reactionTorque) / config.wheelInertiaKgM2 * dt;
+      // A brake dissipates rotation; it cannot accelerate a stopped wheel in
+      // the opposite direction when a substep crosses zero angular velocity.
+      const unbrakedAngular = kinematics.wheelAngularVelocityRadps
+        + (driveTorque - reactionTorque) / config.wheelInertiaKgM2 * dt;
+      const brakeAngularDelta = Math.min(Math.abs(unbrakedAngular),
+        brakeTorqueMagnitude / config.wheelInertiaKgM2 * dt);
+      const actualBrakeTorque = dt > 0
+        ? Math.sign(unbrakedAngular) * brakeAngularDelta * config.wheelInertiaKgM2 / dt : 0;
+      const appliedWheelTorque = driveTorque - actualBrakeTorque;
+      let nextAngular = unbrakedAngular - Math.sign(unbrakedAngular) * brakeAngularDelta;
+      const brakeHoldingWheel = brakeTorqueMagnitude > 0 && nextAngular === 0;
       const rollingAngularVelocityRadps = kinematics.longitudinalVelocityMps
         / Math.max(EPSILON, kinematics.effectiveRollingRadiusM);
       const currentRollingError = kinematics.wheelAngularVelocityRadps - rollingAngularVelocityRadps;
@@ -2255,13 +2315,13 @@ export class ContactPatchTireModel {
       const crossedRollingSpeed = currentRollingError * nextRollingError < 0;
       const crossedAgainstAppliedTorque = Math.abs(appliedWheelTorque) <= EPSILON
         || Math.sign(nextRollingError) !== Math.sign(appliedWheelTorque);
-      if (crossedRollingSpeed && crossedAgainstAppliedTorque) {
+      if (!brakeHoldingWheel && crossedRollingSpeed && crossedAgainstAppliedTorque) {
         nextAngular = rollingAngularVelocityRadps;
       }
       const rollingRadiusM = Math.max(EPSILON, kinematics.effectiveRollingRadiusM);
       const staticTorqueCapacityNm = Math.max(0, Number(capacityByWheel[wheelId] || 0)) * rollingRadiusM;
       const tire = wheelInputs[wheelId].tire || {};
-      const peakSlip = clamp(Number(tire.peakSlip ?? 0.16), 0.03, 1.5);
+      const peakSlip = clamp(Number(tire.peakSlip ?? (force.snowResponseWeight > 0 ? force.peakLongitudinalSlipRatio : .16)), 0.03, 1.5);
       const recoveryHysteresis = clamp(Number(tire.recoveryHysteresis ?? 0.04), 0, 0.3);
       const widthScale = clamp(Number(tire.widthMm ?? 245) / 245, 0.7, 1.4);
       const longitudinalStiffnessN = Math.max(
@@ -2279,18 +2339,28 @@ export class ContactPatchTireModel {
       // Keep substep reaction torque from ratcheting a low-demand wheel out of
       // static adhesion. Higher launch demand still has to re-enter through the
       // rolling-speed crossing so genuine breakaway and wheelspin remain free.
-      const nearRollingConstraint = (atRollingSpeed && staticTorqueRatio <= 0.72)
+      const lowSpeedAdhesion = (force.peakLongitudinalSlipRatio < 0.08 || force.snowResponseWeight > 0)
+        && Math.abs(kinematics.longitudinalVelocityMps) < 5
+        && withinStaticSlipRange && staticTorqueRatio <= 0.9
+        && Math.abs(kinematics.slipAngleRad) < 0.02;
+      const nearRollingConstraint = lowSpeedAdhesion || (atRollingSpeed && staticTorqueRatio <= 0.72)
         || (withinStaticSlipRange
           && ((Number(controls.throttle || 0) > 0.5 && staticTorqueRatio <= 0.55)
             || (Number(controls.throttle || 0) <= 0.5
               && appliedWheelTorque > 0
               && equilibriumSlipDemand <= Math.min(0.007, peakSlip * 0.07))));
       if (geometricContact
-        && nearRollingConstraint) {
+        && !brakeHoldingWheel && nearRollingConstraint) {
+        // Invert the brush curve, not its initial linear stiffness. Near
+        // saturation the linear inverse underestimates the slip needed to
+        // balance drive torque and makes low-speed wheels break away.
+        const brushPeak = Number(force.peakLongitudinalSlipRatio) || 3 * staticTorqueCapacityNm / rollingRadiusM / longitudinalStiffnessN;
         const equilibriumSlipRatio = clamp(
-          (appliedWheelTorque / rollingRadiusM) / longitudinalStiffnessN,
-          -0.08,
-          0.08
+          lowSpeedAdhesion
+            ? Math.sign(appliedWheelTorque) * brushPeak * (1 - Math.cbrt(1 - staticTorqueRatio))
+            : (appliedWheelTorque / rollingRadiusM) / longitudinalStiffnessN,
+          -Math.max(0.08, lowSpeedAdhesion ? brushPeak : 0),
+          Math.max(0.08, lowSpeedAdhesion ? brushPeak : 0)
         );
         const slipReferenceSpeedMps = Math.max(
           0.5,

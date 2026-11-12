@@ -106,3 +106,18 @@ test('reusing unchanged conforming polygons preserves the complete mesh',()=>{
  assert.equal(reused.stats.unresolvedHeightErrors,rebuilt.stats.unresolvedHeightErrors);
  assert.equal(new Set(reused.terrainCells.map(c=>c.key)).size,reused.terrainCells.length);
 });
+
+test('queued balancing and indexed borders preserve the reference mesh on straight and curved roads',()=>{
+ for(const sourceCellSize of [7.5,40])for(const curved of [false,true]){
+  const options={...config(),sourceCellSize,bounds:{minX:-80,maxX:80,minZ:-40,maxZ:60}};
+  if(curved)options.surfaceBake={sections:Array.from({length:9},(_,i)=>{
+   const z=i*2.5,x=Math.sin(i*.6)*4;
+   return {center:p(x,z),left:p(x-2,z,i*.03),right:p(x+2,z,i*.04),metrics:{transitionWidth:10}};
+  })};
+  const queued=buildAdaptiveRaceTerrain(options);
+  const reference=buildAdaptiveRaceTerrain({...options,useBalanceQueue:false,useBoundaryIndex:false});
+  const signature=result=>result.terrainCells.map(c=>c.points.map(p=>`${p.x},${p.z},${p.elevation}`).sort().join('|')).sort();
+  assert.deepEqual(signature(queued),signature(reference));
+  assert.equal(queued.stats.unresolvedHeightErrors,reference.stats.unresolvedHeightErrors);
+ }
+});

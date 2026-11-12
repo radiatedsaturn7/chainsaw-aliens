@@ -1,5 +1,22 @@
 // Subdivide decals in world space, then sample the same surface used by cars.
 // Texture coordinates remain attached to the authored footprint on slopes.
+export function configureRaceDecalAlpha(material) {
+  // Filter/mipmap premultiplied texels so transparent black pixels cannot
+  // darken the image edge. Restore straight RGB before Three's usual color
+  // processing and SRC_ALPHA blend; otherwise alpha would be applied twice.
+  material.onBeforeCompile = shader => {
+    shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>', `
+      #include <map_fragment>
+      #ifdef USE_MAP
+        diffuseColor.rgb = sampledDiffuseColor.a > 0.0
+          ? diffuseColor.rgb / sampledDiffuseColor.a : vec3(0.0);
+      #endif
+    `);
+  };
+  material.customProgramCacheKey = () => 'race-decal-premultiplied-sampling-v1';
+  return material;
+}
+
 export function buildRaceDecalTriangles(decal, sampleSurface) {
   const width = Math.max(0.25, Number(decal.widthM) || 3.2);
   const height = Math.max(0.25, Number(decal.heightM) || width);

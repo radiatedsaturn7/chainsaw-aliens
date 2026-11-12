@@ -50,7 +50,8 @@ export const RACE_SNOW_CONDITIONS = [
   { id: 'dusting', label: 'Dusting', grip: 0.68, bumpiness: 0.08 },
   { id: 'three-inch', label: '3 in Snow', grip: 0.56, bumpiness: 0.18 },
   { id: 'six-inch', label: '6 in Snow', grip: 0.42, bumpiness: 0.34 },
-  { id: 'slush', label: 'Slush', grip: 0.48, bumpiness: 0.14 }
+  { id: 'slush', label: 'Slush', grip: 0.48, bumpiness: 0.14 },
+  { id: 'fresh', label: 'Fresh Snow', grip: 1, bumpiness: 0.03 }
 ];
 
 export const RACE_TIRE_COMPOUNDS = [
@@ -81,7 +82,7 @@ export const RACE_TIRE_COMPOUNDS = [
   {
     id: 'offroad',
     label: 'Offroad',
-    surfaceGrip: { asphalt: 0.7, 'wet-asphalt': 0.68, dirt: 1.0, gravel: 1.08, mud: 1.02, 'wet-gravel': 1.04, snow: 0.66, slush: 0.76 },
+    surfaceGrip: { asphalt: 0.7, 'wet-asphalt': 0.68, dirt: 1.0, gravel: 1.08, mud: 1.02, 'wet-gravel': 1.04, snow: 0.95, slush: 0.86 },
     wetEvacuationFactor: 1.16,
     treadDepthMm: 11,
     wearRate: 1.08

@@ -227,3 +227,24 @@ test('intro cutscenes ignore screen taps and Back but accept held simulated G',a
  assert.equal(player.cutscene.active,false);
  player.handlePointerUp({id:10,x:g.x,y:g.y});assert.equal(player.surface.controls.isHeld('jump'),false);
 });
+
+test('Back during an asynchronous Stock action does not stop the game or return to the editor',async()=>{
+ for(const controls of [input(['Escape']),input([],['cancel']),input([],['gamepadB'])]){
+  const {player,calls}=fixture();let finish;
+  player.preview=true;
+  player.flow=new MenuFlow(createMenuDocument(),{
+   garageAction:()=>new Promise(resolve=>{finish=resolve;}),
+   stop:()=>calls.push(['stopped'])
+  });
+  const screen=player.flow.screenId;
+  const pending=player.flow.run({type:'garage-fit',target:'package:stock'});
+  assert.equal(player.flow.busy,true);
+  player.update(controls,.016);
+  assert.equal(player.flow.active,true);
+  assert.equal(player.flow.screenId,screen);
+  assert.deepEqual(calls,[]);
+  finish();assert.equal(await pending,true);
+  assert.equal(player.flow.busy,false);
+  assert.equal(player.flow.active,true);
+ }
+});

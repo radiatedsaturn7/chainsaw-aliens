@@ -6,7 +6,7 @@ const profile=(parts,weather,intensity,temperature,surface,roughness,briefing,zo
 });
 export const MIDDLE_MISSION_CONDITIONS={
  'osm-cf573fba73e0':profile(['snow-tires'],'snow',.75,-12,'snow',[.035,.085],
-  'Snow tires recommended. Packed snow covers the climb from the start; slow down before the hairpins. You can attempt this with any equipment.'),
+  'One inch of fresh snow covers the climb. Stock tires can make it with gentle throttle and slower corners; snow tires give more climbing, braking and cornering margin.'),
  'america-middle-laurel':profile(['rally-suspension'],'clear',0,-3,'asphalt',[.025,.055],
   'Rally suspension recommended. Long frost-damaged sections interrupt the pavement. Stock suspension can get through at a slower pace.',
   [[.12,.32,'asphalt',.26,.36],[.45,.65,'asphalt',.28,.38],[.76,.91,'asphalt',.25,.35]]),
@@ -51,6 +51,10 @@ export function applyMissionConditions(race){
  race.weather=p.weather;race.weatherIntensity=p.intensity;race.weatherTemperatureC=p.temperature;
  race.weatherVisibilityM=p.weather==='snow'?700:p.weather==='storm'?900:2200;
  race.snowClouds={...race.snowClouds,enabled:p.weather==='snow',artRef:'snowcloud'};
+ if(race.id==='osm-cf573fba73e0'){
+  race.trackState??={};race.trackState.surfaceProfiles??={};
+  race.trackState.surfaceProfiles.snow={...race.trackState.surfaceProfiles.snow,grip:.40,snowDepthMm:25.4,iceDepthMm:0,moistureDepthMm:0,standingWaterDepthMm:0};
+ }
  const segments=race.road.segments;
  const length=segments.reduce((n,s)=>n+Number(s.length??s.lengthM??0),0);
  let distance=0;
@@ -67,6 +71,7 @@ export function applyMissionConditions(race){
    lo+=(zlo-lo)*blend;hi+=(zhi-hi)*blend;
   }
   s.surface=surface;
+  if(race.id==='osm-cf573fba73e0'&&surface==='snow')s.snowCondition='fresh';
   s.bumpiness=Number((lo+(hi-lo)*(.5+.5*Math.sin((distance+span*.5)/120))).toFixed(4));
   distance+=span;
  }

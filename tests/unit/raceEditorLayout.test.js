@@ -10905,7 +10905,7 @@ test('Race playtest keeps Studio Sprint pre-start projection stable before throt
   assert.equal(editor.lastRaceMode7Slices[0].center.distance, initialFirstSlice);
 });
 
-test('Race playtest holds WebGL render scale during pre-start launch', () => {
+test('Race playtest holds configured WebGL render scale during launch and driving', () => {
   const editor = new RaceEditor({ deviceIsMobile: true, isMobile: true, exitRaceEditor() {} });
   editor.selectedRace.groundRenderer = 'webgl-track';
   editor.startPlaytest('starter-rwd');
@@ -10922,7 +10922,7 @@ test('Race playtest holds WebGL render scale during pre-start launch', () => {
   editor.playtestSession.launchLockMs = 0;
   assert.equal(editor.shouldHoldRaceWebGLDynamicScale(), false);
   editor.updateRacePlaytestFps(0.2);
-  assert.equal(editor.raceWebGLTrackDynamicScale < 1, true);
+  assert.equal(editor.raceWebGLTrackDynamicScale, 1);
 });
 
 test('Race playtest prewarms terrain from the negative visual start distance', () => {

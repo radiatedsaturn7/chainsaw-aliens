@@ -11,6 +11,19 @@ export class FullscreenPrompt {
 
   get blocksInput() { return this.active || this.awaitingRelease; }
 
+  // A loading screen may render for many frames. Offer once per load, even
+  // when the player cancels or fullscreen is already active at its start.
+  showForLoading(load, { fullscreen = false, supported = true, hidden = false } = {}) {
+    if (!load) {
+      this.loadingPromptToken = null;
+      return;
+    }
+    if (this.loadingPromptToken === load) return;
+    this.loadingPromptToken = load;
+    if (fullscreen || !supported || hidden || this.blocksInput) return;
+    return this.show();
+  }
+
   show() {
     if (this.active) return;
     this.active = true;

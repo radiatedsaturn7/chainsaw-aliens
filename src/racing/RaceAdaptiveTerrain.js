@@ -53,6 +53,43 @@ function spatialIndex(size) {
   };
 }
 
+// Most conformity edges are axis-aligned cell borders. A sorted line lookup
+// visits only vertices near that border instead of all vertices in a square
+// spatial bucket. Diagonal road cuts still use the general spatial index.
+function boundaryVertexIndex(points, spatial) {
+  const columns = new Map(), rows = new Map();
+  const add = (map, key, point) => {
+    let line = map.get(key);
+    if (!line) map.set(key, line = []);
+    line.push(point);
+  };
+  for (const p of points) {
+    add(columns, Math.round(p.x*1e6), p);
+    add(rows, Math.round(p.z*1e6), p);
+  }
+  for (const line of columns.values()) line.sort((a,b)=>a.z-b.z);
+  for (const line of rows.values()) line.sort((a,b)=>a.x-b.x);
+  return function* candidates(a,b) {
+    const vertical = a.x === b.x, horizontal = a.z === b.z;
+    if (!vertical && !horizontal) {
+      yield* spatial.within(Math.min(a.x,b.x)-1e-6,Math.max(a.x,b.x)+1e-6,Math.min(a.z,b.z)-1e-6,Math.max(a.z,b.z)+1e-6);
+      return;
+    }
+    const map = vertical ? columns : rows, axis = vertical ? 'z' : 'x';
+    const key = Math.round((vertical ? a.x : a.z)*1e6);
+    const low = Math.min(a[axis],b[axis])-1e-6, high = Math.max(a[axis],b[axis])+1e-6;
+    // Neighboring rounded keys include vertices within the existing seam
+    // tolerance even when rounding puts them on opposite sides of a bin.
+    for (let k=key-1;k<=key+1;k++) {
+      const line=map.get(k);
+      if (!line) continue;
+      let lo=0,hi=line.length;
+      while(lo<hi){const mid=(lo+hi)>>>1;if(line[mid][axis]<low)lo=mid+1;else hi=mid;}
+      for(let i=lo;i<line.length&&line[i][axis]<=high;i++)yield line[i];
+    }
+  };
+}
+
 export function createAdaptiveTerrainField({surfaceBake,runtimeType='destination',sampleGround,elevationScaleM=12}) {
   const sections=surfaceBake?.sections||[],footprints=spatialIndex(32),edges=spatialIndex(32),boundaryVertices=[];
   const count=runtimeType==='circuit'?sections.length:sections.length-1;
@@ -110,7 +147,7 @@ export function createAdaptiveTerrainField({surfaceBake,runtimeType='destination
 // Bake one conforming surface for rendering and tire/body contact. Keep the
 // authored road boundary fixed, refine the surrounding height field, then split
 // shared edges before triangulation so coarse/fine neighbors cannot form cracks.
-export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',bounds,sourceCellSize=75,sampleGround,tileAt,elevationScaleM=12,minCellSize=.625,onProgress=()=>{},reuseConformingPolygons=true}) {
+export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',bounds,sourceCellSize=75,sampleGround,tileAt,elevationScaleM=12,minCellSize=.625,onProgress=()=>{},reuseConformingPolygons=true,useBalanceQueue=true,useBoundaryIndex=true}) {
   const started=Date.now();
   // All triangles in one authored tile share its immutable material descriptor.
   const materials=new Map();
@@ -195,10 +232,31 @@ export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',
   stats.reusedPolygons=0;
   while(true){
     const balanceStarted=Date.now();
-    let changed=true;
-    while(changed){changed=false;for(const c of leaves())for(const [x,z] of [[c.x-1e-6,c.z+c.size/2],[c.x+c.size+1e-6,c.z+c.size/2],[c.x+c.size/2,c.z-1e-6],[c.x+c.size/2,c.z+c.size+1e-6]]){
-      const neighbor=find(x,z);if(neighbor&&neighbor.size>c.size*2+1e-6){split(neighbor).forEach(refine);changed=true;}
-    }}
+    const neighbors = c => [[c.x-1e-6,c.z+c.size/2],[c.x+c.size+1e-6,c.z+c.size/2],[c.x+c.size/2,c.z-1e-6],[c.x+c.size/2,c.z+c.size+1e-6]];
+    if (useBalanceQueue) {
+      // Only newly split leaves can introduce another size mismatch. Rechecking
+      // every distant cell on every balancing pass made long stages expensive.
+      const queue = leaves();
+      const enqueueLeaves = c => c.children ? c.children.forEach(enqueueLeaves) : queue.push(c);
+      for (let cursor = 0; cursor < queue.length; cursor++) {
+        const c = queue[cursor];
+        if (c.children) continue;
+        for (const [x,z] of neighbors(c)) {
+          const neighbor = find(x,z);
+          if (neighbor && neighbor.size > c.size*2+1e-6) {
+            split(neighbor).forEach(refine);
+            enqueueLeaves(neighbor);
+            // Its replacement beside c may still be more than twice c's size.
+            queue.push(c);
+          }
+        }
+      }
+    } else {
+      let changed=true;
+      while(changed){changed=false;for(const c of leaves())for(const [x,z] of neighbors(c)){
+        const neighbor=find(x,z);if(neighbor&&neighbor.size>c.size*2+1e-6){split(neighbor).forEach(refine);changed=true;}
+      }}
+    }
     stats.balanceMs+=Date.now()-balanceStarted;
     const connectStarted=Date.now();
     const finalLeaves=leaves();
@@ -207,6 +265,9 @@ export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',
     const register=p=>{const key=pointKey(p),existing=registered.get(key);if(existing)return existing;registered.set(key,p);vertices.add(p,p.x,p.x,p.z,p.z);return p;};
     for(const c of finalLeaves)for(const poly of c.pieces)for(let i=0;i<poly.length;i++)poly[i]=register(poly[i]);
     for(const p of field.boundaryVertices)register(sample(p.x,p.z));
+    const boundaryCandidates = useBoundaryIndex
+      ? boundaryVertexIndex(registered.values(), vertices)
+      : (a,b) => vertices.within(Math.min(a.x,b.x)-1e-6,Math.max(a.x,b.x)+1e-6,Math.min(a.z,b.z)-1e-6,Math.max(a.z,b.z)+1e-6);
     const needsRefinement=new Set();
     stats.unresolvedHeightErrors=0;stats.unresolvedAtMinimumCellSize=0;stats.maxHeightErrorM=0;delete stats.heightErrorExamples;
     for(const c of finalLeaves){
@@ -216,7 +277,7 @@ export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',
         poly.forEach((a,i)=>{
           const b=poly[(i+1)%poly.length],dx=b.x-a.x,dz=b.z-a.z,length=Math.hypot(dx,dz);boundary.push(a);if(length<1e-8)return;
           const splits=[];
-          for(const p of vertices.within(Math.min(a.x,b.x)-1e-6,Math.max(a.x,b.x)+1e-6,Math.min(a.z,b.z)-1e-6,Math.max(a.z,b.z)+1e-6)){
+          for(const p of boundaryCandidates(a,b)){
             if(p===a||p===b)continue;
             const t=((p.x-a.x)*dx+(p.z-a.z)*dz)/(length*length);
             if(t<=1e-9||t>=1-1e-9||Math.abs(cross(a,b,p))/length>1e-7)continue;

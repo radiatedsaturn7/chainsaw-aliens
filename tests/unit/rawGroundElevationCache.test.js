@@ -47,3 +47,31 @@ test('an empty editor can query fallback terrain inside a read scope',()=>{
  const e=new RaceEditor({});e.project.races=[];
  e.withRaceGeometryReadCache(()=>assert.equal(e.getRaceRawGroundElevationAtWorldPoint({x:0,z:0},.5),.5));
 });
+
+test('bake sampler matches bilinear terrain, survey extension and fallback without repeated corner reads',()=>{
+ const e=create();
+ e.withRaceGeometryReadCache(()=>{
+  const sample=e.createRaceBakeGroundSampler(0);
+  for(let i=0;i<1000;i++){
+   const point={x:(i*17%800)/10-30,z:(i*23%800)/10-30};
+   assert.equal(sample(point),e.getRaceGroundElevationAtWorldPoint(point,0));
+  }
+  const fresh=e.createRaceBakeGroundSampler(0);
+  const original=e.getRaceRawGroundElevationAtWorldPoint.bind(e);let reads=0;
+  e.getRaceRawGroundElevationAtWorldPoint=(...args)=>{reads++;return original(...args);};
+  for(let i=0;i<1000;i++)fresh({x:6+i/1000,z:6+i/1000});
+  assert.equal(reads,4,'one set of corners per immutable interpolation cell');
+ });
+ const empty=new RaceEditor({});
+ empty.withRaceGeometryReadCache(()=>{
+  const sample=empty.createRaceBakeGroundSampler(7);
+  for(const point of [{x:0,z:0},{x:-20.5,z:50.25}])assert.equal(sample(point),empty.getRaceGroundElevationAtWorldPoint(point,7));
+ });
+});
+
+test('new bake sampler sees edited terrain rather than retaining a previous bake cache',()=>{
+ const e=create();
+ e.withRaceGeometryReadCache(()=>assert.equal(e.createRaceBakeGroundSampler()({x:5,z:5}),-20));
+ e.ensureRaceTileMap().cells['0,0'].elevation=14;e.clearRaceRuntimeSurfaceCaches();
+ e.withRaceGeometryReadCache(()=>assert.equal(e.createRaceBakeGroundSampler()({x:5,z:5}),14));
+});

@@ -3,11 +3,15 @@
 import fs from 'node:fs';
 import zlib from 'node:zlib';
 import assert from 'node:assert/strict';
-import {spawnSync} from 'node:child_process';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
+const runChild=promisify(execFile);
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 const skipped=new Set((process.argv.find(a=>a.startsWith('--skip='))?.slice(7)||'').split(','));
-const catalog=JSON.parse(fs.readFileSync(new URL('../../data/campaigns/america/catalog.json',import.meta.url))).filter(stage=>!skipped.has(stage.id));
+const sideRaces=process.argv.includes('--side-races');
+const catalog=JSON.parse(fs.readFileSync(new URL(sideRaces?'../../data/campaigns/america/side-races/catalog.json':'../../data/campaigns/america/catalog.json',import.meta.url)))
+ .filter(stage=>(!sideRaces||stage.status==='installed')&&!skipped.has(stage.id)).map(stage=>({...stage,name:stage.name||stage.raceRef}));
 
 const auditEdges=process.argv.includes('--audit-edges');
 const stageTimeoutMs=Math.max(1000,Number(process.argv.find(a=>a.startsWith('--timeout-ms='))?.slice(13))||360000);
@@ -79,13 +83,17 @@ if(id){
   console.log(JSON.stringify({id,name:stage.name,seamAudit,recordingAudit,physicsProbeMeanMs,ok:true,terrainStats:copy.header.terrainGenerationStats,peakRssKB:process.resourceUsage().maxRSS,triangles:copy.packedSampler.positions.length/9,seconds:(Date.now()-started)/1000}));
  }catch(error){console.error(`${stage.name}: failed during ${phase}\n${error.stack}`);process.exitCode=1;}
 }else{
- const results=[];
- for(const stage of catalog){
-  const result=spawnSync(process.execPath,['--stack_size=128',fileURLToPath(import.meta.url),`--stage=${stage.id}`,...(auditEdges?['--audit-edges']:[])],{encoding:'utf8',timeout:stageTimeoutMs,maxBuffer:4*1024*1024});
+ const results=new Array(catalog.length);let next=0;
+ const jobs=Math.max(1,Math.min(2,Number(process.argv.find(a=>a.startsWith('--jobs='))?.slice(7))||1));
+ await Promise.all(Array.from({length:jobs},async()=>{
+ for(;;){
+  const index=next++;if(index>=catalog.length)return;const stage=catalog[index];
+  const result=await runChild(process.execPath,['--stack_size=128',fileURLToPath(import.meta.url),`--stage=${stage.id}`,...(sideRaces?['--side-races']:[]),...(auditEdges?['--audit-edges']:[])],{encoding:'utf8',timeout:stageTimeoutMs,maxBuffer:4*1024*1024}).then(value=>({...value,status:0}),error=>({stdout:error.stdout,stderr:error.stderr,status:1,error,signal:error.signal}));
   process.stdout.write(result.stdout||'');process.stderr.write(result.stderr||'');
-  if(result.status!==0){const error=result.error?.message||result.stderr||`Exit ${result.status}, signal ${result.signal}`;console.error(`${stage.name}: ${error}`);results.push({id:stage.id,ok:false,error});}
-  else results.push(JSON.parse(result.stdout.trim().split('\n').at(-1)));
+  if(result.status!==0){const error=result.error?.message||result.stderr||`Exit ${result.status}, signal ${result.signal}`;console.error(`${stage.name}: ${error}`);results[index]={id:stage.id,ok:false,error};}
+  else results[index]=JSON.parse(result.stdout.trim().split('\n').at(-1));
  }
+ }));
  const reportArg=process.argv.find(a=>a.startsWith('--report='));
  if(reportArg)fs.writeFileSync(reportArg.slice(9),JSON.stringify({checkedAt:new Date().toISOString(),stackSizeKB:128,stageTimeoutMs,results},null,2)+'\n');
  console.log(`${results.filter(r=>r.ok).length}/${catalog.length} campaign races prepared successfully.`);

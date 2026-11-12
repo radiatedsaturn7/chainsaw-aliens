@@ -202,6 +202,7 @@ export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22,
 }
 
 export function roadTextureForSegment(settings,segment={}) {
+ if(settings.overrideRoad)return settings.overrideRoad;
  const base=settings.surfaceRoads?.[segment.surface] || settings.road;
  return base.roughArtRef && Number(segment.bumpiness)>=.35 ? {...base,artRef:base.roughArtRef} : base;
 }

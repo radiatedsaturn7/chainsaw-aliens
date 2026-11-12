@@ -50,7 +50,7 @@ test('static renderer uses textures, preserves road elevation/UVs and invalidate
 test('editor settings save/load, collect artwork, cancel cleanly and restore default mapping',async()=>{
  const e=new RaceEditor({});let fields;
  await e.openRaceRoadTextures(async(title,f)=>{fields=f;return {roadMipmapDistance:4,roadFilter:'crisp',roadMipmaps:false,roadAnisotropy:16,roadArt:'center line',roadRepeat:7,roadRepeatWidth:4,marginRepeatWidth:.1,marginArt:'curb',marginRepeat:2,builtInLines:false};});
- assert.equal(fields.length,15);assert.equal(e.selectedRace.roadTextures.road.repeatM,7);
+ assert.equal(fields.length,21);assert.ok(fields.some(field=>field.id==='debugRoad_asphalt'));assert.equal(e.selectedRace.roadTextures.road.repeatM,7);
  assert.ok(e.collectSelectedRaceTextureArtRefs().includes('center line'));
  const loaded=e.normalizeLoadedRaceDocument(e.serializeSelectedRaceDocument());
  assert.deepEqual(loaded.roadTextures,e.selectedRace.roadTextures);
@@ -260,4 +260,23 @@ test('surface-only shoulder textures render without a default road or shoulder t
  const section=distance=>({center:{distance,segment:{surface:'gravel'}},left:{x:-4,z:distance},right:{x:4,z:distance},marginLeft:{x:-4.2,z:distance},marginRight:{x:4.2,z:distance},shoulderLeft:{x:-6,z:distance},shoulderRight:{x:6,z:distance}});
  const bake={key:'shoulders-only',runtimeType:'destination',routeLength:20,surfaceBake:{sections:[section(0),section(20)]}};
  assert.equal(e.getRaceStaticTrackSurfaceMeshes(bake).shoulderMeshes.filter(m=>m.artRef==='gravel edge').length,2);
+});
+
+
+test('live debug road swaps snow artwork in static renderer and restores it without mutating bake',()=>{
+ const {bake,network}=fixture(),editor=new RaceEditor({});
+ editor.selectedRace.road.network=network;
+ editor.selectedRace.roadTextures={road:{artRef:'snowroad',repeatM:5},surfaceRoads:{asphalt:{artRef:'road-snow-packed'}}};
+ const before=JSON.stringify(bake);
+ const authored=editor.getRaceStaticTrackSurfaceMeshes(bake);
+ editor.playtestSession={debugRoad:{surface:'asphalt'}};
+ const dry=editor.getRaceStaticTrackSurfaceMeshes(bake);
+ assert.notEqual(dry,authored);
+ assert.ok(dry.roadMeshes.length);
+ assert.ok(dry.roadMeshes.every(mesh=>mesh.artRef==='road-asphalt-worn'));
+ assert.equal(dry.roadPaintMeshes.length,0);
+ editor.playtestSession.debugRoad={};
+ const restored=editor.getRaceStaticTrackSurfaceMeshes(bake);
+ assert.deepEqual(restored.roadMeshes,authored.roadMeshes);
+ assert.equal(JSON.stringify(bake),before);
 });

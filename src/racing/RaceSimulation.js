@@ -1,3 +1,4 @@
+import {advanceRaceDriftScore} from './RaceDriftScore.js';
 import { advanceRaceSimulationClock } from './RaceFrameBudget.js';
 import {updateGlassWeather} from './GlassWeather.js';
 import {prepareRaceSceneryTriggers} from './simulation/DamageModel.js';
@@ -2492,6 +2493,7 @@ export function updateRaceSimulation({
     : Math.abs(Number(editor.playtestSession.speedMps) || 0);
   tuning.absEnabled = editor.playtestSession.absEnabled !== false;
   tuning.tractionControlEnabled = editor.playtestSession.tractionControlEnabled !== false;
+  tuning.launchControlEnabled = editor.playtestSession.launchControlEnabled === true;
   // Staged countdown/rolling formation follows presentation and the music clock.
   // The bounded clock governs active racing, not how long the player waits for GO.
   const wallSeconds = Number.isFinite(Number(dt)) ? Math.max(0, Number(dt)) : 0;
@@ -2538,6 +2540,7 @@ export function updateRaceSimulation({
       absEnabled: tuning.absEnabled,
       tractionControlEnabled: tuning.tractionControlEnabled,
       launchControlEnabled: tuning.launchControlEnabled === true,
+      launchControlStaging: preStart,
       stabilityControlEnabled: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
         ? editor.playtestSession.stabilityControlExplicitlyEnabled === true
         : editor.playtestSession.stabilityControlEnabled !== false,
@@ -2567,7 +2570,7 @@ export function updateRaceSimulation({
   editor.raceInput.lookAngle = stepRaceLookAngle(
     Number(editor.raceInput.lookAngle || 0), look.angle, seconds, editor.raceInput.lookStickActive
   );
-  editor.updateRacePedalAxes(seconds);
+  editor.updateRacePedalAxes(seconds, {tuning});
   const launchSteeringLocked = countdownActive || (
     editor.isRaceLaunchSteeringLocked(editor.playtestSession)
     && editor.raceInput.analogSteeringActive
@@ -4031,6 +4034,7 @@ export function updateRaceSimulation({
         absEnabled: tuning.absEnabled,
         tractionControlEnabled: tuning.tractionControlEnabled,
         launchControlEnabled: tuning.launchControlEnabled === true,
+      launchControlStaging: countdownActive,
         stabilityControlEnabled: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
           ? editor.playtestSession.stabilityControlExplicitlyEnabled === true
           : editor.playtestSession.stabilityControlEnabled !== false,
@@ -4113,6 +4117,16 @@ export function updateRaceSimulation({
     travelM: Math.hypot(Number(authoritativeVelocity.x || 0), Number(authoritativeVelocity.z || 0)) * seconds,
     onRoad: Number(projection.distanceToRoute) <= projectedRoadHalfWidth
   });
+  if(editor.selectedRace?.campaign?.scoring==='drift'){
+    editor.playtestSession.driftScore=advanceRaceDriftScore(editor.playtestSession.driftScore,{
+      distanceM:Math.max(0,Math.min(routeAdvance,Math.hypot(Number(authoritativeVelocity.x||0),Number(authoritativeVelocity.z||0))*seconds)),
+      longitudinalSpeed:Number(presentationState.bodyLongitudinalSpeedMps)||0,
+      lateralSpeed:Number(presentationState.bodyLateralSpeedMps)||0,
+      contactCount:Object.values(presentationState.contactPatches||{}).filter(p=>p?.inContact).length,
+      onCourse:Math.abs(projectedLateralMeters)<=projectedRoadHalfWidth,
+      active:!countdownActive&&!editor.playtestSession.pendingEdgeCenterReset
+    });
+  }
   const integratedDistance = previousDistance + routeAdvance;
   if (routeRuntimeType === 'circuit') {
     const nextDistance = ((integratedDistance % routeLength) + routeLength) % routeLength;

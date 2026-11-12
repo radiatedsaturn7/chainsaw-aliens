@@ -365,6 +365,7 @@ const KNOWN_ASSIST_FIELDS = Object.freeze([
   'absEnabled',
   'autoShift',
   'launchControlEnabled',
+  'launchControlStaging',
   'stabilityControlEnabled',
   'tractionControlEnabled'
 ]);

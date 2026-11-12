@@ -1,0 +1,87 @@
+{
+  "status": "Engineering calibration, not an exact measured tire reproduction",
+  "surface": {
+    "mountWashingtonStartSnowDepthMm": 25.4,
+    "mountWashingtonBaseGrip": 0.4,
+    "changedThisCalibration": false
+  },
+  "tires": {
+    "Stock": {
+      "class": "Conventional road all-season",
+      "snowSuitability": 0.7,
+      "changed": false
+    },
+    "Snow": {
+      "class": "Studless winter tire",
+      "snowSuitability": 1.08,
+      "changed": false
+    },
+    "Offroad": {
+      "class": "Winter-capable all-terrain, not dedicated mud-terrain",
+      "snowSuitability": 0.95,
+      "previousSnowSuitability": 0.66
+    }
+  },
+  "coldSnowResponse": {
+    "longitudinalPeakSlip": 0.18,
+    "slidingToPeakForceRatio": 0.88,
+    "basis": "Conservative engineering defaults informed by snow shearing literature. Not digitized or fitted manufacturer measurements. Peak force is unchanged. Wetness and ice blend back toward the existing response.",
+    "reference": "https://research.chalmers.se/en/publication/511723",
+    "tractionControlContactReserve": 0.95
+  },
+  "measuredComparison": {
+    "reference": "https://www.tyrereviews.com/Tyre-Tests/2023-Best-All-Terrain-Tyres-In-Snow.htm",
+    "size": "275/65 R18",
+    "accelerationWindowKmh": [
+      8,
+      32
+    ],
+    "seconds": {
+      "Michelin X-Ice Snow SUV": 4.28,
+      "BFGoodrich Trail-Terrain TA": 4.57,
+      "Michelin Defender LTX MS": 5.05,
+      "Pirelli Scorpion All Terrain Plus": 6.26
+    },
+    "limits": "Different vehicle, tires, and snow. Acceleration time is not a friction coefficient; absolute times cannot be transferred to RTG-001. Defender is a strong all-season example, not representative of every factory tire. Use category comparisons as constraints, not a universal ratio."
+  },
+  "drivetrainReference": "https://www.mit.edu/course/2/2.972/www/reports/torque_converter/torque_converter.htm",
+  "knownLimitations": [
+    "No complete manual engine-stall simulation was added.",
+    "No snow sinkage or density-specific physical shear simulation was added.",
+    "Controlled slopes do not validate every imported mountain corner.",
+    "Aids-off Stock at 55% throttle on level snow drifted 1.17 m over the stop/restart run, versus 0.0015 m with an explicitly restored old curve. Holding first gear did not remove it (1.44 m). At 25% throttle drift was 0.00057 m. Substantial wheelspin accompanies the higher-throttle response; this is not proof that its lateral behavior matches a real vehicle. No corrective steering was applied."
+  ],
+  "validation": {
+    "regressions": {
+      "broadSuitePassed": 99,
+      "finalCodeTargetedPassed": 48,
+      "countsOverlap": true
+    },
+    "hillMatrix": {
+      "cases": 24,
+      "gradesPercent": [
+        0,
+        6,
+        12,
+        18
+      ],
+      "tires": [
+        "Stock",
+        "Offroad",
+        "Snow"
+      ],
+      "assists": "ABS and TC both enabled, then both disabled",
+      "passed": [
+        "Every configuration restarted forward",
+        "Brake hold drift below 0.03 mph",
+        "Aids-on lateral displacement below 0.1 m",
+        "Snow > Offroad > Stock restart speed for every grade and assist combination"
+      ]
+    },
+    "artifacts": [
+      "artifacts/traction-audit/snow-calibration.json",
+      "artifacts/traction-audit/snow-lateral-check.json",
+      "artifacts/traction-audit/snow-shift-check.json"
+    ]
+  }
+}
