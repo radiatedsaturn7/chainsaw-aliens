@@ -10,19 +10,20 @@ import {loadServerPreferenceAsync,saveServerPreference} from '../../src/ui/serve
 
 const json = (value,status=200) => new Response(JSON.stringify(value),{status,headers:{'Content-Type':'application/json'}});
 const root='/data/server-storage/files/';
-async function fixture(run,{failure=()=>new Response('<html>Missing API</html>',{status:404})}={}) {
+async function fixture(run,{documentRoot, failure=()=>new Response('<html>Missing API</html>',{status:404})}={}) {
  const prior=globalThis.fetch;clearCachedProjectFilesForTests();const calls=[];
  const docs=new Map(),meta=new Map(),assets=new Map();const folders={};
+ const bodyRoot=documentRoot ? documentRoot+'/' : root;
  const add=(folder,name,data,metadata={})=>{
   const path=`${folder}/${name}/document.json`;
   (folders[folder] ||= {})[name]=path;
-  docs.set(root+path.split('/').map(encodeURIComponent).join('/'),data);
-  meta.set(root+path.replace('/document.json','/metadata.json').split('/').map(encodeURIComponent).join('/'),metadata);
+  docs.set(bodyRoot+path.split('/').map(encodeURIComponent).join('/'),data);
+  meta.set(bodyRoot+path.replace('/document.json','/metadata.json').split('/').map(encodeURIComponent).join('/'),metadata);
  };
  globalThis.fetch=async(url,options={})=>{
   const key=String(url);calls.push([key,options.method||'GET']);
   if(key.startsWith('/__storage/'))return failure(key,options);
-  if(key===root+'manifest.json')return json({folders});
+  if(key===root+'manifest.json')return json({folders,...(documentRoot ? {documentRoot} : {})});
   if(docs.has(key))return json(docs.get(key));
   if(meta.has(key))return json(meta.get(key));
   if(assets.has(key))return new Response(assets.get(key));
@@ -116,3 +117,26 @@ test('failed resource hydration cannot turn into a successful cached open',async
  await assert.rejects(hydrateProjectFile('actors','Needs image'),/Could not load published file/);
  assert.equal(readCachedProjectFile('actors','Needs image',{allowSyncFetch:false}),null);
 }));
+
+test('remote project documents, metadata and relative media use the pinned commit',async()=>{
+ const documentRoot='https://raw.githubusercontent.com/owner/repo/'+'a'.repeat(40)+'/data/server-storage/files';
+ await fixture(async({add,assets,calls})=>{
+  add('art','Remote #50%',{image:{__chainsawAssetRef:'assets/sprite.bin',mime:'image/png'}},{savedAt:42});
+  assets.set(documentRoot+'/art/Remote%20%2350%25/assets/sprite.bin',new Uint8Array([1,2,3]));
+  await hydrateServerStorage();
+  assert.equal(calls.filter(([url])=>url.startsWith('https:')).length,0);
+  const file=await hydrateProjectFile('art','Remote #50%');
+  assert.equal(file.data.image,'data:image/png;base64,AQID');
+  assert.equal(file.savedAt,42);
+  assert.equal(calls.filter(([url])=>url.startsWith(documentRoot)).length,3);
+  assert.equal(calls.some(([url])=>url.startsWith(root+'art/')),false);
+ },{documentRoot});
+});
+test('remote roots must be immutable GitHub commits',async()=>{
+ for(const documentRoot of ['https://raw.githubusercontent.com/o/r/main/data/server-storage/files','https://evil.example/files']) {
+  await fixture(async({add})=>{
+   add('art','Remote',{});
+   await assert.rejects(hydrateProjectFile('art','Remote'),/Invalid remote project/);
+  },{documentRoot});
+ }
+});
