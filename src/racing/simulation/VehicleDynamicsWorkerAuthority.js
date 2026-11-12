@@ -262,7 +262,11 @@ export class VehicleDynamicsWorkerAuthority {
           Atomics.store(this.snapshotSequenceControl, snapshotSlot, this.snapshotSequence * 2);
         }
         pendingSnapshots.push({
-          mechanical:vehicle.runner.state.mechanical && vehicle.lastMechanicalTick!==vehicle.runner.state.mechanical.tick ? structuredClone(vehicle.runner.state.mechanical) : null,
+          tractionBattery: vehicle.runner.state.powertrainState?.electric ? {
+            ...vehicle.runner.state.powertrainState.electric,
+            ...vehicle.runner.state.powertrainState.telemetry?.electric
+          } : null,
+          mechanical:vehicle.runner.state.mechanical && (vehicle.runner.config.powertrainTuning?.powertrainType === 'electric' || vehicle.lastMechanicalTick!==vehicle.runner.state.mechanical.tick) ? structuredClone(vehicle.runner.state.mechanical) : null,
           vehicleId: vehicle.id,
           buffer,
           snapshotSequence: this.snapshotSequence,

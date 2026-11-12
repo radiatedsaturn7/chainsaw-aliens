@@ -2195,6 +2195,11 @@ export class ContactPatchTireModel {
     powertrainStepRequest.state = state;
     powertrainStepRequest.damage = environment.damage || fallbackDamage;
     powertrainStepRequest.dt = dt;
+    // Bound motor work using the same tire reaction and wheel inertia as the
+    // integration below. Absolute reaction is conservative for both directions.
+    powertrainStepRequest.externalWheelAccelerationRadps2 = Math.max(0, ...RACE_WHEEL_IDS.map(id =>
+      Math.abs(Number(wheelInputs[id]?.force?.longitudinalForceN || 0)
+        * Number(kinematicsByWheel[id]?.effectiveRollingRadiusM || config.wheelRadiusM)) / config.wheelInertiaKgM2));
     const powertrainStep = powertrainModel.stepAuthoritativeWheelTorques(
       powertrainStepRequest
     );
