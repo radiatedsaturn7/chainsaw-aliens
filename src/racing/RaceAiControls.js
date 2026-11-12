@@ -27,7 +27,14 @@ export function planRaceAiControls(editor,ai,tuning,targetMps,profile={}) {
  while(gear<tuning.gearRatios.length&&editor.getRaceProjectedEngineRpmForGear(tuning,speed,gear)>Math.max(upshift,tuning.revLimitRpm*.985)){
   gear++;automaticOverrevUpshifts++;
  }
- const rpm=clamp(editor.getRaceProjectedEngineRpmForGear(tuning,speed,gear),tuning.idleRpm,tuning.revLimitRpm);
+ const cvt=tuning.powertrainType !== 'electric' && tuning.cvt;
+ // Detailed CVT opponents retain their actual ratio through distance changes.
+ // Before the first authoritative sample, estimate the continuous target ratio.
+ const targetRpm=cvt ? cvt.cruiseRpm+(cvt.powerRpm-cvt.cruiseRpm)*throttle : 0;
+ const cvtRatio=cvt ? clamp(Number(ai.vehicleDynamicsRunner?.state?.powertrainState?.cvt?.ratio)
+   || targetRpm*2*Math.PI*Math.max(.01,tuning.wheelRadiusM)/(60*Math.max(.01,speed)*tuning.finalDrive),cvt.minRatio,cvt.maxRatio) : 0;
+ const rpm=clamp(cvt ? speed/Math.max(.01,tuning.wheelRadiusM)*cvtRatio*tuning.finalDrive*60/(2*Math.PI)
+   : editor.getRaceProjectedEngineRpmForGear(tuning,speed,gear),tuning.idleRpm,tuning.revLimitRpm);
  // Proportional speed control alone cannot restart a slow uphill queue: a
  // 0.5 m/s target requested almost no torque, less than gravity/resistance.
  // Add force-based launch feed-forward, fading out as the car gains speed.
@@ -40,7 +47,7 @@ export function planRaceAiControls(editor,ai,tuning,targetMps,profile={}) {
   const resistance=editor.getRaceLongitudinalResistanceForces({tuning,speedMps:speed,
    setupModifiers:editor.getRaceSetupPhysicsModifiers(tuning,speed),terrainResistance:1,
    looseSurfaceFactor:0,tirePressureRollingMultiplier:1,tireContactScale:1});
-  const force=editor.getRaceDriveForceComponents({tuning,gearRatio:editor.getRaceGearRatio(tuning,gear),
+  const force=editor.getRaceDriveForceComponents({tuning,gearRatio:cvt ? cvtRatio : editor.getRaceGearRatio(tuning,gear),
    engineTorqueNm:editor.getRaceTorqueNmAtRpm(rpm,tuning),availablePowerW:tuning.powerHp*745.7,speedMps:speed}).baseForceN
    * tuning.accelerationCalibration;
   const required=Math.max(0,mass*9.81*editor.getRaceGradeGravityRatio(grade)
