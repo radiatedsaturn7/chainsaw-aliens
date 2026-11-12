@@ -32,3 +32,13 @@ test('Dustjack artwork builds eight calibrated angles and roundtrips editor with
  const dash=built.art['catalog-dustjack-v8-dashboard'];
  assert.ok(dash.frames[0].slice(0,dash.width*200).every(p=>p===null || (p.length===9 && parseInt(p.slice(-2),16)<=1)),'upper windshield has no visible opaque art (source has sparse alpha1 noise)');
 });
+
+test('Dustjack front-right near-wheel anchor is inside the authored wheel opening, not the front bumper',()=>{
+ const image=decodePng(new URL('body.png',base).pathname),anchor=config.authoredWheelAnchors.frontRight.find(p=>p.wheel==='fr');
+ const y=720;let start=anchor.x,end=anchor.x;
+ const alpha=x=>image.data[(y*image.width+x)*4+3];
+ assert.ok(alpha(anchor.x)<128,'wheel center is in the original transparent opening');
+ while(start>0&&alpha(start-1)<128)start--;while(end<image.width-1&&alpha(end+1)<128)end++;
+ assert.ok(end-start>40&&end-start<100,'measured wheel opening, not empty outside canvas');
+ assert.ok(Math.abs(anchor.x-(start+end)/2)<=3,'anchor matches center of measured wheel opening');
+});

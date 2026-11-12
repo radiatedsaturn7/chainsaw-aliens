@@ -448,7 +448,7 @@
           },
           "cabin": {
             "centerZM": -0.1,
-            "lengthM": 2.0,
+            "lengthM": 2,
             "widthM": 1.7,
             "heightM": 0.89895
           },
@@ -646,7 +646,7 @@
     "estimates": [
       "No single invariant factory specification: actual cars used TH4003AT,4L85E4AT and custom4L60E builds.",
       "2011auction example proves concrete4L85E+4.11 installation; does not establish original manufacture unchanged.",
-      "3800\u20134000lb range is better supported than falsely exact3792lb; prototype3200lb/diesel3000lb must not be mixed with2013LS3production brochure.",
+      "3800–4000lb range is better supported than falsely exact3792lb; prototype3200lb/diesel3000lb must not be mixed with2013LS3production brochure.",
       "Exact build year/VIN, factory scale mass, finaldrive and gearbox remain needed for strictly factoryverified status.",
       "Redline, fulltorquecurve, aeroCd/frontalarea,CG,inertia,grip and dampercoefficients remain simulationparameters.",
       "Do not mix lowride20in tires with highride17in visual/physicaldimensions.",
@@ -680,7 +680,7 @@
     "frontRight": [
       {
         "wheel": "fr",
-        "x": 1651,
+        "x": 1695,
         "y": 724,
         "radius": 45
       },
