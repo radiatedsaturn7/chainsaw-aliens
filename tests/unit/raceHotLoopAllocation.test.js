@@ -95,5 +95,8 @@ test('steering envelope supports either front wheel without changing its input c
  const before=structuredClone(left);
  assert.equal(calculateAuthoritativeSteeringEnvelope(left),calculateAuthoritativeSteeringEnvelope(right));
  assert.deepEqual(left,before);
- assert.ok(Math.abs(calculateAuthoritativeSteeringEnvelope({groundSpeedMps:25})-.002)<1e-12);
+ const unloaded=calculateAuthoritativeSteeringEnvelope({groundSpeedMps:25});
+ assert.equal(unloaded,calculateAuthoritativeSteeringEnvelope(left),'missing contact data must retain the speed-based steering range');
+ assert.ok(unloaded>0 && unloaded<=.52);
+ assert.ok(calculateAuthoritativeSteeringEnvelope({groundSpeedMps:50})<unloaded);
 });
