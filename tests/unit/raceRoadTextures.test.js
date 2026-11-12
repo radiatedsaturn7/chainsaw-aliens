@@ -49,8 +49,8 @@ test('static renderer uses textures, preserves road elevation/UVs and invalidate
 });
 test('editor settings save/load, collect artwork, cancel cleanly and restore default mapping',async()=>{
  const e=new RaceEditor({});let fields;
- await e.openRaceRoadTextures(async(title,f)=>{fields=f;return {roadMipmapDistance:4,roadFilter:'crisp',roadMipmaps:false,roadAnisotropy:16,roadArt:'center line',roadRepeat:7,roadRepeatWidth:4,marginRepeatWidth:.1,marginArt:'curb',marginRepeat:2,builtInLines:false};});
- assert.equal(fields.length,21);assert.ok(fields.some(field=>field.id==='debugRoad_asphalt'));assert.equal(e.selectedRace.roadTextures.road.repeatM,7);
+ await e.openRaceRoadTextures(async(title,f)=>{fields=f;return {roadLaneWidth:3.6576,roadMipmapDistance:4,roadFilter:'crisp',roadMipmaps:false,roadAnisotropy:16,roadArt:'center line',roadRepeat:7,roadRepeatWidth:4,marginRepeatWidth:.1,marginArt:'curb',marginRepeat:2,builtInLines:false};});
+ assert.ok(fields.some(field=>field.id==='roadLaneWidth'));assert.equal(e.selectedRace.roadTextures.road.laneWidthM,3.6576);assert.ok(fields.some(field=>field.id==='debugRoad_asphalt'));assert.equal(e.selectedRace.roadTextures.road.repeatM,7);
  assert.ok(e.collectSelectedRaceTextureArtRefs().includes('center line'));
  const loaded=e.normalizeLoadedRaceDocument(e.serializeSelectedRaceDocument());
  assert.deepEqual(loaded.roadTextures,e.selectedRace.roadTextures);
@@ -279,4 +279,17 @@ test('live debug road swaps snow artwork in static renderer and restores it with
  const restored=editor.getRaceStaticTrackSurfaceMeshes(bake);
  assert.deepEqual(restored.roadMeshes,authored.roadMeshes);
  assert.equal(JSON.stringify(bake),before);
+});
+
+test('highway stripes use physical lane spacing for three and four lane carriageways',async()=>{
+ const {roadTextureCrossSection}=await import('../../src/racing/RaceRoadTextures.js');
+ for(const lanes of [3,4]){
+  const width=lanes*3.6576,options=roadTextureSettings({roadTextures:{road:{laneWidthM:3.6576}}}).road;
+  const {span,center}=roadTextureCrossSection({x:-width/2,z:0},{x:width/2,z:0},options);
+  const left=center-span/2,right=center+span/2;
+  const stripes=[];
+  for(let u=-5.5;u<6;u+=1)if(u>left+1e-8&&u<right-1e-8)stripes.push((u-left)/span*width);
+  assert.equal(stripes.length,lanes-1);
+  stripes.forEach((x,i)=>assert.ok(Math.abs(x-(i+1)*3.6576)<1e-8));
+ }
 });

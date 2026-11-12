@@ -10,21 +10,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 1,
     "hubBoss": "Tower Hill Road",
     "status": "installed",
-    "lengthM": 3451.2174918886117,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      13.4
+    ],
+    "lengthM": 9374.02258029123,
     "laps": 1,
-    "estimatedDrivingSeconds": 181,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 225,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 41.8779672,
-      "lon": -71.5425826
+      "lat": 41.898449,
+      "lon": -71.54377
     },
     "finishGps": {
-      "lat": 41.863552,
-      "lon": -71.57576
+      "lat": 41.834351,
+      "lon": -71.586563
     },
     "surface": [
       "asphalt"
@@ -38,15 +44,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H01-S02.json",
+    "lightingPreset": "morning",
     "raceRef": "RI 116 — North Smithfield Scituate",
+    "displayName": "RI 116 — North Smithfield / Scituate",
     "documentPath": "races/RI 116 %E2%80%94 North Smithfield Scituate/document.json",
     "hubRaceRef": "Tower Hill Road",
-    "sceneryCount": 150,
+    "sceneryCount": 414,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "RI 116 — North Smithfield / Scituate"
+    "conditionNotes": ""
   },
   {
     "id": "H01-S05",
@@ -59,14 +66,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 1,
     "hubBoss": "Tower Hill Road",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 2416.5217192632003,
-    "laps": 1,
-    "estimatedDrivingSeconds": 174,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 3,
+    "estimatedDrivingSeconds": 315,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 41.9810955,
       "lon": -71.8256118
@@ -87,15 +100,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H01-S05.json",
+    "lightingPreset": "noon",
     "raceRef": "Thompson Speedway — 1.7-mile road course",
+    "displayName": "Thompson Speedway — 1.7-mile road course",
     "documentPath": "races/Thompson Speedway %E2%80%94 1.7-mile road course/document.json",
     "hubRaceRef": "Tower Hill Road",
     "sceneryCount": 94,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Thompson Speedway — 1.7-mile road course"
+    "conditionNotes": ""
   },
   {
     "id": "H01-S01",
@@ -108,21 +122,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 1,
     "hubBoss": "Tower Hill Road",
     "status": "installed",
-    "lengthM": 3704.631830326808,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      11.572799999999999,
+      15.2304
+    ],
+    "lengthM": 13019.62131457946,
     "laps": 1,
-    "estimatedDrivingSeconds": 185,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 223,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 41.901999579999995,
-      "lon": -71.35800391999999
+      "lat": 41.870576,
+      "lon": -71.3997193
     },
     "finishGps": {
-      "lat": 41.8779243,
-      "lon": -71.3790563
+      "lat": 41.9520034,
+      "lon": -71.306101
     },
     "surface": [
       "asphalt"
@@ -136,15 +156,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H01-S01.json",
+    "lightingPreset": "noon",
     "raceRef": "I-95 — Attleboro to Warwick curves",
+    "displayName": "I-95 — Attleboro to Warwick curves",
     "documentPath": "races/I-95 %E2%80%94 Attleboro to Warwick curves/document.json",
     "hubRaceRef": "Tower Hill Road",
-    "sceneryCount": 162,
+    "sceneryCount": 576,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "I-95 — Attleboro to Warwick curves"
+    "conditionNotes": ""
   },
   {
     "id": "H01-S03",
@@ -157,21 +178,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 1,
     "hubBoss": "Tower Hill Road",
     "status": "installed",
-    "lengthM": 3411.1210122420425,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      3.8000000000000003,
+      7
+    ],
+    "lengthM": 10426.369134658766,
     "laps": 1,
-    "estimatedDrivingSeconds": 185,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 227,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 41.919141499999995,
-      "lon": -71.67092500000001
+      "lat": 41.929173,
+      "lon": -71.668396
     },
     "finishGps": {
-      "lat": 41.890499,
-      "lon": -71.671233
+      "lat": 41.83845788888888,
+      "lon": -71.67613488888888
     },
     "surface": [
       "asphalt"
@@ -185,15 +212,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H01-S03.json",
+    "lightingPreset": "evening",
     "raceRef": "RI 102 — Victory Highway",
+    "displayName": "RI 102 — Victory Highway",
     "documentPath": "races/RI 102 %E2%80%94 Victory Highway/document.json",
     "hubRaceRef": "Tower Hill Road",
-    "sceneryCount": 150,
+    "sceneryCount": 461,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "RI 102 — Victory Highway"
+    "conditionNotes": ""
   },
   {
     "id": "H01-S04",
@@ -206,21 +234,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 1,
     "hubBoss": "Tower Hill Road",
     "status": "installed",
-    "lengthM": 2451.4501441895227,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.5,
+      4.5
+    ],
+    "lengthM": 4947.419379204108,
     "laps": 1,
-    "estimatedDrivingSeconds": 143,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 224,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 41.5505564,
-      "lon": -71.8267773
+      "lat": 41.5427355,
+      "lon": -71.8229626
     },
     "finishGps": {
-      "lat": 41.5332572,
-      "lon": -71.8113818
+      "lat": 41.557972500000005,
+      "lon": -71.7998796
     },
     "surface": [
       "dirt"
@@ -234,15 +268,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H01-S04.json",
+    "lightingPreset": "evening",
     "raceRef": "Pachaug State Forest — public gravel access roads",
+    "displayName": "Pachaug State Forest — public gravel access roads",
     "documentPath": "races/Pachaug State Forest %E2%80%94 public gravel access roads/document.json",
     "hubRaceRef": "Tower Hill Road",
-    "sceneryCount": 106,
+    "sceneryCount": 214,
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": "",
-    "displayName": "Pachaug State Forest — public gravel access roads"
+    "conditionNotes": ""
   },
   {
     "id": "H01-S06",
@@ -255,14 +290,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 1,
     "hubBoss": "Tower Hill Road",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 449.4570884194403,
-    "laps": 5,
-    "estimatedDrivingSeconds": 190,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 9,
+    "estimatedDrivingSeconds": 213,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 41.7848295,
       "lon": -71.3013111
@@ -283,15 +324,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H01-S06.json",
+    "lightingPreset": "noon",
     "raceRef": "Seekonk Speedway — oval",
+    "displayName": "Seekonk Speedway — oval",
     "documentPath": "races/Seekonk Speedway %E2%80%94 oval/document.json",
     "hubRaceRef": "Tower Hill Road",
     "sceneryCount": 18,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Seekonk Speedway — oval"
+    "conditionNotes": ""
   },
   {
     "id": "H01-S07",
@@ -304,21 +346,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 1,
     "hubBoss": "Tower Hill Road",
     "status": "installed",
-    "lengthM": 3453.152822868422,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      3.8000000000000003,
+      7
+    ],
+    "lengthM": 10908.14820590168,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 227,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 41.9075462,
-      "lon": -71.6645693
+      "lat": 41.8996939,
+      "lon": -71.631676
     },
     "finishGps": {
-      "lat": 41.91964,
-      "lon": -71.698296
+      "lat": 41.920447599999996,
+      "lon": -71.74997880000001
     },
     "surface": [
       "asphalt"
@@ -332,15 +380,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H01-S07.json",
+    "lightingPreset": "morning",
     "raceRef": "RI 44 — Putnam Pike Glocester",
+    "displayName": "RI 44 — Putnam Pike / Glocester",
     "documentPath": "races/RI 44 %E2%80%94 Putnam Pike Glocester/document.json",
     "hubRaceRef": "Tower Hill Road",
-    "sceneryCount": 152,
+    "sceneryCount": 482,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "RI 44 — Putnam Pike / Glocester"
+    "conditionNotes": ""
   },
   {
     "id": "H01-S08",
@@ -353,14 +402,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 1,
     "hubBoss": "Tower Hill Road",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 2411.371845944385,
-    "laps": 1,
-    "estimatedDrivingSeconds": 146,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 3,
+    "estimatedDrivingSeconds": 253,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 41.9251135,
       "lon": -73.3861351
@@ -381,15 +436,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H01-S08.json",
+    "lightingPreset": "noon",
     "raceRef": "Lime Rock Park — Connecticut",
+    "displayName": "Lime Rock Park — Connecticut",
     "documentPath": "races/Lime Rock Park %E2%80%94 Connecticut/document.json",
     "hubRaceRef": "Tower Hill Road",
     "sceneryCount": 104,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Lime Rock Park — Connecticut"
+    "conditionNotes": ""
   },
   {
     "id": "H01-S09",
@@ -402,14 +458,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 1,
     "hubBoss": "Tower Hill Road",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 3666.5319140640927,
-    "laps": 1,
-    "estimatedDrivingSeconds": 237,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 2,
+    "estimatedDrivingSeconds": 277,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 42.2319505,
       "lon": -72.2458325
@@ -430,15 +492,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H01-S09.json",
+    "lightingPreset": "night",
     "raceRef": "Palmer Motorsports Park — Massachusetts",
+    "displayName": "Palmer Motorsports Park — Massachusetts",
     "documentPath": "races/Palmer Motorsports Park %E2%80%94 Massachusetts/document.json",
     "hubRaceRef": "Tower Hill Road",
     "sceneryCount": 132,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Palmer Motorsports Park — Massachusetts"
+    "conditionNotes": ""
   },
   {
     "id": "H02-S01",
@@ -451,21 +514,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 2,
     "hubBoss": "Mount Washington Auto Road",
     "status": "installed",
-    "lengthM": 3398.5709535931255,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 8873.968157347452,
     "laps": 1,
-    "estimatedDrivingSeconds": 181,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 226,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 44.0408965,
-      "lon": -71.5243137
+      "lat": 44.0350623,
+      "lon": -71.5285293
     },
     "finishGps": {
-      "lat": 44.0327075,
-      "lon": -71.4985897
+      "lat": 44.023085,
+      "lon": -71.475336
     },
     "surface": [
       "asphalt"
@@ -479,15 +548,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H02-S01.json",
+    "lightingPreset": "morning",
     "raceRef": "Kancamagus Highway — NH 112",
+    "displayName": "Kancamagus Highway — NH 112",
     "documentPath": "races/Kancamagus Highway %E2%80%94 NH 112/document.json",
     "hubRaceRef": "Mount Washington Auto Road — point-to-point",
-    "sceneryCount": 146,
+    "sceneryCount": 379,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Kancamagus Highway — NH 112"
+    "conditionNotes": ""
   },
   {
     "id": "H02-S02",
@@ -500,21 +570,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 2,
     "hubBoss": "Mount Washington Auto Road",
     "status": "installed",
-    "lengthM": 3487.4405887959624,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 8042.406901200266,
     "laps": 1,
-    "estimatedDrivingSeconds": 182,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 223,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 44.0356773,
       "lon": -71.325149
     },
     "finishGps": {
-      "lat": 44.0461754,
-      "lon": -71.29174
+      "lat": 44.0685195,
+      "lon": -71.2829265
     },
     "surface": [
       "asphalt"
@@ -528,15 +604,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H02-S02.json",
+    "lightingPreset": "morning",
     "raceRef": "Bear Notch Road — Bartlett",
+    "displayName": "Bear Notch Road — Bartlett",
     "documentPath": "races/Bear Notch Road %E2%80%94 Bartlett/document.json",
     "hubRaceRef": "Mount Washington Auto Road — point-to-point",
-    "sceneryCount": 152,
+    "sceneryCount": 354,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Bear Notch Road — Bartlett"
+    "conditionNotes": ""
   },
   {
     "id": "H02-S03",
@@ -549,21 +626,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 2,
     "hubBoss": "Mount Washington Auto Road",
     "status": "installed",
-    "lengthM": 3018.5008892798487,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      3.8000000000000003,
+      3.8000000000000003
+    ],
+    "lengthM": 6832.130956944514,
     "laps": 1,
-    "estimatedDrivingSeconds": 186,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 227,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 44.075288650000005,
-      "lon": -71.102787
+      "lat": 44.0753172,
+      "lon": -71.10430286666667
     },
     "finishGps": {
-      "lat": 44.068406800000005,
-      "lon": -71.0723395
+      "lat": 44.078697,
+      "lon": -71.0315438
     },
     "surface": [
       "asphalt"
@@ -577,15 +660,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H02-S03.json",
+    "lightingPreset": "evening",
     "raceRef": "Hurricane Mountain Road — Conway",
+    "displayName": "Hurricane Mountain Road — Conway",
     "documentPath": "races/Hurricane Mountain Road %E2%80%94 Conway/document.json",
     "hubRaceRef": "Mount Washington Auto Road — point-to-point",
-    "sceneryCount": 129,
+    "sceneryCount": 296,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Hurricane Mountain Road — Conway"
+    "conditionNotes": ""
   },
   {
     "id": "H02-S04",
@@ -598,17 +682,23 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 2,
     "hubBoss": "Mount Washington Auto Road",
     "status": "installed",
-    "lengthM": 3632.6896876584947,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 10643.038886189197,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 222,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 44.1940504,
-      "lon": -71.4062807
+      "lat": 44.1461034,
+      "lon": -71.365611
     },
     "finishGps": {
       "lat": 44.2231036,
@@ -626,15 +716,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H02-S04.json",
+    "lightingPreset": "noon",
     "raceRef": "Crawford Notch — US 302",
+    "displayName": "Crawford Notch — US 302",
     "documentPath": "races/Crawford Notch %E2%80%94 US 302/document.json",
     "hubRaceRef": "Mount Washington Auto Road — point-to-point",
-    "sceneryCount": 160,
+    "sceneryCount": 470,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Crawford Notch — US 302"
+    "conditionNotes": ""
   },
   {
     "id": "H02-S05",
@@ -647,21 +738,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 2,
     "hubBoss": "Mount Washington Auto Road",
     "status": "installed",
-    "lengthM": 3674.202919496918,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7.9152,
+      11.572799999999999
+    ],
+    "lengthM": 10995.594262365554,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 238,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 44.2467389,
       "lon": -71.2531936
     },
     "finishGps": {
-      "lat": 44.21747116,
-      "lon": -71.24840408
+      "lat": 44.160191,
+      "lon": -71.212701
     },
     "surface": [
       "asphalt"
@@ -675,15 +772,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H02-S05.json",
+    "lightingPreset": "noon",
     "raceRef": "Pinkham Notch — NH 16",
+    "displayName": "Pinkham Notch — NH 16",
     "documentPath": "races/Pinkham Notch %E2%80%94 NH 16/document.json",
     "hubRaceRef": "Mount Washington Auto Road — point-to-point",
-    "sceneryCount": 162,
+    "sceneryCount": 486,
     "installedSurfaces": [
       "snow"
     ],
-    "conditionNotes": "",
-    "displayName": "Pinkham Notch — NH 16"
+    "conditionNotes": ""
   },
   {
     "id": "H02-S06",
@@ -696,14 +794,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 2,
     "hubBoss": "Mount Washington Auto Road",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 3601.6736983335845,
-    "laps": 1,
-    "estimatedDrivingSeconds": 228,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 2,
+    "estimatedDrivingSeconds": 273,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 43.822534,
       "lon": -71.2498848
@@ -724,15 +828,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H02-S06.json",
+    "lightingPreset": "noon",
     "raceRef": "Club Motorsports — Tamworth",
+    "displayName": "Club Motorsports — Tamworth",
     "documentPath": "races/Club Motorsports %E2%80%94 Tamworth/document.json",
     "hubRaceRef": "Mount Washington Auto Road — point-to-point",
     "sceneryCount": 151,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Club Motorsports — Tamworth"
+    "conditionNotes": ""
   },
   {
     "id": "H02-S07",
@@ -745,14 +850,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 2,
     "hubBoss": "Mount Washington Auto Road",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": true,
+    "roadWidthRangeM": [
+      5,
+      5
+    ],
     "lengthM": 3103.1496712123394,
     "laps": 1,
-    "estimatedDrivingSeconds": 220,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 154,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 44.36491217483608,
       "lon": -71.71145304000505
@@ -773,15 +884,16 @@
     "geometryMethod": "hand-authored-fictional",
     "confidence": "Hand-authored fictional reconstruction; not a surveyed course",
     "generatedPath": "artifacts/campaign-import/side-races/H02-S07.json",
+    "lightingPreset": "noon",
     "raceRef": "Team O’Neil-inspired Rally Stage (2994)",
+    "displayName": "Team O’Neil-inspired Rally Stage (2994)",
     "documentPath": "races/Team O%E2%80%99Neil-inspired Rally Stage (2994)/document.json",
     "hubRaceRef": "Mount Washington Auto Road — point-to-point",
     "sceneryCount": 134,
     "installedSurfaces": [
       "gravel"
     ],
-    "conditionNotes": "",
-    "displayName": "Team O’Neil-inspired Rally Stage (2994)"
+    "conditionNotes": ""
   },
   {
     "id": "H02-S08",
@@ -794,14 +906,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 2,
     "hubBoss": "Mount Washington Auto Road",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      16.6
+    ],
     "lengthM": 2575.824781930943,
-    "laps": 1,
-    "estimatedDrivingSeconds": 170,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 3,
+    "estimatedDrivingSeconds": 302,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 43.3608635,
       "lon": -71.4629464
@@ -822,15 +940,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H02-S08.json",
+    "lightingPreset": "evening",
     "raceRef": "New Hampshire Motor Speedway — Loudon",
+    "displayName": "New Hampshire Motor Speedway — Loudon",
     "documentPath": "races/New Hampshire Motor Speedway %E2%80%94 Loudon/document.json",
     "hubRaceRef": "Mount Washington Auto Road — point-to-point",
     "sceneryCount": 98,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "New Hampshire Motor Speedway — Loudon"
+    "conditionNotes": ""
   },
   {
     "id": "H02-S09",
@@ -843,10 +962,16 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 2,
     "hubBoss": "Mount Washington Auto Road",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 402.336,
     "laps": 1,
     "estimatedDrivingSeconds": null,
@@ -871,15 +996,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H02-S09.json",
+    "lightingPreset": "morning",
     "raceRef": "New England Dragway — Epping",
+    "displayName": "New England Dragway — Epping",
     "documentPath": "races/New England Dragway %E2%80%94 Epping/document.json",
     "hubRaceRef": "Mount Washington Auto Road — point-to-point",
     "sceneryCount": 16,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "New England Dragway — Epping"
+    "conditionNotes": ""
   },
   {
     "id": "H03-S01",
@@ -892,21 +1018,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 3,
     "hubBoss": "Laurel Highlands Scenic Byway",
     "status": "installed",
-    "lengthM": 3674.4244373598226,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 11193.066841868125,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 231,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.879047,
-      "lon": -79.4817141
+      "lat": 39.8720616,
+      "lon": -79.492984
     },
     "finishGps": {
-      "lat": 39.8965892,
-      "lon": -79.4659054
+      "lat": 39.94806705,
+      "lon": -79.4520052
     },
     "surface": [
       "asphalt"
@@ -920,15 +1052,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H03-S01.json",
+    "lightingPreset": "noon",
     "raceRef": "PA 381 — Ohiopyle approach",
+    "displayName": "PA 381 — Ohiopyle approach",
     "documentPath": "races/PA 381 %E2%80%94 Ohiopyle approach/document.json",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
-    "sceneryCount": 162,
+    "sceneryCount": 496,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "PA 381 — Ohiopyle approach"
+    "conditionNotes": ""
   },
   {
     "id": "H03-S02",
@@ -941,21 +1074,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 3,
     "hubBoss": "Laurel Highlands Scenic Byway",
     "status": "installed",
-    "lengthM": 3671.081075451321,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 12163.09768263116,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 234,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 40.0481955,
-      "lon": -79.3972187
+      "lat": 40.0734453,
+      "lon": -79.3589473
     },
     "finishGps": {
-      "lat": 40.022085260000004,
-      "lon": -79.40110864666667
+      "lat": 40.0058873,
+      "lon": -79.44124844999999
     },
     "surface": [
       "asphalt"
@@ -969,15 +1108,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H03-S02.json",
+    "lightingPreset": "evening",
     "raceRef": "PA 711 — Normalville Champion",
+    "displayName": "PA 711 — Normalville / Champion",
     "documentPath": "races/PA 711 %E2%80%94 Normalville Champion/document.json",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
-    "sceneryCount": 160,
+    "sceneryCount": 538,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "PA 711 — Normalville / Champion"
+    "conditionNotes": ""
   },
   {
     "id": "H03-S03",
@@ -990,21 +1130,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 3,
     "hubBoss": "Laurel Highlands Scenic Byway",
     "status": "installed",
-    "lengthM": 3654.4918177387494,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.2576,
+      7.9152
+    ],
+    "lengthM": 11886.049317128449,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 228,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.8435095,
-      "lon": -79.6146553
+      "lat": 39.8156879,
+      "lon": -79.5828133
     },
     "finishGps": {
-      "lat": 39.8496638,
-      "lon": -79.6564599
+      "lat": 39.8675584,
+      "lon": -79.6905067
     },
     "surface": [
       "asphalt"
@@ -1018,15 +1164,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H03-S03.json",
+    "lightingPreset": "evening",
     "raceRef": "US 40 — Chalk Hill Summit",
+    "displayName": "US 40 — Chalk Hill / Summit",
     "documentPath": "races/US 40 %E2%80%94 Chalk Hill Summit/document.json",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
-    "sceneryCount": 160,
+    "sceneryCount": 526,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "US 40 — Chalk Hill / Summit"
+    "conditionNotes": ""
   },
   {
     "id": "H03-S04",
@@ -1039,21 +1186,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 3,
     "hubBoss": "Laurel Highlands Scenic Byway",
     "status": "installed",
-    "lengthM": 3612.8020012451275,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 11569.474642509327,
     "laps": 1,
-    "estimatedDrivingSeconds": 181,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 210,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 40.0879129,
       "lon": -79.3364016
     },
     "finishGps": {
-      "lat": 40.073859988888884,
-      "lon": -79.30123614444445
+      "lat": 40.0523151,
+      "lon": -79.2177752
     },
     "surface": [
       "asphalt"
@@ -1067,15 +1220,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H03-S04.json",
+    "lightingPreset": "night",
     "raceRef": "PA 31 — Donegal to Laurel Ridge",
+    "displayName": "PA 31 — Donegal to Laurel Ridge",
     "documentPath": "races/PA 31 %E2%80%94 Donegal to Laurel Ridge/document.json",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
-    "sceneryCount": 158,
+    "sceneryCount": 512,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "PA 31 — Donegal to Laurel Ridge"
+    "conditionNotes": ""
   },
   {
     "id": "H03-S05",
@@ -1088,21 +1242,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 3,
     "hubBoss": "Laurel Highlands Scenic Byway",
     "status": "installed",
-    "lengthM": 3618.6973672016475,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 9341.176686754865,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 228,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 40.0071425,
       "lon": -79.2641283
     },
     "finishGps": {
-      "lat": 40.0306229,
-      "lon": -79.2885556
+      "lat": 40.0420868,
+      "lon": -79.33778871666665
     },
     "surface": [
       "asphalt"
@@ -1116,15 +1276,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H03-S05.json",
+    "lightingPreset": "night",
     "raceRef": "County Line Road — Seven Springs",
+    "displayName": "County Line Road — Seven Springs",
     "documentPath": "races/County Line Road %E2%80%94 Seven Springs/document.json",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
-    "sceneryCount": 158,
+    "sceneryCount": 412,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "County Line Road — Seven Springs"
+    "conditionNotes": ""
   },
   {
     "id": "H03-S06",
@@ -1137,21 +1298,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 3,
     "hubBoss": "Laurel Highlands Scenic Byway",
     "status": "installed",
-    "lengthM": 3261.067634812371,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.5,
+      4.5
+    ],
+    "lengthM": 5640.498385389236,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 190,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 40.1175181,
-      "lon": -79.1771119
+      "lat": 40.1177855,
+      "lon": -79.1790756
     },
     "finishGps": {
-      "lat": 40.1395436,
-      "lon": -79.16159736666667
+      "lat": 40.1570064,
+      "lon": -79.1497398
     },
     "surface": [
       "gravel"
@@ -1165,15 +1332,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H03-S06.json",
+    "lightingPreset": "morning",
     "raceRef": "Forbes State Forest — designated gravel roads",
+    "displayName": "Forbes State Forest — designated gravel roads",
     "documentPath": "races/Forbes State Forest %E2%80%94 designated gravel roads/document.json",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
-    "sceneryCount": 141,
+    "sceneryCount": 248,
     "installedSurfaces": [
       "gravel"
     ],
-    "conditionNotes": "",
-    "displayName": "Forbes State Forest — designated gravel roads"
+    "conditionNotes": ""
   },
   {
     "id": "H03-S07",
@@ -1186,14 +1354,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 3,
     "hubBoss": "Laurel Highlands Scenic Byway",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 825.0366800509637,
-    "laps": 3,
-    "estimatedDrivingSeconds": 160,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 7,
+    "estimatedDrivingSeconds": 229,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 40.1599272,
       "lon": -79.0722703
@@ -1214,15 +1388,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H03-S07.json",
+    "lightingPreset": "night",
     "raceRef": "Jennerstown Speedway — oval",
+    "displayName": "Jennerstown Speedway — oval",
     "documentPath": "races/Jennerstown Speedway %E2%80%94 oval/document.json",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
     "sceneryCount": 34,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Jennerstown Speedway — oval"
+    "conditionNotes": ""
   },
   {
     "id": "H03-S08",
@@ -1235,10 +1410,16 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 3,
     "hubBoss": "Laurel Highlands Scenic Byway",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      12,
+      12
+    ],
     "lengthM": 402.33600000000007,
     "laps": 1,
     "estimatedDrivingSeconds": null,
@@ -1263,15 +1444,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H03-S08.json",
+    "lightingPreset": "morning",
     "raceRef": "Keystone Motorsports Park — New Alexandria",
+    "displayName": "Keystone Motorsports Park — New Alexandria",
     "documentPath": "races/Keystone Motorsports Park %E2%80%94 New Alexandria/document.json",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
     "sceneryCount": 16,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Keystone Motorsports Park — New Alexandria"
+    "conditionNotes": ""
   },
   {
     "id": "H03-S09",
@@ -1284,14 +1466,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 3,
     "hubBoss": "Laurel Highlands Scenic Byway",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 4473.999960115731,
-    "laps": 1,
-    "estimatedDrivingSeconds": 286,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 2,
+    "estimatedDrivingSeconds": 339,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 40.8488373,
       "lon": -80.3511296
@@ -1312,15 +1500,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H03-S09.json",
+    "lightingPreset": "noon",
     "raceRef": "Pittsburgh International Race Complex — Wampum",
+    "displayName": "Pittsburgh International Race Complex — Wampum",
     "documentPath": "races/Pittsburgh International Race Complex %E2%80%94 Wampum/document.json",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
     "sceneryCount": 185,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Pittsburgh International Race Complex — Wampum"
+    "conditionNotes": ""
   },
   {
     "id": "H04-S01",
@@ -1333,21 +1522,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 4,
     "hubBoss": "Ohio River Crossing",
     "status": "installed",
-    "lengthM": 3188.831644926604,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 6850.0591581949275,
     "laps": 1,
-    "estimatedDrivingSeconds": 185,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 219,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.551112,
-      "lon": -81.192237
+      "lat": 39.54813,
+      "lon": -81.206123
     },
     "finishGps": {
-      "lat": 39.54053,
-      "lon": -81.173318
+      "lat": 39.540702,
+      "lon": -81.17627
     },
     "surface": [
       "asphalt"
@@ -1361,15 +1556,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H04-S01.json",
+    "lightingPreset": "noon",
     "raceRef": "OH 26 — Covered Bridge Scenic Byway",
+    "displayName": "OH 26 — Covered Bridge Scenic Byway",
     "documentPath": "races/OH 26 %E2%80%94 Covered Bridge Scenic Byway/document.json",
     "hubRaceRef": "Ohio River Crossing",
-    "sceneryCount": 140,
+    "sceneryCount": 300,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "OH 26 — Covered Bridge Scenic Byway"
+    "conditionNotes": ""
   },
   {
     "id": "H04-S02",
@@ -1382,21 +1578,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 4,
     "hubBoss": "Ohio River Crossing",
     "status": "installed",
-    "lengthM": 3173.151441660117,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 7030.4670482045085,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 216,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.3673942,
-      "lon": -81.7850724
+      "lat": 39.3479572,
+      "lon": -81.7888898
     },
     "finishGps": {
-      "lat": 39.381408,
-      "lon": -81.808649
+      "lat": 39.3899763,
+      "lon": -81.8182309
     },
     "surface": [
       "asphalt"
@@ -1410,15 +1612,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H04-S02.json",
+    "lightingPreset": "evening",
     "raceRef": "OH 555 — Triple Nickel",
+    "displayName": "OH 555 — Triple Nickel",
     "documentPath": "races/OH 555 %E2%80%94 Triple Nickel/document.json",
     "hubRaceRef": "Ohio River Crossing",
-    "sceneryCount": 138,
+    "sceneryCount": 310,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "OH 555 — Triple Nickel"
+    "conditionNotes": ""
   },
   {
     "id": "H04-S03",
@@ -1431,21 +1634,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 4,
     "hubBoss": "Ohio River Crossing",
     "status": "installed",
-    "lengthM": 3576.3793986768287,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 11544.129984479536,
     "laps": 1,
-    "estimatedDrivingSeconds": 181,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 232,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.3939488,
-      "lon": -81.5872388
+      "lat": 39.394587,
+      "lon": -81.59566
     },
     "finishGps": {
-      "lat": 39.394136,
-      "lon": -81.626117
+      "lat": 39.403235,
+      "lon": -81.72326
     },
     "surface": [
       "asphalt"
@@ -1459,15 +1668,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H04-S03.json",
+    "lightingPreset": "morning",
     "raceRef": "OH 550 — Barlow approach",
+    "displayName": "OH 550 — Barlow approach",
     "documentPath": "races/OH 550 %E2%80%94 Barlow approach/document.json",
     "hubRaceRef": "Ohio River Crossing",
-    "sceneryCount": 156,
+    "sceneryCount": 510,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "OH 550 — Barlow approach"
+    "conditionNotes": ""
   },
   {
     "id": "H04-S04",
@@ -1480,21 +1690,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 4,
     "hubBoss": "Ohio River Crossing",
     "status": "installed",
-    "lengthM": 2696.4460928872727,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 5379.29275708755,
     "laps": 1,
-    "estimatedDrivingSeconds": 182,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 215,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.7243922,
-      "lon": -80.9657229
+      "lat": 39.7373047,
+      "lon": -80.9765005
     },
     "finishGps": {
-      "lat": 39.7091758,
-      "lon": -80.9537631
+      "lat": 39.7106161,
+      "lon": -80.9548263
     },
     "surface": [
       "asphalt"
@@ -1508,15 +1724,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H04-S04.json",
+    "lightingPreset": "night",
     "raceRef": "OH 536 — Ohio River hills",
+    "displayName": "OH 536 — Ohio River hills",
     "documentPath": "races/OH 536 %E2%80%94 Ohio River hills/document.json",
     "hubRaceRef": "Ohio River Crossing",
-    "sceneryCount": 118,
+    "sceneryCount": 233,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "OH 536 — Ohio River hills"
+    "conditionNotes": ""
   },
   {
     "id": "H04-S05",
@@ -1529,21 +1746,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 4,
     "hubBoss": "Ohio River Crossing",
     "status": "installed",
-    "lengthM": 3113.7818173560336,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 5919.9822948411365,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 214,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.469646,
-      "lon": -81.816017
+      "lat": 39.463841,
+      "lon": -81.819881
     },
     "finishGps": {
-      "lat": 39.480411,
-      "lon": -81.791345
+      "lat": 39.4875,
+      "lon": -81.778067
     },
     "surface": [
       "asphalt"
@@ -1557,15 +1780,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H04-S05.json",
+    "lightingPreset": "night",
     "raceRef": "OH 676 — Western county hills",
+    "displayName": "OH 676 — Western county hills",
     "documentPath": "races/OH 676 %E2%80%94 Western county hills/document.json",
     "hubRaceRef": "Ohio River Crossing",
-    "sceneryCount": 136,
+    "sceneryCount": 258,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "OH 676 — Western county hills"
+    "conditionNotes": ""
   },
   {
     "id": "H04-S06",
@@ -1578,17 +1802,23 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 4,
     "hubBoss": "Ohio River Crossing",
     "status": "installed",
-    "lengthM": 3666.2204922469086,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7.9152,
+      7.9152
+    ],
+    "lengthM": 12987.336980854521,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 220,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.437498399999996,
-      "lon": -81.43064145
+      "lat": 39.36018258333333,
+      "lon": -81.441667
     },
     "finishGps": {
       "lat": 39.468313,
@@ -1606,15 +1836,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H04-S06.json",
+    "lightingPreset": "evening",
     "raceRef": "Marietta–Williamstown — I-77 river bridge",
+    "displayName": "Marietta–Williamstown — I-77 river bridge",
     "documentPath": "races/Marietta%E2%80%93Williamstown %E2%80%94 I-77 river bridge/document.json",
     "hubRaceRef": "Ohio River Crossing",
-    "sceneryCount": 160,
+    "sceneryCount": 576,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Marietta–Williamstown — I-77 river bridge"
+    "conditionNotes": ""
   },
   {
     "id": "H04-S07",
@@ -1627,21 +1858,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 4,
     "hubBoss": "Ohio River Crossing",
     "status": "installed",
-    "lengthM": 2910.5501404892343,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.5,
+      4.5
+    ],
+    "lengthM": 5515.915823177931,
     "laps": 1,
-    "estimatedDrivingSeconds": 182,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 215,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.465631,
-      "lon": -81.766559
+      "lat": 39.457907,
+      "lon": -81.772998
     },
     "finishGps": {
-      "lat": 39.474645,
-      "lon": -81.743409
+      "lat": 39.478165,
+      "lon": -81.734879
     },
     "surface": [
       "dirt"
@@ -1655,15 +1892,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H04-S07.json",
+    "lightingPreset": "morning",
     "raceRef": "Washington County western covered-bridge gravel loop",
+    "displayName": "Washington County western covered-bridge gravel loop",
     "documentPath": "races/Washington County western covered-bridge gravel loop/document.json",
     "hubRaceRef": "Ohio River Crossing",
-    "sceneryCount": 128,
+    "sceneryCount": 242,
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": "",
-    "displayName": "Washington County western covered-bridge gravel loop"
+    "conditionNotes": ""
   },
   {
     "id": "H04-S08",
@@ -1676,14 +1914,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 4,
     "hubBoss": "Ohio River Crossing",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 452.52462094450675,
-    "laps": 4,
-    "estimatedDrivingSeconds": 164,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 8,
+    "estimatedDrivingSeconds": 230,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 39.1976582,
       "lon": -81.651774
@@ -1704,15 +1948,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H04-S08.json",
+    "lightingPreset": "night",
     "raceRef": "Ohio Valley Speedway — Washington, West Virginia",
+    "displayName": "Ohio Valley Speedway — Washington, West Virginia",
     "documentPath": "races/Ohio Valley Speedway %E2%80%94 Washington%2C West Virginia/document.json",
     "hubRaceRef": "Ohio River Crossing",
     "sceneryCount": 11,
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": "",
-    "displayName": "Ohio Valley Speedway — Washington, West Virginia"
+    "conditionNotes": ""
   },
   {
     "id": "H04-S09",
@@ -1725,14 +1970,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 4,
     "hubBoss": "Ohio River Crossing",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 3646.183002485484,
-    "laps": 1,
-    "estimatedDrivingSeconds": 232,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 2,
+    "estimatedDrivingSeconds": 265,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 40.6861723,
       "lon": -82.6391477
@@ -1753,15 +2004,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H04-S09.json",
+    "lightingPreset": "evening",
     "raceRef": "Mid-Ohio Sports Car Course — Lexington",
+    "displayName": "Mid-Ohio Sports Car Course — Lexington",
     "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Lexington/document.json",
     "hubRaceRef": "Ohio River Crossing",
     "sceneryCount": 148,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Mid-Ohio Sports Car Course — Lexington"
+    "conditionNotes": ""
   },
   {
     "id": "H05-S01",
@@ -1774,21 +2026,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 5,
     "hubBoss": "Ozark Backroads",
     "status": "installed",
-    "lengthM": 3605.56214324434,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 9558.614614216907,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 230,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.392813,
-      "lon": -91.4412394
+      "lat": 37.3636128,
+      "lon": -91.4273456
     },
     "finishGps": {
-      "lat": 37.4088129,
-      "lon": -91.4668357
+      "lat": 37.424185,
+      "lon": -91.468361
     },
     "surface": [
       "asphalt"
@@ -1802,15 +2060,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H05-S01.json",
+    "lightingPreset": "evening",
     "raceRef": "MO 19 — Eminence Current River",
+    "displayName": "MO 19 — Eminence / Current River",
     "documentPath": "races/MO 19 %E2%80%94 Eminence Current River/document.json",
     "hubRaceRef": "Ozark Backroads",
-    "sceneryCount": 158,
+    "sceneryCount": 422,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "MO 19 — Eminence / Current River"
+    "conditionNotes": ""
   },
   {
     "id": "H05-S02",
@@ -1823,21 +2082,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 5,
     "hubBoss": "Ozark Backroads",
     "status": "installed",
-    "lengthM": 3671.3505607489897,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 9924.985403707671,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 236,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.1392456,
-      "lon": -91.4193955
+      "lat": 37.1457229,
+      "lon": -91.3934988
     },
     "finishGps": {
-      "lat": 37.1468475,
-      "lon": -91.3821088
+      "lat": 37.1479466,
+      "lon": -91.4819358
     },
     "surface": [
       "asphalt"
@@ -1851,15 +2116,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H05-S02.json",
+    "lightingPreset": "noon",
     "raceRef": "MO 106 — Alley Spring approach",
+    "displayName": "MO 106 — Alley Spring approach",
     "documentPath": "races/MO 106 %E2%80%94 Alley Spring approach/document.json",
     "hubRaceRef": "Ozark Backroads",
-    "sceneryCount": 160,
+    "sceneryCount": 438,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "MO 106 — Alley Spring approach"
+    "conditionNotes": ""
   },
   {
     "id": "H05-S03",
@@ -1872,21 +2138,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 5,
     "hubBoss": "Ozark Backroads",
     "status": "installed",
-    "lengthM": 3619.797700848276,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 9507.723590916647,
     "laps": 1,
-    "estimatedDrivingSeconds": 185,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 233,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.1486231,
-      "lon": -91.2302394
+      "lat": 37.1592787,
+      "lon": -91.2038291
     },
     "finishGps": {
-      "lat": 37.15136115,
-      "lon": -91.26025265000001
+      "lat": 37.15154053333333,
+      "lon": -91.28671023333334
     },
     "surface": [
       "asphalt"
@@ -1900,15 +2172,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H05-S03.json",
+    "lightingPreset": "morning",
     "raceRef": "MO 106 — Powder Mill approach",
+    "displayName": "MO 106 — Powder Mill approach",
     "documentPath": "races/MO 106 %E2%80%94 Powder Mill approach/document.json",
     "hubRaceRef": "Ozark Backroads",
-    "sceneryCount": 158,
+    "sceneryCount": 420,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "MO 106 — Powder Mill approach"
+    "conditionNotes": ""
   },
   {
     "id": "H05-S04",
@@ -1921,21 +2194,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 5,
     "hubBoss": "Ozark Backroads",
     "status": "installed",
-    "lengthM": 3467.338604980435,
+    "targetSeconds": 210,
+    "durationLimitedBySource": true,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 4723.025029549931,
     "laps": 1,
-    "estimatedDrivingSeconds": 186,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 135,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.1605391,
-      "lon": -91.2727031
+      "lat": 37.1556212,
+      "lon": -91.2755124
     },
     "finishGps": {
-      "lat": 37.1845383,
-      "lon": -91.2735325
+      "lat": 37.1894258,
+      "lon": -91.2765166
     },
     "surface": [
       "asphalt"
@@ -1949,15 +2228,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H05-S04.json",
+    "lightingPreset": "morning",
     "raceRef": "MO V — Two Rivers access",
+    "displayName": "MO V — Two Rivers access",
     "documentPath": "races/MO V %E2%80%94 Two Rivers access/document.json",
     "hubRaceRef": "Ozark Backroads",
-    "sceneryCount": 152,
+    "sceneryCount": 208,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "MO V — Two Rivers access"
+    "conditionNotes": ""
   },
   {
     "id": "H05-S05",
@@ -1970,21 +2250,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 5,
     "hubBoss": "Ozark Backroads",
     "status": "installed",
-    "lengthM": 3545.0863167075854,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.5,
+      7
+    ],
+    "lengthM": 10180.502174346984,
     "laps": 1,
-    "estimatedDrivingSeconds": 186,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 238,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.107197666666664,
-      "lon": -91.20373413333334
+      "lat": 37.10478855,
+      "lon": -91.2077648
     },
     "finishGps": {
-      "lat": 37.093812,
-      "lon": -91.2349535
+      "lat": 37.1431124,
+      "lon": -91.2416925
     },
     "surface": [
       "asphalt"
@@ -1998,16 +2284,17 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H05-S05.json",
+    "lightingPreset": "evening",
     "raceRef": "MO H NN — Roberts Field access",
+    "displayName": "MO H / NN — Roberts Field access",
     "documentPath": "races/MO H NN %E2%80%94 Roberts Field access/document.json",
     "hubRaceRef": "Ozark Backroads",
-    "sceneryCount": 156,
+    "sceneryCount": 449,
     "installedSurfaces": [
       "asphalt",
       "gravel"
     ],
-    "conditionNotes": "Fictional 2994 damage exposes gravel in intermittent sections of the mapped paved NN access road; geometry is unchanged.",
-    "displayName": "MO H / NN — Roberts Field access"
+    "conditionNotes": "Fictional 2994 damage exposes gravel in intermittent sections of the mapped paved NN access road; geometry is unchanged."
   },
   {
     "id": "H05-S06",
@@ -2020,21 +2307,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 5,
     "hubBoss": "Ozark Backroads",
     "status": "installed",
-    "lengthM": 2885.947436275742,
+    "targetSeconds": 210,
+    "durationLimitedBySource": true,
+    "roadWidthRangeM": [
+      4.5,
+      4.5
+    ],
+    "lengthM": 4168.244959771862,
     "laps": 1,
-    "estimatedDrivingSeconds": 193,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 187,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.255719,
-      "lon": -91.3875913
+      "lat": 37.2506187,
+      "lon": -91.3998178
     },
     "finishGps": {
-      "lat": 37.2575952,
-      "lon": -91.3593408
+      "lat": 37.2576837,
+      "lon": -91.3591299
     },
     "surface": [
       "gravel"
@@ -2048,15 +2341,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H05-S06.json",
+    "lightingPreset": "morning",
     "raceRef": "Jerktail Landing gravel road",
+    "displayName": "Jerktail Landing gravel road",
     "documentPath": "races/Jerktail Landing gravel road/document.json",
     "hubRaceRef": "Ozark Backroads",
-    "sceneryCount": 126,
+    "sceneryCount": 182,
     "installedSurfaces": [
       "gravel"
     ],
-    "conditionNotes": "",
-    "displayName": "Jerktail Landing gravel road"
+    "conditionNotes": ""
   },
   {
     "id": "H05-S07",
@@ -2069,21 +2363,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 5,
     "hubBoss": "Ozark Backroads",
     "status": "installed",
-    "lengthM": 3653.013338128302,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7.9152,
+      7.9152
+    ],
+    "lengthM": 12783.862035510921,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 229,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 36.9507869,
       "lon": -91.1714166
     },
     "finishGps": {
-      "lat": 36.9598195,
-      "lon": -91.2101159
+      "lat": 36.987433599999996,
+      "lon": -91.29404599
     },
     "surface": [
       "asphalt"
@@ -2097,15 +2397,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H05-S07.json",
+    "lightingPreset": "noon",
     "raceRef": "US 60 — Winona Van Buren",
+    "displayName": "US 60 — Winona / Van Buren",
     "documentPath": "races/US 60 %E2%80%94 Winona Van Buren/document.json",
     "hubRaceRef": "Ozark Backroads",
-    "sceneryCount": 160,
+    "sceneryCount": 566,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "US 60 — Winona / Van Buren"
+    "conditionNotes": ""
   },
   {
     "id": "H05-S08",
@@ -2118,21 +2419,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 5,
     "hubBoss": "Ozark Backroads",
     "status": "installed",
-    "lengthM": 2889.7142882817784,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.5,
+      4.5
+    ],
+    "lengthM": 6158.077615918233,
     "laps": 1,
-    "estimatedDrivingSeconds": 182,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 220,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 36.700591,
-      "lon": -92.783452
+      "lat": 36.719494,
+      "lon": -92.780394
     },
     "finishGps": {
-      "lat": 36.684825,
-      "lon": -92.797472
+      "lat": 36.680618,
+      "lon": -92.798048
     },
     "surface": [
       "asphalt",
@@ -2147,16 +2454,17 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H05-S08.json",
+    "lightingPreset": "morning",
     "raceRef": "Glade Top Trail — Mark Twain National Forest",
+    "displayName": "Glade Top Trail — Mark Twain National Forest",
     "documentPath": "races/Glade Top Trail %E2%80%94 Mark Twain National Forest/document.json",
     "hubRaceRef": "Ozark Backroads",
-    "sceneryCount": 126,
+    "sceneryCount": 270,
     "installedSurfaces": [
       "asphalt",
       "gravel"
     ],
-    "conditionNotes": "",
-    "displayName": "Glade Top Trail — Mark Twain National Forest"
+    "conditionNotes": ""
   },
   {
     "id": "H05-S09",
@@ -2169,14 +2477,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 5,
     "hubBoss": "Ozark Backroads",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 6408.47998240462,
     "laps": 1,
-    "estimatedDrivingSeconds": 376,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 218,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 38.2785903,
       "lon": -92.8871805
@@ -2197,15 +2511,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H05-S09.json",
+    "lightingPreset": "morning",
     "raceRef": "Ozarks International Raceway — Gravois Mills",
+    "displayName": "Ozarks International Raceway — Gravois Mills",
     "documentPath": "races/Ozarks International Raceway %E2%80%94 Gravois Mills/document.json",
     "hubRaceRef": "Ozark Backroads",
     "sceneryCount": 273,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Ozarks International Raceway — Gravois Mills"
+    "conditionNotes": ""
   },
   {
     "id": "H06-S01",
@@ -2218,14 +2533,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 6,
     "hubBoss": "Data Center City",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 2809.102998820318,
-    "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 2,
+    "estimatedDrivingSeconds": 216,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 38.6520702,
       "lon": -90.1341055
@@ -2246,15 +2567,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H06-S01.json",
+    "lightingPreset": "noon",
     "raceRef": "World Wide Technology Raceway — road course",
+    "displayName": "World Wide Technology Raceway — road course",
     "documentPath": "races/World Wide Technology Raceway %E2%80%94 road course/document.json",
     "hubRaceRef": "Data Center City",
     "sceneryCount": 107,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "World Wide Technology Raceway — road course"
+    "conditionNotes": ""
   },
   {
     "id": "H06-S02",
@@ -2267,14 +2589,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 6,
     "hubBoss": "Data Center City",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 2042.8492138196227,
-    "laps": 2,
-    "estimatedDrivingSeconds": 225,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 4,
+    "estimatedDrivingSeconds": 244,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 38.6520702,
       "lon": -90.1341055
@@ -2295,15 +2623,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H06-S02.json",
+    "lightingPreset": "night",
     "raceRef": "World Wide Technology Raceway — oval",
+    "displayName": "World Wide Technology Raceway — oval",
     "documentPath": "races/World Wide Technology Raceway %E2%80%94 oval/document.json",
     "hubRaceRef": "Data Center City",
     "sceneryCount": 88,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "World Wide Technology Raceway — oval"
+    "conditionNotes": ""
   },
   {
     "id": "H06-S03",
@@ -2316,10 +2645,16 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 6,
     "hubBoss": "Data Center City",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
     "lengthM": 402.336,
     "laps": 1,
     "estimatedDrivingSeconds": null,
@@ -2344,15 +2679,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H06-S03.json",
+    "lightingPreset": "night",
     "raceRef": "World Wide Technology Raceway — drag strip",
+    "displayName": "World Wide Technology Raceway — drag strip",
     "documentPath": "races/World Wide Technology Raceway %E2%80%94 drag strip/document.json",
     "hubRaceRef": "Data Center City",
     "sceneryCount": 16,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "World Wide Technology Raceway — drag strip"
+    "conditionNotes": ""
   },
   {
     "id": "H06-S04",
@@ -2365,21 +2701,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 6,
     "hubBoss": "Data Center City",
     "status": "installed",
-    "lengthM": 3673.1303008409573,
+    "targetSeconds": 210,
+    "durationLimitedBySource": true,
+    "roadWidthRangeM": [
+      7.9152,
+      18.888
+    ],
+    "lengthM": 10171.162477288091,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 178,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.630894,
-      "lon": -90.2319881
+      "lat": 38.6296783,
+      "lon": -90.2704475
     },
     "finishGps": {
-      "lat": 38.620865550000005,
-      "lon": -90.1918272
+      "lat": 38.6227212,
+      "lon": -90.1648784
     },
     "surface": [
       "asphalt"
@@ -2393,15 +2735,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H06-S04.json",
+    "lightingPreset": "morning",
     "raceRef": "I-64 — St. Louis downtown approaches",
+    "displayName": "I-64 — St. Louis downtown approaches",
     "documentPath": "races/I-64 %E2%80%94 St. Louis downtown approaches/document.json",
     "hubRaceRef": "Data Center City",
-    "sceneryCount": 162,
+    "sceneryCount": 450,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "I-64 — St. Louis downtown approaches"
+    "conditionNotes": ""
   },
   {
     "id": "H06-S05",
@@ -2414,21 +2757,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 6,
     "hubBoss": "Data Center City",
     "status": "installed",
-    "lengthM": 2524.056575414854,
+    "targetSeconds": 210,
+    "durationLimitedBySource": true,
+    "roadWidthRangeM": [
+      7.9152,
+      15.2304
+    ],
+    "lengthM": 9055.464203459254,
     "laps": 1,
-    "estimatedDrivingSeconds": 127,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 166,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.642995,
-      "lon": -90.1884835
+      "lat": 38.6399136,
+      "lon": -90.1345161
     },
     "finishGps": {
-      "lat": 38.6485579,
-      "lon": -90.1610633
+      "lat": 38.670187,
+      "lon": -90.2022514
     },
     "surface": [
       "asphalt"
@@ -2442,15 +2791,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H06-S05.json",
+    "lightingPreset": "noon",
     "raceRef": "I-70 — Stan Musial Veterans Memorial Bridge",
+    "displayName": "I-70 — Stan Musial Veterans Memorial Bridge",
     "documentPath": "races/I-70 %E2%80%94 Stan Musial Veterans Memorial Bridge/document.json",
     "hubRaceRef": "Data Center City",
-    "sceneryCount": 110,
+    "sceneryCount": 400,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "I-70 — Stan Musial Veterans Memorial Bridge"
+    "conditionNotes": ""
   },
   {
     "id": "H06-S06",
@@ -2463,21 +2813,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 6,
     "hubBoss": "Data Center City",
     "status": "installed",
-    "lengthM": 3656.0834073886717,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 12069.370021673292,
     "laps": 1,
-    "estimatedDrivingSeconds": 186,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 217,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.9347457,
-      "lon": -90.3002223
+      "lat": 38.9510944,
+      "lon": -90.3623611
     },
     "finishGps": {
-      "lat": 38.9364564,
-      "lon": -90.2953116
+      "lat": 38.9368535,
+      "lon": -90.3244619
     },
     "surface": [
       "asphalt"
@@ -2491,15 +2847,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H06-S06.json",
+    "lightingPreset": "noon",
     "raceRef": "IL 100 — Great River Road bluffs",
+    "displayName": "IL 100 — Great River Road bluffs",
     "documentPath": "races/IL 100 %E2%80%94 Great River Road bluffs/document.json",
     "hubRaceRef": "Data Center City",
-    "sceneryCount": 150,
+    "sceneryCount": 524,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "IL 100 — Great River Road bluffs"
+    "conditionNotes": ""
   },
   {
     "id": "H06-S07",
@@ -2512,21 +2869,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 6,
     "hubBoss": "Data Center City",
     "status": "installed",
-    "lengthM": 3655.5888508530547,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 10322.463179225579,
     "laps": 1,
-    "estimatedDrivingSeconds": 185,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 227,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.59980973333333,
-      "lon": -90.80032156666667
+      "lat": 38.64465333333333,
+      "lon": -90.77510913333333
     },
     "finishGps": {
-      "lat": 38.6285234,
-      "lon": -90.7809231
+      "lat": 38.5827725,
+      "lon": -90.8426723
     },
     "surface": [
       "asphalt"
@@ -2540,15 +2903,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H06-S07.json",
+    "lightingPreset": "evening",
     "raceRef": "MO 94 — Defiance Augusta",
+    "displayName": "MO 94 — Defiance / Augusta",
     "documentPath": "races/MO 94 %E2%80%94 Defiance Augusta/document.json",
     "hubRaceRef": "Data Center City",
-    "sceneryCount": 160,
+    "sceneryCount": 456,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "MO 94 — Defiance / Augusta"
+    "conditionNotes": ""
   },
   {
     "id": "H06-S08",
@@ -2561,14 +2925,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 6,
     "hubBoss": "Data Center City",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 1242.782987969157,
-    "laps": 2,
-    "estimatedDrivingSeconds": 217,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 4,
+    "estimatedDrivingSeconds": 269,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 38.6487593,
       "lon": -90.1347779
@@ -2589,15 +2959,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H06-S08.json",
+    "lightingPreset": "morning",
     "raceRef": "Gateway Kartplex — WWT complex",
+    "displayName": "Gateway Kartplex — WWT complex",
     "documentPath": "races/Gateway Kartplex %E2%80%94 WWT complex/document.json",
     "hubRaceRef": "Data Center City",
     "sceneryCount": 34,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Gateway Kartplex — WWT complex"
+    "conditionNotes": ""
   },
   {
     "id": "H06-S09",
@@ -2610,14 +2981,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 6,
     "hubBoss": "Data Center City",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 528.2522965377102,
-    "laps": 3,
-    "estimatedDrivingSeconds": 175,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 6,
+    "estimatedDrivingSeconds": 224,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 38.2713224,
       "lon": -90.3993536
@@ -2638,15 +3015,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H06-S09.json",
+    "lightingPreset": "evening",
     "raceRef": "Federated Auto Parts Raceway at I-55 — Pevely",
+    "displayName": "Federated Auto Parts Raceway at I-55 — Pevely",
     "documentPath": "races/Federated Auto Parts Raceway at I-55 %E2%80%94 Pevely/document.json",
     "hubRaceRef": "Data Center City",
     "sceneryCount": 14,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Federated Auto Parts Raceway at I-55 — Pevely"
+    "conditionNotes": ""
   },
   {
     "id": "H07-S01",
@@ -2659,17 +3037,23 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 7,
     "hubBoss": "Historic Route 66",
     "status": "installed",
-    "lengthM": 3656.355302685853,
+    "targetSeconds": 210,
+    "durationLimitedBySource": true,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 9613.434262249604,
     "laps": 1,
-    "estimatedDrivingSeconds": 185,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 181,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 35.22651725,
-      "lon": -100.499742
+      "lat": 35.2264851,
+      "lon": -100.4343334
     },
     "finishGps": {
       "lat": 35.2245041,
@@ -2687,15 +3071,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H07-S01.json",
+    "lightingPreset": "noon",
     "raceRef": "Old Route 66 — Shamrock McLean",
+    "displayName": "Old Route 66 — Shamrock / McLean",
     "documentPath": "races/Old Route 66 %E2%80%94 Shamrock McLean/document.json",
     "hubRaceRef": "Historic Route 66",
-    "sceneryCount": 160,
+    "sceneryCount": 426,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Old Route 66 — Shamrock / McLean"
+    "conditionNotes": ""
   },
   {
     "id": "H07-S02",
@@ -2708,24 +3093,31 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 7,
     "hubBoss": "Historic Route 66",
     "status": "installed",
-    "lengthM": 3684.9820089768446,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 13366.97741231721,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 215,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 35.20737619047619,
-      "lon": -101.31342123809524
+      "lat": 35.2073004,
+      "lon": -101.2328914
     },
     "finishGps": {
-      "lat": 35.207411,
-      "lon": -101.3539768
+      "lat": 35.20756266666667,
+      "lon": -101.37999461111112
     },
     "surface": [
-      "asphalt"
+      "asphalt",
+      "gravel"
     ],
     "warnings": [
       "Banking is set to 0°; set banking per segment in the editor.",
@@ -2736,15 +3128,17 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H07-S02.json",
+    "lightingPreset": "night",
     "raceRef": "Old Route 66 — Groom Conway",
+    "displayName": "Old Route 66 — Groom / Conway",
     "documentPath": "races/Old Route 66 %E2%80%94 Groom Conway/document.json",
     "hubRaceRef": "Historic Route 66",
-    "sceneryCount": 162,
+    "sceneryCount": 592,
     "installedSurfaces": [
+      "gravel",
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Old Route 66 — Groom / Conway"
+    "conditionNotes": ""
   },
   {
     "id": "H07-S03",
@@ -2757,21 +3151,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 7,
     "hubBoss": "Historic Route 66",
     "status": "installed",
-    "lengthM": 3558.6224533821965,
+    "targetSeconds": 210,
+    "durationLimitedBySource": true,
+    "roadWidthRangeM": [
+      7,
+      13.4
+    ],
+    "lengthM": 4312.120180357189,
     "laps": 1,
-    "estimatedDrivingSeconds": 180,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 83,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 35.2076717,
       "lon": -101.8370491
     },
     "finishGps": {
-      "lat": 35.211241550000004,
-      "lon": -101.8757620625
+      "lat": 35.2112314,
+      "lon": -101.8840558
     },
     "surface": [
       "asphalt"
@@ -2785,15 +3185,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H07-S03.json",
+    "lightingPreset": "noon",
     "raceRef": "Amarillo — Historic 6th Avenue alignment",
+    "displayName": "Amarillo — Historic 6th Avenue alignment",
     "documentPath": "races/Amarillo %E2%80%94 Historic 6th Avenue alignment/document.json",
     "hubRaceRef": "Historic Route 66",
-    "sceneryCount": 156,
+    "sceneryCount": 190,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Amarillo — Historic 6th Avenue alignment"
+    "conditionNotes": ""
   },
   {
     "id": "H07-S04",
@@ -2806,21 +3207,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 7,
     "hubBoss": "Historic Route 66",
     "status": "installed",
-    "lengthM": 3682.8185641702257,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.2576,
+      7.9152
+    ],
+    "lengthM": 11643.529197550783,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 216,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 35.273129303125,
-      "lon": -102.5991977515625
+      "lat": 35.2706096,
+      "lon": -102.566222
     },
     "finishGps": {
-      "lat": 35.2686742,
-      "lon": -102.5593634
+      "lat": 35.27244725384615,
+      "lon": -102.62302243076923
     },
     "surface": [
       "asphalt"
@@ -2834,15 +3241,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H07-S04.json",
+    "lightingPreset": "night",
     "raceRef": "Old Route 66 — Vega Adrian",
+    "displayName": "Old Route 66 — Vega / Adrian",
     "documentPath": "races/Old Route 66 %E2%80%94 Vega Adrian/document.json",
     "hubRaceRef": "Historic Route 66",
-    "sceneryCount": 162,
+    "sceneryCount": 492,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Old Route 66 — Vega / Adrian"
+    "conditionNotes": ""
   },
   {
     "id": "H07-S05",
@@ -2855,21 +3263,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 7,
     "hubBoss": "Historic Route 66",
     "status": "installed",
-    "lengthM": 3681.9956190276544,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7.9152,
+      7.9152
+    ],
+    "lengthM": 13648.110422787497,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 219,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 35.19540153333333,
-      "lon": -102.95788420000001
+      "lat": 35.18399796,
+      "lon": -102.99746784
     },
     "finishGps": {
-      "lat": 35.1844168,
-      "lon": -102.9958501
+      "lat": 35.229217,
+      "lon": -102.858708
     },
     "surface": [
       "asphalt"
@@ -2883,15 +3297,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H07-S05.json",
+    "lightingPreset": "noon",
     "raceRef": "Old Route 66 — Adrian Glenrio",
+    "displayName": "Old Route 66 — Adrian / Glenrio",
     "documentPath": "races/Old Route 66 %E2%80%94 Adrian Glenrio/document.json",
     "hubRaceRef": "Historic Route 66",
-    "sceneryCount": 162,
+    "sceneryCount": 604,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Old Route 66 — Adrian / Glenrio"
+    "conditionNotes": ""
   },
   {
     "id": "H07-S06",
@@ -2904,21 +3319,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 7,
     "hubBoss": "Historic Route 66",
     "status": "installed",
-    "lengthM": 2917.3040327999656,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      3.8000000000000003,
+      7
+    ],
+    "lengthM": 6711.6275515428115,
     "laps": 1,
-    "estimatedDrivingSeconds": 181,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 220,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.979893,
-      "lon": -101.68206
+      "lat": 34.9656516,
+      "lon": -101.6714274
     },
     "finishGps": {
-      "lat": 34.9803803,
-      "lon": -101.6916489
+      "lat": 34.985053,
+      "lon": -101.702211
     },
     "surface": [
       "asphalt"
@@ -2932,15 +3353,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H07-S06.json",
+    "lightingPreset": "night",
     "raceRef": "Palo Duro Canyon — Park Road 5",
+    "displayName": "Palo Duro Canyon — Park Road 5",
     "documentPath": "races/Palo Duro Canyon %E2%80%94 Park Road 5/document.json",
     "hubRaceRef": "Historic Route 66",
-    "sceneryCount": 123,
+    "sceneryCount": 288,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Palo Duro Canyon — Park Road 5"
+    "conditionNotes": ""
   },
   {
     "id": "H07-S07",
@@ -2953,10 +3375,16 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 7,
     "hubBoss": "Historic Route 66",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      12,
+      12
+    ],
     "lengthM": 402.33600000000007,
     "laps": 1,
     "estimatedDrivingSeconds": null,
@@ -2981,15 +3409,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H07-S07.json",
+    "lightingPreset": "noon",
     "raceRef": "Amarillo Dragway",
+    "displayName": "Amarillo Dragway",
     "documentPath": "races/Amarillo Dragway/document.json",
     "hubRaceRef": "Historic Route 66",
     "sceneryCount": 16,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Amarillo Dragway"
+    "conditionNotes": ""
   },
   {
     "id": "H07-S08",
@@ -3002,21 +3431,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 7,
     "hubBoss": "Historic Route 66",
     "status": "installed",
-    "lengthM": 3608.8203994057085,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      13.4
+    ],
+    "lengthM": 12489.132018278198,
     "laps": 1,
-    "estimatedDrivingSeconds": 185,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 230,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 35.61089364,
-      "lon": -98.30566341
+      "lat": 35.536011200000004,
+      "lon": -98.33304625
     },
     "finishGps": {
-      "lat": 35.600254285714286,
-      "lon": -98.30035635714286
+      "lat": 35.6115971,
+      "lon": -98.3064905
     },
     "surface": [
       "asphalt"
@@ -3030,15 +3465,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H07-S08.json",
+    "lightingPreset": "morning",
     "raceRef": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+    "displayName": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
     "documentPath": "races/Route 66 %E2%80%94 Bridgeport Pony Bridge%2C Oklahoma/document.json",
     "hubRaceRef": "Historic Route 66",
-    "sceneryCount": 147,
+    "sceneryCount": 542,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Route 66 — Bridgeport Pony Bridge, Oklahoma"
+    "conditionNotes": ""
   },
   {
     "id": "H07-S09",
@@ -3051,14 +3487,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 7,
     "hubBoss": "Historic Route 66",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 2832.8746607882563,
-    "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 2,
+    "estimatedDrivingSeconds": 218,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 36.2186724,
       "lon": -96.5903689
@@ -3079,15 +3521,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H07-S09.json",
+    "lightingPreset": "evening",
     "raceRef": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+    "displayName": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
     "documentPath": "races/Hallett Motor Racing Circuit %E2%80%94 Jennings%2C Oklahoma/document.json",
     "hubRaceRef": "Historic Route 66",
     "sceneryCount": 120,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Hallett Motor Racing Circuit — Jennings, Oklahoma"
+    "conditionNotes": ""
   },
   {
     "id": "H08-S01",
@@ -3100,21 +3543,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 8,
     "hubBoss": "Pikes Peak Highway",
     "status": "installed",
-    "lengthM": 2891.8424508919147,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      3,
+      7
+    ],
+    "lengthM": 5350.622257292952,
     "laps": 1,
-    "estimatedDrivingSeconds": 186,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 217,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.7866853,
-      "lon": -104.907344
+      "lat": 38.7912025,
+      "lon": -104.904879
     },
     "finishGps": {
-      "lat": 38.7941117,
-      "lon": -104.8982578
+      "lat": 38.8076836,
+      "lon": -104.8782831
     },
     "surface": [
       "asphalt",
@@ -3129,16 +3578,17 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H08-S01.json",
+    "lightingPreset": "night",
     "raceRef": "Gold Camp Road — Colorado Springs",
+    "displayName": "Gold Camp Road — Colorado Springs",
     "documentPath": "races/Gold Camp Road %E2%80%94 Colorado Springs/document.json",
     "hubRaceRef": "Pikes Peak Highway",
-    "sceneryCount": 124,
+    "sceneryCount": 236,
     "installedSurfaces": [
       "dirt",
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Gold Camp Road — Colorado Springs"
+    "conditionNotes": ""
   },
   {
     "id": "H08-S02",
@@ -3151,21 +3601,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 8,
     "hubBoss": "Pikes Peak Highway",
     "status": "installed",
-    "lengthM": 1995.7207067133322,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.5,
+      4.5
+    ],
+    "lengthM": 3562.521631719897,
     "laps": 1,
-    "estimatedDrivingSeconds": 182,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 214,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.6260662,
-      "lon": -105.1229575
+      "lat": 38.6302753,
+      "lon": -105.1188835
     },
     "finishGps": {
-      "lat": 38.6152954,
-      "lon": -105.1331177
+      "lat": 38.6093401,
+      "lon": -105.1314698
     },
     "surface": [
       "dirt"
@@ -3179,15 +3635,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H08-S02.json",
+    "lightingPreset": "morning",
     "raceRef": "Phantom Canyon Road — Gold Belt Tour",
+    "displayName": "Phantom Canyon Road — Gold Belt Tour",
     "documentPath": "races/Phantom Canyon Road %E2%80%94 Gold Belt Tour/document.json",
     "hubRaceRef": "Pikes Peak Highway",
-    "sceneryCount": 85,
+    "sceneryCount": 155,
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": "",
-    "displayName": "Phantom Canyon Road — Gold Belt Tour"
+    "conditionNotes": ""
   },
   {
     "id": "H08-S03",
@@ -3200,21 +3657,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 8,
     "hubBoss": "Pikes Peak Highway",
     "status": "installed",
-    "lengthM": 2153.297429287957,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.5,
+      4.5
+    ],
+    "lengthM": 3665.5617567542326,
     "laps": 1,
-    "estimatedDrivingSeconds": 191,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 220,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.6833681,
-      "lon": -105.2117939
+      "lat": 38.6769628,
+      "lon": -105.2135941
     },
     "finishGps": {
-      "lat": 38.6963372,
-      "lon": -105.20394
+      "lat": 38.6978049,
+      "lon": -105.2014051
     },
     "surface": [
       "gravel"
@@ -3228,15 +3691,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H08-S03.json",
+    "lightingPreset": "morning",
     "raceRef": "Shelf Road — Gold Belt Tour",
+    "displayName": "Shelf Road — Gold Belt Tour",
     "documentPath": "races/Shelf Road %E2%80%94 Gold Belt Tour/document.json",
     "hubRaceRef": "Pikes Peak Highway",
-    "sceneryCount": 92,
+    "sceneryCount": 155,
     "installedSurfaces": [
       "gravel"
     ],
-    "conditionNotes": "",
-    "displayName": "Shelf Road — Gold Belt Tour"
+    "conditionNotes": ""
   },
   {
     "id": "H08-S04",
@@ -3249,21 +3713,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 8,
     "hubBoss": "Pikes Peak Highway",
     "status": "installed",
-    "lengthM": 3247.9761644634045,
+    "targetSeconds": 210,
+    "durationLimitedBySource": true,
+    "roadWidthRangeM": [
+      3.8000000000000003,
+      7
+    ],
+    "lengthM": 4136.5831542047035,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 124,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.4667238,
-      "lon": -105.2535229
+      "lat": 38.4724789,
+      "lon": -105.2584117
     },
     "finishGps": {
-      "lat": 38.4485257,
-      "lon": -105.246586
+      "lat": 38.448543,
+      "lon": -105.2462087
     },
     "surface": [
       "asphalt"
@@ -3277,15 +3747,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H08-S04.json",
+    "lightingPreset": "night",
     "raceRef": "Skyline Drive — Cañon City",
+    "displayName": "Skyline Drive — Cañon City",
     "documentPath": "races/Skyline Drive %E2%80%94 Ca%C3%B1on City/document.json",
     "hubRaceRef": "Pikes Peak Highway",
-    "sceneryCount": 134,
+    "sceneryCount": 171,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Skyline Drive — Cañon City"
+    "conditionNotes": ""
   },
   {
     "id": "H08-S05",
@@ -3298,21 +3769,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 8,
     "hubBoss": "Pikes Peak Highway",
     "status": "installed",
-    "lengthM": 3487.947182107508,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7.9152,
+      7.9152
+    ],
+    "lengthM": 9545.784435117837,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 226,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 38.8737262,
       "lon": -104.928346
     },
     "finishGps": {
-      "lat": 38.8898383,
-      "lon": -104.9581113
+      "lat": 38.9270881,
+      "lon": -104.9976586
     },
     "surface": [
       "asphalt"
@@ -3326,15 +3803,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H08-S05.json",
+    "lightingPreset": "morning",
     "raceRef": "US 24 — Ute Pass Woodland Park",
+    "displayName": "US 24 — Ute Pass / Woodland Park",
     "documentPath": "races/US 24 %E2%80%94 Ute Pass Woodland Park/document.json",
     "hubRaceRef": "Pikes Peak Highway",
-    "sceneryCount": 152,
+    "sceneryCount": 422,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "US 24 — Ute Pass / Woodland Park"
+    "conditionNotes": ""
   },
   {
     "id": "H08-S06",
@@ -3347,21 +3825,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 8,
     "hubBoss": "Pikes Peak Highway",
     "status": "installed",
-    "lengthM": 3293.785595825838,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 7249.3324880833225,
     "laps": 1,
-    "estimatedDrivingSeconds": 186,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 224,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.847776,
-      "lon": -105.1594975
+      "lat": 38.8577747,
+      "lon": -105.154269
     },
     "finishGps": {
-      "lat": 38.8349029,
-      "lon": -105.1376995
+      "lat": 38.8160278,
+      "lon": -105.1305734
     },
     "surface": [
       "asphalt"
@@ -3375,15 +3859,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H08-S06.json",
+    "lightingPreset": "morning",
     "raceRef": "CO 67 — Woodland Park Cripple Creek",
+    "displayName": "CO 67 — Woodland Park / Cripple Creek",
     "documentPath": "races/CO 67 %E2%80%94 Woodland Park Cripple Creek/document.json",
     "hubRaceRef": "Pikes Peak Highway",
-    "sceneryCount": 144,
+    "sceneryCount": 320,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "CO 67 — Woodland Park / Cripple Creek"
+    "conditionNotes": ""
   },
   {
     "id": "H08-S07",
@@ -3396,21 +3881,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 8,
     "hubBoss": "Pikes Peak Highway",
     "status": "installed",
-    "lengthM": 2878.1354349564886,
+    "targetSeconds": 210,
+    "durationLimitedBySource": true,
+    "roadWidthRangeM": [
+      3.8000000000000003,
+      7
+    ],
+    "lengthM": 4558.904448227839,
     "laps": 1,
-    "estimatedDrivingSeconds": 181,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 163,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.8758435,
-      "lon": -104.8782822
+      "lat": 38.8678581,
+      "lon": -104.8880079
     },
     "finishGps": {
-      "lat": 38.8678317,
-      "lon": -104.8790088
+      "lat": 38.8797917,
+      "lon": -104.8837848
     },
     "surface": [
       "asphalt"
@@ -3424,15 +3915,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H08-S07.json",
+    "lightingPreset": "night",
     "raceRef": "Garden of the Gods — paved park road",
+    "displayName": "Garden of the Gods — paved park road",
     "documentPath": "races/Garden of the Gods %E2%80%94 paved park road/document.json",
     "hubRaceRef": "Pikes Peak Highway",
-    "sceneryCount": 122,
+    "sceneryCount": 190,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Garden of the Gods — paved park road"
+    "conditionNotes": ""
   },
   {
     "id": "H08-S08",
@@ -3445,14 +3937,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 8,
     "hubBoss": "Pikes Peak Highway",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 2115.777658134792,
-    "laps": 1,
-    "estimatedDrivingSeconds": 138,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 3,
+    "estimatedDrivingSeconds": 249,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 38.5932377,
       "lon": -104.6791754
@@ -3473,6 +3971,7 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H08-S08.json",
+    "lightingPreset": "noon",
     "raceRef": "Pikes Peak International Raceway — Fountain",
     "displayName": "Pikes Peak International Raceway — Fountain",
     "documentPath": "races/Pikes Peak International Raceway %E2%80%94 Fountain/document.json",
@@ -3494,14 +3993,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 8,
     "hubBoss": "Pikes Peak Highway",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 3513.511978620278,
-    "laps": 1,
-    "estimatedDrivingSeconds": 218,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 2,
+    "estimatedDrivingSeconds": 251,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 38.3020531,
       "lon": -104.6742564
@@ -3522,15 +4027,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H08-S09.json",
+    "lightingPreset": "evening",
     "raceRef": "Pueblo Motorsports Park — road course or drag strip",
+    "displayName": "Pueblo Motorsports Park — road course or drag strip",
     "documentPath": "races/Pueblo Motorsports Park %E2%80%94 road course or drag strip/document.json",
     "hubRaceRef": "Pikes Peak Highway",
     "sceneryCount": 149,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Pueblo Motorsports Park — road course or drag strip"
+    "conditionNotes": ""
   },
   {
     "id": "H09-S01",
@@ -3543,21 +4049,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 9,
     "hubBoss": "Moki Dugway",
     "status": "installed",
-    "lengthM": 2336.825563808947,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 4253.534521032385,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 214,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.3000971,
-      "lon": -109.851184
+      "lat": 37.2846865,
+      "lon": -109.8541331
     },
     "finishGps": {
-      "lat": 37.3161637,
-      "lon": -109.8546172
+      "lat": 37.3160144,
+      "lon": -109.8553468
     },
     "surface": [
       "dirt"
@@ -3571,15 +4083,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H09-S01.json",
+    "lightingPreset": "noon",
     "raceRef": "Valley of the Gods Road — San Juan CR 242",
+    "displayName": "Valley of the Gods Road — San Juan CR 242",
     "documentPath": "races/Valley of the Gods Road %E2%80%94 San Juan CR 242/document.json",
     "hubRaceRef": "Moki Dugway",
-    "sceneryCount": 100,
+    "sceneryCount": 184,
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": "",
-    "displayName": "Valley of the Gods Road — San Juan CR 242"
+    "conditionNotes": ""
   },
   {
     "id": "H09-S02",
@@ -3592,17 +4105,23 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 9,
     "hubBoss": "Moki Dugway",
     "status": "installed",
-    "lengthM": 2714.6100512064804,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 5663.701415249794,
     "laps": 1,
-    "estimatedDrivingSeconds": 186,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 218,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.2429379,
-      "lon": -109.97711000000001
+      "lat": 37.2672682,
+      "lon": -109.964421
     },
     "finishGps": {
       "lat": 37.2331083,
@@ -3620,15 +4139,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H09-S02.json",
+    "lightingPreset": "evening",
     "raceRef": "Muley Point Road — CR 241",
+    "displayName": "Muley Point Road — CR 241",
     "documentPath": "races/Muley Point Road %E2%80%94 CR 241/document.json",
     "hubRaceRef": "Moki Dugway",
-    "sceneryCount": 118,
+    "sceneryCount": 250,
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": "",
-    "displayName": "Muley Point Road — CR 241"
+    "conditionNotes": ""
   },
   {
     "id": "H09-S03",
@@ -3641,21 +4161,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 9,
     "hubBoss": "Moki Dugway",
     "status": "installed",
-    "lengthM": 3591.170555470214,
+    "targetSeconds": 210,
+    "durationLimitedBySource": true,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 5673.564905444647,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 120,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.18931045,
-      "lon": -109.91348047
+      "lat": 37.1745677,
+      "lon": -109.9270958
     },
     "finishGps": {
-      "lat": 37.1988527,
-      "lon": -109.8791581
+      "lat": 37.1987708,
+      "lon": -109.8789994
     },
     "surface": [
       "asphalt"
@@ -3669,15 +4195,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H09-S03.json",
+    "lightingPreset": "morning",
     "raceRef": "UT 316 — Goosenecks State Park Road",
+    "displayName": "UT 316 — Goosenecks State Park Road",
     "documentPath": "races/UT 316 %E2%80%94 Goosenecks State Park Road/document.json",
     "hubRaceRef": "Moki Dugway",
-    "sceneryCount": 158,
+    "sceneryCount": 250,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "UT 316 — Goosenecks State Park Road"
+    "conditionNotes": ""
   },
   {
     "id": "H09-S04",
@@ -3690,21 +4217,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 9,
     "hubBoss": "Moki Dugway",
     "status": "installed",
-    "lengthM": 3673.3091213856533,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 12943.098546222609,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 231,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.0552,
-      "lon": -110.0870442
+      "lat": 37.09182774583333,
+      "lon": -110.00522591250001
     },
     "finishGps": {
-      "lat": 37.03239724736843,
-      "lon": -110.11530192105265
+      "lat": 37.029735478947366,
+      "lon": -110.12032176842106
     },
     "surface": [
       "asphalt"
@@ -3718,15 +4251,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H09-S04.json",
+    "lightingPreset": "morning",
     "raceRef": "US 163 — Mexican Hat Monument Valley approach",
+    "displayName": "US 163 — Mexican Hat / Monument Valley approach",
     "documentPath": "races/US 163 %E2%80%94 Mexican Hat Monument Valley approach/document.json",
     "hubRaceRef": "Moki Dugway",
-    "sceneryCount": 162,
+    "sceneryCount": 574,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "US 163 — Mexican Hat / Monument Valley approach"
+    "conditionNotes": ""
   },
   {
     "id": "H09-S05",
@@ -3739,21 +4273,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 9,
     "hubBoss": "Moki Dugway",
     "status": "installed",
-    "lengthM": 3672.1773703093772,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      10.200000000000001
+    ],
+    "lengthM": 13300.35815094136,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 231,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.53760065454545,
-      "lon": -109.7391983
+      "lat": 37.557292857142855,
+      "lon": -109.78800578571429
     },
     "finishGps": {
-      "lat": 37.531923500000005,
-      "lon": -109.69989726666668
+      "lat": 37.5115551,
+      "lon": -109.6564681
     },
     "surface": [
       "asphalt"
@@ -3767,15 +4307,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H09-S05.json",
+    "lightingPreset": "evening",
     "raceRef": "UT 95 — Comb Ridge Cedar Mesa",
+    "displayName": "UT 95 — Comb Ridge / Cedar Mesa",
     "documentPath": "races/UT 95 %E2%80%94 Comb Ridge Cedar Mesa/document.json",
     "hubRaceRef": "Moki Dugway",
-    "sceneryCount": 162,
+    "sceneryCount": 588,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "UT 95 — Comb Ridge / Cedar Mesa"
+    "conditionNotes": ""
   },
   {
     "id": "H09-S06",
@@ -3788,21 +4329,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 9,
     "hubBoss": "Moki Dugway",
     "status": "installed",
-    "lengthM": 3632.5304688942038,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 12056.587295365638,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 238,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.4531119,
-      "lon": -110.5787883
+      "lat": 37.4576174,
+      "lon": -110.587425
     },
     "finishGps": {
-      "lat": 37.4633348,
-      "lon": -110.6161302
+      "lat": 37.4536396,
+      "lon": -110.712795
     },
     "surface": [
       "asphalt"
@@ -3816,15 +4363,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H09-S06.json",
+    "lightingPreset": "night",
     "raceRef": "UT 276 — Halls Crossing approach",
+    "displayName": "UT 276 — Halls Crossing approach",
     "documentPath": "races/UT 276 %E2%80%94 Halls Crossing approach/document.json",
     "hubRaceRef": "Moki Dugway",
-    "sceneryCount": 160,
+    "sceneryCount": 534,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "UT 276 — Halls Crossing approach"
+    "conditionNotes": ""
   },
   {
     "id": "H09-S07",
@@ -3837,21 +4385,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 9,
     "hubBoss": "Moki Dugway",
     "status": "installed",
-    "lengthM": 3675.9862162898003,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      13.4
+    ],
+    "lengthM": 13437.956377409173,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 224,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.40966,
-      "lon": -109.48785065
+      "lat": 37.4417184,
+      "lon": -109.4686055
     },
     "finishGps": {
-      "lat": 37.4381817,
-      "lon": -109.4703234
+      "lat": 37.3311742,
+      "lon": -109.519856
     },
     "surface": [
       "asphalt"
@@ -3865,15 +4419,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H09-S07.json",
+    "lightingPreset": "morning",
     "raceRef": "US 191 — Bluff Blanding",
+    "displayName": "US 191 — Bluff / Blanding",
     "documentPath": "races/US 191 %E2%80%94 Bluff Blanding/document.json",
     "hubRaceRef": "Moki Dugway",
-    "sceneryCount": 162,
+    "sceneryCount": 596,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "US 191 — Bluff / Blanding"
+    "conditionNotes": ""
   },
   {
     "id": "H09-S08",
@@ -3886,21 +4441,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 9,
     "hubBoss": "Moki Dugway",
     "status": "installed",
-    "lengthM": 1894.4313697429943,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.5,
+      4.5
+    ],
+    "lengthM": 3537.946691412174,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 214,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.452124,
-      "lon": -109.8162866
+      "lat": 38.4549351,
+      "lon": -109.8167123
     },
     "finishGps": {
-      "lat": 38.4486656,
-      "lon": -109.8210815
+      "lat": 38.4558231,
+      "lon": -109.8188293
     },
     "surface": [
       "dirt"
@@ -3914,15 +4475,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H09-S08.json",
+    "lightingPreset": "night",
     "raceRef": "Shafer Trail — Canyonlands National Park",
+    "displayName": "Shafer Trail — Canyonlands National Park",
     "documentPath": "races/Shafer Trail %E2%80%94 Canyonlands National Park/document.json",
     "hubRaceRef": "Moki Dugway",
-    "sceneryCount": 62,
+    "sceneryCount": 117,
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": "",
-    "displayName": "Shafer Trail — Canyonlands National Park"
+    "conditionNotes": ""
   },
   {
     "id": "H09-S09",
@@ -3935,23 +4497,30 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 9,
     "hubBoss": "Moki Dugway",
     "status": "installed",
-    "lengthM": 2118.721538084011,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.5,
+      4.5
+    ],
+    "lengthM": 3859.0630548917443,
     "laps": 1,
-    "estimatedDrivingSeconds": 188,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 219,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.8500464,
-      "lon": -111.0269264
+      "lat": 37.8491267,
+      "lon": -111.0327498
     },
     "finishGps": {
-      "lat": 37.8529614,
-      "lon": -111.0182529
+      "lat": 37.8546933,
+      "lon": -111.0125014
     },
     "surface": [
+      "asphalt",
       "dirt"
     ],
     "warnings": [
@@ -3963,15 +4532,17 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H09-S09.json",
+    "lightingPreset": "noon",
     "raceRef": "Burr Trail switchbacks — Capitol Reef",
+    "displayName": "Burr Trail switchbacks — Capitol Reef",
     "documentPath": "races/Burr Trail switchbacks %E2%80%94 Capitol Reef/document.json",
     "hubRaceRef": "Moki Dugway",
-    "sceneryCount": 73,
+    "sceneryCount": 148,
     "installedSurfaces": [
-      "dirt"
+      "dirt",
+      "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Burr Trail switchbacks — Capitol Reef"
+    "conditionNotes": ""
   },
   {
     "id": "H10-S01",
@@ -3984,21 +4555,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 10,
     "hubBoss": "Oak Creek Canyon (SR 89A)",
     "status": "installed",
-    "lengthM": 3650.634471140925,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.2576,
+      7
+    ],
+    "lengthM": 7880.774080956459,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 220,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.7985813,
-      "lon": -111.76719980000001
+      "lat": 34.7728929,
+      "lon": -111.7639617
     },
     "finishGps": {
-      "lat": 34.8252097,
-      "lon": -111.7782406
+      "lat": 34.8359513,
+      "lon": -111.7771651
     },
     "surface": [
       "asphalt"
@@ -4012,15 +4589,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H10-S01.json",
+    "lightingPreset": "evening",
     "raceRef": "SR 179 — Red Rock Scenic Byway",
+    "displayName": "SR 179 — Red Rock Scenic Byway",
     "documentPath": "races/SR 179 %E2%80%94 Red Rock Scenic Byway/document.json",
     "hubRaceRef": "Oak Creek Canyon",
-    "sceneryCount": 160,
+    "sceneryCount": 348,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "SR 179 — Red Rock Scenic Byway"
+    "conditionNotes": ""
   },
   {
     "id": "H10-S02",
@@ -4033,21 +4611,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 10,
     "hubBoss": "Oak Creek Canyon (SR 89A)",
     "status": "installed",
-    "lengthM": 2791.389260797322,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 6045.165102373832,
     "laps": 1,
-    "estimatedDrivingSeconds": 181,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 218,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.8292961,
-      "lon": -111.8114179
+      "lat": 34.8476392,
+      "lon": -111.8291045
     },
     "finishGps": {
-      "lat": 34.8218188,
-      "lon": -111.8348604
+      "lat": 34.820709,
+      "lon": -111.834839
     },
     "surface": [
       "asphalt"
@@ -4061,15 +4645,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H10-S02.json",
+    "lightingPreset": "morning",
     "raceRef": "Upper Lower Red Rock Loop Road",
+    "displayName": "Upper / Lower Red Rock Loop Road",
     "documentPath": "races/Upper Lower Red Rock Loop Road/document.json",
     "hubRaceRef": "Oak Creek Canyon",
-    "sceneryCount": 121,
+    "sceneryCount": 262,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Upper / Lower Red Rock Loop Road"
+    "conditionNotes": ""
   },
   {
     "id": "H10-S03",
@@ -4082,21 +4667,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 10,
     "hubBoss": "Oak Creek Canyon (SR 89A)",
     "status": "installed",
-    "lengthM": 3564.683614064641,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 8319.079510139418,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 225,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.78885153333333,
-      "lon": -111.91115773333334
+      "lat": 34.7898543,
+      "lon": -111.91234109999999
     },
     "finishGps": {
-      "lat": 34.7655719,
-      "lon": -111.8914083
+      "lat": 34.740027,
+      "lon": -111.889504
     },
     "surface": [
       "asphalt"
@@ -4110,15 +4701,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H10-S03.json",
+    "lightingPreset": "evening",
     "raceRef": "Page Springs Road",
+    "displayName": "Page Springs Road",
     "documentPath": "races/Page Springs Road/document.json",
     "hubRaceRef": "Oak Creek Canyon",
-    "sceneryCount": 156,
+    "sceneryCount": 368,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Page Springs Road"
+    "conditionNotes": ""
   },
   {
     "id": "H10-S04",
@@ -4131,21 +4723,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 10,
     "hubBoss": "Oak Creek Canyon (SR 89A)",
     "status": "installed",
-    "lengthM": 3691.246327060417,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 9811.485447734069,
     "laps": 1,
-    "estimatedDrivingSeconds": 185,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 211,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.7248157,
-      "lon": -111.8136647
+      "lat": 34.7338377,
+      "lon": -111.7767705
     },
     "finishGps": {
-      "lat": 34.7363917,
-      "lon": -111.7800306
+      "lat": 34.6906287,
+      "lon": -111.853494
     },
     "surface": [
       "asphalt"
@@ -4159,15 +4757,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H10-S04.json",
+    "lightingPreset": "evening",
     "raceRef": "Beaverhead Flat Road — CR 78",
+    "displayName": "Beaverhead Flat Road — CR 78",
     "documentPath": "races/Beaverhead Flat Road %E2%80%94 CR 78/document.json",
     "hubRaceRef": "Oak Creek Canyon",
-    "sceneryCount": 162,
+    "sceneryCount": 434,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Beaverhead Flat Road — CR 78"
+    "conditionNotes": ""
   },
   {
     "id": "H10-S05",
@@ -4180,17 +4779,23 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 10,
     "hubBoss": "Oak Creek Canyon (SR 89A)",
     "status": "installed",
-    "lengthM": 2498.1907640198297,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      4.5,
+      4.5
+    ],
+    "lengthM": 4866.9328369622735,
     "laps": 1,
-    "estimatedDrivingSeconds": 186,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 221,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.9227584,
-      "lon": -111.9159919
+      "lat": 34.9048856,
+      "lon": -111.9121027
     },
     "finishGps": {
       "lat": 34.9356881,
@@ -4208,15 +4813,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H10-S05.json",
+    "lightingPreset": "night",
     "raceRef": "Boynton Pass Road FR 525 loop",
+    "displayName": "Boynton Pass Road / FR 525 loop",
     "documentPath": "races/Boynton Pass Road FR 525 loop/document.json",
     "hubRaceRef": "Oak Creek Canyon",
-    "sceneryCount": 104,
+    "sceneryCount": 213,
     "installedSurfaces": [
       "gravel"
     ],
-    "conditionNotes": "",
-    "displayName": "Boynton Pass Road / FR 525 loop"
+    "conditionNotes": ""
   },
   {
     "id": "H10-S06",
@@ -4229,21 +4835,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 10,
     "hubBoss": "Oak Creek Canyon (SR 89A)",
     "status": "installed",
-    "lengthM": 2145.7230806703333,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 3944.4815021857544,
     "laps": 1,
-    "estimatedDrivingSeconds": 184,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 221,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.8708581,
-      "lon": -111.7229911
+      "lat": 34.8707327,
+      "lon": -111.7209475
     },
     "finishGps": {
-      "lat": 34.8686687,
-      "lon": -111.7103165
+      "lat": 34.8840432,
+      "lon": -111.7099654
     },
     "surface": [
       "gravel"
@@ -4257,15 +4869,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H10-S06.json",
+    "lightingPreset": "noon",
     "raceRef": "Schnebly Hill Road — Sedona",
+    "displayName": "Schnebly Hill Road — Sedona",
     "documentPath": "races/Schnebly Hill Road %E2%80%94 Sedona/document.json",
     "hubRaceRef": "Oak Creek Canyon",
-    "sceneryCount": 86,
+    "sceneryCount": 168,
     "installedSurfaces": [
       "gravel"
     ],
-    "conditionNotes": "",
-    "displayName": "Schnebly Hill Road — Sedona"
+    "conditionNotes": ""
   },
   {
     "id": "H10-S07",
@@ -4278,21 +4891,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 10,
     "hubBoss": "Oak Creek Canyon (SR 89A)",
     "status": "installed",
-    "lengthM": 2828.9685641581973,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      10.200000000000001
+    ],
+    "lengthM": 6160.060139856786,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 218,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.6864382,
-      "lon": -112.1702498
+      "lat": 34.6855052,
+      "lon": -112.1700549
     },
     "finishGps": {
-      "lat": 34.7020406,
-      "lon": -112.1595482
+      "lat": 34.718148,
+      "lon": -112.1543377
     },
     "surface": [
       "asphalt"
@@ -4306,15 +4925,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H10-S07.json",
+    "lightingPreset": "morning",
     "raceRef": "SR 89A — Mingus Mountain Jerome",
+    "displayName": "SR 89A — Mingus Mountain / Jerome",
     "documentPath": "races/SR 89A %E2%80%94 Mingus Mountain Jerome/document.json",
     "hubRaceRef": "Oak Creek Canyon",
-    "sceneryCount": 116,
+    "sceneryCount": 261,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "SR 89A — Mingus Mountain / Jerome"
+    "conditionNotes": ""
   },
   {
     "id": "H10-S08",
@@ -4327,14 +4947,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 10,
     "hubBoss": "Oak Creek Canyon (SR 89A)",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 3725.9448356273315,
-    "laps": 1,
-    "estimatedDrivingSeconds": 255,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 2,
+    "estimatedDrivingSeconds": 308,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 32.8182785,
       "lon": -111.8357456
@@ -4355,15 +4981,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H10-S08.json",
+    "lightingPreset": "evening",
     "raceRef": "Podium Club at Attesa — Casa Grande",
+    "displayName": "Podium Club at Attesa — Casa Grande",
     "documentPath": "races/Podium Club at Attesa %E2%80%94 Casa Grande/document.json",
     "hubRaceRef": "Oak Creek Canyon",
     "sceneryCount": 139,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Podium Club at Attesa — Casa Grande"
+    "conditionNotes": ""
   },
   {
     "id": "H10-S09",
@@ -4376,10 +5003,16 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 10,
     "hubBoss": "Oak Creek Canyon (SR 89A)",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      12,
+      12
+    ],
     "lengthM": 402.336,
     "laps": 1,
     "estimatedDrivingSeconds": null,
@@ -4404,15 +5037,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H10-S09.json",
+    "lightingPreset": "evening",
     "raceRef": "Firebird Motorsports Park — Chandler",
+    "displayName": "Firebird Motorsports Park — Chandler",
     "documentPath": "races/Firebird Motorsports Park %E2%80%94 Chandler/document.json",
     "hubRaceRef": "Oak Creek Canyon",
     "sceneryCount": 16,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Firebird Motorsports Park — Chandler"
+    "conditionNotes": ""
   },
   {
     "id": "H11-S01",
@@ -4425,21 +5059,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 11,
     "hubBoss": "Angeles Crest Highway (SR 2)",
     "status": "installed",
-    "lengthM": 3256.004835185093,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 7679.756964801281,
     "laps": 1,
-    "estimatedDrivingSeconds": 188,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 231,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 34.3918205,
       "lon": -118.0813467
     },
     "finishGps": {
-      "lat": 34.3782004,
-      "lon": -118.0972844
+      "lat": 34.3445276,
+      "lon": -118.110387
     },
     "surface": [
       "asphalt"
@@ -4453,15 +5093,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H11-S01.json",
+    "lightingPreset": "evening",
     "raceRef": "Angeles Forest Highway — County N3",
+    "displayName": "Angeles Forest Highway — County N3",
     "documentPath": "races/Angeles Forest Highway %E2%80%94 County N3/document.json",
     "hubRaceRef": "Angeles Crest Highway",
-    "sceneryCount": 142,
+    "sceneryCount": 338,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Angeles Forest Highway — County N3"
+    "conditionNotes": ""
   },
   {
     "id": "H11-S02",
@@ -4474,21 +5115,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 11,
     "hubBoss": "Angeles Crest Highway (SR 2)",
     "status": "installed",
-    "lengthM": 3558.633779888256,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 8222.997667716198,
     "laps": 1,
-    "estimatedDrivingSeconds": 187,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 226,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.3040769,
-      "lon": -118.0635706
+      "lat": 34.308386125,
+      "lon": -118.076425175
     },
     "finishGps": {
-      "lat": 34.2815847,
-      "lon": -118.0416523
+      "lat": 34.2729488,
+      "lon": -118.0433912
     },
     "surface": [
       "asphalt"
@@ -4502,15 +5149,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H11-S02.json",
+    "lightingPreset": "evening",
     "raceRef": "Upper Big Tujunga Canyon Road",
+    "displayName": "Upper Big Tujunga Canyon Road",
     "documentPath": "races/Upper Big Tujunga Canyon Road/document.json",
     "hubRaceRef": "Angeles Crest Highway",
-    "sceneryCount": 156,
+    "sceneryCount": 362,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Upper Big Tujunga Canyon Road"
+    "conditionNotes": ""
   },
   {
     "id": "H11-S03",
@@ -4523,17 +5171,23 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 11,
     "hubBoss": "Angeles Crest Highway (SR 2)",
     "status": "installed",
-    "lengthM": 3303.883290558155,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 6965.0302286497335,
     "laps": 1,
-    "estimatedDrivingSeconds": 183,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 200,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.2871207,
-      "lon": -118.2227999
+      "lat": 34.3028058,
+      "lon": -118.2559542
     },
     "finishGps": {
       "lat": 34.2836407,
@@ -4551,15 +5205,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H11-S03.json",
+    "lightingPreset": "noon",
     "raceRef": "Big Tujunga Canyon Road",
+    "displayName": "Big Tujunga Canyon Road",
     "documentPath": "races/Big Tujunga Canyon Road/document.json",
     "hubRaceRef": "Angeles Crest Highway",
-    "sceneryCount": 144,
+    "sceneryCount": 308,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Big Tujunga Canyon Road"
+    "conditionNotes": ""
   },
   {
     "id": "H11-S04",
@@ -4572,21 +5227,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 11,
     "hubBoss": "Angeles Crest Highway (SR 2)",
     "status": "installed",
-    "lengthM": 2191.284770034995,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 4344.112637016781,
     "laps": 1,
-    "estimatedDrivingSeconds": 185,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 211,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.212748,
-      "lon": -117.8010637
+      "lat": 34.2123163,
+      "lon": -117.8004408
     },
     "finishGps": {
-      "lat": 34.2167532,
-      "lon": -117.7884712
+      "lat": 34.2280684,
+      "lon": -117.7825349
     },
     "surface": [
       "asphalt"
@@ -4600,15 +5261,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H11-S04.json",
+    "lightingPreset": "noon",
     "raceRef": "Glendora Mountain Road",
+    "displayName": "Glendora Mountain Road",
     "documentPath": "races/Glendora Mountain Road/document.json",
     "hubRaceRef": "Angeles Crest Highway",
-    "sceneryCount": 94,
+    "sceneryCount": 189,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Glendora Mountain Road"
+    "conditionNotes": ""
   },
   {
     "id": "H11-S05",
@@ -4621,21 +5283,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 11,
     "hubBoss": "Angeles Crest Highway (SR 2)",
     "status": "installed",
-    "lengthM": 2516.6434078559346,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      3.8000000000000003,
+      3.8000000000000003
+    ],
+    "lengthM": 4921.501772376578,
     "laps": 1,
-    "estimatedDrivingSeconds": 191,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 223,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.2205581,
-      "lon": -117.7190373
+      "lat": 34.22014745,
+      "lon": -117.70801184999999
     },
     "finishGps": {
-      "lat": 34.2242875,
-      "lon": -117.7387037
+      "lat": 34.2177248,
+      "lon": -117.7444881
     },
     "surface": [
       "asphalt"
@@ -4649,15 +5317,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H11-S05.json",
+    "lightingPreset": "evening",
     "raceRef": "Glendora Ridge Road",
+    "displayName": "Glendora Ridge Road",
     "documentPath": "races/Glendora Ridge Road/document.json",
     "hubRaceRef": "Angeles Crest Highway",
-    "sceneryCount": 108,
+    "sceneryCount": 212,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "Glendora Ridge Road"
+    "conditionNotes": ""
   },
   {
     "id": "H11-S06",
@@ -4670,21 +5339,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 11,
     "hubBoss": "Angeles Crest Highway (SR 2)",
     "status": "installed",
-    "lengthM": 3204.3448305603933,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 6772.1782364208475,
     "laps": 1,
-    "estimatedDrivingSeconds": 186,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 219,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.2167999,
-      "lon": -117.8592865
+      "lat": 34.2308872,
+      "lon": -117.8458232
     },
     "finishGps": {
-      "lat": 34.1996734,
-      "lon": -117.86158
+      "lat": 34.1902056,
+      "lon": -117.865933
     },
     "surface": [
       "asphalt"
@@ -4698,15 +5373,16 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H11-S06.json",
+    "lightingPreset": "morning",
     "raceRef": "San Gabriel Canyon Road — SR 39",
+    "displayName": "San Gabriel Canyon Road — SR 39",
     "documentPath": "races/San Gabriel Canyon Road %E2%80%94 SR 39/document.json",
     "hubRaceRef": "Angeles Crest Highway",
-    "sceneryCount": 140,
+    "sceneryCount": 298,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "San Gabriel Canyon Road — SR 39"
+    "conditionNotes": ""
   },
   {
     "id": "H11-S07",
@@ -4719,21 +5395,27 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 11,
     "hubBoss": "Angeles Crest Highway (SR 2)",
     "status": "installed",
-    "lengthM": 2129.8621699965433,
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
+    "lengthM": 4464.306070665003,
     "laps": 1,
-    "estimatedDrivingSeconds": 180,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "estimatedDrivingSeconds": 210,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.3407669,
-      "lon": -118.3487791
+      "lat": 34.3321288,
+      "lon": -118.3425764
     },
     "finishGps": {
-      "lat": 34.3438493,
-      "lon": -118.3576531
+      "lat": 34.3439202,
+      "lon": -118.3578516
     },
     "surface": [
       "asphalt"
@@ -4747,11 +5429,12 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H11-S07.json",
+    "lightingPreset": "noon",
     "raceRef": "Little Tujunga Canyon Road",
     "displayName": "Little Tujunga Canyon Road",
     "documentPath": "races/Little Tujunga Canyon Road/document.json",
     "hubRaceRef": "Angeles Crest Highway",
-    "sceneryCount": 87,
+    "sceneryCount": 188,
     "installedSurfaces": [
       "asphalt"
     ],
@@ -4768,14 +5451,20 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 11,
     "hubBoss": "Angeles Crest Highway (SR 2)",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      10,
+      10
+    ],
     "lengthM": 1611.431452022178,
-    "laps": 1,
-    "estimatedDrivingSeconds": 127,
-    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "laps": 3,
+    "estimatedDrivingSeconds": 238,
+    "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 34.8771727,
       "lon": -118.2654893
@@ -4796,6 +5485,7 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H11-S08.json",
+    "lightingPreset": "evening",
     "raceRef": "Willow Springs — Horse Thief Mile",
     "displayName": "Willow Springs — Horse Thief Mile",
     "documentPath": "races/Willow Springs %E2%80%94 Horse Thief Mile/document.json",
@@ -4817,10 +5507,16 @@
       120,
       240
     ],
-    "importVersion": 2,
+    "importVersion": 3,
     "hubStage": 11,
     "hubBoss": "Angeles Crest Highway (SR 2)",
     "status": "installed",
+    "targetSeconds": 210,
+    "durationLimitedBySource": false,
+    "roadWidthRangeM": [
+      7,
+      7
+    ],
     "lengthM": 402.336,
     "laps": 1,
     "estimatedDrivingSeconds": null,
@@ -4845,14 +5541,15 @@
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
     "generatedPath": "artifacts/campaign-import/side-races/H11-S09.json",
+    "lightingPreset": "noon",
     "raceRef": "In-N-Out Burger Pomona Dragstrip",
+    "displayName": "In-N-Out Burger Pomona Dragstrip",
     "documentPath": "races/In-N-Out Burger Pomona Dragstrip/document.json",
     "hubRaceRef": "Angeles Crest Highway",
     "sceneryCount": 16,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": "",
-    "displayName": "In-N-Out Burger Pomona Dragstrip"
+    "conditionNotes": ""
   }
 ]

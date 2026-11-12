@@ -10876,6 +10876,7 @@ export default class RaceEditor {
       { id: 'roadArt', label: 'Road artwork', type: 'select', options, value: settings.road.artRef },
       { id: 'roadRepeat', label: 'Road repeat length (meters)', type: 'number', min: .1, max: 1000, step: .1, value: settings.road.repeatM },
       { id: 'roadRepeatWidth', label: 'Road repeat width (meters; 0 = fit road)', type: 'number', min: 0, max: 1000, step: .1, value: settings.road.repeatWidthM },
+      { id: 'roadLaneWidth', label: 'Lane stripe spacing (meters; 0 = off)', type: 'number', min: 0, max: 5, step: .01, value: settings.road.laneWidthM },
       {id:'roadFilter',label:'Road filtering',type:'select',value:settings.road.filterMode,options:[{value:'inherit',label:'Use race setting'},{value:'crisp',label:'Crisp pixels'},{value:'balanced',label:'Crisp pixels / smooth distance'},{value:'smooth',label:'Smooth'}]},
       {id:'roadMipmaps',label:'Road distance mipmaps',type:'checkbox',value:settings.road.mipmaps},
       {id:'roadMipmapDistance',label:'Road mipmap distance multiplier',type:'number',min:.25,max:16,step:.25,value:settings.road.mipmapDistance},
@@ -10894,7 +10895,7 @@ export default class RaceEditor {
     this.captureRaceHistory('Road textures');
     race.roadTextures = { ...roadTextureSettings({ roadTextures: {
       ...race.roadTextures,
-      road: { mipmapDistance:result.roadMipmapDistance,filterMode:result.roadFilter,mipmaps:result.roadMipmaps,anisotropy:result.roadAnisotropy,artRef: result.roadArt, repeatM: result.roadRepeat, repeatWidthM: result.roadRepeatWidth || 0 },
+      road: { laneWidthM:result.roadLaneWidth??settings.road.laneWidthM,mipmapDistance:result.roadMipmapDistance,filterMode:result.roadFilter,mipmaps:result.roadMipmaps,anisotropy:result.roadAnisotropy,artRef: result.roadArt, repeatM: result.roadRepeat, repeatWidthM: result.roadRepeatWidth || 0 },
       margin: { mipmapDistance:result.marginMipmapDistance,filterMode:result.marginFilter,mipmaps:result.marginMipmaps,anisotropy:result.marginAnisotropy,artRef: result.marginArt, repeatM: result.marginRepeat, repeatWidthM: result.marginRepeatWidth || 0 }
     }}), debugSurfaces:Object.fromEntries(DEBUG_ROAD_SURFACES.map(surface=>[surface.id,result['debugRoad_'+surface.id]||surface.artRef])), builtInLines: result.builtInLines !== false };
     this.raceStaticTrackSurfaceMeshCache = null;

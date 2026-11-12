@@ -37,3 +37,20 @@ test('installed side races resolve to distinct saved race documents with real so
   assert.ok(!mains.some(m=>m.name===race.name));
  }
 });
+
+test('side races save varied lighting and the Pawtucket highway keeps full lane widths',()=>{
+ const lighting=new Set();
+ for(const event of events){
+  const {race}=read('data/server-storage/files/'+event.documentPath);
+  lighting.add(race.visualFx.preset);
+  assert.equal(race.visualFx.skyBrightness,1);
+  assert.equal(race.timeOfDay,race.visualFx.preset==='night'?'night':'day');
+ }
+ assert.equal(lighting.size,4);
+ const event=events.find(e=>e.id==='H01-S01');
+ const {race}=read('data/server-storage/files/'+event.documentPath);
+ assert.ok(event.lengthM>11000,'fast highway route must be longer than the original 3.7 km');
+ assert.equal(race.visualFx.preset,'noon');assert.equal(race.brightness,1);
+ assert.ok(race.road.segments.every(s=>s.roadWidthM>11&&s.roadWidthM<16));
+ assert.equal(race.roadTextures.surfaceRoads.asphalt.laneWidthM,3.6576);
+});

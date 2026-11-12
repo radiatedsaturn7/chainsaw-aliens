@@ -20,6 +20,11 @@ for hub in research['hubs']:
             duration=f"{r['estimatedDrivingSeconds']} seconds estimated" if r['estimatedDrivingSeconds'] is not None else 'Quarter-mile elapsed-time run; duration depends on car'
             sections.append('<p>'+html.escape(f'{r["lengthM"]/1000:.2f} km · {r["laps"]} lap(s) · {duration} · '+', '.join(installed.get(candidate['id'],{}).get('installedSurfaces',r['surface'])))+'</p>')
             sections.append('<p>'+html.escape(f'Start {r["startGps"]}; finish {r["finishGps"]}')+'</p>')
+            lighting=installed.get(candidate['id'],{}).get('lightingPreset')
+            if lighting:sections.append('<p>Lighting: '+html.escape(lighting)+'</p>')
+            if r.get('roadWidthRangeM'):sections.append('<p>Road width: '+html.escape('–'.join(f'{w:.2f}' for w in r['roadWidthRangeM']))+' m</p>')
+            if r.get('durationLimitedBySource'):sections.append('<p>Shorter than target: retained the best available contiguous source section.</p>')
+
             sections.append('<p>'+html.escape(r['confidence']+'; '+r['durationMethod'])+'</p>')
             if installed.get(candidate['id'],{}).get('conditionNotes'):sections.append('<p>'+html.escape(installed[candidate['id']]['conditionNotes'])+'</p>')
             if race['source'].get('geometryAdaptation'):sections.append('<p>'+html.escape(race['source']['geometryAdaptation'])+'</p>')

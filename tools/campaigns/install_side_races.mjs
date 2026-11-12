@@ -1,5 +1,6 @@
 // Install successful imports only; never rewrite existing campaign races.
 import fs from 'node:fs';
+import {applySideRaceLighting} from './side_race_lighting.mjs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import RaceEditor from '../../src/ui/RaceEditor.js';
@@ -25,6 +26,7 @@ for(const row of report){
  const displayName=race.name;race.name=sanitizeProjectFileName(sanitizeProjectFileName(race.name));
  const parent=read(`${root}/${manifest.folders.races[hub.name]}`).race;
  for(const key of ['brightness','visualFx','skyboxArtRef','skyboxSettings','groundPlaneArtRef'])if(parent[key]!==undefined)race[key]=structuredClone(parent[key]);
+ const lightingPreset=applySideRaceLighting(race,row.id);
  if(['H08-S08','H11-S07','H11-S08'].includes(row.id))race.campaign.scoring='drift';
  race.margin={marginMode:'hidden'};
  race.road.autoExtend=false;
@@ -33,6 +35,10 @@ for(const row of report){
  for(const cell of Object.values(race.road.tileMap.cells))cell.tileId=race.road.tileMap.defaultTileId;
  race.roadTextures={builtInLines:false,road:{artRef:'road-asphalt-patched',repeatM:24,filterMode:'balanced',mipmaps:true},
   surfaceRoads:Object.fromEntries([['asphalt','road-asphalt-patched'],['gravel','road-gravel-gray'],['dirt','road-dirt-packed'],['snow','snowroad']].filter(([,ref])=>manifest.folders.art[ref]).map(([surface,artRef])=>[surface,{artRef,repeatM:12,filterMode:'balanced',mipmaps:true}]))};
+ if(['H01-S01','H06-S04','H06-S05'].includes(row.id)){
+  const highway={artRef:'road-asphalt-worn',repeatM:12,laneWidthM:3.6576,filterMode:'balanced',mipmaps:true};
+  race.roadTextures.road={...highway};race.roadTextures.surfaceRoads.asphalt={...highway};
+ }
  // A regional art palette is shared, not the boss's scripts or geometry.
  race.weather=row.event_type.toLowerCase().includes('snow')?'snow':'clear';
  if(race.weather==='snow'){
@@ -77,7 +83,7 @@ for(const row of report){
  write(`${root}/${documentPath}`,encode({schemaVersion:1,kind:'race-track',savedAt,selectedRaceId:race.id,race}));
  write(`${root}/${folder}/metadata.json`,{name:raceRef,folder:'races',savedAt,version:1});
  manifest.folders.races[raceRef]=documentPath;
- installed.push({...row,status:'installed',raceRef,displayName,documentPath,hubRaceRef:hub.name,sceneryCount:race.scenery.length,installedSurfaces:[...new Set(race.road.segments.map(s=>s.surface))],conditionNotes:race.source.campaignConditions||''});
+ installed.push({...row,status:'installed',lightingPreset,raceRef,displayName,documentPath,hubRaceRef:hub.name,sceneryCount:race.scenery.length,installedSurfaces:[...new Set(race.road.segments.map(s=>s.surface))],conditionNotes:race.source.campaignConditions||''});
  console.log(`Installed ${row.id}: ${raceRef}`);
 }
 write(`${base}/catalog.json`,installed);
