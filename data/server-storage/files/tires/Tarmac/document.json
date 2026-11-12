@@ -29,34 +29,34 @@
   "graphics": {
     "tireSurfaces": {
       "tread": {
-        "artRef": "8582 tires 3",
+        "artRef": "catalog-tarmac-semislick",
         "frameIndex": 0,
         "region": {
-          "x": 138,
-          "y": 27,
-          "width": 158,
-          "height": 379
+          "x": 221,
+          "y": 71,
+          "width": 302,
+          "height": 627
         },
         "bounds": {
-          "x": 138.5,
-          "y": 27.5,
-          "width": 157,
-          "height": 378
+          "x": 221.5,
+          "y": 71.5,
+          "width": 301,
+          "height": 626
         }
       },
       "wheel": {
-        "artRef": "8582 tires 3",
-        "frameIndex": 2,
+        "artRef": "catalog-tarmac-semislick",
+        "frameIndex": 1,
         "region": {
-          "x": 218,
-          "y": 213,
-          "radius": 204.24005483743878
+          "x": 375,
+          "y": 381,
+          "radius": 357.2296180329957
         },
         "bounds": {
-          "x": 13.760045162561227,
-          "y": 8.760045162561227,
-          "width": 408.47990967487755,
-          "height": 408.47990967487755
+          "x": 17.770481967004287,
+          "y": 23.770481967004287,
+          "width": 714.4590360659914,
+          "height": 714.4590360659914
         }
       }
     },
@@ -65,19 +65,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-tarmac-semislick",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 221,
+            "y": 71,
+            "width": 302,
+            "height": 627
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 221.5,
+            "y": 71.5,
+            "width": 301,
+            "height": 626
           }
         }
       },
@@ -85,19 +85,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-tarmac-semislick",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 221,
+            "y": 71,
+            "width": 302,
+            "height": 627
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 221.5,
+            "y": 71.5,
+            "width": 301,
+            "height": 626
           }
         }
       },
@@ -105,18 +105,18 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
-          "frameIndex": 2,
+          "artRef": "catalog-tarmac-semislick",
+          "frameIndex": 1,
           "region": {
-            "x": 218,
-            "y": 213,
-            "radius": 204.24005483743878
+            "x": 375,
+            "y": 381,
+            "radius": 357.2296180329957
           },
           "bounds": {
-            "x": 13.760045162561227,
-            "y": 8.760045162561227,
-            "width": 408.47990967487755,
-            "height": 408.47990967487755
+            "x": 17.770481967004287,
+            "y": 23.770481967004287,
+            "width": 714.4590360659914,
+            "height": 714.4590360659914
           }
         }
       },
@@ -124,19 +124,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-tarmac-semislick",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 221,
+            "y": 71,
+            "width": 302,
+            "height": 627
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 221.5,
+            "y": 71.5,
+            "width": 301,
+            "height": 626
           }
         }
       },
@@ -144,19 +144,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-tarmac-semislick",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 221,
+            "y": 71,
+            "width": 302,
+            "height": 627
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 221.5,
+            "y": 71.5,
+            "width": 301,
+            "height": 626
           }
         }
       },
@@ -164,19 +164,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-tarmac-semislick",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 221,
+            "y": 71,
+            "width": 302,
+            "height": 627
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 221.5,
+            "y": 71.5,
+            "width": 301,
+            "height": 626
           }
         }
       },
@@ -184,18 +184,18 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
-          "frameIndex": 2,
+          "artRef": "catalog-tarmac-semislick",
+          "frameIndex": 1,
           "region": {
-            "x": 218,
-            "y": 213,
-            "radius": 204.24005483743878
+            "x": 375,
+            "y": 381,
+            "radius": 357.2296180329957
           },
           "bounds": {
-            "x": 13.760045162561227,
-            "y": 8.760045162561227,
-            "width": 408.47990967487755,
-            "height": 408.47990967487755
+            "x": 17.770481967004287,
+            "y": 23.770481967004287,
+            "width": 714.4590360659914,
+            "height": 714.4590360659914
           }
         }
       },
@@ -203,19 +203,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-tarmac-semislick",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 221,
+            "y": 71,
+            "width": 302,
+            "height": 627
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 221.5,
+            "y": 71.5,
+            "width": 301,
+            "height": 626
           }
         }
       }

@@ -376,7 +376,10 @@
       "expanded-tree-hickory-young-01": "art/expanded-tree-hickory-young-01/document.json",
       "expanded-tree-river-birch-young-01": "art/expanded-tree-river-birch-young-01/document.json",
       "expanded-tree-shortleaf-pine-young-01": "art/expanded-tree-shortleaf-pine-young-01/document.json",
-      "expanded-tree-white-oak-young-01": "art/expanded-tree-white-oak-young-01/document.json"
+      "expanded-tree-white-oak-young-01": "art/expanded-tree-white-oak-young-01/document.json",
+      "catalog-kestrel-660-2018-body": "art/catalog-kestrel-660-2018-body/document.json",
+      "catalog-kestrel-660-2018-dashboard": "art/catalog-kestrel-660-2018-dashboard/document.json",
+      "catalog-tarmac-semislick": "art/catalog-tarmac-semislick/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -387,7 +390,8 @@
       "PZ-24": "cars/PZ-24/document.json",
       "RTG-001": "cars/RTG-001/document.json",
       "RTG-S": "cars/RTG-S/document.json",
-      "STI Airslayer": "cars/STI Airslayer/document.json"
+      "STI Airslayer": "cars/STI Airslayer/document.json",
+      "2018 Kestrel 660": "cars/2018 Kestrel 660/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
