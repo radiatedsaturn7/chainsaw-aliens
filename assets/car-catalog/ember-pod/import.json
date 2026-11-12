@@ -1,0 +1,808 @@
+{
+  "car": {
+    "id": "ember-pod",
+    "name": "Ember Pod Prototype",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "tires": [],
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": null
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": "steeringwheel",
+          "frameIndex": 0,
+          "scaleX": 1.6,
+          "scaleY": 1.6,
+          "offsetX": -0.5,
+          "offsetY": 0.9,
+          "centerX": 0.498046875,
+          "centerY": 0.5448717948717948
+        },
+        "wipers": {
+          "artRef": "windshieldwiper",
+          "frameIndex": 0,
+          "pivotX": 0,
+          "pivotY": 0.5,
+          "width": 0.35640000000000005,
+          "parkAngle": -5,
+          "sweepAngle": -80,
+          "cycleSeconds": 1.6,
+          "mounts": [
+            {
+              "x": 0.16,
+              "y": 0.755
+            },
+            {
+              "x": 0.56,
+              "y": 0.755
+            }
+          ]
+        }
+      },
+      "addOns": [],
+      "tireSurfaces": {
+        "tread": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 0,
+          "region": {
+            "x": 138,
+            "y": 27,
+            "width": 158,
+            "height": 379
+          },
+          "bounds": {
+            "x": 138.5,
+            "y": 27.5,
+            "width": 157,
+            "height": 378
+          }
+        },
+        "wheel": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 2,
+          "region": {
+            "x": 218,
+            "y": 213,
+            "radius": 204.24005483743878
+          },
+          "bounds": {
+            "x": 13.760045162561227,
+            "y": 8.760045162561227,
+            "width": 408.47990967487755,
+            "height": 408.47990967487755
+          }
+        }
+      },
+      "angleLayers": {
+        "front": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "frontRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "right": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "rearRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rear": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rearLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "left": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "frontLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        }
+      }
+    },
+    "camera": {
+      "trackingMode": "dynamic"
+    },
+    "dimensions": {
+      "lengthM": 3.835,
+      "widthM": 1.81,
+      "wheelbaseM": 2.43,
+      "trackFrontM": 1.5,
+      "trackRearM": 1.51
+    },
+    "audio": {
+      "engineSoundId": null
+    },
+    "setup": {
+      "defaultTireCompound": "tarmac",
+      "tireCompoundByWheel": {
+        "fl": "tarmac",
+        "fr": "tarmac",
+        "rl": "tarmac",
+        "rr": "tarmac"
+      },
+      "tirePressurePsi": {
+        "fl": 30,
+        "fr": 30,
+        "rl": 30,
+        "rr": 30
+      },
+      "tireSize": {
+        "widthMm": 235,
+        "aspectRatio": 45,
+        "wheelDiameterIn": 18
+      }
+    },
+    "defaultTransmissionType": "manual",
+    "transmissions": {
+      "manual": {
+        "type": "manual",
+        "label": "Prototype 6-speed paddle AMT (modeled ratios)",
+        "shiftMode": "manual",
+        "shiftTimeMs": 220,
+        "clutchDelayMs": 0,
+        "launchRpm": 2800,
+        "autoUpshiftRpm": 6500,
+        "autoDownshiftRpm": 2200,
+        "gearRatios": [
+          3.2,
+          2.15,
+          1.6,
+          1.27,
+          1.06,
+          0.9083208125361897
+        ],
+        "reverseRatio": 3.1,
+        "gearFinalDrive": 4.1,
+        "drivetrainEfficiency": 0.89,
+        "engineProfile": null
+      }
+    },
+    "tuning": {
+      "drivetrain": "rwd",
+      "powerHp": 187.40081341771088,
+      "torqueLbFt": 154.8880513482258,
+      "weightKg": 800,
+      "frontWeightDistribution": 0.4,
+      "engineDisplacementL": 1.198,
+      "aspiration": "Turbocharged",
+      "tireGrip": 1.04,
+      "brakeBalance": 0.55,
+      "brakePressure": 1,
+      "redlineRpm": 6700,
+      "revLimitRpm": 7000,
+      "revLimiterDropRpm": 350,
+      "idleRpm": 850,
+      "torquePeakStartRpm": 2500,
+      "torquePeakEndRpm": 2500,
+      "torqueFalloffRpm": 7000,
+      "wheelRadiusM": 0.33435,
+      "topSpeedMph": 136.70166229221346,
+      "zeroToSixtySec": 6,
+      "dragCoefficient": 0.36,
+      "accelerationCalibration": 1,
+      "drivetrainEfficiency": 0.89,
+      "differentialAccel": 0.4,
+      "differentialDecel": 0.22,
+      "rearDifferentialAccel": 0.4,
+      "rearDifferentialDecel": 0.22,
+      "gearFinalDrive": 4.1,
+      "camberFront": -1,
+      "camberRear": -1.3,
+      "toeFront": 0,
+      "toeRear": 0.1,
+      "casterFront": 6.2,
+      "aeroFront": 0.12,
+      "aeroRear": 0.18,
+      "springFront": 0.64,
+      "springRear": 0.7,
+      "rideHeightFront": 0.4,
+      "rideHeightRear": 0.42,
+      "suspensionTravelFront": 0.34,
+      "suspensionTravelRear": 0.36,
+      "dampingFront": 0.62,
+      "dampingRear": 0.67,
+      "bumpFront": 0.55,
+      "bumpRear": 0.59,
+      "reboundFront": 0.67,
+      "reboundRear": 0.71,
+      "antiRollFront": 0.58,
+      "antiRollRear": 0.54,
+      "gearRatios": [
+        3.2,
+        2.15,
+        1.6,
+        1.27,
+        1.06,
+        0.9083208125361897
+      ],
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 3.835,
+          "overallWidthM": 1.81,
+          "overallHeightM": 1.208,
+          "groundClearanceM": 0.165,
+          "frontOverhangM": 0.7,
+          "rearOverhangM": 0.705,
+          "lowerBodyHeightM": 0.4,
+          "hood": {
+            "lengthM": 0.8,
+            "widthM": 1.68,
+            "heightM": 0.25
+          },
+          "cabin": {
+            "centerZM": 0.1,
+            "lengthM": 1.6,
+            "widthM": 1.56,
+            "heightM": 0.643
+          },
+          "bed": {
+            "centerZM": -1.35,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.46,
+            "z": 0
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": false,
+          "wheelWellClearanceMarginM": 0.06,
+          "maximumTireDeflectionM": 0.04,
+          "wheelRadiusM": 0.33435,
+          "trackWidthM": 1.505,
+          "frontAxleDistanceFromCgM": 1.458,
+          "rearAxleDistanceFromCgM": 0.9720000000000001,
+          "customColliders": [],
+          "pieces": [
+            {
+              "id": "lower-chassis",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.09500000000000003,
+                "z": 0
+              },
+              "sizeM": {
+                "x": 1.81,
+                "y": 0.4,
+                "z": 3.835
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "front-body-hood",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.22999999999999998,
+                "z": 0.8175
+              },
+              "sizeM": {
+                "x": 1.68,
+                "y": 0.25,
+                "z": 0.8
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "cabin",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.4265,
+                "z": 0.1
+              },
+              "sizeM": {
+                "x": 1.56,
+                "y": 0.643,
+                "z": 1.6
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "rear-body-trunk",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": 0.20999999999999996,
+                "z": -0.8935000000000001
+              },
+              "sizeM": {
+                "x": 1.7014,
+                "y": 0.21,
+                "z": 0.6379999999999997
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            }
+          ]
+        }
+      },
+      "reverseRatio": 3.1,
+      "engineCurve": {
+        "rpmMin": 850,
+        "rpmMax": 7000,
+        "torquePoints": [
+          {
+            "rpm": 850,
+            "torqueLbFt": 50
+          },
+          {
+            "rpm": 1800,
+            "torqueLbFt": 125
+          },
+          {
+            "rpm": 2500,
+            "torqueLbFt": 155
+          },
+          {
+            "rpm": 4500,
+            "torqueLbFt": 154
+          },
+          {
+            "rpm": 6500,
+            "torqueLbFt": 151
+          },
+          {
+            "rpm": 7000,
+            "torqueLbFt": 125
+          }
+        ]
+      },
+      "frontDifferentialAccel": 0,
+      "frontDifferentialDecel": 0,
+      "steeringRatio": 15
+    },
+    "description": "Original fictional mid-engine prototype inspired by TAMO Racemo. Uses 800 kg development TARGET, not measured curb weight; six-speed paddle gearbox ratios are modeled, not verified production specifications.",
+    "category": "car"
+  },
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "provenance": {
+    "status": "prototype-target-modelled; not production-spec-verified",
+    "referenceVehicle": "TAMO Racemo petrol concept / production-intent prototype, no production model year asserted",
+    "sources": [
+      {
+        "url": "https://www.tatamotors.com/wp-content/uploads/2025/06/7feb18-product-note-Racemo.pdf",
+        "fields": [
+          "engineCc",
+          "cylinders",
+          "induction",
+          "enginePosition",
+          "powerPS",
+          "powerRpm",
+          "torqueNm",
+          "torqueRpm",
+          "transmission",
+          "lengthMm",
+          "widthMm",
+          "heightMm",
+          "wheelbaseMm",
+          "unladenClearanceMm",
+          "tankLitres",
+          "frontTyre",
+          "rearTyre",
+          "turningCircleRadiusM",
+          "suspension",
+          "brakes"
+        ]
+      },
+      {
+        "url": "https://www.em.autocar.co.uk/car-news/new-cars/insight-tamos-first-sports-car-racemo",
+        "fields": [
+          "reported800kgDevelopmentTarget",
+          "reported60percentRearwardMass"
+        ]
+      }
+    ],
+    "verifiedFacts": {
+      "engineCc": 1198,
+      "cylinders": 3,
+      "induction": "turbocharged intercooled petrol",
+      "enginePosition": "mid",
+      "powerPS": 190,
+      "powerRpm": 6500,
+      "torqueNm": 210,
+      "torqueRpm": 2500,
+      "transmission": "TA6300 AMT, six forward one reverse, paddle shift",
+      "lengthMm": 3835,
+      "widthMm": 1810,
+      "heightMm": 1208,
+      "wheelbaseMm": 2430,
+      "unladenClearanceMm": 165,
+      "tankLitres": 40,
+      "frontTyre": "205/50 R17",
+      "rearTyre": "235/45 R18",
+      "turningCircleRadiusM": 5.8,
+      "suspension": "independent double wishbone both axles",
+      "brakes": "disc both axles; ABS/EBD"
+    },
+    "modelledAssumptions": {
+      "massKg": 800,
+      "massClassification": "reported development target, NOT measured curb mass",
+      "gearing": {
+        "forwardRatios": [
+          3.2,
+          2.15,
+          1.6,
+          1.27,
+          1.06,
+          0.9083208125361897
+        ],
+        "finalDrive": 4.1,
+        "reverseRatio": 3.1,
+        "classification": "bespoke simulation design, NOT Racemo or Nexon component specification",
+        "designCriterion": "sixth chosen for220km/h at6500rpm with nominal rear radius.33435m;220km/h is selected game design target, not OEM top-speed claim",
+        "formula": "sixth=6500*60*(2*pi*.33435)/(220000*4.1)"
+      },
+      "frontTireRadiusM": 0.3184,
+      "rearTireRadiusM": 0.33435
+    },
+    "estimates": [
+      "800kg is reported development target with uncertain achievement; no primary measured curb mass. This car is a prototype-target simulation, not a verified production trim.",
+      "All six individual gear ratios, final4.1 and reverse3.1 are explicitly modelled. Sixth derived from chosen220km/h@6500rpm kinematic design target; lower ratios selected for progressive spacing. No Nexon gearing borrowed or represented as Racemo verified.",
+      "Manufacturer190PS converted to mechanical hp;210Nm converted tolbft.6500rpm torque derived from rated power. Other curve samples, idle/redline/revlimit, shift timing, launch control, losses and gear control are estimates.",
+      "TA6300AMT six-forward/one-reverse manufacturer fact; current runtime manual shift mode approximates paddle operation with zero clutch delay. Does not claim detailed AMT actuator or automated clutch physics.",
+      "Staggered205/50R17 front and235/45R18 rear are source facts. Runtime car uses single tire-size/radius: rear driven-wheel235/45R18 and.33435m nominal radius, so front sizing approximated. Front nominal.3184m preserved as provenance; no claim true staggered runtime geometry.",
+      "40%front distribution is secondary reported/assumed, not manufacturer measured. Tracks1.50/1.51m,CG.46m,collidersections,overhangsplit,steering15:1,drag.36,grip,brakes,differential,suspension and pressure30psi are simulation estimates.",
+      "220km/h top-speed and6s0-60 are provisional game design targets, not measured performance. No Forza gameplay stats used as real-world evidence.",
+      "Wheel anchors measured visually and from transparent openings; front/rear anchors inferred behind shell corners. Artwork and placement are original fictional design, not factory replica. Browser/driving QA pending."
+    ],
+    "artwork": "Original logo-free red/black Ember Pod coupe and cockpit; shared existing steeringwheel reused.",
+    "sourceHashes": {
+      "bodyPng": "369d98da377201d4a2150d03f83686629e5532e754e18bbc06fd400027426093",
+      "dashboardPng": "53bc6ad54bbe5ccf59319894279b9bc91d668976ae3a2192fa3a74c26157cc4d"
+    }
+  },
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 60,
+        "y": 280,
+        "radius": 29
+      },
+      {
+        "wheel": "fr",
+        "x": 326,
+        "y": 280,
+        "radius": 29
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1896,
+        "y": 640,
+        "radius": 35
+      },
+      {
+        "wheel": "rr",
+        "x": 2078,
+        "y": 640,
+        "radius": 27
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1126,
+        "y": 280,
+        "radius": 54
+      },
+      {
+        "wheel": "rr",
+        "x": 1490,
+        "y": 280,
+        "radius": 60
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1691,
+        "y": 270,
+        "radius": 25
+      },
+      {
+        "wheel": "rr",
+        "x": 1876,
+        "y": 280,
+        "radius": 40
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 63,
+        "y": 650,
+        "radius": 30
+      },
+      {
+        "wheel": "rl",
+        "x": 324,
+        "y": 650,
+        "radius": 30
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 662,
+        "y": 640,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 861,
+        "y": 640,
+        "radius": 25
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 1060,
+        "y": 650,
+        "radius": 64
+      },
+      {
+        "wheel": "fl",
+        "x": 1432,
+        "y": 640,
+        "radius": 55
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 459,
+        "y": 270,
+        "radius": 37
+      },
+      {
+        "wheel": "fl",
+        "x": 678,
+        "y": 280,
+        "radius": 42
+      }
+    ]
+  }
+}
