@@ -1,3 +1,4 @@
+import {advanceRaceLaunchControl} from './RaceLaunchControl.js';
 import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
 
 // Shape pedal travel without changing zero or full-throttle output.
@@ -447,9 +448,11 @@ export class PowertrainModel {
     ) / 1000 * (1 + transmissionDamage * 0.012));
     const drivenIds = (config.drivenWheelIds || this.getDrivenWheelIds(tuning))
       .filter((wheelId) => RACE_WHEEL_IDS.includes(wheelId));
-    const averageDrivenOmega = drivenIds.length
+    // Shaft direction matters: reverse rotation in a forward gear cannot
+    // back-drive positive engine RPM. Reverse gear reverses this relationship.
+    const averageSignedDrivenOmega = drivenIds.length
       ? drivenIds.reduce((sum, wheelId) => (
-        sum + Math.abs(Number(kinematicsByWheel[wheelId]?.wheelAngularVelocityRadps || 0))
+        sum + Number(kinematicsByWheel[wheelId]?.wheelAngularVelocityRadps || 0)
       ), 0) / drivenIds.length
       : 0;
     if (controls.assists?.autoShift === true && requestedGear > 0 && gear > 0
@@ -460,13 +463,13 @@ export class PowertrainModel {
       )));
       const projectedRpm = (candidateGear) => {
         const ratio = Math.abs(Number(this.getGearRatio(tuning, candidateGear, ratios)) || 0);
-        return averageDrivenOmega * ratio * finalDriveForShift * 60 / (Math.PI * 2);
+        return Math.max(0, averageSignedDrivenOmega) * ratio * finalDriveForShift * 60 / (Math.PI * 2);
       };
       const rollingContacts = drivenIds.filter(id=>Number.isFinite(kinematicsByWheel[id]?.longitudinalVelocityMps));
       const groundOmega = rollingContacts.length ? rollingContacts.reduce((sum,id)=>{
         const wheel=kinematicsByWheel[id];
         const radius=Math.max(.1,Number(wheel.effectiveRollingRadiusM??config.wheelRadiusM??tuning.wheelRadiusM)||.33);
-        return sum+Math.abs(wheel.longitudinalVelocityMps)/radius;
+        return sum+Math.max(0,wheel.longitudinalVelocityMps)/radius;
       },0)/rollingContacts.length : null;
       const roadRpm = groundOmega==null ? null : groundOmega
         * Math.abs(Number(this.getGearRatio(tuning,gear))||0)*finalDriveForShift*60/(Math.PI*2);
@@ -539,9 +542,20 @@ export class PowertrainModel {
     )));
     const overallRatio = gearRatio * finalDrive;
     const coupledRpm = overallRatio > 0
-      ? averageDrivenOmega * overallRatio * 60 / (Math.PI * 2)
+      ? Math.max(0, averageSignedDrivenOmega * (gear < 0 ? -1 : 1)) * overallRatio * 60 / (Math.PI * 2)
       : idleRpm;
-    const freeRpmTarget = idleRpm + (maxRpm - idleRpm) * clamp(Number(controls.throttle || 0), 0, 1);
+    const groundSpeedMps = Math.max(0, Number(state.groundSpeedMps
+      ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0))) || 0);
+    const launchRpm = clamp(Number(tuning.launchRpm || idleRpm), idleRpm, maxRpm);
+    const launchControl = advanceRaceLaunchControl(previous.launchControl, {
+      enabled:controls.assists?.launchControlEnabled === true,
+      staging:controls.assists?.launchControlStaging === true,
+      throttle:controls.throttle,brake:controls.brake,handbrake:controls.handbrake,
+      gear,speedMps:groundSpeedMps,dt:seconds
+    });
+    const launchControlActive = launchControl.phase === 'launching';
+    const freeRpmTarget = launchControl.phase === 'armed' ? launchRpm
+      : idleRpm + (maxRpm - idleRpm) * clamp(Number(controls.throttle || 0), 0, 1);
     const driverClutchCoupling = clamp(1 - Number(controls.clutch || 0), 0, 1);
     const converterSlip = clamp(Number(tuning.torqueConverterSlip || 0), 0, 0.35);
     // A loaded converter approaches its stall RPM at zero shaft speed. Do not
@@ -558,11 +572,24 @@ export class PowertrainModel {
       ? clamp(coupledRpm / Math.max(idleRpm, converterRpmTarget), 0.25, 1)
       : 0;
     const mechanical = state.mechanical?.config?.enabled ? state.mechanical : null;
-    const clutchCoupling = driverClutchCoupling * shiftTorqueScale * (mechanical?.effects?.drive ?? 1);
+    // Auto-shifted sequential/manual gearboxes still need clutch take-up.
+    // Full engagement at zero shaft speed pinned high-strung engines at idle.
+    // Use the authored launch RPM and slip the clutch; do not add engine power
+    // or tire grip. Explicit manual clutch input retains authority.
+    const automaticClutch = converterSlip === 0 && controls.assists?.autoShift === true
+      && Math.abs(gear) === 1 && Number(controls.throttle || 0) > .02;
+    const clutchTargetRpm = idleRpm + (launchRpm-idleRpm)*clamp(Number(controls.throttle)||0,0,1);
+    const takeup = (automaticClutch || launchControlActive) ? clamp(coupledRpm / Math.max(idleRpm,clutchTargetRpm),.35,1) : 1;
+    const launchTakeup = launchControlActive ? clamp(launchControl.elapsed/.6,0,1) : 1;
+    const clutchCoupling = driverClutchCoupling * shiftTorqueScale * Math.min(takeup,launchTakeup)
+      * (mechanical?.effects?.drive ?? 1);
     const rpmCoupling = clutchCoupling * (converterSlip > 0 ? converterCoupling : 1);
+    const loadedRpmTarget = converterSlip > 0 ? converterRpmTarget
+      : automaticClutch || launchControlActive ? Math.max(coupledRpm,clutchTargetRpm) : coupledRpm;
+    const slipFreeRpmTarget = automaticClutch || launchControlActive ? clutchTargetRpm : freeRpmTarget;
     const rpmTarget = overallRatio > 0
-      ? (converterSlip > 0 ? converterRpmTarget : coupledRpm) * clutchCoupling
-        + freeRpmTarget * (1 - clutchCoupling)
+      ? loadedRpmTarget * clutchCoupling
+        + (driverClutchCoupling === 0 ? freeRpmTarget : slipFreeRpmTarget) * (1 - clutchCoupling)
       : freeRpmTarget;
     let engineRpm = clamp(Number(previous.engineRpm ?? state.engineRpm ?? idleRpm), idleRpm, maxRpm);
     // Calibrated rotational response: torque-equivalent response stays constant,
@@ -590,8 +617,6 @@ export class PowertrainModel {
         return Math.max(0, Number(wheel.slipRatio || 0) * driveDirection);
       }))
       : 0;
-    const groundSpeedMps = Math.max(0, Number(state.groundSpeedMps
-      ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0))) || 0);
     const handbrakeActive = Number(controls.handbrake || 0) > 0.001;
     const rearBrakeSlip = Math.max(0, ...['rl', 'rr'].map((wheelId) => {
       const wheel = kinematicsByWheel[wheelId] || {};
@@ -603,28 +628,39 @@ export class PowertrainModel {
     ), 0.02, 0.4);
     const handbrakeEscSuppressed = handbrakeActive
       || (previous.handbrakeEscSuppressed === true && rearBrakeSlip > handbrakeEscRecoverySlip);
-    const launchControlActive = !handbrakeActive
-      && controls.assists?.launchControlEnabled === true
-      && groundSpeedMps < 8
-      && controls.throttle > 0.7
-      && overallRatio > 0;
     const tractionControlActive = !handbrakeActive
       && controls.assists?.tractionControlEnabled !== false
       && controls.throttle > 0.02
       && overallRatio > 0;
+    const wheelSlipControlActive = tractionControlActive || launchControlActive;
     const targetDrivenSlip = launchControlActive
       ? clamp(Number(tuning.launchSlipTarget ?? 0.09), 0.04, 0.2)
       : clamp(Number(tuning.tractionControlSlipTarget ?? 0.12), 0.05, 0.3);
-    const targetTractionScale = tractionControlActive && drivenSlip > targetDrivenSlip
-      ? clamp(targetDrivenSlip / drivenSlip, 0.08, 1)
-      : 1;
+    // The brush peak moves with load and surface friction. A fixed 12% slip
+    // target can be far beyond the snow peak and hold the wheels in sliding.
+    const targetTractionScale = wheelSlipControlActive ? Math.min(1, ...drivenIds.map((wheelId) => {
+      const wheel = kinematicsByWheel[wheelId] || {};
+      if (Number(wheel.wheelAngularVelocityRadps || 0) * driveDirection <= 0) return 1;
+      const peak = Number(wheel.peakLongitudinalSlipRatio);
+      const target = Number.isFinite(peak) && peak > 0
+        ? Math.min(targetDrivenSlip, Math.max(0.005, peak * 0.8)) : targetDrivenSlip;
+      const travel = Number(wheel.longitudinalVelocityMps || 0) * driveDirection;
+      const radius = Math.max(0.1, Number(wheel.effectiveRollingRadiusM || config.wheelRadiusM || .33));
+      const poweredSpeed = Number(wheel.wheelAngularVelocityRadps || 0) * radius * driveDirection;
+      // During rollback, torque first brakes the backward motion. Its slip
+      // cannot approach the forward-driving target until travel crosses zero.
+      // Still regulate actual powered wheelspin using a launch-speed reference.
+      const slip = travel < 0
+        ? Math.max(0, poweredSpeed) / Math.max(.5, Math.abs(travel))
+        : Math.max(0, Number(wheel.slipRatio || 0) * driveDirection);
+      return slip > target ? clamp(target / slip, 0.08, 1) : 1;
+    })) : 1;
     const previousTractionScale = clamp(Number(previous.tractionTorqueScale ?? 1), 0.05, 1);
     const tractionRate = targetTractionScale < previousTractionScale ? 18 : 8;
-    const tractionTorqueScale = tractionControlActive
+    const tractionTorqueScale = wheelSlipControlActive
       ? previousTractionScale + (targetTractionScale - previousTractionScale)
         * Math.min(1, seconds * tractionRate)
       : 1;
-    const launchRpm = clamp(Number(tuning.launchRpm || idleRpm), idleRpm, maxRpm);
     const launchTorqueScale = launchControlActive
       && drivenSlip > targetDrivenSlip
       && engineRpm > launchRpm
@@ -662,10 +698,29 @@ export class PowertrainModel {
       direction * combustionTorqueNm - travelDirection * engineBrakeTorqueNm
     ) * overallRatio * transmissionEfficiency * clutchCoupling * converterTorqueMultiplier
       * awdCenterCouplingScale;
+    // Anticipate the current contact limit when traction control is enabled.
+    // Feedback alone acts after a low-grip tire has already crossed its peak.
+    // Preserve axle shares by reducing engine torque equally for all wheels.
+    let contactTorqueScale = 1;
+    if (wheelSlipControlActive && wheelDriveTorqueTotalNm * direction > 0) {
+      for (const wheelId of drivenIds) {
+        const share = Number(driveShareByWheel[wheelId] || 0);
+        if (share <= 0) continue;
+        const capacity = Number(capacityByWheel[wheelId]);
+        const peak = Number(kinematicsByWheel[wheelId]?.peakLongitudinalSlipRatio);
+        if (!Number.isFinite(capacity) || capacity <= 0 || !(peak > 0 && (peak < 0.08 || kinematicsByWheel[wheelId]?.snowResponseWeight > 0))) continue;
+        const radius = Math.max(0.1, Number(kinematicsByWheel[wheelId]?.effectiveRollingRadiusM || config.wheelRadiusM || 0.33));
+        // The broader snow response permits a smaller controller reserve.
+        // This changes torque utilization, never the tire's friction limit.
+        const contactReserve = kinematicsByWheel[wheelId]?.snowResponseWeight > 0 ? .95 : .9;
+        contactTorqueScale = Math.min(contactTorqueScale,
+          Math.max(0, capacity) * radius * contactReserve / Math.max(1e-6, Math.abs(wheelDriveTorqueTotalNm) * share));
+      }
+    }
     const wheelDriveTorqueNm = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
       wheelId,
       drivenIds.includes(wheelId)
-        ? wheelDriveTorqueTotalNm * Number(driveShareByWheel[wheelId] || 0)
+        ? wheelDriveTorqueTotalNm * contactTorqueScale * Number(driveShareByWheel[wheelId] || 0)
         : 0
     ]));
 
@@ -744,7 +799,9 @@ export class PowertrainModel {
       const travelSign = Math.sign(Number(wheel.longitudinalVelocityMps || 0));
       const signedBrakeSlip = Math.max(0, -Number(wheel.slipRatio || 0) * travelSign);
       const rearHandbrakeWheel = handbrakeActive && (wheelId === 'rl' || wheelId === 'rr');
-      const absEnabled = controls.assists?.absEnabled !== false && !rearHandbrakeWheel;
+      // ABS releases are inappropriate at a standstill: permit brake hold.
+      const absEnabled = controls.assists?.absEnabled !== false && !rearHandbrakeWheel
+        && Math.abs(Number(wheel.longitudinalVelocityMps || 0)) > 1;
       const absTargetSlip = clamp(Number(tuning.absSlipTarget ?? 0.13), 0.06, 0.24);
       const targetModulation = absEnabled && signedBrakeSlip > absTargetSlip
         ? clamp(absTargetSlip / signedBrakeSlip, 0.05, 1)
@@ -789,6 +846,7 @@ export class PowertrainModel {
         revLimiterActive: limiterActive,
         limiterSequence: Number(previous.limiterSequence || 0) + (limiterActive ? 1 : 0),
         tractionTorqueScale,
+        launchControl,
         handbrakeEscSuppressed,
         absModulationByWheel
       },
@@ -804,9 +862,12 @@ export class PowertrainModel {
         converterTorqueMultiplier,
         revLimiterActive: limiterActive,
         tractionControlActive,
+        contactTorqueScale,
         tractionTorqueScale,
         drivenSlip,
         launchControlActive,
+        launchControlPhase:launchControl.phase,
+        automaticClutch,
         handbrakeActive,
         handbrakeEscSuppressed,
         rearBrakeSlip,

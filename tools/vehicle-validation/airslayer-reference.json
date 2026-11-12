@@ -1,0 +1,40 @@
+{
+  "car": "STI Airslayer",
+  "source": "https://vtcar.com/cars/vt20g/",
+  "published": {
+    "vehicle": "2020 Subaru WRX STI VT20g Airslayer",
+    "powerBhp": 862,
+    "torqueLbFt": 664,
+    "massWithoutDriverKg": 1190,
+    "displacementL": 2.3,
+    "drivetrain": "AWD",
+    "transmission": "Sadev six-speed sequential",
+    "steeringRatio": 11,
+    "hillClimbWheelDiameterIn": 19,
+    "brakes": "Alcon 350 mm front / 320 mm rear",
+    "fuelCellLiters": "35+",
+    "tires": "Yokohama Advan A052 / Apex",
+    "mountWashington2021Time": "5:28.67"
+  },
+  "estimates": [
+    "Gear ratios, final drive, shift time, redline and torque curve shape",
+    "Differential locking, suspension rates, damping, alignment and CG/inertia",
+    "275/35 R19 tire size; saved Tarmac compound approximates A052 without a bespoke tire model",
+    "Drag coefficient, frontal area and fixed front/rear downforce approximate the active aero",
+    "Body dimensions, rigidity, fuel economy and performance display estimates"
+  ],
+  "limitations": [
+    "RTG-001 body artwork is reused; tire artwork comes from the saved Tarmac tire",
+    "Both transmission modes use the same six-speed hardware; automatic is a gameplay auto-shift option",
+    "Published mass excludes driver; no separate driver mass is added to the game car",
+    "Brake rotor dimensions are reference information; the existing brake force model is used",
+    "No real-world Airslayer telemetry calibration or complete Mount Washington lap validation"
+  ],
+  "dryStraightSimulation": {
+    "conditions": "20 C asphalt, zero snow, Tarmac tires, full throttle, traction control and ABS enabled, automatic shifting",
+    "samplingSeconds": 1,
+    "levelFirstSampleAt130MphSeconds": 10,
+    "twelvePercentGradeFirstSampleAt130MphSeconds": 13,
+    "purpose": "Verify runtime powertrain can exceed 130 mph; not a lap-time prediction or measured real-car acceleration"
+  }
+}

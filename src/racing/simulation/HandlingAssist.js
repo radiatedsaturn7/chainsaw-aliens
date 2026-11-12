@@ -146,6 +146,31 @@ export class HandlingAssist {
       + Math.pow(speedFactor, 0.72) * config.analogTargetReleaseHighSpeedBonus;
   }
 
+  // Button intent is a wheel movement command, not an analog position.
+  // Integrate each phase exactly so a reversal crossing zero is independent
+  // of the render frame partition. Unwind quickly, then build opposite lock
+  // at the normal rate; never carry the unwind rate into the next turn.
+  stepDigitalSteering({ intent = 0, currentOutput = 0, speedMps = 0,
+    seconds = 0, calibration = this.steering.digitalCalibration } = {}) {
+    const profile = calibration || {};
+    const blend = clamp(Math.abs(Number(speedMps) || 0) / 60, 0, 1);
+    const press = (profile.pressRateLowSpeed ?? 2.8)
+      + ((profile.pressRateHighSpeed ?? 1.4) - (profile.pressRateLowSpeed ?? 2.8)) * blend;
+    const unwind = profile.unwindRate ?? 7;
+    const release = profile.releaseRate ?? 3.5;
+    const direction = Math.sign(Number(intent) || 0);
+    let current = clamp(Number(currentOutput) || 0, -1, 1);
+    let dt = Math.max(0, Number(seconds) || 0);
+    if (!direction) return Math.sign(current) * Math.max(0, Math.abs(current) - release * dt);
+    if (current * direction < 0) {
+      const timeToCenter = Math.abs(current) / unwind;
+      if (dt <= timeToCenter) return current + direction * unwind * dt;
+      dt -= timeToCenter;
+      current = 0;
+    }
+    return clamp(current + direction * press * dt, -1, 1);
+  }
+
   stepControllerToRackInput({
     mode = 'keyboard',
     intent = 0,
@@ -158,7 +183,8 @@ export class HandlingAssist {
     const current = clamp(Number(currentOutput) || 0, -1, 1);
     const dt = Math.max(0, Number(seconds) || 0);
     if (profile.direct === true) return target;
-    const rate = Math.max(0.01, Number(
+    const reversing = target * current < 0 && Math.abs(target) > 0.15;
+    const rate = (reversing ? 1.6 : 1) * Math.max(0.01, Number(
       Math.abs(target) > Math.abs(current)
         ? profile.responseRatePerSecond
         : profile.releaseRatePerSecond
@@ -252,7 +278,7 @@ export class HandlingAssist {
   } = {}) {
     // A stick/touch pad commands rack position. Tire aligning torque must
     // not rewrite that command when the player releases or centres the pad.
-    if (steeringInputMode === 'gamepad' || steeringInputMode === 'simulation-wheel' || activeTurnInput || launchAligning || seconds <= 0) return 0;
+    if (steeringInputMode === 'digital' || steeringInputMode === 'keyboard' || steeringInputMode === 'gamepad' || steeringInputMode === 'simulation-wheel' || activeTurnInput || launchAligning || seconds <= 0) return 0;
     let frontLoadN = 0;
     let rackMomentNm = 0;
     ['fl', 'fr'].forEach((wheelId) => {

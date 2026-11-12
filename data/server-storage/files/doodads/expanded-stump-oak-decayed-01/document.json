@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-expanded-stump-oak-decayed-01",
+    "name": "expanded-stump-oak-decayed-01",
+    "artRef": "expanded-stump-oak-decayed-01",
+    "widthM": 0.8,
+    "heightM": 0.8,
+    "groundOffsetM": 0.0938,
+    "hitboxWidthM": 0.68,
+    "hitboxHeightM": 0.7200000000000001,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

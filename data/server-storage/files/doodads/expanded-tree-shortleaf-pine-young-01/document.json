@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-expanded-tree-shortleaf-pine-young-01",
+    "name": "expanded-tree-shortleaf-pine-young-01",
+    "artRef": "expanded-tree-shortleaf-pine-young-01",
+    "widthM": 4.5703125,
+    "heightM": 5,
+    "groundOffsetM": 0.2148,
+    "hitboxWidthM": 0.65,
+    "hitboxHeightM": 4.5,
+    "weightKg": 350,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

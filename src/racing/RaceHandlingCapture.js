@@ -15,8 +15,19 @@ export function captureRaceHandling(editor) {
     inputs: pick(editor.raceInput, ['steeringWheel', 'analogSteeringIntent', 'binarySteer', 'steeringTarget', 'handbrake', 'throttleAxis', 'brakeAxis', 'gear',
       'lastSteeringInputMode', 'tractionControlEnabled', 'stabilityControlEnabled', 'absEnabled']),
     state: state ? {
-      ...pick(state, ['groundSpeedMps', 'bodyLongitudinalSpeedMps', 'bodyLateralSpeedMps', 'yawRateRadps', 'rollRad', 'pitchRad']),
+      ...pick(state, ['groundSpeedMps', 'bodyLongitudinalSpeedMps', 'bodyLateralSpeedMps', 'yawRateRadps', 'yawRad', 'rollRad', 'pitchRad']),
       position: pick(state.position, ['x', 'y', 'z']),
+      orientation: pick(state.orientation, ['x', 'y', 'z', 'w']),
+      velocity: pick(state.velocity, ['x', 'y', 'z']),
+      angularVelocityWorld: pick(state.angularVelocityWorld, ['x', 'y', 'z']),
+      contactStabilization: {
+        ...scalarSettings(state.contactStabilization),
+        latest: state.contactStabilization?.latest ? structuredClone(state.contactStabilization.latest) : null
+      },
+      collisionEscape: worker ? null : {
+        ...scalarSettings(runner?.collisionEscapeState),
+        latest: runner?.collisionEscapeState?.latest ? structuredClone(runner.collisionEscapeState.latest) : null
+      },
       powertrain: scalarSettings(state.powertrainState),
       steering: scalarSettings(state.steeringTelemetry),
       stability: scalarSettings(state.powertrainState?.telemetry),

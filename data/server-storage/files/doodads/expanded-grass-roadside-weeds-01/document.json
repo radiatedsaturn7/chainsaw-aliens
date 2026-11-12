@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-expanded-grass-roadside-weeds-01",
+    "name": "expanded-grass-roadside-weeds-01",
+    "artRef": "expanded-grass-roadside-weeds-01",
+    "widthM": 0.65,
+    "heightM": 0.65,
+    "groundOffsetM": 0.165,
+    "hitboxWidthM": 0.5525,
+    "hitboxHeightM": 0.5850000000000001,
+    "weightKg": 5,
+    "defaultRule": {
+      "behavior": "flatten",
+      "speedDrainPercent": 1,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

@@ -1,5 +1,6 @@
 import { clamp, hashTrackStateValue, quantizeTrackStateNumber } from './TrackStateMath.js';
 import { TrackState, RUNTIME_TRACK_STATE_CHECKPOINT_OPTIONS } from './TrackState.js';
+import { getTrackStateSurfaceProfile } from './TrackStateProfiles.js';
 
 const EMPTY_ACCEPTED_TIRE_EVENTS = Object.freeze([]);
 
@@ -29,6 +30,7 @@ export function createRaceTrackState({
   surfaceModel = null,
   elevationScaleM = 1,
   snapshot = null,
+  initialSurfaceTemperatureC = null,
   ...options
 } = {}) {
   return new TrackState({
@@ -44,13 +46,17 @@ export function createRaceTrackState({
       const materialId = sample.region === 'terrain'
         ? sample.materialId || sample.tile?.tileId || baseSurfaceId
         : baseSurfaceId;
+      const profile = getTrackStateSurfaceProfile(baseSurfaceId, materialId, options.profileOverrides);
+      const authoredGrip = options.profileOverrides?.[profile.id]?.grip
+        ?? options.profileOverrides?.generic?.grip;
       return {
         baseSurfaceId,
+        surfaceTemperatureC: sample.surfaceTemperatureC ?? initialSurfaceTemperatureC ?? undefined,
         materialId,
         region: sample.region || 'terrain',
         elevationM: Number(sample.elevationM ?? sample.elevation ?? 0) * Number(elevationScaleM || 1),
         normal: sample.normal || { x: 0, y: 1, z: 0 },
-        friction: Number(baseSurface.grip || sample.friction || 1)
+        friction: Number(authoredGrip ?? (baseSurface.grip || sample.friction || 1))
           * Number(sample.terrainGripScale || 1),
         drainageRateMmPerS: sample.drainageRateMmPerS,
         sunExposure: sample.sunExposure,

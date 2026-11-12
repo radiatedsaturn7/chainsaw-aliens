@@ -1,3 +1,4 @@
+import {normalizeDebugRoad, createDebugRoadCell} from '../RaceDebugRoad.js';
 import { cloneTrackStateCheckpointCell } from './TrackStateCheckpointCell.js';
 import { indexTrackStateCell, queryTrackStateCells } from './TrackStateSpatialIndex.js';
 import {
@@ -574,16 +575,35 @@ export class TrackState {
     return this.createCellAtCoordinates(x, z, key, throughStep);
   }
 
+  setDebugRoad(value = {}) {
+    const next = normalizeDebugRoad(value);
+    if (JSON.stringify(next) === JSON.stringify(this.debugRoad)) return;
+    this.debugRoad = next;
+    this.debugRoadStartStep = this.stepIndex;
+    // Keep topology, vehicle state and terrain cells intact. Reset only road
+    // materials to the chosen (or authored) profile, publishing visual deltas.
+    for (const cell of this.cells.values()) {
+      const base = this.getBaseSurfaceForCoordinates(cell);
+      if (base.region !== 'road') continue;
+      this.prepareCellMutation(cell);
+      Object.assign(cell, createDebugRoadCell({x:cell.x,z:cell.z,
+        cellSizeM:this.cellSizeM,base,stepIndex:this.stepIndex,
+        profileOverrides:this.profileOverrides}, next));
+    }
+    this.carryByTire.clear();
+    this.cellLookupRevision += 1;
+  }
+
   createCellAtCoordinates(x, z, key, throughStep) {
     const coords = {x, z};
     const base = this.getBaseSurfaceForCoordinates(coords);
-    const cell = createTrackStateCell({
+    const cell = (this.debugRoadStartStep == null ? createTrackStateCell : createDebugRoadCell)({
       ...coords,
       cellSizeM: this.cellSizeM,
       base,
-      stepIndex: this.historyBaseStepIndex,
+      stepIndex: base.region === 'road' && this.debugRoadStartStep != null ? this.debugRoadStartStep : this.historyBaseStepIndex,
       profileOverrides: this.profileOverrides
-    });
+    }, this.debugRoad);
     this.cells.set(key, cell);
     indexTrackStateCell(this.cells, key, cell);
     this.queueMaintenancePreparation(cell);
@@ -599,8 +619,8 @@ export class TrackState {
     this.orderedCellKeys.splice(low, 0, key);
     if (low <= this.cellCursor && this.orderedCellKeys.length > 1) this.cellCursor += 1;
     if (Number(throughStep) > this.historyBaseStepIndex && this.weatherTimeline.size) {
-      if (!this.catchUpNewDryCellWeather(cell, throughStep)
-        && !this.catchUpNewWetCellWeather(cell, throughStep)) this.catchUpCellWeather(cell, throughStep);
+      if ((base.region === 'road' && this.debugRoadStartStep != null) || (!this.catchUpNewDryCellWeather(cell, throughStep)
+        && !this.catchUpNewWetCellWeather(cell, throughStep))) this.catchUpCellWeather(cell, throughStep);
     }
     return cell;
   }
@@ -1051,9 +1071,8 @@ export class TrackState {
       );
       cell.standingWaterDepthMm -= freeze;
       cell.iceDepthMm += freeze;
-      const compactFreeze = Math.min(cell.snowDepthMm, cell.compaction * dt * 0.08);
-      cell.snowDepthMm -= compactFreeze;
-      cell.iceDepthMm += compactFreeze * 0.1; // Approximate 10:1 snow-to-water depth.
+      // Compacted cold snow is still snow. Only liquid water freezes into
+      // an ice layer; traffic alone must not manufacture glaze ice.
     } else if (cell.surfaceTemperatureC > 0.5) {
       const meltCapacity = cell.surfaceTemperatureC * dt * (0.045 + forcing.sunIntensity * cell.sunExposure * 0.08);
       const iceMelt = Math.min(cell.iceDepthMm, meltCapacity * 0.35);

@@ -9,7 +9,7 @@ import {
   readVehicleResetCommand,
   writeVehicleRenderSnapshot
 } from './VehicleDynamicsWorkerProtocol.js';
-import { createPackedRaceWorkerEnvironmentProvider } from './PackedRaceWorkerEnvironment.js';
+import { createPackedRaceWorkerEnvironmentProvider, applyPackedDebugRoad } from './PackedRaceWorkerEnvironment.js';
 import { createWorkerTrackStateAuthority } from './VehicleTrackStateAuthority.js';
 
 export function createVehicleDynamicsWorkerMessageHandler({
@@ -85,6 +85,9 @@ export function createVehicleDynamicsWorkerMessageHandler({
           ? createWorkerTrackStateAuthority(message.payload.trackState)
           : null;
         sharedPhysicsWorld = definitions.find(definition => definition.physicsWorld)?.physicsWorld || null;
+        if (message.payload?.trackState?.debugRoad) {
+          applyPackedDebugRoad(trackStateAuthority?.trackState, sharedPhysicsWorld?.surfaceSampler, message.payload.trackState.debugRoad);
+        }
         const runners = definitions.map(createEntry);
         authority = createAuthority({
           runners,
@@ -133,6 +136,8 @@ export function createVehicleDynamicsWorkerMessageHandler({
         const update = readVehicleEnvironmentUpdate(message.buffer);
         authority.updateEnvironmentState(update, message.vehicleId || null);
         trackStateAuthority?.updateWeatherForcing(update.weatherForcing);
+      } else if (message.type === 'debugRoad') {
+        applyPackedDebugRoad(authority.trackState, sharedPhysicsWorld?.surfaceSampler, message.update);
       } else if (message.type === 'debugTireSwap') {
         if(!authority.updateTires(message.update,message.vehicleId||'player'))throw new Error('Unknown vehicle for tire swap');
       } else if (message.type === 'resetVehicle') {

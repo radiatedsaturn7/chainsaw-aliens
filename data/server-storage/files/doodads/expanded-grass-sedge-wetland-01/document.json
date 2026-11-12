@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-expanded-grass-sedge-wetland-01",
+    "name": "expanded-grass-sedge-wetland-01",
+    "artRef": "expanded-grass-sedge-wetland-01",
+    "widthM": 1.5,
+    "heightM": 0.75,
+    "groundOffsetM": 0.0645,
+    "hitboxWidthM": 1.275,
+    "hitboxHeightM": 0.675,
+    "weightKg": 5,
+    "defaultRule": {
+      "behavior": "flatten",
+      "speedDrainPercent": 1,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

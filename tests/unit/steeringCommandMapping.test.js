@@ -5,16 +5,18 @@ import { HandlingAssist } from '../../src/racing/simulation/HandlingAssist.js';
 import { RACE_CONTROLLER_STEERING } from '../../src/racing/simulation/RaceSimulationConfig.js';
 import {
   calculateAuthoritativeSteeringEnvelope,
+  updateCountersteeringRange,
   calculateWheelContactKinematics,
   classifySteeringResponseTelemetry,
   resolvePhysicalCenterSteeringAngle
 } from '../../src/racing/simulation/ContactPatchTireModel.js';
 import {
   VehicleControlInputTimeline,
+  VehicleDynamicsRunner,
   normalizeVehicleControlInput
 } from '../../src/racing/simulation/VehicleDynamicsRunner.js';
 
-test('authoritative steering envelope responds to front support and aquaplaning', () => {
+test('steering position is independent of front support and aquaplaning', () => {
   const config = {
     handlingPreset: 'sport', maxSteerAngleRad: 0.52, massKg: 1500,
     frontWeightDistribution: 0.58, wheelbaseM: 2.68
@@ -36,8 +38,8 @@ test('authoritative steering envelope responds to front support and aquaplaning'
       fr: { ...patch, normalLoadN: 900 }
     }
   }, config);
-  assert.ok(twoWheel > oneWheel);
-  assert.ok(oneWheel > aquaplaning);
+  assert.equal(twoWheel,oneWheel);
+  assert.equal(oneWheel,aquaplaning);
   assert.equal(resolvePhysicalCenterSteeringAngle({ steering: 1 }, config, {
     groundSpeedMps: 25, contactPatches: { fl: patch, fr: patch }
   }), twoWheel);
@@ -318,7 +320,7 @@ test('authoritative gamepad rack receives the extra angle while preserving conta
     else assert.ok(gamepad > keyboard && gamepad <= keyboard * 1.100001);
     assert.equal(resolvePhysicalCenterSteeringAngle({ steering: -0.5, steeringInputMode: 'gamepad' }, config, state), -gamepad * 0.5);
     const airborne = resolvePhysicalCenterSteeringAngle({ steering: 1, steeringInputMode: 'gamepad' }, config, { groundSpeedMps: speed });
-    assert.ok(airborne < 0.003);
+    assert.equal(airborne,gamepad);
     assert.ok(gamepad <= config.maxSteerAngleRad);
   }
 });
@@ -358,4 +360,162 @@ test('touch/gamepad release stays player-directed under tire aligning torque',()
   const next=assist.stepControllerToRackInput({mode:'gamepad',intent:0,currentOutput,seconds:1/60});
   assert.equal(Math.sign(next),Math.sign(currentOutput));assert.ok(Math.abs(next)<Math.abs(currentOutput));
  }
+});
+
+test('player-commanded countersteering opens the rack during a slide without automatic steering',()=>{
+ const config={handlingPreset:'sport',maxSteerAngleRad:.52,massKg:1500,frontWeightDistribution:.58};
+ const patch={normalLoadN:4300,suspensionNormalLoadN:4300};
+ for(const mode of ['gamepad','keyboard'])for(const speed of [15,25,40])for(const sign of [-1,1]){
+  const straight={groundSpeedMps:speed,bodyLongitudinalSpeedMps:speed,bodyLateralSpeedMps:0,contactPatches:{fl:patch,fr:patch}};
+  const sliding={...straight,bodyLateralSpeedMps:sign*speed*Math.tan(16*Math.PI/180)};
+  const steer=value=>resolvePhysicalCenterSteeringAngle({steering:value,steeringInputMode:mode},config,sliding);
+  assert.equal(steer(0),0,'no automatic correction');
+  assert.ok(Math.abs(steer(sign))>16*Math.PI/180,'can steer beyond the travel angle to arrest rotation');
+  assert.ok(Math.abs(steer(sign))<.45,'moderate slides do not demand maximum physical lock');
+  assert.ok(Math.abs(steer(sign*.5))<Math.abs(steer(sign)),'partial input remains below full input');
+  assert.equal(steer(sign*.1),resolvePhysicalCenterSteeringAngle({steering:sign*.1,steeringInputMode:mode},config,straight),'small corrections keep their center gain');
+  assert.equal(steer(-sign),resolvePhysicalCenterSteeringAngle({steering:-sign,steeringInputMode:mode},config,straight),'ordinary turn-in range stays bounded');
+  assert.equal(Math.sign(steer(sign)),sign);
+ }
+});
+test('countersteering range blends smoothly and retains contact and direct-wheel policies',()=>{
+ const config={handlingPreset:'sport',maxSteerAngleRad:.52,massKg:1500,frontWeightDistribution:.58};
+ const patch={normalLoadN:4300,suspensionNormalLoadN:4300};
+ const state={groundSpeedMps:30,bodyLongitudinalSpeedMps:30,contactPatches:{fl:patch,fr:patch}};
+ let previous=0;
+ for(let degrees=0;degrees<=20;degrees+=.1){
+  const next=resolvePhysicalCenterSteeringAngle({steering:-1,steeringInputMode:'gamepad'},config,{...state,bodyLateralSpeedMps:-30*Math.tan(degrees*Math.PI/180)});
+  if(previous)assert.ok(Math.abs(Math.abs(next)-previous)<.015);previous=Math.abs(next);
+ }
+ const slide={...state,bodyLateralSpeedMps:-10};
+ assert.equal(resolvePhysicalCenterSteeringAngle({steering:-1,steeringInputMode:'gamepad'},config,{...slide,contactPatches:{}}),resolvePhysicalCenterSteeringAngle({steering:-1,steeringInputMode:'gamepad'},config,slide),'wheel position remains available in the air');
+ assert.equal(resolvePhysicalCenterSteeringAngle({steering:-.5,steeringInputMode:'simulation-wheel'},config,slide),-.26);
+ assert.equal(resolvePhysicalCenterSteeringAngle({steering:-1,steeringInputMode:'gamepad'},config,{...slide,bodyLongitudinalSpeedMps:-30}),resolvePhysicalCenterSteeringAngle({steering:-1,steeringInputMode:'gamepad'},config,{...state,bodyLongitudinalSpeedMps:-30}),'do not interpret reversing as a forward drift');
+});
+
+test('a developing 8 degree slide gets bounded corrective steering',()=>{
+ const config={handlingPreset:'sport',maxSteerAngleRad:.52,massKg:1500,frontWeightDistribution:.58};
+ const patch={normalLoadN:4300,suspensionNormalLoadN:4300};
+ for(const sign of [-1,1]){
+  const state={groundSpeedMps:30,bodyLongitudinalSpeedMps:30,bodyLateralSpeedMps:sign*30*Math.tan(8*Math.PI/180),contactPatches:{fl:patch,fr:patch}};
+  const angle=Math.abs(resolvePhysicalCenterSteeringAngle({steering:sign,steeringInputMode:'gamepad'},config,state));
+  assert.ok(angle>8*Math.PI/180&&angle<17*Math.PI/180);
+  assert.equal(resolvePhysicalCenterSteeringAngle({steering:0,steeringInputMode:'gamepad'},config,state),0);
+ }
+});
+test('deliberate stick reversal is quicker without amplifying the final input',()=>{
+ const assist=new HandlingAssist(RACE_CONTROLLER_STEERING);
+ const reversed=assist.stepControllerToRackInput({mode:'gamepad',intent:-1,currentOutput:.5,seconds:.05});
+ const ordinary=assist.stepControllerToRackInput({mode:'gamepad',intent:1,currentOutput:0,seconds:.05});
+ assert.ok((.5-reversed)/1.5>ordinary);
+ assert.ok(reversed>=-1&&reversed<.5);
+});
+
+test('160 mph center precision coexists with bounded early yaw correction',()=>{
+ const config={handlingPreset:'sport',maxSteerAngleRad:.52,wheelbaseM:2.67};
+ const straight={groundSpeedMps:160*.44704,bodyLongitudinalSpeedMps:160*.44704,bodyLateralSpeedMps:0,yawRateRadps:0};
+ const turning={...straight,yawRateRadps:.8};
+ const angle=(input,state)=>resolvePhysicalCenterSteeringAngle({steering:input,steeringInputMode:'gamepad'},config,state);
+ assert.equal(angle(-.1,turning),angle(-.1,straight),'small highway corrections retain their gain');
+ assert.ok(Math.abs(angle(-1,turning))>.10&&Math.abs(angle(-1,turning))<.22,'catch rotation without a sudden maximum-lock command');
+ assert.equal(angle(1,turning),angle(1,straight),'no extra lock turning into the spin');
+ assert.equal(angle(0,turning),0);
+ assert.ok(Math.abs(angle(1,straight))<.11);
+});
+test('countersteering range decays smoothly on the physics clock and clears at rest',()=>{
+ const config={},state={bodyLongitudinalSpeedMps:30,yawRateRadps:.8};
+ updateCountersteeringRange(state,config,1/120);assert.equal(state.countersteerRangeLeft,1);
+ state.yawRateRadps=0;
+ updateCountersteeringRange(state,config,1/120);assert.ok(state.countersteerRangeLeft>.97);
+ const split={...state},whole={...state};
+ for(let i=0;i<120;i++)updateCountersteeringRange(split,config,1/120);
+ updateCountersteeringRange(whole,config,1);
+ assert.ok(Math.abs(split.countersteerRangeLeft-whole.countersteerRangeLeft)<1e-12);
+ assert.ok(split.countersteerRangeLeft<.06);
+ state.bodyLongitudinalSpeedMps=0;updateCountersteeringRange(state,config,1/120);
+ assert.equal(state.countersteerRangeLeft,0);
+});
+
+test('airborne runner keeps commanded front-wheel angle and replays recovery range exactly',()=>{
+ const runner=new VehicleDynamicsRunner({environmentProvider:()=>({grounded:false}),config:{handlingPreset:'sport',maxSteerAngleRad:.52,chassisHz:120,tireHz:120},initialState:{heightM:10,speedMps:30,velocity:{x:-15,y:0,z:30},bodyLateralSpeedMps:-15,yawRateRadps:.8,angularVelocityWorld:{x:0,y:.8,z:0}}});
+ runner.addInputSample(0,{steering:-1,steeringInputMode:'gamepad'});
+ runner.advance(1/120);
+ assert.ok(runner.state.countersteerRangeLeft>.99);
+ assert.ok(runner.state.steeringTelemetry.resolvedCenterRackAngleRad<-.51);
+ for(const id of ['fl','fr']){
+  assert.ok(Math.abs(runner.state.contactPatches[id].steeringAngleRad)>.4);
+  assert.equal(runner.state.contactPatches[id].normalLoadN,0,'steering position adds no tire support');
+ }
+ const snapshot=runner.createSnapshot();
+ const replay=new VehicleDynamicsRunner({config:snapshot.config,environmentProvider:()=>({grounded:false})});replay.restoreSnapshot(snapshot);
+ for(let i=0;i<10;i++){runner.advance(1/120);replay.advance(1/120);}
+ assert.equal(runner.state.countersteerRangeLeft,replay.state.countersteerRangeLeft);
+ assert.deepEqual(runner.state.position,replay.state.position);
+ assert.deepEqual(runner.state.steeringTelemetry,replay.state.steeringTelemetry);
+});
+
+test('cockpit wheel displays the physical rack, including worker render fallback',async()=>{
+ const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');
+ const editor=new RaceEditor({});
+ editor.playtestSession={vehicleDynamicsRunner:{state:{steeringTelemetry:{resolvedCenterRackAngleRad:-.45}}}};
+ assert.equal(editor.getRaceVisibleSteeringWheelRotationRad(),editor.getRaceSteeringWheelRotationForTireAngle(.45));
+ editor.playtestSession={vehicleRenderState:{wheels:{fl:{steeringAngleRad:-.4},fr:{steeringAngleRad:-.5}}}};
+ assert.equal(editor.getRaceVisibleSteeringWheelRotationRad(),editor.getRaceSteeringWheelRotationForTireAngle(.45));
+});
+
+test('recovery permission does not retain excessive correction after a slide settles',()=>{
+ const config={handlingPreset:'sport',maxSteerAngleRad:.52};
+ const pose={groundSpeedMps:45,bodyLongitudinalSpeedMps:45,countersteerRangeLeft:1};
+ const angle=(u,s)=>Math.abs(resolvePhysicalCenterSteeringAngle({steering:-u,steeringInputMode:'gamepad'},config,s));
+ const mild={...pose,bodyLateralSpeedMps:-1.5,yawRateRadps:.2};
+ const severe={...pose,bodyLateralSpeedMps:-20,yawRateRadps:.8};
+ const settled={...pose,bodyLateralSpeedMps:0,yawRateRadps:0};
+ assert.ok(angle(.5,mild)<5*Math.PI/180,'half-stick mild correction stays modest');
+ assert.ok(angle(.5,severe)>angle(.5,mild)*2,'large sideways momentum still gets useful angle');
+ assert.ok(angle(.5,settled)<angle(.5,mild),'retained permission does not retain a large steering angle');
+ assert.ok(angle(1,mild)<11*Math.PI/180,'even strong input cannot suddenly demand 30 degrees in a mild skid');
+ assert.ok(angle(1,severe)>.51,'physical lock remains available when momentum requires it');
+ for(let u=0,previous=0;u<=1;u+=.001){
+  const current=angle(u,mild);assert.ok(current>=previous-1e-10);assert.ok(current-previous<.003);previous=current;
+ }
+});
+test('sideways recovery remains available across the old 4 m/s forward cutoff',()=>{
+ const config={handlingPreset:'sport',maxSteerAngleRad:.52};
+ const angle=forward=>resolvePhysicalCenterSteeringAngle({steering:-1,steeringInputMode:'gamepad'},config,{
+  groundSpeedMps:45,bodyLongitudinalSpeedMps:forward,bodyLateralSpeedMps:-44,yawRateRadps:.5
+ });
+ assert.ok(Math.abs(angle(3))>.51);
+ assert.ok(Math.abs(angle(4.001)-angle(3.999))<.001);
+ assert.ok(Math.abs(angle(0))>.3);
+});
+
+test('momentum mapping reduces opposite-spin overshoot in a fixed mild-slide maneuver',()=>{
+ // Same car, surface and 200ms half-stick correction. Baseline reproduces
+ // the prior range-only mapping, injected as a direct physical wheel angle.
+ const maneuver=previousMapping=>{
+  const runner=new VehicleDynamicsRunner({
+   config:{handlingPreset:'sport',chassisHz:120,tireHz:120,maxSteerAngleRad:.52},
+   initialState:{heightM:.55,velocity:{x:-1.5,y:0,z:45},speedMps:45,bodyLateralSpeedMps:-1.5,yawRateRadps:.2,angularVelocityWorld:{x:0,y:.2,z:0},countersteerRangeLeft:1},
+   environmentProvider:()=>({surfaceHeightByWheel:{fl:0,fr:0,rl:0,rr:0}})
+  });
+  let oppositeYaw=0,maxAngle=0;
+  for(let i=0;i<60;i++){
+   const input=i<24?-.5:0;
+   const speed=runner.state.groundSpeedMps;
+   const base=.52/(1+(speed/23)**1.35);
+   const t=Math.max(0,(Math.abs(input)-.2)/.8);
+   const oldAngle=input*Math.min(.52,1.1*(base+(.52-base)*(runner.state.countersteerRangeLeft||0)*t*t*(3-2*t)));
+   runner.addInputSample(i/120,previousMapping
+    ? {steeringInputMode:'simulation-wheel',centerSteeringAngleRad:oldAngle}
+    : {steeringInputMode:'gamepad',steering:input});
+   runner.advance(1/120);
+   oppositeYaw=Math.max(oppositeYaw,-runner.state.yawRateRadps);
+   maxAngle=Math.max(maxAngle,Math.abs(runner.state.steeringTelemetry.resolvedCenterRackAngleRad));
+  }
+  return {oppositeYaw,maxAngle,finalYaw:Math.abs(runner.state.yawRateRadps)};
+ };
+ const previous=maneuver(true),momentum=maneuver(false);
+ assert.ok(momentum.oppositeYaw<previous.oppositeYaw*.8,JSON.stringify({previous,momentum}));
+ assert.ok(momentum.maxAngle<previous.maxAngle*.7);
+ assert.ok(momentum.finalYaw<previous.finalYaw*.6);
 });

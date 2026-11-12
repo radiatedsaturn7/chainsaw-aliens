@@ -7,8 +7,8 @@
     "id": "snow",
     "label": "Snow",
     "surfaceGrip": {
-      "asphalt": 0.58,
-      "wet-asphalt": 0.62,
+      "asphalt": 0.82,
+      "wet-asphalt": 0.85,
       "dirt": 0.74,
       "gravel": 0.76,
       "mud": 0.62,

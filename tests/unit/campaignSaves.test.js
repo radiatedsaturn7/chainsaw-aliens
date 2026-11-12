@@ -245,3 +245,18 @@ test('pre-slot HACKME and SKIPME survive new/continued slot selection and bypass
   assert.equal(player.flow.pendingOpeningRace,'Tower Hill Road','queued cheats must not leak into another slot');
  }
 });
+
+test('drift side-event results save a best score without completing the parent mission',async()=>{
+ const {game,saves}=await fixture();await saves.startNew(0);await commitMenuCar(game,'RTG-001');
+ game.raceTravelSession={carSelection:{documentName:'RTG-001'},garage:game.items.garage};
+ const editor=new RaceEditor(game);editor.mode='race';
+ editor.selectedRace.campaign={sideEventId:'H11-S08',scoring:'drift',hubBoss:'Angeles Crest Highway'};
+ const session={raceId:'side-h11-s08',raceDocumentName:'Willow Springs — Horse Thief Mile',damage:{},mechanical:{},driftScore:{points:620.9}};
+ editor.playtestSession=session;editor.showRaceResults();await session.campaignSaveTask;
+ assert.equal(editor.getRacePauseMenuRows().find(r=>r.id==='race-result-drift').value,'620');
+ assert.equal(saves.slots[0].progress['raceScore.H11-S08'],620);
+ assert.equal(saves.slots[0].progress[raceCompletionKey('Angeles Crest Highway')],undefined);
+ const replay={...session,campaignProgressSaved:false,campaignSaveTask:null,driftScore:{points:100}};
+ await editor.saveCampaignRaceResult(replay);
+ assert.equal(saves.slots[0].progress['raceScore.H11-S08'],620);
+});
