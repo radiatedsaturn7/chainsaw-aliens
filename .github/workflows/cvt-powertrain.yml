@@ -24,7 +24,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: node --test tests/unit/cvtTransmission.test.js tests/unit/electricPowertrain*.test.js tests/unit/automaticKickdown.test.js tests/unit/powertrainAllocationParity.test.js tests/unit/raceAiRemotePowertrain.test.js tests/unit/vehicleDynamicsReplay.test.js tests/unit/vehicleDynamicsControls.test.js tests/unit/raceVehicleDynamicsWorkerBridge.test.js tests/unit/raceVehicleDynamicsWorkerMigration.test.js tests/unit/raceLaunchControl.test.js
+      - run: node --test tests/unit/cvtTransmission.test.js tests/unit/raceAiDistantPhysics.test.js tests/unit/electricPowertrain*.test.js tests/unit/automaticKickdown.test.js tests/unit/powertrainAllocationParity.test.js tests/unit/raceAiRemotePowertrain.test.js tests/unit/vehicleDynamicsReplay.test.js tests/unit/vehicleDynamicsControls.test.js tests/unit/raceVehicleDynamicsWorkerBridge.test.js tests/unit/raceVehicleDynamicsWorkerMigration.test.js tests/unit/raceLaunchControl.test.js
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test tests/playwright/cvt-editor.spec.js tests/playwright/electric-editor.spec.js --workers=1 --reporter=line
       - uses: actions/upload-artifact@v4

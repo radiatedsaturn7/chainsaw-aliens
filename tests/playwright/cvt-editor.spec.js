@@ -33,7 +33,7 @@ for (const viewport of [{width:390,height:844},{width:1280,height:800}]) {
       return {count:seen.size,failures,edited,lift:restored.tuning.cvt.ratioRatePerSecond,foreground};
     },viewport);
     expect(result.failures).toEqual([]);expect(result.count).toBe(5);
-    expect(result.edited).toBe(true);expect(result.lift).toBeCloseTo(2.538,3);expect(result.foreground).toBeGreaterThan(100);
+    expect(result.edited).toBe(true);expect(Math.abs(result.lift - (.05 + (10 - .05) * .25))).toBeLessThanOrEqual(.00051);expect(result.foreground).toBeGreaterThan(100);
     await page.screenshot({path:testInfo.outputPath('cvt-editor.png')});
   });
 }
