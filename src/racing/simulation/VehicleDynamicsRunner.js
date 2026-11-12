@@ -1,3 +1,4 @@
+import { normalizeElectricTuning } from './ElectricPowertrainModel.js';
 import {contactTireWear,applySuspensionContactDamage,applySuspensionLandingDamage} from './SurfaceWearModel.js';
 import {mapThrottlePedal} from './PowertrainModel.js';
 import {chassisComplianceScale} from './ChassisUpgrades.js';
@@ -1198,7 +1199,7 @@ export function createVehicleDynamicsConfig(config = {}) {
     damageDragGain: clamp(Number(config.damageDragGain) || 0.55, 0, 3),
     aeroMap: clone(config.aeroMap || {}),
     yawResponsePerSecond: Math.max(0.1, Number(config.yawResponsePerSecond) || 9),
-    idleRpm: Math.max(0, Number(config.idleRpm) || 800),
+    idleRpm: config.powertrainTuning?.powertrainType === 'electric' ? 0 : Math.max(0, Number(config.idleRpm) || 800),
     maxRpm: Math.max(1000, Number(config.maxRpm) || 7000),
     revLimiterDropRpm: Math.max(40, Number(config.revLimiterDropRpm) || 280),
     handlingPreset: String(config.handlingPreset || 'sport').toLowerCase(),
@@ -1220,6 +1221,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
   inputTimelineLimit = 0,
   physicsIncidentRecordingEnabled = false
 } = {}) {
+  tuning = normalizeElectricTuning(tuning);
   const physical = tuning.physicalVehicleProfile || null;
   const powerW = Math.max(0, Number(tuning.powerHp || 0) * 745.7);
   const massKg = Math.max(100, Number(tuning.weightKg ?? physical?.massKg) || 1450);
@@ -2238,6 +2240,10 @@ export class VehicleDynamicsRunner {
     physicsCostAccounting = null
   } = {}) {
     this.config = createVehicleDynamicsConfig(config);
+    if (this.config.powertrainTuning?.powertrainType === 'electric') {
+      initialState = { ...initialState, engineRpm: initialState.engineRpm ?? 0,
+        powertrainState: { engineRpm: initialState.engineRpm ?? 0, gear: initialState.gear ?? 0, ...initialState.powertrainState } };
+    }
     this.initialState = createVehicleDynamicsState(initialState);
     this.state = createVehicleDynamicsState(initialState);
     if (!initialState.wheelAngularVelocityRadps) {
@@ -2519,7 +2525,7 @@ export class VehicleDynamicsRunner {
     // next attempt to reuse the failed prepared-query generation on a hill.
     this.authoritativeResetAttemptSequence = vehicleResetGeneration;
     const routeDistance = finiteNumber(nextState.routeDistance);
-    const idleRpm = Math.max(0, Number(this.config.idleRpm || 800));
+    const idleRpm = Math.max(0, Number(this.config.idleRpm ?? 800));
     const requestedGear = Math.trunc(Number(nextState.gear ?? 1) || 0);
     // TireState also carries a copy of the last contact patch for thermal
     // accounting. That patch contains crash-frame hub/contact geometry,
@@ -2538,6 +2544,10 @@ export class VehicleDynamicsRunner {
     let resetState = createVehicleDynamicsState({
       ...nextState,
       mechanical:nextState.mechanical || this.state.mechanical,
+      ...(this.config.powertrainTuning?.powertrainType === 'electric' ? { powertrainState: {
+        electric: clone(nextState.powertrainState?.electric || this.state.powertrainState?.electric || {}),
+        engineRpm: idleRpm, gear: requestedGear
+      } } : {}),
       orientation: uprightRequestedOrientation,
       yawRad: uprightRequestedEuler.yaw,
       pitchRad: uprightRequestedEuler.pitch,
@@ -6586,7 +6596,18 @@ export class VehicleDynamicsRunner {
       ) % (Math.PI * 2), 12);
     }
     applySuspensionContactDamage(this.state,this.config,chassisStepDt);
-    if (this.state.mechanical) stepMechanicalState(this.state.mechanical, chassisStepDt, {
+    if (this.state.mechanical && this.config.powertrainTuning?.powertrainType === 'electric') {
+      for (const key of ['headlights', 'highBeams', 'auxLights']) {
+        if (typeof controls[key] === 'boolean') this.state.mechanical[key] = controls[key];
+      }
+      // Traction energy lives in powertrainState.electric, never the accessory
+      // 12 V charge/fuel fields. ICE wear/stall simulation is not run for EVs.
+      this.state.mechanical.engineRunning = true;
+      this.state.mechanical.warnings = (this.state.mechanical.warnings || []).filter(warning =>
+        !['ENGINE SEIZED','ENGINE STALLED','OIL PRESSURE','FUEL LOW'].includes(warning));
+      this.state.mechanical.effects.lights = (this.state.mechanical.headlights || this.state.mechanical.auxLights) ? 1 : 0;
+    }
+    if (this.state.mechanical && this.config.powertrainTuning?.powertrainType !== 'electric') stepMechanicalState(this.state.mechanical, chassisStepDt, {
       rpm:this.state.engineRpm, maxRpm:this.config.maxRpm,
       throttle:controls.throttle, brake:controls.brake, headlights:controls.headlights,highBeams:controls.highBeams,auxLights:controls.auxLights,
       clutchCoupling:this.state.powertrainState?.clutchCoupling,

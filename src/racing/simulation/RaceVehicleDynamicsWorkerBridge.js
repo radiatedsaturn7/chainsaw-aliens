@@ -316,6 +316,7 @@ export function applyRaceVehicleRenderSnapshot(session, snapshot) {
   session.signedTravelSpeedMps = state.signedTravelSpeedMps;
   session.velocityYaw = Math.atan2(session.velocityX, session.velocityZ);
   session.verticalVelocityMps = session.velocityY;
+  session.tractionBattery = snapshot.tractionBattery ? { ...snapshot.tractionBattery } : null;
   session.engineRpm = snapshot.engineRpm;
   session.gear = Number(snapshot.gear || 0);
   session.carYaw = euler.yaw;
