@@ -354,7 +354,10 @@
       "skybox-route-66": "art/skybox-route-66/document.json",
       "skybox-sawtooth": "art/skybox-sawtooth/document.json",
       "skybox-tioga-pass": "art/skybox-tioga-pass/document.json",
-      "skybox-tower-hill": "art/skybox-tower-hill/document.json"
+      "skybox-tower-hill": "art/skybox-tower-hill/document.json",
+      "catalog-kestrel-660-2018-body": "art/catalog-kestrel-660-2018-body/document.json",
+      "catalog-kestrel-660-2018-dashboard": "art/catalog-kestrel-660-2018-dashboard/document.json",
+      "catalog-tarmac-semislick": "art/catalog-tarmac-semislick/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -363,7 +366,8 @@
       "BUSE-019": "cars/BUSE-019/document.json",
       "CT-86": "cars/CT-86/document.json",
       "PZ-24": "cars/PZ-24/document.json",
-      "RTG-001": "cars/RTG-001/document.json"
+      "RTG-001": "cars/RTG-001/document.json",
+      "2018 Kestrel 660": "cars/2018 Kestrel 660/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
@@ -592,8 +596,8 @@
       "Col de Turini": "races/Col de Turini/document.json",
       "Daytona Tri-Oval": "races/Daytona Tri-Oval/document.json",
       "Demo Track": "races/Demo Track/document.json",
-      "Mount Washington Auto Road \u2014 point-to-point": "races/Mount Washington Auto Road %E2%80%94 point-to-point/document.json",
-      "Mount Washington Auto Road \u2014 point-to-point Copy": "races/Mount Washington Auto Road %E2%80%94 point-to-point Copy/document.json",
+      "Mount Washington Auto Road — point-to-point": "races/Mount Washington Auto Road %E2%80%94 point-to-point/document.json",
+      "Mount Washington Auto Road — point-to-point Copy": "races/Mount Washington Auto Road %E2%80%94 point-to-point Copy/document.json",
       "Nurburgring Nordschleife": "races/Nurburgring Nordschleife/document.json",
       "Ouninpohja": "races/Ouninpohja/document.json",
       "Studio Sprint": "races/Studio Sprint/document.json",
