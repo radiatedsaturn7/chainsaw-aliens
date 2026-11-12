@@ -1192,7 +1192,8 @@
       "Full torque curve except rated torque/power anchor points, redline, rev limit, top speed and acceleration are estimates.",
       "Mass distribution .59 front, CG .48m, steering ratio, Cd, tire pressures, friction, brake, differential, drivetrain efficiency, suspension and shift timing are simulator estimates.",
       "Body sub-collider geometry and shared steering wheel cockpit alignment approximate original fictional artwork.",
-      "AWD center/front/rear differential behavior is simplified, not a measured factory calibration."
+      "AWD center/front/rear differential behavior is simplified, not a measured factory calibration.",
+      "Visual wheel calibration: oblique hub centers remeasured within source transparent openings, then vertical upper opening extent plus2px used for cover radius. Only sprite transforms change; physical tires and drivetrain unchanged."
     ]
   },
   "authoredWheelAnchors": {
@@ -1215,13 +1216,13 @@
         "wheel": "fr",
         "x": 1900,
         "y": 650,
-        "radius": 40
+        "radius": 52
       },
       {
         "wheel": "rr",
         "x": 2092,
-        "y": 625,
-        "radius": 29
+        "y": 620,
+        "radius": 42
       }
     ],
     "right": [
@@ -1235,21 +1236,21 @@
         "wheel": "rr",
         "x": 1489,
         "y": 282,
-        "radius": 60
+        "radius": 61
       }
     ],
     "rearRight": [
       {
         "wheel": "fr",
         "x": 1678,
-        "y": 282,
-        "radius": 26
+        "y": 260,
+        "radius": 32
       },
       {
         "wheel": "rr",
         "x": 1863,
-        "y": 282,
-        "radius": 43
+        "y": 270,
+        "radius": 44
       }
     ],
     "rear": [
@@ -1270,14 +1271,14 @@
       {
         "wheel": "rl",
         "x": 649,
-        "y": 645,
-        "radius": 43
+        "y": 640,
+        "radius": 49
       },
       {
         "wheel": "fl",
         "x": 847,
-        "y": 635,
-        "radius": 25
+        "y": 625,
+        "radius": 32
       }
     ],
     "left": [
@@ -1285,7 +1286,7 @@
         "wheel": "rl",
         "x": 1051,
         "y": 650,
-        "radius": 63
+        "radius": 64
       },
       {
         "wheel": "fl",
@@ -1298,13 +1299,13 @@
       {
         "wheel": "rl",
         "x": 449,
-        "y": 270,
-        "radius": 34
+        "y": 256,
+        "radius": 37
       },
       {
         "wheel": "fl",
         "x": 667,
-        "y": 282,
+        "y": 281,
         "radius": 44
       }
     ]

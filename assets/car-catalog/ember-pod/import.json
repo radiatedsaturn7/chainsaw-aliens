@@ -1216,7 +1216,8 @@
       "Staggered205/50R17 front and235/45R18 rear are source facts. Runtime car uses single tire-size/radius: rear driven-wheel235/45R18 and.33435m nominal radius, so front sizing approximated. Front nominal.3184m preserved as provenance; no claim true staggered runtime geometry.",
       "40%front distribution is secondary reported/assumed, not manufacturer measured. Tracks1.50/1.51m,CG.46m,collidersections,overhangsplit,steering15:1,drag.36,grip,brakes,differential,suspension and pressure30psi are simulation estimates.",
       "220km/h top-speed and6s0-60 are provisional game design targets, not measured performance. No Forza gameplay stats used as real-world evidence.",
-      "Wheel anchors measured visually and from transparent openings; front/rear anchors inferred behind shell corners. Artwork and placement are original fictional design, not factory replica. Browser/driving QA pending."
+      "Wheel anchors measured visually and from transparent openings; front/rear anchors inferred behind shell corners. Artwork and placement are original fictional design, not factory replica. Browser/driving QA pending.",
+      "Visual wheel calibration: oblique hub centers remeasured within source transparent openings, then vertical upper opening extent plus2px used for cover radius. Only sprite transforms change; physical tires and drivetrain unchanged."
     ],
     "artwork": "Original logo-free red/black Ember Pod coupe and cockpit; shared existing steeringwheel reused.",
     "sourceHashes": {
@@ -1243,14 +1244,14 @@
       {
         "wheel": "fr",
         "x": 1896,
-        "y": 640,
-        "radius": 35
+        "y": 650,
+        "radius": 46
       },
       {
         "wheel": "rr",
         "x": 2078,
-        "y": 640,
-        "radius": 27
+        "y": 620,
+        "radius": 41
       }
     ],
     "right": [
@@ -1264,21 +1265,21 @@
         "wheel": "rr",
         "x": 1490,
         "y": 280,
-        "radius": 60
+        "radius": 64
       }
     ],
     "rearRight": [
       {
         "wheel": "fr",
         "x": 1691,
-        "y": 270,
-        "radius": 25
+        "y": 265,
+        "radius": 39
       },
       {
         "wheel": "rr",
         "x": 1876,
-        "y": 280,
-        "radius": 40
+        "y": 267,
+        "radius": 48
       }
     ],
     "rear": [
@@ -1299,14 +1300,14 @@
       {
         "wheel": "rl",
         "x": 662,
-        "y": 640,
-        "radius": 44
+        "y": 638,
+        "radius": 51
       },
       {
         "wheel": "fl",
         "x": 861,
-        "y": 640,
-        "radius": 25
+        "y": 624,
+        "radius": 33
       }
     ],
     "left": [
@@ -1314,7 +1315,7 @@
         "wheel": "rl",
         "x": 1060,
         "y": 650,
-        "radius": 64
+        "radius": 66
       },
       {
         "wheel": "fl",
@@ -1327,7 +1328,7 @@
       {
         "wheel": "rl",
         "x": 459,
-        "y": 270,
+        "y": 248,
         "radius": 37
       },
       {
@@ -1356,5 +1357,6 @@
       282
     ],
     "method": "Visual inspection of original dashboard PNG. Shared steering wheel pivot retained. Numeric instruments occupy the authored dark cluster; browser QA required."
-  }
+  },
+  "wheelFit": "cover"
 }
