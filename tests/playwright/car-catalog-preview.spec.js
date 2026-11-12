@@ -44,9 +44,19 @@ test(`${carName} actual editor preview composites exterior/cockpit and advances 
  for(const v of [physics.x,physics.z,physics.speed,physics.rpm])expect(Number.isFinite(v)).toBe(true);
  expect(Math.hypot(physics.x-initial.x,physics.z-initial.z)).toBeGreaterThan(.05);
  await testInfo.attach('production-preview-physics',{body:Buffer.from(JSON.stringify({initial,physics},null,2)),contentType:'application/json'});
+ // Freeze only after the real motion smoke has passed. Keep the production
+ // drawing/compositing path, but prevent time/position changes between angles.
+ const frozenPose=await page.evaluate(()=>{
+  const e=window.__game.carEditor;
+  e.updateCarEditorPreviewPlaytest=()=>{};
+  const s=e.carEditorPreviewPlaytest.session;
+  return {x:s.worldX,z:s.worldZ,yaw:s.carYaw,elapsed:s.elapsedMs,distance:s.distance,speed:s.speedMps};
+ });
+ await testInfo.attach('frozen-preview-pose',{body:Buffer.from(JSON.stringify(frozenPose,null,2)),contentType:'application/json'});
  for(const slot of ['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft']){
   await page.evaluate(slot=>{const g=window.__game,e=g.carEditor;e.selectedCarShellFrameSlot=slot;e.activeAction='car-art-exterior';e.syncCarAnglePreviewArt();e.invalidateCarEditorPreviewFrame();g.draw();},slot);
   await page.waitForTimeout(150);
+  expect(await page.evaluate(()=>{const s=window.__game.carEditor.carEditorPreviewPlaytest.session;return {x:s.worldX,z:s.worldZ,yaw:s.carYaw,elapsed:s.elapsedMs,distance:s.distance,speed:s.speedMps};})).toEqual(frozenPose);
   const screenshot=await page.screenshot({path:testInfo.outputPath(`actual-preview-${slot}.png`)});
   await testInfo.attach(`actual-preview-${slot}`,{body:screenshot,contentType:'image/png'});
  }

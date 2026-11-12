@@ -114,6 +114,12 @@ test(`${name} measured wheel wells coincide with production rig after editor rou
  // Use the exact import layout, including differently centered crop rectangles.
  return import('../../src/racing/CarGraphicImport.js').then(({prepareCarSheet})=>{
   const prepared=prepareCarSheet(source);
+  const visibleWidth=slot=>{const entry=car.art.angleLayers[slot].body;return 100*entry.transforms.bodyScaleX*art.frameBounds[entry.frameIndex].width/art.width;};
+  for(const [diagonal,a,b] of [['frontRight','front','right'],['frontLeft','front','left'],['rearRight','rear','right'],['rearLeft','rear','left']]) {
+   const expected=(visibleWidth(a)+visibleWidth(b))/Math.SQRT2;
+   assert.ok(Math.abs(visibleWidth(diagonal)-expected)<.01,`${diagonal}: perspective must not inflate overall vehicle size`);
+  }
+
   for(const [i,slot]of ['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft'].entries()){
    const body=car.art.angleLayers[slot].body.transforms,tires=car.art.angleLayers[slot].tires.transforms;
    const neutral=structuredClone(car);neutral.art.tireScaleX=1;neutral.art.tireScaleY=1;

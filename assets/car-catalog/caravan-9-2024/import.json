@@ -660,7 +660,8 @@
       "Nominal unloaded tire radius calculated fromP235/65R17; actual loaded rolling radius not sourced.",
       "58%front mass distribution is estimated. Axle distances derived from this estimate and sourced wheelbase.",
       "Fuel19USgal and3turns lock-to-lock are recorded reference facts; this integration does not claim fuel-system capacity or steering-travel runtime wiring beyond steeringRatio14.23.",
-      "Wheel-well centers/radii measured manually from original sprite sheet; per-angle graphical scale/placement calibrated to production rear-axle anchored wheel rig. These are visual estimates, not changes to physical dimensions; browser review required."
+      "Wheel-well centers/radii measured manually from original sprite sheet; per-angle graphical scale/placement calibrated to production rear-axle anchored wheel rig. These are visual estimates, not changes to physical dimensions; browser review required.",
+      "Diagonal sprite visual envelope uses 45-degree blend of principal-view widths; per-axle graphic offsets accommodate differing authored perspective without altering physics or magnifying diagonal bodies."
     ],
     "artwork": "Original logo-free salvage minivan body and cockpit, existing shared steeringwheel; not a factory replica."
   },

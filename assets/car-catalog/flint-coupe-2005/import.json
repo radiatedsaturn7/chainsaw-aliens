@@ -552,7 +552,8 @@
       "Rolling radius derived from1.941m published circumference, rather than nominal unloaded tire radius.",
       "Unattributed suspension/differential/brake/drag/audio/CG/overhang/body-piece values, performance targets and intermediate torque-curve samples are provisional simulation estimates.",
       "Editor quantizes curve torque to integer lb-ft:130kW at7000rpm rounds to131lb-ft and displayed175hp, vs reference174.33mechanical hp (~0.4% error).",
-      "Wheel-well centers/radii measured manually from original sprite sheet; per-angle graphical scale/placement calibrated to production rear-axle anchored wheel rig. These are visual estimates, not changes to physical dimensions; browser review required."
+      "Wheel-well centers/radii measured manually from original sprite sheet; per-angle graphical scale/placement calibrated to production rear-axle anchored wheel rig. These are visual estimates, not changes to physical dimensions; browser review required.",
+      "Diagonal sprite visual envelope uses 45-degree blend of principal-view widths; per-axle graphic offsets accommodate differing authored perspective without altering physics or magnifying diagonal bodies."
     ],
     "verifiedFacts": {
       "displacement": {

@@ -3,6 +3,18 @@
  * Perspective/holes are artist estimates, not vehicle physics specifications. */
 export function calibrateCatalogPlacement(editor, car, document, prepared, mapping, anchors) {
  const slots=['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft'];
+ // First establish the principal silhouettes. Diagonal source images may have
+ // different artistic perspective; their near-side wheel gap must not set scale.
+ const principalWidths={};
+ for(const slot of ['front','right','rear','left']) {
+  const i=slots.indexOf(slot),crop=prepared.crops[mapping[i]];
+  const points=anchors[slot];
+  if(!Array.isArray(points)||points.length!==2)throw Error(`Two principal anchors required: ${slot}`);
+  const neutral=structuredClone(car);neutral.art.tireScaleX=1;neutral.art.tireScaleY=1;
+  const rig=editor.getRaceSpriteWheelRig({car:neutral,viewSlot:slot,bodyBaseWidth:100});
+  const scale=(rig.wheels[points[1].wheel].x-rig.wheels[points[0].wheel].x)/(points[1].x-points[0].x);
+  principalWidths[slot]=crop.width*scale;
+ }
  for(const [index,slot] of slots.entries()) {
   const points=anchors[slot];
   if(!Array.isArray(points)||points.length<2)throw Error(`Two measured wheel wells required: ${slot}`);
@@ -16,7 +28,13 @@ export function calibrateCatalogPlacement(editor, car, document, prepared, mappi
   const mx=p.reduce((s,a)=>s+a.x,0)/p.length,my=p.reduce((s,a)=>s+a.y,0)/p.length;
   const tx=p.reduce((s,a)=>s+a.target.x,0)/p.length,ty=p.reduce((s,a)=>s+a.target.y,0)/p.length;
   const variance=p.reduce((s,a)=>s+(a.x-mx)**2,0);
-  const scale=p.reduce((s,a)=>s+(a.x-mx)*(a.target.x-tx),0)/variance;
+  let scale=p.reduce((s,a)=>s+(a.x-mx)*(a.target.x-tx),0)/variance;
+  if(index%2===1){
+   const longitudinal=index===1||index===7?'front':'rear';
+   const lateral=index<4?'right':'left';
+   // 45-degree projected width of a consistent rectangular vehicle envelope.
+   scale=(principalWidths[longitudinal]+principalWidths[lateral])/Math.SQRT2/crop.width;
+  }
   if(!(scale>0&&Number.isFinite(scale)))throw Error(`Wheel mapping mirrored or degenerate: ${slot}`);
   const left=tx-scale*mx,top=ty-scale*my,w=document.width*scale,h=document.height*scale;
   const body={bodyScaleX:w/100,bodyScaleY:h/74,bodyOffsetX:(left+w/2)/16,bodyOffsetY:(top+h*.58)/(74*.22),bodyRotationDeg:0};
