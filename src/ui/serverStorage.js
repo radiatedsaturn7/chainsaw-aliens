@@ -3,6 +3,7 @@ const PROJECT_FILE_PREFIX = 'server-project-file:';
 const DEFAULT_FOLDERS = ['levels', 'art', 'music', 'actors', 'sfx', 'cutscenes', 'races', 'cars', 'tires', 'models', 'menus', 'doodads', 'items', 'fonts', 'settings'];
 const STATIC_STORAGE_ROOT = projectStorageUrl('data/server-storage/files');
 let staticManifestPromise = null;
+let staticDocumentRoot = STATIC_STORAGE_ROOT;
 const staticLoads = new Map();
 const STORAGE_REQUEST_TIMEOUT_MS = 12000;
 const COMPACT_STORAGE_MARKER = '__chainsawStorage';
@@ -329,6 +330,12 @@ async function loadStaticManifest() {
     staticManifestPromise = requestStatic(`${STATIC_STORAGE_ROOT}/manifest.json`)
       .then(manifest => {
         if (!manifest?.folders || typeof manifest.folders !== 'object') throw new Error('Invalid published project index');
+        // Only immutable public GitHub URLs are accepted for remote builds.
+        const remote = manifest.documentRoot;
+        if (remote != null && !/^https:\/\/raw\.githubusercontent\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+\/[a-f0-9]{40}\/data\/server-storage\/files$/.test(remote)) {
+          throw new Error('Invalid remote project document root');
+        }
+        staticDocumentRoot = remote || STATIC_STORAGE_ROOT;
         return manifest.folders;
       }).catch(error => { staticManifestPromise = null; throw error; });
   }
@@ -344,7 +351,7 @@ async function fetchStaticFile(folder, name) {
     if (typeof path !== 'string') return null;
     // Manifest paths are filesystem names, not already URL-encoded URLs. A
     // literal percent sign must survive the HTTP server's one decoding pass.
-    const documentUrl = `${STATIC_STORAGE_ROOT}/${path.split('/').map(encodeURIComponent).join('/')}`;
+    const documentUrl = `${staticDocumentRoot}/${path.split('/').map(encodeURIComponent).join('/')}`;
     const metadataUrl = documentUrl.replace(/\/document\.json$/, '/metadata.json');
     const [storedData, metadata] = await Promise.all([
       requestStatic(documentUrl), requestStatic(metadataUrl).catch(error => {
@@ -567,6 +574,7 @@ export function clearCachedProjectFilesForTests() {
   volatileFiles.clear();
   volatileFileSources.clear();
   staticManifestPromise = null;
+  staticDocumentRoot = STATIC_STORAGE_ROOT;
   staticLoads.clear();
   serverIndex = DEFAULT_FOLDERS.reduce((acc, folder) => { acc[folder] = {}; return acc; }, {});
   storageApiAvailable = true;

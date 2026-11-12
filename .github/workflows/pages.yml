@@ -25,7 +25,13 @@ jobs:
       - name: Test manifest and static packaging
         run: python3 -m unittest discover -s tests/python -p 'test_project_manifest.py'
       - name: Generate and validate website
-        run: python3 tools/build_static_site.py --output _site
+        env:
+          ASSET_REPOSITORY: ${{ github.repository }}
+          ASSET_COMMIT: ${{ github.sha }}
+        run: >-
+          python3 tools/build_static_site.py --output _site
+          --remote-repository "$ASSET_REPOSITORY"
+          --remote-commit "$ASSET_COMMIT"
       - name: Upload validated site
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4

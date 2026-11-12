@@ -171,3 +171,25 @@ class ProjectManifestTests(unittest.TestCase):
                 build_site(source, Path(tmp) / 'oversized', max_site_bytes=1)
             with self.assertRaisesRegex(ValueError, 'new directory'):
                 build_site(source, output)
+
+    def test_remote_build_indexes_but_does_not_package_project_files(self):
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'tools'))
+        from build_static_site import build_site
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / 'source'
+            for name in ['src', 'ui', 'css', 'assets', 'vendor', 'data/server-storage/files/art/Test']:
+                (source / name).mkdir(parents=True)
+            for name in ['index.html', 'styles.css']:
+                (source / name).write_text('fixture')
+            root = source / 'data/server-storage/files'
+            (root / 'art/Test/document.json').write_text('{}')
+            output = Path(tmp) / 'remote'
+            build_site(source, output, remote_repository='owner/repo', remote_commit='a' * 40)
+            manifest = json.loads((output / 'data/server-storage/files/manifest.json').read_text())
+            self.assertEqual(manifest['documentRoot'], 'https://raw.githubusercontent.com/owner/repo/' + 'a' * 40 + '/data/server-storage/files')
+            self.assertEqual(manifest['folders']['art']['Test'], 'art/Test/document.json')
+            self.assertFalse((output / 'data/server-storage/files/art').exists())
+            self.assertTrue((root / 'art/Test/document.json').exists())
+            with self.assertRaisesRegex(ValueError, 'full lowercase commit SHA'):
+                build_site(source, Path(tmp) / 'bad', remote_repository='owner/repo', remote_commit='main')
