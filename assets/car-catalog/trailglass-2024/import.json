@@ -680,7 +680,8 @@
       "0.35565m radius is calculated nominal unloaded215/65R17 geometry; loaded rolling radius unknown. Reused tarmac graphics/compound do not claim factory tire brand.",
       "Use OEM1693kg metric NHTSA curb mass for S FWD7seat; do not substitute AWD3818lb or SE3777lb. Rounded paired imperial3732lb is retained in provenance, not falsely precise conversion.",
       "Published fuel and brake dimensions recorded as reference; does not claim separate fuel or geometric brake model wiring.",
-      "Wheel anchors are image-space visual estimates. Six oblique/side angles measured from transparent wheel openings; straight front/rear wheel axes inferred behind body corners because shell occludes wheel wells. Placement helper calibrates original image perspective without changing sourced physical geometry."
+      "Wheel anchors are image-space visual estimates. Six oblique/side angles measured from transparent wheel openings; straight front/rear wheel axes inferred behind body corners because shell occludes wheel wells. Placement helper calibrates original image perspective without changing sourced physical geometry.",
+      "Oblique wheel fit uses measured vertical opening extent plus2 source pixels, not its narrower horizontal half-width; cover policy fits the largest normalized opening so road stripes cannot show above tires. Shared per-view scale may slightly overfill the smaller opening; graphics only, no physical tyre radius change."
     ],
     "artwork": "Original logo-free Trailglass SUV body and cockpit, shared existing steeringwheel. Blue-gray and cream salvage body, compact SUV silhouette; not factory replica."
   },
@@ -704,13 +705,13 @@
         "wheel": "fr",
         "x": 1898,
         "y": 640,
-        "radius": 35
+        "radius": 51
       },
       {
         "wheel": "rr",
         "x": 2082,
         "y": 625,
-        "radius": 24
+        "radius": 49
       }
     ],
     "right": [
@@ -718,13 +719,13 @@
         "wheel": "fr",
         "x": 1104,
         "y": 275,
-        "radius": 51
+        "radius": 52
       },
       {
         "wheel": "rr",
         "x": 1496,
         "y": 275,
-        "radius": 51
+        "radius": 52
       }
     ],
     "rearRight": [
@@ -732,13 +733,13 @@
         "wheel": "fr",
         "x": 1693,
         "y": 263,
-        "radius": 20
+        "radius": 36
       },
       {
         "wheel": "rr",
         "x": 1860,
         "y": 275,
-        "radius": 34
+        "radius": 48
       }
     ],
     "rear": [
@@ -760,13 +761,13 @@
         "wheel": "rl",
         "x": 661,
         "y": 640,
-        "radius": 36
+        "radius": 50
       },
       {
         "wheel": "fl",
         "x": 861,
         "y": 625,
-        "radius": 24
+        "radius": 38
       }
     ],
     "left": [
@@ -788,14 +789,15 @@
         "wheel": "rl",
         "x": 448,
         "y": 260,
-        "radius": 30
+        "radius": 48
       },
       {
         "wheel": "fl",
         "x": 655,
         "y": 275,
-        "radius": 36
+        "radius": 51
       }
     ]
-  }
+  },
+  "wheelFit": "cover"
 }

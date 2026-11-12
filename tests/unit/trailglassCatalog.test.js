@@ -40,6 +40,23 @@ test('Trailglass eight calibrated angles and shared-wheel cockpit roundtrip edit
  for(const slot of Object.keys(config.authoredWheelAnchors)){
   const layer=c.art.angleLayers[slot];assert.ok(layer.body.transforms.bodyScaleX>0);assert.ok(Number.isFinite(layer.body.transforms.bodyOffsetX));assert.ok(layer.tires.transforms.tireScaleX>0);
  }
+ const source=decodePng(new URL('body.png',base).pathname);
+ const geometryEditor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});
+ assert.equal(config.wheelFit,'cover');
+ for(const slot of ['frontRight','rearRight','rearLeft','frontLeft']){
+  const layer=c.art.angleLayers[slot],scale=100*layer.body.transforms.bodyScaleX/built.art['catalog-trailglass-2024-body'].width;
+  const neutral=structuredClone(c);neutral.art.tireScaleX=1;neutral.art.tireScaleY=1;
+  const rig=geometryEditor.getRaceSpriteWheelRig({car:neutral,viewSlot:slot,bodyBaseWidth:100});
+  for(const point of config.authoredWheelAnchors[slot]){
+   let top=point.y;
+   while(top>0&&source.data[((top-1)*source.width+point.x)*4+3]<128)top--;
+   const openingRadius=point.y-top;
+   assert.ok(point.radius>=openingRadius,slot+' measured vertical opening covered');
+   const renderedRadius=rig.wheels[point.wheel].height*layer.tires.transforms.tireScaleY/2;
+   assert.ok(renderedRadius>=openingRadius*scale,slot+'/'+point.wheel+' rendered tire covers upper opening');
+   assert.ok(renderedRadius<(openingRadius+2)*scale*1.35,slot+' no excessive far-wheel overfill');
+  }
+ }
  const editor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});editor.applyLoadedCarDocument(built.car,{name:c.name});
  const again=editor.serializeSelectedCarDocument().car;
  assert.deepEqual(again.transmissions.automatic.gearRatios,[5.59,3.14,1.95,1.43,1.21,1,.81,.67]);assert.equal(again.tuning.weightKg,1693);assert.equal(again.id,'trailglass-2024');
