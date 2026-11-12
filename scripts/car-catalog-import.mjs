@@ -42,7 +42,7 @@ export function buildCatalogDocuments(config,body,dashboard,sourceHashes={}){
  const editor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});
  const clean=editor.normalizeLoadedCarDocument(structuredClone(car));
  assignCarSheet(clean,'body',bodyName,mapping,bodyDoc);
- if(config.authoredWheelAnchors)calibrateCatalogPlacement(editor,clean,bodyDoc,prepared,mapping,config.authoredWheelAnchors);
+ if(config.authoredWheelAnchors)calibrateCatalogPlacement(editor,clean,bodyDoc,prepared,mapping,config.authoredWheelAnchors,config.wheelFit);
  clean.art.interior.dashboard={...clean.art.interior.dashboard,artRef:dashboardName};
  clean.art.interior.steeringWheel={...clean.art.interior.steeringWheel,artRef:'steeringwheel',frameIndex:0};
  clean.catalogProvenance={...structuredClone(provenance),sourceHashes};
