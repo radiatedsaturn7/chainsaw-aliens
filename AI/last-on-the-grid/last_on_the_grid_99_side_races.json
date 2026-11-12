@@ -1,0 +1,1381 @@
+{
+  "title": "Last on the Grid — 99 side-race candidates",
+  "updated": "2026-11-12",
+  "purpose": "Research-backed candidate venues and driving segments for short fictional in-game race events, NOT public-road racing advice.",
+  "event_duration_target_seconds": {
+    "min": 120,
+    "max": 240
+  },
+  "hub_count": 11,
+  "core_per_hub": 7,
+  "wildcard_per_hub": 2,
+  "boss_note": "Existing eleven campaign boss races remain separate. The Tower Hill cold open is the only exception to side races preceding the boss.",
+  "known_constraints": [
+    "The world is fictional in year 2994. Public roads and circuit venues are historical/geographical references, not recommendations for illegal real-life street racing.",
+    "All source roads have been identified, but exact importer geometry and 2-4-minute runtime have NOT been verified.",
+    "Track/drag/skid-pad layouts may not be routable in ordinary road-network importers: use separately licensed geometry, a track dataset, or hand author with review.",
+    "Unpaved forest access roads must be checked against legal drivable roads in baseline data; hiking, ATV, and enduro-only trails must not silently become car roads.",
+    "Some tracks close or move; historical assets remain valid as fictional ruins. Keystone Motorsports Park announced its final season in 2026, as did PPIR.",
+    "Some routes are distant deliberate detours; do not silently connect them as if next door.",
+    "Do not conflate a quarter-mile drag run with 2-4 minutes of continuous driving; use event-specific launch, staging, heats and rematches.",
+    "The 2026 closure of US 163 bridge in Utah and part of SR 39 in California should not be misrepresented as currently drivable through-routes; 2994 adaptations are fine if explicit."
+  ],
+  "hubs": [
+    {
+      "hub": "Tower Hill Road — Cumberland, Rhode Island",
+      "boss": "Tower Hill Road",
+      "chapter_note": "Tower Hill remains the very first mandatory cold-open mission. Unlock side races after the garage return.",
+      "banter": "CAIT: Lime Rock? That's in Connecticut. ROB: Still closer than the bloody ocean.",
+      "sources": [
+        "https://www.thompsonspeedway.com/",
+        "https://ctparks.com/parks/pachaug-state-forest",
+        "https://limerock.com/drive/facility-overview/",
+        "https://palmermsp.com/track/",
+        "https://www.seekonkspeedway.com/"
+      ],
+      "sequence": 1,
+      "races": [
+        {
+          "id": "H01-S01",
+          "name": "I-95 — Attleboro to Warwick curves",
+          "event_type": "Highway sprint",
+          "selection_guidance": "Find a 2–4-minute S-curve-rich contiguous section; no need to import the whole interstate",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H01-S02",
+          "name": "RI 116 — North Smithfield / Scituate",
+          "event_type": "Tarmac time trial",
+          "selection_guidance": "Choose a rural, bending section with meaningful elevation and camber",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H01-S03",
+          "name": "RI 102 — Victory Highway",
+          "event_type": "Backroad sprint",
+          "selection_guidance": "Pick a section around Burrillville / Glocester with a changing radius of curves",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H01-S04",
+          "name": "Pachaug State Forest — public gravel access roads",
+          "event_type": "Gravel rally",
+          "selection_guidance": "Use only official driveable public roads, e.g. Green Falls area primary roads; no hiking/enduro trails",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H01-S05",
+          "name": "Thompson Speedway — 1.7-mile road course",
+          "event_type": "Circuit",
+          "selection_guidance": "Run laps on the road course; track geometry may require a special source",
+          "import_kind": "track_trace",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H01-S06",
+          "name": "Seekonk Speedway — oval",
+          "event_type": "Short-track race",
+          "selection_guidance": "Multiple laps of the small oval; add a fun in-universe oval challenge",
+          "import_kind": "track_trace",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H01-S07",
+          "name": "RI 44 — Putnam Pike / Glocester",
+          "event_type": "Forest-road sprint",
+          "selection_guidance": "Curving wooded stretches west of Smithfield",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H01-S08",
+          "name": "Lime Rock Park — Connecticut",
+          "event_type": "Circuit detour",
+          "selection_guidance": "1.5-mile road course; geographically off-route",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H01-S09",
+          "name": "Palmer Motorsports Park — Massachusetts",
+          "event_type": "Mountain circuit detour",
+          "selection_guidance": "2.3-mile Whiskey Hill road course with large elevation changes",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        }
+      ]
+    },
+    {
+      "hub": "Mount Washington Auto Road — New Hampshire",
+      "boss": "Mount Washington Auto Road",
+      "chapter_note": "All listed routes are side events, not replacements for the mountain-climb boss.",
+      "banter": "ROB: Epping? Cait, we are in the White Mountains. CAIT: So we take the long way.",
+      "sources": [
+        "https://www.visitnh.gov/things-to-do/scenic-drives/white-mountains",
+        "https://teamoneil.com/facility/",
+        "https://www.nhms.com/media/track-info/",
+        "https://www.nedragway.com/"
+      ],
+      "sequence": 2,
+      "races": [
+        {
+          "id": "H02-S01",
+          "name": "Kancamagus Highway — NH 112",
+          "event_type": "Mountain sprint",
+          "selection_guidance": "Select the tightest/most varied part of the 34.5-mile scenic corridor",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H02-S02",
+          "name": "Bear Notch Road — Bartlett",
+          "event_type": "Forest descent",
+          "selection_guidance": "Use the seasonal paved connector between Bartlett and NH 112",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H02-S03",
+          "name": "Hurricane Mountain Road — Conway",
+          "event_type": "Hill sprint",
+          "selection_guidance": "Very steep, winding, seasonal paved mountain road",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H02-S04",
+          "name": "Crawford Notch — US 302",
+          "event_type": "Alpine sprint",
+          "selection_guidance": "Select a 2–4-minute high-grade section near the notch",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H02-S05",
+          "name": "Pinkham Notch — NH 16",
+          "event_type": "Snow-road time trial",
+          "selection_guidance": "Short approach stretch south of Mount Washington Auto Road",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H02-S06",
+          "name": "Club Motorsports — Tamworth",
+          "event_type": "Technical circuit",
+          "selection_guidance": "2.5-mile road course with significant elevation changes",
+          "import_kind": "track_trace",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H02-S07",
+          "name": "Team O’Neil Rally School — Dalton",
+          "event_type": "Rally stage",
+          "selection_guidance": "Private gravel network; use a permitted reference or handmade stage, not public-road importer",
+          "import_kind": "track_trace",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H02-S08",
+          "name": "New Hampshire Motor Speedway — Loudon",
+          "event_type": "Oval/road-course detour",
+          "selection_guidance": "Use its 1.6-mile road layout (or oval variant), not the Mt. Washington boss",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H02-S09",
+          "name": "New England Dragway — Epping",
+          "event_type": "Drag strip detour",
+          "selection_guidance": "Real quarter-mile strip; make a speed-trap event or short acceleration challenge",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        }
+      ]
+    },
+    {
+      "hub": "Laurel Highlands Scenic Byway — Pennsylvania",
+      "boss": "Laurel Highlands Scenic Byway",
+      "chapter_note": "Forest roads are real but require drivable-road filtering; Keystone is a historical/fictionalized venue following its 2026 closure.",
+      "banter": "ROB: You want to race the old track? CAIT: It looks abandoned. ROB: Everything looks abandoned.",
+      "sources": [
+        "https://www.pa.gov/agencies/dcnr/recreation/where-to-go/state-forests/find-a-forest/forbes/sightseeing",
+        "https://www.pa.gov/agencies/dcnr/recreation/where-to-go/state-parks/find-a-park/ohiopyle-state-park",
+        "https://www.jennerstown.org/",
+        "https://www.keystonemotorsportspark.net/",
+        "https://midohio.com/plan-your-visit/azinfoguide"
+      ],
+      "sequence": 3,
+      "races": [
+        {
+          "id": "H03-S01",
+          "name": "PA 381 — Ohiopyle approach",
+          "event_type": "Mountain sprint",
+          "selection_guidance": "Short forested, winding section near Ohiopyle",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H03-S02",
+          "name": "PA 711 — Normalville / Champion",
+          "event_type": "Tarmac rally",
+          "selection_guidance": "Select tight bends on the Laurel Highlands Scenic Byway",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H03-S03",
+          "name": "US 40 — Chalk Hill / Summit",
+          "event_type": "Highway climb",
+          "selection_guidance": "Choose a grade-heavy section of the National Road",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H03-S04",
+          "name": "PA 31 — Donegal to Laurel Ridge",
+          "event_type": "Ridge sprint",
+          "selection_guidance": "Select a winding forest segment east of Donegal",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H03-S05",
+          "name": "County Line Road — Seven Springs",
+          "event_type": "Hillclimb",
+          "selection_guidance": "Steep approach to Seven Springs resort",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H03-S06",
+          "name": "Forbes State Forest — designated gravel roads",
+          "event_type": "Gravel rally",
+          "selection_guidance": "Only publicly motorable forest roads; choose a contiguous 2–4 min stage",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H03-S07",
+          "name": "Jennerstown Speedway — oval",
+          "event_type": "Short-track race",
+          "selection_guidance": "Multiple laps of the half-mile-ish paved oval",
+          "import_kind": "track_trace",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H03-S08",
+          "name": "Keystone Motorsports Park — New Alexandria",
+          "event_type": "Abandoned drag-strip detour",
+          "selection_guidance": "Venue announced 2026 as final season; deliberately fictionalized as a ruined drag strip",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H03-S09",
+          "name": "Pittsburgh International Race Complex — Wampum",
+          "event_type": "Circuit detour",
+          "selection_guidance": "A substantial detour toward Beaver County; special road-course event",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        }
+      ]
+    },
+    {
+      "hub": "Ohio River Crossing — Marietta, Ohio",
+      "boss": "Ohio River Crossing",
+      "chapter_note": "Washington County tourism publishes several real scenic driving loops suitable for breaking into short segments.",
+      "banter": "CAIT: Why are we crossing the river again? ROB: Because apparently you collect bridges.",
+      "sources": [        "https://mariettaohio.org/plan/",
+        "https://www.recreation.gov/gateways/13622",
+        "https://midohio.com/plan-your-visit/azinfoguide"
+      ],
+      "sequence": 4,
+      "races": [
+        {
+          "id": "H04-S01",
+          "name": "OH 26 — Covered Bridge Scenic Byway",
+          "event_type": "River-canyon sprint",
+          "selection_guidance": "Select a tight valley segment along Little Muskingum River",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H04-S02",
+          "name": "OH 555 — Triple Nickel",
+          "event_type": "Technical backroad",
+          "selection_guidance": "Use a dense cluster of successive crests and corners",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H04-S03",
+          "name": "OH 550 — Barlow approach",
+          "event_type": "Country-road sprint",
+          "selection_guidance": "Pick a bendy segment west of Marietta",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H04-S04",
+          "name": "OH 536 — Ohio River hills",
+          "event_type": "Forest hillclimb",
+          "selection_guidance": "Short technical section from the county scenic loops",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H04-S05",
+          "name": "OH 676 — Western county hills",
+          "event_type": "Rural circuit",
+          "selection_guidance": "Select a rolling, paved section near OH 555",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H04-S06",
+          "name": "Marietta–Williamstown — I-77 river bridge",
+          "event_type": "Highway sprint",
+          "selection_guidance": "Short crossing plus freeway approaches, not a whole interstate section",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H04-S07",
+          "name": "Washington County western covered-bridge gravel loop",
+          "event_type": "Gravel rally",
+          "selection_guidance": "Choose public motorable township roads; bridges can be scenery, not stunt ramps",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H04-S08",
+          "name": "Ohio Valley Speedway — Washington, West Virginia",
+          "event_type": "Dirt oval detour",
+          "selection_guidance": "Short-track dirt laps near Parkersburg; verify raceway map and closure history",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H04-S09",
+          "name": "Mid-Ohio Sports Car Course — Lexington",
+          "event_type": "Circuit detour",
+          "selection_guidance": "2.258/2.4-mile circuit far north of Marietta",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        }
+      ]
+    },
+    {
+      "hub": "Ozark Backroads — Eminence, Missouri",
+      "boss": "Ozark Backroads",
+      "chapter_note": "The National Park Service maps routes around Eminence and identifies gravel access routes; no hiking trails as car stages.",
+      "banter": "ROB: We have to go *how* far for that circuit? CAIT: It has nineteen corners. ROB: That wasn’t the question.",
+      "sources": [
+        "https://www.nps.gov/ozar/planyourvisit/park-brochure.htm",
+        "https://www.nps.gov/ozar/planyourvisit/directions.htm",
+        "https://ozarksinternationalraceway.com/",
+        "https://nsbfoundation.com/sb/glade-top-trail/"
+      ],
+      "sequence": 5,
+      "races": [
+        {
+          "id": "H05-S01",
+          "name": "MO 19 — Eminence / Current River",
+          "event_type": "Forest sprint",
+          "selection_guidance": "Hilly paved section north of Eminence",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H05-S02",
+          "name": "MO 106 — Alley Spring approach",
+          "event_type": "Riverside stage",
+          "selection_guidance": "Eminence west toward Alley Spring, short rolling section",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H05-S03",
+          "name": "MO 106 — Powder Mill approach",
+          "event_type": "Sweeping rally",
+          "selection_guidance": "Eminence east toward Powder Mill",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H05-S04",
+          "name": "MO V — Two Rivers access",
+          "event_type": "Narrow-road time trial",
+          "selection_guidance": "Paved access from 106 down to Two Rivers",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H05-S05",
+          "name": "MO H / NN — Roberts Field access",
+          "event_type": "Mixed-surface stage",
+          "selection_guidance": "Choose motorable county-road section; verify actual gravel and road status",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H05-S06",
+          "name": "Jerktail Landing gravel road",
+          "event_type": "Gravel rally",
+          "selection_guidance": "Public vehicle-access route off MO 19; do not substitute trails",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H05-S07",
+          "name": "US 60 — Winona / Van Buren",
+          "event_type": "High-speed sweepers",
+          "selection_guidance": "Use a varied east/west segment through Ozark hills",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H05-S08",
+          "name": "Glade Top Trail — Mark Twain National Forest",
+          "event_type": "Long-detour gravel stage",
+          "selection_guidance": "23-mile graded gravel scenic byway far to the southwest",
+          "import_kind": "forest_check",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H05-S09",
+          "name": "Ozarks International Raceway — Gravois Mills",
+          "event_type": "Long-detour road circuit",
+          "selection_guidance": "3.97-mile/19-turn circuit; likely special track tracing",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        }
+      ]
+    },
+    {
+      "hub": "Data Center City — St. Louis, Missouri (fictional)",
+      "boss": "Data Center City",
+      "chapter_note": "Real St. Louis road networks support the city; fictional industrial overlays and hazards must be hand-authored, not invented by geocoder.",
+      "banter": "CAIT: The machines have repaved the drag strip. ROB: Finally. Some competent road maintenance.",
+      "sources": [
+        "https://wwtraceway.com/wwtr-track-schedules/",
+        "https://www.mvs.usace.army.mil/Missions/Recreation/Rivers-Project-Office/National-Scenic-Byway/",
+        "https://www.visitmo.com/articles/scenic-drives-on-highway-94",
+        "https://www.gatewaykartplex.com/facility",
+        "https://federatedautopartsraceway.com/"
+      ],
+      "sequence": 6,
+      "races": [
+        {
+          "id": "H06-S01",
+          "name": "World Wide Technology Raceway — road course",
+          "event_type": "Circuit",
+          "selection_guidance": "Infield road-course configuration across river in Madison, Illinois",
+          "import_kind": "track_trace",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H06-S02",
+          "name": "World Wide Technology Raceway — oval",
+          "event_type": "Oval race",
+          "selection_guidance": "1.25-mile oval; multiple laps",
+          "import_kind": "track_trace",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H06-S03",
+          "name": "World Wide Technology Raceway — drag strip",
+          "event_type": "Drag challenge",
+          "selection_guidance": "Quarter-mile acceleration challenge; use special timing rules",
+          "import_kind": "track_trace",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H06-S04",
+          "name": "I-64 — St. Louis downtown approaches",
+          "event_type": "Urban highway sprint",
+          "selection_guidance": "Elevated interstate bends and interchanges, fictionalized for machine traffic",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H06-S05",
+          "name": "I-70 — Stan Musial Veterans Memorial Bridge",
+          "event_type": "River crossing sprint",
+          "selection_guidance": "Bridge and on/off ramps; exclude risky or inaccessible branches",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H06-S06",
+          "name": "IL 100 — Great River Road bluffs",
+          "event_type": "River canyon sprint",
+          "selection_guidance": "Alton toward Grafton, select scenic 2–4-min section",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H06-S07",
+          "name": "MO 94 — Defiance / Augusta",
+          "event_type": "Vineyard-road time trial",
+          "selection_guidance": "Bending Missouri River valley paved road",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H06-S08",
+          "name": "Gateway Kartplex — WWT complex",
+          "event_type": "Mini-course / fictional enlargement",
+          "selection_guidance": "Real half-mile kart track, too small for normal cars: scale up only as explicitly fictional",
+          "import_kind": "fictional_layout",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H06-S09",
+          "name": "Federated Auto Parts Raceway at I-55 — Pevely",
+          "event_type": "Dirt oval detour",
+          "selection_guidance": "1/3-mile dirt oval south of the city",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        }
+      ]
+    },
+    {
+      "hub": "Historic Route 66 — Oklahoma / Texas Panhandle",
+      "boss": "Historic Route 66",
+      "chapter_note": "Historical alignments vary and some are cut off: use state highway inventories, not a blind OSM Route 66 relation from end to end.",
+      "banter": "ROB: We left the highway to drive through a ghost town? CAIT: There is no traffic. ROB: There are no people, Cait.",
+      "sources": [
+        "https://thc.texas.gov/travel/historic-highways/route-66",
+        "https://tpwd.texas.gov/state-parks/palo-duro-canyon/map",
+        "https://www.visitamarillo.com/listing/amarillo-dragway/484/",
+        "https://oklahoma.gov/odot/about-us/newsroom/2024/drivers-can-get-their-kicks-on-route-66-following-us-281-route-6.html",
+        "https://www.hallettracing.net/track-information/"
+      ],
+      "sequence": 7,
+      "races": [
+        {
+          "id": "H07-S01",
+          "name": "Old Route 66 — Shamrock / McLean",
+          "event_type": "Historic road sprint",
+          "selection_guidance": "Select surviving paved old alignment between towns",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H07-S02",
+          "name": "Old Route 66 — Groom / Conway",
+          "event_type": "Broken-pavement sprint",
+          "selection_guidance": "Follow continuous surviving frontage alignment; preserve ghost-road ambience",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]        },
+        {
+          "id": "H07-S03",
+          "name": "Amarillo — Historic 6th Avenue alignment",
+          "event_type": "Urban time trial",
+          "selection_guidance": "Tighter town section of old Route 66",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H07-S04",
+          "name": "Old Route 66 — Vega / Adrian",
+          "event_type": "Open-plains sprint",
+          "selection_guidance": "Straight sections for gearing tests",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H07-S05",
+          "name": "Old Route 66 — Adrian / Glenrio",
+          "event_type": "Ghost-town approach",
+          "selection_guidance": "Choose drivable surviving alignment toward Texas/New Mexico line",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H07-S06",
+          "name": "Palo Duro Canyon — Park Road 5",
+          "event_type": "Canyon descent",
+          "selection_guidance": "Select paved switchbacks inside state park; real-life park speed limits do not govern fictional 2994 racing",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H07-S07",
+          "name": "Amarillo Dragway",
+          "event_type": "Drag strip",
+          "selection_guidance": "Quarter-mile-style acceleration event, staging plus trap",
+          "import_kind": "track_trace",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H07-S08",
+          "name": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+          "event_type": "Eastern detour / bridge sprint",
+          "selection_guidance": "Actual historic Route 66 bridge, reopened 2024, well east of Amarillo",
+          "import_kind": "road",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H07-S09",
+          "name": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+          "event_type": "Huge-detour road circuit",
+          "selection_guidance": "1.8-mile, 10-turn track near Tulsa, humorously far east",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        }
+      ]
+    },
+    {
+      "hub": "Pikes Peak Highway — Colorado",
+      "boss": "Pikes Peak Highway",
+      "chapter_note": "Pikes Peak International Raceway announced 2026 as its final public motorsports season: treat it as a historic ruin in 2994.",
+      "banter": "ROB: That raceway shut down centuries ago. CAIT: So? Less competition.",
+      "sources": [
+        "https://www.blm.gov/visit/gold-belt-back-country-byway",
+        "https://canoncity.org/370/Skyline-Drive",
+        "https://racepmp.com/",
+        "https://www.ppir.com/all-events",
+        "https://www.visitcos.com/things-to-do/outdoors/scenic-drives/"
+      ],
+      "sequence": 8,
+      "races": [
+        {
+          "id": "H08-S01",
+          "name": "Gold Camp Road — Colorado Springs",
+          "event_type": "Mountain gravel sprint",
+          "selection_guidance": "Old railroad-grade route; verify drivable segments and forest gates",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H08-S02",
+          "name": "Phantom Canyon Road — Gold Belt Tour",
+          "event_type": "Rally hillclimb",
+          "selection_guidance": "Gravel canyon, bridges, and stone tunnels",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H08-S03",
+          "name": "Shelf Road — Gold Belt Tour",
+          "event_type": "Cliffside rally",
+          "selection_guidance": "Narrow gravel shelf-road segment; short and technical",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H08-S04",
+          "name": "Skyline Drive — Cañon City",
+          "event_type": "Ridgeline sprint",
+          "selection_guidance": "2.5–2.8-mile one-way paved hogback road; ideal for target duration",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H08-S05",
+          "name": "US 24 — Ute Pass / Woodland Park",
+          "event_type": "Highway climb",
+          "selection_guidance": "Grade and flowing curves west of Colorado Springs",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H08-S06",
+          "name": "CO 67 — Woodland Park / Cripple Creek",
+          "event_type": "Alpine sprint",
+          "selection_guidance": "Technical paved section of mountain highway",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H08-S07",
+          "name": "Garden of the Gods — paved park road",
+          "event_type": "Precision trial",
+          "selection_guidance": "Curvy park loop; fictional empty-city precision event, not normal high-speed lap",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H08-S08",
+          "name": "Pikes Peak International Raceway — Fountain",
+          "event_type": "Historic drift / track detour",
+          "selection_guidance": "Use PPIR infield/skid pad; 2026 final public motorsports season announced",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H08-S09",
+          "name": "Pueblo Motorsports Park — road course or drag strip",
+          "event_type": "Motorsports detour",
+          "selection_guidance": "Choose circuit laps or quarter-mile launch with proper event rules",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        }
+      ]
+    },
+    {
+      "hub": "Moki Dugway — Utah",
+      "boss": "Moki Dugway",
+      "chapter_note": "The core seven are regional real roads; Utah has fewer near-by permanent race circuits. The two wildcards are distant rugged drives.",
+      "banter": "ROB: Shafer Trail? That is nowhere near here. CAIT: It has switchbacks. ROB: Every bastard road has switchbacks out here.",
+      "sources": [
+        "https://www.blm.gov/visit/valley-gods",
+        "https://www.visitutah.com/places-to-go/parks-outdoors/monument-valley-tribal-park/scenic-drives",
+        "https://www.visitutah.com/things-to-do/road-trips/scenic-byways",
+        "https://www.nps.gov/cany/planyourvisit/driving.htm",
+        "https://www.nps.gov/care/planyourvisit/roads.htm"
+      ],
+      "sequence": 9,
+      "races": [
+        {
+          "id": "H09-S01",
+          "name": "Valley of the Gods Road — San Juan CR 242",
+          "event_type": "Gravel rally",
+          "selection_guidance": "Choose 2–4 min from the 17-mile graded-gravel loop",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H09-S02",
+          "name": "Muley Point Road — CR 241",
+          "event_type": "Mesa access rally",
+          "selection_guidance": "Graded gravel side route near top of Moki Dugway, not the boss switchbacks themselves",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H09-S03",
+          "name": "UT 316 — Goosenecks State Park Road",
+          "event_type": "Desert descent",
+          "selection_guidance": "Paved approach to the overlook",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H09-S04",
+          "name": "US 163 — Mexican Hat / Monument Valley approach",
+          "event_type": "Desert straightaway",
+          "selection_guidance": "Select iconic rolling/straight section; preserve Navajo Nation access boundaries",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H09-S05",
+          "name": "UT 95 — Comb Ridge / Cedar Mesa",
+          "event_type": "Open-desert sprint",
+          "selection_guidance": "Bicentennial Highway; short changes in grade along sandstone walls",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H09-S06",
+          "name": "UT 276 — Halls Crossing approach",
+          "event_type": "High-speed desert sprint",
+          "selection_guidance": "Remote paved road descending from UT 95 toward Lake Powell",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H09-S07",
+          "name": "US 191 — Bluff / Blanding",
+          "event_type": "Desert highway",
+          "selection_guidance": "Open highway segment with sweeping grades",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H09-S08",
+          "name": "Shafer Trail — Canyonlands National Park",
+          "event_type": "Long-detour 4x4 switchbacks",
+          "selection_guidance": "Very distant rough 4WD road; do not route through White Rim without permit in modern base data",
+          "import_kind": "forest_check",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H09-S09",
+          "name": "Burr Trail switchbacks — Capitol Reef",
+          "event_type": "Huge-detour gravel cliff climb",
+          "selection_guidance": "Far away, exceptionally steep short switchbacks",
+          "import_kind": "forest_check",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        }
+      ]
+    },
+    {
+      "hub": "Oak Creek Canyon — Sedona, Arizona",
+      "boss": "Oak Creek Canyon (SR 89A)",
+      "chapter_note": "Boss uses Oak Creek Canyon SR 89A; side race on separate SR 89A Mingus Mountain section is a different road stretch.",
+      "banter": "ROB: Casa Grande? That is south. The ocean is west. CAIT: I know where west is.",
+      "sources": [
+        "https://azdot.gov/about/historic-and-scenic-roads/list-scenic-roads",
+        "https://redrockscenicbyway.com/wp-content/uploads/2022/05/coconino_forest_guide.pdf",
+        "https://www.podiumclub.com/roadcourse",
+        "https://wildhorsepass.com/event/gofast-drift-n-drag-dragstrip/"
+      ],
+      "sequence": 10,
+      "races": [
+        {
+          "id": "H10-S01",
+          "name": "SR 179 — Red Rock Scenic Byway",
+          "event_type": "Scenic sprint",
+          "selection_guidance": "Paved curves among red rocks, separate from boss corridor",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H10-S02",
+          "name": "Upper / Lower Red Rock Loop Road",
+          "event_type": "Mixed-surface time trial",
+          "selection_guidance": "Sedona loop includes a gravel stretch",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H10-S03",
+          "name": "Page Springs Road",
+          "event_type": "Creek-valley time trial",
+          "selection_guidance": "Winding paved road through the Page Springs valley",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H10-S04",
+          "name": "Beaverhead Flat Road — CR 78",
+          "event_type": "Desert sweepers",
+          "selection_guidance": "Connector from Cornville area to SR 179",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H10-S05",
+          "name": "Boynton Pass Road / FR 525 loop",
+          "event_type": "Rough-road stage",          "selection_guidance": "Mostly paved initially, then bumpy/unpaved; use only designated motor roads",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H10-S06",
+          "name": "Schnebly Hill Road — Sedona",
+          "event_type": "4x4 rally stage",
+          "selection_guidance": "Extremely rough forest road, some parts demand high clearance",
+          "import_kind": "forest_check",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H10-S07",
+          "name": "SR 89A — Mingus Mountain / Jerome",
+          "event_type": "Mountain hairpins",
+          "selection_guidance": "Separate section of SR 89A over Mingus Mountain west of Sedona",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H10-S08",
+          "name": "Podium Club at Attesa — Casa Grande",
+          "event_type": "Long-detour circuit",
+          "selection_guidance": "2.32-mile track with 15 corners south of Phoenix",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H10-S09",
+          "name": "Firebird Motorsports Park — Chandler",
+          "event_type": "Long-detour drag/drift event",
+          "selection_guidance": "2026 events at the dragstrip, well south of Sedona",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        }
+      ]
+    },
+    {
+      "hub": "Angeles Crest Highway — Los Angeles, California",
+      "boss": "Angeles Crest Highway (SR 2)",
+      "chapter_note": "Do not force closed 2026 links as currently drivable; SR 39 does not fully connect through to SR 2 in current map data.",
+      "banter": "CAIT: Willow Springs has a track called Horse Thief Mile. ROB: We are not stealing a fucking horse.",
+      "sources": [
+        "https://www.tougemap.com/regions/angeles-san-gabriel-mountains",
+        "https://willowspringsraceway.com/tracks/",
+        "https://www.nhra.com/schedule/2026/nhra-mission-foods-drag-racing-series/n-out-burger-nhra-finals",
+        "https://roads.dot.ca.gov/?roadnumber=39",
+        "https://mrca.ca.gov/parks/park-listing/mulholland-scenic-parkway-and-corridor/"
+      ],
+      "sequence": 11,
+      "races": [
+        {
+          "id": "H11-S01",
+          "name": "Angeles Forest Highway — County N3",
+          "event_type": "Mountain sprint",
+          "selection_guidance": "Use a standalone section, distinct from SR 2 boss route",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H11-S02",
+          "name": "Upper Big Tujunga Canyon Road",
+          "event_type": "High-speed mountain sweepers",
+          "selection_guidance": "Paved connector between Angeles Forest Highway and Angeles Crest",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H11-S03",
+          "name": "Big Tujunga Canyon Road",
+          "event_type": "Canyon sprint",
+          "selection_guidance": "Lower canyon approach along Big Tujunga Creek",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H11-S04",
+          "name": "Glendora Mountain Road",
+          "event_type": "Technical hillclimb",
+          "selection_guidance": "Use an isolated hairpin-dense section east of San Gabriel Valley",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H11-S05",
+          "name": "Glendora Ridge Road",
+          "event_type": "Ridgeline time trial",
+          "selection_guidance": "Technical high-ridge section toward Mount Baldy",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H11-S06",
+          "name": "San Gabriel Canyon Road — SR 39",
+          "event_type": "Canyon time trial",
+          "selection_guidance": "South/lower drivable portion; not fictionalize as a current through-road without flag",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H11-S07",
+          "name": "Little Tujunga Canyon Road",
+          "event_type": "Drift/technical sprint",
+          "selection_guidance": "Canyon road over Bear Divide; in-game drift event",
+          "import_kind": "road",
+          "priority": "core",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H11-S08",
+          "name": "Willow Springs — Horse Thief Mile",
+          "event_type": "Drift circuit detour",
+          "selection_guidance": "1-mile 11-turn canyon-simulating track; Rosamond is a considerable detour",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        },
+        {
+          "id": "H11-S09",
+          "name": "In-N-Out Burger Pomona Dragstrip",
+          "event_type": "Drag strip detour",
+          "selection_guidance": "2026-active NHRA drag venue at Pomona; quarter-mile style event",
+          "import_kind": "track_trace",
+          "priority": "wildcard_detour",
+          "duration_target_seconds": [
+            120,
+            240
+          ]
+        }
+      ]
+    }
+  ]
+}
