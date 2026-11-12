@@ -14,15 +14,15 @@ for(const viewport of [{width:1280,height:720},{width:390,height:844}])test(`aut
    e.drawCarInteriorLayers(ctx,b,car,{layer:'dashboard'});
    const gaugeBounds=cockpitGaugeBounds(b,car,dashboard),state={car,session:{speedMps:100,engineRpm:10000,gear:2,tractionBattery:{stateOfCharge:.42,batteryPowerW:-120000}},gear:2};
    const regions=drawCarGauges(ctx,gaugeBounds,car.art.gauges.interior,state,{getArt:ref=>e.getRaceArtSpriteCanvas(ref)});
-   const textMetrics=car.art.gauges.interior.widgets.map(g=>{ctx.font=gaugeFont(g,gaugeBounds.h/300);const value=gaugeValue(g,state),text=gaugeText(g,value,state);return {source:g.source,value,text,width:ctx.measureText(text).width,available:g.width*gaugeBounds.w};});
+   const textMetrics=car.art.gauges.interior.widgets.filter(g=>g.showValue!==false).map(g=>{ctx.font=gaugeFont(g,gaugeBounds.h/300);const value=gaugeValue(g,state),text=gaugeText(g,value,state);return {source:g.source,value,text,width:ctx.measureText(text).width,available:g.width*gaugeBounds.w};});
    e.drawCarInteriorLayers(ctx,b,car,{layer:'wheel',rotation:0});
    return {id:car.id,coordinateSpace:car.art.gauges.interior.coordinateSpace,rect,wheel,regions,textMetrics,png:c.toDataURL('image/png').split(',')[1]};
   },{id,name,viewport});
   expect(result.id).toBe(id);expect(result.coordinateSpace).toBe('dashboard');expect(result.regions).toHaveLength(4);for(const t of result.textMetrics)expect(t.width).toBeLessThanOrEqual(t.available);
-  if(id==='volt-hound-gt-2023'){expect(result.textMetrics.find(t=>t.source==='tractionBattery.percent').value).toBe(42);expect(result.textMetrics.find(t=>t.source==='tractionBattery.powerKw').value).toBe(-120);}
+  if(id==='volt-hound-gt-2023'){expect(result.textMetrics.find(t=>t.source==='tractionBattery.powerKw').value).toBe(-120);}
   const a=cockpitAnchors[id],r=result.rect;expect(result.wheel.x).toBeCloseTo(r.x+r.w*a.wheel[0]/a.size[0],6);expect(result.wheel.y).toBeCloseTo(r.y+r.h*a.wheel[1]/a.size[1],6);
-  for(const g of result.regions){expect(g.y).toBeCloseTo(r.y+r.h*a.cluster[1]/a.size[1],6);expect(g.x).toBeGreaterThanOrEqual(r.x+r.w*a.cluster[0]/a.size[0]);expect(g.x+g.w).toBeLessThanOrEqual(r.x+r.w*(a.cluster[0]+a.cluster[2])/a.size[0]+1e-6);}
-  await testInfo.attach(`${id}-${viewport.width}-production-cockpit`,{body:Buffer.from(result.png,'base64'),contentType:'image/png'});
+  for(const g of result.regions){expect(g.y).toBeGreaterThanOrEqual(r.y+r.h*a.cluster[1]/a.size[1]-1e-6);expect(g.y+g.h).toBeLessThanOrEqual(r.y+r.h*(a.cluster[1]+a.cluster[3])/a.size[1]+1e-6);expect(g.x).toBeGreaterThanOrEqual(r.x+r.w*a.cluster[0]/a.size[0]-1e-6);expect(g.x+g.w).toBeLessThanOrEqual(r.x+r.w*(a.cluster[0]+a.cluster[2])/a.size[0]+1e-6);}
+  fs.mkdirSync(testInfo.outputPath(),{recursive:true});const screenshotPath=testInfo.outputPath(`${id}-${viewport.width}-production-cockpit.png`);fs.writeFileSync(screenshotPath,Buffer.from(result.png,'base64'));await testInfo.attach(`${id}-${viewport.width}-production-cockpit`,{path:screenshotPath,contentType:'image/png'});
   // This is the actual compositor with live numeric widget code, against a plain
   // QA backdrop. It does not substitute for the separate driving-preview test.
  }

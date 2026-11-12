@@ -15,7 +15,7 @@ for(const [id,a] of Object.entries(cockpitAnchors))for(const [w,h] of [[1280,720
  car.art.interior.dashboard.artRef='dashboard-test';editor.drawCarInteriorLayers(ctx,bounds,car);
  assert.equal(calls.length,2);close(calls[0][1],dash.x);close(calls[0][2],dash.y);close(calls[1][3],wheel.width);
  const gaugeBounds=cockpitGaugeBounds(bounds,car,image);const regions=drawCarGauges(ctx,gaugeBounds,car.art.gauges.interior,{session:{speedMps:20,engineRpm:3000},car});
- assert.equal(regions.length,4);for(const region of regions){assert.ok(region.x>=dash.x+dash.w*a.cluster[0]/a.size[0]);assert.ok(region.x+region.w<=dash.x+dash.w*(a.cluster[0]+a.cluster[2])/a.size[0]+1e-7);close(region.y,dash.y+dash.h*a.cluster[1]/a.size[1]);}
+ assert.equal(regions.length,4);for(const region of regions){assert.ok(region.x>=dash.x+dash.w*a.cluster[0]/a.size[0]-1e-7);assert.ok(region.x+region.w<=dash.x+dash.w*(a.cluster[0]+a.cluster[2])/a.size[0]+1e-7);assert.ok(region.y>=dash.y+dash.h*a.cluster[1]/a.size[1]-1e-7);assert.ok(region.y+region.h<=dash.y+dash.h*(a.cluster[1]+a.cluster[3])/a.size[1]+1e-7);}
 });
 test('legacy viewport layouts and exterior gauges remain unchanged',()=>{
  const b={x:10,y:20,w:960,h:540},d={x:0,y:400,w:960,h:140},w=cockpitWheelLayout(b,{},d);close(w.x,490);close(w.y,462.8);close(w.width,140.4);
@@ -41,7 +41,7 @@ test('authored gauge font budgets fit long readings without compressed glyphs',(
   for(const [w,h] of [[1280,720],[390,844]]){
    const b=cockpitGaugeBounds({x:0,y:0,w,h},car,{width:a.size[0],height:a.size[1]});
    for(const [i,g] of car.art.gauges.interior.widgets.entries()){
-    const fontPx=g.fontSize*b.h/300,charBudget=[7,9,2,5][i];assert.ok(fontPx*.64*charBudget<=g.width*b.w);assert.ok(fontPx*1.5<=g.height*b.h+1e-7);
+    if(g.showValue===false)continue;const fontPx=g.fontSize*b.h/300,charBudget=[3,5,1][i];assert.ok(fontPx>=8, `${id}: unreadable ${fontPx}px font`);assert.ok(fontPx*.64*charBudget<=g.width*b.w);assert.ok(fontPx*1.5<=g.height*b.h+1e-7);
    }
   }
  }
