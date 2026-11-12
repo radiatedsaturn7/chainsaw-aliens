@@ -1,0 +1,45 @@
+name: Vehicle catalog validation
+on:
+  pull_request:
+    branches: [staging]
+    paths:
+      - 'assets/car-catalog/**'
+      - 'data/vehicle-catalog/**'
+      - 'scripts/car-catalog-import.mjs'
+      - 'data/server-storage/files/cars/**'
+      - 'data/server-storage/files/tires/**'
+      - 'data/server-storage/files/art/catalog-*/**'
+      - 'tests/**/carCatalog*'
+      - 'tests/playwright/car-catalog.spec.js'
+      - '.github/workflows/vehicle-catalog.yml'
+permissions:
+  contents: read
+concurrency:
+  group: vehicle-catalog-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install Pillow==11.3.0
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node --test tests/unit/carCatalogImport.test.js tests/unit/carGraphicImport.test.js tests/unit/carPresets.test.js tests/unit/carTireTextureFit.test.js tests/unit/carWheelCylinder.test.js
+      - run: python tools/project_manifest.py --check --validate-assets
+      - run: npx playwright test tests/playwright/car-catalog.spec.js tests/playwright/car-graphic-import.spec.js tests/playwright/car-presets.spec.js --workers=1 --reporter=line
+        env:
+          CI: 'true'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vehicle-catalog-browser-results
+          path: test-results
