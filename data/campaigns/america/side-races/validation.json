@@ -1,14 +1,17 @@
 {
-  "checkedAt": "2026-11-12T19:42:26.189Z",
+  "checkedAt": "2026-11-12T21:50:41.990582+00:00",
   "installedSideRaces": 99,
   "preservedMainRaces": 11,
   "loadingChecksPassed": 99,
   "loadingChecksFailed": 0,
-  "savedRaceApiChecksPassed": 99,
+  "savedRaceApiChecksPassed": 1,
   "mainRaceDocumentsUnchanged": true,
-  "unitTests": "Campaign progression, hub menus, asset resolution, save integration and drift scoring passed.",
+  "unitTests": {
+    "nodePostMergePassed": 44,
+    "pythonImporterPassed": 4
+  },
   "limits": [
-    "Automated world bake, worker transfer, geometry and sampler checks; not 99 manual driving playthroughs.",
+    "Automated world bake, worker transfer, geometry and sampler checks on all 99 updated races; not 99 manual driving playthroughs. Browser screenshots were not run on Android.",
     "Existing terrain baker reports residual height tolerance warnings on some tracks; these are not treated as proof of visual correctness.",
     "Circuit widths, banking, start direction and DEM elevation need driving review.",
     "Team O\u2019Neil-inspired stage is original fictional geometry; Gateway Kartplex is an explicitly enlarged fictional adaptation.",
@@ -20,20 +23,20 @@
       "unresolvedHeightErrors": 1
     },
     {
-      "id": "H01-S01",
-      "unresolvedHeightErrors": 2
-    },
-    {
       "id": "H01-S09",
       "unresolvedHeightErrors": 6
     },
     {
       "id": "H02-S01",
-      "unresolvedHeightErrors": 2
+      "unresolvedHeightErrors": 12
     },
     {
       "id": "H02-S02",
-      "unresolvedHeightErrors": 30
+      "unresolvedHeightErrors": 2
+    },
+    {
+      "id": "H02-S03",
+      "unresolvedHeightErrors": 4
     },
     {
       "id": "H02-S04",
@@ -41,22 +44,14 @@
     },
     {
       "id": "H02-S05",
-      "unresolvedHeightErrors": 2
+      "unresolvedHeightErrors": 4
     },
     {
       "id": "H02-S07",
       "unresolvedHeightErrors": 16
     },
     {
-      "id": "H03-S01",
-      "unresolvedHeightErrors": 28
-    },
-    {
-      "id": "H03-S02",
-      "unresolvedHeightErrors": 60
-    },
-    {
-      "id": "H03-S06",
+      "id": "H03-S04",
       "unresolvedHeightErrors": 4
     },
     {
@@ -65,11 +60,19 @@
     },
     {
       "id": "H04-S01",
-      "unresolvedHeightErrors": 4
+      "unresolvedHeightErrors": 9
+    },
+    {
+      "id": "H04-S04",
+      "unresolvedHeightErrors": 16
+    },
+    {
+      "id": "H04-S05",
+      "unresolvedHeightErrors": 44
     },
     {
       "id": "H04-S07",
-      "unresolvedHeightErrors": 96
+      "unresolvedHeightErrors": 50
     },
     {
       "id": "H04-S09",
@@ -80,104 +83,202 @@
       "unresolvedHeightErrors": 451
     },
     {
-      "id": "H06-S06",
-      "unresolvedHeightErrors": 64
-    },
-    {
       "id": "H07-S06",
-      "unresolvedHeightErrors": 2
+      "unresolvedHeightErrors": 1058
     },
     {
       "id": "H07-S08",
-      "unresolvedHeightErrors": 445
+      "unresolvedHeightErrors": 1618
     },
     {
       "id": "H08-S01",
-      "unresolvedHeightErrors": 69
+      "unresolvedHeightErrors": 56
     },
     {
       "id": "H08-S02",
-      "unresolvedHeightErrors": 783
+      "unresolvedHeightErrors": 60
     },
     {
       "id": "H08-S03",
-      "unresolvedHeightErrors": 86
+      "unresolvedHeightErrors": 351
     },
     {
-      "id": "H08-S04",
-      "unresolvedHeightErrors": 307
+      "id": "H08-S05",
+      "unresolvedHeightErrors": 12
     },
     {
       "id": "H08-S06",
-      "unresolvedHeightErrors": 26
+      "unresolvedHeightErrors": 4
     },
     {
       "id": "H09-S01",
-      "unresolvedHeightErrors": 8
+      "unresolvedHeightErrors": 4
     },
     {
       "id": "H09-S02",
-      "unresolvedHeightErrors": 10
-    },
-    {
-      "id": "H09-S04",
       "unresolvedHeightErrors": 6
     },
     {
       "id": "H09-S08",
-      "unresolvedHeightErrors": 2078
+      "unresolvedHeightErrors": 21889
     },
     {
       "id": "H09-S09",
-      "unresolvedHeightErrors": 1363
-    },
-    {
-      "id": "H10-S01",
-      "unresolvedHeightErrors": 6
+      "unresolvedHeightErrors": 660
     },
     {
       "id": "H10-S02",
-      "unresolvedHeightErrors": 4
-    },
-    {
-      "id": "H10-S05",
-      "unresolvedHeightErrors": 2
+      "unresolvedHeightErrors": 26
     },
     {
       "id": "H10-S06",
-      "unresolvedHeightErrors": 110
+      "unresolvedHeightErrors": 128
     },
     {
       "id": "H10-S07",
-      "unresolvedHeightErrors": 193
+      "unresolvedHeightErrors": 74
     },
     {
       "id": "H11-S01",
-      "unresolvedHeightErrors": 66
+      "unresolvedHeightErrors": 18
+    },
+    {
+      "id": "H11-S02",
+      "unresolvedHeightErrors": 4
     },
     {
       "id": "H11-S03",
-      "unresolvedHeightErrors": 2
+      "unresolvedHeightErrors": 6
     },
     {
       "id": "H11-S04",
-      "unresolvedHeightErrors": 426
-    },
-    {
-      "id": "H11-S05",
-      "unresolvedHeightErrors": 8
+      "unresolvedHeightErrors": 373
     },
     {
       "id": "H11-S06",
-      "unresolvedHeightErrors": 76
-    },
-    {
-      "id": "H11-S07",
-      "unresolvedHeightErrors": 26
+      "unresolvedHeightErrors": 38
     },
     {
       "id": "H11-S08",
       "unresolvedHeightErrors": 4
+    },
+    {
+      "id": "H06-S06",
+      "unresolvedHeightErrors": 11515
+    },
+    {
+      "id": "H08-S04",
+      "unresolvedHeightErrors": 106
+    },
+    {
+      "id": "H08-S07",
+      "unresolvedHeightErrors": 8
+    },
+    {
+      "id": "H09-S03",
+      "unresolvedHeightErrors": 2
     }
-  ]
+  ],
+  "savedRaceApiScope": "Live S-curves document: 13.0 km, noon, all widths above 11 m.",
+  "documentSha256": {
+    "H01-S02": "d1c76428a0e779881b04091078c0df2801fe1a2195fd7c801936e28f529e57c7",
+    "H01-S05": "3934bc666ce42438ff977b3fc7d902adcbab144444c58cb8fb3915be3c7af609",
+    "H01-S01": "9e7e0c8e2b0be2db50ca567aed32458cf3d1b94673042d7369c0403061c02717",
+    "H01-S03": "2fb7be32cc65b7ae6c4215b5bd13111fd53288bc784f53da4e80667d0a9682db",
+    "H01-S04": "a58b2d1b2686dff19b30bc4b593ebf137f369803a89d332e015fb906d08ec687",
+    "H01-S06": "68b39701986862d7e9cdb43121ae6bf30de2326f99cf3575f7a87cceaaefcc1f",
+    "H01-S07": "35e251c14a31551318c28300a03cb1f38153f51a34891dcc1ad24ae02923105d",
+    "H01-S08": "d34eea440e41e83365113e7120db285c2ec000a666b9cfa833450d1e851d556c",
+    "H01-S09": "b53291ee4654c6e78e842866751f5d21e52e2e1d0a132eb74e712ab279920b72",
+    "H02-S01": "88c8ecd4e8f3c400b59a84a4e9854b3da774adc71aad6b055641455ea74848e2",
+    "H02-S02": "4b86a1073bb40d160a7024aec34e36f856221fa53d99ecd97ab135f0c27b6e3a",
+    "H02-S03": "f77d449e40324f254543a75519d88e841dbfbf9e17a9750cd723be35f488c3e7",
+    "H02-S04": "cf3521fe0cb87799c1f101357a385a008ca6680ffbe55478ec5d8285b590e510",
+    "H02-S05": "8e4225c045518ee7f07a5e66e5f577a97f5f6bf21efe5c1b7dcd9a62e23d23ad",
+    "H02-S06": "7854ffb5454f03cfaed0860db4dd6ccde547ff71b77d8978f92f0a5fd63bd9d9",
+    "H02-S07": "68a94980e426b26435b0ce6ab15b3894666aa46e651c962b9d9f15ca80536f12",
+    "H02-S08": "847c5ca1d719d7f64f0692fcb51e09393944e49560e3bdde1abddb5c21b142fe",
+    "H02-S09": "37bcffb15ba45057318e6fdc352245209e0ee23de814b66e9243777c931b7b27",
+    "H03-S01": "230395c5b9cade0dd55e14b97269e42c69ddf4477a64c4fd297e858a7210b9d6",
+    "H03-S02": "b01e110ff0b4c65d396acb793411f67c9c7e7e3c2163571256474a0eb7869ff3",
+    "H03-S03": "871ac260f11cb0d1365fa8fdf72e6fc15038a47f56a240471635b2787d84bee7",
+    "H03-S04": "2baeef27508d559931dddbc0f2b55bd39b04a3b3b2454dfb583e8d4c344bdd85",
+    "H03-S05": "c90d4474b30aff1459ef4c111ed21452572b3cc9c92584b3fae69cba08fc6947",
+    "H03-S06": "84ae17253463bd681dc853941eb24344c56e31b793443f144dd335457b3ae217",
+    "H03-S07": "b3aceee788f81a7bf3ae643a884f7c7943013803396b8a67e0cf056da68f7821",
+    "H03-S08": "28902cc754826bb130980d5cace3df3e2a9107fac3ce00acb3e27d2720921579",
+    "H03-S09": "73b9f247d87d9fdd72f443ee8a6179102496f49d916cc34334dc85544836f3fe",
+    "H04-S01": "dab09c026f3d2347855c2b0e561ba10a31bdec337dc556ac0d7c536d876a09ff",
+    "H04-S02": "a4abcdb00ded18ce577b1b7b7ada9b8bdbf14cd3d136b19e7bebc93e190f69af",
+    "H04-S03": "4ac7f278fce992dcfbbab89e0a034d5624146702223fa322ab2fe260d8a40b6c",
+    "H04-S04": "c34ad2738de4f14551cc382efc21ccf770dca2bad02532ff3d96a2019114e4e8",
+    "H04-S05": "f2adccf5e0a531acdff9cead03e1acde936f60aa5da84eb516e21dfb5e44a1e2",
+    "H04-S06": "f55672196b20df2b3f9589895faf677b9784d9040d37b1d360b756254ab0ff3c",
+    "H04-S07": "f791f5e800829b90067972d7311d1fcf9294a27ddbffd303e7bd369ae3eab2aa",
+    "H04-S08": "f4922ec30c7be32f50cfa40ac32086836870a38bc83fe3b60601fb41b9576baa",
+    "H04-S09": "50e9859f1adeb4ee0603aa28c3420acc089079b7203ea24391d3a75b45cb4759",
+    "H05-S01": "9d81245fa0f2aea63b1b0c0fbbafdc971a3abaab84c494133ee4120ec8730b94",
+    "H05-S02": "28e867f6571b5bc4b76e75249d2ac58644323cf4315209b6a43f5f9bff342a54",
+    "H05-S03": "7ea2dce85900572eaa1c6bb3f2a3b829401a3e5a98bd8baf41671cd453471632",
+    "H05-S04": "dfda922b7c3a84fa65f93cb8d5fe4c179b089ec8474930e1fb41aafa8ae750a8",
+    "H05-S05": "5f83100fe89cd1a0dc1ba798893577e550b4e9e1d59de2d796f0cf6cc9f68706",
+    "H05-S06": "96dd646c71e145d9b9552a2895820df02a90e251456ab2273dec9ec53b732b89",
+    "H05-S07": "350753dbfb7f68e2919d9a20559a99a767793243af65f13fa019d1be98b4fe9e",
+    "H05-S08": "16833956c7f7d192dc8d0439cd5bc1d0204d2615bbf23afbd1739898ecc38e25",
+    "H05-S09": "e18eb2d8424e6b47d0140bedc94047f1231714aa08d5d2efc3f3e4485c6b0924",
+    "H06-S01": "2e0fca08e8671c089f2b2ce186363d0ccbbe142586e088e0d28e62b6cb72acae",
+    "H06-S02": "4c603e233c4969db98abb5c29d4bbeb7c8a3eed429c342e2e80c9bf7e2bd6bee",
+    "H06-S03": "4ef378ffeb70d81f2b06c7021f5b99ad70b6cfd6841ecdc9492d60d7c17eaf83",
+    "H06-S04": "00cfc5f88d3a8a635192c2272ce8f83626214ba3be3bf369dad351d2bafabe63",
+    "H06-S05": "6b05baba76c1143e27168c08a51219628618b1063a00c6889a178ac1d90c9e05",
+    "H06-S06": "73c0f58e56482d1877542f8ed836be27ee2112903c7a595b28096fc0a186de2a",
+    "H06-S07": "5e8e0e7475334e707dcb16898cc18153e06a0a6a8375e0cf925b54fe9b794938",
+    "H06-S08": "dcb63d58a7dbd992bf6db81261ccefc1dffb3119a4b7d9d001ac931c7f3ee6fe",
+    "H06-S09": "a871bdc2a64784e290e0570ad15047b50847c400e3fa951d723399700e88b287",
+    "H07-S01": "ce155bfcac199f5b815aaee92c74eeb113749a600d4860fa9ee511aae36fb462",
+    "H07-S02": "c5ac26435de82de66cb3b6ea7d20224370232c2784c851085abd6a57072dc15a",
+    "H07-S03": "d9c858baa77b6a93a36672126a300c50e4ad7ddc92caead52854ffc9380b65eb",
+    "H07-S04": "fb6e5bcd35858451496e12e7456f17eecc2d74905562ba27ac257787a5be0524",
+    "H07-S05": "992d99a0d9748f18eed9a454a8b0801bc2f6d630c8a094d434cfc16b1821fcc5",
+    "H07-S06": "416bc6fb4adbb305f0dc6d13388231b9468bc36e34e725f476cbad8df2d3008e",
+    "H07-S07": "5c096aa55de4abfb20434814dc498565350a1e26173a2a58be27a35616f3983e",
+    "H07-S08": "4a508d4bc3987a773ab21c18e87aa5396a418a7418154ac7d76e566d2257eac6",
+    "H07-S09": "0651ac021613d223e3e60d278a524b03cfbe37e61db009869a0a6a85639b26df",
+    "H08-S01": "3f6e1241cf18ca7e8e02cc25ebd8c2c9767ba4b7114c0a93a292c944125dde0d",
+    "H08-S02": "aae8be97e8320e4d14c8d1abe6a23cde85c36665773b6b7a8e424638e0f85923",
+    "H08-S03": "87884239853be3daea7377f8064efa31af02a2dad3a3a51332bba99293e4dc1e",
+    "H08-S04": "97a510a776a5d780c57f7432d420f0736bdd496c47d80f1ab636520fbccea0fb",
+    "H08-S05": "e4f60e5f6285ba7d264eaf9ff1d1154a7e2e9cf22d0e9aa8bc05a31c694c109c",
+    "H08-S06": "1b57c98cb96c3beec0ba41b96554a3d6b69563bdc37187b2fde8a136e748250c",
+    "H08-S07": "db48c7f47a46c81d72c8a167a80bbb1b3a0c0dd9ae78519e69722720f75a9aba",
+    "H08-S08": "6a9a405ce6210830af9f3aece1e0da66a382ec06010bfba39451fb455d880085",
+    "H08-S09": "39525ca099b6348e05145c823a8a02a133dabe1e71c9b2694411785b8628e02f",
+    "H09-S01": "d6cb1d427712d3962d7e35b42387f8ed2eba3481726f2e66877f1d86da452568",
+    "H09-S02": "0038fc13ae5d25de63e92684b1d39215f3d3c80c8bad00a69dc195f5e87771ed",
+    "H09-S03": "4ddf091f2659e2bc8c897de9e5ea3137a1cebf223e3b7b11211f1652fd738428",
+    "H09-S04": "8653f84e721e8a19cec536db810bcca78b600b28157a17cb2deb4bcfc84d2399",
+    "H09-S05": "8d9ad8d2b19125f20dcde831a8be6275e746e2456636b1b2723346779a4b49c2",
+    "H09-S06": "8d31234e6e425fe354e37144397efcadaf283426868da17872896e0729f080a7",
+    "H09-S07": "e43d970ec11290ea53afc5fcd758472dc786e809aace29b1a27bacd52bf8bc06",
+    "H09-S08": "bc1aea037fd35f486870c89399b10aa03878bb23293218ca441732631a90025e",
+    "H09-S09": "4038ea3fc28b598aa83a1ab7842845dff39dee9fb717c00fb2fe5a8cac1b719a",
+    "H10-S01": "511395588b71e5136c0a819f0259c0f0fb9404df66d2e2e7ac6e4dcd7ca09940",
+    "H10-S02": "50429e9698277e6cb67ae696acca9d282718ee871c32ba0c5e5cfe1979c53e06",
+    "H10-S03": "3ef8e06730a5c456ec9dc1fc5ee67db3265dad0b98cac45a6c0fdf7ec19b4da5",
+    "H10-S04": "7c981d649a1c84e3c9e1d63cbc35997cfef0876648aceabcd7d0a85e391d5cbf",
+    "H10-S05": "b36dfba5a92553769d22b44c2c76107e6915d397577f498092addfd5b8397d8c",
+    "H10-S06": "d5b1b862359616f971a803d67a6cefb6814f4704f58c175a66b646955908ec1f",
+    "H10-S07": "733b88b66a6bdfd32db8c2c3cae3016b8f66f3a85a887d6bd5504c40573e26b6",
+    "H10-S08": "0958c9ff618f9f4cd72752922b6e2eae231c9b58a8b22a2b33176a55d7c500e3",
+    "H10-S09": "cb425dc41d55c370dba32353da059bb17522a83a8a62065a88ca761bc8a24414",
+    "H11-S01": "6a058b5cececd9186b0cbdb76018a9c95bceb31512cc0e75d0d4bf6298b968f1",
+    "H11-S02": "e6c9b2277887314eda051a1688b9b6e26c09f35acb4dc32c1c4167e3d72ef9a7",
+    "H11-S03": "e2a302d13602c58c41338397c25a405c838f30d7b808d9e6d9b79b21d8d11b7c",
+    "H11-S04": "d3aae2ea79f0c86612fdf5769e8baf766b61b5eab00b725be4831f4899b54f6c",
+    "H11-S05": "a79a56667c3d19c91e03e829be5477b67d5ce55cd9dfa3ef6c576252f770d4c6",
+    "H11-S06": "132119c8abd54cdebc1f7d75242a42b6b9bef38f55e7837448ffae78e7b1aa57",
+    "H11-S07": "fe5d8ff1e7014461a2d47ae2c8c104bb24e83411d1009834fc704cfd4dab4256",
+    "H11-S08": "e946db3a8335390faf95ee1e56ad950df6dfd4e210201159cb82abf67d394d51",
+    "H11-S09": "5c8e37cbe7de451bc97cf4b02b52e0f88ff6b95b8c4eddaceb19615a01a52fce"
+  }
 }
