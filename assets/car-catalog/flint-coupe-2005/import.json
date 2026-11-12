@@ -1,0 +1,685 @@
+{
+  "car": {
+    "id": "flint-coupe-2005",
+    "name": "2005 Flint Coupe",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "tires": [],
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": null
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": "steeringwheel",
+          "frameIndex": 0,
+          "scaleX": 1.6875,
+          "scaleY": 1.6875,
+          "offsetX": -0.42200520833333344,
+          "offsetY": 0.9000000000000002,
+          "centerX": 0.498046875,
+          "centerY": 0.5448717948717948
+        },
+        "wipers": {
+          "artRef": "windshieldwiper",
+          "frameIndex": 0,
+          "pivotX": 0,
+          "pivotY": 0.5,
+          "width": 0.35640000000000005,
+          "parkAngle": -5,
+          "sweepAngle": -80,
+          "cycleSeconds": 1.6,
+          "mounts": [
+            {
+              "x": 0.16,
+              "y": 0.755
+            },
+            {
+              "x": 0.56,
+              "y": 0.755
+            }
+          ]
+        }
+      },
+      "addOns": [],
+      "tireSurfaces": {
+        "tread": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 0,
+          "region": {
+            "x": 138,
+            "y": 27,
+            "width": 158,
+            "height": 379
+          },
+          "bounds": {
+            "x": 138.5,
+            "y": 27.5,
+            "width": 157,
+            "height": 378
+          }
+        },
+        "wheel": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 2,
+          "region": {
+            "x": 218,
+            "y": 213,
+            "radius": 204.24005483743878
+          },
+          "bounds": {
+            "x": 13.760045162561227,
+            "y": 8.760045162561227,
+            "width": 408.47990967487755,
+            "height": 408.47990967487755
+          }
+        }
+      },
+      "angleLayers": {
+        "front": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "frontRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "right": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "rearRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rear": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rearLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "left": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "frontLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        }
+      }
+    },
+    "camera": {
+      "trackingMode": "dynamic"
+    },
+    "dimensions": {
+      "lengthM": 4.273,
+      "widthM": 1.769,
+      "wheelbaseM": 2.608,
+      "trackFrontM": 1.497,
+      "trackRearM": 1.502
+    },
+    "audio": {
+      "engineSoundId": null
+    },
+    "setup": {
+      "defaultTireCompound": "street",
+      "tireCompoundByWheel": {
+        "fl": "street",
+        "fr": "street",
+        "rl": "street",
+        "rr": "street"
+      },
+      "tirePressurePsi": {
+        "fl": 32,
+        "fr": 32,
+        "rl": 31,
+        "rr": 31
+      },
+      "tireSize": {
+        "widthMm": 205,
+        "aspectRatio": 50,
+        "wheelDiameterIn": 17
+      }
+    },
+    "defaultTransmissionType": "manual",
+    "transmissions": {
+      "manual": {
+        "type": "manual",
+        "label": "5MT",
+        "shiftMode": "manual",
+        "shiftTimeMs": 390,
+        "clutchDelayMs": 85,
+        "launchRpm": 3200,
+        "autoUpshiftRpm": 7000,
+        "autoDownshiftRpm": 2200,
+        "gearRatios": [
+          2.91622,
+          1.8704,
+          1.36286,
+          1.05119,
+          0.86098
+        ],
+        "reverseRatio": 3.45,
+        "gearFinalDrive": 4.294117647058823,
+        "drivetrainEfficiency": 0.86,
+        "engineProfile": null
+      }
+    },
+    "tuning": {
+      "drivetrain": "fwd",
+      "powerHp": 174.3328717,
+      "torqueLbFt": 148.98755409799998,
+      "weightKg": 1337,
+      "frontWeightDistribution": 0.62,
+      "engineDisplacementL": 1.997,
+      "aspiration": "Naturally Aspirated",
+      "tireGrip": 0.96,
+      "brakeBalance": 0.57,
+      "brakePressure": 1,
+      "redlineRpm": 7000,
+      "revLimitRpm": 7500,
+      "revLimiterDropRpm": 420,
+      "idleRpm": 850,
+      "torquePeakStartRpm": 4750,
+      "torquePeakEndRpm": 4750,
+      "torqueFalloffRpm": 7500,
+      "wheelRadiusM": 0.3089197445413689,
+      "topSpeedMph": 140,
+      "zeroToSixtySec": 8.3,
+      "dragCoefficient": 0.32,
+      "accelerationCalibration": 1,
+      "drivetrainEfficiency": 0.86,
+      "differentialAccel": 0.5,
+      "differentialDecel": 0.25,
+      "rearDifferentialAccel": 0.5,
+      "rearDifferentialDecel": 0.25,
+      "gearFinalDrive": 4.294117647058823,
+      "camberFront": -0.9,
+      "camberRear": -1,
+      "toeFront": 0,
+      "toeRear": 0.12,
+      "casterFront": 6.1,
+      "aeroFront": 0.22,
+      "aeroRear": 0.28,
+      "springFront": 0.54,
+      "springRear": 0.56,
+      "rideHeightFront": 0.48,
+      "rideHeightRear": 0.5,
+      "suspensionTravelFront": 0.45,
+      "suspensionTravelRear": 0.45,
+      "dampingFront": 0.54,
+      "dampingRear": 0.55,
+      "bumpFront": 0.5,
+      "bumpRear": 0.52,
+      "reboundFront": 0.56,
+      "reboundRear": 0.57,
+      "antiRollFront": 0.52,
+      "antiRollRear": 0.58,
+      "gearRatios": [
+        2.91622,
+        1.8704,
+        1.36286,
+        1.05119,
+        0.86098
+      ],
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 4.273,
+          "overallWidthM": 1.769,
+          "overallHeightM": 1.46,
+          "groundClearanceM": 0.14,
+          "frontOverhangM": 0.935,
+          "rearOverhangM": 0.73,
+          "lowerBodyHeightM": 0.48,
+          "hood": {
+            "lengthM": 1.1,
+            "widthM": 1.7,
+            "heightM": 0.38
+          },
+          "cabin": {
+            "centerZM": -0.15,
+            "lengthM": 2.1,
+            "widthM": 1.64,
+            "heightM": 0.84
+          },
+          "bed": {
+            "centerZM": -1.35,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.55,
+            "z": 0
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": false,
+          "wheelWellClearanceMarginM": 0.06,
+          "maximumTireDeflectionM": 0.04,
+          "wheelRadiusM": 0.3089197445413689,
+          "trackWidthM": 1.4995,
+          "frontAxleDistanceFromCgM": 0.99104,
+          "rearAxleDistanceFromCgM": 1.61696,
+          "customColliders": []
+        }
+      },
+      "reverseRatio": 3.45,
+      "engineCurve": {
+        "rpmMin": 850,
+        "rpmMax": 7500,
+        "torquePoints": [
+          {
+            "rpm": 850,
+            "torqueLbFt": 50
+          },
+          {
+            "rpm": 2500,
+            "torqueLbFt": 110
+          },
+          {
+            "rpm": 4750,
+            "torqueLbFt": 148.98755409799998
+          },
+          {
+            "rpm": 6000,
+            "torqueLbFt": 140
+          },
+          {
+            "rpm": 7000,
+            "torqueLbFt": 130.79946316691428
+          },
+          {
+            "rpm": 7500,
+            "torqueLbFt": 110
+          }
+        ]
+      },
+      "frontDifferentialAccel": 0.3,
+      "frontDifferentialDecel": 0.15
+    },
+    "description": "Original fictional salvage coupe referenced to2005 Citroen C4 Coupe VTS180. Uses published1337kg empty-running-order mass; driver convention unresolved. Gear ratios are derived estimates. Not an OEM replica."
+  },
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "provenance": {
+    "referenceVehicle": "2005 Citroen C4 Coupe 2.0i16V VTS180 EU,5MT",
+    "sources": [
+      {
+        "url": "https://www.largus.fr/fiche-technique/Citroen/C4/I/2005/Coupe%2B3%2BPortes/20i%2B16v%2B180ch%2BVTS-799752.html",
+        "fields": [
+          "displacement",
+          "engine",
+          "power",
+          "torque",
+          "drivetrain",
+          "frontTire",
+          "rearTire"
+        ]
+      },
+      {
+        "url": "https://www.km77.com/coches/citroen/c4/2005/coupe/vts/c4-coupe-20i-16v-180cv-vts/datos",
+        "fields": [
+          "transmission",
+          "gearSpeedPer1000Rpm"
+        ]
+      },
+      {
+        "url": "https://pdfcoffee.com/266815246-automotive-electronics-part-3-pdf-free.html",
+        "fields": [
+          "wheelbase",
+          "tireRollingCircumference",
+          "publishedRunningOrderMass",
+          "length",
+          "width",
+          "heightRange"
+        ]
+      },
+      {
+        "url": "https://pcgroup.rs/wp-content/uploads/2018/02/CITROEN-C4-2005.God_..pdf",
+        "fields": [
+          "gearboxCode",
+          "finalDriveTeeth",
+          "finalDrive"
+        ]
+      }
+    ],
+    "estimates": [
+      "Marketing180 is not180SAEhp; retain130kW.",
+      "Manufacturer2004 handbook transcription reports1337kg empty running order; LArgus/km77 report1412kg.75kg difference exists but no explicit driver-allowance evidence, so no-driver curbMass remains unresolved.",
+      "Per-gear ratios below are derived estimates from rounded road-speed developments, not verified tooth counts.",
+      "Manufacturer generic3-door tracks1505/1510mm differ from VTS-specific secondary1497/1502mm; exact wheel-offset geometry unconfirmed.",
+      "2004 handbook calls20DM68 BE4/5T while2005volume callsBE4/5L; code/final tooth pair agree.",
+      "Simulation uses1337kg published empty-running-order mass; NOT a resolved no-driver curbMass.",
+      "Height1.460m selected within manufacturer1.456–1.471m range; exact VTS tire-dependent height unverified.",
+      "Tracks1.497/1.502m use secondary VTS values rather than generic manufacturer3-door widths; pending wheel-offset confirmation.",
+      "Gear ratios derived from rounded published road-speed development, NOT verified gearbox tooth counts. Reverse3.45 is an estimate.",
+      "Rolling radius derived from1.941m published circumference, rather than nominal unloaded tire radius.",
+      "Unattributed suspension/differential/brake/drag/audio/CG/overhang/body-piece values, performance targets and intermediate torque-curve samples are provisional simulation estimates.",
+      "Editor quantizes curve torque to integer lb-ft:130kW at7000rpm rounds to131lb-ft and displayed175hp, vs reference174.33mechanical hp (~0.4% error)."
+    ],
+    "verifiedFacts": {
+      "displacement": {
+        "value": 1997,
+        "unit": "cm3",
+        "source": "c4-argus-2005"
+      },
+      "engine": {
+        "value": "naturally aspirated inline four",
+        "unit": "description",
+        "source": "c4-argus-2005"
+      },
+      "power": {
+        "value": 130,
+        "unit": "kW",
+        "source": "c4-argus-2005",
+        "rpm": 7000
+      },
+      "torque": {
+        "value": 202,
+        "unit": "Nm",
+        "source": "c4-argus-2005",
+        "rpm": 4750,
+        "rpmSource": "c4-km77"
+      },
+      "drivetrain": {
+        "value": "FWD",
+        "unit": "layout",
+        "source": "c4-argus-2005"
+      },
+      "transmission": {
+        "value": "5-speed manual",
+        "unit": "type",
+        "source": "c4-km77"
+      },
+      "wheelbase": {
+        "value": 2608,
+        "unit": "mm",
+        "source": "c4-handbook-2004-transcription"
+      },
+      "frontTire": {
+        "value": "205/50R17",
+        "unit": "designation",
+        "source": "c4-argus-2005"
+      },
+      "rearTire": {
+        "value": "205/50R17",
+        "unit": "designation",
+        "source": "c4-argus-2005"
+      },
+      "curbMass": null,
+      "gearboxCode": {
+        "value": "20 DM 68 (BE4/5L)",
+        "unit": "code",
+        "source": "c4-handbook-2005"
+      },
+      "finalDriveTeeth": {
+        "value": [
+          17,
+          73
+        ],
+        "unit": "pinion_crown_teeth",
+        "source": "c4-handbook-2005"
+      },
+      "finalDrive": {
+        "value": 4.294117647058823,
+        "unit": "ratio",
+        "source": "c4-handbook-2005",
+        "derivation": "73 crown teeth /17 pinion teeth"
+      },
+      "gearSpeedPer1000Rpm": {
+        "value": [
+          9.3,
+          14.5,
+          19.9,
+          25.8,
+          31.5
+        ],
+        "unit": "km/h per1000rpm",
+        "source": "c4-km77"
+      },
+      "tireRollingCircumference": {
+        "value": 1.941,
+        "unit": "m",
+        "source": "c4-handbook-2004-transcription"
+      },
+      "publishedRunningOrderMass": {
+        "value": 1337,
+        "unit": "kg",
+        "source": "c4-handbook-2004-transcription",
+        "convention": "weight empty in running order; driver allowance not explicitly established"
+      },
+      "length": {
+        "value": 4273,
+        "unit": "mm",
+        "source": "c4-handbook-2004-transcription"
+      },
+      "width": {
+        "value": 1769,
+        "unit": "mm",
+        "source": "c4-handbook-2004-transcription"
+      },
+      "heightRange": {
+        "value": [
+          1456,
+          1471
+        ],
+        "unit": "mm",
+        "source": "c4-handbook-2004-transcription",
+        "notes": "depends on tires; not exact VTS-specific"
+      }
+    },
+    "derivedGearRatios": {
+      "value": [
+        2.91622,
+        1.8704,
+        1.36286,
+        1.05119,
+        0.86098
+      ],
+      "unit": "ratio",
+      "method": "rollingCircumference_m*60/(kmh_per1000rpm*finalDrive)",
+      "sources": [
+        "c4-handbook-2004-transcription",
+        "c4-km77"
+      ],
+      "status": "estimate_from_rounded_secondary_developments_not_verified_gears"
+    },
+    "artwork": "Original fictional logo-free eight-view body and cockpit. Shared existing steeringwheel. Not replica."
+  }
+}

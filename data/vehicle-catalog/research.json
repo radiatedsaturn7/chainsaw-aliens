@@ -57,6 +57,65 @@
       "publisher": "Subaru of America",
       "type": "manufacturer_brochure",
       "access": "verified_by_parent_research_agent"
+    },
+    "kia-ev6-2023-us": {
+      "url": "https://www.kiamedia.com/us/en/models/ev6/2023/specifications",
+      "publisher": "Kia America",
+      "type": "manufacturer_specification",
+      "access": "indexed_official_full_table_sections_read_full_page_403",
+      "notes": [
+        "GT column explicitly distinguished from GT-Line. Official tire text has apparent typo 255/40R201; tire size deliberately not imported.",
+        "Official table lists both 576 hp and 430 kW; retained as separately published values, not exact computed equivalents."
+      ]
+    },
+    "vw-tiguan-2024-release-mirror": {
+      "url": "https://manuals.plus/volkswagen/2024-tiguan-rendered-with-sleek-body-manual",
+      "publisher": "Volkswagen of America release, mirrored by Manuals+",
+      "type": "mirrored_manufacturer_release",
+      "access": "full_release_read",
+      "originalUrl": "https://media.vw.com/press-kits/2024-tiguan-press-kit",
+      "notes": [
+        "Original press-kit URL currently returns JavaScript shell, no readable technical PDF. Mirror preserves US2024 manufacturer media information."
+      ]
+    },
+    "vw-tiguan-2024-s-fwd-dealer": {
+      "url": "https://www.claycooley.com/vdp-media-thumbnails/3VVRB7AX1RM069958/Used--2024--Volkswagen--Tiguan--Lewisville--TX/",
+      "publisher": "Clay Cooley Volkswagen",
+      "type": "dealer_specification",
+      "access": "indexed_table_sections_read",
+      "notes": [
+        "Specific 2024 S FWD listing; not factory engineering sheet. Gear ratios and curb mass remain secondary-source provisional."
+      ]
+    },
+    "vw-tiguan-2024-fwd-dimensions": {
+      "url": "https://www.floridafinecars.com/carsforsale/2024-VOLKSWAGEN-TIGUAN-MIAMI-Stock%3D143888",
+      "publisher": "Florida Fine Cars",
+      "type": "dealer_specification",
+      "access": "indexed_table_read",
+      "notes": [
+        "2024 SE FWD dimensions; shared body claim requires factory confirmation for S trim."
+      ]
+    },
+    "c4-handbook-2005": {
+      "url": "https://pcgroup.rs/wp-content/uploads/2018/02/CITROEN-C4-2005.God_..pdf",
+      "publisher": "Citroen (archived manufacturer workshop handbook)",
+      "type": "manufacturer_workshop_handbook",
+      "access": "full_pdf_read_and_table_visually_checked",
+      "notes": "2005 volume2, printed313/PDF319. EW10J4S BE4/5L20DM68 final tooth pair17x73;19x77 belongs EW10A/J4, not VTS180."
+    },
+    "c4-handbook-2004-transcription": {
+      "url": "https://pdfcoffee.com/266815246-automotive-electronics-part-3-pdf-free.html",
+      "publisher": "Citroen (third-party text transcription of2004 handbook)",
+      "type": "manufacturer_workshop_handbook_transcription",
+      "access": "full_text_read",
+      "notes": "Printed11 RFK3-door weight empty in running order1337kg; printed10 dimensions; printed277 RFK gearbox20DM68 tooth pair17x73 and rolling circumference1.941m. Original PDF mirror blocked; transcription retained with caveat."
+    },
+    "c4-km77": {
+      "url": "https://www.km77.com/coches/citroen/c4/2005/coupe/vts/c4-coupe-20i-16v-180cv-vts/datos",
+      "publisher": "km77",
+      "type": "secondary_specifications",
+      "access": "full_page_read",
+      "notes": "Gear developments9.3/14.5/19.9/25.8/31.5km/h per1000rpm;1412kg weight without convention. Reject implausible frontal area0.68m2 on this page."
     }
   },
   "vehicles": [
@@ -481,7 +540,9 @@
         "torque": {
           "value": 202,
           "unit": "Nm",
-          "source": "c4-argus-2005"
+          "source": "c4-argus-2005",
+          "rpm": 4750,
+          "rpmSource": "c4-km77"
         },
         "drivetrain": {
           "value": "FWD",
@@ -489,14 +550,14 @@
           "source": "c4-argus-2005"
         },
         "transmission": {
-          "value": "manual",
+          "value": "5-speed manual",
           "unit": "type",
-          "source": "c4-argus-2005"
+          "source": "c4-km77"
         },
         "wheelbase": {
-          "value": 2.61,
-          "unit": "m",
-          "source": "c4-argus-2005"
+          "value": 2608,
+          "unit": "mm",
+          "source": "c4-handbook-2004-transcription"
         },
         "frontTire": {
           "value": "205/50R17",
@@ -508,14 +569,99 @@
           "unit": "designation",
           "source": "c4-argus-2005"
         },
-        "curbMass": null
+        "curbMass": null,
+        "gearboxCode": {
+          "value": "20 DM 68 (BE4/5L)",
+          "unit": "code",
+          "source": "c4-handbook-2005"
+        },
+        "finalDriveTeeth": {
+          "value": [
+            17,
+            73
+          ],
+          "unit": "pinion_crown_teeth",
+          "source": "c4-handbook-2005"
+        },
+        "finalDrive": {
+          "value": 4.294117647058823,
+          "unit": "ratio",
+          "source": "c4-handbook-2005",
+          "derivation": "73 crown teeth /17 pinion teeth"
+        },
+        "gearSpeedPer1000Rpm": {
+          "value": [
+            9.3,
+            14.5,
+            19.9,
+            25.8,
+            31.5
+          ],
+          "unit": "km/h per1000rpm",
+          "source": "c4-km77"
+        },
+        "tireRollingCircumference": {
+          "value": 1.941,
+          "unit": "m",
+          "source": "c4-handbook-2004-transcription"
+        },
+        "publishedRunningOrderMass": {
+          "value": 1337,
+          "unit": "kg",
+          "source": "c4-handbook-2004-transcription",
+          "convention": "weight empty in running order; driver allowance not explicitly established"
+        },
+        "length": {
+          "value": 4273,
+          "unit": "mm",
+          "source": "c4-handbook-2004-transcription"
+        },
+        "width": {
+          "value": 1769,
+          "unit": "mm",
+          "source": "c4-handbook-2004-transcription"
+        },
+        "heightRange": {
+          "value": [
+            1456,
+            1471
+          ],
+          "unit": "mm",
+          "source": "c4-handbook-2004-transcription",
+          "notes": "depends on tires; not exact VTS-specific"
+        }
       },
       "uncertainties": [
-        "Marketing designation 180 does not equal 180 SAE hp; 130 kW retained as source unit.",
-        "Mass conflict: L'Argus 1412 kg vs other references 1337 kg. Difference is 75 kg but driver-allowance explanation is not yet verified.",
-        "Five speeds and 4750 rpm torque peak need direct primary-source confirmation."
+        "Marketing180 is not180SAEhp; retain130kW.",
+        "Manufacturer2004 handbook transcription reports1337kg empty running order; LArgus/km77 report1412kg.75kg difference exists but no explicit driver-allowance evidence, so no-driver curbMass remains unresolved.",
+        "Per-gear ratios below are derived estimates from rounded road-speed developments, not verified tooth counts.",
+        "Manufacturer generic3-door tracks1505/1510mm differ from VTS-specific secondary1497/1502mm; exact wheel-offset geometry unconfirmed.",
+        "2004 handbook calls20DM68 BE4/5T while2005volume callsBE4/5L; code/final tooth pair agree."
       ],
-      "simulationEstimates": {},
+      "simulationEstimates": {
+        "gearRatiosFromPublishedDevelopment": {
+          "value": [
+            2.91622,
+            1.8704,
+            1.36286,
+            1.05119,
+            0.86098
+          ],
+          "unit": "ratio",
+          "method": "rollingCircumference_m*60/(kmh_per1000rpm*finalDrive)",
+          "sources": [
+            "c4-handbook-2004-transcription",
+            "c4-km77"
+          ],
+          "status": "estimate_from_rounded_secondary_developments_not_verified_gears"
+        },
+        "provisionalMass": {
+          "value": 1337,
+          "unit": "kg",
+          "basis": "manufacturer empty-running-order table; no claim that75kg difference is driver",
+          "status": "provisional_pending_mass_convention"
+        }
+      },
       "art": {
         "interior": null,
         "exterior": null,
@@ -599,16 +745,105 @@
       }
     },
     {
-      "id": "volkswagen-tiguan-pending",
+      "id": "volkswagen-tiguan-2024-s-fwd-us",
       "make": "Volkswagen",
       "model": "Tiguan",
-      "year": null,
-      "trim": null,
-      "market": null,
-      "status": "pending_research",
-      "facts": {},
+      "year": 2024,
+      "trim": "S FWD",
+      "market": "US",
+      "status": "needs_source_confirmation",
+      "facts": {
+        "displacement": {
+          "value": 2.0,
+          "unit": "L",
+          "source": "vw-tiguan-2024-release-mirror"
+        },
+        "engine": {
+          "value": "EA888 turbocharged direct-injection inline four",
+          "unit": "description",
+          "source": "vw-tiguan-2024-release-mirror"
+        },
+        "power": {
+          "value": 184,
+          "unit": "hp",
+          "source": "vw-tiguan-2024-release-mirror",
+          "rpm": 4400
+        },
+        "torque": {
+          "value": 221,
+          "unit": "lb-ft",
+          "source": "vw-tiguan-2024-release-mirror",
+          "rpm": 1600
+        },
+        "transmission": {
+          "value": "8AT",
+          "unit": "type",
+          "source": "vw-tiguan-2024-release-mirror"
+        },
+        "drivetrain": {
+          "value": "FWD",
+          "unit": "layout",
+          "source": "vw-tiguan-2024-s-fwd-dealer"
+        },
+        "curbMass": {
+          "value": 3732,
+          "unit": "lb",
+          "source": "vw-tiguan-2024-s-fwd-dealer",
+          "verification": "provisional_secondary"
+        },
+        "forwardRatios": {
+          "value": [
+            5.59,
+            3.14,
+            1.95,
+            1.43,
+            1.21,
+            1,
+            0.81,
+            0.67
+          ],
+          "unit": "ratio",
+          "source": "vw-tiguan-2024-s-fwd-dealer",
+          "verification": "provisional_secondary"
+        },
+        "reverseRatio": {
+          "value": 3.99,
+          "unit": "ratio",
+          "source": "vw-tiguan-2024-s-fwd-dealer",
+          "verification": "provisional_secondary"
+        },
+        "finalDrive": {
+          "value": 3.33,
+          "unit": "ratio",
+          "source": "vw-tiguan-2024-s-fwd-dealer",
+          "verification": "provisional_secondary"
+        },
+        "wheelbase": {
+          "value": 109.9,
+          "unit": "in",
+          "source": "vw-tiguan-2024-fwd-dimensions",
+          "verification": "provisional_shared_body"
+        },
+        "dimensionsLWH": {
+          "value": [
+            186.1,
+            72.4,
+            66.4
+          ],
+          "unit": "in",
+          "source": "vw-tiguan-2024-fwd-dimensions",
+          "verification": "provisional_shared_body"
+        },
+        "fuelTank": {
+          "value": 15.3,
+          "unit": "US gal",
+          "source": "vw-tiguan-2024-release-mirror"
+        }
+      },
       "uncertainties": [
-        "Identity confirmed by Rob; choose and verify year, market, trim and drivetrain."
+        "Identity confirmed by user; selected US2024 S FWD explicitly. Do not substitute European third generation or Canadian AWD weights.",
+        "Manufacturer US release available through mirror, but original engineering specification PDF not recovered. Curb mass/gearing remain provisional dealer evidence, dimensions from same-year SE FWD require factory confirmation.",
+        "Manufacturer release states 184hp begins at4400rpm and221lb-ft available from1600rpm; secondary databases instead list6000/1900rpm. Retain conflict until factory engineering sheet confirms power/torque plateau."
       ],
       "simulationEstimates": {},
       "art": {
@@ -622,16 +857,103 @@
       }
     },
     {
-      "id": "kia-ev6-gt-2023-us-pending",
+      "id": "kia-ev6-gt-2023-us",
       "make": "Kia",
       "model": "EV6",
       "year": 2023,
       "trim": "GT",
       "market": "US",
-      "status": "pending_research",
-      "facts": {},
+      "status": "research_only",
+      "facts": {
+        "power": {
+          "value": 576,
+          "unit": "hp",
+          "source": "kia-ev6-2023-us"
+        },
+        "manufacturerPowerKW": {
+          "value": 430,
+          "unit": "kW",
+          "source": "kia-ev6-2023-us"
+        },
+        "torque": {
+          "value": 545,
+          "unit": "lb-ft",
+          "source": "kia-ev6-2023-us"
+        },
+        "curbMass": {
+          "value": 4795,
+          "unit": "lb",
+          "source": "kia-ev6-2023-us",
+          "definition": "manufacturer minimum AWD curb weight"
+        },
+        "drivetrain": {
+          "value": "AWD",
+          "unit": "layout",
+          "source": "kia-ev6-2023-us"
+        },
+        "motorType": {
+          "value": "AC synchronous permanent magnet",
+          "unit": "description",
+          "source": "kia-ev6-2023-us"
+        },
+        "transmission": {
+          "value": "single-speed gear reduction unit",
+          "unit": "type",
+          "source": "kia-ev6-2023-us"
+        },
+        "finalDrive": {
+          "value": 10.65,
+          "unit": "ratio",
+          "source": "kia-ev6-2023-us"
+        },
+        "batteryEnergy": {
+          "value": 77.4,
+          "unit": "kWh",
+          "source": "kia-ev6-2023-us"
+        },
+        "wheelbase": {
+          "value": 114.2,
+          "unit": "in",
+          "source": "kia-ev6-2023-us"
+        },
+        "dimensionsLWH": {
+          "value": [
+            184.8,
+            74.4,
+            60.8
+          ],
+          "unit": "in",
+          "source": "kia-ev6-2023-us"
+        },
+        "groundClearance": {
+          "value": 6.1,
+          "unit": "in",
+          "source": "kia-ev6-2023-us"
+        },
+        "trackFrontRear": {
+          "value": [
+            64.1,
+            64.4
+          ],
+          "unit": "in",
+          "source": "kia-ev6-2023-us"
+        },
+        "topSpeed": {
+          "value": 161,
+          "unit": "mph",
+          "source": "kia-ev6-2023-us"
+        },
+        "acceleration0To60mph": {
+          "value": 3.4,
+          "unit": "s",
+          "source": "kia-ev6-2023-us"
+        }
+      },
       "uncertainties": [
-        "FH5 identity verified; parent researcher owns full manufacturer evidence packet. Do not mix European PS/mass with US specification."
+        "Full specification page blocks direct fetch; official table recovered through indexed sections with explicit GT column.",
+        "US specification, not European homologation. Do not substitute 585 PS or European curb mass.",
+        "Official tire field malformed (255/40R201); do not import until independently confirmed.",
+        "Preserve EV torque/power characteristics rather than inventing combustion-engine RPM or multigear shifts."
       ],
       "simulationEstimates": {},
       "art": {

@@ -65,3 +65,22 @@ test('Kestrel pilot retains sourced geometry, ratios, torque and power anchors',
  assert.equal(c.tuning.weightKg,830);assert.equal(c.tuning.powerHp,63);
  assert.ok(c.tuning.engineCurve.torquePoints.some(p=>p.rpm===6000&&p.torqueLbFt===55));
 });
+
+test('Flint coupe preserves sourced units and explicit mass/gearing uncertainty',()=>{
+ const doc=JSON.parse(fs.readFileSync(new URL('../../data/server-storage/files/cars/2005 Flint Coupe/document.json',import.meta.url)));
+ const c=doc.car,b=c.tuning.physics.bodyProfile;
+ assert.equal(c.id,'flint-coupe-2005');assert.equal(c.tuning.drivetrain,'fwd');assert.equal(c.tuning.weightKg,1337);
+ assert.equal(c.dimensions.lengthM,4.273);assert.equal(c.dimensions.widthM,1.769);assert.equal(c.dimensions.wheelbaseM,2.608);
+ assert.equal(b.overallLengthM,c.dimensions.lengthM);assert.equal(b.overallWidthM,c.dimensions.widthM);
+ assert.ok(Math.abs(b.frontAxleDistanceFromCgM+b.rearAxleDistanceFromCgM-2.608)<1e-9);
+ assert.equal(b.wheelRadiusM,c.tuning.wheelRadiusM);assert.ok(b.trackWidthM<c.dimensions.widthM);
+ assert.equal(c.transmissions.manual.gearRatios.length,5);assert.equal(c.transmissions.manual.gearFinalDrive,73/17);
+ assert.equal(c.setup.tireSize.widthMm,205);assert.equal(c.setup.tireSize.wheelDiameterIn,17);
+ assert.equal(c.catalogProvenance.verifiedFacts.power.value,130);assert.equal(c.catalogProvenance.verifiedFacts.power.unit,'kW');
+ assert.equal(c.catalogProvenance.verifiedFacts.curbMass,null);
+ assert.ok(c.catalogProvenance.estimates.some(x=>x.includes('NOT a resolved no-driver curbMass')));
+ assert.ok(c.catalogProvenance.estimates.some(x=>x.includes('NOT verified gearbox tooth counts')));
+ assert.equal(c.art.interior.steeringWheel.artRef,'steeringwheel');
+ const editor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});editor.applyLoadedCarDocument(doc,{name:c.name});const reopened=editor.serializeSelectedCarDocument();
+ assert.deepEqual(reopened.car.catalogProvenance,c.catalogProvenance);assert.equal(reopened.car.transmissions.manual.gearRatios.length,5);
+});

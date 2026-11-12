@@ -357,7 +357,9 @@
       "skybox-tower-hill": "art/skybox-tower-hill/document.json",
       "catalog-kestrel-660-2018-body": "art/catalog-kestrel-660-2018-body/document.json",
       "catalog-kestrel-660-2018-dashboard": "art/catalog-kestrel-660-2018-dashboard/document.json",
-      "catalog-tarmac-semislick": "art/catalog-tarmac-semislick/document.json"
+      "catalog-tarmac-semislick": "art/catalog-tarmac-semislick/document.json",
+      "catalog-flint-coupe-2005-body": "art/catalog-flint-coupe-2005-body/document.json",
+      "catalog-flint-coupe-2005-dashboard": "art/catalog-flint-coupe-2005-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -367,7 +369,8 @@
       "CT-86": "cars/CT-86/document.json",
       "PZ-24": "cars/PZ-24/document.json",
       "RTG-001": "cars/RTG-001/document.json",
-      "2018 Kestrel 660": "cars/2018 Kestrel 660/document.json"
+      "2018 Kestrel 660": "cars/2018 Kestrel 660/document.json",
+      "2005 Flint Coupe": "cars/2005 Flint Coupe/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
