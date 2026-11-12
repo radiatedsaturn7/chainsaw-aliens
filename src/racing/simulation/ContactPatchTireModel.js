@@ -2214,7 +2214,8 @@ export class ContactPatchTireModel {
     const finalDriveRatio = Math.abs(Number(
       powertrainTuning.gearFinalDrive || powertrainTuning.finalDrive || 1
     ));
-    const overallDriveRatio = selectedGearRatio * finalDriveRatio;
+    const overallDriveRatio = powertrainTuning.cvt && powertrainTuning.powertrainType !== 'electric'
+      ? powertrainStep.telemetry.overallRatio : selectedGearRatio * finalDriveRatio;
     const maximumPoweredWheelOmegaRadps = overallDriveRatio > EPSILON
       ? (config.maxRpm * Math.PI * 2 / 60) / overallDriveRatio
         * (1 + clamp(Number(powertrainTuning.torqueConverterSlip || 0), 0, 0.25))

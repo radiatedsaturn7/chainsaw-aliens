@@ -1,3 +1,4 @@
+import { normalizeCvtTuning } from './CvtTransmissionModel.js';
 import { normalizeElectricTuning } from './ElectricPowertrainModel.js';
 import {contactTireWear,applySuspensionContactDamage,applySuspensionLandingDamage} from './SurfaceWearModel.js';
 import {mapThrottlePedal} from './PowertrainModel.js';
@@ -1221,7 +1222,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
   inputTimelineLimit = 0,
   physicsIncidentRecordingEnabled = false
 } = {}) {
-  tuning = normalizeElectricTuning(tuning);
+  tuning = normalizeCvtTuning(normalizeElectricTuning(tuning));
   const physical = tuning.physicalVehicleProfile || null;
   const powerW = Math.max(0, Number(tuning.powerHp || 0) * 745.7);
   const massKg = Math.max(100, Number(tuning.weightKg ?? physical?.massKg) || 1450);

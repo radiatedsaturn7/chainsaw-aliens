@@ -1,3 +1,4 @@
+import { stepCvt } from './CvtTransmissionModel.js';
 import {advanceRaceLaunchControl} from './RaceLaunchControl.js';
 import { stepElectricPowertrain } from './ElectricPowertrainModel.js';
 import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
@@ -346,7 +347,7 @@ export class PowertrainModel {
   }
 
   getRedlineSpeedMps(tuning = {}, gear = 1) {
-    const ratio = this.getGearRatio(tuning, gear);
+    const ratio = tuning.cvt && tuning.powertrainType !== 'electric' && gear > 0 ? tuning.cvt.minRatio : this.getGearRatio(tuning, gear);
     if (!ratio) return 0;
     const wheelRpm = tuning.redlineRpm / Math.max(0.1, ratio * tuning.finalDrive);
     return (wheelRpm / 60) * (Math.PI * 2 * tuning.wheelRadiusM);
@@ -438,11 +439,13 @@ export class PowertrainModel {
   } = {}) {
     const seconds = Math.max(0, Number(dt) || 0);
     const electric = tuning.powertrainType === 'electric';
+    const cvt = !electric && tuning.cvt;
     const idleRpm = electric ? 0 : Math.max(500, Number(config.idleRpm ?? tuning.idleRpm) || 800);
     const maxRpm = Math.max(idleRpm + 500, Number(config.maxRpm
       ?? tuning.revLimitRpm ?? tuning.redlineRpm) || 7000);
     let requestedGear = Math.trunc(Number(controls.requestedGear || 0));
-    if (electric) requestedGear = Math.sign(requestedGear);
+    if (electric || cvt) requestedGear = Math.sign(requestedGear);
+    if (cvt) previous = {...previous, gear:Math.sign(previous.gear ?? requestedGear), targetGear:Math.sign(previous.targetGear ?? requestedGear)};
     let gear = Number.isInteger(previous.gear) ? previous.gear : requestedGear;
     let targetGear = Number.isInteger(previous.targetGear) ? previous.targetGear : gear;
     let shiftTimeRemainingSeconds = Math.max(0, Number(previous.shiftTimeRemainingSeconds || 0));
@@ -463,7 +466,7 @@ export class PowertrainModel {
         sum + Number(kinematicsByWheel[wheelId]?.wheelAngularVelocityRadps || 0)
       ), 0) / drivenIds.length
       : 0;
-    if (!electric && controls.assists?.autoShift === true && requestedGear > 0 && gear > 0
+    if (!electric && !cvt && controls.assists?.autoShift === true && requestedGear > 0 && gear > 0
       && shiftTimeRemainingSeconds <= 0) {
       const ratios = Array.isArray(tuning.gearRatios) ? tuning.gearRatios : [];
       const finalDriveForShift = Math.max(0.1, Math.abs(Number(
@@ -548,10 +551,14 @@ export class PowertrainModel {
         );
       }
     }
-    const gearRatio = Math.abs(Number(this.getGearRatio(tuning, gear, tuning.gearRatios || [])) || 0);
+    let gearRatio = Math.abs(Number(this.getGearRatio(tuning, gear, tuning.gearRatios || [])) || 0);
     const finalDrive = Math.max(0.1, Math.abs(Number(
       tuning.gearFinalDrive ?? tuning.finalDrive ?? 1
     )));
+    const cvtStep = cvt ? stepCvt({config:cvt, previousRatio:previous.cvt?.ratio,
+      wheelOmegaRadps:averageSignedDrivenOmega, finalDrive,
+      throttle:Number(controls.throttle || 0), dt:seconds}) : null;
+    if (cvtStep && gear > 0) gearRatio = cvtStep.ratio;
     const overallRatio = gearRatio * finalDrive;
     const coupledRpm = overallRatio > 0
       ? Math.max(0, averageSignedDrivenOmega * (gear < 0 ? -1 : 1)) * overallRatio * 60 / (Math.PI * 2)
@@ -588,7 +595,7 @@ export class PowertrainModel {
     // Full engagement at zero shaft speed pinned high-strung engines at idle.
     // Use the authored launch RPM and slip the clutch; do not add engine power
     // or tire grip. Explicit manual clutch input retains authority.
-    const automaticClutch = !electric && converterSlip === 0 && controls.assists?.autoShift === true
+    const automaticClutch = !electric && converterSlip === 0 && (cvt || controls.assists?.autoShift === true)
       && Math.abs(gear) === 1 && Number(controls.throttle || 0) > .02;
     const clutchTargetRpm = idleRpm + (launchRpm-idleRpm)*clamp(Number(controls.throttle)||0,0,1);
     const takeup = (automaticClutch || launchControlActive) ? clamp(coupledRpm / Math.max(idleRpm,clutchTargetRpm),.35,1) : 1;
@@ -871,6 +878,7 @@ export class PowertrainModel {
       wheelBrakeTorqueNm,
       state: {
         ...(electricStep ? { electric: electricStep.state } : {}),
+        ...(cvtStep ? {cvt:{ratio:cvtStep.ratio}} : {}),
         engineRpm: !electric && mechanical?.engineRunning === false ? 0 : engineRpm,
         gear,
         targetGear,
@@ -888,6 +896,7 @@ export class PowertrainModel {
       },
       telemetry: {
         ...(electricStep ? { electric: electricStep.telemetry } : {}),
+        ...(cvtStep ? {cvt:cvtStep} : {}),
         curveTorqueNm,
         combustionTorqueNm,
         engineBrakeTorqueNm,
