@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {existsSync} from 'node:fs';
-const catalogCases=[['2018 Kestrel 660','kestrel-660-2018'],['2005 Flint Coupe','flint-coupe-2005'],['2024 Caravan-9','caravan-9-2024'],['2023 Volt-Hound GT','volt-hound-gt-2023'],['Dustjack V8','dustjack-v8']].filter(([name])=>existsSync(`data/server-storage/files/cars/${name}/document.json`));
+const catalogCases=[['Trailglass 2024','trailglass-2024'],['2018 Kestrel 660','kestrel-660-2018'],['2005 Flint Coupe','flint-coupe-2005'],['2024 Caravan-9','caravan-9-2024'],['2023 Volt-Hound GT','volt-hound-gt-2023'],['Dustjack V8','dustjack-v8']].filter(([name])=>existsSync(`data/server-storage/files/cars/${name}/document.json`));
 for(const [carName,carId] of catalogCases){
 
 test(`${carName} actual editor preview composites exterior/cockpit and advances production physics`,async({page},testInfo)=>{

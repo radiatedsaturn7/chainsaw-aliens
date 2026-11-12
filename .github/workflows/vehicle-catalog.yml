@@ -33,7 +33,7 @@ jobs:
       - run: python -m pip install Pillow==11.3.0
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: node --test tests/unit/carCatalogImport.test.js tests/unit/catalogRallyTire.test.js tests/unit/catalogRainTire.test.js tests/unit/voltHoundElectric.test.js tests/unit/dustjackCatalog.test.js tests/unit/catalogTireVariety.test.js tests/unit/carGraphicImport.test.js tests/unit/carPresets.test.js tests/unit/carTireTextureFit.test.js tests/unit/carWheelCylinder.test.js
+      - run: node --test tests/unit/trailglassCatalog.test.js tests/unit/carCatalogImport.test.js tests/unit/catalogRallyTire.test.js tests/unit/catalogRainTire.test.js tests/unit/voltHoundElectric.test.js tests/unit/dustjackCatalog.test.js tests/unit/catalogTireVariety.test.js tests/unit/carGraphicImport.test.js tests/unit/carPresets.test.js tests/unit/carTireTextureFit.test.js tests/unit/carWheelCylinder.test.js
       - run: python tools/project_manifest.py --check --validate-assets
       - run: npx playwright test tests/playwright/car-catalog.spec.js tests/playwright/car-catalog-preview.spec.js tests/playwright/car-graphic-import.spec.js tests/playwright/car-presets.spec.js --workers=1 --reporter=line
         env:
