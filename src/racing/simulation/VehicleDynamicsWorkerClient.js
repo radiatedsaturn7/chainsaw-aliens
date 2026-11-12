@@ -206,6 +206,10 @@ export class VehicleDynamicsWorkerClient {
     });
   }
 
+  submitDebugRoad(update) {
+    this.worker.postMessage({type:'debugRoad',update});
+  }
+
   submitDebugTireSwap(update,vehicleId='player') {
     this.worker.postMessage({type:'debugTireSwap',vehicleId,update});
   }

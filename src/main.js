@@ -406,6 +406,14 @@ function loop(now) {
     updateFullscreenPrompt();
   }
   const raceEditor = getActiveRaceEditor(game);
+  // Wait until the authored loading screen is visible, then reuse the same
+  // gesture-driven dialog and input barrier as the initial fullscreen offer.
+  fullscreenPrompt.showForLoading(raceEditor?.raceLoadingPresentation?.ready
+    ? raceEditor.raceLoadingEntry : null, {
+    fullscreen: Boolean(document.fullscreenElement),
+    supported: Boolean(document.documentElement.requestFullscreen),
+    hidden: hideFullscreenControlsForTesting
+  });
   const raceSession = raceEditor?.playtestSession;
   const raceActive = raceSession?.running
     && !raceSession.preparing && !raceSession.startupFramePending

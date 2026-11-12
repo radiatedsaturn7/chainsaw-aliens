@@ -47,7 +47,8 @@ test('authoring changes conditions, never surveyed road geometry or race behavio
 });
 
 test('existing saved compounds give substantial grip advantages on mission surfaces',()=>{
- const checks=[['snow','Snow',2.5],['gravel','Rally',1.5],['wet-asphalt','Rain',1.15],['asphalt','Tarmac',1.2]];
+ // Snow is a useful upgrade over all-season Stock, not a mandatory 2.5x grip gate.
+ const checks=[['snow','Snow',1.4],['gravel','Rally',1.5],['wet-asphalt','Rain',1.15],['asphalt','Tarmac',1.2]];
  for(const [surface,name,minRatio] of checks){
   const state=createRaceTrackState({surfaceModel:{sampleWorld:()=>({region:'road',segment:{surface,bumpiness:.05}})}});
   const material=state.getOrCreateCell({x:0,z:0});

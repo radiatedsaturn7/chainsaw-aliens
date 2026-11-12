@@ -159,7 +159,8 @@ export function prepareRaceSurfaceBakeForTransfer(surfaceBake = null) {
       compact.center.segment = {
         surface: String(section.center?.segment?.surface || 'asphalt'),
         bumpiness: Number(section.center?.segment?.bumpiness || 0),
-        boundaryArtRef: String(section.center?.segment?.boundaryArtRef || '')
+        boundaryArtRef: String(section.center?.segment?.boundaryArtRef || ''),
+        ...(section.center?.segment?.shoulderTexture ? { shoulderTexture: { ...section.center.segment.shoulderTexture } } : {})
       };
       return compact;
     })
@@ -209,10 +210,13 @@ export async function buildRaceTransferPackage(sourceRace = null, {
     retainTerrainCells: false,
     validate: false
   });
+  // Topology counts are already recorded; the worker transfers triangles,
+  // not the large diagnostic edge map. Release it before allocating packets.
+  bake.mesh.edgeCounts?.clear();
   reportProgress(0.76, 'physics-pack');
   const packedSampler = packRaceCanonicalSurfaceMesh(bake.mesh, {
     elevationScaleM: 12,
-    bucketSizeM: Math.max(10, Math.min(24, Number(bake.terrainSize || 120) * 0.2))
+    bucketSizeM: bake.terrainGenerationStats?.algorithm ? 12 : Math.max(10, Math.min(24, Number(bake.terrainSize || 120) * 0.2))
   });
   reportProgress(0.84, 'terrain-pack');
   const packedTerrain = editor.packRaceThreeTerrainFromCanonicalMesh(bake.mesh, {
@@ -274,6 +278,7 @@ export async function buildRaceTransferPackage(sourceRace = null, {
   (editor.selectedRace?.road?.segments || []).forEach((segment) => {
     addCritical(segment?.artRef);
     addCritical(segment?.boundaryArtRef);
+    addCritical(segment?.shoulderTexture?.artRef);
   });
   Object.values(editor.selectedRace?.road?.tileMap?.cells || {}).forEach((cell) => {
     addCritical(cell?.artRef || cell?.tileArtRef);

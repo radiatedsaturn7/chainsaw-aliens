@@ -53,3 +53,17 @@ test('fallback WebGL has terrain-conforming textured decals with cached UVs',asy
  e.selectedRace.decals=[];assert.deepEqual(e.getRaceWebGLDecalMeshes(),[]);
  e.selectedRace.renderDebug={overlaysEnabled:false};assert.deepEqual(e.getRaceWebGLDecalMeshes(),[]);
 });
+
+test('decal textures clamp filtered edges without changing repeating road textures', async()=>{
+ const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');
+ const THREE=await import('../../src/vendorBridge/three.js');
+ const e=new RaceEditor({});e.getRaceArtSpriteCanvas=()=>({width:32,height:32});e.getRaceGroundTextureFilterMode=()=> 'smooth';
+ const renderer={textureCache:new Map()};
+ const road=e.getRaceThreeTexture(renderer,'same-art');
+ const decal=e.getRaceThreeTexture(renderer,'same-art',{clampEdges:true,premultiplyAlpha:true,filterMode:'smooth'});
+ assert.notEqual(road,decal);assert.equal(road.wrapS,THREE.RepeatWrapping);assert.equal(road.wrapT,THREE.RepeatWrapping);
+ assert.equal(decal.wrapS,THREE.ClampToEdgeWrapping);assert.equal(decal.wrapT,THREE.ClampToEdgeWrapping);
+ assert.equal(decal.minFilter,THREE.LinearMipmapLinearFilter);
+ assert.equal(decal.premultiplyAlpha,true);assert.equal(road.premultiplyAlpha,false);
+ assert.equal(e.getRaceThreeTexture(renderer,'same-art',{clampEdges:true,premultiplyAlpha:true,filterMode:'smooth'}),decal);
+});

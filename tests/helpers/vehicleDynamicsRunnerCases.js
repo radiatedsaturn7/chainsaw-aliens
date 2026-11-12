@@ -92,7 +92,7 @@ themedTest('wrx', 'WRX legacy brakeBalance maps unchanged into authoritative con
     ...WRX_2022_SHARED_TUNING,
     ...WRX_2022_TRANSMISSIONS.automatic
   });
-  assert.equal(config.frontBrakeBias, 0.56);
+  assert.equal(config.frontBrakeBias, WRX_2022_SHARED_TUNING.brakeBalance);
 });
 
 themedTest('state', 'authoritative velocity state separates ground, body, lateral, and signed travel speed', () => {

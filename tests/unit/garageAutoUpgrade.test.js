@@ -118,3 +118,37 @@ test('a high-class car can downgrade, keep removed parts, upgrade again using th
  assert.deepEqual(f.garage.configuration('car').installed,{});assert.deepEqual(f.garage.configuration('car').tune,{});
  assert.equal(evaluate(await f.garage.build('car',f.stock)).points,base.points);
 });
+
+test('Stock cancels in-flight and queued quotes and prevents stale results from returning',async()=>{
+ const f=await fixture(),resources=new MenuResources({...f.items.game,carEditor:editor,items:f.items});
+ resources.stockCar=()=>f.stock;resources.partCatalog=[...f.catalog].map(([ref,item])=>({ref,item}));
+ const original=f.garage.stockBaseline.bind(f.garage);
+ let release,started=0;
+ const gate=new Promise(resolve=>{release=resolve;});
+ f.garage.stockBaseline=async stock=>{if(++started===1)await gate;return original(stock);};
+ resources.autoUpgradeQuote('car','A');resources.autoUpgradeQuote('car','B');
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(started,1,'only one expensive search may run at once');
+ const oldBatch=resources.autoQuoteBatch;
+ await f.garage.resetStock('car');
+ assert.equal(resources.autoUpgradeQuote('car','A'),null);
+ assert.equal(oldBatch.controller.signal.aborted,true);
+ release();await Promise.all([...resources.pending.values()]);
+ assert.equal(started,2,'obsolete queued B search never starts');
+ assert.equal(resources.autoQuotes.size,1,'only current revision results are retained');
+ assert.ok(resources.autoUpgradeQuote('car','A').rating);
+ assert.deepEqual(f.garage.configuration('car').installed,{});
+ assert.deepEqual(f.garage.configuration('car').tune,{});
+});
+
+test('leaving the menu cancels pending auto upgrades without publishing an error or result',async()=>{
+ const f=await fixture(),resources=new MenuResources({...f.items.game,carEditor:editor,items:f.items});
+ resources.stockCar=()=>f.stock;resources.partCatalog=[...f.catalog].map(([ref,item])=>({ref,item}));
+ resources.autoUpgradeQuote('car','S');resources.autoUpgradeQuote('car','A');
+ const batch=resources.autoQuoteBatch;
+ resources.cancelAutoUpgradeQuotes();
+ await Promise.all([...resources.pending.values()]);
+ assert.equal(batch.controller.signal.aborted,true);
+ assert.equal(resources.autoQuotes.size,0);
+ assert.equal(resources.errors.size,0);
+});

@@ -29,15 +29,15 @@
   },
   "leafless-tree-02": {
     "source": "assets/campaign-art/vegetation/leafless-tree-02.png",
-    "sourceSha256": "f5bf5f2cd4fefaa46b862a9d3833bb8c8004b252b19b428a67ed1e5e11429f45",
-    "documentSha256": "94f69a353f626e43175fd33f81589e16c3727d366ed4756aca500251bcfbc43f",
+    "sourceSha256": "4dfcb0ac4b510249065d3fa3fbddf11ef6faebc8f336f092a003a674533ec0ec",
+    "documentSha256": "cf24c258fadc53e4399b0769e87c87bae12e571f477d21ed8b886d4033ce3551",
     "width": 512,
     "height": 341
   },
   "leafless-tree-03": {
     "source": "assets/campaign-art/vegetation/leafless-tree-03.png",
-    "sourceSha256": "4315d949d2c4cfc2943dcb5cc8d69339dd5da567bab92bded184fd312426f05a",
-    "documentSha256": "04c939f1a308ad13cd2c6bcbe3b358ffa51ad64ffb02f38890de7646abfadae7",
+    "sourceSha256": "59e10b87c58b2bb25c126572dbadab4447694698bf25a861804ed4a8bf695de8",
+    "documentSha256": "ef92ee417903b56801d7d9258b47392ecef03744e092298299a759b50887bf0d",
     "width": 512,
     "height": 473
   },
@@ -1356,5 +1356,159 @@
     "documentSha256": "f58d4409a8bff659660a958e1d047f6490d213f09f9d0949c56570bb844372ac",
     "width": 1024,
     "height": 341
+  },
+  "expanded-bush-blackberry-bramble-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-blackberry-bramble-01.png",
+    "sourceSha256": "0e9efc102752bd99a493e20990ff6bd8be6546ef88f8b2e2eeb37a4c47d34931",
+    "documentSha256": "f8ef21b879daa3fcaba439beac909542df95df8a063051fd7ed8e352237f77b0",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-bush-blueberry-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-blueberry-01.png",
+    "sourceSha256": "0b182c4b5d4227dadec1717b0d2bc7483f7f619eb967865ddf153822be5834b3",
+    "documentSha256": "3180d51c6f594ebd0a3b9feade29d65e76e3c3a335b7785217baa4af57af9655",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-bush-dogwood-sapling-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-dogwood-sapling-01.png",
+    "sourceSha256": "101514fbe803077db1c54fa153cf03a4b657c6ef96efe797bbdb6f2983cd4aab",
+    "documentSha256": "c6e795a2c8458579952687a465c546889b1e149254fe8826a3891476c5e4d889",
+    "width": 512,
+    "height": 512
+  },
+  "expanded-bush-mountain-laurel-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-mountain-laurel-01.png",
+    "sourceSha256": "07f526aa2ab429d6445fc744d070cef4785f9aa95ca8b6b3fe3f18f91cf9914c",
+    "documentSha256": "16e3f7673eae13cec0312eed1db5edaa0aa3478a978622bc5c501358fcc5429c",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-bush-willow-river-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-willow-river-01.png",
+    "sourceSha256": "3a153dc9e3b6b1bd5124950c71d1df667176c2aea1470798275f3ed34ac6d458",
+    "documentSha256": "e1b8d219fa0e025aa9d3073bd9a361b6f69e1ca53179b4fe8b49ed7035a9c9f1",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-bush-winterberry-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-winterberry-01.png",
+    "sourceSha256": "0eaee4a6a8ed0faa08ae61b437e0d5ebc4b1c843dee45a37ab8f907395bdaa76",
+    "documentSha256": "78c9be4f0033f9df6d607bd2687be8cf0e785fee56165afe4b36ad06fd88f417",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-fern-bracken-dry-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/fern-bracken-dry-01.png",
+    "sourceSha256": "390fbcb950a456df257ae1050205836f3c66fe78c164e59c2781a3a28f36599a",
+    "documentSha256": "dbf4c7debefbe5e0a785d098a39d4de0690255f8346ed694ccf8871559aae6ec",
+    "width": 256,
+    "height": 128
+  },
+  "expanded-fern-christmas-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/fern-christmas-01.png",
+    "sourceSha256": "ee796fc3b439e19ac172f0a4d06343f2302fb57884b24cedf8f1845d3244cc73",
+    "documentSha256": "83a573be1d3db3209fb0cd1cd03e14b48e86dea69546f9b280eebaab493b782e",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-grass-little-bluestem-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/grass-little-bluestem-01.png",
+    "sourceSha256": "ff44a7c5a4a0ac0909400355a7731a0d66cb2562a4904876bbe219bd77eff82d",
+    "documentSha256": "ca2a8c112e6b290b01edbae9cc2feec9b6b6e7ed23886bd39a2824a9b43fe950",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-grass-little-bluestem-02": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/grass-little-bluestem-02.png",
+    "sourceSha256": "43fbd77fc653c35d8f2730d175da73d3f7eb5792aefeb8fd17536e0c6b08b16b",
+    "documentSha256": "c6d43ac0a008f10a6c7ea6a1bf69cfd292b67ba50ffbadf548c15e628058c7c8",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-grass-roadside-weeds-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/grass-roadside-weeds-01.png",
+    "sourceSha256": "9a6c2ced42cb92ed5229c604a3c57dfa85bbb57ec37309d4e3b5a27f10ef20fb",
+    "documentSha256": "a784e0a8c85988a0cb1b499630571f32c5592fea9dd0a956a709d1c69f798c8d",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-grass-sedge-wetland-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/grass-sedge-wetland-01.png",
+    "sourceSha256": "e7c7836c128bcbdf496df4e8bb907b3e307c6fcd70e1b63439d9fa82886a115a",
+    "documentSha256": "9e6390e8e8cac09a1587138608bd3ef21a0fe17a4469f74cd7355c094fc0b584",
+    "width": 256,
+    "height": 128
+  },
+  "expanded-grass-woodoats-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/grass-woodoats-01.png",
+    "sourceSha256": "bc51fe80cd1288f7929af08b3b19794de6d5c44ad7b214adc72c8051a3362493",
+    "documentSha256": "d988e98a4b1331f47686e725996000d0ae133f83064ade14e822702d0377c09b",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-log-rotten-moss-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/log-rotten-moss-01.png",
+    "sourceSha256": "d8e550700d8f2608a8ef5849c663d86f24934ded60ec7850706b5c5792355c26",
+    "documentSha256": "b99ed01070eb25b1c70482562f567e5042650f8d82546c99ca30dd35f8741ace",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-rock-chert-cluster-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/rock-chert-cluster-01.png",
+    "sourceSha256": "42b2a40e9315e6d8d15df745b75a468ba22ecc3e80820cfac8b98d490a35488c",
+    "documentSha256": "1b458147854a5c04c9f42efeaf49d507aa43473099327b0e748cb18fc5bfad00",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-rock-granite-moss-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/rock-granite-moss-01.png",
+    "sourceSha256": "1249d0397764e0f8f17d0816e6b9a520e78ee87af2023ccf64d3a69e7e10bbad",
+    "documentSha256": "3f8ca4d65a3e74c7109d5b3a5edc98fcd9028e2b4b58153457461c51f6984cdc",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-rock-limestone-flat-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/rock-limestone-flat-01.png",
+    "sourceSha256": "d91bf1f0cb58087d27e1338fe31e197c2554a5c167f72046d6289e4c3556e75a",
+    "documentSha256": "35d49c8d4f32f471d8b0ef70c2db65d7cd789c6affebd5a1fd92ae8708ffc263",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-stump-oak-decayed-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/stump-oak-decayed-01.png",
+    "sourceSha256": "89f7ebb9067b924076d0fa3be21ee5dc833b41d763d5d195b2d1094f3261d64f",
+    "documentSha256": "4c3a4066d2c094f20fd488140bfa5d088f69aca28ff29cf78ca5818aed13d68b",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-tree-hickory-young-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/tree-hickory-young-01.png",
+    "sourceSha256": "27d3b28261e81a8428cfba9b54cf2e687d30005243cebd7f3f5acba933252319",
+    "documentSha256": "20cad1a1f9d06279430c0c7bcb8e668bacd12b42ced40d7a79a1ef6e728373fc",
+    "width": 512,
+    "height": 512
+  },
+  "expanded-tree-river-birch-young-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/tree-river-birch-young-01.png",
+    "sourceSha256": "55806b2cf14b66e85b727248d3b7bb995641f6bd8119e44727e898774633157b",
+    "documentSha256": "fc015579908047f7f1046433321489a8de7084b63cc3fb8c7b4b47c08126dc26",
+    "width": 512,
+    "height": 512
+  },
+  "expanded-tree-shortleaf-pine-young-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/tree-shortleaf-pine-young-01.png",
+    "sourceSha256": "2ab61962baa807c676e7a090765e2fb4c1fccc42566f14dace49af6d602fb184",
+    "documentSha256": "2e5f6edf48e14e7b295e5267578871fdf69c293635a53a852f0ae69bd0825ae0",
+    "width": 468,
+    "height": 512
+  },
+  "expanded-tree-white-oak-young-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/tree-white-oak-young-01.png",
+    "sourceSha256": "1103dc202b241f4173fadf871278b430f41059e97985af75032e6e07e7e5b43a",
+    "documentSha256": "93a763c5d3cf1ca08e6f65d5dedadc769fa94c6c1c6993c931025efacae7b172",
+    "width": 512,
+    "height": 512
   }
 }

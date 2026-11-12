@@ -184,10 +184,11 @@ test('road detail repeats along each imported campaign stage and landmarks leave
 test('expanded landmarks use reviewed regions and stay outside the driving corridor',()=>{
  const catalog=read('data/campaigns/america/catalog.json');
  for(const entry of catalog){
+  const key=entry.sourceKey||(catalog.indexOf(entry)===0?'tower':'mount');
   const r=read(root+entry.documentPath).race,editor=new RaceEditor({});editor.applyLoadedRaceDocument(r);
   for(const p of r.scenery.filter(p=>p.artRef?.startsWith('expanded-'))){
    const a=expanded.find(a=>a.name===p.artRef);
-   assert.ok(a?.placements.some(plan=>plan.race===entry.sourceKey),p.artRef+' in '+entry.name);
+   assert.ok(a?.placements.some(plan=>plan.race===key),p.artRef+' in '+entry.name);
    assert.ok(Math.abs(editor.getRaceRouteProjectionForWorldPoint(p).lateral)>=10+p.widthM/2-1e-6,p.id);
    assert.equal(p.previewDoodad.defaultRule.behavior,a.kind==='vegetation'?'flatten':a.kind==='background'?'decoration':'collide');
    if(a.kind==='fence')assert.equal(p.previewDoodad.isFence,true);
@@ -210,5 +211,49 @@ test('expanded landmarks use reviewed regions and stay outside the driving corri
  for(const e of read('data/campaigns/america/catalog.json'))for(const p of read(root+e.documentPath).race.scenery){
   if(!p.fenceId||!p.campaignArtBounds)continue;
   assert.equal(p.widthM,p.campaignArtBounds.widthM,p.id);assert.equal(p.heightM,p.campaignArtBounds.heightM,p.id);
+ }
+});
+
+test('eastern foliage is grounded, region-specific and soft plants do not become solid barriers',()=>{
+ const foliage=expanded.filter(a=>a.source.startsWith('foliage-expansion/'));
+ assert.equal(foliage.length,22);
+ const counts=new Map();
+ for(const a of foliage){
+  const art=read(root+manifest.folders.art[a.name]),def=read(root+manifest.folders.doodads[a.name]).doodad;
+  assert.ok(art.frames[0].includes(null),a.name+' transparent background');
+  const bottom=art.frames[0].reduce((last,c,i)=>c&&(c.length<9||parseInt(c.slice(-2),16)>=32)?Math.floor(i/art.width):last,-1);
+  assert.ok(Math.abs(def.groundOffsetM-a.heightM*(art.height-1-bottom)/art.height)<.0001,a.name+' grounding');
+  if(a.kind==='vegetation'){assert.equal(def.defaultRule.behavior,'flatten');assert.equal(def.defaultRule.damage.panels,0);}
+  if(a.kind==='tree')assert.ok(def.hitboxWidthM<=.65,a.name+' trunk hitbox');
+ }
+ for(const [i,e] of read('data/campaigns/america/catalog.json').entries()){
+  const key=e.sourceKey||(i===0?'tower':'mount'),r=read(root+e.documentPath).race;
+  for(const p of r.scenery){
+   const a=foliage.find(a=>a.name===p.artRef);if(!a)continue;
+   assert.ok(a.placements.some(plan=>plan.race===key),p.id);
+   const scale=p.heightM/a.heightM;
+   assert.ok(Math.abs(p.groundOffsetM-a.groundOffsetM*scale)<1e-8,p.id+' scaled padding');
+   assert.equal(p.previewDoodad.groundOffsetM,p.groundOffsetM);
+   if(p.campaignDistanceLayer)continue;
+   counts.set(a.name,(counts.get(a.name)||0)+1);
+  }
+ }
+ for(const a of foliage)assert.equal(counts.get(a.name),a.placements.length,a.name+' all planned placements');
+});
+
+test('every campaign has biome-specific distant clusters inside saved terrain and outside the road corridor',()=>{
+ const configs=read('data/campaigns/america/distant-scenery.json');
+ for(const [i,e] of read('data/campaigns/america/catalog.json').entries()){
+  const key=e.sourceKey||(i===0?'tower':'mount'),r=read(root+e.documentPath).race,config=configs[key],tile=r.road.tileMap;
+  const allowed=new Set([...config.refs.flat(),...(config.upper?.refs||[])]);
+  const placements=r.scenery.filter(p=>p.campaignDistanceLayer);
+  assert.ok(placements.length>150,e.name+' distant layer');
+  assert.ok(placements.some(p=>Math.abs(p.trackLateral)>400),e.name+' distant horizon');
+  for(const p of placements){
+   assert.ok(allowed.has(p.doodadRef),p.id+' biome');
+   assert.ok(Math.abs(p.trackLateral)>=65,p.id+' road clearance');
+   assert.ok(tile.cells[`${Math.floor(p.x/tile.cellSizeM)},${Math.floor(p.z/tile.cellSizeM)}`],p.id+' terrain coverage');
+   assert.ok(manifest.folders.doodads[p.doodadRef],p.id+' saved asset');
+  }
  }
 });

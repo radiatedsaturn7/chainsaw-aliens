@@ -103,3 +103,30 @@ test('fullscreen prompt follows the visible viewport and removes rotation listen
   assert.equal(overlay.style.width,'844px');
  }finally{globalThis.window=previousWindow;restore();}
 });
+
+test('loading offers fullscreen once, allows cancellation, and offers again on the next load', async () => {
+ const restore=dom();try {
+  const prompt=new FullscreenPrompt(()=>{}), first={};
+  const result=prompt.showForLoading(first);
+  assert.equal(prompt.active,true);
+  prompt.buttons.cancelBtn.click();await result;
+  prompt.update(input());
+  prompt.showForLoading(first);
+  assert.equal(prompt.active,false,'Cancel lasts for this entire load');
+  prompt.showForLoading(null);
+  const next=prompt.showForLoading({});
+  assert.equal(prompt.active,true);
+  prompt.buttons.cancelBtn.click();await next;
+ } finally {restore();}
+});
+
+test('loading does not prompt in fullscreen, unsupported browsers, or hidden test controls', () => {
+ const prompt=new FullscreenPrompt(()=>{});
+ let offers=0;prompt.show=()=>offers++;
+ for (const options of [{fullscreen:true},{supported:false},{hidden:true}]) {
+  const load={};prompt.showForLoading(load,options);
+  prompt.showForLoading(load);
+ }
+ assert.equal(offers,0);
+ prompt.showForLoading({});assert.equal(offers,1);
+});

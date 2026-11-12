@@ -285,6 +285,7 @@ export function createRaceVehicleDynamicsWorkerInitialization({
       vehicles,
       trackState: trackState ? {
         snapshot: trackState.createSnapshot(),
+        ...(trackState.debugRoadStartStep != null ? {debugRoad:trackState.debugRoad} : {}),
         weatherForcing,
         tireCompoundByWheel,
         contactStepSeconds: 1 / runner.config.chassisHz

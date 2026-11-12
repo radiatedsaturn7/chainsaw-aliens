@@ -13,8 +13,8 @@
       "gravel": 1.08,
       "mud": 1.02,
       "wet-gravel": 1.04,
-      "snow": 0.66,
-      "slush": 0.76
+      "snow": 0.95,
+      "slush": 0.86
     },
     "wetEvacuationFactor": 1.16,
     "treadDepthMm": 11,

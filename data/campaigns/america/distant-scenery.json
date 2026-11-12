@@ -1,0 +1,430 @@
+{
+  "tower": {
+    "count": 720,
+    "clusterSize": 6,
+    "bands": [
+      [
+        90,
+        150
+      ],
+      [
+        220,
+        330
+      ],
+      [
+        420,
+        600
+      ]
+    ],
+    "refs": [
+      [
+        "snow-covered-pine-01",
+        "snow-covered-pine-02"
+      ],
+      [
+        "snow-covered-pine-01",
+        "snow-covered-pine-02"
+      ],
+      [
+        "snow-covered-pine-01",
+        "snow-covered-pine-02"
+      ]
+    ],
+    "scale": [
+      1,
+      1.2,
+      1.4
+    ]
+  },
+  "mount": {
+    "count": 480,
+    "clusterSize": 6,
+    "bands": [
+      [
+        90,
+        150
+      ],
+      [
+        220,
+        330
+      ],
+      [
+        420,
+        600
+      ]
+    ],
+    "refs": [
+      [
+        "snow-covered-pine-01",
+        "snow-covered-pine-02"
+      ],
+      [
+        "snow-covered-pine-01",
+        "snow-covered-pine-02"
+      ],
+      [
+        "snow-covered-pine-01",
+        "snow-covered-pine-02"
+      ]
+    ],
+    "scale": [
+      1,
+      1.2,
+      1.4
+    ],
+    "upper": {
+      "after": 0.32,
+      "refs": [
+        "alpine-rock-outcrop-01",
+        "alpine-rock-outcrop-02"
+      ]
+    }
+  },
+  "laurel": {
+    "count": 1080,
+    "clusterSize": 6,
+    "bands": [
+      [
+        90,
+        150
+      ],
+      [
+        220,
+        330
+      ],
+      [
+        420,
+        600
+      ]
+    ],
+    "refs": [
+      [
+        "leafless-tree-01",
+        "mostly-bare-pine-01",
+        "mostly-bare-pine-02"
+      ],
+      [
+        "leafless-tree-01",
+        "mostly-bare-pine-01",
+        "mostly-bare-pine-02"
+      ],
+      [
+        "leafless-tree-01",
+        "mostly-bare-pine-01",
+        "mostly-bare-pine-02"
+      ]
+    ],
+    "scale": [
+      1,
+      1.2,
+      1.4
+    ]
+  },
+  "ohio": {
+    "count": 660,
+    "clusterSize": 6,
+    "bands": [
+      [
+        90,
+        150
+      ],
+      [
+        220,
+        330
+      ],
+      [
+        420,
+        600
+      ]
+    ],
+    "refs": [
+      [
+        "leafless-tree-01",
+        "expanded-tree-river-birch-young-01"
+      ],
+      [
+        "leafless-tree-01",
+        "mostly-bare-pine-01",
+        "mostly-bare-pine-02"
+      ],
+      [
+        "leafless-tree-01",
+        "mostly-bare-pine-01",
+        "mostly-bare-pine-02"
+      ]
+    ],
+    "scale": [
+      1,
+      1.2,
+      1.4
+    ]
+  },
+  "ozark": {
+    "count": 1080,
+    "clusterSize": 6,
+    "bands": [
+      [
+        90,
+        150
+      ],
+      [
+        220,
+        330
+      ],
+      [
+        420,
+        600
+      ]
+    ],
+    "refs": [
+      [
+        "mostly-bare-pine-01",
+        "expanded-tree-shortleaf-pine-young-01"
+      ],
+      [
+        "leafless-tree-01",
+        "mostly-bare-pine-01",
+        "mostly-bare-pine-02"
+      ],
+      [
+        "leafless-tree-01",
+        "mostly-bare-pine-01",
+        "mostly-bare-pine-02"
+      ]
+    ],
+    "scale": [
+      1,
+      1.2,
+      1.4
+    ]
+  },
+  "city": {
+    "count": 240,
+    "clusterSize": 3,
+    "bands": [
+      [
+        90,
+        150
+      ],
+      [
+        220,
+        330
+      ],
+      [
+        420,
+        600
+      ]
+    ],
+    "refs": [
+      [
+        "data-center-city-server-building",
+        "data-center-city-cooling-units"
+      ],
+      [
+        "data-center-city-server-building",
+        "expanded-abandoned-business-building"
+      ],
+      [
+        "data-center-city-server-building",
+        "expanded-abandoned-waste-management-facility"
+      ]
+    ],
+    "scale": [
+      1,
+      1.4,
+      1.7
+    ]
+  },
+  "route66": {
+    "count": 360,
+    "clusterSize": 3,
+    "bands": [
+      [
+        90,
+        150
+      ],
+      [
+        220,
+        330
+      ],
+      [
+        420,
+        600
+      ]
+    ],
+    "refs": [
+      [
+        "dry-scrub-bush-01",
+        "gray-boulder-01"
+      ],
+      [
+        "dry-scrub-bush-02",
+        "gray-boulder-02"
+      ],
+      [
+        "gray-boulder-02",
+        "gray-boulder-03"
+      ]
+    ],
+    "scale": [
+      1.2,
+      1.5,
+      2
+    ]
+  },
+  "pikes": {
+    "count": 360,
+    "clusterSize": 6,
+    "bands": [
+      [
+        90,
+        150
+      ],
+      [
+        220,
+        330
+      ],
+      [
+        420,
+        600
+      ]
+    ],
+    "refs": [
+      [
+        "snow-covered-pine-01",
+        "pikes-peak-granite-outcrop"
+      ],
+      [
+        "snow-covered-pine-01",
+        "pikes-peak-granite-outcrop"
+      ],
+      [
+        "snow-covered-pine-01",
+        "pikes-peak-granite-outcrop"
+      ]
+    ],
+    "scale": [
+      1,
+      1.6,
+      2
+    ],
+    "upper": {
+      "after": 0.35,
+      "refs": [
+        "pikes-peak-granite-outcrop",
+        "alpine-rock-outcrop-01"
+      ]
+    }
+  },
+  "moki": {
+    "count": 450,
+    "clusterSize": 3,
+    "bands": [
+      [
+        90,
+        150
+      ],
+      [
+        220,
+        330
+      ],
+      [
+        420,
+        600
+      ]
+    ],
+    "refs": [
+      [
+        "moki-dugway-desert-scrub",
+        "red-sandstone-boulder-02"
+      ],
+      [
+        "moki-dugway-sandstone-outcrop",
+        "red-sandstone-boulder-03"
+      ],
+      [
+        "moki-dugway-sandstone-outcrop",
+        "moki-dugway-mesa-silhouette"
+      ]
+    ],
+    "scale": [
+      1.2,
+      2,
+      2
+    ]
+  },
+  "oak": {
+    "count": 720,
+    "clusterSize": 6,
+    "bands": [
+      [
+        90,
+        150
+      ],
+      [
+        220,
+        330
+      ],
+      [
+        420,
+        600
+      ]
+    ],
+    "refs": [
+      [
+        "oak-creek-creekside-tree",
+        "oak-creek-red-rock-formation"
+      ],
+      [
+        "mostly-bare-pine-01",
+        "red-sandstone-boulder-02"
+      ],
+      [
+        "oak-creek-red-rock-formation",
+        "mostly-bare-pine-02"
+      ]
+    ],
+    "scale": [
+      1,
+      1.6,
+      2
+    ]
+  },
+  "angeles": {
+    "count": 720,
+    "clusterSize": 6,
+    "bands": [
+      [
+        90,
+        150
+      ],
+      [
+        220,
+        330
+      ],
+      [
+        420,
+        600
+      ]
+    ],
+    "refs": [
+      [
+        "angeles-crest-dry-mountain-pine",
+        "angeles-crest-chaparral"
+      ],
+      [
+        "angeles-crest-dry-mountain-pine",
+        "angeles-crest-pale-rock-cut"
+      ],
+      [
+        "angeles-crest-dry-mountain-pine",
+        "angeles-crest-pale-rock-cut"
+      ]
+    ],
+    "scale": [
+      1,
+      1.3,
+      1.8
+    ]
+  }
+}

@@ -35,7 +35,9 @@
     "test:studio-sprint2-physics-performance": "node tools/run-studio-sprint2-physics-performance.mjs",
     "test:race-physics-feel:browser": "playwright test tests/playwright/race-physics-feel.spec.js",
     "test:playwright": "playwright test tests/playwright",
-    "test:playwright:headed": "playwright test --headed"
+    "test:playwright:headed": "playwright test --headed",
+    "calibrate:steering": "node tools/vehicle-validation/calibrate-digital-steering.mjs",
+    "calibrate:steering:assists": "node tools/vehicle-validation/calibrate-digital-steering.mjs --assists"
   },
   "type": "module"
 }

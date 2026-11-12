@@ -1,0 +1,183 @@
+{
+  "checkedAt": "2026-11-12T19:42:26.189Z",
+  "installedSideRaces": 99,
+  "preservedMainRaces": 11,
+  "loadingChecksPassed": 99,
+  "loadingChecksFailed": 0,
+  "savedRaceApiChecksPassed": 99,
+  "mainRaceDocumentsUnchanged": true,
+  "unitTests": "Campaign progression, hub menus, asset resolution, save integration and drift scoring passed.",
+  "limits": [
+    "Automated world bake, worker transfer, geometry and sampler checks; not 99 manual driving playthroughs.",
+    "Existing terrain baker reports residual height tolerance warnings on some tracks; these are not treated as proof of visual correctness.",
+    "Circuit widths, banking, start direction and DEM elevation need driving review.",
+    "Team O\u2019Neil-inspired stage is original fictional geometry; Gateway Kartplex is an explicitly enlarged fictional adaptation.",
+    "Most estimated road runs are 2\u20134 minutes; whole circuits may be longer and quarter-mile drags are shorter."
+  ],
+  "terrainToleranceWarnings": [
+    {
+      "id": "H01-S05",
+      "unresolvedHeightErrors": 1
+    },
+    {
+      "id": "H01-S01",
+      "unresolvedHeightErrors": 2
+    },
+    {
+      "id": "H01-S09",
+      "unresolvedHeightErrors": 6
+    },
+    {
+      "id": "H02-S01",
+      "unresolvedHeightErrors": 2
+    },
+    {
+      "id": "H02-S02",
+      "unresolvedHeightErrors": 30
+    },
+    {
+      "id": "H02-S04",
+      "unresolvedHeightErrors": 10
+    },
+    {
+      "id": "H02-S05",
+      "unresolvedHeightErrors": 2
+    },
+    {
+      "id": "H02-S07",
+      "unresolvedHeightErrors": 16
+    },
+    {
+      "id": "H03-S01",
+      "unresolvedHeightErrors": 28
+    },
+    {
+      "id": "H03-S02",
+      "unresolvedHeightErrors": 60
+    },
+    {
+      "id": "H03-S06",
+      "unresolvedHeightErrors": 4
+    },
+    {
+      "id": "H03-S09",
+      "unresolvedHeightErrors": 18
+    },
+    {
+      "id": "H04-S01",
+      "unresolvedHeightErrors": 4
+    },
+    {
+      "id": "H04-S07",
+      "unresolvedHeightErrors": 96
+    },
+    {
+      "id": "H04-S09",
+      "unresolvedHeightErrors": 2
+    },
+    {
+      "id": "H05-S09",
+      "unresolvedHeightErrors": 451
+    },
+    {
+      "id": "H06-S06",
+      "unresolvedHeightErrors": 64
+    },
+    {
+      "id": "H07-S06",
+      "unresolvedHeightErrors": 2
+    },
+    {
+      "id": "H07-S08",
+      "unresolvedHeightErrors": 445
+    },
+    {
+      "id": "H08-S01",
+      "unresolvedHeightErrors": 69
+    },
+    {
+      "id": "H08-S02",
+      "unresolvedHeightErrors": 783
+    },
+    {
+      "id": "H08-S03",
+      "unresolvedHeightErrors": 86
+    },
+    {
+      "id": "H08-S04",
+      "unresolvedHeightErrors": 307
+    },
+    {
+      "id": "H08-S06",
+      "unresolvedHeightErrors": 26
+    },
+    {
+      "id": "H09-S01",
+      "unresolvedHeightErrors": 8
+    },
+    {
+      "id": "H09-S02",
+      "unresolvedHeightErrors": 10
+    },
+    {
+      "id": "H09-S04",
+      "unresolvedHeightErrors": 6
+    },
+    {
+      "id": "H09-S08",
+      "unresolvedHeightErrors": 2078
+    },
+    {
+      "id": "H09-S09",
+      "unresolvedHeightErrors": 1363
+    },
+    {
+      "id": "H10-S01",
+      "unresolvedHeightErrors": 6
+    },
+    {
+      "id": "H10-S02",
+      "unresolvedHeightErrors": 4
+    },
+    {
+      "id": "H10-S05",
+      "unresolvedHeightErrors": 2
+    },
+    {
+      "id": "H10-S06",
+      "unresolvedHeightErrors": 110
+    },
+    {
+      "id": "H10-S07",
+      "unresolvedHeightErrors": 193
+    },
+    {
+      "id": "H11-S01",
+      "unresolvedHeightErrors": 66
+    },
+    {
+      "id": "H11-S03",
+      "unresolvedHeightErrors": 2
+    },
+    {
+      "id": "H11-S04",
+      "unresolvedHeightErrors": 426
+    },
+    {
+      "id": "H11-S05",
+      "unresolvedHeightErrors": 8
+    },
+    {
+      "id": "H11-S06",
+      "unresolvedHeightErrors": 76
+    },
+    {
+      "id": "H11-S07",
+      "unresolvedHeightErrors": 26
+    },
+    {
+      "id": "H11-S08",
+      "unresolvedHeightErrors": 4
+    }
+  ]
+}
