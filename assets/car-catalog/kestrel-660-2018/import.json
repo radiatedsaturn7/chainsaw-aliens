@@ -531,7 +531,8 @@
       "Original salvage body collider profile and wheel placement require visual/physics QA; not certified manufacturer geometry.",
       "Collider overhangs, CG height, track, wheel radius and body sections scaled explicitly for kei dimensions; front/rear axle distances derived from wheelbase and estimated 45% front weight.",
       "Torque curve anchors at 2600 and 6000 rpm sourced/derived; remaining samples are estimates. Editor rounds lb-ft to integers, approximately 77 lb-ft and 63 hp.",
-      "Wheel-well centers/radii measured manually from original sprite sheet; per-angle graphical scale/placement calibrated to production rear-axle anchored wheel rig. These are visual estimates, not changes to physical dimensions; browser review required."
+      "Wheel-well centers/radii measured manually from original sprite sheet; per-angle graphical scale/placement calibrated to production rear-axle anchored wheel rig. These are visual estimates, not changes to physical dimensions; browser review required.",
+      "Diagonal sprite visual envelope uses 45-degree blend of principal-view widths; per-axle graphic offsets accommodate differing authored perspective without altering physics or magnifying diagonal bodies."
     ],
     "verifiedFacts": {
       "heightM": 1.18,

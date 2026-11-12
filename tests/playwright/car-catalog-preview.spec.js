@@ -1,26 +1,29 @@
 import {test,expect} from '@playwright/test';
+import {existsSync} from 'node:fs';
+const catalogCases=[['2018 Kestrel 660','kestrel-660-2018'],['2005 Flint Coupe','flint-coupe-2005'],['2024 Caravan-9','caravan-9-2024']].filter(([name])=>existsSync(`data/server-storage/files/cars/${name}/document.json`));
+for(const [carName,carId] of catalogCases){
 
-test('Kestrel actual editor preview composites exterior/cockpit and advances production physics',async({page},testInfo)=>{
+test(`${carName} actual editor preview composites exterior/cockpit and advances production physics`,async({page},testInfo)=>{
  test.setTimeout(180_000);
  await page.setViewportSize({width:1280,height:900});
  await page.goto('/index.html?hideFullscreenForTesting');
  await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
- await page.evaluate(async()=>{
+ await page.evaluate(async(carName)=>{
   const {hydrateProjectFilePayload}=await import('/src/ui/projectFiles.js');
   const g=window.__game;g.enterCarEditor();g.setDisplayMode('color');
-  const e=g.carEditor,payload=await hydrateProjectFilePayload('cars','2018 Kestrel 660',{forceRefresh:true});
-  if(!payload?.data)throw Error('Missing published Kestrel');
-  e.applyLoadedCarDocument(payload.data,{name:'2018 Kestrel 660'});
+  const e=g.carEditor,payload=await hydrateProjectFilePayload('cars',carName,{forceRefresh:true});
+  if(!payload?.data)throw Error('Missing published catalog car');
+  e.applyLoadedCarDocument(payload.data,{name:carName});
   e.activeRootId='art';e.activeAction='car-art-exterior';e.carArtActiveComponent='body';e.closeEditorMenus();
   // Hydrate every vehicle reference, including actual tire textures, not just body art.
   const refs=new Set();const walk=v=>{if(!v||typeof v!=='object')return;if(v.artRef)refs.add(v.artRef);Object.values(v).forEach(walk);};walk(e.selectedCar.art);
   for(const ref of refs)await e.hydrateRaceArt(ref);
   e.syncCarAnglePreviewArt();e.invalidateCarEditorPreviewFrame();g.draw();
- });
- await page.waitForFunction(()=>{
+ },carName);
+ await page.waitForFunction(carId=>{
   const e=window.__game.carEditor,p=e.carEditorPreviewPlaytest;
-  return p?.session?.runtimeCar?.id==='kestrel-660-2018'&&e.carEditorPreviewFrameCache?.canvas&&!p.session.startupFramePending;
- },null,{timeout:120_000});
+  return p?.session?.runtimeCar?.id===carId&&e.carEditorPreviewFrameCache?.canvas&&!p.session.startupFramePending;
+ },carId,{timeout:120_000});
  const initial=await page.evaluate(()=>{
   const s=window.__game.carEditor.carEditorPreviewPlaytest.session;
   return {x:s.worldX,z:s.worldZ,elapsed:Number(s.elapsedMs||0)};
@@ -37,13 +40,23 @@ test('Kestrel actual editor preview composites exterior/cockpit and advances pro
   const e=window.__game.carEditor,s=e.carEditorPreviewPlaytest.session;
   return {id:s.runtimeCar.id,x:s.worldX,z:s.worldZ,speed:s.speedMps,rpm:s.engineRpm,elapsed:s.elapsedMs,failure:e.carEditorPreviewRuntimeFailureMessage||'',running:s.running};
  });
- expect(physics.id).toBe('kestrel-660-2018');expect(physics.failure).toBe('');expect(physics.running).not.toBe(false);
+ expect(physics.id).toBe(carId);expect(physics.failure).toBe('');expect(physics.running).not.toBe(false);
  for(const v of [physics.x,physics.z,physics.speed,physics.rpm])expect(Number.isFinite(v)).toBe(true);
  expect(Math.hypot(physics.x-initial.x,physics.z-initial.z)).toBeGreaterThan(.05);
  await testInfo.attach('production-preview-physics',{body:Buffer.from(JSON.stringify({initial,physics},null,2)),contentType:'application/json'});
+ // Freeze only after the real motion smoke has passed. Keep the production
+ // drawing/compositing path, but prevent time/position changes between angles.
+ const frozenPose=await page.evaluate(()=>{
+  const e=window.__game.carEditor;
+  e.updateCarEditorPreviewPlaytest=()=>{};
+  const s=e.carEditorPreviewPlaytest.session;
+  return {x:s.worldX,z:s.worldZ,yaw:s.carYaw,elapsed:s.elapsedMs,distance:s.distance,speed:s.speedMps};
+ });
+ await testInfo.attach('frozen-preview-pose',{body:Buffer.from(JSON.stringify(frozenPose,null,2)),contentType:'application/json'});
  for(const slot of ['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft']){
   await page.evaluate(slot=>{const g=window.__game,e=g.carEditor;e.selectedCarShellFrameSlot=slot;e.activeAction='car-art-exterior';e.syncCarAnglePreviewArt();e.invalidateCarEditorPreviewFrame();g.draw();},slot);
   await page.waitForTimeout(150);
+  expect(await page.evaluate(()=>{const s=window.__game.carEditor.carEditorPreviewPlaytest.session;return {x:s.worldX,z:s.worldZ,yaw:s.carYaw,elapsed:s.elapsedMs,distance:s.distance,speed:s.speedMps};})).toEqual(frozenPose);
   const screenshot=await page.screenshot({path:testInfo.outputPath(`actual-preview-${slot}.png`)});
   await testInfo.attach(`actual-preview-${slot}`,{body:screenshot,contentType:'image/png'});
  }
@@ -66,3 +79,5 @@ test('Kestrel actual editor preview composites exterior/cockpit and advances pro
  // Screenshots require human placement review. This asserts loading/compositing
  // and basic motion only, not calibrated acceleration or subjective alignment.
 });
+
+}
