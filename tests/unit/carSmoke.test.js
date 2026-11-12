@@ -100,7 +100,10 @@ test('rolling snow tires emit saved powder art at 5 mph without skidding; parked
  e.getRaceWheelFxEmissionPosition=id=>({x:id==='rl'?-1:1,z:-2,elevation:0});
  e.getRaceTireFxVisualMaterialAtWorldPoint=()=>({region:'road',materialId:'snow',surfaceId:'snow',effectSlotId:'snowDust',sampledColor:'#ffffff'});
  e.emitRaceTireFxParticles(1,{speedMps:0});assert.equal(e.playtestSession.tireFxParticles.length,0);
- for(let frame=0;frame<180;frame++)e.stepRaceTireFxParticles(1/60,{speedMps:5/2.236936});
- assert.ok(e.playtestSession.tireFxParticles.length>0);
- for(const p of e.playtestSession.tireFxParticles){assert.equal(p.artRef,'snowsmoke');assert.ok(['rl','rr'].includes(p.wheelId));assert.equal(p.slotId,'snowDust');}
+ // Particle lifetimes are randomized; observe emissions throughout the run,
+ // rather than requiring one to remain alive at an arbitrary final frame.
+ const emitted=[];
+ for(let frame=0;frame<180;frame++){e.stepRaceTireFxParticles(1/60,{speedMps:5/2.236936});emitted.push(...e.playtestSession.tireFxParticles.map(p=>({...p})));}
+ assert.ok(emitted.length>0);
+ for(const p of emitted){assert.equal(p.artRef,'snowsmoke');assert.ok(['rl','rr'].includes(p.wheelId));assert.equal(p.slotId,'snowDust');}
 });

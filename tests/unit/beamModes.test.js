@@ -8,7 +8,7 @@ import {controlLamp} from '../../src/racing/MechanicalInstruments.js';
 import {normalizeGauge,gaugeArtRefs,drawCarGauges} from '../../src/racing/CarGauges.js';
 test('storm starts on low beams; high beams and independent AUX follow pause controls',()=>{
  assert.equal(raceStartsWithHeadlights({weather:'storm',timeOfDay:'day'}),true);
- const e=new RaceEditor({});e.playtestSession={mechanical:createMechanicalState()};e.raceInput.pauseMenuMode='car-controls';const m=e.playtestSession.mechanical;
+ const e=new RaceEditor({});e.playtestSession={mechanical:createMechanicalState()};e.raceInput.pauseMenuMode='car-controls';e.getRacePauseMenuRows().find(r=>r.id==='race-car-lights').onClick();const m=e.playtestSession.mechanical;
  assert.equal(m.highBeams,false);assert.equal(m.auxLights,false);
  const rows=e.getRacePauseMenuRows();rows.find(r=>r.id==='race-highBeams').onClick();assert.equal(m.highBeams,true);assert.equal(controlLamp('highbeamslight',e.playtestSession),1);
  rows.find(r=>r.id==='race-auxLights').onAdjust(1);assert.equal(controlLamp('auxlightslight',e.playtestSession),1);
