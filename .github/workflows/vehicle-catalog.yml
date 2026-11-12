@@ -10,7 +10,7 @@ on:
       - 'data/server-storage/files/tires/**'
       - 'data/server-storage/files/art/catalog-*/**'
       - 'tests/**/carCatalog*'
-      - 'tests/playwright/car-catalog.spec.js'
+      - 'tests/playwright/car-catalog*.spec.js'
       - '.github/workflows/vehicle-catalog.yml'
 permissions:
   contents: read
@@ -35,7 +35,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: node --test tests/unit/carCatalogImport.test.js tests/unit/carGraphicImport.test.js tests/unit/carPresets.test.js tests/unit/carTireTextureFit.test.js tests/unit/carWheelCylinder.test.js
       - run: python tools/project_manifest.py --check --validate-assets
-      - run: npx playwright test tests/playwright/car-catalog.spec.js tests/playwright/car-graphic-import.spec.js tests/playwright/car-presets.spec.js --workers=1 --reporter=line
+      - run: npx playwright test tests/playwright/car-catalog.spec.js tests/playwright/car-catalog-preview.spec.js tests/playwright/car-graphic-import.spec.js tests/playwright/car-presets.spec.js --workers=1 --reporter=line
         env:
           CI: 'true'
       - uses: actions/upload-artifact@v4

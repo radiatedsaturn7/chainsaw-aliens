@@ -359,7 +359,9 @@
       "catalog-kestrel-660-2018-dashboard": "art/catalog-kestrel-660-2018-dashboard/document.json",
       "catalog-tarmac-semislick": "art/catalog-tarmac-semislick/document.json",
       "catalog-flint-coupe-2005-body": "art/catalog-flint-coupe-2005-body/document.json",
-      "catalog-flint-coupe-2005-dashboard": "art/catalog-flint-coupe-2005-dashboard/document.json"
+      "catalog-flint-coupe-2005-dashboard": "art/catalog-flint-coupe-2005-dashboard/document.json",
+      "catalog-caravan-9-2024-body": "art/catalog-caravan-9-2024-body/document.json",
+      "catalog-caravan-9-2024-dashboard": "art/catalog-caravan-9-2024-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -370,7 +372,8 @@
       "PZ-24": "cars/PZ-24/document.json",
       "RTG-001": "cars/RTG-001/document.json",
       "2018 Kestrel 660": "cars/2018 Kestrel 660/document.json",
-      "2005 Flint Coupe": "cars/2005 Flint Coupe/document.json"
+      "2005 Flint Coupe": "cars/2005 Flint Coupe/document.json",
+      "2024 Caravan-9": "cars/2024 Caravan-9/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

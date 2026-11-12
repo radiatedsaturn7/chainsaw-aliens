@@ -84,3 +84,19 @@ test('Flint coupe preserves sourced units and explicit mass/gearing uncertainty'
  const editor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});editor.applyLoadedCarDocument(doc,{name:c.name});const reopened=editor.serializeSelectedCarDocument();
  assert.deepEqual(reopened.car.catalogProvenance,c.catalogProvenance);assert.equal(reopened.car.transmissions.manual.gearRatios.length,5);
 });
+
+test('Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry',()=>{
+ const doc=JSON.parse(fs.readFileSync(new URL('../../data/server-storage/files/cars/2024 Caravan-9/document.json',import.meta.url)));
+ const c=doc.car,t=c.transmissions.automatic,b=c.tuning.physics.bodyProfile;
+ assert.equal(c.id,'caravan-9-2024');assert.equal(c.category,'van');assert.equal(c.defaultTransmissionType,'automatic');assert.deepEqual(Object.keys(c.transmissions),['automatic']);
+ assert.equal(c.tuning.drivetrain,'fwd');assert.ok(Math.abs(c.tuning.weightKg-4431*.45359237)<1e-8);
+ assert.equal(c.tuning.powerHp,290);assert.equal(c.tuning.torqueLbFt,262);assert.equal(c.tuning.engineDisplacementL,3.47);
+ assert.deepEqual(t.gearRatios,[4.808,2.901,1.864,1.424,1.219,1,.799,.648]);assert.equal(t.reverseRatio,3.425);assert.equal(t.gearFinalDrive,3.51);
+ assert.equal(c.dimensions.wheelbaseM,121.7*.0254);assert.equal(b.overallLengthM,203*.0254);assert.equal(b.overallWidthM,78.5*.0254);assert.equal(b.overallHeightM,68.5*.0254);assert.equal(b.groundClearanceM,6.8*.0254);
+ assert.ok(Math.abs(b.frontAxleDistanceFromCgM+b.rearAxleDistanceFromCgM-c.dimensions.wheelbaseM)<1e-9);
+ assert.ok(Math.abs(b.frontOverhangM+b.rearOverhangM+c.dimensions.wheelbaseM-b.overallLengthM)<1e-9);
+ assert.equal(b.wheelRadiusM,c.tuning.wheelRadiusM);assert.equal(b.trackWidthM,68.9*.0254);
+ assert.deepEqual(c.setup.tireSize,{widthMm:235,aspectRatio:65,wheelDiameterIn:17});assert.equal(c.art.interior.steeringWheel.artRef,'steeringwheel');
+ const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(doc,{name:c.name});const reopened=e.serializeSelectedCarDocument().car;
+ assert.deepEqual(reopened.transmissions.automatic.gearRatios,t.gearRatios);assert.deepEqual(reopened.catalogProvenance,c.catalogProvenance);
+});
