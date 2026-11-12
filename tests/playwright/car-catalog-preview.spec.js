@@ -1,0 +1,68 @@
+import {test,expect} from '@playwright/test';
+
+test('Kestrel actual editor preview composites exterior/cockpit and advances production physics',async({page},testInfo)=>{
+ test.setTimeout(180_000);
+ await page.setViewportSize({width:1280,height:900});
+ await page.goto('/index.html?hideFullscreenForTesting');
+ await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
+ await page.evaluate(async()=>{
+  const {hydrateProjectFilePayload}=await import('/src/ui/projectFiles.js');
+  const g=window.__game;g.enterCarEditor();g.setDisplayMode('color');
+  const e=g.carEditor,payload=await hydrateProjectFilePayload('cars','2018 Kestrel 660',{forceRefresh:true});
+  if(!payload?.data)throw Error('Missing published Kestrel');
+  e.applyLoadedCarDocument(payload.data,{name:'2018 Kestrel 660'});
+  e.activeRootId='art';e.activeAction='car-art-exterior';e.carArtActiveComponent='body';e.closeEditorMenus();
+  // Hydrate every vehicle reference, including actual tire textures, not just body art.
+  const refs=new Set();const walk=v=>{if(!v||typeof v!=='object')return;if(v.artRef)refs.add(v.artRef);Object.values(v).forEach(walk);};walk(e.selectedCar.art);
+  for(const ref of refs)await e.hydrateRaceArt(ref);
+  e.syncCarAnglePreviewArt();e.invalidateCarEditorPreviewFrame();g.draw();
+ });
+ await page.waitForFunction(()=>{
+  const e=window.__game.carEditor,p=e.carEditorPreviewPlaytest;
+  return p?.session?.runtimeCar?.id==='kestrel-660-2018'&&e.carEditorPreviewFrameCache?.canvas&&!p.session.startupFramePending;
+ },null,{timeout:120_000});
+ const initial=await page.evaluate(()=>{
+  const s=window.__game.carEditor.carEditorPreviewPlaytest.session;
+  return {x:s.worldX,z:s.worldZ,elapsed:Number(s.elapsedMs||0)};
+ });
+ // The real editor autoplays its production RaceSimulation/VehicleDynamicsRunner
+ // preview. Never substitute a synthetic physics fixture or mutate race documents.
+ await expect.poll(()=>page.evaluate(()=>{
+  const e=window.__game.carEditor,s=e.carEditorPreviewPlaytest?.session;
+  if(e.carEditorPreviewRuntimeFailureMessage)throw Error(e.carEditorPreviewRuntimeFailureMessage);
+  return Math.abs(Number(s?.speedMps||0));
+ }),{timeout:30_000}).toBeGreaterThan(.25);
+ await page.waitForTimeout(2000);
+ const physics=await page.evaluate(()=>{
+  const e=window.__game.carEditor,s=e.carEditorPreviewPlaytest.session;
+  return {id:s.runtimeCar.id,x:s.worldX,z:s.worldZ,speed:s.speedMps,rpm:s.engineRpm,elapsed:s.elapsedMs,failure:e.carEditorPreviewRuntimeFailureMessage||'',running:s.running};
+ });
+ expect(physics.id).toBe('kestrel-660-2018');expect(physics.failure).toBe('');expect(physics.running).not.toBe(false);
+ for(const v of [physics.x,physics.z,physics.speed,physics.rpm])expect(Number.isFinite(v)).toBe(true);
+ expect(Math.hypot(physics.x-initial.x,physics.z-initial.z)).toBeGreaterThan(.05);
+ await testInfo.attach('production-preview-physics',{body:Buffer.from(JSON.stringify({initial,physics},null,2)),contentType:'application/json'});
+ for(const slot of ['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft']){
+  await page.evaluate(slot=>{const g=window.__game,e=g.carEditor;e.selectedCarShellFrameSlot=slot;e.activeAction='car-art-exterior';e.syncCarAnglePreviewArt();e.invalidateCarEditorPreviewFrame();g.draw();},slot);
+  await page.waitForTimeout(150);
+  const screenshot=await page.screenshot({path:testInfo.outputPath(`actual-preview-${slot}.png`)});
+  await testInfo.attach(`actual-preview-${slot}`,{body:screenshot,contentType:'image/png'});
+ }
+ // Prove the production cockpit compositor draws both authored layers, not its
+ // fallback rectangles/wheel. Draw through that compositor and inspect output.
+ const cockpit=await page.evaluate(()=>{
+  const e=window.__game.carEditor,c=document.createElement('canvas');c.width=960;c.height=540;
+  const ctx=c.getContext('2d'),original=ctx.drawImage.bind(ctx),calls=[];
+  ctx.drawImage=(image,...args)=>{calls.push({width:image.width,height:image.height,args});return original(image,...args);};
+  e.drawCarInteriorLayers(ctx,{x:0,y:0,w:960,h:540},e.selectedCar,{rotation:.25});
+  const p=ctx.getImageData(0,0,960,540).data;let visible=0,clear=0;for(let i=3;i<p.length;i+=4){if(p[i])visible++;else clear++;}
+  return {calls,visible,clear,png:c.toDataURL('image/png').split(',')[1]};
+ });
+ await testInfo.attach('production-cockpit-composite',{body:Buffer.from(cockpit.png,'base64'),contentType:'image/png'});delete cockpit.png;
+ expect(cockpit.calls).toHaveLength(2);expect(cockpit.visible).toBeGreaterThan(1000);expect(cockpit.clear).toBeGreaterThan(1000);
+ await page.evaluate(()=>{const g=window.__game,e=g.carEditor;e.activeAction='car-art-interior';e.carEditorPreviewPlaytest.input.cameraView='first-person';e.carEditorPreviewPlaytest.session.cameraView='first-person';e.invalidateCarEditorPreviewFrame();g.draw();});
+ await page.waitForTimeout(200);
+ await testInfo.attach('actual-preview-cockpit',{body:await page.screenshot({path:testInfo.outputPath('actual-preview-cockpit.png')}),contentType:'image/png'});
+ await testInfo.attach('cockpit-compositing-calls',{body:Buffer.from(JSON.stringify(cockpit,null,2)),contentType:'application/json'});
+ // Screenshots require human placement review. This asserts loading/compositing
+ // and basic motion only, not calibrated acceleration or subjective alignment.
+});
