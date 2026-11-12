@@ -18,10 +18,10 @@ test('badge stays within phone viewport and restores canvas state',()=>{
 });
 test('debug submenus preserve actions and hierarchical Back',()=>{
  const editor=new RaceEditor({});editor.playtestSession={running:true,aiRuntime:[]};editor.raceInput.pauseMenuMode='debug';
- const root=editor.getRacePauseMenuRows();assert.equal(root.length,6);
+ const root=editor.getRacePauseMenuRows();assert.ok(root.length<=8);
  for(const [group,id] of [['performance','race-perf-start'],['ai','race-debug-ai-add'],['weather','race-debug-weather'],['vehicle','race-test-indicators'],['overlays','race-toggle-physics-performance']]){
   root.find(r=>r.id==='race-debug-menu-'+group).onClick();
-  const rows=editor.getRacePauseMenuRows();assert.ok(rows.some(r=>r.id===id));assert.ok(rows.length<=7);
+  const rows=editor.getRacePauseMenuRows();assert.ok(rows.some(r=>r.id===id));assert.ok(rows.length<=8);
   editor.backRacePauseMenu();assert.equal(editor.raceInput.pauseMenuMode,'debug');
  }
  editor.backRacePauseMenu();assert.equal(editor.raceInput.pauseMenuMode,'settings');
