@@ -385,7 +385,9 @@
       "catalog-caravan-9-2024-body": "art/catalog-caravan-9-2024-body/document.json",
       "catalog-caravan-9-2024-dashboard": "art/catalog-caravan-9-2024-dashboard/document.json",
       "catalog-rally-gravel": "art/catalog-rally-gravel/document.json",
-      "catalog-rain-directional": "art/catalog-rain-directional/document.json"
+      "catalog-rain-directional": "art/catalog-rain-directional/document.json",
+      "catalog-volt-hound-gt-2023-body": "art/catalog-volt-hound-gt-2023-body/document.json",
+      "catalog-volt-hound-gt-2023-dashboard": "art/catalog-volt-hound-gt-2023-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -399,7 +401,8 @@
       "STI Airslayer": "cars/STI Airslayer/document.json",
       "2018 Kestrel 660": "cars/2018 Kestrel 660/document.json",
       "2005 Flint Coupe": "cars/2005 Flint Coupe/document.json",
-      "2024 Caravan-9": "cars/2024 Caravan-9/document.json"
+      "2024 Caravan-9": "cars/2024 Caravan-9/document.json",
+      "2023 Volt-Hound GT": "cars/2023 Volt-Hound GT/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
