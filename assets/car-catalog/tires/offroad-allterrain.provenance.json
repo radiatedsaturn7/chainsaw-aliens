@@ -1,0 +1,7 @@
+{
+  "method": "OpenAI built-in image generation",
+  "purpose": "Original Offroad tire visual, no physics changes",
+  "prompt": "Original2994 painted pixel-art game OFFROAD ALL-TERRAIN tire sheet, same two-cell transparent layout as reference. LEFT cell: wide head-on tire tread with massive staggered polygonal lug blocks, deep wide irregular channels, pronounced chunky shoulder lugs, dry tan earth dust in crevices, black rubber. Distinct from fine gravel/rally tread, NO snow, NO ice, NO studs. RIGHT cell: perfectly circular matching side wheel, thick tall rugged sidewall with shoulder lugs around edge, small battered muted olive steel wheel with six round vent recesses. Entire wheel circle MUST be fully opaque, including dark solid backing in all vent recesses; no transparent holes inside wheel. No logos, lettering, numbers, brands or emblems. Orthographic head-on tread and perpendicular sidewheel. Exactly2columns1row, same diameter, complete objects centered wholly inside cells with generous empty margins/gutter. TRUE TRANSPARENT ALPHAZERO background outside both tires. No white background, haze, ground, cast shadows or glow. Painted weathered game style not photo.",
+  "reference": "rain-directional.png layout and game style",
+  "validation": "Visually inspected large dry allterrain lugs and olive steel wheel, no snow. Two-frame importer and opaque wheel UV fit passed. Runtime prepared via editor importer; no manifest or commits. Source alpha-threshold crop has 5px top margin; fitted circular UV remains inside opaque tire."
+}

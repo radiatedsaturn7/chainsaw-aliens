@@ -389,7 +389,10 @@
       "catalog-volt-hound-gt-2023-body": "art/catalog-volt-hound-gt-2023-body/document.json",
       "catalog-volt-hound-gt-2023-dashboard": "art/catalog-volt-hound-gt-2023-dashboard/document.json",
       "catalog-dustjack-v8-body": "art/catalog-dustjack-v8-body/document.json",
-      "catalog-dustjack-v8-dashboard": "art/catalog-dustjack-v8-dashboard/document.json"
+      "catalog-dustjack-v8-dashboard": "art/catalog-dustjack-v8-dashboard/document.json",
+      "catalog-street-road": "art/catalog-street-road/document.json",
+      "catalog-drift-worn": "art/catalog-drift-worn/document.json",
+      "catalog-offroad-allterrain": "art/catalog-offroad-allterrain/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

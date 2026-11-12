@@ -1,0 +1,7 @@
+{
+  "method": "OpenAI built-in image generation",
+  "purpose": "Original Street tire visual, no physics changes",
+  "prompt": "Original 2994 painted pixel-art racing game tire texture sprite sheet, same two-frame transparent layout as reference. LEFT cell: head-on tread band, everyday STREET road tire with clearly asymmetric small rectangular tread blocks, three narrow longitudinal grooves, fine diagonal sipes only on outer shoulder, NOT V-groove rain, NOT slick. RIGHT cell: matching perfectly circular SIDE wheel face with aged dark gunmetal simple five-spoke rim and medium-height black sidewall. Entire circular wheel face fully opaque including dark backing between spokes, NOT alpha holes. Worn but serviceable everyday rubber. No logos, text, lettering, numbers, snow, studs, floor, shadows, background, glow, haze. TRUE transparent alpha ZERO all around both isolated objects, generous empty gutters and margins. Exactly2equal columns1row, both objects centered wholly inside cell. Flat orthographic views, same tire diameter. Retain reference's painted game style; make tread and wheel original distinct designs.",
+  "reference": "rain-directional.png layout and game style",
+  "validation": "Visually inspected asymmetric road tread, true transparent gutters and opaque wheel backing. Two-frame importer and UV fit passed. Runtime prepared via editor importer; no manifest or commits."
+}

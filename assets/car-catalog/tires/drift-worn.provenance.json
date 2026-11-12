@@ -1,0 +1,7 @@
+{
+  "method": "OpenAI built-in image generation",
+  "purpose": "Original Drift tire visual, no physics changes",
+  "prompt": "Original2994 painted pixel-art racing game DRIFT tire sprite, matching reference two-cell layout only. LEFT cell head-on tread band: heavily worn low-profile performance rubber, nearly bald with TWO faint longitudinal grooves, dry abrasion scuffs and dark charcoal rubber, shallow remaining shoulder marks. Clearly NOT rain V grooves, NOT allterrain blocks; no exposed cords. RIGHT cell perfectly circular matching sidewheel, large original aged muted bronze SIX-spoke rim, narrow black sidewall. Fully OPAQUE black brake backing visible between spokes, entire circular wheel face opaque including recesses; alpha only outside tire. No brand, logos, letters, numbers, snow, studs. Exactly2columns1row, complete centered separate objects with generous fully TRANSPARENT ALPHA ZERO margins and gutter. No background white, haze, floor, cast shadows, glow or smoke. Orthographic frontal tread and perpendicular sidewheel views. Match painted 2994 game texture style, not photograph.",
+  "reference": "rain-directional.png layout and game style",
+  "validation": "Visually inspected shallow worn tread, bronze rim, transparent gutters. Two-frame importer and opaque wheel UV fit passed. Runtime prepared via editor importer; no manifest or commits."
+}
