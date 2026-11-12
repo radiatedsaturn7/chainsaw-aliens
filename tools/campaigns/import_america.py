@@ -81,10 +81,11 @@ def longest_connected_trace(ways, origin, minimum_progress=.3):
     return route.trace(ways,origin,[{k:points[n][k] for k in ('x','y')} for n in (a,b)])
 
 
-def profile(points, pace_cap=28):
+def profile(points, pace_cap=28, settings=None):
     """Planning estimate: curvature-limited winter pace, with accel/brake passes.
     Not a measured AI lap. No speed limit or artificial delay is imposed in-game.
     """
+    settings=settings or {}
     dist=[0.0]
     for a,b in zip(points,points[1:]):dist.append(dist[-1]+math.hypot(b['x']-a['x'],b['y']-a['y']))
     speeds=[];turns=[]
@@ -95,12 +96,13 @@ def profile(points, pace_cap=28):
         chord=math.hypot(b['x']-a['x'],b['y']-a['y'])
         curvature=2*math.sin(angle)/max(1,chord)
         loose=p.get('tags',{}).get('surface') in ('gravel','unpaved','compacted','dirt','ground')
-        speed=min(min(22,pace_cap) if loose else pace_cap, math.sqrt((2.3 if loose else 3.2)/max(.00001,curvature)))
+        lateral=settings.get('looseLateralMps2',2.3) if loose else settings.get('pavedLateralMps2',3.2)
+        speed=min(min(settings.get('looseCapMps',22),pace_cap) if loose else pace_cap, math.sqrt(lateral/max(.00001,curvature)))
         # Winter visibility/patchy snow reduces sustainable pace, not geometry.
-        speeds.append(max(4,speed*.85));turns.append(angle)
+        speeds.append(max(4,speed*settings.get('visibilityFactor',.85)));turns.append(angle)
     speeds[0]=min(speeds[0],5)
-    for i in range(1,len(points)):speeds[i]=min(speeds[i],math.sqrt(speeds[i-1]**2+2*1.7*(dist[i]-dist[i-1])))
-    for i in range(len(points)-2,-1,-1):speeds[i]=min(speeds[i],math.sqrt(speeds[i+1]**2+2*3*(dist[i+1]-dist[i])))
+    for i in range(1,len(points)):speeds[i]=min(speeds[i],math.sqrt(speeds[i-1]**2+2*settings.get('accelerationMps2',1.7)*(dist[i]-dist[i-1])))
+    for i in range(len(points)-2,-1,-1):speeds[i]=min(speeds[i],math.sqrt(speeds[i+1]**2+2*settings.get('brakingMps2',3)*(dist[i+1]-dist[i])))
     times=[0.0]
     for i in range(1,len(points)):times.append(times[-1]+2*(dist[i]-dist[i-1])/(speeds[i]+speeds[i-1]))
     return dist,times,turns
@@ -108,7 +110,7 @@ def profile(points, pace_cap=28):
 
 def select_section(points,spec):
     points=track.densify(track.simplify(points),80)
-    dist,times,turns=profile(points,spec.get('paceCapMps',28))
+    dist,times,turns=profile(points,spec.get('paceCapMps',28),spec.get('paceSettings'))
     if times[-1]<=TARGET_SECONDS:return points
     # Score contiguous ~11-minute windows by technical turns, DEM relief and
     # inclusion of a named landmark. Do not default to the first road endpoint.

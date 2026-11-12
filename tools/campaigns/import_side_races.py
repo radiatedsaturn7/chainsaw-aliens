@@ -9,11 +9,26 @@ import race_track_import as track
 import import_america as america
 import terrain_tiles
 
-IMPORT_VERSION=2
+IMPORT_VERSION=3
+TARGET_SECONDS=210
+PACE_SETTINGS={"looseCapMps":32,"looseLateralMps2":3.5,"pavedLateralMps2":7.0,"visibilityFactor":1,"accelerationMps2":3.2,"brakingMps2":6}
+PACE_CAP_MPS=65
 ROOT=Path('data/campaigns/america/side-races')
 OUT=Path('artifacts/campaign-import/side-races')
 SPECS=json.loads(Path('tools/campaigns/side_race_sources.json').read_text())
 RESEARCH=json.loads(Path('AI/last-on-the-grid/last_on_the_grid_99_side_races.json').read_text())
+
+def mapped_road_width(tags, default=7):
+    # Bad OSM width tags must not discard the independently mapped lane count.
+    try: width=float(tags.get('width',''))
+    except (TypeError,ValueError): width=0
+    if math.isfinite(width) and 3<=width<=30:return width
+    lanes=str(tags.get('lanes',''))
+    if lanes.isdigit() and 1<=int(lanes)<=8:
+        lane_width=3.6576 if tags.get('highway') in ('motorway','motorway_link','trunk','trunk_link') else 3.2
+        return max(3,min(30,int(lanes)*lane_width+.6))
+    return default
+
 
 def snapshot(spec, key=None):
     lat,lon,kind,pattern=spec[:4]
@@ -59,8 +74,7 @@ def build(candidate,hub):
     for way in ways:
         tags=way.get('tags',{})
         if tags.get('surface') in ('rock','pebblestone','fine_gravel'):tags['surface']='gravel'
-        if not tags.get('width') and str(tags.get('lanes','')).isdigit():
-            tags['width']=str(max(3,min(30,int(tags['lanes'])*3.2+.6)))
+        tags['width']=str(mapped_road_width(tags,12 if kind=='drag' else 10 if kind=='circuit' else 4.5 if candidate['import_kind']=='forest_check' else 7))
     origin={'name':candidate['name'],'lat':lat,'lon':lon,'country':'us'}
     if authored:
         lat,lon=authored['origin']['lat'],authored['origin']['lon']
@@ -90,8 +104,8 @@ def build(candidate,hub):
             p={**a,**{k:a[k]+t*(b[k]-a[k]) for k in ('x','y','lat','lon')}}
             points=points[:end]+[p]
         else:
-            america.TARGET_SECONDS=180
-            points=america.select_section(points,{'lat':lat,'lon':lon,'paceCapMps':24})
+            america.TARGET_SECONDS=TARGET_SECONDS
+            points=america.select_section(points,{'lat':lat,'lon':lon,'paceCapMps':PACE_CAP_MPS,'paceSettings':PACE_SETTINGS})
         distances,_,_=america.profile(points)
         layout={'name':candidate['name'],'points':points,'lengthM':distances[-1],'place':origin,'open':True}
     if key=='H06-S08':
@@ -126,8 +140,8 @@ def build(candidate,hub):
         segment['bumpiness']=.16 if tags.get('smoothness') in ('horrible','very_horrible') else .07 if segment['surface'] in ('dirt','gravel') else .015
 
     if bridges:track.fit_terrain_to_road(race['road'])
-    _,times,_=america.profile(points,24)
-    laps=max(1,round(180/max(1,times[-1]))) if kind=='circuit' else 1
+    _,times,_=america.profile(points,PACE_CAP_MPS,PACE_SETTINGS)
+    laps=max(1,math.ceil(TARGET_SECONDS/max(1,times[-1]))) if kind=='circuit' else 1
     race['laps']=laps
     if key=='H06-S08':race['source']['geometryAdaptation']='Fictional 2994 Kartplex enlargement: mapped plan scaled 2x about the venue; GPS references are the unscaled historical source.'
     race['campaign']={'hubStage':hub['sequence'],'hubBoss':hub['boss'],'sideEventId':key,'optional':True,'priority':candidate['priority'],'eventType':candidate['event_type']}
@@ -137,7 +151,7 @@ def build(candidate,hub):
     race['source']['warnings']=[w.replace('USGS 3DEP','Mapzen DEM').replace('USGS elevation','DEM elevation') for w in race['source']['warnings']]
     OUT.mkdir(parents=True,exist_ok=True)
     (OUT/f'{key}.json').write_text(json.dumps(race,separators=(',',':'))+'\n')
-    return {'status':'imported','lengthM':layout['lengthM'],'laps':laps,'estimatedDrivingSeconds':None if kind=='drag' else round(times[-1]*laps),'durationMethod':'Curvature/acceleration planning estimate, not a measured gameplay run' if kind!='drag' else 'Quarter-mile elapsed-time challenge; vehicle dependent', 'startGps':{k:points[0][k] for k in ('lat','lon')},'finishGps':{k:points[-1][k] for k in ('lat','lon')},'surface':sorted(set(s['surface'] for s in race['road']['segments'])),'warnings':race['source']['warnings'],'geometryMethod':authored['geometryMethod'] if authored else 'osm','confidence':'Hand-authored fictional reconstruction; not a surveyed course' if authored else 'Mapped geometry; width/banking and gameplay runtime require review','generatedPath':str(OUT/f'{key}.json')}
+    return {'status':'imported','targetSeconds':TARGET_SECONDS,'durationLimitedBySource':kind not in ('drag','circuit') and times[-1]<TARGET_SECONDS*.9,'roadWidthRangeM':[min(s['roadWidthM'] for s in race['road']['segments']),max(s['roadWidthM'] for s in race['road']['segments'])],'lengthM':layout['lengthM'],'laps':laps,'estimatedDrivingSeconds':None if kind=='drag' else round(times[-1]*laps),'durationMethod':'Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run' if kind!='drag' else 'Quarter-mile elapsed-time challenge; vehicle dependent', 'startGps':{k:points[0][k] for k in ('lat','lon')},'finishGps':{k:points[-1][k] for k in ('lat','lon')},'surface':sorted(set(s['surface'] for s in race['road']['segments'])),'warnings':race['source']['warnings'],'geometryMethod':authored['geometryMethod'] if authored else 'osm','confidence':'Hand-authored fictional reconstruction; not a surveyed course' if authored else 'Mapped geometry; width/banking and gameplay runtime require review','generatedPath':str(OUT/f'{key}.json')}
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--only',nargs='*');parser.add_argument('--rebuild',action='store_true');args=parser.parse_args()

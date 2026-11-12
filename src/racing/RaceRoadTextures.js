@@ -20,7 +20,8 @@ export function roadTextureSettings(race = {}) {
     artRef: String(source?.artRef || '').trim(),
     roughArtRef: String(source?.roughArtRef || '').trim(),
     repeatM: Math.max(.1, Math.min(1000, Number(source?.repeatM) || 5)),
-    repeatWidthM: Math.max(0, Math.min(1000, Number(source?.repeatWidthM) || 0))
+    repeatWidthM: Math.max(0, Math.min(1000, Number(source?.repeatWidthM) || 0)),
+    laneWidthM: Math.max(0, Math.min(5, Number(source?.laneWidthM) || 0))
   });
   const map = value => Object.fromEntries(Object.entries(value || {}).map(([key,entry]) => [key,clean(entry)]));
   return { road: clean(race.roadTextures?.road), margin: clean(race.roadTextures?.margin),
@@ -38,15 +39,25 @@ export function showBuiltInRoadMarkings(race = {}) {
   return !roadTextureSettings(race).road.artRef && race.roadTextures?.builtInLines !== false;
 }
 
+// Lane artwork contains one stripe at U=.5. Place stripes between whole lanes,
+// rather than stretching that single stripe across a multi-lane carriageway.
+export function roadTextureCrossSection(left,right,settings={}) {
+  const width=Math.hypot(right.x-left.x,right.z-left.z);
+  if(settings.laneWidthM>0){
+    const lanes=Math.max(1,Math.round(width/settings.laneWidthM));
+    return {span:width/settings.laneWidthM,center:lanes%2?1:.5};
+  }
+  return {span:settings.repeatWidthM>0?width/settings.repeatWidthM:1,center:.5};
+}
+
 export function texturedRoadStrip(nearLeft, nearRight, farLeft, farRight, nearDistance, farDistance, settings, source) {
-  const width = (left,right) => settings.repeatWidthM > 0 ? Math.hypot(right.x-left.x,right.z-left.z) / settings.repeatWidthM : 1;
-  const nearWidth=width(nearLeft,nearRight),farWidth=width(farLeft,farRight);
+  const near=roadTextureCrossSection(nearLeft,nearRight,settings),far=roadTextureCrossSection(farLeft,farRight,settings);
   const repeatM = Math.max(.1, Math.min(1000, Number(settings.repeatM) || 5));
   const point = (p, u, distance) => ({ ...p, u, v: -distance / repeatM });
   return {
     source, textureOptions:roadTextureSampling(settings), artRef: settings.artRef, textured: true, color: '#ffffff',
-    points: [point(farLeft, .5-farWidth/2, farDistance), point(farRight, .5+farWidth/2, farDistance),
-      point(nearRight, .5+nearWidth/2, nearDistance), point(nearLeft, .5-nearWidth/2, nearDistance)],
+    points: [point(farLeft, far.center-far.span/2, farDistance), point(farRight, far.center+far.span/2, farDistance),
+      point(nearRight, near.center+near.span/2, nearDistance), point(nearLeft, near.center-near.span/2, nearDistance)],
     depthOffset: source.includes('shoulder') ? -.091 : source.includes('boundary') ? -.09 : -.08,
     threeLiftM: source.includes('boundary') ? .035 : .012,
     textureWorldM: repeatM
@@ -177,8 +188,8 @@ export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22,
       }).filter(Boolean);
       if(ends.length<2)continue;
       const mouthPoints=ends.flatMap(({section:s,distance})=>{
-        const span=settings.road.repeatWidthM>0?Math.hypot(s.right.x-s.left.x,s.right.z-s.left.z)/settings.road.repeatWidthM:1;
-        return [{...s.left,u:.5-span/2,v:-distance/settings.road.repeatM},{...s.right,u:.5+span/2,v:-distance/settings.road.repeatM}];
+        const {span,center}=roadTextureCrossSection(s.left,s.right,settings.road);
+        return [{...s.left,u:center-span/2,v:-distance/settings.road.repeatM},{...s.right,u:center+span/2,v:-distance/settings.road.repeatM}];
       });
       const {section:s,distance}=ends[0],dx=node.x-s.center.x,dz=node.z-s.center.z;
       const centerV=-(distance+dx*Math.sin(s.center.yaw)+dz*Math.cos(s.center.yaw))/settings.road.repeatM;
