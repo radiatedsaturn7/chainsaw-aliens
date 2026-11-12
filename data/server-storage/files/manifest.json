@@ -392,7 +392,11 @@
       "catalog-dustjack-v8-dashboard": "art/catalog-dustjack-v8-dashboard/document.json",
       "catalog-street-road": "art/catalog-street-road/document.json",
       "catalog-drift-worn": "art/catalog-drift-worn/document.json",
-      "catalog-offroad-allterrain": "art/catalog-offroad-allterrain/document.json"
+      "catalog-offroad-allterrain": "art/catalog-offroad-allterrain/document.json",
+      "catalog-trailglass-2024-body": "art/catalog-trailglass-2024-body/document.json",
+      "catalog-trailglass-2024-dashboard": "art/catalog-trailglass-2024-dashboard/document.json",
+      "catalog-sentinel-sedan-2024-body": "art/catalog-sentinel-sedan-2024-body/document.json",
+      "catalog-sentinel-sedan-2024-dashboard": "art/catalog-sentinel-sedan-2024-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -408,7 +412,9 @@
       "2005 Flint Coupe": "cars/2005 Flint Coupe/document.json",
       "2024 Caravan-9": "cars/2024 Caravan-9/document.json",
       "2023 Volt-Hound GT": "cars/2023 Volt-Hound GT/document.json",
-      "Dustjack V8": "cars/Dustjack V8/document.json"
+      "Dustjack V8": "cars/Dustjack V8/document.json",
+      "Trailglass 2024": "cars/Trailglass 2024/document.json",
+      "2024 Sentinel Sedan": "cars/2024 Sentinel Sedan/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

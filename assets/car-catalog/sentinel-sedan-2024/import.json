@@ -1,0 +1,802 @@
+{
+  "car": {
+    "id": "sentinel-sedan-2024",
+    "name": "2024 Sentinel Sedan",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "tires": [],
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": null
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": "steeringwheel",
+          "frameIndex": 0,
+          "scaleX": 1.6875,
+          "scaleY": 1.6875,
+          "offsetX": -0.42200520833333344,
+          "offsetY": 0.9000000000000002,
+          "centerX": 0.498046875,
+          "centerY": 0.5448717948717948
+        },
+        "wipers": {
+          "artRef": "windshieldwiper",
+          "frameIndex": 0,
+          "pivotX": 0,
+          "pivotY": 0.5,
+          "width": 0.35640000000000005,
+          "parkAngle": -5,
+          "sweepAngle": -80,
+          "cycleSeconds": 1.6,
+          "mounts": [
+            {
+              "x": 0.16,
+              "y": 0.755
+            },
+            {
+              "x": 0.56,
+              "y": 0.755
+            }
+          ]
+        }
+      },
+      "addOns": [],
+      "tireSurfaces": {
+        "tread": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 0,
+          "region": {
+            "x": 138,
+            "y": 27,
+            "width": 158,
+            "height": 379
+          },
+          "bounds": {
+            "x": 138.5,
+            "y": 27.5,
+            "width": 157,
+            "height": 378
+          }
+        },
+        "wheel": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 2,
+          "region": {
+            "x": 218,
+            "y": 213,
+            "radius": 204.24005483743878
+          },
+          "bounds": {
+            "x": 13.760045162561227,
+            "y": 8.760045162561227,
+            "width": 408.47990967487755,
+            "height": 408.47990967487755
+          }
+        }
+      },
+      "angleLayers": {
+        "front": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "frontRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "right": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "rearRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rear": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rearLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "left": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "frontLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        }
+      }
+    },
+    "camera": {
+      "trackingMode": "dynamic"
+    },
+    "dimensions": {
+      "lengthM": 4.64566,
+      "widthM": 1.8160999999999998,
+      "wheelbaseM": 2.7076399999999996,
+      "trackFrontM": 1.5875,
+      "trackRearM": 1.58496
+    },
+    "audio": {
+      "engineSoundId": null
+    },
+    "setup": {
+      "defaultTireCompound": "street",
+      "tireCompoundByWheel": {
+        "fl": "street",
+        "fr": "street",
+        "rl": "street",
+        "rr": "street"
+      },
+      "tirePressurePsi": {
+        "fl": 33,
+        "fr": 33,
+        "rl": 33,
+        "rr": 33
+      },
+      "tireSize": {
+        "widthMm": 205,
+        "aspectRatio": 60,
+        "wheelDiameterIn": 16
+      }
+    },
+    "defaultTransmissionType": "automatic",
+    "transmissions": {
+      "automatic": {
+        "type": "automatic",
+        "label": "Continuous CVT",
+        "shiftMode": "automatic",
+        "shiftTimeMs": 180,
+        "clutchDelayMs": 0,
+        "launchRpm": 2000,
+        "autoUpshiftRpm": 6000,
+        "autoDownshiftRpm": 1800,
+        "torqueConverterSlip": 0.1,
+        "torqueConverterMultiplication": 1.6,
+        "gearRatios": [
+          2.805
+        ],
+        "reverseRatio": 1.797,
+        "gearFinalDrive": 5.034,
+        "drivetrainEfficiency": 0.84,
+        "engineProfile": null,
+        "cvt": {
+          "minRatio": 0.357,
+          "maxRatio": 2.805,
+          "cruiseRpm": 1800,
+          "powerRpm": 6000,
+          "ratioRatePerSecond": 1
+        }
+      }
+    },
+    "tuning": {
+      "drivetrain": "fwd",
+      "powerHp": 149,
+      "torqueLbFt": 146,
+      "weightKg": 1377.1064353200002,
+      "frontWeightDistribution": 0.61,
+      "engineDisplacementL": 1.997,
+      "aspiration": "Naturally Aspirated",
+      "tireGrip": 0.96,
+      "brakeBalance": 0.57,
+      "brakePressure": 1,
+      "redlineRpm": 6400,
+      "revLimitRpm": 6600,
+      "revLimiterDropRpm": 420,
+      "idleRpm": 750,
+      "torquePeakStartRpm": 4000,
+      "torquePeakEndRpm": 4000,
+      "torqueFalloffRpm": 6600,
+      "wheelRadiusM": 0.3262,
+      "topSpeedMph": 120,
+      "zeroToSixtySec": 9.2,
+      "dragCoefficient": 0.299,
+      "accelerationCalibration": 1,
+      "drivetrainEfficiency": 0.86,
+      "differentialAccel": 0.5,
+      "differentialDecel": 0.25,
+      "rearDifferentialAccel": 0.5,
+      "rearDifferentialDecel": 0.25,
+      "gearFinalDrive": 5.034,
+      "camberFront": -0.9,
+      "camberRear": -1,
+      "toeFront": 0,
+      "toeRear": 0.12,
+      "casterFront": 6.1,
+      "aeroFront": 0.22,
+      "aeroRear": 0.28,
+      "springFront": 0.54,
+      "springRear": 0.56,
+      "rideHeightFront": 0.48,
+      "rideHeightRear": 0.5,
+      "suspensionTravelFront": 0.45,
+      "suspensionTravelRear": 0.45,
+      "dampingFront": 0.54,
+      "dampingRear": 0.55,
+      "bumpFront": 0.5,
+      "bumpRear": 0.52,
+      "reboundFront": 0.56,
+      "reboundRear": 0.57,
+      "antiRollFront": 0.52,
+      "antiRollRear": 0.58,
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 4.64566,
+          "overallWidthM": 1.8160999999999998,
+          "overallHeightM": 1.44526,
+          "groundClearanceM": 0.11938,
+          "frontOverhangM": 0.95,
+          "rearOverhangM": 0.9880200000000003,
+          "lowerBodyHeightM": 0.46,
+          "hood": {
+            "lengthM": 0.95,
+            "widthM": 1.74,
+            "heightM": 0.35
+          },
+          "cabin": {
+            "centerZM": -0.1,
+            "lengthM": 2.4,
+            "widthM": 1.68,
+            "heightM": 0.83
+          },
+          "bed": {
+            "centerZM": -1.35,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.5,
+            "z": 0
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": false,
+          "wheelWellClearanceMarginM": 0.06,
+          "maximumTireDeflectionM": 0.04,
+          "wheelRadiusM": 0.3262,
+          "trackWidthM": 1.58623,
+          "frontAxleDistanceFromCgM": 1.0559796,
+          "rearAxleDistanceFromCgM": 1.6516603999999997,
+          "customColliders": []
+        }
+      },
+      "reverseRatio": 1.797,
+      "engineCurve": {
+        "rpmMin": 750,
+        "rpmMax": 6600,
+        "torquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 60
+          },
+          {
+            "rpm": 2000,
+            "torqueLbFt": 118
+          },
+          {
+            "rpm": 3000,
+            "torqueLbFt": 136
+          },
+          {
+            "rpm": 4000,
+            "torqueLbFt": 146
+          },
+          {
+            "rpm": 5000,
+            "torqueLbFt": 141
+          },
+          {
+            "rpm": 6000,
+            "torqueLbFt": 130.42466666666667
+          },
+          {
+            "rpm": 6600,
+            "torqueLbFt": 115
+          }
+        ]
+      },
+      "frontDifferentialAccel": 0.3,
+      "frontDifferentialDecel": 0.15,
+      "steeringRatio": 15.3,
+      "cvt": {
+        "minRatio": 0.357,
+        "maxRatio": 2.805,
+        "cruiseRpm": 1800,
+        "powerRpm": 6000,
+        "ratioRatePerSecond": 1
+      },
+      "gearRatios": [
+        2.805
+      ]
+    },
+    "description": "Original fictional 2994 salvage compact sedan, referencing 2024 US Nissan Sentra S factory specifications. No manufacturer branding or replica body. Unpublished simulation parameters are estimates. Continuous CVT simulation; not OEM control calibration.",
+    "category": "sedan"
+  },
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "provenance": {
+    "referenceVehicle": "2024 Nissan Sentra S US CVT",
+    "sources": [
+      {
+        "url": "https://usa.nissannews.com/en-US/releases/2024-nissan-sentra-specifications",
+        "fields": [
+          "displacement",
+          "engine",
+          "power",
+          "torque",
+          "curbMass",
+          "drivetrain",
+          "transmission",
+          "weightDistributionFrontRear",
+          "wheelbase",
+          "cvtRatioRange",
+          "reverseRatio",
+          "finalDrive",
+          "engineMaxRpm",
+          "dimensionsLWH",
+          "trackFrontRear",
+          "frontTire",
+          "rearTire",
+          "groundClearance",
+          "dragCoefficient",
+          "axleCurbMassFrontRear",
+          "steeringRatio",
+          "steeringTurnsLockToLock"
+        ]
+      }
+    ],
+    "verifiedFacts": {
+      "displacement": {
+        "value": 1997,
+        "unit": "cm3",
+        "source": "nissan-sentra-2024"
+      },
+      "engine": {
+        "value": "MR20DD naturally aspirated inline four",
+        "unit": "description",
+        "source": "nissan-sentra-2024"
+      },
+      "power": {
+        "value": 149,
+        "unit": "hp",
+        "source": "nissan-sentra-2024",
+        "rpm": 6000
+      },
+      "torque": {
+        "value": 146,
+        "unit": "lb-ft",
+        "source": "nissan-sentra-2024",
+        "rpm": 4000
+      },
+      "curbMass": {
+        "value": 3036,
+        "unit": "lb",
+        "source": "nissan-sentra-2024"
+      },
+      "drivetrain": {
+        "value": "FWD",
+        "unit": "layout",
+        "source": "nissan-sentra-2024"
+      },
+      "transmission": {
+        "value": "Xtronic CVT",
+        "unit": "type",
+        "source": "nissan-sentra-2024"
+      },
+      "weightDistributionFrontRear": {
+        "value": [
+          61,
+          39
+        ],
+        "unit": "percent",
+        "source": "nissan-sentra-2024"
+      },
+      "wheelbase": {
+        "value": 106.6,
+        "unit": "in",
+        "source": "nissan-sentra-2024"
+      },
+      "cvtRatioRange": {
+        "value": [
+          2.805,
+          0.357
+        ],
+        "unit": "ratio",
+        "source": "nissan-sentra-2024"
+      },
+      "reverseRatio": {
+        "value": 1.797,
+        "unit": "ratio",
+        "source": "nissan-sentra-2024"
+      },
+      "finalDrive": {
+        "value": 5.034,
+        "unit": "ratio",
+        "source": "nissan-sentra-2024"
+      },
+      "engineMaxRpm": {
+        "value": 6600,
+        "unit": "rpm",
+        "source": "nissan-sentra-2024"
+      },
+      "dimensionsLWH": {
+        "value": [
+          182.9,
+          71.5,
+          56.9
+        ],
+        "unit": "in",
+        "source": "nissan-sentra-2024"
+      },
+      "trackFrontRear": {
+        "value": [
+          62.5,
+          62.4
+        ],
+        "unit": "in",
+        "source": "nissan-sentra-2024"
+      },
+      "frontTire": {
+        "value": "205/60R16",
+        "unit": "designation",
+        "source": "nissan-sentra-2024"
+      },
+      "rearTire": {
+        "value": "205/60R16",
+        "unit": "designation",
+        "source": "nissan-sentra-2024"
+      },
+      "groundClearance": {
+        "value": 4.7,
+        "unit": "in",
+        "source": "nissan-sentra-2024"
+      },
+      "dragCoefficient": {
+        "value": 0.299,
+        "unit": "dimensionless",
+        "source": "nissan-sentra-2024"
+      },
+      "axleCurbMassFrontRear": {
+        "value": [
+          1861,
+          1175
+        ],
+        "unit": "lb",
+        "source": "nissan-sentra-2024"
+      },
+      "steeringRatio": {
+        "value": 15.3,
+        "unit": "ratio",
+        "source": "nissan-sentra-2024"
+      },
+      "steeringTurnsLockToLock": {
+        "value": 2.53,
+        "unit": "turns",
+        "source": "nissan-sentra-2024"
+      }
+    },
+    "estimates": [
+      "Manufacturer table peaks retained at 6000 rpm power and 4000 rpm torque, despite differing secondary tables.",
+      "Continuous CVT range .357\u20132.805, reverse1.797 and final drive5.034 are manufacturer facts, not virtual fixed gears.",
+      "Torque samples outside the two factory peaks, idle/redline before6600maximum, converter/ratio control, efficiency, aero frontal area, CG, suspension, differential, braking, tire grip/pressure and collision subshapes are simulation estimates.",
+      "Nominal tire radius .3262m calculated from205/60R16; loaded rolling radius not sourced.33psi is an assumption.",
+      "9.2s and120mph are provisional display/calibration targets, not measured OEM claims or validation results.",
+      "61/39 source distribution retained; 1861/1175lb source axle weights imply61.3/38.7 after rounding.",
+      "Wheel centers and sprite perspective are manual visual estimates, not changes to physical dimensions.",
+      "CVT1800rpm cruise/6000rpm full-throttle target and1ratio-unit/s slew, .1 converter slip/1.6 multiplication and .84 drivetrain efficiency are explicit simulation assumptions. Single gearRatios entry2.805 is controller envelope initialization, not a fixed forward gearbox.",
+      "Actual-runner launch/rolling/reverse validated against isolated CVT candidate; production browser artwork QA and merged foundation still required."
+    ],
+    "artwork": "Original logo-free sage/charcoal salvage sedan and cockpit; existing steeringwheel reused."
+  },
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 60,
+        "y": 290,
+        "radius": 28
+      },
+      {
+        "wheel": "fr",
+        "x": 329,
+        "y": 290,
+        "radius": 28
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1895,
+        "y": 660,
+        "radius": 47
+      },
+      {
+        "wheel": "rr",
+        "x": 2114,
+        "y": 627,
+        "radius": 32
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1107,
+        "y": 283,
+        "radius": 56
+      },
+      {
+        "wheel": "rr",
+        "x": 1537,
+        "y": 283,
+        "radius": 56
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1701,
+        "y": 258,
+        "radius": 32
+      },
+      {
+        "wheel": "rr",
+        "x": 1849,
+        "y": 285,
+        "radius": 46
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 63,
+        "y": 659,
+        "radius": 28
+      },
+      {
+        "wheel": "rl",
+        "x": 329,
+        "y": 659,
+        "radius": 28
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 658,
+        "y": 658,
+        "radius": 46
+      },
+      {
+        "wheel": "fl",
+        "x": 884,
+        "y": 628,
+        "radius": 32
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 1067,
+        "y": 658,
+        "radius": 56
+      },
+      {
+        "wheel": "fl",
+        "x": 1480,
+        "y": 658,
+        "radius": 56
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 435,
+        "y": 257,
+        "radius": 32
+      },
+      {
+        "wheel": "fl",
+        "x": 662,
+        "y": 288,
+        "radius": 47
+      }
+    ]
+  }
+}

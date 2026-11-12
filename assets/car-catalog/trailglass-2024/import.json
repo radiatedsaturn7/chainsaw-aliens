@@ -1,0 +1,801 @@
+{
+  "car": {
+    "id": "trailglass-2024",
+    "name": "Trailglass 2024",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "tires": [],
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": null
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": "steeringwheel",
+          "frameIndex": 0,
+          "scaleX": 1.6,
+          "scaleY": 1.6,
+          "offsetX": -0.5,
+          "offsetY": 0.9,
+          "centerX": 0.498046875,
+          "centerY": 0.5448717948717948
+        },
+        "wipers": {
+          "artRef": "windshieldwiper",
+          "frameIndex": 0,
+          "pivotX": 0,
+          "pivotY": 0.5,
+          "width": 0.35640000000000005,
+          "parkAngle": -5,
+          "sweepAngle": -80,
+          "cycleSeconds": 1.6,
+          "mounts": [
+            {
+              "x": 0.16,
+              "y": 0.755
+            },
+            {
+              "x": 0.56,
+              "y": 0.755
+            }
+          ]
+        }
+      },
+      "addOns": [],
+      "tireSurfaces": {
+        "tread": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 0,
+          "region": {
+            "x": 138,
+            "y": 27,
+            "width": 158,
+            "height": 379
+          },
+          "bounds": {
+            "x": 138.5,
+            "y": 27.5,
+            "width": 157,
+            "height": 378
+          }
+        },
+        "wheel": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 2,
+          "region": {
+            "x": 218,
+            "y": 213,
+            "radius": 204.24005483743878
+          },
+          "bounds": {
+            "x": 13.760045162561227,
+            "y": 8.760045162561227,
+            "width": 408.47990967487755,
+            "height": 408.47990967487755
+          }
+        }
+      },
+      "angleLayers": {
+        "front": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "frontRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "right": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "rearRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rear": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rearLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "left": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "frontLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        }
+      }
+    },
+    "camera": {
+      "trackingMode": "dynamic"
+    },
+    "dimensions": {
+      "lengthM": 4.728,
+      "widthM": 1.839,
+      "wheelbaseM": 2.791,
+      "trackFrontM": 1.58,
+      "trackRearM": 1.571
+    },
+    "audio": {
+      "engineSoundId": null
+    },
+    "setup": {
+      "defaultTireCompound": "tarmac",
+      "tireCompoundByWheel": {
+        "fl": "tarmac",
+        "fr": "tarmac",
+        "rl": "tarmac",
+        "rr": "tarmac"
+      },
+      "tirePressurePsi": {
+        "fl": 35,
+        "fr": 35,
+        "rl": 35,
+        "rr": 35
+      },
+      "tireSize": {
+        "widthMm": 215,
+        "aspectRatio": 65,
+        "wheelDiameterIn": 17
+      }
+    },
+    "defaultTransmissionType": "automatic",
+    "transmissions": {
+      "automatic": {
+        "type": "automatic",
+        "label": "8-speed torque-converter automatic",
+        "shiftMode": "automatic",
+        "shiftTimeMs": 280,
+        "clutchDelayMs": 0,
+        "launchRpm": 1800,
+        "autoUpshiftRpm": 5100,
+        "autoDownshiftRpm": 1450,
+        "torqueConverterSlip": 0.1,
+        "torqueConverterMultiplication": 1.7,
+        "gearRatios": [
+          5.59,
+          3.14,
+          1.95,
+          1.43,
+          1.21,
+          1,
+          0.81,
+          0.67
+        ],
+        "reverseRatio": 3.99,
+        "gearFinalDrive": 3.33,
+        "drivetrainEfficiency": 0.87,
+        "engineProfile": null
+      }
+    },
+    "tuning": {
+      "drivetrain": "fwd",
+      "powerHp": 184,
+      "torqueLbFt": 221,
+      "weightKg": 1693,
+      "frontWeightDistribution": 0.59,
+      "engineDisplacementL": 1.984,
+      "aspiration": "Turbocharged",
+      "tireGrip": 0.94,
+      "brakeBalance": 0.59,
+      "brakePressure": 1,
+      "redlineRpm": 6000,
+      "revLimitRpm": 6300,
+      "revLimiterDropRpm": 350,
+      "idleRpm": 800,
+      "torquePeakStartRpm": 1600,
+      "torquePeakEndRpm": 1600,
+      "torqueFalloffRpm": 6300,
+      "wheelRadiusM": 0.35565,
+      "topSpeedMph": 115,
+      "zeroToSixtySec": 8.8,
+      "dragCoefficient": 0.34,
+      "accelerationCalibration": 1,
+      "drivetrainEfficiency": 0.87,
+      "differentialAccel": 0.22,
+      "differentialDecel": 0.12,
+      "rearDifferentialAccel": 0,
+      "rearDifferentialDecel": 0,
+      "gearFinalDrive": 3.33,
+      "camberFront": -0.6,
+      "camberRear": -1,
+      "toeFront": 0.03,
+      "toeRear": 0.1,
+      "casterFront": 6,
+      "aeroFront": 0.08,
+      "aeroRear": 0.1,
+      "springFront": 0.48,
+      "springRear": 0.46,
+      "rideHeightFront": 0.51,
+      "rideHeightRear": 0.52,
+      "suspensionTravelFront": 0.49,
+      "suspensionTravelRear": 0.49,
+      "dampingFront": 0.5,
+      "dampingRear": 0.48,
+      "bumpFront": 0.45,
+      "bumpRear": 0.44,
+      "reboundFront": 0.54,
+      "reboundRear": 0.52,
+      "antiRollFront": 0.53,
+      "antiRollRear": 0.45,
+      "gearRatios": [
+        5.59,
+        3.14,
+        1.95,
+        1.43,
+        1.21,
+        1,
+        0.81,
+        0.67
+      ],
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 4.728,
+          "overallWidthM": 1.839,
+          "overallHeightM": 1.688,
+          "groundClearanceM": 0.187,
+          "frontOverhangM": 0.91,
+          "rearOverhangM": 1.027,
+          "lowerBodyHeightM": 0.57,
+          "hood": {
+            "lengthM": 1.15,
+            "widthM": 1.72,
+            "heightM": 0.39
+          },
+          "cabin": {
+            "centerZM": -0.17,
+            "lengthM": 2.7,
+            "widthM": 1.69,
+            "heightM": 0.931
+          },
+          "bed": {
+            "centerZM": -1.35,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.64,
+            "z": 0
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": false,
+          "wheelWellClearanceMarginM": 0.06,
+          "maximumTireDeflectionM": 0.04,
+          "wheelRadiusM": 0.35565,
+          "trackWidthM": 1.5755,
+          "frontAxleDistanceFromCgM": 1.14431,
+          "rearAxleDistanceFromCgM": 1.6466899999999998,
+          "customColliders": []
+        }
+      },
+      "reverseRatio": 3.99,
+      "engineCurve": {
+        "rpmMin": 800,
+        "rpmMax": 6300,
+        "torquePoints": [
+          {
+            "rpm": 800,
+            "torqueLbFt": 75
+          },
+          {
+            "rpm": 1600,
+            "torqueLbFt": 221
+          },
+          {
+            "rpm": 3000,
+            "torqueLbFt": 218
+          },
+          {
+            "rpm": 4400,
+            "torqueLbFt": 219.6290909090909
+          },
+          {
+            "rpm": 5100,
+            "torqueLbFt": 185.36470588235295
+          },
+          {
+            "rpm": 6000,
+            "torqueLbFt": 145
+          },
+          {
+            "rpm": 6300,
+            "torqueLbFt": 120
+          }
+        ]
+      },
+      "frontDifferentialAccel": 0.22,
+      "frontDifferentialDecel": 0.12,
+      "steeringRatio": 13.3
+    },
+    "description": "Original fictional compact SUV referencing the 2024 US Tiguan S FWD seven-seat configuration. Manufacturer drivetrain and dimensional anchors; handling and unprovided engine-curve details are explicit simulation estimates.",
+    "category": "suv"
+  },
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "provenance": {
+    "referenceVehicle": "2024 Volkswagen Tiguan S FWD US, seven seats, 17-inch standard wheels",
+    "sources": [
+      {
+        "url": "https://media.vw.com/assets/documents/original/17298-2024TiguanTechnicalSpecsFINAL.pdf",
+        "fields": [
+          "engine",
+          "SAE184hp@4400rpm",
+          "221lbft@1600rpm",
+          "S-FWD-curb-NHTSA1693kg3732lb",
+          "forwardRatios",
+          "reverse3.99",
+          "final3.33",
+          "dimensions",
+          "tracks",
+          "clearance",
+          "Cd0.34",
+          "steeringRatioRange11-13.30",
+          "tire215/65R17H"
+        ]
+      },
+      {
+        "url": "https://media.vw.com/assets/documents/original/17381-2024TiguanRelease91823FINAL13PricingUpdate.pdf",
+        "fields": [
+          "S-standard17inch-wheels",
+          "S-215/65-tires",
+          "S-cloth-seats",
+          "S-early-model-year6.5inch-display",
+          "FWD7seats"
+        ]
+      }
+    ],
+    "verifiedFacts": {
+      "engine": {
+        "source": "vw-technical page 1",
+        "displacementCc": 1984,
+        "layout": "Front transverse turbocharged/intercooled inline four, 16 valve TSI",
+        "familyFromRelease": "EA888",
+        "powerSAEHp": 184,
+        "powerRpm": 4400,
+        "torqueLbFt": 221,
+        "torqueRpm": 1600,
+        "boreMm": 82.5,
+        "strokeMm": 92.8,
+        "compressionRatio": 11.65,
+        "fuel": "Regular unleaded recommended"
+      },
+      "gearbox": {
+        "source": "vw-technical page 1 FWD column",
+        "type": "8-speed automatic, NOT CVT and NOT DSG",
+        "forwardRatios": [
+          5.59,
+          3.14,
+          1.95,
+          1.43,
+          1.21,
+          1,
+          0.81,
+          0.67
+        ],
+        "reverseRatio": 3.99,
+        "finalDriveRatio": 3.33,
+        "ratioPrecision": "As published to two decimals, do not imply tooth-count precision"
+      },
+      "mass": {
+        "source": "vw-technical page 2 FWD S line",
+        "curbNhtsaLb": 3732,
+        "curbNhtsaKg": 1693,
+        "gvwrLb": 5159,
+        "gvwrKg": 2340,
+        "payloadLb": 1301,
+        "payloadKg": 590,
+        "note": "Use curb, not GVWR or payload. OEM paired imperial/metric values rounded independently."
+      },
+      "geometry": {
+        "source": "vw-technical page 2 FWD column",
+        "wheelbase": {
+          "in": 109.9,
+          "mm": 2791
+        },
+        "length": {
+          "in": 186.1,
+          "mm": 4728
+        },
+        "widthWithoutMirrors": {
+          "in": 72.4,
+          "mm": 1839
+        },
+        "height": {
+          "in": 66.5,
+          "mm": 1688
+        },
+        "trackFront": {
+          "in": 62.2,
+          "mm": 1580
+        },
+        "trackRear": {
+          "in": 61.9,
+          "mm": 1571
+        },
+        "groundClearance": {
+          "in": 7.4,
+          "mm": 187
+        },
+        "approachDeg": 17.8,
+        "departureDeg": 21.6,
+        "breakoverDeg": 20.2,
+        "dragCoefficient": 0.34
+      },
+      "wheelsTires": {
+        "source": "vw-release confirms S 17-inch,215/65; vw-technical page2 supplies full size",
+        "frontAndRear": "215/65 R17 H all-season",
+        "rim": "17 x 7.0J aluminum alloy"
+      },
+      "fuelTank": {
+        "source": "vw-technical page1 FWD",
+        "usGallons": 15.3,
+        "liters": 58
+      },
+      "steering": {
+        "source": "vw-technical page1",
+        "type": "Electric power assisted rack and pinion",
+        "ratioRange": [
+          11,
+          13.3
+        ],
+        "turnsLockToLockRange": [
+          2.14,
+          2.58
+        ],
+        "turningCircleCurbToCurbFt": 38.1,
+        "turningCircleM": 11.6,
+        "note": "OEM gives range, not an S-specific fixed ratio. Selecting a single simulator ratio is a model estimate."
+      },
+      "chassis": {
+        "source": "vw-technical page2",
+        "frontSuspension": "Strut type, lower control arms, coil springs, telescopic dampers, anti-roll bar",
+        "rearSuspension": "Multilink, coil springs, telescopic dampers, anti-roll bar",
+        "frontBrakeDiscIn": [
+          13.4,
+          1.2
+        ],
+        "frontBrakeVentilated": true,
+        "rearBrakeDiscIn": [
+          11.8,
+          0.5
+        ],
+        "rearBrakeVentilated": false
+      },
+      "artTrimNotes": {
+        "source": "vw-release",
+        "seats": "Cloth",
+        "rLineExterior": false,
+        "panoramicRoof": "Not S standard; release makes available on SE and standard upper trims",
+        "infotainment": "Early-year S MIB2 6.5-inch; release says mid-cycle S upgrades to MIB3. Pick and label one, do not mix top-trim cabin.",
+        "steeringWheel": "Reuse game shared steering wheel; not new per-car art"
+      }
+    },
+    "estimates": [
+      "Original fictional art is not a factory replica; existing steeringwheel reused. Source PNGs inspected and wheel anchors measured; rendered browser and driving QA still pending.",
+      "Engine curve has manufacturer torque221lbft@1600 and power-derived torque184*5252/4400 at4400; other samples, torque falloff, idle/redline/revlimit and plateau shape are model estimates. No measured full curve claimed.",
+      "8AT gear/reverse/final ratios are manufacturer facts; shift times/thresholds, launchRPM, converter slip/multiplication and drivetrain efficiency are simulation estimates.",
+      "59% front static mass distribution,0.64m CG height, collider sections and overhang split are estimates. Front/rear axle-to-CG distances derived from estimated distribution and sourced2.791m wheelbase.",
+      "Normalized suspension/antiroll/aero controls, alignment, grip, differential and brake balance are provisional compact-FWD-SUV estimates, not factory calibration.",
+      "115mph and8.8sec0-60 are provisional game targets, not manufacturer claims or measured outcomes. Must validate gameplay before integration.",
+      "13.3 steering ratio selects upper end of OEM11\u201313.3 range; simulator uses fixed approximation.35psi tire pressure unsourced estimate, not a placard recommendation.",
+      "0.35565m radius is calculated nominal unloaded215/65R17 geometry; loaded rolling radius unknown. Reused tarmac graphics/compound do not claim factory tire brand.",
+      "Use OEM1693kg metric NHTSA curb mass for S FWD7seat; do not substitute AWD3818lb or SE3777lb. Rounded paired imperial3732lb is retained in provenance, not falsely precise conversion.",
+      "Published fuel and brake dimensions recorded as reference; does not claim separate fuel or geometric brake model wiring.",
+      "Wheel anchors are image-space visual estimates. Six oblique/side angles measured from transparent wheel openings; straight front/rear wheel axes inferred behind body corners because shell occludes wheel wells. Placement helper calibrates original image perspective without changing sourced physical geometry."
+    ],
+    "artwork": "Original logo-free Trailglass SUV body and cockpit, shared existing steeringwheel. Blue-gray and cream salvage body, compact SUV silhouette; not factory replica."
+  },
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 65,
+        "y": 280,
+        "radius": 30
+      },
+      {
+        "wheel": "fr",
+        "x": 323,
+        "y": 280,
+        "radius": 30
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1898,
+        "y": 640,
+        "radius": 35
+      },
+      {
+        "wheel": "rr",
+        "x": 2082,
+        "y": 625,
+        "radius": 24
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1104,
+        "y": 275,
+        "radius": 51
+      },
+      {
+        "wheel": "rr",
+        "x": 1496,
+        "y": 275,
+        "radius": 51
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1693,
+        "y": 263,
+        "radius": 20
+      },
+      {
+        "wheel": "rr",
+        "x": 1860,
+        "y": 275,
+        "radius": 34
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 64,
+        "y": 643,
+        "radius": 30
+      },
+      {
+        "wheel": "rl",
+        "x": 322,
+        "y": 643,
+        "radius": 30
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 661,
+        "y": 640,
+        "radius": 36
+      },
+      {
+        "wheel": "fl",
+        "x": 861,
+        "y": 625,
+        "radius": 24
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 1059,
+        "y": 640,
+        "radius": 54
+      },
+      {
+        "wheel": "fl",
+        "x": 1451,
+        "y": 640,
+        "radius": 54
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 448,
+        "y": 260,
+        "radius": 30
+      },
+      {
+        "wheel": "fl",
+        "x": 655,
+        "y": 275,
+        "radius": 36
+      }
+    ]
+  }
+}
