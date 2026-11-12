@@ -681,7 +681,8 @@
       "61/39 source distribution retained; 1861/1175lb source axle weights imply61.3/38.7 after rounding.",
       "Wheel centers and sprite perspective are manual visual estimates, not changes to physical dimensions.",
       "CVT1800rpm cruise/6000rpm full-throttle target and1ratio-unit/s slew, .1 converter slip/1.6 multiplication and .84 drivetrain efficiency are explicit simulation assumptions. Single gearRatios entry2.805 is controller envelope initialization, not a fixed forward gearbox.",
-      "Actual-runner launch/rolling/reverse validated against isolated CVT candidate; production browser artwork QA and merged foundation still required."
+      "Actual-runner launch/rolling/reverse validated against isolated CVT candidate; production browser artwork QA and merged foundation still required.",
+      "Visual wheel fit covers vertical transparent opening extent plus2 source pixels; a shared per-view cover scale avoids exposed road stripes. FrontRight rear-wheel center corrected to bounded opening2091,600; other centers remain visual estimates. Physical tire radius and all sourced specs unchanged."
     ],
     "artwork": "Original logo-free sage/charcoal salvage sedan and cockpit; existing steeringwheel reused."
   },
@@ -705,13 +706,13 @@
         "wheel": "fr",
         "x": 1895,
         "y": 660,
-        "radius": 47
+        "radius": 69
       },
       {
         "wheel": "rr",
-        "x": 2114,
-        "y": 627,
-        "radius": 32
+        "x": 2091,
+        "y": 600,
+        "radius": 37
       }
     ],
     "right": [
@@ -719,13 +720,13 @@
         "wheel": "fr",
         "x": 1107,
         "y": 283,
-        "radius": 56
+        "radius": 65
       },
       {
         "wheel": "rr",
         "x": 1537,
         "y": 283,
-        "radius": 56
+        "radius": 64
       }
     ],
     "rearRight": [
@@ -733,13 +734,13 @@
         "wheel": "fr",
         "x": 1701,
         "y": 258,
-        "radius": 32
+        "radius": 47
       },
       {
         "wheel": "rr",
         "x": 1849,
         "y": 285,
-        "radius": 46
+        "radius": 56
       }
     ],
     "rear": [
@@ -761,13 +762,13 @@
         "wheel": "rl",
         "x": 658,
         "y": 658,
-        "radius": 46
+        "radius": 68
       },
       {
         "wheel": "fl",
         "x": 884,
         "y": 628,
-        "radius": 32
+        "radius": 42
       }
     ],
     "left": [
@@ -775,13 +776,13 @@
         "wheel": "rl",
         "x": 1067,
         "y": 658,
-        "radius": 56
+        "radius": 74
       },
       {
         "wheel": "fl",
         "x": 1480,
         "y": 658,
-        "radius": 56
+        "radius": 72
       }
     ],
     "frontLeft": [
@@ -789,14 +790,15 @@
         "wheel": "rl",
         "x": 435,
         "y": 257,
-        "radius": 32
+        "radius": 41
       },
       {
         "wheel": "fl",
         "x": 662,
         "y": 288,
-        "radius": 47
+        "radius": 69
       }
     ]
-  }
+  },
+  "wheelFit": "cover"
 }
