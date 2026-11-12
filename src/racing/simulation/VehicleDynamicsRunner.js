@@ -8,6 +8,7 @@ import {addItemVehicleForce} from '../../items/ItemVehicleEffect.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './SimulationMath.js';
 import {
   ContactPatchTireModel,
+  updateCountersteeringRange,
   resolvePhysicalCenterSteeringAngle
 } from './ContactPatchTireModel.js';
 import { HandlingAssist } from './HandlingAssist.js';
@@ -364,6 +365,7 @@ const KNOWN_ASSIST_FIELDS = Object.freeze([
   'absEnabled',
   'autoShift',
   'launchControlEnabled',
+  'launchControlStaging',
   'stabilityControlEnabled',
   'tractionControlEnabled'
 ]);
@@ -837,6 +839,8 @@ export function createVehicleDynamicsState(initial = {}) {
     )),
     bodyLongitudinalSpeedMps: quantize(initial.bodyLongitudinalSpeedMps ?? initialSpeed),
     bodyLateralSpeedMps: quantize(initial.bodyLateralSpeedMps ?? 0),
+    countersteerRangeLeft: clamp(Number(initial.countersteerRangeLeft)||0,0,1),
+    countersteerRangeRight: clamp(Number(initial.countersteerRangeRight)||0,0,1),
     signedTravelSpeedMps: quantize(initial.signedTravelSpeedMps ?? initialSpeed),
     yawRad: quantize(initialYaw),
     yawRateRadps: quantize(initial.yawRateRadps ?? initial.yawVelocityRadps ?? 0),
@@ -1165,6 +1169,8 @@ export function createVehicleDynamicsConfig(config = {}) {
     contactFootprintSamples: clamp(Math.trunc(Number(config.contactFootprintSamples) || 6), 4, 8),
     contactFootprintMaxGapM: clamp(Number(config.contactFootprintMaxGapM) || 0.045, 0.015, 0.12),
     maxSteerAngleRad: clamp(Number(config.maxSteerAngleRad) || 0.52, 0.05, 1.2),
+    // Selected by the ABS/TC matrix and the separate all-aids-off late-release audit.
+    digitalRecoverySlipAngleRad: clamp(Number(config.digitalRecoverySlipAngleRad) || 0.5 * Math.PI / 180, 0.25 * Math.PI / 180, 3 * Math.PI / 180),
     steeringWheelRatio: Math.max(1, Number(config.steeringWheelRatio) || 14),
     physicalProfileId: config.physicalProfileId ? String(config.physicalProfileId) : null,
     powerHp: Math.max(0, Number(config.powerHp) || 0),
@@ -2541,6 +2547,8 @@ export class VehicleDynamicsRunner {
       groundSpeedMps: 0,
       bodyLongitudinalSpeedMps: 0,
       bodyLateralSpeedMps: 0,
+      countersteerRangeLeft: 0,
+      countersteerRangeRight: 0,
       signedTravelSpeedMps: 0,
       yawRateRadps: 0,
       angularVelocityWorld: { x: 0, y: 0, z: 0 },
@@ -4689,6 +4697,7 @@ export class VehicleDynamicsRunner {
       this.stationaryResetHold = null;
       suppressThrottleForResetRelease = true;
     }
+    updateCountersteeringRange(this.state, this.config, 1 / this.config.chassisHz);
     const previousHandbrakeCommand = this.state.handbrakeCommandState || {};
     const holdSequence = Math.max(0, Math.trunc(Number(sampledControls.handbrakeHoldSequence || 0)));
     const newHoldCommand = holdSequence > Math.max(0, Math.trunc(Number(

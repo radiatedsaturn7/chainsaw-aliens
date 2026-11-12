@@ -530,7 +530,8 @@
       "Real car has staggered tires; common editor size is provisional.",
       "Original salvage body collider profile and wheel placement require visual/physics QA; not certified manufacturer geometry.",
       "Collider overhangs, CG height, track, wheel radius and body sections scaled explicitly for kei dimensions; front/rear axle distances derived from wheelbase and estimated 45% front weight.",
-      "Torque curve anchors at 2600 and 6000 rpm sourced/derived; remaining samples are estimates. Editor rounds lb-ft to integers, approximately 77 lb-ft and 63 hp."
+      "Torque curve anchors at 2600 and 6000 rpm sourced/derived; remaining samples are estimates. Editor rounds lb-ft to integers, approximately 77 lb-ft and 63 hp.",
+      "Wheel-well centers/radii measured manually from original sprite sheet; per-angle graphical scale/placement calibrated to production rear-axle anchored wheel rig. These are visual estimates, not changes to physical dimensions; browser review required."
     ],
     "verifiedFacts": {
       "heightM": 1.18,
@@ -538,5 +539,119 @@
       "torqueRpm": 2600,
       "engineLayout": "mid-engine three-cylinder"
     }
+  },
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 77,
+        "y": 379,
+        "radius": 30
+      },
+      {
+        "wheel": "fr",
+        "x": 298,
+        "y": 379,
+        "radius": 30
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1617,
+        "y": 758,
+        "radius": 39
+      },
+      {
+        "wheel": "rr",
+        "x": 1715,
+        "y": 723,
+        "radius": 33
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 969,
+        "y": 376,
+        "radius": 49
+      },
+      {
+        "wheel": "rr",
+        "x": 1257,
+        "y": 372,
+        "radius": 49
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1411,
+        "y": 359,
+        "radius": 34
+      },
+      {
+        "wheel": "rr",
+        "x": 1533,
+        "y": 379,
+        "radius": 40
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 74,
+        "y": 753,
+        "radius": 30
+      },
+      {
+        "wheel": "rl",
+        "x": 294,
+        "y": 753,
+        "radius": 30
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 611,
+        "y": 762,
+        "radius": 38
+      },
+      {
+        "wheel": "fl",
+        "x": 725,
+        "y": 739,
+        "radius": 34
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 905,
+        "y": 766,
+        "radius": 47
+      },
+      {
+        "wheel": "fl",
+        "x": 1187,
+        "y": 770,
+        "radius": 48
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 440,
+        "y": 348,
+        "radius": 31
+      },
+      {
+        "wheel": "fl",
+        "x": 581,
+        "y": 381,
+        "radius": 39
+      }
+    ]
   }
 }

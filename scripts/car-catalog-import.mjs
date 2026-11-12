@@ -13,6 +13,7 @@ import {gzipSync,gunzipSync} from 'node:zlib';
 import {createHash} from 'node:crypto';
 import RaceEditor from '../src/ui/RaceEditor.js';
 import {carSheetDocument,prepareCarSheet,assignCarSheet} from '../src/racing/CarGraphicImport.js';
+import {calibrateCatalogPlacement} from './car-catalog-placement.mjs';
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const safe=s=>typeof s==='string' && /^[a-zA-Z0-9][a-zA-Z0-9 _.-]*$/.test(s) && !s.includes('..');
 export function decodePng(filename){
@@ -35,11 +36,13 @@ export function buildCatalogDocuments(config,body,dashboard,sourceHashes={}){
  if(!car.transmissions||!car.transmissions[car.defaultTransmissionType])throw Error('Explicit transmission configuration required');
  if(!Array.isArray(mapping)||mapping.length!==8||new Set(mapping).size!==8||mapping.some(n=>!Number.isInteger(n)||n<0||n>7))throw Error('Explicit eight-angle mapping required');
  const bodyName=`catalog-${car.id}-body`,dashboardName=`catalog-${car.id}-dashboard`;
- const bodyDoc=carSheetDocument(body,prepareCarSheet(body));
+ const prepared=prepareCarSheet(body);
+ const bodyDoc=carSheetDocument(body,prepared);
  const dashDoc=dashboardDocument(dashboard);
  const editor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});
  const clean=editor.normalizeLoadedCarDocument(structuredClone(car));
  assignCarSheet(clean,'body',bodyName,mapping,bodyDoc);
+ if(config.authoredWheelAnchors)calibrateCatalogPlacement(editor,clean,bodyDoc,prepared,mapping,config.authoredWheelAnchors);
  clean.art.interior.dashboard={...clean.art.interior.dashboard,artRef:dashboardName};
  clean.art.interior.steeringWheel={...clean.art.interior.steeringWheel,artRef:'steeringwheel',frameIndex:0};
  clean.catalogProvenance={...structuredClone(provenance),sourceHashes};

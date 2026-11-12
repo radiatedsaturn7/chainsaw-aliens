@@ -8,12 +8,15 @@ const slots=['ecu','intake','exhaust','ignition','camshaft','fuel-system','turbo
 export function garageCarPerformance(car,tuning){
  return calculateCarPerformance({...car,transmissions:{},tuning:{...car.tuning,...tuning,topSpeedMph:tuning.topSpeedMps!=null?tuning.topSpeedMps/0.44704:car.tuning?.topSpeedMph}});
 }
-export async function planAutoUpgrade(garage,ref,stock,target,catalog,evaluate,progress=garage.items.progress){
+export async function planAutoUpgrade(garage,ref,stock,target,catalog,evaluate,progress=garage.items.progress,{signal}={}){
+ signal?.throwIfAborted();
  const limit=AUTO_UPGRADE_CLASSES.find(c=>c.label===target)?.limit;
  if(!safeGarageKey(ref)||limit===undefined)throw Error('Choose a car and target class');
  stock=await garage.stockBaseline(stock);
+ signal?.throwIfAborted();
  const setup=garage.configuration(ref,progress),original=garage.installed(ref,progress),tires={};
  for(const item of [...original,...catalog.values()].filter(Boolean))if(item.carPart?.tireRef&&!tires[item.carPart.tireRef]){try{tires[item.carPart.tireRef]=await garage.loadTire(item.carPart.tireRef);}catch{}}
+ signal?.throwIfAborted();
  const baseline=original.filter(item=>!slots.includes(item.carPart.slot));
  const retainedRanges=garageTuningRanges(baseline);
  const retainedTune=Object.fromEntries(Object.entries(setup.tune).filter(([id,value])=>retainedRanges[id]&&value>=retainedRanges[id].min&&value<=retainedRanges[id].max));
@@ -33,6 +36,7 @@ export async function planAutoUpgrade(garage,ref,stock,target,catalog,evaluate,p
  let beam=[{parts:baseline,refs:[],cost:0,rating:baseRating}];
  for(const slot of slots){
   await new Promise(resolve=>setTimeout(resolve,0));
+  signal?.throwIfAborted();
   const options=eligible.filter(([,item])=>item.carPart.slot===slot),next=[...beam];
   for(const state of beam)for(const [partRef,item] of options){
    if(state.parts.some(p=>p.id===item.id))continue;
@@ -60,6 +64,7 @@ export async function planAutoUpgrade(garage,ref,stock,target,catalog,evaluate,p
  // optimum so applying the same class again cannot sell another small upgrade.
  while(true){
   await new Promise(resolve=>setTimeout(resolve,0));
+  signal?.throwIfAborted();
   let improved=best;
   for(const [partRef,item] of eligible){
    if(best.parts.some(p=>p.id===item.id))continue;

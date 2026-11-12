@@ -100,3 +100,35 @@ test('Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometr
  const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(doc,{name:c.name});const reopened=e.serializeSelectedCarDocument().car;
  assert.deepEqual(reopened.transmissions.automatic.gearRatios,t.gearRatios);assert.deepEqual(reopened.catalogProvenance,c.catalogProvenance);
 });
+
+for(const [id,name] of [['kestrel-660-2018','2018 Kestrel 660'],['flint-coupe-2005','2005 Flint Coupe'],['caravan-9-2024','2024 Caravan-9']])
+test(`${name} measured wheel wells coincide with production rig after editor roundtrip`,()=>{
+ const config=JSON.parse(fs.readFileSync(new URL(`../../assets/car-catalog/${id}/import.json`,import.meta.url)));
+ const document=JSON.parse(fs.readFileSync(new URL(`../../data/server-storage/files/cars/${name}/document.json`,import.meta.url)));
+ const editor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});
+ editor.applyLoadedCarDocument(document,{name:document.car.name});
+ const car=editor.serializeSelectedCarDocument().car;
+ const stored=JSON.parse(fs.readFileSync(new URL(`../../data/server-storage/files/art/catalog-${id}-body/document.json`,import.meta.url)));
+ const art=JSON.parse(gunzipSync(Buffer.from(stored.data,'base64')));
+ const source=decodePng(new URL(`../../assets/car-catalog/${id}/body.png`,import.meta.url).pathname);
+ // Use the exact import layout, including differently centered crop rectangles.
+ return import('../../src/racing/CarGraphicImport.js').then(({prepareCarSheet})=>{
+  const prepared=prepareCarSheet(source);
+  for(const [i,slot]of ['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft'].entries()){
+   const body=car.art.angleLayers[slot].body.transforms,tires=car.art.angleLayers[slot].tires.transforms;
+   const neutral=structuredClone(car);neutral.art.tireScaleX=1;neutral.art.tireScaleY=1;
+   const rig=editor.getRaceSpriteWheelRig({car:neutral,viewSlot:slot,bodyBaseWidth:100});
+   const f=config.mapping[i],crop=prepared.crops[f],bounds=art.frameBounds[f];
+   for(const p of config.authoredWheelAnchors[slot]){
+    const x=(p.x-crop.x+bounds.x)/art.width,y=(p.y-crop.y+bounds.y)/art.height;
+    const bx=(x-.5)*100*body.bodyScaleX+body.bodyOffsetX*16;
+    const by=(y-.58)*74*body.bodyScaleY+body.bodyOffsetY*74*.22;
+    const axle=p.wheel.startsWith('f')?'front':'rear',hub=rig.wheels[p.wheel];
+    const hx=hub.x+tires[axle+'TireOffsetX']*100*rig.offsetScale*.14;
+    const hy=hub.y+tires[axle+'TireOffsetY']*74*rig.offsetScale*.2;
+    assert.ok(Math.abs(bx-hx)<.01,`${slot}/${p.wheel} x detached`);
+    assert.ok(Math.abs(by-hy)<.01,`${slot}/${p.wheel} y detached`);
+   }
+  }
+ });
+});

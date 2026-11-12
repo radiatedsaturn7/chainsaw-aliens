@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-expanded-bush-winterberry-01",
+    "name": "expanded-bush-winterberry-01",
+    "artRef": "expanded-bush-winterberry-01",
+    "isFence": false,
+    "fenceThicknessM": 0.3,
+    "itemType": "scenery",
+    "unlockTrackId": "",
+    "model": null,
+    "widthM": 1.7,
+    "heightM": 1.7,
+    "groundOffsetM": 0.1992,
+    "hitboxWidthM": 1.4449999999999998,
+    "hitboxHeightM": 1.53,
+    "weightKg": 5,
+    "defaultRule": {
+      "behavior": "flatten",
+      "speedDrainPercent": 1,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

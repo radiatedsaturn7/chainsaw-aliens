@@ -100,3 +100,30 @@ test('raw canonical default terrain also receives ground artwork but painted sur
  assert.deepEqual(packed.artGroups,[{artRef:'providenceGround',start:0,count:3}]);
  assert.deepEqual(editor.packRaceThreeTerrainFromCanonicalMesh({triangles:[triangle({tileId:'grass'})]},{textured:false}).artGroups,[]);
 });
+
+test('packed terrain reuses material lookups while preserving per-triangle lighting and edits',()=>{
+ const editor=new RaceEditor({});
+ editor.getRaceSunSettings=()=>({angleDeg:90,intensity:.8});
+ const tileCell={tileId:'dirt',artRef:'dirt-art'};
+ const mesh={triangles:[-2,0,2].map(height=>({tileCell,terrainCell:{tileCell},vertices:[
+  {x:0,z:0,elevation:0},{x:10,z:0,elevation:height},{x:0,z:10,elevation:0}
+ ]}))};
+ const palette=editor.getRaceWeightedGroundTilePalette(null,'dirt');
+ const expected=mesh.triangles.map(t=>({
+  color:editor.getRaceWebGLColorArray(editor.getRaceTerrainSunTint(t.vertices,palette.groundA)).slice(0,3),
+  texture:editor.getRaceWebGLColorArray(editor.getRaceTextureSunTint(t.vertices)).slice(0,3)
+ }));
+ const original=editor.getRaceWeightedGroundTilePalette.bind(editor);let reads=0;
+ editor.getRaceWeightedGroundTilePalette=(...args)=>{reads++;return original(...args);};
+ const packed=editor.packRaceThreeTerrainFromCanonicalMesh(mesh,{useSunShading:true,textured:true});
+ assert.equal(reads,1);
+ for(let i=0;i<expected.length;i++)for(let vertex=0;vertex<3;vertex++){
+  const offset=i*9+vertex*3;
+  assert.deepEqual(packed.colors.slice(offset,offset+3),expected[i].color);
+  assert.deepEqual(packed.textureColors.slice(offset,offset+3),expected[i].texture);
+ }
+ assert.deepEqual(packed.artGroups,[{artRef:'dirt-art',start:0,count:9}]);
+ tileCell.artRef='edited-art';
+ assert.equal(editor.packRaceThreeTerrainFromCanonicalMesh(mesh,{textured:true}).artGroups[0].artRef,'edited-art');
+ assert.equal(reads,2);
+});

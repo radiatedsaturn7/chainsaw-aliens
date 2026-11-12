@@ -81,3 +81,17 @@ test('scaled Three world keeps logical camera, sprite bounds and compositing coo
   assert.equal(stats.effectiveRenderScaleX, 501 / 1001);
   assert.equal(stats.effectiveRenderScaleY, 351 / 701);
 });
+
+test('slow simulation frames cannot lower configured resolution or change sharpness across pause',()=>{
+ const editor=Object.create(RaceEditor.prototype);
+ editor.playtestSession={running:true};editor.getRaceGroundRenderer=()=> 'webgl-track';
+ editor.raceWebGLTrackDynamicScale=1;
+ for(const paused of [false,true,false]){
+  editor.raceInput={paused};
+  for(let i=0;i<60;i++){
+   editor.lastRacePlaytestFpsMs=0;
+   editor.updateRacePlaytestFps(paused?1/60:1/25);
+   assert.equal(editor.getRaceWebGLTrackRenderResolution({resolution:75}),.75);
+  }
+ }
+});

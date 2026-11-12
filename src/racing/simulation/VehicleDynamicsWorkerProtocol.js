@@ -171,6 +171,7 @@ export function createVehicleControlInputBuffer(input = {}) {
     | ((input.autoShift ?? assists.autoShift) ? 4 : 0)
     | ((input.stabilityControlEnabled ?? assists.stabilityControlEnabled) ? 8 : 0)
     | ((input.launchControlEnabled ?? assists.launchControlEnabled) ? 16 : 0)
+    | ((input.launchControlStaging ?? assists.launchControlStaging) ? 32 : 0)
   );
   return buffer;
 }
@@ -210,7 +211,8 @@ export function readVehicleControlInput(buffer) {
       tractionControlEnabled: (flags & 2) !== 0,
       autoShift: (flags & 4) !== 0,
       stabilityControlEnabled: (flags & 8) !== 0,
-      launchControlEnabled: (flags & 16) !== 0
+      launchControlEnabled: (flags & 16) !== 0,
+      launchControlStaging: (flags & 32) !== 0
     }
   };
 }

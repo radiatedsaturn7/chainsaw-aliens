@@ -659,8 +659,123 @@
       "Shift duration, shift thresholds, converter slip/multiplication, drivetrain efficiency, final-RPM limits, idle, torque samples outside5000/6400rpm, suspension/brake/differential settings, aero, drag, performance targets, CG, overhang split and body collision sections are provisional simulation estimates.",
       "Nominal unloaded tire radius calculated fromP235/65R17; actual loaded rolling radius not sourced.",
       "58%front mass distribution is estimated. Axle distances derived from this estimate and sourced wheelbase.",
-      "Fuel19USgal and3turns lock-to-lock are recorded reference facts; this integration does not claim fuel-system capacity or steering-travel runtime wiring beyond steeringRatio14.23."
+      "Fuel19USgal and3turns lock-to-lock are recorded reference facts; this integration does not claim fuel-system capacity or steering-travel runtime wiring beyond steeringRatio14.23.",
+      "Wheel-well centers/radii measured manually from original sprite sheet; per-angle graphical scale/placement calibrated to production rear-axle anchored wheel rig. These are visual estimates, not changes to physical dimensions; browser review required."
     ],
     "artwork": "Original logo-free salvage minivan body and cockpit, existing shared steeringwheel; not a factory replica."
+  },
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 55,
+        "y": 369,
+        "radius": 24
+      },
+      {
+        "wheel": "fr",
+        "x": 302,
+        "y": 369,
+        "radius": 24
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1680,
+        "y": 753,
+        "radius": 35
+      },
+      {
+        "wheel": "rr",
+        "x": 1841,
+        "y": 730,
+        "radius": 28
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 990,
+        "y": 363,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 1342,
+        "y": 363,
+        "radius": 46
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1510,
+        "y": 336,
+        "radius": 27
+      },
+      {
+        "wheel": "rr",
+        "x": 1656,
+        "y": 359,
+        "radius": 32
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 62,
+        "y": 749,
+        "radius": 24
+      },
+      {
+        "wheel": "rl",
+        "x": 305,
+        "y": 749,
+        "radius": 24
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 580,
+        "y": 747,
+        "radius": 33
+      },
+      {
+        "wheel": "fl",
+        "x": 763,
+        "y": 727,
+        "radius": 28
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 931,
+        "y": 747,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 1303,
+        "y": 750,
+        "radius": 45
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 435,
+        "y": 333,
+        "radius": 27
+      },
+      {
+        "wheel": "fl",
+        "x": 609,
+        "y": 365,
+        "radius": 33
+      }
+    ]
   }
 }

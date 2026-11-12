@@ -494,7 +494,8 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
           grip: sample?.effectiveGrip ?? contact.friction ?? 1,
           effectiveGrip: sample?.effectiveGrip ?? contact.friction ?? 1,
           effectiveGripMultiplier: sample?.effectiveGripMultiplier ?? 1,
-          surfaceGripScale: localBaseGrip / nominalBaseGrip
+          // Match the player contact model: preserve absolute ground friction.
+          surfaceGripScale: localBaseGrip
             * Number(sample?.effectiveGripMultiplier ?? 1),
           surfaceId: contact.surfaceId || contact.surface,
           trackStateConditionApplied: Boolean(sample)

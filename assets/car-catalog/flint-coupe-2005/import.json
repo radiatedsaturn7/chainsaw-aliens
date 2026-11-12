@@ -551,7 +551,8 @@
       "Gear ratios derived from rounded published road-speed development, NOT verified gearbox tooth counts. Reverse3.45 is an estimate.",
       "Rolling radius derived from1.941m published circumference, rather than nominal unloaded tire radius.",
       "Unattributed suspension/differential/brake/drag/audio/CG/overhang/body-piece values, performance targets and intermediate torque-curve samples are provisional simulation estimates.",
-      "Editor quantizes curve torque to integer lb-ft:130kW at7000rpm rounds to131lb-ft and displayed175hp, vs reference174.33mechanical hp (~0.4% error)."
+      "Editor quantizes curve torque to integer lb-ft:130kW at7000rpm rounds to131lb-ft and displayed175hp, vs reference174.33mechanical hp (~0.4% error).",
+      "Wheel-well centers/radii measured manually from original sprite sheet; per-angle graphical scale/placement calibrated to production rear-axle anchored wheel rig. These are visual estimates, not changes to physical dimensions; browser review required."
     ],
     "verifiedFacts": {
       "displacement": {
@@ -681,5 +682,119 @@
       "status": "estimate_from_rounded_secondary_developments_not_verified_gears"
     },
     "artwork": "Original fictional logo-free eight-view body and cockpit. Shared existing steeringwheel. Not replica."
+  },
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 49,
+        "y": 361,
+        "radius": 25
+      },
+      {
+        "wheel": "fr",
+        "x": 307,
+        "y": 361,
+        "radius": 25
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1729,
+        "y": 748,
+        "radius": 38
+      },
+      {
+        "wheel": "rr",
+        "x": 1858,
+        "y": 700,
+        "radius": 29
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1000,
+        "y": 362,
+        "radius": 50
+      },
+      {
+        "wheel": "rr",
+        "x": 1357,
+        "y": 361,
+        "radius": 50
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1511,
+        "y": 337,
+        "radius": 27
+      },
+      {
+        "wheel": "rr",
+        "x": 1629,
+        "y": 359,
+        "radius": 34
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 49,
+        "y": 750,
+        "radius": 25
+      },
+      {
+        "wheel": "rl",
+        "x": 305,
+        "y": 750,
+        "radius": 25
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 633,
+        "y": 747,
+        "radius": 37
+      },
+      {
+        "wheel": "fl",
+        "x": 785,
+        "y": 714,
+        "radius": 27
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 934,
+        "y": 750,
+        "radius": 50
+      },
+      {
+        "wheel": "fl",
+        "x": 1306,
+        "y": 753,
+        "radius": 49
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 417,
+        "y": 318,
+        "radius": 29
+      },
+      {
+        "wheel": "fl",
+        "x": 586,
+        "y": 360,
+        "radius": 38
+      }
+    ]
   }
 }

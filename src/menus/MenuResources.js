@@ -21,19 +21,48 @@ export class MenuResources {
   async prepareGarage(){
     await this.garage?.load();
     await hydrateServerStorage({folder:'tires'}).catch(()=>null);
-    this.autoQuotes.clear();
+    this.cancelAutoUpgradeQuotes();
     this.setupCatalog=await loadGarageSetupCatalog(this.garage);
     const entries=await itemLibrary.list();
     this.partCatalog=(await Promise.all(entries.map(async e=>{try{return {ref:e.name,item:await itemLibrary.load(e.name)};}catch{return null;}}))).filter(e=>e?.item.carPart);
   }
   performance(car){return garageCarPerformance(car,this.game.carEditor.getRaceCarTuning(car));}
+  cancelAutoUpgradeQuotes(){
+    this.autoQuoteBatch?.controller.abort();
+    this.autoQuoteBatch=null;
+    this.autoQuotes.clear();
+  }
   autoUpgradeQuote(ref,target){
     const stock=this.stockCar(ref);if(!stock)return null;
-    const key=`${ref}:${target}:${this.garage.revision}:${this.garage.items.revision}`;
+    const garage=this.garage;
+    const revision=`${ref}:${garage.revision}:${garage.items.revision}`;
+    if(this.autoQuoteBatch?.revision!==revision||this.autoQuoteBatch?.stock!==stock){
+      this.cancelAutoUpgradeQuotes();
+      this.autoQuoteBatch={revision,stock,controller:new AbortController(),id:(this.autoQuoteGeneration||0)+1};
+      this.autoQuoteGeneration=this.autoQuoteBatch.id;
+    }
+    const batch=this.autoQuoteBatch,key=`${revision}:${target}`;
     const cached=this.autoQuotes.get(key);if(cached?.stock===stock)return cached.result;
-    this.request('auto:'+key,async()=>{
-      let result;try{result=await planAutoUpgrade(this.garage,ref,stock,target,new Map(this.garageCatalog().map(e=>[e.ref,e.item])),car=>this.performance(car));}catch(error){result={error:error.message};}
-      this.autoQuotes.set(key,{stock,result});
+    const signal=batch.controller.signal;
+    // PI searches are CPU-heavy. Run one at a time, and discard the entire
+    // batch when Stock, another part, or a different car changes its inputs.
+    this.request(`auto:${batch.id}:${key}`,()=>{
+      const task=(this.autoQuoteQueue||Promise.resolve()).then(async()=>{
+        if(signal.aborted)return;
+        let result;
+        try{
+          result=await planAutoUpgrade(garage,ref,stock,target,
+            new Map(this.garageCatalog().map(e=>[e.ref,e.item])),car=>this.performance(car),
+            garage.items.progress,{signal});
+        }catch(error){
+          if(signal.aborted)return;
+          result={error:error.message};
+        }
+        if(!signal.aborted&&this.autoQuoteBatch===batch
+          &&revision===`${ref}:${garage.revision}:${garage.items.revision}`)this.autoQuotes.set(key,{stock,result});
+      });
+      this.autoQuoteQueue=task.catch(()=>{});
+      return task;
     });return null;
   }
   stockPart(slot){return this.partCatalog.find(({item})=>(item.carPart.stock||isStockPart(item))&&item.carPart.slot===slot)?.item;}

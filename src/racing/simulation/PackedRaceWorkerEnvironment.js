@@ -1,3 +1,4 @@
+import {getTrackStateSurfaceProfile} from '../trackState/TrackStateProfiles.js';
 import { getSurfaceById } from '../raceData.js';
 import {
   getRaceBakedSurfaceTrianglesInBounds,
@@ -35,6 +36,27 @@ function createSample(raw, point, sampler, fallbackHeightM = 0) {
     queryPosition: point,
     reason: null
   };
+}
+
+// A debug material swap must reach roads ahead of the car, not just cells
+// transferred at worker startup. Geometry remains the immutable packed sampler.
+export function applyPackedDebugRoad(trackState, surfaceSampler, update) {
+  if (!trackState || !surfaceSampler) return;
+  if (!trackState.debugRoadPackedSampler) {
+    trackState.debugRoadPackedSampler = surfaceSampler;
+    trackState.sampleBaseSurface = point => {
+      const sample = sampleRaceBakedSurface(surfaceSampler, point) || {};
+      const baseSurfaceId = sample.materialId || 'asphalt';
+      const profile = getTrackStateSurfaceProfile(baseSurfaceId, baseSurfaceId, trackState.profileOverrides);
+      return {region:sample.region || 'terrain',baseSurfaceId,materialId:baseSurfaceId,
+        friction:profile.grip,normal:sample.normal,
+        elevationM:Number(sample.elevation || 0)*Number(surfaceSampler.elevationScaleM || 1),
+        surfaceTemperatureC:trackState.lastWeatherForcing?.ambientTemperatureC ?? 20};
+    };
+    trackState.baseSurfaceCache.clear();
+    trackState.preparedBaseSurfaces.clear();
+  }
+  trackState.setDebugRoad(update);
 }
 
 export function getPackedRaceWorkerEnvironmentTransferables(descriptor = {}) {
@@ -167,6 +189,12 @@ export function createPackedRaceWorkerEnvironmentProvider({
           ...(sample.materialId ? { surfaceId: sample.materialId, grip: getSurfaceById(sample.materialId).grip } : null),
           ...(trackSample ? { grip: Number(trackSample.effectiveGrip || 1) } : null)
         };
+        if (trackState?.debugRoadStartStep != null && trackSample?.cell?.region === 'road') {
+          output.materialByWheel[wheelId] = {...trackSample.cell,
+            surfaceId:trackSample.effectiveSurfaceId,
+            surfaceGripScale:trackSample.cell.baseGrip * trackSample.effectiveGripMultiplier,
+            grip:trackSample.effectiveGrip,trackStateConditionApplied:true};
+        }
         output.trackStateSampleByWheel[wheelId] = trackSample;
       }
     }

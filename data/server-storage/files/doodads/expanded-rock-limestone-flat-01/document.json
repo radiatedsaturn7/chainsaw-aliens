@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-expanded-rock-limestone-flat-01",
+    "name": "expanded-rock-limestone-flat-01",
+    "artRef": "expanded-rock-limestone-flat-01",
+    "isFence": false,
+    "fenceThicknessM": 0.3,
+    "itemType": "scenery",
+    "unlockTrackId": "",
+    "model": null,
+    "widthM": 0.65,
+    "heightM": 0.65,
+    "groundOffsetM": 0.2158,
+    "hitboxWidthM": 0.5525,
+    "hitboxHeightM": 0.5850000000000001,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

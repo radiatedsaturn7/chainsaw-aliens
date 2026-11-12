@@ -1,0 +1,4858 @@
+[
+  {
+    "id": "H01-S02",
+    "name": "RI 116 — North Smithfield / Scituate",
+    "event_type": "Tarmac time trial",
+    "selection_guidance": "Choose a rural, bending section with meaningful elevation and camber",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 1,
+    "hubBoss": "Tower Hill Road",
+    "status": "installed",
+    "lengthM": 3451.2174918886117,
+    "laps": 1,
+    "estimatedDrivingSeconds": 181,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 41.8779672,
+      "lon": -71.5425826
+    },
+    "finishGps": {
+      "lat": 41.863552,
+      "lon": -71.57576
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H01-S02.json",
+    "raceRef": "RI 116 — North Smithfield Scituate",
+    "documentPath": "races/RI 116 %E2%80%94 North Smithfield Scituate/document.json",
+    "hubRaceRef": "Tower Hill Road",
+    "sceneryCount": 150,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "RI 116 — North Smithfield / Scituate"
+  },
+  {
+    "id": "H01-S05",
+    "name": "Thompson Speedway — 1.7-mile road course",
+    "event_type": "Circuit",
+    "selection_guidance": "Run laps on the road course; track geometry may require a special source",
+    "import_kind": "track_trace",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 1,
+    "hubBoss": "Tower Hill Road",
+    "status": "installed",
+    "lengthM": 2416.5217192632003,
+    "laps": 1,
+    "estimatedDrivingSeconds": 174,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 41.9810955,
+      "lon": -71.8256118
+    },
+    "finishGps": {
+      "lat": 41.9810955,
+      "lon": -71.8256118
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H01-S05.json",
+    "raceRef": "Thompson Speedway — 1.7-mile road course",
+    "documentPath": "races/Thompson Speedway %E2%80%94 1.7-mile road course/document.json",
+    "hubRaceRef": "Tower Hill Road",
+    "sceneryCount": 94,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Thompson Speedway — 1.7-mile road course"
+  },
+  {
+    "id": "H01-S01",
+    "name": "I-95 — Attleboro to Warwick curves",
+    "event_type": "Highway sprint",
+    "selection_guidance": "Find a 2–4-minute S-curve-rich contiguous section; no need to import the whole interstate",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 1,
+    "hubBoss": "Tower Hill Road",
+    "status": "installed",
+    "lengthM": 3704.631830326808,
+    "laps": 1,
+    "estimatedDrivingSeconds": 185,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 41.901999579999995,
+      "lon": -71.35800391999999
+    },
+    "finishGps": {
+      "lat": 41.8779243,
+      "lon": -71.3790563
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H01-S01.json",
+    "raceRef": "I-95 — Attleboro to Warwick curves",
+    "documentPath": "races/I-95 %E2%80%94 Attleboro to Warwick curves/document.json",
+    "hubRaceRef": "Tower Hill Road",
+    "sceneryCount": 162,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "I-95 — Attleboro to Warwick curves"
+  },
+  {
+    "id": "H01-S03",
+    "name": "RI 102 — Victory Highway",
+    "event_type": "Backroad sprint",
+    "selection_guidance": "Pick a section around Burrillville / Glocester with a changing radius of curves",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 1,
+    "hubBoss": "Tower Hill Road",
+    "status": "installed",
+    "lengthM": 3411.1210122420425,
+    "laps": 1,
+    "estimatedDrivingSeconds": 185,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 41.919141499999995,
+      "lon": -71.67092500000001
+    },
+    "finishGps": {
+      "lat": 41.890499,
+      "lon": -71.671233
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H01-S03.json",
+    "raceRef": "RI 102 — Victory Highway",
+    "documentPath": "races/RI 102 %E2%80%94 Victory Highway/document.json",
+    "hubRaceRef": "Tower Hill Road",
+    "sceneryCount": 150,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "RI 102 — Victory Highway"
+  },
+  {
+    "id": "H01-S04",
+    "name": "Pachaug State Forest — public gravel access roads",
+    "event_type": "Gravel rally",
+    "selection_guidance": "Use only official driveable public roads, e.g. Green Falls area primary roads; no hiking/enduro trails",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 1,
+    "hubBoss": "Tower Hill Road",
+    "status": "installed",
+    "lengthM": 2451.4501441895227,
+    "laps": 1,
+    "estimatedDrivingSeconds": 143,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 41.5505564,
+      "lon": -71.8267773
+    },
+    "finishGps": {
+      "lat": 41.5332572,
+      "lon": -71.8113818
+    },
+    "surface": [
+      "dirt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H01-S04.json",
+    "raceRef": "Pachaug State Forest — public gravel access roads",
+    "documentPath": "races/Pachaug State Forest %E2%80%94 public gravel access roads/document.json",
+    "hubRaceRef": "Tower Hill Road",
+    "sceneryCount": 106,
+    "installedSurfaces": [
+      "dirt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Pachaug State Forest — public gravel access roads"
+  },
+  {
+    "id": "H01-S06",
+    "name": "Seekonk Speedway — oval",
+    "event_type": "Short-track race",
+    "selection_guidance": "Multiple laps of the small oval; add a fun in-universe oval challenge",
+    "import_kind": "track_trace",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 1,
+    "hubBoss": "Tower Hill Road",
+    "status": "installed",
+    "lengthM": 449.4570884194403,
+    "laps": 5,
+    "estimatedDrivingSeconds": 190,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 41.7848295,
+      "lon": -71.3013111
+    },
+    "finishGps": {
+      "lat": 41.7848295,
+      "lon": -71.3013111
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H01-S06.json",
+    "raceRef": "Seekonk Speedway — oval",
+    "documentPath": "races/Seekonk Speedway %E2%80%94 oval/document.json",
+    "hubRaceRef": "Tower Hill Road",
+    "sceneryCount": 18,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Seekonk Speedway — oval"
+  },
+  {
+    "id": "H01-S07",
+    "name": "RI 44 — Putnam Pike / Glocester",
+    "event_type": "Forest-road sprint",
+    "selection_guidance": "Curving wooded stretches west of Smithfield",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 1,
+    "hubBoss": "Tower Hill Road",
+    "status": "installed",
+    "lengthM": 3453.152822868422,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 41.9075462,
+      "lon": -71.6645693
+    },
+    "finishGps": {
+      "lat": 41.91964,
+      "lon": -71.698296
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H01-S07.json",
+    "raceRef": "RI 44 — Putnam Pike Glocester",
+    "documentPath": "races/RI 44 %E2%80%94 Putnam Pike Glocester/document.json",
+    "hubRaceRef": "Tower Hill Road",
+    "sceneryCount": 152,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "RI 44 — Putnam Pike / Glocester"
+  },
+  {
+    "id": "H01-S08",
+    "name": "Lime Rock Park — Connecticut",
+    "event_type": "Circuit detour",
+    "selection_guidance": "1.5-mile road course; geographically off-route",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 1,
+    "hubBoss": "Tower Hill Road",
+    "status": "installed",
+    "lengthM": 2411.371845944385,
+    "laps": 1,
+    "estimatedDrivingSeconds": 146,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 41.9251135,
+      "lon": -73.3861351
+    },
+    "finishGps": {
+      "lat": 41.9251135,
+      "lon": -73.3861351
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H01-S08.json",
+    "raceRef": "Lime Rock Park — Connecticut",
+    "documentPath": "races/Lime Rock Park %E2%80%94 Connecticut/document.json",
+    "hubRaceRef": "Tower Hill Road",
+    "sceneryCount": 104,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Lime Rock Park — Connecticut"
+  },
+  {
+    "id": "H01-S09",
+    "name": "Palmer Motorsports Park — Massachusetts",
+    "event_type": "Mountain circuit detour",
+    "selection_guidance": "2.3-mile Whiskey Hill road course with large elevation changes",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 1,
+    "hubBoss": "Tower Hill Road",
+    "status": "installed",
+    "lengthM": 3666.5319140640927,
+    "laps": 1,
+    "estimatedDrivingSeconds": 237,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 42.2319505,
+      "lon": -72.2458325
+    },
+    "finishGps": {
+      "lat": 42.2319505,
+      "lon": -72.2458325
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H01-S09.json",
+    "raceRef": "Palmer Motorsports Park — Massachusetts",
+    "documentPath": "races/Palmer Motorsports Park %E2%80%94 Massachusetts/document.json",
+    "hubRaceRef": "Tower Hill Road",
+    "sceneryCount": 132,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Palmer Motorsports Park — Massachusetts"
+  },
+  {
+    "id": "H02-S01",
+    "name": "Kancamagus Highway — NH 112",
+    "event_type": "Mountain sprint",
+    "selection_guidance": "Select the tightest/most varied part of the 34.5-mile scenic corridor",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 2,
+    "hubBoss": "Mount Washington Auto Road",
+    "status": "installed",
+    "lengthM": 3398.5709535931255,
+    "laps": 1,
+    "estimatedDrivingSeconds": 181,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 44.0408965,
+      "lon": -71.5243137
+    },
+    "finishGps": {
+      "lat": 44.0327075,
+      "lon": -71.4985897
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H02-S01.json",
+    "raceRef": "Kancamagus Highway — NH 112",
+    "documentPath": "races/Kancamagus Highway %E2%80%94 NH 112/document.json",
+    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "sceneryCount": 146,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Kancamagus Highway — NH 112"
+  },
+  {
+    "id": "H02-S02",
+    "name": "Bear Notch Road — Bartlett",
+    "event_type": "Forest descent",
+    "selection_guidance": "Use the seasonal paved connector between Bartlett and NH 112",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 2,
+    "hubBoss": "Mount Washington Auto Road",
+    "status": "installed",
+    "lengthM": 3487.4405887959624,
+    "laps": 1,
+    "estimatedDrivingSeconds": 182,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 44.0356773,
+      "lon": -71.325149
+    },
+    "finishGps": {
+      "lat": 44.0461754,
+      "lon": -71.29174
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H02-S02.json",
+    "raceRef": "Bear Notch Road — Bartlett",
+    "documentPath": "races/Bear Notch Road %E2%80%94 Bartlett/document.json",
+    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "sceneryCount": 152,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Bear Notch Road — Bartlett"
+  },
+  {
+    "id": "H02-S03",
+    "name": "Hurricane Mountain Road — Conway",
+    "event_type": "Hill sprint",
+    "selection_guidance": "Very steep, winding, seasonal paved mountain road",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 2,
+    "hubBoss": "Mount Washington Auto Road",
+    "status": "installed",
+    "lengthM": 3018.5008892798487,
+    "laps": 1,
+    "estimatedDrivingSeconds": 186,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 44.075288650000005,
+      "lon": -71.102787
+    },
+    "finishGps": {
+      "lat": 44.068406800000005,
+      "lon": -71.0723395
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H02-S03.json",
+    "raceRef": "Hurricane Mountain Road — Conway",
+    "documentPath": "races/Hurricane Mountain Road %E2%80%94 Conway/document.json",
+    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "sceneryCount": 129,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Hurricane Mountain Road — Conway"
+  },
+  {
+    "id": "H02-S04",
+    "name": "Crawford Notch — US 302",
+    "event_type": "Alpine sprint",
+    "selection_guidance": "Select a 2–4-minute high-grade section near the notch",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 2,
+    "hubBoss": "Mount Washington Auto Road",
+    "status": "installed",
+    "lengthM": 3632.6896876584947,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 44.1940504,
+      "lon": -71.4062807
+    },
+    "finishGps": {
+      "lat": 44.2231036,
+      "lon": -71.4141515
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H02-S04.json",
+    "raceRef": "Crawford Notch — US 302",
+    "documentPath": "races/Crawford Notch %E2%80%94 US 302/document.json",
+    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "sceneryCount": 160,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Crawford Notch — US 302"
+  },
+  {
+    "id": "H02-S05",
+    "name": "Pinkham Notch — NH 16",
+    "event_type": "Snow-road time trial",
+    "selection_guidance": "Short approach stretch south of Mount Washington Auto Road",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 2,
+    "hubBoss": "Mount Washington Auto Road",
+    "status": "installed",
+    "lengthM": 3674.202919496918,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 44.2467389,
+      "lon": -71.2531936
+    },
+    "finishGps": {
+      "lat": 44.21747116,
+      "lon": -71.24840408
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H02-S05.json",
+    "raceRef": "Pinkham Notch — NH 16",
+    "documentPath": "races/Pinkham Notch %E2%80%94 NH 16/document.json",
+    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "sceneryCount": 162,
+    "installedSurfaces": [
+      "snow"
+    ],
+    "conditionNotes": "",
+    "displayName": "Pinkham Notch — NH 16"
+  },
+  {
+    "id": "H02-S06",
+    "name": "Club Motorsports — Tamworth",
+    "event_type": "Technical circuit",
+    "selection_guidance": "2.5-mile road course with significant elevation changes",
+    "import_kind": "track_trace",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 2,
+    "hubBoss": "Mount Washington Auto Road",
+    "status": "installed",
+    "lengthM": 3601.6736983335845,
+    "laps": 1,
+    "estimatedDrivingSeconds": 228,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 43.822534,
+      "lon": -71.2498848
+    },
+    "finishGps": {
+      "lat": 43.822534,
+      "lon": -71.2498848
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H02-S06.json",
+    "raceRef": "Club Motorsports — Tamworth",
+    "documentPath": "races/Club Motorsports %E2%80%94 Tamworth/document.json",
+    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "sceneryCount": 151,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Club Motorsports — Tamworth"
+  },
+  {
+    "id": "H02-S07",
+    "name": "Team O’Neil Rally School — Dalton",
+    "event_type": "Rally stage",
+    "selection_guidance": "Private gravel network; use a permitted reference or handmade stage, not public-road importer",
+    "import_kind": "track_trace",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 2,
+    "hubBoss": "Mount Washington Auto Road",
+    "status": "installed",
+    "lengthM": 3103.1496712123394,
+    "laps": 1,
+    "estimatedDrivingSeconds": 220,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 44.36491217483608,
+      "lon": -71.71145304000505
+    },
+    "finishGps": {
+      "lat": 44.37709796576455,
+      "lon": -71.70830797332995
+    },
+    "surface": [
+      "gravel"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "hand-authored-fictional",
+    "confidence": "Hand-authored fictional reconstruction; not a surveyed course",
+    "generatedPath": "artifacts/campaign-import/side-races/H02-S07.json",
+    "raceRef": "Team O’Neil-inspired Rally Stage (2994)",
+    "documentPath": "races/Team O%E2%80%99Neil-inspired Rally Stage (2994)/document.json",
+    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "sceneryCount": 134,
+    "installedSurfaces": [
+      "gravel"
+    ],
+    "conditionNotes": "",
+    "displayName": "Team O’Neil-inspired Rally Stage (2994)"
+  },
+  {
+    "id": "H02-S08",
+    "name": "New Hampshire Motor Speedway — Loudon",
+    "event_type": "Oval/road-course detour",
+    "selection_guidance": "Use its 1.6-mile road layout (or oval variant), not the Mt. Washington boss",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 2,
+    "hubBoss": "Mount Washington Auto Road",
+    "status": "installed",
+    "lengthM": 2575.824781930943,
+    "laps": 1,
+    "estimatedDrivingSeconds": 170,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 43.3608635,
+      "lon": -71.4629464
+    },
+    "finishGps": {
+      "lat": 43.3608635,
+      "lon": -71.4629464
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H02-S08.json",
+    "raceRef": "New Hampshire Motor Speedway — Loudon",
+    "documentPath": "races/New Hampshire Motor Speedway %E2%80%94 Loudon/document.json",
+    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "sceneryCount": 98,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "New Hampshire Motor Speedway — Loudon"
+  },
+  {
+    "id": "H02-S09",
+    "name": "New England Dragway — Epping",
+    "event_type": "Drag strip detour",
+    "selection_guidance": "Real quarter-mile strip; make a speed-trap event or short acceleration challenge",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 2,
+    "hubBoss": "Mount Washington Auto Road",
+    "status": "installed",
+    "lengthM": 402.336,
+    "laps": 1,
+    "estimatedDrivingSeconds": null,
+    "durationMethod": "Quarter-mile elapsed-time challenge; vehicle dependent",
+    "startGps": {
+      "lat": 43.0205828,
+      "lon": -71.0280421
+    },
+    "finishGps": {
+      "lat": 43.023692846470155,
+      "lon": -71.0255123693413
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H02-S09.json",
+    "raceRef": "New England Dragway — Epping",
+    "documentPath": "races/New England Dragway %E2%80%94 Epping/document.json",
+    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "sceneryCount": 16,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "New England Dragway — Epping"
+  },
+  {
+    "id": "H03-S01",
+    "name": "PA 381 — Ohiopyle approach",
+    "event_type": "Mountain sprint",
+    "selection_guidance": "Short forested, winding section near Ohiopyle",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 3,
+    "hubBoss": "Laurel Highlands Scenic Byway",
+    "status": "installed",
+    "lengthM": 3674.4244373598226,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 39.879047,
+      "lon": -79.4817141
+    },
+    "finishGps": {
+      "lat": 39.8965892,
+      "lon": -79.4659054
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H03-S01.json",
+    "raceRef": "PA 381 — Ohiopyle approach",
+    "documentPath": "races/PA 381 %E2%80%94 Ohiopyle approach/document.json",
+    "hubRaceRef": "Laurel Highlands Scenic Byway",
+    "sceneryCount": 162,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "PA 381 — Ohiopyle approach"
+  },
+  {
+    "id": "H03-S02",
+    "name": "PA 711 — Normalville / Champion",
+    "event_type": "Tarmac rally",
+    "selection_guidance": "Select tight bends on the Laurel Highlands Scenic Byway",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 3,
+    "hubBoss": "Laurel Highlands Scenic Byway",
+    "status": "installed",
+    "lengthM": 3671.081075451321,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 40.0481955,
+      "lon": -79.3972187
+    },
+    "finishGps": {
+      "lat": 40.022085260000004,
+      "lon": -79.40110864666667
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H03-S02.json",
+    "raceRef": "PA 711 — Normalville Champion",
+    "documentPath": "races/PA 711 %E2%80%94 Normalville Champion/document.json",
+    "hubRaceRef": "Laurel Highlands Scenic Byway",
+    "sceneryCount": 160,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "PA 711 — Normalville / Champion"
+  },
+  {
+    "id": "H03-S03",
+    "name": "US 40 — Chalk Hill / Summit",
+    "event_type": "Highway climb",
+    "selection_guidance": "Choose a grade-heavy section of the National Road",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 3,
+    "hubBoss": "Laurel Highlands Scenic Byway",
+    "status": "installed",
+    "lengthM": 3654.4918177387494,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 39.8435095,
+      "lon": -79.6146553
+    },
+    "finishGps": {
+      "lat": 39.8496638,
+      "lon": -79.6564599
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H03-S03.json",
+    "raceRef": "US 40 — Chalk Hill Summit",
+    "documentPath": "races/US 40 %E2%80%94 Chalk Hill Summit/document.json",
+    "hubRaceRef": "Laurel Highlands Scenic Byway",
+    "sceneryCount": 160,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "US 40 — Chalk Hill / Summit"
+  },
+  {
+    "id": "H03-S04",
+    "name": "PA 31 — Donegal to Laurel Ridge",
+    "event_type": "Ridge sprint",
+    "selection_guidance": "Select a winding forest segment east of Donegal",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 3,
+    "hubBoss": "Laurel Highlands Scenic Byway",
+    "status": "installed",
+    "lengthM": 3612.8020012451275,
+    "laps": 1,
+    "estimatedDrivingSeconds": 181,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 40.0879129,
+      "lon": -79.3364016
+    },
+    "finishGps": {
+      "lat": 40.073859988888884,
+      "lon": -79.30123614444445
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H03-S04.json",
+    "raceRef": "PA 31 — Donegal to Laurel Ridge",
+    "documentPath": "races/PA 31 %E2%80%94 Donegal to Laurel Ridge/document.json",
+    "hubRaceRef": "Laurel Highlands Scenic Byway",
+    "sceneryCount": 158,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "PA 31 — Donegal to Laurel Ridge"
+  },
+  {
+    "id": "H03-S05",
+    "name": "County Line Road — Seven Springs",
+    "event_type": "Hillclimb",
+    "selection_guidance": "Steep approach to Seven Springs resort",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 3,
+    "hubBoss": "Laurel Highlands Scenic Byway",
+    "status": "installed",
+    "lengthM": 3618.6973672016475,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 40.0071425,
+      "lon": -79.2641283
+    },
+    "finishGps": {
+      "lat": 40.0306229,
+      "lon": -79.2885556
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H03-S05.json",
+    "raceRef": "County Line Road — Seven Springs",
+    "documentPath": "races/County Line Road %E2%80%94 Seven Springs/document.json",
+    "hubRaceRef": "Laurel Highlands Scenic Byway",
+    "sceneryCount": 158,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "County Line Road — Seven Springs"
+  },
+  {
+    "id": "H03-S06",
+    "name": "Forbes State Forest — designated gravel roads",
+    "event_type": "Gravel rally",
+    "selection_guidance": "Only publicly motorable forest roads; choose a contiguous 2–4 min stage",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 3,
+    "hubBoss": "Laurel Highlands Scenic Byway",
+    "status": "installed",
+    "lengthM": 3261.067634812371,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 40.1175181,
+      "lon": -79.1771119
+    },
+    "finishGps": {
+      "lat": 40.1395436,
+      "lon": -79.16159736666667
+    },
+    "surface": [
+      "gravel"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H03-S06.json",
+    "raceRef": "Forbes State Forest — designated gravel roads",
+    "documentPath": "races/Forbes State Forest %E2%80%94 designated gravel roads/document.json",
+    "hubRaceRef": "Laurel Highlands Scenic Byway",
+    "sceneryCount": 141,
+    "installedSurfaces": [
+      "gravel"
+    ],
+    "conditionNotes": "",
+    "displayName": "Forbes State Forest — designated gravel roads"
+  },
+  {
+    "id": "H03-S07",
+    "name": "Jennerstown Speedway — oval",
+    "event_type": "Short-track race",
+    "selection_guidance": "Multiple laps of the half-mile-ish paved oval",
+    "import_kind": "track_trace",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 3,
+    "hubBoss": "Laurel Highlands Scenic Byway",
+    "status": "installed",
+    "lengthM": 825.0366800509637,
+    "laps": 3,
+    "estimatedDrivingSeconds": 160,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 40.1599272,
+      "lon": -79.0722703
+    },
+    "finishGps": {
+      "lat": 40.1599272,
+      "lon": -79.0722703
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H03-S07.json",
+    "raceRef": "Jennerstown Speedway — oval",
+    "documentPath": "races/Jennerstown Speedway %E2%80%94 oval/document.json",
+    "hubRaceRef": "Laurel Highlands Scenic Byway",
+    "sceneryCount": 34,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Jennerstown Speedway — oval"
+  },
+  {
+    "id": "H03-S08",
+    "name": "Keystone Motorsports Park — New Alexandria",
+    "event_type": "Abandoned drag-strip detour",
+    "selection_guidance": "Venue announced 2026 as final season; deliberately fictionalized as a ruined drag strip",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 3,
+    "hubBoss": "Laurel Highlands Scenic Byway",
+    "status": "installed",
+    "lengthM": 402.33600000000007,
+    "laps": 1,
+    "estimatedDrivingSeconds": null,
+    "durationMethod": "Quarter-mile elapsed-time challenge; vehicle dependent",
+    "startGps": {
+      "lat": 40.4061407,
+      "lon": -79.3971989
+    },
+    "finishGps": {
+      "lat": 40.402542986633144,
+      "lon": -79.39669285059088
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H03-S08.json",
+    "raceRef": "Keystone Motorsports Park — New Alexandria",
+    "documentPath": "races/Keystone Motorsports Park %E2%80%94 New Alexandria/document.json",
+    "hubRaceRef": "Laurel Highlands Scenic Byway",
+    "sceneryCount": 16,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Keystone Motorsports Park — New Alexandria"
+  },
+  {
+    "id": "H03-S09",
+    "name": "Pittsburgh International Race Complex — Wampum",
+    "event_type": "Circuit detour",
+    "selection_guidance": "A substantial detour toward Beaver County; special road-course event",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 3,
+    "hubBoss": "Laurel Highlands Scenic Byway",
+    "status": "installed",
+    "lengthM": 4473.999960115731,
+    "laps": 1,
+    "estimatedDrivingSeconds": 286,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 40.8488373,
+      "lon": -80.3511296
+    },
+    "finishGps": {
+      "lat": 40.8488373,
+      "lon": -80.3511296
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H03-S09.json",
+    "raceRef": "Pittsburgh International Race Complex — Wampum",
+    "documentPath": "races/Pittsburgh International Race Complex %E2%80%94 Wampum/document.json",
+    "hubRaceRef": "Laurel Highlands Scenic Byway",
+    "sceneryCount": 185,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Pittsburgh International Race Complex — Wampum"
+  },
+  {
+    "id": "H04-S01",
+    "name": "OH 26 — Covered Bridge Scenic Byway",
+    "event_type": "River-canyon sprint",
+    "selection_guidance": "Select a tight valley segment along Little Muskingum River",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 4,
+    "hubBoss": "Ohio River Crossing",
+    "status": "installed",
+    "lengthM": 3188.831644926604,
+    "laps": 1,
+    "estimatedDrivingSeconds": 185,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 39.551112,
+      "lon": -81.192237
+    },
+    "finishGps": {
+      "lat": 39.54053,
+      "lon": -81.173318
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H04-S01.json",
+    "raceRef": "OH 26 — Covered Bridge Scenic Byway",
+    "documentPath": "races/OH 26 %E2%80%94 Covered Bridge Scenic Byway/document.json",
+    "hubRaceRef": "Ohio River Crossing",
+    "sceneryCount": 140,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "OH 26 — Covered Bridge Scenic Byway"
+  },
+  {
+    "id": "H04-S02",
+    "name": "OH 555 — Triple Nickel",
+    "event_type": "Technical backroad",
+    "selection_guidance": "Use a dense cluster of successive crests and corners",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 4,
+    "hubBoss": "Ohio River Crossing",
+    "status": "installed",
+    "lengthM": 3173.151441660117,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 39.3673942,
+      "lon": -81.7850724
+    },
+    "finishGps": {
+      "lat": 39.381408,
+      "lon": -81.808649
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H04-S02.json",
+    "raceRef": "OH 555 — Triple Nickel",
+    "documentPath": "races/OH 555 %E2%80%94 Triple Nickel/document.json",
+    "hubRaceRef": "Ohio River Crossing",
+    "sceneryCount": 138,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "OH 555 — Triple Nickel"
+  },
+  {
+    "id": "H04-S03",
+    "name": "OH 550 — Barlow approach",
+    "event_type": "Country-road sprint",
+    "selection_guidance": "Pick a bendy segment west of Marietta",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 4,
+    "hubBoss": "Ohio River Crossing",
+    "status": "installed",
+    "lengthM": 3576.3793986768287,
+    "laps": 1,
+    "estimatedDrivingSeconds": 181,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 39.3939488,
+      "lon": -81.5872388
+    },
+    "finishGps": {
+      "lat": 39.394136,
+      "lon": -81.626117
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H04-S03.json",
+    "raceRef": "OH 550 — Barlow approach",
+    "documentPath": "races/OH 550 %E2%80%94 Barlow approach/document.json",
+    "hubRaceRef": "Ohio River Crossing",
+    "sceneryCount": 156,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "OH 550 — Barlow approach"
+  },
+  {
+    "id": "H04-S04",
+    "name": "OH 536 — Ohio River hills",
+    "event_type": "Forest hillclimb",
+    "selection_guidance": "Short technical section from the county scenic loops",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 4,
+    "hubBoss": "Ohio River Crossing",
+    "status": "installed",
+    "lengthM": 2696.4460928872727,
+    "laps": 1,
+    "estimatedDrivingSeconds": 182,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 39.7243922,
+      "lon": -80.9657229
+    },
+    "finishGps": {
+      "lat": 39.7091758,
+      "lon": -80.9537631
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H04-S04.json",
+    "raceRef": "OH 536 — Ohio River hills",
+    "documentPath": "races/OH 536 %E2%80%94 Ohio River hills/document.json",
+    "hubRaceRef": "Ohio River Crossing",
+    "sceneryCount": 118,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "OH 536 — Ohio River hills"
+  },
+  {
+    "id": "H04-S05",
+    "name": "OH 676 — Western county hills",
+    "event_type": "Rural circuit",
+    "selection_guidance": "Select a rolling, paved section near OH 555",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 4,
+    "hubBoss": "Ohio River Crossing",
+    "status": "installed",
+    "lengthM": 3113.7818173560336,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 39.469646,
+      "lon": -81.816017
+    },
+    "finishGps": {
+      "lat": 39.480411,
+      "lon": -81.791345
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H04-S05.json",
+    "raceRef": "OH 676 — Western county hills",
+    "documentPath": "races/OH 676 %E2%80%94 Western county hills/document.json",
+    "hubRaceRef": "Ohio River Crossing",
+    "sceneryCount": 136,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "OH 676 — Western county hills"
+  },
+  {
+    "id": "H04-S06",
+    "name": "Marietta–Williamstown — I-77 river bridge",
+    "event_type": "Highway sprint",
+    "selection_guidance": "Short crossing plus freeway approaches, not a whole interstate section",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 4,
+    "hubBoss": "Ohio River Crossing",
+    "status": "installed",
+    "lengthM": 3666.2204922469086,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 39.437498399999996,
+      "lon": -81.43064145
+    },
+    "finishGps": {
+      "lat": 39.468313,
+      "lon": -81.4354879
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H04-S06.json",
+    "raceRef": "Marietta–Williamstown — I-77 river bridge",
+    "documentPath": "races/Marietta%E2%80%93Williamstown %E2%80%94 I-77 river bridge/document.json",
+    "hubRaceRef": "Ohio River Crossing",
+    "sceneryCount": 160,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Marietta–Williamstown — I-77 river bridge"
+  },
+  {
+    "id": "H04-S07",
+    "name": "Washington County western covered-bridge gravel loop",
+    "event_type": "Gravel rally",
+    "selection_guidance": "Choose public motorable township roads; bridges can be scenery, not stunt ramps",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 4,
+    "hubBoss": "Ohio River Crossing",
+    "status": "installed",
+    "lengthM": 2910.5501404892343,
+    "laps": 1,
+    "estimatedDrivingSeconds": 182,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 39.465631,
+      "lon": -81.766559
+    },
+    "finishGps": {
+      "lat": 39.474645,
+      "lon": -81.743409
+    },
+    "surface": [
+      "dirt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H04-S07.json",
+    "raceRef": "Washington County western covered-bridge gravel loop",
+    "documentPath": "races/Washington County western covered-bridge gravel loop/document.json",
+    "hubRaceRef": "Ohio River Crossing",
+    "sceneryCount": 128,
+    "installedSurfaces": [
+      "dirt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Washington County western covered-bridge gravel loop"
+  },
+  {
+    "id": "H04-S08",
+    "name": "Ohio Valley Speedway — Washington, West Virginia",
+    "event_type": "Dirt oval detour",
+    "selection_guidance": "Short-track dirt laps near Parkersburg; verify raceway map and closure history",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 4,
+    "hubBoss": "Ohio River Crossing",
+    "status": "installed",
+    "lengthM": 452.52462094450675,
+    "laps": 4,
+    "estimatedDrivingSeconds": 164,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 39.1976582,
+      "lon": -81.651774
+    },
+    "finishGps": {
+      "lat": 39.1976582,
+      "lon": -81.651774
+    },
+    "surface": [
+      "dirt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H04-S08.json",
+    "raceRef": "Ohio Valley Speedway — Washington, West Virginia",
+    "documentPath": "races/Ohio Valley Speedway %E2%80%94 Washington%2C West Virginia/document.json",
+    "hubRaceRef": "Ohio River Crossing",
+    "sceneryCount": 11,
+    "installedSurfaces": [
+      "dirt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Ohio Valley Speedway — Washington, West Virginia"
+  },
+  {
+    "id": "H04-S09",
+    "name": "Mid-Ohio Sports Car Course — Lexington",
+    "event_type": "Circuit detour",
+    "selection_guidance": "2.258/2.4-mile circuit far north of Marietta",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 4,
+    "hubBoss": "Ohio River Crossing",
+    "status": "installed",
+    "lengthM": 3646.183002485484,
+    "laps": 1,
+    "estimatedDrivingSeconds": 232,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 40.6861723,
+      "lon": -82.6391477
+    },
+    "finishGps": {
+      "lat": 40.6861723,
+      "lon": -82.6391477
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H04-S09.json",
+    "raceRef": "Mid-Ohio Sports Car Course — Lexington",
+    "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Lexington/document.json",
+    "hubRaceRef": "Ohio River Crossing",
+    "sceneryCount": 148,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Mid-Ohio Sports Car Course — Lexington"
+  },
+  {
+    "id": "H05-S01",
+    "name": "MO 19 — Eminence / Current River",
+    "event_type": "Forest sprint",
+    "selection_guidance": "Hilly paved section north of Eminence",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 5,
+    "hubBoss": "Ozark Backroads",
+    "status": "installed",
+    "lengthM": 3605.56214324434,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.392813,
+      "lon": -91.4412394
+    },
+    "finishGps": {
+      "lat": 37.4088129,
+      "lon": -91.4668357
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H05-S01.json",
+    "raceRef": "MO 19 — Eminence Current River",
+    "documentPath": "races/MO 19 %E2%80%94 Eminence Current River/document.json",
+    "hubRaceRef": "Ozark Backroads",
+    "sceneryCount": 158,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "MO 19 — Eminence / Current River"
+  },
+  {
+    "id": "H05-S02",
+    "name": "MO 106 — Alley Spring approach",
+    "event_type": "Riverside stage",
+    "selection_guidance": "Eminence west toward Alley Spring, short rolling section",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 5,
+    "hubBoss": "Ozark Backroads",
+    "status": "installed",
+    "lengthM": 3671.3505607489897,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.1392456,
+      "lon": -91.4193955
+    },
+    "finishGps": {
+      "lat": 37.1468475,
+      "lon": -91.3821088
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H05-S02.json",
+    "raceRef": "MO 106 — Alley Spring approach",
+    "documentPath": "races/MO 106 %E2%80%94 Alley Spring approach/document.json",
+    "hubRaceRef": "Ozark Backroads",
+    "sceneryCount": 160,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "MO 106 — Alley Spring approach"
+  },
+  {
+    "id": "H05-S03",
+    "name": "MO 106 — Powder Mill approach",
+    "event_type": "Sweeping rally",
+    "selection_guidance": "Eminence east toward Powder Mill",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 5,
+    "hubBoss": "Ozark Backroads",
+    "status": "installed",
+    "lengthM": 3619.797700848276,
+    "laps": 1,
+    "estimatedDrivingSeconds": 185,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.1486231,
+      "lon": -91.2302394
+    },
+    "finishGps": {
+      "lat": 37.15136115,
+      "lon": -91.26025265000001
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H05-S03.json",
+    "raceRef": "MO 106 — Powder Mill approach",
+    "documentPath": "races/MO 106 %E2%80%94 Powder Mill approach/document.json",
+    "hubRaceRef": "Ozark Backroads",
+    "sceneryCount": 158,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "MO 106 — Powder Mill approach"
+  },
+  {
+    "id": "H05-S04",
+    "name": "MO V — Two Rivers access",
+    "event_type": "Narrow-road time trial",
+    "selection_guidance": "Paved access from 106 down to Two Rivers",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 5,
+    "hubBoss": "Ozark Backroads",
+    "status": "installed",
+    "lengthM": 3467.338604980435,
+    "laps": 1,
+    "estimatedDrivingSeconds": 186,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.1605391,
+      "lon": -91.2727031
+    },
+    "finishGps": {
+      "lat": 37.1845383,
+      "lon": -91.2735325
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H05-S04.json",
+    "raceRef": "MO V — Two Rivers access",
+    "documentPath": "races/MO V %E2%80%94 Two Rivers access/document.json",
+    "hubRaceRef": "Ozark Backroads",
+    "sceneryCount": 152,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "MO V — Two Rivers access"
+  },
+  {
+    "id": "H05-S05",
+    "name": "MO H / NN — Roberts Field access",
+    "event_type": "Mixed-surface stage",
+    "selection_guidance": "Choose motorable county-road section; verify actual gravel and road status",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 5,
+    "hubBoss": "Ozark Backroads",
+    "status": "installed",
+    "lengthM": 3545.0863167075854,
+    "laps": 1,
+    "estimatedDrivingSeconds": 186,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.107197666666664,
+      "lon": -91.20373413333334
+    },
+    "finishGps": {
+      "lat": 37.093812,
+      "lon": -91.2349535
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H05-S05.json",
+    "raceRef": "MO H NN — Roberts Field access",
+    "documentPath": "races/MO H NN %E2%80%94 Roberts Field access/document.json",
+    "hubRaceRef": "Ozark Backroads",
+    "sceneryCount": 156,
+    "installedSurfaces": [
+      "asphalt",
+      "gravel"
+    ],
+    "conditionNotes": "Fictional 2994 damage exposes gravel in intermittent sections of the mapped paved NN access road; geometry is unchanged.",
+    "displayName": "MO H / NN — Roberts Field access"
+  },
+  {
+    "id": "H05-S06",
+    "name": "Jerktail Landing gravel road",
+    "event_type": "Gravel rally",
+    "selection_guidance": "Public vehicle-access route off MO 19; do not substitute trails",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 5,
+    "hubBoss": "Ozark Backroads",
+    "status": "installed",
+    "lengthM": 2885.947436275742,
+    "laps": 1,
+    "estimatedDrivingSeconds": 193,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.255719,
+      "lon": -91.3875913
+    },
+    "finishGps": {
+      "lat": 37.2575952,
+      "lon": -91.3593408
+    },
+    "surface": [
+      "gravel"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H05-S06.json",
+    "raceRef": "Jerktail Landing gravel road",
+    "documentPath": "races/Jerktail Landing gravel road/document.json",
+    "hubRaceRef": "Ozark Backroads",
+    "sceneryCount": 126,
+    "installedSurfaces": [
+      "gravel"
+    ],
+    "conditionNotes": "",
+    "displayName": "Jerktail Landing gravel road"
+  },
+  {
+    "id": "H05-S07",
+    "name": "US 60 — Winona / Van Buren",
+    "event_type": "High-speed sweepers",
+    "selection_guidance": "Use a varied east/west segment through Ozark hills",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 5,
+    "hubBoss": "Ozark Backroads",
+    "status": "installed",
+    "lengthM": 3653.013338128302,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 36.9507869,
+      "lon": -91.1714166
+    },
+    "finishGps": {
+      "lat": 36.9598195,
+      "lon": -91.2101159
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H05-S07.json",
+    "raceRef": "US 60 — Winona Van Buren",
+    "documentPath": "races/US 60 %E2%80%94 Winona Van Buren/document.json",
+    "hubRaceRef": "Ozark Backroads",
+    "sceneryCount": 160,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "US 60 — Winona / Van Buren"
+  },
+  {
+    "id": "H05-S08",
+    "name": "Glade Top Trail — Mark Twain National Forest",
+    "event_type": "Long-detour gravel stage",
+    "selection_guidance": "23-mile graded gravel scenic byway far to the southwest",
+    "import_kind": "forest_check",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 5,
+    "hubBoss": "Ozark Backroads",
+    "status": "installed",
+    "lengthM": 2889.7142882817784,
+    "laps": 1,
+    "estimatedDrivingSeconds": 182,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 36.700591,
+      "lon": -92.783452
+    },
+    "finishGps": {
+      "lat": 36.684825,
+      "lon": -92.797472
+    },
+    "surface": [
+      "asphalt",
+      "gravel"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H05-S08.json",
+    "raceRef": "Glade Top Trail — Mark Twain National Forest",
+    "documentPath": "races/Glade Top Trail %E2%80%94 Mark Twain National Forest/document.json",
+    "hubRaceRef": "Ozark Backroads",
+    "sceneryCount": 126,
+    "installedSurfaces": [
+      "asphalt",
+      "gravel"
+    ],
+    "conditionNotes": "",
+    "displayName": "Glade Top Trail — Mark Twain National Forest"
+  },
+  {
+    "id": "H05-S09",
+    "name": "Ozarks International Raceway — Gravois Mills",
+    "event_type": "Long-detour road circuit",
+    "selection_guidance": "3.97-mile/19-turn circuit; likely special track tracing",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 5,
+    "hubBoss": "Ozark Backroads",
+    "status": "installed",
+    "lengthM": 6408.47998240462,
+    "laps": 1,
+    "estimatedDrivingSeconds": 376,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.2785903,
+      "lon": -92.8871805
+    },
+    "finishGps": {
+      "lat": 38.2785903,
+      "lon": -92.8871805
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H05-S09.json",
+    "raceRef": "Ozarks International Raceway — Gravois Mills",
+    "documentPath": "races/Ozarks International Raceway %E2%80%94 Gravois Mills/document.json",
+    "hubRaceRef": "Ozark Backroads",
+    "sceneryCount": 273,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Ozarks International Raceway — Gravois Mills"
+  },
+  {
+    "id": "H06-S01",
+    "name": "World Wide Technology Raceway — road course",
+    "event_type": "Circuit",
+    "selection_guidance": "Infield road-course configuration across river in Madison, Illinois",
+    "import_kind": "track_trace",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 6,
+    "hubBoss": "Data Center City",
+    "status": "installed",
+    "lengthM": 2809.102998820318,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.6520702,
+      "lon": -90.1341055
+    },
+    "finishGps": {
+      "lat": 38.6520702,
+      "lon": -90.1341055
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H06-S01.json",
+    "raceRef": "World Wide Technology Raceway — road course",
+    "documentPath": "races/World Wide Technology Raceway %E2%80%94 road course/document.json",
+    "hubRaceRef": "Data Center City",
+    "sceneryCount": 107,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "World Wide Technology Raceway — road course"
+  },
+  {
+    "id": "H06-S02",
+    "name": "World Wide Technology Raceway — oval",
+    "event_type": "Oval race",
+    "selection_guidance": "1.25-mile oval; multiple laps",
+    "import_kind": "track_trace",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 6,
+    "hubBoss": "Data Center City",
+    "status": "installed",
+    "lengthM": 2042.8492138196227,
+    "laps": 2,
+    "estimatedDrivingSeconds": 225,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.6520702,
+      "lon": -90.1341055
+    },
+    "finishGps": {
+      "lat": 38.6520702,
+      "lon": -90.1341055
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H06-S02.json",
+    "raceRef": "World Wide Technology Raceway — oval",
+    "documentPath": "races/World Wide Technology Raceway %E2%80%94 oval/document.json",
+    "hubRaceRef": "Data Center City",
+    "sceneryCount": 88,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "World Wide Technology Raceway — oval"
+  },
+  {
+    "id": "H06-S03",
+    "name": "World Wide Technology Raceway — drag strip",
+    "event_type": "Drag challenge",
+    "selection_guidance": "Quarter-mile acceleration challenge; use special timing rules",
+    "import_kind": "track_trace",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 6,
+    "hubBoss": "Data Center City",
+    "status": "installed",
+    "lengthM": 402.336,
+    "laps": 1,
+    "estimatedDrivingSeconds": null,
+    "durationMethod": "Quarter-mile elapsed-time challenge; vehicle dependent",
+    "startGps": {
+      "lat": 38.654533,
+      "lon": -90.1396468
+    },
+    "finishGps": {
+      "lat": 38.65104302307613,
+      "lon": -90.13842393351831
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H06-S03.json",
+    "raceRef": "World Wide Technology Raceway — drag strip",
+    "documentPath": "races/World Wide Technology Raceway %E2%80%94 drag strip/document.json",
+    "hubRaceRef": "Data Center City",
+    "sceneryCount": 16,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "World Wide Technology Raceway — drag strip"
+  },
+  {
+    "id": "H06-S04",
+    "name": "I-64 — St. Louis downtown approaches",
+    "event_type": "Urban highway sprint",
+    "selection_guidance": "Elevated interstate bends and interchanges, fictionalized for machine traffic",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 6,
+    "hubBoss": "Data Center City",
+    "status": "installed",
+    "lengthM": 3673.1303008409573,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.630894,
+      "lon": -90.2319881
+    },
+    "finishGps": {
+      "lat": 38.620865550000005,
+      "lon": -90.1918272
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H06-S04.json",
+    "raceRef": "I-64 — St. Louis downtown approaches",
+    "documentPath": "races/I-64 %E2%80%94 St. Louis downtown approaches/document.json",
+    "hubRaceRef": "Data Center City",
+    "sceneryCount": 162,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "I-64 — St. Louis downtown approaches"
+  },
+  {
+    "id": "H06-S05",
+    "name": "I-70 — Stan Musial Veterans Memorial Bridge",
+    "event_type": "River crossing sprint",
+    "selection_guidance": "Bridge and on/off ramps; exclude risky or inaccessible branches",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 6,
+    "hubBoss": "Data Center City",
+    "status": "installed",
+    "lengthM": 2524.056575414854,
+    "laps": 1,
+    "estimatedDrivingSeconds": 127,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.642995,
+      "lon": -90.1884835
+    },
+    "finishGps": {
+      "lat": 38.6485579,
+      "lon": -90.1610633
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H06-S05.json",
+    "raceRef": "I-70 — Stan Musial Veterans Memorial Bridge",
+    "documentPath": "races/I-70 %E2%80%94 Stan Musial Veterans Memorial Bridge/document.json",
+    "hubRaceRef": "Data Center City",
+    "sceneryCount": 110,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "I-70 — Stan Musial Veterans Memorial Bridge"
+  },
+  {
+    "id": "H06-S06",
+    "name": "IL 100 — Great River Road bluffs",
+    "event_type": "River canyon sprint",
+    "selection_guidance": "Alton toward Grafton, select scenic 2–4-min section",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 6,
+    "hubBoss": "Data Center City",
+    "status": "installed",
+    "lengthM": 3656.0834073886717,
+    "laps": 1,
+    "estimatedDrivingSeconds": 186,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.9347457,
+      "lon": -90.3002223
+    },
+    "finishGps": {
+      "lat": 38.9364564,
+      "lon": -90.2953116
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H06-S06.json",
+    "raceRef": "IL 100 — Great River Road bluffs",
+    "documentPath": "races/IL 100 %E2%80%94 Great River Road bluffs/document.json",
+    "hubRaceRef": "Data Center City",
+    "sceneryCount": 150,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "IL 100 — Great River Road bluffs"
+  },
+  {
+    "id": "H06-S07",
+    "name": "MO 94 — Defiance / Augusta",
+    "event_type": "Vineyard-road time trial",
+    "selection_guidance": "Bending Missouri River valley paved road",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 6,
+    "hubBoss": "Data Center City",
+    "status": "installed",
+    "lengthM": 3655.5888508530547,
+    "laps": 1,
+    "estimatedDrivingSeconds": 185,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.59980973333333,
+      "lon": -90.80032156666667
+    },
+    "finishGps": {
+      "lat": 38.6285234,
+      "lon": -90.7809231
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H06-S07.json",
+    "raceRef": "MO 94 — Defiance Augusta",
+    "documentPath": "races/MO 94 %E2%80%94 Defiance Augusta/document.json",
+    "hubRaceRef": "Data Center City",
+    "sceneryCount": 160,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "MO 94 — Defiance / Augusta"
+  },
+  {
+    "id": "H06-S08",
+    "name": "Gateway Kartplex — WWT complex",
+    "event_type": "Mini-course / fictional enlargement",
+    "selection_guidance": "Real half-mile kart track, too small for normal cars: scale up only as explicitly fictional",
+    "import_kind": "fictional_layout",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 6,
+    "hubBoss": "Data Center City",
+    "status": "installed",
+    "lengthM": 1242.782987969157,
+    "laps": 2,
+    "estimatedDrivingSeconds": 217,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.6487593,
+      "lon": -90.1347779
+    },
+    "finishGps": {
+      "lat": 38.6487593,
+      "lon": -90.1347779
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H06-S08.json",
+    "raceRef": "Gateway Kartplex — WWT complex",
+    "documentPath": "races/Gateway Kartplex %E2%80%94 WWT complex/document.json",
+    "hubRaceRef": "Data Center City",
+    "sceneryCount": 34,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Gateway Kartplex — WWT complex"
+  },
+  {
+    "id": "H06-S09",
+    "name": "Federated Auto Parts Raceway at I-55 — Pevely",
+    "event_type": "Dirt oval detour",
+    "selection_guidance": "1/3-mile dirt oval south of the city",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 6,
+    "hubBoss": "Data Center City",
+    "status": "installed",
+    "lengthM": 528.2522965377102,
+    "laps": 3,
+    "estimatedDrivingSeconds": 175,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.2713224,
+      "lon": -90.3993536
+    },
+    "finishGps": {
+      "lat": 38.2713224,
+      "lon": -90.3993536
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H06-S09.json",
+    "raceRef": "Federated Auto Parts Raceway at I-55 — Pevely",
+    "documentPath": "races/Federated Auto Parts Raceway at I-55 %E2%80%94 Pevely/document.json",
+    "hubRaceRef": "Data Center City",
+    "sceneryCount": 14,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Federated Auto Parts Raceway at I-55 — Pevely"
+  },
+  {
+    "id": "H07-S01",
+    "name": "Old Route 66 — Shamrock / McLean",
+    "event_type": "Historic road sprint",
+    "selection_guidance": "Select surviving paved old alignment between towns",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 7,
+    "hubBoss": "Historic Route 66",
+    "status": "installed",
+    "lengthM": 3656.355302685853,
+    "laps": 1,
+    "estimatedDrivingSeconds": 185,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 35.22651725,
+      "lon": -100.499742
+    },
+    "finishGps": {
+      "lat": 35.2245041,
+      "lon": -100.5386189
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H07-S01.json",
+    "raceRef": "Old Route 66 — Shamrock McLean",
+    "documentPath": "races/Old Route 66 %E2%80%94 Shamrock McLean/document.json",
+    "hubRaceRef": "Historic Route 66",
+    "sceneryCount": 160,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Old Route 66 — Shamrock / McLean"
+  },
+  {
+    "id": "H07-S02",
+    "name": "Old Route 66 — Groom / Conway",
+    "event_type": "Broken-pavement sprint",
+    "selection_guidance": "Follow continuous surviving frontage alignment; preserve ghost-road ambience",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 7,
+    "hubBoss": "Historic Route 66",
+    "status": "installed",
+    "lengthM": 3684.9820089768446,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 35.20737619047619,
+      "lon": -101.31342123809524
+    },
+    "finishGps": {
+      "lat": 35.207411,
+      "lon": -101.3539768
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H07-S02.json",
+    "raceRef": "Old Route 66 — Groom Conway",
+    "documentPath": "races/Old Route 66 %E2%80%94 Groom Conway/document.json",
+    "hubRaceRef": "Historic Route 66",
+    "sceneryCount": 162,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Old Route 66 — Groom / Conway"
+  },
+  {
+    "id": "H07-S03",
+    "name": "Amarillo — Historic 6th Avenue alignment",
+    "event_type": "Urban time trial",
+    "selection_guidance": "Tighter town section of old Route 66",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 7,
+    "hubBoss": "Historic Route 66",
+    "status": "installed",
+    "lengthM": 3558.6224533821965,
+    "laps": 1,
+    "estimatedDrivingSeconds": 180,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 35.2076717,
+      "lon": -101.8370491
+    },
+    "finishGps": {
+      "lat": 35.211241550000004,
+      "lon": -101.8757620625
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H07-S03.json",
+    "raceRef": "Amarillo — Historic 6th Avenue alignment",
+    "documentPath": "races/Amarillo %E2%80%94 Historic 6th Avenue alignment/document.json",
+    "hubRaceRef": "Historic Route 66",
+    "sceneryCount": 156,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Amarillo — Historic 6th Avenue alignment"
+  },
+  {
+    "id": "H07-S04",
+    "name": "Old Route 66 — Vega / Adrian",
+    "event_type": "Open-plains sprint",
+    "selection_guidance": "Straight sections for gearing tests",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 7,
+    "hubBoss": "Historic Route 66",
+    "status": "installed",
+    "lengthM": 3682.8185641702257,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 35.273129303125,
+      "lon": -102.5991977515625
+    },
+    "finishGps": {
+      "lat": 35.2686742,
+      "lon": -102.5593634
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H07-S04.json",
+    "raceRef": "Old Route 66 — Vega Adrian",
+    "documentPath": "races/Old Route 66 %E2%80%94 Vega Adrian/document.json",
+    "hubRaceRef": "Historic Route 66",
+    "sceneryCount": 162,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Old Route 66 — Vega / Adrian"
+  },
+  {
+    "id": "H07-S05",
+    "name": "Old Route 66 — Adrian / Glenrio",
+    "event_type": "Ghost-town approach",
+    "selection_guidance": "Choose drivable surviving alignment toward Texas/New Mexico line",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 7,
+    "hubBoss": "Historic Route 66",
+    "status": "installed",
+    "lengthM": 3681.9956190276544,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 35.19540153333333,
+      "lon": -102.95788420000001
+    },
+    "finishGps": {
+      "lat": 35.1844168,
+      "lon": -102.9958501
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H07-S05.json",
+    "raceRef": "Old Route 66 — Adrian Glenrio",
+    "documentPath": "races/Old Route 66 %E2%80%94 Adrian Glenrio/document.json",
+    "hubRaceRef": "Historic Route 66",
+    "sceneryCount": 162,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Old Route 66 — Adrian / Glenrio"
+  },
+  {
+    "id": "H07-S06",
+    "name": "Palo Duro Canyon — Park Road 5",
+    "event_type": "Canyon descent",
+    "selection_guidance": "Select paved switchbacks inside state park; real-life park speed limits do not govern fictional 2994 racing",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 7,
+    "hubBoss": "Historic Route 66",
+    "status": "installed",
+    "lengthM": 2917.3040327999656,
+    "laps": 1,
+    "estimatedDrivingSeconds": 181,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.979893,
+      "lon": -101.68206
+    },
+    "finishGps": {
+      "lat": 34.9803803,
+      "lon": -101.6916489
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H07-S06.json",
+    "raceRef": "Palo Duro Canyon — Park Road 5",
+    "documentPath": "races/Palo Duro Canyon %E2%80%94 Park Road 5/document.json",
+    "hubRaceRef": "Historic Route 66",
+    "sceneryCount": 123,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Palo Duro Canyon — Park Road 5"
+  },
+  {
+    "id": "H07-S07",
+    "name": "Amarillo Dragway",
+    "event_type": "Drag strip",
+    "selection_guidance": "Quarter-mile-style acceleration event, staging plus trap",
+    "import_kind": "track_trace",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 7,
+    "hubBoss": "Historic Route 66",
+    "status": "installed",
+    "lengthM": 402.33600000000007,
+    "laps": 1,
+    "estimatedDrivingSeconds": null,
+    "durationMethod": "Quarter-mile elapsed-time challenge; vehicle dependent",
+    "startGps": {
+      "lat": 35.0784331,
+      "lon": -101.8287456
+    },
+    "finishGps": {
+      "lat": 35.07843981177686,
+      "lon": -101.82432424904076
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H07-S07.json",
+    "raceRef": "Amarillo Dragway",
+    "documentPath": "races/Amarillo Dragway/document.json",
+    "hubRaceRef": "Historic Route 66",
+    "sceneryCount": 16,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Amarillo Dragway"
+  },
+  {
+    "id": "H07-S08",
+    "name": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+    "event_type": "Eastern detour / bridge sprint",
+    "selection_guidance": "Actual historic Route 66 bridge, reopened 2024, well east of Amarillo",
+    "import_kind": "road",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 7,
+    "hubBoss": "Historic Route 66",
+    "status": "installed",
+    "lengthM": 3608.8203994057085,
+    "laps": 1,
+    "estimatedDrivingSeconds": 185,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 35.61089364,
+      "lon": -98.30566341
+    },
+    "finishGps": {
+      "lat": 35.600254285714286,
+      "lon": -98.30035635714286
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H07-S08.json",
+    "raceRef": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+    "documentPath": "races/Route 66 %E2%80%94 Bridgeport Pony Bridge%2C Oklahoma/document.json",
+    "hubRaceRef": "Historic Route 66",
+    "sceneryCount": 147,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Route 66 — Bridgeport Pony Bridge, Oklahoma"
+  },
+  {
+    "id": "H07-S09",
+    "name": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+    "event_type": "Huge-detour road circuit",
+    "selection_guidance": "1.8-mile, 10-turn track near Tulsa, humorously far east",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 7,
+    "hubBoss": "Historic Route 66",
+    "status": "installed",
+    "lengthM": 2832.8746607882563,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 36.2186724,
+      "lon": -96.5903689
+    },
+    "finishGps": {
+      "lat": 36.2186724,
+      "lon": -96.5903689
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H07-S09.json",
+    "raceRef": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+    "documentPath": "races/Hallett Motor Racing Circuit %E2%80%94 Jennings%2C Oklahoma/document.json",
+    "hubRaceRef": "Historic Route 66",
+    "sceneryCount": 120,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Hallett Motor Racing Circuit — Jennings, Oklahoma"
+  },
+  {
+    "id": "H08-S01",
+    "name": "Gold Camp Road — Colorado Springs",
+    "event_type": "Mountain gravel sprint",
+    "selection_guidance": "Old railroad-grade route; verify drivable segments and forest gates",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 8,
+    "hubBoss": "Pikes Peak Highway",
+    "status": "installed",
+    "lengthM": 2891.8424508919147,
+    "laps": 1,
+    "estimatedDrivingSeconds": 186,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.7866853,
+      "lon": -104.907344
+    },
+    "finishGps": {
+      "lat": 38.7941117,
+      "lon": -104.8982578
+    },
+    "surface": [
+      "asphalt",
+      "dirt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H08-S01.json",
+    "raceRef": "Gold Camp Road — Colorado Springs",
+    "documentPath": "races/Gold Camp Road %E2%80%94 Colorado Springs/document.json",
+    "hubRaceRef": "Pikes Peak Highway",
+    "sceneryCount": 124,
+    "installedSurfaces": [
+      "dirt",
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Gold Camp Road — Colorado Springs"
+  },
+  {
+    "id": "H08-S02",
+    "name": "Phantom Canyon Road — Gold Belt Tour",
+    "event_type": "Rally hillclimb",
+    "selection_guidance": "Gravel canyon, bridges, and stone tunnels",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 8,
+    "hubBoss": "Pikes Peak Highway",
+    "status": "installed",
+    "lengthM": 1995.7207067133322,
+    "laps": 1,
+    "estimatedDrivingSeconds": 182,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.6260662,
+      "lon": -105.1229575
+    },
+    "finishGps": {
+      "lat": 38.6152954,
+      "lon": -105.1331177
+    },
+    "surface": [
+      "dirt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H08-S02.json",
+    "raceRef": "Phantom Canyon Road — Gold Belt Tour",
+    "documentPath": "races/Phantom Canyon Road %E2%80%94 Gold Belt Tour/document.json",
+    "hubRaceRef": "Pikes Peak Highway",
+    "sceneryCount": 85,
+    "installedSurfaces": [
+      "dirt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Phantom Canyon Road — Gold Belt Tour"
+  },
+  {
+    "id": "H08-S03",
+    "name": "Shelf Road — Gold Belt Tour",
+    "event_type": "Cliffside rally",
+    "selection_guidance": "Narrow gravel shelf-road segment; short and technical",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 8,
+    "hubBoss": "Pikes Peak Highway",
+    "status": "installed",
+    "lengthM": 2153.297429287957,
+    "laps": 1,
+    "estimatedDrivingSeconds": 191,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.6833681,
+      "lon": -105.2117939
+    },
+    "finishGps": {
+      "lat": 38.6963372,
+      "lon": -105.20394
+    },
+    "surface": [
+      "gravel"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H08-S03.json",
+    "raceRef": "Shelf Road — Gold Belt Tour",
+    "documentPath": "races/Shelf Road %E2%80%94 Gold Belt Tour/document.json",
+    "hubRaceRef": "Pikes Peak Highway",
+    "sceneryCount": 92,
+    "installedSurfaces": [
+      "gravel"
+    ],
+    "conditionNotes": "",
+    "displayName": "Shelf Road — Gold Belt Tour"
+  },
+  {
+    "id": "H08-S04",
+    "name": "Skyline Drive — Cañon City",
+    "event_type": "Ridgeline sprint",
+    "selection_guidance": "2.5–2.8-mile one-way paved hogback road; ideal for target duration",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 8,
+    "hubBoss": "Pikes Peak Highway",
+    "status": "installed",
+    "lengthM": 3247.9761644634045,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.4667238,
+      "lon": -105.2535229
+    },
+    "finishGps": {
+      "lat": 38.4485257,
+      "lon": -105.246586
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H08-S04.json",
+    "raceRef": "Skyline Drive — Cañon City",
+    "documentPath": "races/Skyline Drive %E2%80%94 Ca%C3%B1on City/document.json",
+    "hubRaceRef": "Pikes Peak Highway",
+    "sceneryCount": 134,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Skyline Drive — Cañon City"
+  },
+  {
+    "id": "H08-S05",
+    "name": "US 24 — Ute Pass / Woodland Park",
+    "event_type": "Highway climb",
+    "selection_guidance": "Grade and flowing curves west of Colorado Springs",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 8,
+    "hubBoss": "Pikes Peak Highway",
+    "status": "installed",
+    "lengthM": 3487.947182107508,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.8737262,
+      "lon": -104.928346
+    },
+    "finishGps": {
+      "lat": 38.8898383,
+      "lon": -104.9581113
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H08-S05.json",
+    "raceRef": "US 24 — Ute Pass Woodland Park",
+    "documentPath": "races/US 24 %E2%80%94 Ute Pass Woodland Park/document.json",
+    "hubRaceRef": "Pikes Peak Highway",
+    "sceneryCount": 152,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "US 24 — Ute Pass / Woodland Park"
+  },
+  {
+    "id": "H08-S06",
+    "name": "CO 67 — Woodland Park / Cripple Creek",
+    "event_type": "Alpine sprint",
+    "selection_guidance": "Technical paved section of mountain highway",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 8,
+    "hubBoss": "Pikes Peak Highway",
+    "status": "installed",
+    "lengthM": 3293.785595825838,
+    "laps": 1,
+    "estimatedDrivingSeconds": 186,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.847776,
+      "lon": -105.1594975
+    },
+    "finishGps": {
+      "lat": 38.8349029,
+      "lon": -105.1376995
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H08-S06.json",
+    "raceRef": "CO 67 — Woodland Park Cripple Creek",
+    "documentPath": "races/CO 67 %E2%80%94 Woodland Park Cripple Creek/document.json",
+    "hubRaceRef": "Pikes Peak Highway",
+    "sceneryCount": 144,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "CO 67 — Woodland Park / Cripple Creek"
+  },
+  {
+    "id": "H08-S07",
+    "name": "Garden of the Gods — paved park road",
+    "event_type": "Precision trial",
+    "selection_guidance": "Curvy park loop; fictional empty-city precision event, not normal high-speed lap",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 8,
+    "hubBoss": "Pikes Peak Highway",
+    "status": "installed",
+    "lengthM": 2878.1354349564886,
+    "laps": 1,
+    "estimatedDrivingSeconds": 181,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.8758435,
+      "lon": -104.8782822
+    },
+    "finishGps": {
+      "lat": 38.8678317,
+      "lon": -104.8790088
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H08-S07.json",
+    "raceRef": "Garden of the Gods — paved park road",
+    "documentPath": "races/Garden of the Gods %E2%80%94 paved park road/document.json",
+    "hubRaceRef": "Pikes Peak Highway",
+    "sceneryCount": 122,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Garden of the Gods — paved park road"
+  },
+  {
+    "id": "H08-S08",
+    "name": "Pikes Peak International Raceway — Fountain",
+    "event_type": "Historic drift / track detour",
+    "selection_guidance": "Use PPIR infield/skid pad; 2026 final public motorsports season announced",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 8,
+    "hubBoss": "Pikes Peak Highway",
+    "status": "installed",
+    "lengthM": 2115.777658134792,
+    "laps": 1,
+    "estimatedDrivingSeconds": 138,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.5932377,
+      "lon": -104.6791754
+    },
+    "finishGps": {
+      "lat": 38.5932377,
+      "lon": -104.6791754
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H08-S08.json",
+    "raceRef": "Pikes Peak International Raceway — Fountain",
+    "displayName": "Pikes Peak International Raceway — Fountain",
+    "documentPath": "races/Pikes Peak International Raceway %E2%80%94 Fountain/document.json",
+    "hubRaceRef": "Pikes Peak Highway",
+    "sceneryCount": 81,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": ""
+  },
+  {
+    "id": "H08-S09",
+    "name": "Pueblo Motorsports Park — road course or drag strip",
+    "event_type": "Motorsports detour",
+    "selection_guidance": "Choose circuit laps or quarter-mile launch with proper event rules",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 8,
+    "hubBoss": "Pikes Peak Highway",
+    "status": "installed",
+    "lengthM": 3513.511978620278,
+    "laps": 1,
+    "estimatedDrivingSeconds": 218,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.3020531,
+      "lon": -104.6742564
+    },
+    "finishGps": {
+      "lat": 38.3020531,
+      "lon": -104.6742564
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H08-S09.json",
+    "raceRef": "Pueblo Motorsports Park — road course or drag strip",
+    "documentPath": "races/Pueblo Motorsports Park %E2%80%94 road course or drag strip/document.json",
+    "hubRaceRef": "Pikes Peak Highway",
+    "sceneryCount": 149,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Pueblo Motorsports Park — road course or drag strip"
+  },
+  {
+    "id": "H09-S01",
+    "name": "Valley of the Gods Road — San Juan CR 242",
+    "event_type": "Gravel rally",
+    "selection_guidance": "Choose 2–4 min from the 17-mile graded-gravel loop",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 9,
+    "hubBoss": "Moki Dugway",
+    "status": "installed",
+    "lengthM": 2336.825563808947,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.3000971,
+      "lon": -109.851184
+    },
+    "finishGps": {
+      "lat": 37.3161637,
+      "lon": -109.8546172
+    },
+    "surface": [
+      "dirt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H09-S01.json",
+    "raceRef": "Valley of the Gods Road — San Juan CR 242",
+    "documentPath": "races/Valley of the Gods Road %E2%80%94 San Juan CR 242/document.json",
+    "hubRaceRef": "Moki Dugway",
+    "sceneryCount": 100,
+    "installedSurfaces": [
+      "dirt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Valley of the Gods Road — San Juan CR 242"
+  },
+  {
+    "id": "H09-S02",
+    "name": "Muley Point Road — CR 241",
+    "event_type": "Mesa access rally",
+    "selection_guidance": "Graded gravel side route near top of Moki Dugway, not the boss switchbacks themselves",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 9,
+    "hubBoss": "Moki Dugway",
+    "status": "installed",
+    "lengthM": 2714.6100512064804,
+    "laps": 1,
+    "estimatedDrivingSeconds": 186,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.2429379,
+      "lon": -109.97711000000001
+    },
+    "finishGps": {
+      "lat": 37.2331083,
+      "lon": -109.9933018
+    },
+    "surface": [
+      "dirt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H09-S02.json",
+    "raceRef": "Muley Point Road — CR 241",
+    "documentPath": "races/Muley Point Road %E2%80%94 CR 241/document.json",
+    "hubRaceRef": "Moki Dugway",
+    "sceneryCount": 118,
+    "installedSurfaces": [
+      "dirt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Muley Point Road — CR 241"
+  },
+  {
+    "id": "H09-S03",
+    "name": "UT 316 — Goosenecks State Park Road",
+    "event_type": "Desert descent",
+    "selection_guidance": "Paved approach to the overlook",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 9,
+    "hubBoss": "Moki Dugway",
+    "status": "installed",
+    "lengthM": 3591.170555470214,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.18931045,
+      "lon": -109.91348047
+    },
+    "finishGps": {
+      "lat": 37.1988527,
+      "lon": -109.8791581
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H09-S03.json",
+    "raceRef": "UT 316 — Goosenecks State Park Road",
+    "documentPath": "races/UT 316 %E2%80%94 Goosenecks State Park Road/document.json",
+    "hubRaceRef": "Moki Dugway",
+    "sceneryCount": 158,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "UT 316 — Goosenecks State Park Road"
+  },
+  {
+    "id": "H09-S04",
+    "name": "US 163 — Mexican Hat / Monument Valley approach",
+    "event_type": "Desert straightaway",
+    "selection_guidance": "Select iconic rolling/straight section; preserve Navajo Nation access boundaries",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 9,
+    "hubBoss": "Moki Dugway",
+    "status": "installed",
+    "lengthM": 3673.3091213856533,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.0552,
+      "lon": -110.0870442
+    },
+    "finishGps": {
+      "lat": 37.03239724736843,
+      "lon": -110.11530192105265
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H09-S04.json",
+    "raceRef": "US 163 — Mexican Hat Monument Valley approach",
+    "documentPath": "races/US 163 %E2%80%94 Mexican Hat Monument Valley approach/document.json",
+    "hubRaceRef": "Moki Dugway",
+    "sceneryCount": 162,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "US 163 — Mexican Hat / Monument Valley approach"
+  },
+  {
+    "id": "H09-S05",
+    "name": "UT 95 — Comb Ridge / Cedar Mesa",
+    "event_type": "Open-desert sprint",
+    "selection_guidance": "Bicentennial Highway; short changes in grade along sandstone walls",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 9,
+    "hubBoss": "Moki Dugway",
+    "status": "installed",
+    "lengthM": 3672.1773703093772,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.53760065454545,
+      "lon": -109.7391983
+    },
+    "finishGps": {
+      "lat": 37.531923500000005,
+      "lon": -109.69989726666668
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H09-S05.json",
+    "raceRef": "UT 95 — Comb Ridge Cedar Mesa",
+    "documentPath": "races/UT 95 %E2%80%94 Comb Ridge Cedar Mesa/document.json",
+    "hubRaceRef": "Moki Dugway",
+    "sceneryCount": 162,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "UT 95 — Comb Ridge / Cedar Mesa"
+  },
+  {
+    "id": "H09-S06",
+    "name": "UT 276 — Halls Crossing approach",
+    "event_type": "High-speed desert sprint",
+    "selection_guidance": "Remote paved road descending from UT 95 toward Lake Powell",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 9,
+    "hubBoss": "Moki Dugway",
+    "status": "installed",
+    "lengthM": 3632.5304688942038,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.4531119,
+      "lon": -110.5787883
+    },
+    "finishGps": {
+      "lat": 37.4633348,
+      "lon": -110.6161302
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H09-S06.json",
+    "raceRef": "UT 276 — Halls Crossing approach",
+    "documentPath": "races/UT 276 %E2%80%94 Halls Crossing approach/document.json",
+    "hubRaceRef": "Moki Dugway",
+    "sceneryCount": 160,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "UT 276 — Halls Crossing approach"
+  },
+  {
+    "id": "H09-S07",
+    "name": "US 191 — Bluff / Blanding",
+    "event_type": "Desert highway",
+    "selection_guidance": "Open highway segment with sweeping grades",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 9,
+    "hubBoss": "Moki Dugway",
+    "status": "installed",
+    "lengthM": 3675.9862162898003,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.40966,
+      "lon": -109.48785065
+    },
+    "finishGps": {
+      "lat": 37.4381817,
+      "lon": -109.4703234
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H09-S07.json",
+    "raceRef": "US 191 — Bluff Blanding",
+    "documentPath": "races/US 191 %E2%80%94 Bluff Blanding/document.json",
+    "hubRaceRef": "Moki Dugway",
+    "sceneryCount": 162,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "US 191 — Bluff / Blanding"
+  },
+  {
+    "id": "H09-S08",
+    "name": "Shafer Trail — Canyonlands National Park",
+    "event_type": "Long-detour 4x4 switchbacks",
+    "selection_guidance": "Very distant rough 4WD road; do not route through White Rim without permit in modern base data",
+    "import_kind": "forest_check",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 9,
+    "hubBoss": "Moki Dugway",
+    "status": "installed",
+    "lengthM": 1894.4313697429943,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 38.452124,
+      "lon": -109.8162866
+    },
+    "finishGps": {
+      "lat": 38.4486656,
+      "lon": -109.8210815
+    },
+    "surface": [
+      "dirt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H09-S08.json",
+    "raceRef": "Shafer Trail — Canyonlands National Park",
+    "documentPath": "races/Shafer Trail %E2%80%94 Canyonlands National Park/document.json",
+    "hubRaceRef": "Moki Dugway",
+    "sceneryCount": 62,
+    "installedSurfaces": [
+      "dirt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Shafer Trail — Canyonlands National Park"
+  },
+  {
+    "id": "H09-S09",
+    "name": "Burr Trail switchbacks — Capitol Reef",
+    "event_type": "Huge-detour gravel cliff climb",
+    "selection_guidance": "Far away, exceptionally steep short switchbacks",
+    "import_kind": "forest_check",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 9,
+    "hubBoss": "Moki Dugway",
+    "status": "installed",
+    "lengthM": 2118.721538084011,
+    "laps": 1,
+    "estimatedDrivingSeconds": 188,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 37.8500464,
+      "lon": -111.0269264
+    },
+    "finishGps": {
+      "lat": 37.8529614,
+      "lon": -111.0182529
+    },
+    "surface": [
+      "dirt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H09-S09.json",
+    "raceRef": "Burr Trail switchbacks — Capitol Reef",
+    "documentPath": "races/Burr Trail switchbacks %E2%80%94 Capitol Reef/document.json",
+    "hubRaceRef": "Moki Dugway",
+    "sceneryCount": 73,
+    "installedSurfaces": [
+      "dirt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Burr Trail switchbacks — Capitol Reef"
+  },
+  {
+    "id": "H10-S01",
+    "name": "SR 179 — Red Rock Scenic Byway",
+    "event_type": "Scenic sprint",
+    "selection_guidance": "Paved curves among red rocks, separate from boss corridor",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 10,
+    "hubBoss": "Oak Creek Canyon (SR 89A)",
+    "status": "installed",
+    "lengthM": 3650.634471140925,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.7985813,
+      "lon": -111.76719980000001
+    },
+    "finishGps": {
+      "lat": 34.8252097,
+      "lon": -111.7782406
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H10-S01.json",
+    "raceRef": "SR 179 — Red Rock Scenic Byway",
+    "documentPath": "races/SR 179 %E2%80%94 Red Rock Scenic Byway/document.json",
+    "hubRaceRef": "Oak Creek Canyon",
+    "sceneryCount": 160,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "SR 179 — Red Rock Scenic Byway"
+  },
+  {
+    "id": "H10-S02",
+    "name": "Upper / Lower Red Rock Loop Road",
+    "event_type": "Mixed-surface time trial",
+    "selection_guidance": "Sedona loop includes a gravel stretch",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 10,
+    "hubBoss": "Oak Creek Canyon (SR 89A)",
+    "status": "installed",
+    "lengthM": 2791.389260797322,
+    "laps": 1,
+    "estimatedDrivingSeconds": 181,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.8292961,
+      "lon": -111.8114179
+    },
+    "finishGps": {
+      "lat": 34.8218188,
+      "lon": -111.8348604
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H10-S02.json",
+    "raceRef": "Upper Lower Red Rock Loop Road",
+    "documentPath": "races/Upper Lower Red Rock Loop Road/document.json",
+    "hubRaceRef": "Oak Creek Canyon",
+    "sceneryCount": 121,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Upper / Lower Red Rock Loop Road"
+  },
+  {
+    "id": "H10-S03",
+    "name": "Page Springs Road",
+    "event_type": "Creek-valley time trial",
+    "selection_guidance": "Winding paved road through the Page Springs valley",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 10,
+    "hubBoss": "Oak Creek Canyon (SR 89A)",
+    "status": "installed",
+    "lengthM": 3564.683614064641,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.78885153333333,
+      "lon": -111.91115773333334
+    },
+    "finishGps": {
+      "lat": 34.7655719,
+      "lon": -111.8914083
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H10-S03.json",
+    "raceRef": "Page Springs Road",
+    "documentPath": "races/Page Springs Road/document.json",
+    "hubRaceRef": "Oak Creek Canyon",
+    "sceneryCount": 156,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Page Springs Road"
+  },
+  {
+    "id": "H10-S04",
+    "name": "Beaverhead Flat Road — CR 78",
+    "event_type": "Desert sweepers",
+    "selection_guidance": "Connector from Cornville area to SR 179",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 10,
+    "hubBoss": "Oak Creek Canyon (SR 89A)",
+    "status": "installed",
+    "lengthM": 3691.246327060417,
+    "laps": 1,
+    "estimatedDrivingSeconds": 185,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.7248157,
+      "lon": -111.8136647
+    },
+    "finishGps": {
+      "lat": 34.7363917,
+      "lon": -111.7800306
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H10-S04.json",
+    "raceRef": "Beaverhead Flat Road — CR 78",
+    "documentPath": "races/Beaverhead Flat Road %E2%80%94 CR 78/document.json",
+    "hubRaceRef": "Oak Creek Canyon",
+    "sceneryCount": 162,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Beaverhead Flat Road — CR 78"
+  },
+  {
+    "id": "H10-S05",
+    "name": "Boynton Pass Road / FR 525 loop",
+    "event_type": "Rough-road stage",
+    "selection_guidance": "Mostly paved initially, then bumpy/unpaved; use only designated motor roads",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 10,
+    "hubBoss": "Oak Creek Canyon (SR 89A)",
+    "status": "installed",
+    "lengthM": 2498.1907640198297,
+    "laps": 1,
+    "estimatedDrivingSeconds": 186,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.9227584,
+      "lon": -111.9159919
+    },
+    "finishGps": {
+      "lat": 34.9356881,
+      "lon": -111.9304403
+    },
+    "surface": [
+      "gravel"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H10-S05.json",
+    "raceRef": "Boynton Pass Road FR 525 loop",
+    "documentPath": "races/Boynton Pass Road FR 525 loop/document.json",
+    "hubRaceRef": "Oak Creek Canyon",
+    "sceneryCount": 104,
+    "installedSurfaces": [
+      "gravel"
+    ],
+    "conditionNotes": "",
+    "displayName": "Boynton Pass Road / FR 525 loop"
+  },
+  {
+    "id": "H10-S06",
+    "name": "Schnebly Hill Road — Sedona",
+    "event_type": "4x4 rally stage",
+    "selection_guidance": "Extremely rough forest road, some parts demand high clearance",
+    "import_kind": "forest_check",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 10,
+    "hubBoss": "Oak Creek Canyon (SR 89A)",
+    "status": "installed",
+    "lengthM": 2145.7230806703333,
+    "laps": 1,
+    "estimatedDrivingSeconds": 184,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.8708581,
+      "lon": -111.7229911
+    },
+    "finishGps": {
+      "lat": 34.8686687,
+      "lon": -111.7103165
+    },
+    "surface": [
+      "gravel"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H10-S06.json",
+    "raceRef": "Schnebly Hill Road — Sedona",
+    "documentPath": "races/Schnebly Hill Road %E2%80%94 Sedona/document.json",
+    "hubRaceRef": "Oak Creek Canyon",
+    "sceneryCount": 86,
+    "installedSurfaces": [
+      "gravel"
+    ],
+    "conditionNotes": "",
+    "displayName": "Schnebly Hill Road — Sedona"
+  },
+  {
+    "id": "H10-S07",
+    "name": "SR 89A — Mingus Mountain / Jerome",
+    "event_type": "Mountain hairpins",
+    "selection_guidance": "Separate section of SR 89A over Mingus Mountain west of Sedona",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 10,
+    "hubBoss": "Oak Creek Canyon (SR 89A)",
+    "status": "installed",
+    "lengthM": 2828.9685641581973,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.6864382,
+      "lon": -112.1702498
+    },
+    "finishGps": {
+      "lat": 34.7020406,
+      "lon": -112.1595482
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H10-S07.json",
+    "raceRef": "SR 89A — Mingus Mountain Jerome",
+    "documentPath": "races/SR 89A %E2%80%94 Mingus Mountain Jerome/document.json",
+    "hubRaceRef": "Oak Creek Canyon",
+    "sceneryCount": 116,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "SR 89A — Mingus Mountain / Jerome"
+  },
+  {
+    "id": "H10-S08",
+    "name": "Podium Club at Attesa — Casa Grande",
+    "event_type": "Long-detour circuit",
+    "selection_guidance": "2.32-mile track with 15 corners south of Phoenix",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 10,
+    "hubBoss": "Oak Creek Canyon (SR 89A)",
+    "status": "installed",
+    "lengthM": 3725.9448356273315,
+    "laps": 1,
+    "estimatedDrivingSeconds": 255,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 32.8182785,
+      "lon": -111.8357456
+    },
+    "finishGps": {
+      "lat": 32.8182785,
+      "lon": -111.8357456
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H10-S08.json",
+    "raceRef": "Podium Club at Attesa — Casa Grande",
+    "documentPath": "races/Podium Club at Attesa %E2%80%94 Casa Grande/document.json",
+    "hubRaceRef": "Oak Creek Canyon",
+    "sceneryCount": 139,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Podium Club at Attesa — Casa Grande"
+  },
+  {
+    "id": "H10-S09",
+    "name": "Firebird Motorsports Park — Chandler",
+    "event_type": "Long-detour drag/drift event",
+    "selection_guidance": "2026 events at the dragstrip, well south of Sedona",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 10,
+    "hubBoss": "Oak Creek Canyon (SR 89A)",
+    "status": "installed",
+    "lengthM": 402.336,
+    "laps": 1,
+    "estimatedDrivingSeconds": null,
+    "durationMethod": "Quarter-mile elapsed-time challenge; vehicle dependent",
+    "startGps": {
+      "lat": 33.2708594,
+      "lon": -111.9707444
+    },
+    "finishGps": {
+      "lat": 33.26782744471227,
+      "lon": -111.96838263877949
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H10-S09.json",
+    "raceRef": "Firebird Motorsports Park — Chandler",
+    "documentPath": "races/Firebird Motorsports Park %E2%80%94 Chandler/document.json",
+    "hubRaceRef": "Oak Creek Canyon",
+    "sceneryCount": 16,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Firebird Motorsports Park — Chandler"
+  },
+  {
+    "id": "H11-S01",
+    "name": "Angeles Forest Highway — County N3",
+    "event_type": "Mountain sprint",
+    "selection_guidance": "Use a standalone section, distinct from SR 2 boss route",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 11,
+    "hubBoss": "Angeles Crest Highway (SR 2)",
+    "status": "installed",
+    "lengthM": 3256.004835185093,
+    "laps": 1,
+    "estimatedDrivingSeconds": 188,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.3918205,
+      "lon": -118.0813467
+    },
+    "finishGps": {
+      "lat": 34.3782004,
+      "lon": -118.0972844
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H11-S01.json",
+    "raceRef": "Angeles Forest Highway — County N3",
+    "documentPath": "races/Angeles Forest Highway %E2%80%94 County N3/document.json",
+    "hubRaceRef": "Angeles Crest Highway",
+    "sceneryCount": 142,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Angeles Forest Highway — County N3"
+  },
+  {
+    "id": "H11-S02",
+    "name": "Upper Big Tujunga Canyon Road",
+    "event_type": "High-speed mountain sweepers",
+    "selection_guidance": "Paved connector between Angeles Forest Highway and Angeles Crest",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 11,
+    "hubBoss": "Angeles Crest Highway (SR 2)",
+    "status": "installed",
+    "lengthM": 3558.633779888256,
+    "laps": 1,
+    "estimatedDrivingSeconds": 187,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.3040769,
+      "lon": -118.0635706
+    },
+    "finishGps": {
+      "lat": 34.2815847,
+      "lon": -118.0416523
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H11-S02.json",
+    "raceRef": "Upper Big Tujunga Canyon Road",
+    "documentPath": "races/Upper Big Tujunga Canyon Road/document.json",
+    "hubRaceRef": "Angeles Crest Highway",
+    "sceneryCount": 156,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Upper Big Tujunga Canyon Road"
+  },
+  {
+    "id": "H11-S03",
+    "name": "Big Tujunga Canyon Road",
+    "event_type": "Canyon sprint",
+    "selection_guidance": "Lower canyon approach along Big Tujunga Creek",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 11,
+    "hubBoss": "Angeles Crest Highway (SR 2)",
+    "status": "installed",
+    "lengthM": 3303.883290558155,
+    "laps": 1,
+    "estimatedDrivingSeconds": 183,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.2871207,
+      "lon": -118.2227999
+    },
+    "finishGps": {
+      "lat": 34.2836407,
+      "lon": -118.1975979
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H11-S03.json",
+    "raceRef": "Big Tujunga Canyon Road",
+    "documentPath": "races/Big Tujunga Canyon Road/document.json",
+    "hubRaceRef": "Angeles Crest Highway",
+    "sceneryCount": 144,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Big Tujunga Canyon Road"
+  },
+  {
+    "id": "H11-S04",
+    "name": "Glendora Mountain Road",
+    "event_type": "Technical hillclimb",
+    "selection_guidance": "Use an isolated hairpin-dense section east of San Gabriel Valley",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 11,
+    "hubBoss": "Angeles Crest Highway (SR 2)",
+    "status": "installed",
+    "lengthM": 2191.284770034995,
+    "laps": 1,
+    "estimatedDrivingSeconds": 185,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.212748,
+      "lon": -117.8010637
+    },
+    "finishGps": {
+      "lat": 34.2167532,
+      "lon": -117.7884712
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H11-S04.json",
+    "raceRef": "Glendora Mountain Road",
+    "documentPath": "races/Glendora Mountain Road/document.json",
+    "hubRaceRef": "Angeles Crest Highway",
+    "sceneryCount": 94,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Glendora Mountain Road"
+  },
+  {
+    "id": "H11-S05",
+    "name": "Glendora Ridge Road",
+    "event_type": "Ridgeline time trial",
+    "selection_guidance": "Technical high-ridge section toward Mount Baldy",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 11,
+    "hubBoss": "Angeles Crest Highway (SR 2)",
+    "status": "installed",
+    "lengthM": 2516.6434078559346,
+    "laps": 1,
+    "estimatedDrivingSeconds": 191,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.2205581,
+      "lon": -117.7190373
+    },
+    "finishGps": {
+      "lat": 34.2242875,
+      "lon": -117.7387037
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H11-S05.json",
+    "raceRef": "Glendora Ridge Road",
+    "documentPath": "races/Glendora Ridge Road/document.json",
+    "hubRaceRef": "Angeles Crest Highway",
+    "sceneryCount": 108,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "Glendora Ridge Road"
+  },
+  {
+    "id": "H11-S06",
+    "name": "San Gabriel Canyon Road — SR 39",
+    "event_type": "Canyon time trial",
+    "selection_guidance": "South/lower drivable portion; not fictionalize as a current through-road without flag",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 11,
+    "hubBoss": "Angeles Crest Highway (SR 2)",
+    "status": "installed",
+    "lengthM": 3204.3448305603933,
+    "laps": 1,
+    "estimatedDrivingSeconds": 186,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.2167999,
+      "lon": -117.8592865
+    },
+    "finishGps": {
+      "lat": 34.1996734,
+      "lon": -117.86158
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H11-S06.json",
+    "raceRef": "San Gabriel Canyon Road — SR 39",
+    "documentPath": "races/San Gabriel Canyon Road %E2%80%94 SR 39/document.json",
+    "hubRaceRef": "Angeles Crest Highway",
+    "sceneryCount": 140,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "San Gabriel Canyon Road — SR 39"
+  },
+  {
+    "id": "H11-S07",
+    "name": "Little Tujunga Canyon Road",
+    "event_type": "Drift/technical sprint",
+    "selection_guidance": "Canyon road over Bear Divide; in-game drift event",
+    "import_kind": "road",
+    "priority": "core",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 11,
+    "hubBoss": "Angeles Crest Highway (SR 2)",
+    "status": "installed",
+    "lengthM": 2129.8621699965433,
+    "laps": 1,
+    "estimatedDrivingSeconds": 180,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.3407669,
+      "lon": -118.3487791
+    },
+    "finishGps": {
+      "lat": 34.3438493,
+      "lon": -118.3576531
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H11-S07.json",
+    "raceRef": "Little Tujunga Canyon Road",
+    "displayName": "Little Tujunga Canyon Road",
+    "documentPath": "races/Little Tujunga Canyon Road/document.json",
+    "hubRaceRef": "Angeles Crest Highway",
+    "sceneryCount": 87,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": ""
+  },
+  {
+    "id": "H11-S08",
+    "name": "Willow Springs — Horse Thief Mile",
+    "event_type": "Drift circuit detour",
+    "selection_guidance": "1-mile 11-turn canyon-simulating track; Rosamond is a considerable detour",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 11,
+    "hubBoss": "Angeles Crest Highway (SR 2)",
+    "status": "installed",
+    "lengthM": 1611.431452022178,
+    "laps": 1,
+    "estimatedDrivingSeconds": 127,
+    "durationMethod": "Curvature/acceleration planning estimate, not a measured gameplay run",
+    "startGps": {
+      "lat": 34.8771727,
+      "lon": -118.2654893
+    },
+    "finishGps": {
+      "lat": 34.8771727,
+      "lon": -118.2654893
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H11-S08.json",
+    "raceRef": "Willow Springs — Horse Thief Mile",
+    "displayName": "Willow Springs — Horse Thief Mile",
+    "documentPath": "races/Willow Springs %E2%80%94 Horse Thief Mile/document.json",
+    "hubRaceRef": "Angeles Crest Highway",
+    "sceneryCount": 50,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": ""
+  },
+  {
+    "id": "H11-S09",
+    "name": "In-N-Out Burger Pomona Dragstrip",
+    "event_type": "Drag strip detour",
+    "selection_guidance": "2026-active NHRA drag venue at Pomona; quarter-mile style event",
+    "import_kind": "track_trace",
+    "priority": "wildcard_detour",
+    "duration_target_seconds": [
+      120,
+      240
+    ],
+    "importVersion": 2,
+    "hubStage": 11,
+    "hubBoss": "Angeles Crest Highway (SR 2)",
+    "status": "installed",
+    "lengthM": 402.336,
+    "laps": 1,
+    "estimatedDrivingSeconds": null,
+    "durationMethod": "Quarter-mile elapsed-time challenge; vehicle dependent",
+    "startGps": {
+      "lat": 34.095262,
+      "lon": -117.769576
+    },
+    "finishGps": {
+      "lat": 34.092173618363304,
+      "lon": -117.77185235730084
+    },
+    "surface": [
+      "asphalt"
+    ],
+    "warnings": [
+      "Banking is set to 0°; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ],
+    "geometryMethod": "osm",
+    "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
+    "generatedPath": "artifacts/campaign-import/side-races/H11-S09.json",
+    "raceRef": "In-N-Out Burger Pomona Dragstrip",
+    "documentPath": "races/In-N-Out Burger Pomona Dragstrip/document.json",
+    "hubRaceRef": "Angeles Crest Highway",
+    "sceneryCount": 16,
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "conditionNotes": "",
+    "displayName": "In-N-Out Burger Pomona Dragstrip"
+  }
+]
