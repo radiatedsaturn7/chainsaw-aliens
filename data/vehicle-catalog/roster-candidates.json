@@ -1,0 +1,1152 @@
+{
+  "schemaVersion": 1,
+  "researchedAt": "2026-11-12",
+  "purpose": "Bounded next50 identity candidates; planning only, not50 completed cars or verified specs. Existing must-haves stay in research.json.",
+  "sources": {
+    "fh5": {
+      "url": "https://forza.net/fh5cars",
+      "game": "Forza Horizon 5",
+      "kind": "official roster",
+      "access": "read official table"
+    },
+    "fm": {
+      "url": "https://forza.net/fmcars",
+      "game": "Forza Motorsport",
+      "kind": "official roster",
+      "access": "read official table"
+    },
+    "gt7": {
+      "url": "https://www.gran-turismo.com/us/gt7/news/00_4731065.html",
+      "game": "Gran Turismo 7",
+      "kind": "official update car list",
+      "access": "full notice read; includes existing cars in engine-swap list, not all new additions"
+    },
+    "wrc": {
+      "url": "https://www.nacongaming.com/en/wrc-generation",
+      "game": "WRC Generations",
+      "kind": "official publisher edition vehicle listing",
+      "access": "full product page read"
+    }
+  },
+  "sourceSurvey": {
+    "fh5": "Broadest accessible official table: utility, everyday, microcars, offroad, classics and modern performance. Game-exclusive editions and duplicates excluded.",
+    "fm": "Official roster provides additional hot hatches, uncommon sport compacts and road performance cars; no race-team/livery duplicates selected.",
+    "gt7": "Official carlist URL opened but JS-only/no readable entries. Official update1.54 lists verified identities, including existing engine-swap eligible models; used4 distinct identities.",
+    "wrc": "Full official unified roster not located in readable publisher page. Publisher edition listing explicitly confirms2002Peugeot206WRC and2010CitroenC4WRC; only these2 selected rather than asserting an unverified complete roster."
+  },
+  "selectionRules": [
+    "No performance/physics values copied from games.",
+    "Each identity requires exact market/year/trim, manufacturer or authoritative homologation specs, original art and runtime validation.",
+    "No cosmetic livery or Forza Edition duplication; no speculative filler to reach660.",
+    "Same-generation art reuse permitted only after silhouette/interior compatibility inspection, with physically meaningful trims separately sourced.",
+    "Stock cinematic candidates are not movie replicas.",
+    "Trade names here identify research targets, not final runtime branding."
+  ],
+  "existingMustHaveIdsExcluded": [
+    "honda-s660-2018-alpha-6mt-jp",
+    "subaru-forester-2024-base-us",
+    "subaru-forester-2024-wilderness-us",
+    "nissan-sentra-2024-s-us",
+    "kia-carnival-2024-lx-7pass-us",
+    "citroen-c4-coupe-2005-vts180-eu",
+    "local-motors-rally-fighter-pending-build",
+    "tamo-racemo-pending",
+    "volkswagen-tiguan-2024-s-fwd-us",
+    "kia-ev6-gt-2023-us",
+    "subaru-impreza-2024-base-us",
+    "subaru-impreza-2024-sport-us",
+    "subaru-impreza-2024-rs-us",
+    "toyota-supra-1994-turbo-us-pending",
+    "mitsubishi-eclipse-1995-rs-us-pending",
+    "mazda-rx7-1993-us-pending",
+    "dodge-charger-1970-rt-pending",
+    "honda-s2000-film-pending",
+    "volkswagen-jetta-film-pending",
+    "nissan-240sx-film-pending",
+    "nissan-maxima-film-pending",
+    "honda-civic-film-pending"
+  ],
+  "counts": {
+    "candidates": 50,
+    "implementedByThisFile": 0,
+    "bySource": {
+      "fh5": 30,
+      "fm": 14,
+      "gt7": 4,
+      "wrc": 2
+    }
+  },
+  "candidates": [
+    {
+      "id": "abarth-124-spider-2017-candidate",
+      "year": 2017,
+      "make": "Abarth",
+      "model": "124 Spider",
+      "trim": null,
+      "category": "performance",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "abarth-695-2016-biposto-candidate",
+      "year": 2016,
+      "make": "Abarth",
+      "model": "695",
+      "trim": "Biposto",
+      "category": "hot-hatch",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "abarth-595-1968-esseesse-candidate",
+      "year": 1968,
+      "make": "Abarth",
+      "model": "595",
+      "trim": "esseesse",
+      "category": "microcar",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "alpine-a110-1973-1600s-candidate",
+      "year": 1973,
+      "make": "Alpine",
+      "model": "A110",
+      "trim": "1600s",
+      "category": "classic-rally",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "amc-gremlin-1973-x-candidate",
+      "year": 1973,
+      "make": "AMC",
+      "model": "Gremlin",
+      "trim": "X",
+      "category": "everyday-classic",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "amc-javelin-1971-amx-candidate",
+      "year": 1971,
+      "make": "AMC",
+      "model": "Javelin",
+      "trim": "AMX",
+      "category": "muscle",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "austin-healey-sprite-1958-mki-candidate",
+      "year": 1958,
+      "make": "Austin-Healey",
+      "model": "Sprite",
+      "trim": "MkI",
+      "category": "classic-roadster",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "bentley-turbo-r-1991-candidate",
+      "year": 1991,
+      "make": "Bentley",
+      "model": "Turbo R",
+      "trim": null,
+      "category": "luxury",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "bmw-isetta-1957-300-export-candidate",
+      "year": 1957,
+      "make": "BMW",
+      "model": "Isetta",
+      "trim": "300 Export",
+      "category": "microcar",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "datsun-510-1970-candidate",
+      "year": 1970,
+      "make": "Datsun",
+      "model": "510",
+      "trim": null,
+      "category": "everyday-classic",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "delorean-dmc-12-1982-candidate",
+      "year": 1982,
+      "make": "DeLorean",
+      "model": "DMC-12",
+      "trim": null,
+      "category": "movie-adjacent-stock",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Chosen for cinematic silhouette potential; not a claim of the exact movie hero/stunt vehicle or its modifications.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "ford-f-150-1986-xlt-lariat-candidate",
+      "year": 1986,
+      "make": "Ford",
+      "model": "F-150",
+      "trim": "XLT Lariat",
+      "category": "pickup",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "ford-fiesta-1981-xr2-candidate",
+      "year": 1981,
+      "make": "Ford",
+      "model": "Fiesta",
+      "trim": "XR2",
+      "category": "hot-hatch",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "ford-bronco-1975-candidate",
+      "year": 1975,
+      "make": "Ford",
+      "model": "Bronco",
+      "trim": null,
+      "category": "offroad",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "ford-capri-1973-rs3100-candidate",
+      "year": 1973,
+      "make": "Ford",
+      "model": "Capri",
+      "trim": "RS3100",
+      "category": "classic-sports",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "ford-xb-falcon-1973-gt-candidate",
+      "year": 1973,
+      "make": "Ford",
+      "model": "XB Falcon",
+      "trim": "GT",
+      "category": "movie-adjacent-stock",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Chosen for cinematic silhouette potential; not a claim of the exact movie hero/stunt vehicle or its modifications."
+      ]
+    },
+    {
+      "id": "ford-lotus-cortina-1966-candidate",
+      "year": 1966,
+      "make": "Ford",
+      "model": "Lotus Cortina",
+      "trim": null,
+      "category": "classic-saloon",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "ford-transit-1965-candidate",
+      "year": 1965,
+      "make": "Ford",
+      "model": "Transit",
+      "trim": null,
+      "category": "utility-van",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "ford-anglia-1959-105e-candidate",
+      "year": 1959,
+      "make": "Ford",
+      "model": "Anglia",
+      "trim": "105E",
+      "category": "movie-adjacent-stock",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Chosen for cinematic silhouette potential; not a claim of the exact movie hero/stunt vehicle or its modifications."
+      ]
+    },
+    {
+      "id": "ford-super-deluxe-1946-station-wagon-candidate",
+      "year": 1946,
+      "make": "Ford",
+      "model": "Super Deluxe",
+      "trim": "Station Wagon",
+      "category": "classic-wagon",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "gmc-typhoon-1992-candidate",
+      "year": 1992,
+      "make": "GMC",
+      "model": "Typhoon",
+      "trim": null,
+      "category": "performance-suv",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "gmc-syclone-1991-candidate",
+      "year": 1991,
+      "make": "GMC",
+      "model": "Syclone",
+      "trim": null,
+      "category": "performance-pickup",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "gmc-vandura-1983-g-1500-candidate",
+      "year": 1983,
+      "make": "GMC",
+      "model": "Vandura",
+      "trim": "G-1500",
+      "category": "movie-adjacent-stock",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Chosen for cinematic silhouette potential; not a claim of the exact movie hero/stunt vehicle or its modifications."
+      ]
+    },
+    {
+      "id": "mercedes-benz-unimog-2014-u5023-candidate",
+      "year": 2014,
+      "make": "Mercedes-Benz",
+      "model": "Unimog",
+      "trim": "U5023",
+      "category": "utility-truck",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "mercedes-benz-500-e-1992-candidate",
+      "year": 1992,
+      "make": "Mercedes-Benz",
+      "model": "500 E",
+      "trim": null,
+      "category": "performance-saloon",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "meyers-manx-1971-candidate",
+      "year": 1971,
+      "make": "Meyers",
+      "model": "Manx",
+      "trim": null,
+      "category": "buggy",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "mg-mg3-2015-candidate",
+      "year": 2015,
+      "make": "MG",
+      "model": "MG3",
+      "trim": null,
+      "category": "everyday-hatch",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "reliant-supervan-1972-iii-candidate",
+      "year": 1972,
+      "make": "Reliant",
+      "model": "Supervan",
+      "trim": "III",
+      "category": "three-wheeler",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Three-wheel chassis may require engine/editor capability work; do not misrepresent as a four-wheel production car."
+      ]
+    },
+    {
+      "id": "renault-4l-1968-export-candidate",
+      "year": 1968,
+      "make": "Renault",
+      "model": "4L",
+      "trim": "Export",
+      "category": "everyday-classic",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "subaru-brat-1980-gl-candidate",
+      "year": 1980,
+      "make": "Subaru",
+      "model": "BRAT",
+      "trim": "GL",
+      "category": "utility",
+      "rosterSource": "fh5",
+      "rosterSourceUrl": "https://forza.net/fh5cars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "citroen-ds-3-2011-racing-candidate",
+      "year": 2011,
+      "make": "Citroen",
+      "model": "DS 3",
+      "trim": "Racing",
+      "category": "hot-hatch",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "datsun-2000-1969-roadster-candidate",
+      "year": 1969,
+      "make": "Datsun",
+      "model": "2000",
+      "trim": "Roadster",
+      "category": "classic-roadster",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "dodge-viper-2016-acr-candidate",
+      "year": 2016,
+      "make": "Dodge",
+      "model": "Viper",
+      "trim": "ACR",
+      "category": "performance",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "dodge-charger-2015-srt-hellcat-candidate",
+      "year": 2015,
+      "make": "Dodge",
+      "model": "Charger",
+      "trim": "SRT Hellcat",
+      "category": "performance-saloon",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "dodge-dart-2013-gt-candidate",
+      "year": 2013,
+      "make": "Dodge",
+      "model": "Dart",
+      "trim": "GT",
+      "category": "everyday-saloon",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "dodge-srt-4-2005-acr-candidate",
+      "year": 2005,
+      "make": "Dodge",
+      "model": "SRT-4",
+      "trim": "ACR",
+      "category": "sport-compact",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "dodge-stealth-1996-r-t-turbo-candidate",
+      "year": 1996,
+      "make": "Dodge",
+      "model": "Stealth",
+      "trim": "R/T Turbo",
+      "category": "grand-tourer",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "dodge-shelby-omni-1986-glhs-candidate",
+      "year": 1986,
+      "make": "Dodge",
+      "model": "Shelby Omni",
+      "trim": "GLHS",
+      "category": "hot-hatch",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "eagle-talon-1998-tsi-turbo-candidate",
+      "year": 1998,
+      "make": "Eagle",
+      "model": "Talon",
+      "trim": "TSi Turbo",
+      "category": "sport-compact",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "donkervoort-d8-2013-gto-candidate",
+      "year": 2013,
+      "make": "Donkervoort",
+      "model": "D8",
+      "trim": "GTO",
+      "category": "lightweight-sports",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "ferrari-roma-2020-candidate",
+      "year": 2020,
+      "make": "Ferrari",
+      "model": "Roma",
+      "trim": null,
+      "category": "grand-tourer",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "ferrari-f355-1994-berlinetta-candidate",
+      "year": 1994,
+      "make": "Ferrari",
+      "model": "F355",
+      "trim": "Berlinetta",
+      "category": "performance",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "ferrari-f40-1987-candidate",
+      "year": 1987,
+      "make": "Ferrari",
+      "model": "F40",
+      "trim": null,
+      "category": "supercar",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Roster omits a more precise trim; select exact real-world specification during research rather than inventing one."
+      ]
+    },
+    {
+      "id": "ford-mustang-2024-dark-horse-candidate",
+      "year": 2024,
+      "make": "Ford",
+      "model": "Mustang",
+      "trim": "Dark Horse",
+      "category": "performance",
+      "rosterSource": "fm",
+      "rosterSourceUrl": "https://forza.net/fmcars",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "suzuki-jimny-sierra-2018-jc-candidate",
+      "year": 2018,
+      "make": "Suzuki",
+      "model": "Jimny Sierra",
+      "trim": "JC",
+      "category": "offroad",
+      "rosterSource": "gt7",
+      "rosterSourceUrl": "https://www.gran-turismo.com/us/gt7/news/00_4731065.html",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "volvo-240-1993-se-estate-candidate",
+      "year": 1993,
+      "make": "Volvo",
+      "model": "240",
+      "trim": "SE Estate",
+      "category": "everyday-wagon",
+      "rosterSource": "gt7",
+      "rosterSourceUrl": "https://www.gran-turismo.com/us/gt7/news/00_4731065.html",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "autobianchi-a112-1985-abarth-candidate",
+      "year": 1985,
+      "make": "Autobianchi",
+      "model": "A112",
+      "trim": "Abarth",
+      "category": "hot-hatch",
+      "rosterSource": "gt7",
+      "rosterSourceUrl": "https://www.gran-turismo.com/us/gt7/news/00_4731065.html",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "porsche-911-2020-turbo-s-992-candidate",
+      "year": 2020,
+      "make": "Porsche",
+      "model": "911",
+      "trim": "Turbo S (992)",
+      "category": "supercar",
+      "rosterSource": "gt7",
+      "rosterSourceUrl": "https://www.gran-turismo.com/us/gt7/news/00_4731065.html",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification."
+      ]
+    },
+    {
+      "id": "peugeot-206-2002-wrc-candidate",
+      "year": 2002,
+      "make": "Peugeot",
+      "model": "206",
+      "trim": "WRC",
+      "category": "competition-rally",
+      "rosterSource": "wrc",
+      "rosterSourceUrl": "https://www.nacongaming.com/en/wrc-generation",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Competition vehicle, mechanically distinct from road-going namesake; original unsponsored art and exact season/homologation research required."
+      ]
+    },
+    {
+      "id": "citroen-c4-2010-wrc-candidate",
+      "year": 2010,
+      "make": "Citroen",
+      "model": "C4",
+      "trim": "WRC",
+      "category": "competition-rally",
+      "rosterSource": "wrc",
+      "rosterSourceUrl": "https://www.nacongaming.com/en/wrc-generation",
+      "status": "needs-real-world-specs/art",
+      "realWorldSpecs": null,
+      "art": {
+        "interior": null,
+        "exterior": null
+      },
+      "implemented": false,
+      "countsTowardImplementedTarget": false,
+      "notes": [
+        "Game identity only; real-world market, gearbox, production specification and homologation require independent verification.",
+        "Competition vehicle, mechanically distinct from road-going namesake; original unsponsored art and exact season/homologation research required."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,782 @@
+{
+  "car": {
+    "id": "caravan-9-2024",
+    "name": "2024 Caravan-9",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "tires": [],
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": null
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": "steeringwheel",
+          "frameIndex": 0,
+          "scaleX": 1.6875,
+          "scaleY": 1.6875,
+          "offsetX": -0.42200520833333344,
+          "offsetY": 0.9000000000000002,
+          "centerX": 0.498046875,
+          "centerY": 0.5448717948717948
+        },
+        "wipers": {
+          "artRef": "windshieldwiper",
+          "frameIndex": 0,
+          "pivotX": 0,
+          "pivotY": 0.5,
+          "width": 0.35640000000000005,
+          "parkAngle": -5,
+          "sweepAngle": -80,
+          "cycleSeconds": 1.6,
+          "mounts": [
+            {
+              "x": 0.16,
+              "y": 0.755
+            },
+            {
+              "x": 0.56,
+              "y": 0.755
+            }
+          ]
+        }
+      },
+      "addOns": [],
+      "tireSurfaces": {
+        "tread": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 0,
+          "region": {
+            "x": 138,
+            "y": 27,
+            "width": 158,
+            "height": 379
+          },
+          "bounds": {
+            "x": 138.5,
+            "y": 27.5,
+            "width": 157,
+            "height": 378
+          }
+        },
+        "wheel": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 2,
+          "region": {
+            "x": 218,
+            "y": 213,
+            "radius": 204.24005483743878
+          },
+          "bounds": {
+            "x": 13.760045162561227,
+            "y": 8.760045162561227,
+            "width": 408.47990967487755,
+            "height": 408.47990967487755
+          }
+        }
+      },
+      "angleLayers": {
+        "front": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "frontRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "right": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "rearRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rear": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rearLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "left": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "frontLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        }
+      }
+    },
+    "camera": {
+      "trackingMode": "dynamic"
+    },
+    "dimensions": {
+      "lengthM": 5.1562,
+      "widthM": 1.9939,
+      "wheelbaseM": 3.09118,
+      "trackFrontM": 1.7500600000000002,
+      "trackRearM": 1.7500600000000002
+    },
+    "audio": {
+      "engineSoundId": null
+    },
+    "setup": {
+      "defaultTireCompound": "street",
+      "tireCompoundByWheel": {
+        "fl": "street",
+        "fr": "street",
+        "rl": "street",
+        "rr": "street"
+      },
+      "tirePressurePsi": {
+        "fl": 32,
+        "fr": 32,
+        "rl": 31,
+        "rr": 31
+      },
+      "tireSize": {
+        "widthMm": 235,
+        "aspectRatio": 65,
+        "wheelDiameterIn": 17
+      }
+    },
+    "defaultTransmissionType": "automatic",
+    "transmissions": {
+      "automatic": {
+        "type": "automatic",
+        "label": "8AT",
+        "shiftMode": "automatic",
+        "shiftTimeMs": 280,
+        "clutchDelayMs": 0,
+        "launchRpm": 2200,
+        "autoUpshiftRpm": 6400,
+        "autoDownshiftRpm": 1900,
+        "torqueConverterSlip": 0.1,
+        "torqueConverterMultiplication": 1.6,
+        "gearRatios": [
+          4.808,
+          2.901,
+          1.864,
+          1.424,
+          1.219,
+          1,
+          0.799,
+          0.648
+        ],
+        "reverseRatio": 3.425,
+        "gearFinalDrive": 3.51,
+        "drivetrainEfficiency": 0.84,
+        "engineProfile": null
+      }
+    },
+    "tuning": {
+      "drivetrain": "fwd",
+      "powerHp": 290,
+      "torqueLbFt": 262,
+      "weightKg": 2009.8677914700002,
+      "frontWeightDistribution": 0.58,
+      "engineDisplacementL": 3.47,
+      "aspiration": "Naturally Aspirated",
+      "tireGrip": 0.96,
+      "brakeBalance": 0.57,
+      "brakePressure": 1,
+      "redlineRpm": 6500,
+      "revLimitRpm": 6800,
+      "revLimiterDropRpm": 420,
+      "idleRpm": 750,
+      "torquePeakStartRpm": 5000,
+      "torquePeakEndRpm": 5000,
+      "torqueFalloffRpm": 6800,
+      "wheelRadiusM": 0.36865,
+      "topSpeedMph": 118,
+      "zeroToSixtySec": 7.5,
+      "dragCoefficient": 0.34,
+      "accelerationCalibration": 1,
+      "drivetrainEfficiency": 0.86,
+      "differentialAccel": 0.5,
+      "differentialDecel": 0.25,
+      "rearDifferentialAccel": 0.5,
+      "rearDifferentialDecel": 0.25,
+      "gearFinalDrive": 3.51,
+      "camberFront": -0.9,
+      "camberRear": -1,
+      "toeFront": 0,
+      "toeRear": 0.12,
+      "casterFront": 6.1,
+      "aeroFront": 0.22,
+      "aeroRear": 0.28,
+      "springFront": 0.54,
+      "springRear": 0.56,
+      "rideHeightFront": 0.48,
+      "rideHeightRear": 0.5,
+      "suspensionTravelFront": 0.45,
+      "suspensionTravelRear": 0.45,
+      "dampingFront": 0.54,
+      "dampingRear": 0.55,
+      "bumpFront": 0.5,
+      "bumpRear": 0.52,
+      "reboundFront": 0.56,
+      "reboundRear": 0.57,
+      "antiRollFront": 0.52,
+      "antiRollRear": 0.58,
+      "gearRatios": [
+        4.808,
+        2.901,
+        1.864,
+        1.424,
+        1.219,
+        1,
+        0.799,
+        0.648
+      ],
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 5.1562,
+          "overallWidthM": 1.9939,
+          "overallHeightM": 1.7399,
+          "groundClearanceM": 0.17271999999999998,
+          "frontOverhangM": 1,
+          "rearOverhangM": 1.06502,
+          "lowerBodyHeightM": 0.6,
+          "hood": {
+            "lengthM": 1,
+            "widthM": 1.9141439999999998,
+            "heightM": 0.42
+          },
+          "cabin": {
+            "centerZM": -0.25,
+            "lengthM": 3.1,
+            "widthM": 1.874266,
+            "heightM": 0.9671799999999999
+          },
+          "bed": {
+            "centerZM": -1.35,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.65,
+            "z": 0
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": false,
+          "wheelWellClearanceMarginM": 0.06,
+          "maximumTireDeflectionM": 0.04,
+          "wheelRadiusM": 0.36865,
+          "trackWidthM": 1.7500600000000002,
+          "frontAxleDistanceFromCgM": 1.2982955999999999,
+          "rearAxleDistanceFromCgM": 1.7928844,
+          "customColliders": []
+        }
+      },
+      "reverseRatio": 3.425,
+      "engineCurve": {
+        "rpmMin": 750,
+        "rpmMax": 6800,
+        "torquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 95
+          },
+          {
+            "rpm": 2000,
+            "torqueLbFt": 200
+          },
+          {
+            "rpm": 3500,
+            "torqueLbFt": 240
+          },
+          {
+            "rpm": 5000,
+            "torqueLbFt": 262
+          },
+          {
+            "rpm": 6400,
+            "torqueLbFt": 237.98125
+          },
+          {
+            "rpm": 6800,
+            "torqueLbFt": 210
+          }
+        ]
+      },
+      "frontDifferentialAccel": 0.3,
+      "frontDifferentialDecel": 0.15,
+      "steeringRatio": 14.23
+    },
+    "description": "Original fictional salvage minivan using2024 US Kia Carnival LX7-passenger factory dimensions and powertrain figures as reference. Not an OEM replica. Unpublished simulation parameters remain estimates.",
+    "category": "van"
+  },
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "provenance": {
+    "referenceVehicle": "2024 Kia Carnival LX7-passenger US8AT",
+    "sources": [
+      {
+        "url": "https://www.kiamedia.com/us/en/media/specifications/20571/2024-kia-carnival-specifications",
+        "fields": [
+          "displacement",
+          "engine",
+          "power",
+          "torque",
+          "curbMass",
+          "drivetrain",
+          "transmission",
+          "forwardRatios",
+          "reverseRatio",
+          "finalDrive",
+          "wheelbase",
+          "dimensionsLWH",
+          "trackFrontRear",
+          "frontTire",
+          "rearTire",
+          "groundClearance",
+          "steeringRatio",
+          "steeringTurnsLockToLock",
+          "fuelTank"
+        ]
+      }
+    ],
+    "verifiedFacts": {
+      "displacement": {
+        "value": 3470,
+        "unit": "cm3",
+        "source": "kia-carnival-2024"
+      },
+      "engine": {
+        "value": "V6",
+        "unit": "description",
+        "source": "kia-carnival-2024"
+      },
+      "power": {
+        "value": 290,
+        "unit": "hp",
+        "source": "kia-carnival-2024",
+        "rpm": 6400
+      },
+      "torque": {
+        "value": 262,
+        "unit": "lb-ft",
+        "source": "kia-carnival-2024",
+        "rpm": 5000
+      },
+      "curbMass": {
+        "value": 4431,
+        "unit": "lb",
+        "source": "kia-carnival-2024"
+      },
+      "drivetrain": {
+        "value": "FWD",
+        "unit": "layout",
+        "source": "kia-carnival-2024"
+      },
+      "transmission": {
+        "value": "8AT",
+        "unit": "type",
+        "source": "kia-carnival-2024"
+      },
+      "forwardRatios": {
+        "value": [
+          4.808,
+          2.901,
+          1.864,
+          1.424,
+          1.219,
+          1,
+          0.799,
+          0.648
+        ],
+        "unit": "ratio",
+        "source": "kia-carnival-2024"
+      },
+      "reverseRatio": {
+        "value": 3.425,
+        "unit": "ratio",
+        "source": "kia-carnival-2024"
+      },
+      "finalDrive": {
+        "value": 3.51,
+        "unit": "ratio",
+        "source": "kia-carnival-2024"
+      },
+      "wheelbase": {
+        "value": 121.7,
+        "unit": "in",
+        "source": "kia-carnival-2024"
+      },
+      "dimensionsLWH": {
+        "value": [
+          203,
+          78.5,
+          68.5
+        ],
+        "unit": "in",
+        "source": "kia-carnival-2024"
+      },
+      "trackFrontRear": {
+        "value": [
+          68.9,
+          68.9
+        ],
+        "unit": "in",
+        "source": "kia-carnival-2024"
+      },
+      "frontTire": {
+        "value": "P235/65R17",
+        "unit": "designation",
+        "source": "kia-carnival-2024"
+      },
+      "rearTire": {
+        "value": "P235/65R17",
+        "unit": "designation",
+        "source": "kia-carnival-2024"
+      },
+      "groundClearance": {
+        "value": 6.8,
+        "unit": "in",
+        "source": "kia-carnival-2024"
+      },
+      "steeringRatio": {
+        "value": 14.23,
+        "unit": "ratio",
+        "source": "kia-carnival-2024"
+      },
+      "steeringTurnsLockToLock": {
+        "value": 3,
+        "unit": "turns",
+        "source": "kia-carnival-2024"
+      },
+      "fuelTank": {
+        "value": 19,
+        "unit": "US gal",
+        "source": "kia-carnival-2024"
+      }
+    },
+    "estimates": [
+      "Full source page403; numeric facts and LX column association verified via indexed official table and secondary mirror.",
+      "Dimensions exclude mirrors and roof rails.",
+      "Actual torque curve, inertias, center of gravity, aero/frontal area, rolling losses, grip and shift-control values not published here; any runtime values for them must be labeled simulation estimates.",
+      "Do not confuse7-passengerLX4431lb with8-passengerLX4513lb orSXPrestige4727lb.",
+      "4431lb converted with0.45359237kg/lb; runtime mass2009.86779147kg. NOT8-passenger LX4513lb or SXPrestige4727lb.",
+      "Shift duration, shift thresholds, converter slip/multiplication, drivetrain efficiency, final-RPM limits, idle, torque samples outside5000/6400rpm, suspension/brake/differential settings, aero, drag, performance targets, CG, overhang split and body collision sections are provisional simulation estimates.",
+      "Nominal unloaded tire radius calculated fromP235/65R17; actual loaded rolling radius not sourced.",
+      "58%front mass distribution is estimated. Axle distances derived from this estimate and sourced wheelbase.",
+      "Fuel19USgal and3turns lock-to-lock are recorded reference facts; this integration does not claim fuel-system capacity or steering-travel runtime wiring beyond steeringRatio14.23.",
+      "Wheel-well centers/radii measured manually from original sprite sheet; per-angle graphical scale/placement calibrated to production rear-axle anchored wheel rig. These are visual estimates, not changes to physical dimensions; browser review required.",
+      "Diagonal sprite visual envelope uses 45-degree blend of principal-view widths; per-axle graphic offsets accommodate differing authored perspective without altering physics or magnifying diagonal bodies."
+    ],
+    "artwork": "Original logo-free salvage minivan body and cockpit, existing shared steeringwheel; not a factory replica."
+  },
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 55,
+        "y": 369,
+        "radius": 24
+      },
+      {
+        "wheel": "fr",
+        "x": 302,
+        "y": 369,
+        "radius": 24
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1680,
+        "y": 753,
+        "radius": 35
+      },
+      {
+        "wheel": "rr",
+        "x": 1841,
+        "y": 730,
+        "radius": 28
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 990,
+        "y": 363,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 1342,
+        "y": 363,
+        "radius": 46
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1510,
+        "y": 336,
+        "radius": 27
+      },
+      {
+        "wheel": "rr",
+        "x": 1656,
+        "y": 359,
+        "radius": 32
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 62,
+        "y": 749,
+        "radius": 24
+      },
+      {
+        "wheel": "rl",
+        "x": 305,
+        "y": 749,
+        "radius": 24
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 580,
+        "y": 747,
+        "radius": 33
+      },
+      {
+        "wheel": "fl",
+        "x": 763,
+        "y": 727,
+        "radius": 28
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 931,
+        "y": 747,
+        "radius": 44
+      },
+      {
+        "wheel": "fl",
+        "x": 1303,
+        "y": 750,
+        "radius": 45
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 435,
+        "y": 333,
+        "radius": 27
+      },
+      {
+        "wheel": "fl",
+        "x": 609,
+        "y": 365,
+        "radius": 33
+      }
+    ]
+  }
+}
