@@ -384,7 +384,8 @@
       "catalog-flint-coupe-2005-dashboard": "art/catalog-flint-coupe-2005-dashboard/document.json",
       "catalog-caravan-9-2024-body": "art/catalog-caravan-9-2024-body/document.json",
       "catalog-caravan-9-2024-dashboard": "art/catalog-caravan-9-2024-dashboard/document.json",
-      "catalog-rally-gravel": "art/catalog-rally-gravel/document.json"
+      "catalog-rally-gravel": "art/catalog-rally-gravel/document.json",
+      "catalog-rain-directional": "art/catalog-rain-directional/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

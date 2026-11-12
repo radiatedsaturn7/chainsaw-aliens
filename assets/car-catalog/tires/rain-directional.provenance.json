@@ -1,0 +1,18 @@
+{
+  "asset": "rain-directional.png",
+  "intendedCompound": "Rain",
+  "method": "OpenAI built-in image generation",
+  "prompt": "Original Rain tire two-frame texture sheet for2994 racing game. Reference1 and2 are layout and painted pixel-art2.5D style ONLY; NEW tire tread. Exactly2 equal columns1row on true transparent alpha. LEFT upright tire viewed straight at tread, narrow oblong silhouette: wet-weather tire with deep sweeping V-shaped water evacuation grooves meeting central channel, fine secondary sipes, smooth rounded shoulders, clean dark charcoal rubber with restrained cool blue-gray highlights. NO mud chunks, no gravel blocks, no slick plain tread. RIGHT perfectly circular side-on view of same tire: worn cool silver five double-spoke alloy wheel, dark plain hub, small dark fasteners. Entire interior of wheel circle MUST be OPAQUE dark recessed brake backing plate between spokes, NOT transparent holes. Equal vertical tire height, centered each half, generous fully transparent center gutter and borders, fully inside canvas. Style crisp handpainted pixel game asset with restrained wear, no photoreal background. No logos, text, numbers, skulls, brands, labels, water spray, ground or castshadow; only the2 tire views. Rain theme comes from channel pattern, not weather baked into background.",
+  "revision": "Background haze removed with built-in imagegen edit; original alpha retained, no programmatic image edits.",
+  "references": [
+    "rally-gravel.png style/layout",
+    "tarmac-slick.png style/layout"
+  ],
+  "layout": {
+    "columns": 2,
+    "rows": 1,
+    "treadFrame": 0,
+    "wheelFrame": 1
+  },
+  "status": "Source only, no runtime integration. Original directional rain grooves, silver wheel, opaque wheel recesses. Visually inspected and existing importer/UV fitting passed."
+}
