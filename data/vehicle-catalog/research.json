@@ -1,0 +1,1108 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Research ledger, not runtime vehicles or completed-car count",
+  "researchedAt": "2026-11-12",
+  "targetIndividualSpecs": 660,
+  "sources": {
+    "honda-s660-2018": {
+      "url": "https://www.honda.co.jp/auto-archive/s660/2018/common/pdf/s660_spec_list_201804.pdf",
+      "publisher": "Honda",
+      "type": "manufacturer_specification",
+      "access": "full_document_read"
+    },
+    "subaru-forester-2024": {
+      "url": "https://s3.amazonaws.com/subarumedia.iconicweb.com/mediasite/attachments/24MY_Forester_Specs_-_FINAL.pdf",
+      "publisher": "Subaru of America",
+      "type": "manufacturer_specification",
+      "access": "full_document_read"
+    },
+    "nissan-sentra-2024": {
+      "url": "https://usa.nissannews.com/en-US/releases/2024-nissan-sentra-specifications",
+      "publisher": "Nissan USA",
+      "type": "manufacturer_specification",
+      "access": "manufacturer_table_read"
+    },
+    "kia-carnival-2024": {
+      "url": "https://www.kiamedia.com/us/en/media/specifications/20571/2024-kia-carnival-specifications",
+      "publisher": "Kia America",
+      "type": "manufacturer_specification",
+      "access": "indexed_extract_only_full_page_403"
+    },
+    "c4-argus-2005": {
+      "url": "https://www.largus.fr/fiche-technique/Citroen/C4/I/2005/Coupe%2B3%2BPortes/20i%2B16v%2B180ch%2BVTS-799752.html",
+      "publisher": "L'Argus",
+      "type": "secondary_specification",
+      "access": "full_page_read"
+    },
+    "c4-manufacturer-2005": {
+      "url": "https://auto-preisliste.de/wp-content/uploads/2025/10/2005-12_preisliste_citroen_c4.pdf",
+      "publisher": "Citroen, archived by auto-preisliste.de",
+      "type": "archived_manufacturer_price_list",
+      "access": "indexed_extract_only_full_pdf_403"
+    },
+    "rally-fighter-road-test": {
+      "url": "https://www.roadandtrack.com/car-culture/a8913/local-motors-rally-fighter-desert-road-test-review/",
+      "publisher": "Road & Track",
+      "type": "contemporary_road_test",
+      "access": "indexed_extract_read"
+    },
+    "film-builds": {
+      "url": "https://www.thedrive.com/news/29060/this-website-lists-the-real-specs-and-build-sheets-for-the-fast-and-the-furious-movie-cars",
+      "publisher": "The Drive",
+      "type": "technical_advisor_reporting",
+      "access": "full_article_read"
+    },
+    "subaru-impreza-2024": {
+      "url": "https://www.subaru.com/content/dam/subaru/downloads/pdf/brochures/2024/MY24_Impreza_Brochure.pdf",
+      "publisher": "Subaru of America",
+      "type": "manufacturer_brochure",
+      "access": "verified_by_parent_research_agent"
+    }
+  },
+  "vehicles": [
+    {
+      "id": "honda-s660-2018-alpha-6mt-jp",
+      "make": "Honda",
+      "model": "S660",
+      "year": 2018,
+      "trim": "alpha 6MT",
+      "market": "JP",
+      "status": "research_only",
+      "facts": {
+        "displacement": {
+          "value": 658,
+          "unit": "cm3",
+          "source": "honda-s660-2018"
+        },
+        "engine": {
+          "value": "turbocharged inline three",
+          "unit": "description",
+          "source": "honda-s660-2018"
+        },
+        "power": {
+          "value": 47,
+          "unit": "kW",
+          "source": "honda-s660-2018",
+          "rpm": 6000,
+          "manufacturerAlternate": {
+            "value": 64,
+            "unit": "PS"
+          }
+        },
+        "torque": {
+          "value": 104,
+          "unit": "Nm",
+          "source": "honda-s660-2018",
+          "rpm": 2600
+        },
+        "curbMass": {
+          "value": 830,
+          "unit": "kg",
+          "source": "honda-s660-2018"
+        },
+        "drivetrain": {
+          "value": "RWD",
+          "unit": "layout",
+          "source": "honda-s660-2018"
+        },
+        "enginePosition": {
+          "value": "mid",
+          "unit": "layout",
+          "source": "honda-s660-2018"
+        },
+        "transmission": {
+          "value": "6MT",
+          "unit": "type",
+          "source": "honda-s660-2018"
+        },
+        "forwardRatios": {
+          "value": [
+            3.571,
+            2.227,
+            1.529,
+            1.15,
+            0.869,
+            0.686
+          ],
+          "unit": "ratio",
+          "source": "honda-s660-2018"
+        },
+        "reverseRatio": {
+          "value": 3.615,
+          "unit": "ratio",
+          "source": "honda-s660-2018"
+        },
+        "finalDrive": {
+          "value": 4.875,
+          "unit": "ratio",
+          "source": "honda-s660-2018"
+        },
+        "wheelbase": {
+          "value": 2.285,
+          "unit": "m",
+          "source": "honda-s660-2018"
+        },
+        "dimensionsLWH": {
+          "value": [
+            3.395,
+            1.475,
+            1.18
+          ],
+          "unit": "m",
+          "source": "honda-s660-2018"
+        },
+        "frontTire": {
+          "value": "165/55R15 75V",
+          "unit": "designation",
+          "source": "honda-s660-2018"
+        },
+        "rearTire": {
+          "value": "195/45R16 80W",
+          "unit": "designation",
+          "source": "honda-s660-2018"
+        }
+      },
+      "uncertainties": [
+        "64 PS is not 64 SAE horsepower. Beta shares these mechanical specifications; do not count a badge-only duplicate toward the target."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "subaru-forester-2024-base-us",
+      "make": "Subaru",
+      "model": "Forester",
+      "year": 2024,
+      "trim": "Base",
+      "market": "US",
+      "status": "research_only",
+      "facts": {
+        "displacement": {
+          "value": 2498,
+          "unit": "cm3",
+          "source": "subaru-forester-2024"
+        },
+        "engine": {
+          "value": "naturally aspirated boxer four",
+          "unit": "description",
+          "source": "subaru-forester-2024"
+        },
+        "power": {
+          "value": 182,
+          "unit": "hp",
+          "source": "subaru-forester-2024",
+          "rpm": 5800
+        },
+        "torque": {
+          "value": 176,
+          "unit": "lb-ft",
+          "source": "subaru-forester-2024",
+          "rpm": 4400
+        },
+        "curbMass": {
+          "value": 3454,
+          "unit": "lb",
+          "source": "subaru-forester-2024"
+        },
+        "drivetrain": {
+          "value": "AWD",
+          "unit": "layout",
+          "source": "subaru-forester-2024"
+        },
+        "transmission": {
+          "value": "Lineartronic CVT",
+          "unit": "type",
+          "source": "subaru-forester-2024"
+        },
+        "finalDrive": {
+          "value": 3.7,
+          "unit": "ratio",
+          "source": "subaru-forester-2024"
+        },
+        "groundClearance": {
+          "value": 8.7,
+          "unit": "in",
+          "source": "subaru-forester-2024"
+        }
+      },
+      "uncertainties": [
+        "CVT simulated steps are not conventional fixed gears. Wilderness differs in gearing, clearance, tires and mass, not just badge."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "subaru-forester-2024-wilderness-us",
+      "make": "Subaru",
+      "model": "Forester",
+      "year": 2024,
+      "trim": "Wilderness",
+      "market": "US",
+      "status": "research_only",
+      "facts": {
+        "displacement": {
+          "value": 2498,
+          "unit": "cm3",
+          "source": "subaru-forester-2024"
+        },
+        "engine": {
+          "value": "naturally aspirated boxer four",
+          "unit": "description",
+          "source": "subaru-forester-2024"
+        },
+        "power": {
+          "value": 182,
+          "unit": "hp",
+          "source": "subaru-forester-2024",
+          "rpm": 5800
+        },
+        "torque": {
+          "value": 176,
+          "unit": "lb-ft",
+          "source": "subaru-forester-2024",
+          "rpm": 4400
+        },
+        "curbMass": {
+          "value": 3620,
+          "unit": "lb",
+          "source": "subaru-forester-2024"
+        },
+        "drivetrain": {
+          "value": "AWD",
+          "unit": "layout",
+          "source": "subaru-forester-2024"
+        },
+        "transmission": {
+          "value": "Lineartronic CVT",
+          "unit": "type",
+          "source": "subaru-forester-2024"
+        },
+        "finalDrive": {
+          "value": 4.111,
+          "unit": "ratio",
+          "source": "subaru-forester-2024"
+        },
+        "groundClearance": {
+          "value": 9.2,
+          "unit": "in",
+          "source": "subaru-forester-2024"
+        }
+      },
+      "uncertainties": [
+        "CVT simulated steps are not conventional fixed gears. Wilderness differs in gearing, clearance, tires and mass, not just badge."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "nissan-sentra-2024-s-us",
+      "make": "Nissan",
+      "model": "Sentra",
+      "year": 2024,
+      "trim": "S",
+      "market": "US",
+      "status": "research_only",
+      "facts": {
+        "displacement": {
+          "value": 1997,
+          "unit": "cm3",
+          "source": "nissan-sentra-2024"
+        },
+        "engine": {
+          "value": "MR20DD naturally aspirated inline four",
+          "unit": "description",
+          "source": "nissan-sentra-2024"
+        },
+        "power": {
+          "value": 149,
+          "unit": "hp",
+          "source": "nissan-sentra-2024",
+          "rpm": 6000
+        },
+        "torque": {
+          "value": 146,
+          "unit": "lb-ft",
+          "source": "nissan-sentra-2024",
+          "rpm": 4000
+        },
+        "curbMass": {
+          "value": 3036,
+          "unit": "lb",
+          "source": "nissan-sentra-2024"
+        },
+        "drivetrain": {
+          "value": "FWD",
+          "unit": "layout",
+          "source": "nissan-sentra-2024"
+        },
+        "transmission": {
+          "value": "Xtronic CVT",
+          "unit": "type",
+          "source": "nissan-sentra-2024"
+        },
+        "weightDistributionFrontRear": {
+          "value": [
+            61,
+            39
+          ],
+          "unit": "percent",
+          "source": "nissan-sentra-2024"
+        },
+        "wheelbase": {
+          "value": 106.6,
+          "unit": "in",
+          "source": "nissan-sentra-2024"
+        }
+      },
+      "uncertainties": [
+        "Secondary sources report power/torque peaks at 6400/4400 rpm; this record retains the explicit Nissan table values 6000/4000."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "kia-carnival-2024-lx-7pass-us",
+      "make": "Kia",
+      "model": "Carnival",
+      "year": 2024,
+      "trim": "LX 7-passenger",
+      "market": "US",
+      "status": "needs_source_confirmation",
+      "facts": {
+        "displacement": {
+          "value": 3.5,
+          "unit": "L",
+          "source": "kia-carnival-2024"
+        },
+        "engine": {
+          "value": "V6",
+          "unit": "description",
+          "source": "kia-carnival-2024"
+        },
+        "power": {
+          "value": 290,
+          "unit": "hp",
+          "source": "kia-carnival-2024",
+          "rpm": 6400
+        },
+        "torque": {
+          "value": 262,
+          "unit": "lb-ft",
+          "source": "kia-carnival-2024",
+          "rpm": 5000
+        },
+        "curbMass": {
+          "value": 4431,
+          "unit": "lb",
+          "source": "kia-carnival-2024"
+        },
+        "drivetrain": {
+          "value": "FWD",
+          "unit": "layout",
+          "source": "kia-carnival-2024"
+        },
+        "transmission": {
+          "value": "8AT",
+          "unit": "type",
+          "source": "kia-carnival-2024"
+        }
+      },
+      "uncertainties": [
+        "Full manufacturer page returned 403; values drawn from indexed official extracts. Confirm weight column association and gearbox ratios before runtime release. Do not substitute older 4376 lb or 2025 facelift specifications."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "citroen-c4-coupe-2005-vts180-eu",
+      "make": "Citroen",
+      "model": "C4 Coupe",
+      "year": 2005,
+      "trim": "2.0i 16V VTS 180",
+      "market": "EU",
+      "status": "needs_source_confirmation",
+      "facts": {
+        "displacement": {
+          "value": 1997,
+          "unit": "cm3",
+          "source": "c4-argus-2005"
+        },
+        "engine": {
+          "value": "naturally aspirated inline four",
+          "unit": "description",
+          "source": "c4-argus-2005"
+        },
+        "power": {
+          "value": 130,
+          "unit": "kW",
+          "source": "c4-argus-2005",
+          "rpm": 7000
+        },
+        "torque": {
+          "value": 202,
+          "unit": "Nm",
+          "source": "c4-argus-2005"
+        },
+        "drivetrain": {
+          "value": "FWD",
+          "unit": "layout",
+          "source": "c4-argus-2005"
+        },
+        "transmission": {
+          "value": "manual",
+          "unit": "type",
+          "source": "c4-argus-2005"
+        },
+        "wheelbase": {
+          "value": 2.61,
+          "unit": "m",
+          "source": "c4-argus-2005"
+        },
+        "frontTire": {
+          "value": "205/50R17",
+          "unit": "designation",
+          "source": "c4-argus-2005"
+        },
+        "rearTire": {
+          "value": "205/50R17",
+          "unit": "designation",
+          "source": "c4-argus-2005"
+        },
+        "curbMass": null
+      },
+      "uncertainties": [
+        "Marketing designation 180 does not equal 180 SAE hp; 130 kW retained as source unit.",
+        "Mass conflict: L'Argus 1412 kg vs other references 1337 kg. Difference is 75 kg but driver-allowance explanation is not yet verified.",
+        "Five speeds and 4750 rpm torque peak need direct primary-source confirmation."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "local-motors-rally-fighter-pending-build",
+      "make": "Local Motors",
+      "model": "Rally Fighter",
+      "year": null,
+      "trim": null,
+      "market": "US",
+      "status": "needs_source_confirmation",
+      "facts": {
+        "displacement": {
+          "value": 6.2,
+          "unit": "L",
+          "source": "rally-fighter-road-test"
+        },
+        "engine": {
+          "value": "V8",
+          "unit": "description",
+          "source": "rally-fighter-road-test"
+        },
+        "power": {
+          "value": 430,
+          "unit": "hp",
+          "source": "rally-fighter-road-test",
+          "rpm": 5900
+        },
+        "torque": {
+          "value": 424,
+          "unit": "lb-ft",
+          "source": "rally-fighter-road-test",
+          "rpm": 4600
+        },
+        "curbMass": null,
+        "transmission": null
+      },
+      "uncertainties": [
+        "Select exact year/build. Generic 4AT claims conflict with a documented TH400 3-speed build. Exact curb mass unresolved.",
+        "Vehicle is RWD; some 4x4 article headlines are misleading."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "tamo-racemo-pending",
+      "make": "TAMO",
+      "model": "Racemo",
+      "year": null,
+      "trim": null,
+      "market": "IN",
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "Identity confirmed by Rob; concept not ordinary production car. Parent researcher has manufacturer packet; import before implementation."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "volkswagen-tiguan-pending",
+      "make": "Volkswagen",
+      "model": "Tiguan",
+      "year": null,
+      "trim": null,
+      "market": null,
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "Identity confirmed by Rob; choose and verify year, market, trim and drivetrain."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "kia-ev6-gt-2023-us-pending",
+      "make": "Kia",
+      "model": "EV6",
+      "year": 2023,
+      "trim": "GT",
+      "market": "US",
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "FH5 identity verified; parent researcher owns full manufacturer evidence packet. Do not mix European PS/mass with US specification."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "subaru-impreza-2024-base-us",
+      "make": "Subaru",
+      "model": "Impreza",
+      "year": 2024,
+      "trim": "Base",
+      "market": "US",
+      "status": "research_only",
+      "facts": {
+        "displacement": {
+          "value": 2.0,
+          "unit": "L",
+          "source": "subaru-impreza-2024"
+        },
+        "engine": {
+          "value": "naturally aspirated boxer four",
+          "unit": "description",
+          "source": "subaru-impreza-2024"
+        },
+        "power": {
+          "value": 152,
+          "unit": "hp",
+          "source": "subaru-impreza-2024",
+          "rpm": 6000
+        },
+        "torque": {
+          "value": 145,
+          "unit": "lb-ft",
+          "source": "subaru-impreza-2024",
+          "rpm": 4000
+        },
+        "curbMass": {
+          "value": 3171,
+          "unit": "lb",
+          "source": "subaru-impreza-2024"
+        },
+        "drivetrain": {
+          "value": "AWD",
+          "unit": "layout",
+          "source": "subaru-impreza-2024"
+        },
+        "transmission": {
+          "value": "CVT",
+          "unit": "type",
+          "source": "subaru-impreza-2024"
+        },
+        "body": {
+          "value": "five-door hatchback",
+          "unit": "description",
+          "source": "subaru-impreza-2024"
+        },
+        "wheelbase": {
+          "value": 105.1,
+          "unit": "in",
+          "source": "subaru-impreza-2024"
+        },
+        "dimensionsLWH": {
+          "value": [
+            176.2,
+            70.1,
+            58.3
+          ],
+          "unit": "in",
+          "source": "subaru-impreza-2024"
+        }
+      },
+      "uncertainties": [
+        "Eight virtual manual steps where equipped are not a fixed eight-speed transmission.",
+        "Research records all requested trims; count as separate completed vehicles only after meaningful differences, artwork and runtime validation.",
+        "Confirm which trim the existing Impression represents before replacing its runtime specifications."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "subaru-impreza-2024-sport-us",
+      "make": "Subaru",
+      "model": "Impreza",
+      "year": 2024,
+      "trim": "Sport",
+      "market": "US",
+      "status": "research_only",
+      "facts": {
+        "displacement": {
+          "value": 2.0,
+          "unit": "L",
+          "source": "subaru-impreza-2024"
+        },
+        "engine": {
+          "value": "naturally aspirated boxer four",
+          "unit": "description",
+          "source": "subaru-impreza-2024"
+        },
+        "power": {
+          "value": 152,
+          "unit": "hp",
+          "source": "subaru-impreza-2024",
+          "rpm": 6000
+        },
+        "torque": {
+          "value": 145,
+          "unit": "lb-ft",
+          "source": "subaru-impreza-2024",
+          "rpm": 4000
+        },
+        "curbMass": {
+          "value": 3249,
+          "unit": "lb",
+          "source": "subaru-impreza-2024"
+        },
+        "drivetrain": {
+          "value": "AWD",
+          "unit": "layout",
+          "source": "subaru-impreza-2024"
+        },
+        "transmission": {
+          "value": "CVT",
+          "unit": "type",
+          "source": "subaru-impreza-2024"
+        },
+        "body": {
+          "value": "five-door hatchback",
+          "unit": "description",
+          "source": "subaru-impreza-2024"
+        },
+        "wheelbase": {
+          "value": 105.1,
+          "unit": "in",
+          "source": "subaru-impreza-2024"
+        },
+        "dimensionsLWH": {
+          "value": [
+            176.2,
+            70.1,
+            58.3
+          ],
+          "unit": "in",
+          "source": "subaru-impreza-2024"
+        }
+      },
+      "uncertainties": [
+        "Eight virtual manual steps where equipped are not a fixed eight-speed transmission.",
+        "Research records all requested trims; count as separate completed vehicles only after meaningful differences, artwork and runtime validation.",
+        "Confirm which trim the existing Impression represents before replacing its runtime specifications."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "subaru-impreza-2024-rs-us",
+      "make": "Subaru",
+      "model": "Impreza",
+      "year": 2024,
+      "trim": "RS",
+      "market": "US",
+      "status": "research_only",
+      "facts": {
+        "displacement": {
+          "value": 2.5,
+          "unit": "L",
+          "source": "subaru-impreza-2024"
+        },
+        "engine": {
+          "value": "naturally aspirated boxer four",
+          "unit": "description",
+          "source": "subaru-impreza-2024"
+        },
+        "power": {
+          "value": 182,
+          "unit": "hp",
+          "source": "subaru-impreza-2024",
+          "rpm": 5800
+        },
+        "torque": {
+          "value": 178,
+          "unit": "lb-ft",
+          "source": "subaru-impreza-2024",
+          "rpm": 3700
+        },
+        "curbMass": {
+          "value": 3275,
+          "unit": "lb",
+          "source": "subaru-impreza-2024"
+        },
+        "drivetrain": {
+          "value": "AWD",
+          "unit": "layout",
+          "source": "subaru-impreza-2024"
+        },
+        "transmission": {
+          "value": "CVT",
+          "unit": "type",
+          "source": "subaru-impreza-2024"
+        },
+        "body": {
+          "value": "five-door hatchback",
+          "unit": "description",
+          "source": "subaru-impreza-2024"
+        },
+        "wheelbase": {
+          "value": 105.1,
+          "unit": "in",
+          "source": "subaru-impreza-2024"
+        },
+        "dimensionsLWH": {
+          "value": [
+            176.2,
+            70.1,
+            58.3
+          ],
+          "unit": "in",
+          "source": "subaru-impreza-2024"
+        }
+      },
+      "uncertainties": [
+        "Eight virtual manual steps where equipped are not a fixed eight-speed transmission.",
+        "Research records all requested trims; count as separate completed vehicles only after meaningful differences, artwork and runtime validation.",
+        "Confirm which trim the existing Impression represents before replacing its runtime specifications."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "toyota-supra-1994-turbo-us-pending",
+      "make": "Toyota",
+      "model": "Supra",
+      "year": 1994,
+      "trim": "Turbo",
+      "market": "US",
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "F&F1 inspiration. Research stock production specification; do not mix modified hero with automatic non-turbo stunt cars."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "mitsubishi-eclipse-1995-rs-us-pending",
+      "make": "Mitsubishi",
+      "model": "Eclipse",
+      "year": 1995,
+      "trim": "RS",
+      "market": "US",
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "F&F1 inspiration. Actual hero used naturally aspirated 420A, not GSX. Stock spec still needs manufacturer source."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "mazda-rx7-1993-us-pending",
+      "make": "Mazda",
+      "model": "RX-7",
+      "year": 1993,
+      "trim": null,
+      "market": "US",
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "F&F1 inspiration; stock trim and specifications pending."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "dodge-charger-1970-rt-pending",
+      "make": "Dodge",
+      "model": "Charger",
+      "year": 1970,
+      "trim": "R/T",
+      "market": "US",
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "F&F1 inspiration; choose engine and transmission. Fictional movie horsepower is not stock specification."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "honda-s2000-film-pending",
+      "make": "Honda",
+      "model": "S2000",
+      "year": null,
+      "trim": null,
+      "market": null,
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "F&F1 inspiration; exact production year/market and stock specifications pending."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "volkswagen-jetta-film-pending",
+      "make": "Volkswagen",
+      "model": "Jetta",
+      "year": null,
+      "trim": null,
+      "market": null,
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "F&F1 inspiration; exact year/trim pending."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "nissan-240sx-film-pending",
+      "make": "Nissan",
+      "model": "240SX",
+      "year": null,
+      "trim": null,
+      "market": "US",
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "F&F1 inspiration; exact year/trim pending."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "nissan-maxima-film-pending",
+      "make": "Nissan",
+      "model": "Maxima",
+      "year": null,
+      "trim": null,
+      "market": "US",
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "F&F1 inspiration; exact year/trim pending."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    },
+    {
+      "id": "honda-civic-film-pending",
+      "make": "Honda",
+      "model": "Civic",
+      "year": null,
+      "trim": null,
+      "market": null,
+      "status": "pending_research",
+      "facts": {},
+      "uncertainties": [
+        "F&F1 inspiration; exact year/trim pending."
+      ],
+      "simulationEstimates": {},
+      "art": {
+        "interior": null,
+        "exterior": null,
+        "status": "not_tracked_here"
+      },
+      "implementation": {
+        "runtimeId": null,
+        "validated": false
+      }
+    }
+  ],
+  "globalNotes": [
+    "All facts require year/trim/market matching. Null means unverified or unavailable, never zero.",
+    "Do not pad target with badge-only variants. Vehicles are candidates, not completed cars.",
+    "No simulation estimates have been added; derived conversions must retain original source units.",
+    "fastandfuriousfacts.com is currently compromised/replaced: gambling spam and recovery-service demos. Do not cite it as reliable current evidence.",
+    "No map/world changes authorized by this ledger."
+  ]
+}
