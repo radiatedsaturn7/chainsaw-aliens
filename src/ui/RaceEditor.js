@@ -2,6 +2,7 @@ import {raceDriftScoreVariables} from '../racing/RaceDriftScore.js';
 import {advanceDigitalThrottle, observeDrivingIntent, DIGITAL_THROTTLE_MODES, DRIVING_INTENT_STYLES} from '../racing/DigitalThrottle.js';
 import {DEBUG_ROAD_SURFACES, debugRoadTextureSettings} from '../racing/RaceDebugRoad.js';
 import { doodadVisualLayout } from '../racing/RaceDoodadVisualBounds.js';
+import { normalizeElectricTuning } from '../racing/simulation/ElectricPowertrainModel.js';
 import {terrainBlendGrid,createTerrainBlendMaterial} from '../racing/RaceTerrainTextureBlend.js';
 import {normalizeSnowClouds,syncSnowClouds,disposeSnowClouds} from '../racing/RaceSnowClouds.js';
 import {editSnowClouds} from './RaceSnowCloudEditor.js';
@@ -8256,6 +8257,20 @@ export default class RaceEditor {
     const transmissionType = this.getRaceTransmissionType(car);
     const transmission = car.transmissions?.[transmissionType] || {};
     const rounded = Math.round(Number(value || 0) * 1000) / 1000;
+    if (car.tuning.powertrainType === 'electric') {
+      if (path === 'gearCount' || path.startsWith('gearRatio-')) return false;
+      const electricKey = path.startsWith('electric-') ? path.slice(9) : ({gearFinalDrive:'reductionRatio', redlineRpm:'maxMotorRpm', revLimitRpm:'maxMotorRpm'})[path];
+      if (electricKey) {
+        const next = { ...car.tuning.electricPowertrain, [electricKey]: rounded };
+        try { car.tuning = normalizeElectricTuning({ ...car.tuning, electricPowertrain: next }); }
+        catch { return false; }
+        for (const preset of Object.values(car.transmissions || {})) {
+          preset.gearRatios = [1]; preset.reverseRatio = 1; preset.gearFinalDrive = next.reductionRatio;
+        }
+        this.status = `Electric ${electricKey}: ${rounded}`;
+        return true;
+      }
+    }
     if (path.startsWith('body-')) {
       const profile = JSON.parse(JSON.stringify(this.getCarPhysicsBodyProfile(car)));
       const key = path.slice(5);
@@ -8992,10 +9007,10 @@ export default class RaceEditor {
         rpm: Math.max(0, Math.round(Number(point?.rpm) || 0)),
         torqueLbFt: Math.max(0, Math.round(Number(point?.torqueLbFt) || 0))
       }))
-      .filter((point) => point.rpm > 0 && point.torqueLbFt > 0)
+      .filter((point) => (tuning.powertrainType === 'electric' ? point.rpm >= 0 : point.rpm > 0) && point.torqueLbFt > 0)
       .sort((a, b) => a.rpm - b.rpm);
     const normalized = torquePoints.length >= 2 ? torquePoints : fallback.torquePoints;
-    const rpmMin = Math.max(1, Math.round(Number(curve.rpmMin) || normalized[0]?.rpm || fallback.rpmMin));
+    const rpmMin = tuning.powertrainType === 'electric' ? 0 : Math.max(1, Math.round(Number(curve.rpmMin) || normalized[0]?.rpm || fallback.rpmMin));
     const rpmMax = Math.max(rpmMin + 1, Math.round(Number(curve.rpmMax) || normalized[normalized.length - 1]?.rpm || fallback.rpmMax));
     return {
       rpmMin,
@@ -9005,6 +9020,7 @@ export default class RaceEditor {
   }
 
   syncCarTuningFromEngineCurve(tuning = {}) {
+    if (tuning.powertrainType === 'electric') return normalizeElectricTuning(tuning);
     const curve = this.normalizeCarEngineCurve(tuning);
     let peakTorque = 0;
     let peakHp = 0;
@@ -18101,7 +18117,7 @@ export default class RaceEditor {
       : (car?.tuning || {});
     const selectedTransmissionType = transmissionType || this.getRaceTransmissionType(car);
     const transmission = car?.transmissions?.[selectedTransmissionType] || {};
-    let merged = { ...tuning, ...transmission };
+    let merged = normalizeElectricTuning({ ...tuning, ...transmission });
     // Saved built-in car documents can predate the authoritative SI profile.
     // Rehydrate only the physical profile by canonical chassis identity while
     // preserving every authored tuning, setup, transmission, and art value.
@@ -18111,8 +18127,8 @@ export default class RaceEditor {
       || canonicalPhysicalProfile;
     ({tuning:merged,physical:physicalVehicleProfile}=resolveChassisMass(merged,physicalVehicleProfile));
     const dimensions = this.getRaceCarDimensions(car);
-    const idleRpm = Math.max(500, Number(merged.idleRpm) || 850);
-    const redlineRpm = Math.max(3000, Number(merged.redlineRpm) || 6100);
+    const idleRpm = merged.powertrainType === 'electric' ? 0 : Math.max(500, Number(merged.idleRpm) || 850);
+    const redlineRpm = merged.powertrainType === 'electric' ? merged.electricPowertrain.maxMotorRpm : Math.max(3000, Number(merged.redlineRpm) || 6100);
     const revLimitRpm = Math.max(redlineRpm, Number(merged.revLimitRpm) || 6300);
     const stockTarget = RACE_STOCK_PERFORMANCE_TARGETS[car?.id] || null;
     const closeToStock = stockTarget
@@ -18125,18 +18141,19 @@ export default class RaceEditor {
       : Number(merged.accelerationCalibration);
     return {
       ...(tuning.garageEngineCurve?{engineCurve:tuning.engineCurve}:{}),
+      ...(merged.powertrainType === 'electric' ? { powertrainType: 'electric', electricPowertrain: { ...merged.electricPowertrain } } : {}),
       physicalVehicleProfile,
       physics: merged.physics || tuning.physics || {},
       bodyShapePreset: merged.physics?.bodyShapePreset || tuning.physics?.bodyShapePreset || 'car',
       bodyProfile: resolveVehicleBodyProfile({ ...merged, physics: merged.physics || tuning.physics }),
       underbodyProtection: clamp(Number(merged.underbodyProtection)||0,0,.85),
       drivetrain: merged.drivetrain || 'awd',
-      transmissionType: selectedTransmissionType,
+      transmissionType: merged.powertrainType === 'electric' ? 'automatic' : selectedTransmissionType,
       shiftMode: merged.shiftMode || selectedTransmissionType || 'manual',
-      powerHp: Math.max(80, Number(merged.powerHp) || 271),
-      torqueLbFt: Math.max(80, Number(merged.torqueLbFt) || 258),
-      engineDisplacementL: Math.max(0.5, Number(merged.engineDisplacementL) || 2.4),
-      aspiration: merged.aspiration || 'Turbocharged',
+      powerHp: merged.powertrainType === 'electric' ? merged.powerHp : Math.max(80, Number(merged.powerHp) || 271),
+      torqueLbFt: merged.powertrainType === 'electric' ? merged.torqueLbFt : Math.max(80, Number(merged.torqueLbFt) || 258),
+      engineDisplacementL: merged.powertrainType === 'electric' ? 0 : Math.max(0.5, Number(merged.engineDisplacementL) || 2.4),
+      aspiration: merged.powertrainType === 'electric' ? 'Electric' : merged.aspiration || 'Turbocharged',
       weightKg: Math.max(450, Number(merged.weightKg) || 1495),
       frontWeightDistribution: clamp(Number(merged.frontWeightDistribution) || 0.54, 0.35, 0.72),
       tireGrip: Math.max(0.2, Number(merged.tireGrip) || 1),
@@ -18241,6 +18258,14 @@ export default class RaceEditor {
   updateRaceEngineAudio({ tuning, throttle = 0, load = 0 } = {}) {
     const session = this.playtestSession;
     if (!session) return;
+    // No inherited combustion idle/rev loop for an electric car.
+    if (tuning?.powertrainType === 'electric') {
+      this.game?.audio?.setVehicleSound?.(false);
+      this.game?.audio?.setEngineRev?.(false);
+      if (session.activeEngineSoundId) this.game?.stopSfxById?.(session.activeEngineSoundId, { key: 'race-engine' });
+      session.activeEngineSoundId = null;
+      return;
+    }
     const audioReady = session.running === true && session.startupFramePending !== true && session.mechanical?.engineRunning !== false;
     if(session.engineSoundId&&this.game?.audio?.engineRevActive)this.game.audio.setEngineRev(false);
     this.game?.audio?.setVehicleSound?.(audioReady, {
@@ -28906,10 +28931,10 @@ export default class RaceEditor {
       });
       const gearCount = Array.isArray(transmission.gearRatios) ? transmission.gearRatios.length : 6;
       const sliderRows = [
-        { id: 'gearFinalDrive', label: 'Final', value: transmission.gearFinalDrive ?? tuning.gearFinalDrive ?? 4.1, min: 2.6, max: 5.2, format: (value) => value.toFixed(2) },
-        { id: 'gearCount', label: 'Gears', value: gearCount, min: 4, max: 10, format: (value) => `${Math.round(value)}` },
-        { id: 'redlineRpm', label: 'Redline Start', value: tuning.redlineRpm || 6500, min: 4500, max: 12000, format: (value) => `${Math.round(value)} rpm` },
-        { id: 'revLimitRpm', label: 'Rev Limiter', value: tuning.revLimitRpm || tuning.redlineRpm || 6800, min: Math.max(4500, Number(tuning.redlineRpm || 4500)), max: 12000, format: (value) => `${Math.round(value)} rpm` },
+        { id: 'gearFinalDrive', label: 'Final', value: transmission.gearFinalDrive ?? tuning.gearFinalDrive ?? 4.1, min: tuning.powertrainType === 'electric' ? 1 : 2.6, max: tuning.powertrainType === 'electric' ? 20 : 5.2, format: (value) => value.toFixed(2) },
+        { id: 'gearCount', label: 'Gears', value: tuning.powertrainType === 'electric' ? 1 : gearCount, min: tuning.powertrainType === 'electric' ? 1 : 4, max: tuning.powertrainType === 'electric' ? 1 : 10, format: (value) => `${Math.round(value)}` },
+        { id: 'redlineRpm', label: 'Redline Start', value: tuning.redlineRpm || 6500, min: 4500, max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
+        { id: 'revLimitRpm', label: 'Rev Limiter', value: tuning.revLimitRpm || tuning.redlineRpm || 6800, min: Math.max(4500, Number(tuning.redlineRpm || 4500)), max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
         { id: 'tachometerMaxRpm', label: 'Tach Max', value: tuning.tachometerMaxRpm || tuning.revLimitRpm || tuning.redlineRpm || 6800, min: 1000, max: 20000, format: (value) => `${Math.round(value)} rpm` }
       ];
       sliderRows.forEach((row, index) => {
@@ -28927,6 +28952,19 @@ export default class RaceEditor {
     }
     if (this.carTuneTab === 'summary') {
       this.drawRaceTuningStats(ctx, content, car);
+      return;
+    }
+    if (this.carTuneTab === 'power-curve' && tuning.powertrainType === 'electric') {
+      const fields = [
+        ['peakTorqueNm','Combined torque Nm',1,3000], ['peakPowerKw','Combined power kW',1,2000],
+        ['maxMotorRpm','Motor limit rpm',1000,30000], ['reductionRatio','Single reduction',1,20],
+        ['usableBatteryKwh','Usable pack kWh',1,250], ['driveEfficiency','Drive efficiency',.1,1],
+        ['regenEfficiency','Regen efficiency',.1,1], ['maxRegenTorqueNm','Regen torque Nm',0,1000],
+        ['maxRegenPowerKw','Regen power kW',0,500], ['standstillLossKw','Winding loss kW',0,20],
+        ['regenFullSpeedRadps','Regen full wheel rad/s',1,30], ['liftOffRegen','Lift-off regen',0,1]
+      ];
+      drawSliderRows(fields.map(([key,label,min,max]) => ({id:`electric-${key}`,label,min,max,
+        value:tuning.electricPowertrain?.[key] ?? 0,format:value=>value.toFixed(2)})));
       return;
     }
     if (this.carTuneTab === 'power-curve') {
@@ -29029,10 +29067,10 @@ export default class RaceEditor {
     if (this.carTuneTab === 'gearing') {
       const gearCount = Array.isArray(transmission.gearRatios) ? transmission.gearRatios.length : 6;
       drawSliderRows([
-        { id: 'gearFinalDrive', label: 'Final', value: transmission.gearFinalDrive ?? tuning.gearFinalDrive ?? 4.1, min: 2.6, max: 5.2, format: (value) => value.toFixed(2) },
-        { id: 'gearCount', label: 'Gears', value: gearCount, min: 4, max: 10, format: (value) => `${Math.round(value)}` },
-        { id: 'redlineRpm', label: 'Redline Start', value: tuning.redlineRpm || 6500, min: 4500, max: 12000, format: (value) => `${Math.round(value)} rpm` },
-        { id: 'revLimitRpm', label: 'Rev Limiter', value: tuning.revLimitRpm || tuning.redlineRpm || 6800, min: Math.max(4500, Number(tuning.redlineRpm || 4500)), max: 12000, format: (value) => `${Math.round(value)} rpm` },
+        { id: 'gearFinalDrive', label: 'Final', value: transmission.gearFinalDrive ?? tuning.gearFinalDrive ?? 4.1, min: tuning.powertrainType === 'electric' ? 1 : 2.6, max: tuning.powertrainType === 'electric' ? 20 : 5.2, format: (value) => value.toFixed(2) },
+        { id: 'gearCount', label: 'Gears', value: tuning.powertrainType === 'electric' ? 1 : gearCount, min: tuning.powertrainType === 'electric' ? 1 : 4, max: tuning.powertrainType === 'electric' ? 1 : 10, format: (value) => `${Math.round(value)}` },
+        { id: 'redlineRpm', label: 'Redline Start', value: tuning.redlineRpm || 6500, min: 4500, max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
+        { id: 'revLimitRpm', label: 'Rev Limiter', value: tuning.revLimitRpm || tuning.redlineRpm || 6800, min: Math.max(4500, Number(tuning.redlineRpm || 4500)), max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
         { id: 'tachometerMaxRpm', label: 'Tach Max', value: tuning.tachometerMaxRpm || tuning.revLimitRpm || tuning.redlineRpm || 6800, min: 1000, max: 20000, format: (value) => `${Math.round(value)} rpm` }
       ]);
       return;

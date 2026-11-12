@@ -29,185 +29,193 @@
   "graphics": {
     "tireSurfaces": {
       "tread": {
-        "artRef": "8296 tires 3",
+        "artRef": "catalog-rally-gravel",
         "frameIndex": 0,
         "region": {
-          "x": 121,
-          "y": 30,
-          "width": 138,
-          "height": 332
+          "x": 220,
+          "y": 57,
+          "width": 219,
+          "height": 542
         },
         "bounds": {
-          "x": 121.5,
-          "y": 30.5,
-          "width": 137,
-          "height": 331
+          "x": 220.5,
+          "y": 57.5,
+          "width": 218,
+          "height": 541
         }
       },
       "wheel": {
-        "artRef": "8296 tires 3",
-        "frameIndex": 2,
+        "artRef": "catalog-rally-gravel",
+        "frameIndex": 1,
         "region": {
-          "x": 191,
-          "y": 192.5,
-          "radius": 177.45210621460654
+          "x": 328.5,
+          "y": 329,
+          "radius": 311.17880711899386
         },
         "bounds": {
-          "x": 13.547993785393459,
-          "y": 15.047993785393459,
-          "width": 354.9040124292131,
-          "height": 354.9040124292131
+          "x": 17.321292881006116,
+          "y": 17.821292881006116,
+          "width": 622.3574142379878,
+          "height": 622.3574142379878
         }
       }
     },
     "angleLayers": {
       "front": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-rally-gravel",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 220,
+            "y": 57,
+            "width": 219,
+            "height": 542
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 220.5,
+            "y": 57.5,
+            "width": 218,
+            "height": 541
           }
         }
       },
       "frontRight": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-rally-gravel",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 220,
+            "y": 57,
+            "width": 219,
+            "height": 542
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 220.5,
+            "y": 57.5,
+            "width": 218,
+            "height": 541
           }
         }
       },
       "right": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
-          "frameIndex": 2,
+          "artRef": "catalog-rally-gravel",
+          "frameIndex": 1,
           "region": {
-            "x": 191,
-            "y": 192.5,
-            "radius": 177.45210621460654
+            "x": 328.5,
+            "y": 329,
+            "radius": 311.17880711899386
           },
           "bounds": {
-            "x": 13.547993785393459,
-            "y": 15.047993785393459,
-            "width": 354.9040124292131,
-            "height": 354.9040124292131
+            "x": 17.321292881006116,
+            "y": 17.821292881006116,
+            "width": 622.3574142379878,
+            "height": 622.3574142379878
           }
         }
       },
       "rearRight": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-rally-gravel",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 220,
+            "y": 57,
+            "width": 219,
+            "height": 542
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 220.5,
+            "y": 57.5,
+            "width": 218,
+            "height": 541
           }
         }
       },
       "rear": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-rally-gravel",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 220,
+            "y": 57,
+            "width": 219,
+            "height": 542
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 220.5,
+            "y": 57.5,
+            "width": 218,
+            "height": 541
           }
         }
       },
       "rearLeft": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-rally-gravel",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 220,
+            "y": 57,
+            "width": 219,
+            "height": 542
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 220.5,
+            "y": 57.5,
+            "width": 218,
+            "height": 541
           }
         }
       },
       "left": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
-          "frameIndex": 2,
+          "artRef": "catalog-rally-gravel",
+          "frameIndex": 1,
           "region": {
-            "x": 191,
-            "y": 192.5,
-            "radius": 177.45210621460654
+            "x": 328.5,
+            "y": 329,
+            "radius": 311.17880711899386
           },
           "bounds": {
-            "x": 13.547993785393459,
-            "y": 15.047993785393459,
-            "width": 354.9040124292131,
-            "height": 354.9040124292131
+            "x": 17.321292881006116,
+            "y": 17.821292881006116,
+            "width": 622.3574142379878,
+            "height": 622.3574142379878
           }
         }
       },
       "frontLeft": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-rally-gravel",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 220,
+            "y": 57,
+            "width": 219,
+            "height": 542
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 220.5,
+            "y": 57.5,
+            "width": 218,
+            "height": 541
           }
         }
       }

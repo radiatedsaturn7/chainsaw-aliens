@@ -1,0 +1,621 @@
+{
+  "car": {
+    "id": "volt-hound-gt-2023",
+    "name": "2023 Volt-Hound GT",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "tires": [],
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": null
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": "steeringwheel",
+          "frameIndex": 0,
+          "scaleX": 1.6875,
+          "scaleY": 1.6875,
+          "offsetX": -0.42200520833333344,
+          "offsetY": 0.9000000000000002,
+          "centerX": 0.498046875,
+          "centerY": 0.5448717948717948
+        },
+        "wipers": {
+          "artRef": "windshieldwiper",
+          "frameIndex": 0,
+          "pivotX": 0,
+          "pivotY": 0.5,
+          "width": 0.35640000000000005,
+          "parkAngle": -5,
+          "sweepAngle": -80,
+          "cycleSeconds": 1.6,
+          "mounts": [
+            {
+              "x": 0.16,
+              "y": 0.755
+            },
+            {
+              "x": 0.56,
+              "y": 0.755
+            }
+          ]
+        }
+      },
+      "addOns": [],
+      "tireSurfaces": {
+        "tread": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 0,
+          "region": {
+            "x": 138,
+            "y": 27,
+            "width": 158,
+            "height": 379
+          },
+          "bounds": {
+            "x": 138.5,
+            "y": 27.5,
+            "width": 157,
+            "height": 378
+          }
+        },
+        "wheel": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 2,
+          "region": {
+            "x": 218,
+            "y": 213,
+            "radius": 204.24005483743878
+          },
+          "bounds": {
+            "x": 13.760045162561227,
+            "y": 8.760045162561227,
+            "width": 408.47990967487755,
+            "height": 408.47990967487755
+          }
+        }
+      },
+      "angleLayers": {
+        "front": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "frontRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "right": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "rearRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rear": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rearLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "left": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "frontLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        }
+      }
+    },
+    "camera": {
+      "trackingMode": "dynamic"
+    },
+    "dimensions": {
+      "lengthM": 4.69392,
+      "widthM": 1.88976,
+      "wheelbaseM": 2.90068,
+      "trackFrontM": 1.6281399999999997,
+      "trackRearM": 1.63576
+    },
+    "audio": {
+      "engineSoundId": null
+    },
+    "setup": {
+      "defaultTireCompound": "street",
+      "tireCompoundByWheel": {
+        "fl": "street",
+        "fr": "street",
+        "rl": "street",
+        "rr": "street"
+      },
+      "tirePressurePsi": {
+        "fl": 36,
+        "fr": 36,
+        "rl": 36,
+        "rr": 36
+      },
+      "tireSize": {
+        "widthMm": 255,
+        "aspectRatio": 40,
+        "wheelDiameterIn": 21
+      }
+    },
+    "defaultTransmissionType": "automatic",
+    "transmissions": {
+      "automatic": {
+        "type": "automatic",
+        "label": "Single reduction EV",
+        "shiftMode": "automatic",
+        "shiftTimeMs": 0,
+        "clutchDelayMs": 0,
+        "launchRpm": 0,
+        "autoUpshiftRpm": 20000,
+        "autoDownshiftRpm": 0,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "gearRatios": [
+          1
+        ],
+        "reverseRatio": 1,
+        "gearFinalDrive": 10.65,
+        "drivetrainEfficiency": 0.92,
+        "engineProfile": null
+      }
+    },
+    "tuning": {
+      "drivetrain": "awd",
+      "powerHp": 576,
+      "torqueLbFt": 545,
+      "weightKg": 2174.9754141500002,
+      "frontWeightDistribution": 0.5,
+      "engineDisplacementL": 0,
+      "aspiration": "Electric",
+      "tireGrip": 0.96,
+      "brakeBalance": 0.57,
+      "brakePressure": 1,
+      "redlineRpm": 20000,
+      "revLimitRpm": 20000,
+      "revLimiterDropRpm": 420,
+      "idleRpm": 0,
+      "torquePeakStartRpm": 5000,
+      "torquePeakEndRpm": 5000,
+      "torqueFalloffRpm": 6800,
+      "wheelRadiusM": 0.368,
+      "topSpeedMph": 161,
+      "zeroToSixtySec": 3.4,
+      "dragCoefficient": 0.3,
+      "accelerationCalibration": 1,
+      "drivetrainEfficiency": 0.92,
+      "differentialAccel": 0.5,
+      "differentialDecel": 0.25,
+      "rearDifferentialAccel": 0.5,
+      "rearDifferentialDecel": 0.25,
+      "gearFinalDrive": 10.65,
+      "camberFront": -0.9,
+      "camberRear": -1,
+      "toeFront": 0,
+      "toeRear": 0.12,
+      "casterFront": 6.1,
+      "aeroFront": 0.22,
+      "aeroRear": 0.28,
+      "springFront": 0.54,
+      "springRear": 0.56,
+      "rideHeightFront": 0.48,
+      "rideHeightRear": 0.5,
+      "suspensionTravelFront": 0.45,
+      "suspensionTravelRear": 0.45,
+      "dampingFront": 0.54,
+      "dampingRear": 0.55,
+      "bumpFront": 0.5,
+      "bumpRear": 0.52,
+      "reboundFront": 0.56,
+      "reboundRear": 0.57,
+      "antiRollFront": 0.52,
+      "antiRollRear": 0.58,
+      "gearRatios": [
+        1
+      ],
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 4.69392,
+          "overallWidthM": 1.88976,
+          "overallHeightM": 1.54432,
+          "groundClearanceM": 0.15494,
+          "frontOverhangM": 0.9,
+          "rearOverhangM": 0.8932400000000004,
+          "lowerBodyHeightM": 0.6,
+          "hood": {
+            "lengthM": 0.9,
+            "widthM": 1.8,
+            "heightM": 0.4
+          },
+          "cabin": {
+            "centerZM": -0.25,
+            "lengthM": 2.8,
+            "widthM": 1.8,
+            "heightM": 0.7
+          },
+          "bed": {
+            "centerZM": -1.35,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.5,
+            "z": 0
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": false,
+          "wheelWellClearanceMarginM": 0.06,
+          "maximumTireDeflectionM": 0.04,
+          "wheelRadiusM": 0.368,
+          "trackWidthM": 1.63195,
+          "frontAxleDistanceFromCgM": 1.45034,
+          "rearAxleDistanceFromCgM": 1.45034,
+          "customColliders": []
+        }
+      },
+      "reverseRatio": 1,
+      "frontDifferentialAccel": 0.3,
+      "frontDifferentialDecel": 0.15,
+      "steeringRatio": 14.23,
+      "powertrainType": "electric",
+      "finalDrive": 10.65,
+      "electricPowertrain": {
+        "peakTorqueNm": 738.9207818406129,
+        "peakPowerKw": 430,
+        "maxMotorRpm": 20000,
+        "reductionRatio": 10.65,
+        "usableBatteryKwh": 74,
+        "driveEfficiency": 0.92,
+        "regenEfficiency": 0.8,
+        "maxRegenTorqueNm": 100,
+        "maxRegenPowerKw": 60,
+        "standstillLossKw": 2,
+        "regenFullSpeedRadps": 5,
+        "liftOffRegen": 0.35
+      }
+    },
+    "description": "Original fictional 2994 salvage electric crossover inspired by the 2023 US EV6 GT. Combined motor specification and dimensions sourced; usable capacity, regen, tire size, suspension and motor envelope are explicit simulation assumptions, not OEM calibration.",
+    "category": "sport"
+  },
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "provenance": {
+    "sources": [
+      {
+        "url": "https://www.kiamedia.com/us/en/models/ev6/2023/specifications",
+        "fields": [
+          "2023 US GT combined576hp/430kW and545lbft",
+          "4795lb minimum curb mass",
+          "AWD single10.65reduction",
+          "dimensions/wheelbase/tracks/clearance",
+          "161mph and3.4s0-60 manufacturer targets",
+          "77.4kWh gross pack (not runtime usable)"
+        ]
+      }
+    ],
+    "estimates": [
+      "Runtime74kWh usable capacity is assumed; official77.4kWh is gross, not directly used.",
+      "20000motorRPM cutoff, constant torque/power envelope, .92drive/.8regen efficiency,100Nm/60kW regen,.35lift-off strength,2kW winding loss and5rad/s fullregen threshold are simulation assumptions, not Kia control maps.",
+      "Combined430kW published output implies576.64mechanicalhp; published576hp retained as source figure, rounding difference is not a second power rating.",
+      "Wheel radius.368m assumed; official tire string malformed, no OEM tire-size claim.",
+      "50:50static distribution, body collision subshapes, CG height.5m, aeroCd.30, suspension/differential/brakes/grip and all default editor handling values are estimates.",
+      "Art is original2994fictional interpretation; wheel anchors measured artistically from this sheet; styling and attachments do not alter source curb mass.",
+      "Manufacturer acceleration/top-speed are comparison targets, not validated runtime performance.",
+      "255/40R21 tire geometry and36psi are simulation choices, not verified factory fitment; .368m effective radius. Street compound reused; source3.4s0-60 not yet matched (initial runtime4.33s)."
+    ]
+  },
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 61,
+        "y": 368,
+        "radius": 23
+      },
+      {
+        "wheel": "fr",
+        "x": 316,
+        "y": 368,
+        "radius": 23
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1633,
+        "y": 752,
+        "radius": 39
+      },
+      {
+        "wheel": "rr",
+        "x": 1750,
+        "y": 716,
+        "radius": 30
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 921,
+        "y": 369,
+        "radius": 50
+      },
+      {
+        "wheel": "rr",
+        "x": 1254,
+        "y": 369,
+        "radius": 51
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1408,
+        "y": 335,
+        "radius": 29
+      },
+      {
+        "wheel": "rr",
+        "x": 1515,
+        "y": 367,
+        "radius": 38
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 61,
+        "y": 746,
+        "radius": 23
+      },
+      {
+        "wheel": "rl",
+        "x": 310,
+        "y": 746,
+        "radius": 23
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 620,
+        "y": 749,
+        "radius": 39
+      },
+      {
+        "wheel": "fl",
+        "x": 748,
+        "y": 721,
+        "radius": 30
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 903,
+        "y": 753,
+        "radius": 49
+      },
+      {
+        "wheel": "fl",
+        "x": 1243,
+        "y": 753,
+        "radius": 49
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 418,
+        "y": 324,
+        "radius": 32
+      },
+      {
+        "wheel": "fl",
+        "x": 558,
+        "y": 373,
+        "radius": 46
+      }
+    ]
+  }
+}

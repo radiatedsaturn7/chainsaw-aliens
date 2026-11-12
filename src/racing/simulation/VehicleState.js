@@ -93,6 +93,8 @@ export function syncVehicleDynamicsCompatibilityOutputs(runner = null, session =
   session.verticalVelocityMps = session.velocityY;
   session.engineRpm = Number(state.powertrainState?.engineRpm ?? state.engineRpm ?? 0);
   session.gear = Number(state.powertrainState?.gear ?? state.gear ?? 0);
+  session.tractionBattery = state.powertrainState?.electric
+    ? { ...state.powertrainState.electric, ...state.powertrainState.telemetry?.electric } : null;
   session.suspensionTravel = copyRecordInto(
     session.suspensionTravel || {},
     state.suspensionTravel

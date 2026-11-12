@@ -29,34 +29,34 @@
   "graphics": {
     "tireSurfaces": {
       "tread": {
-        "artRef": "8582 tires 3",
+        "artRef": "catalog-rain-directional",
         "frameIndex": 0,
         "region": {
-          "x": 138,
-          "y": 27,
-          "width": 158,
-          "height": 379
+          "x": 215,
+          "y": 45,
+          "width": 231,
+          "height": 585
         },
         "bounds": {
-          "x": 138.5,
-          "y": 27.5,
-          "width": 157,
-          "height": 378
+          "x": 215.5,
+          "y": 45.5,
+          "width": 230,
+          "height": 584
         }
       },
       "wheel": {
-        "artRef": "8582 tires 3",
-        "frameIndex": 2,
+        "artRef": "catalog-rain-directional",
+        "frameIndex": 1,
         "region": {
-          "x": 218,
-          "y": 213,
-          "radius": 204.24005483743878
+          "x": 330,
+          "y": 335.5,
+          "radius": 319.53912123556955
         },
         "bounds": {
-          "x": 13.760045162561227,
-          "y": 8.760045162561227,
-          "width": 408.47990967487755,
-          "height": 408.47990967487755
+          "x": 10.460978764430422,
+          "y": 15.960978764430422,
+          "width": 639.0780424711392,
+          "height": 639.0780424711392
         }
       }
     },
@@ -65,19 +65,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-rain-directional",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 215,
+            "y": 45,
+            "width": 231,
+            "height": 585
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 215.5,
+            "y": 45.5,
+            "width": 230,
+            "height": 584
           }
         }
       },
@@ -85,19 +85,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-rain-directional",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 215,
+            "y": 45,
+            "width": 231,
+            "height": 585
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 215.5,
+            "y": 45.5,
+            "width": 230,
+            "height": 584
           }
         }
       },
@@ -105,18 +105,18 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
-          "frameIndex": 2,
+          "artRef": "catalog-rain-directional",
+          "frameIndex": 1,
           "region": {
-            "x": 218,
-            "y": 213,
-            "radius": 204.24005483743878
+            "x": 330,
+            "y": 335.5,
+            "radius": 319.53912123556955
           },
           "bounds": {
-            "x": 13.760045162561227,
-            "y": 8.760045162561227,
-            "width": 408.47990967487755,
-            "height": 408.47990967487755
+            "x": 10.460978764430422,
+            "y": 15.960978764430422,
+            "width": 639.0780424711392,
+            "height": 639.0780424711392
           }
         }
       },
@@ -124,19 +124,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-rain-directional",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 215,
+            "y": 45,
+            "width": 231,
+            "height": 585
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 215.5,
+            "y": 45.5,
+            "width": 230,
+            "height": 584
           }
         }
       },
@@ -144,19 +144,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-rain-directional",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 215,
+            "y": 45,
+            "width": 231,
+            "height": 585
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 215.5,
+            "y": 45.5,
+            "width": 230,
+            "height": 584
           }
         }
       },
@@ -164,19 +164,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-rain-directional",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 215,
+            "y": 45,
+            "width": 231,
+            "height": 585
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 215.5,
+            "y": 45.5,
+            "width": 230,
+            "height": 584
           }
         }
       },
@@ -184,18 +184,18 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
-          "frameIndex": 2,
+          "artRef": "catalog-rain-directional",
+          "frameIndex": 1,
           "region": {
-            "x": 218,
-            "y": 213,
-            "radius": 204.24005483743878
+            "x": 330,
+            "y": 335.5,
+            "radius": 319.53912123556955
           },
           "bounds": {
-            "x": 13.760045162561227,
-            "y": 8.760045162561227,
-            "width": 408.47990967487755,
-            "height": 408.47990967487755
+            "x": 10.460978764430422,
+            "y": 15.960978764430422,
+            "width": 639.0780424711392,
+            "height": 639.0780424711392
           }
         }
       },
@@ -203,19 +203,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-rain-directional",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 215,
+            "y": 45,
+            "width": 231,
+            "height": 585
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 215.5,
+            "y": 45.5,
+            "width": 230,
+            "height": 584
           }
         }
       }

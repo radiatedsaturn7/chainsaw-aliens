@@ -1,4 +1,5 @@
 import {advanceRaceLaunchControl} from './RaceLaunchControl.js';
+import { stepElectricPowertrain } from './ElectricPowertrainModel.js';
 import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
 
 // Shape pedal travel without changing zero or full-throttle output.
@@ -309,6 +310,10 @@ export class PowertrainModel {
   }
 
   getTorqueNmAtRpm(rpm, tuning = {}) {
+    if (tuning.powertrainType === 'electric') {
+      const e = tuning.electricPowertrain, omega = Math.max(0, Number(rpm) || 0) * 2 * Math.PI / 60;
+      return rpm >= e.maxMotorRpm ? 0 : Math.min(e.peakTorqueNm, omega > 0 ? e.peakPowerKw * 1000 / omega : e.peakTorqueNm);
+    }
     const curvePoints = Array.isArray(tuning?.engineCurve?.torquePoints)
       ? tuning.engineCurve.torquePoints
         .map((point) => ({ rpm: Number(point?.rpm) || 0, torqueLbFt: Number(point?.torqueLbFt) || 0 }))
@@ -428,13 +433,16 @@ export class PowertrainModel {
     driveShareByWheel = {},
     state = {},
     damage = {},
+    externalWheelAccelerationRadps2 = 0,
     dt = 0
   } = {}) {
     const seconds = Math.max(0, Number(dt) || 0);
-    const idleRpm = Math.max(500, Number(config.idleRpm ?? tuning.idleRpm) || 800);
+    const electric = tuning.powertrainType === 'electric';
+    const idleRpm = electric ? 0 : Math.max(500, Number(config.idleRpm ?? tuning.idleRpm) || 800);
     const maxRpm = Math.max(idleRpm + 500, Number(config.maxRpm
       ?? tuning.revLimitRpm ?? tuning.redlineRpm) || 7000);
     let requestedGear = Math.trunc(Number(controls.requestedGear || 0));
+    if (electric) requestedGear = Math.sign(requestedGear);
     let gear = Number.isInteger(previous.gear) ? previous.gear : requestedGear;
     let targetGear = Number.isInteger(previous.targetGear) ? previous.targetGear : gear;
     let shiftTimeRemainingSeconds = Math.max(0, Number(previous.shiftTimeRemainingSeconds || 0));
@@ -455,7 +463,7 @@ export class PowertrainModel {
         sum + Number(kinematicsByWheel[wheelId]?.wheelAngularVelocityRadps || 0)
       ), 0) / drivenIds.length
       : 0;
-    if (controls.assists?.autoShift === true && requestedGear > 0 && gear > 0
+    if (!electric && controls.assists?.autoShift === true && requestedGear > 0 && gear > 0
       && shiftTimeRemainingSeconds <= 0) {
       const ratios = Array.isArray(tuning.gearRatios) ? tuning.gearRatios : [];
       const finalDriveForShift = Math.max(0.1, Math.abs(Number(
@@ -512,6 +520,10 @@ export class PowertrainModel {
         requestedGear = gear;
       }
     }
+    if (electric) {
+      gear = requestedGear; targetGear = requestedGear;
+      shiftTimeRemainingSeconds = 0; shiftRecoveryTimeRemainingSeconds = 0;
+    }
     if (requestedGear !== targetGear && shiftTimeRemainingSeconds <= 0) {
       targetGear = requestedGear;
       shiftTimeRemainingSeconds = shiftDurationSeconds;
@@ -548,7 +560,7 @@ export class PowertrainModel {
       ?? Math.hypot(Number(state.velocity?.x || 0), Number(state.velocity?.z || 0))) || 0);
     const launchRpm = clamp(Number(tuning.launchRpm || idleRpm), idleRpm, maxRpm);
     const launchControl = advanceRaceLaunchControl(previous.launchControl, {
-      enabled:controls.assists?.launchControlEnabled === true,
+      enabled:!electric && controls.assists?.launchControlEnabled === true,
       staging:controls.assists?.launchControlStaging === true,
       throttle:controls.throttle,brake:controls.brake,handbrake:controls.handbrake,
       gear,speedMps:groundSpeedMps,dt:seconds
@@ -556,8 +568,8 @@ export class PowertrainModel {
     const launchControlActive = launchControl.phase === 'launching';
     const freeRpmTarget = launchControl.phase === 'armed' ? launchRpm
       : idleRpm + (maxRpm - idleRpm) * clamp(Number(controls.throttle || 0), 0, 1);
-    const driverClutchCoupling = clamp(1 - Number(controls.clutch || 0), 0, 1);
-    const converterSlip = clamp(Number(tuning.torqueConverterSlip || 0), 0, 0.35);
+    const driverClutchCoupling = electric ? 1 : clamp(1 - Number(controls.clutch || 0), 0, 1);
+    const converterSlip = electric ? 0 : clamp(Number(tuning.torqueConverterSlip || 0), 0, 0.35);
     // A loaded converter approaches its stall RPM at zero shaft speed. Do not
     // feed previous engine flare back into coupling: that creates a stable
     // near-redline state even when the tires are barely moving.
@@ -576,12 +588,12 @@ export class PowertrainModel {
     // Full engagement at zero shaft speed pinned high-strung engines at idle.
     // Use the authored launch RPM and slip the clutch; do not add engine power
     // or tire grip. Explicit manual clutch input retains authority.
-    const automaticClutch = converterSlip === 0 && controls.assists?.autoShift === true
+    const automaticClutch = !electric && converterSlip === 0 && controls.assists?.autoShift === true
       && Math.abs(gear) === 1 && Number(controls.throttle || 0) > .02;
     const clutchTargetRpm = idleRpm + (launchRpm-idleRpm)*clamp(Number(controls.throttle)||0,0,1);
     const takeup = (automaticClutch || launchControlActive) ? clamp(coupledRpm / Math.max(idleRpm,clutchTargetRpm),.35,1) : 1;
     const launchTakeup = launchControlActive ? clamp(launchControl.elapsed/.6,0,1) : 1;
-    const clutchCoupling = driverClutchCoupling * shiftTorqueScale * Math.min(takeup,launchTakeup)
+    const clutchCoupling = electric ? 1 : driverClutchCoupling * shiftTorqueScale * Math.min(takeup,launchTakeup)
       * (mechanical?.effects?.drive ?? 1);
     const rpmCoupling = clutchCoupling * (converterSlip > 0 ? converterCoupling : 1);
     const loadedRpmTarget = converterSlip > 0 ? converterRpmTarget
@@ -598,7 +610,8 @@ export class PowertrainModel {
     const engineInertia = clamp(Number(tuning.engineInertiaKgM2) || 0.3, 0.05, 2);
     engineRpm += (clamp(rpmTarget, idleRpm, maxRpm) - engineRpm)
       * Math.min(1, seconds * (overallRatio > 0 ? 12 : 7.5) * 0.3 / engineInertia);
-    const limiterActive = engineRpm >= maxRpm - Math.max(40, Number(config.revLimiterDropRpm || 280) * 0.35)
+    if (electric) engineRpm = Math.min(maxRpm, Math.abs(averageSignedDrivenOmega) * tuning.electricPowertrain.reductionRatio * 60 / (2 * Math.PI));
+    const limiterActive = !electric && engineRpm >= maxRpm - Math.max(40, Number(config.revLimiterDropRpm || 280) * 0.35)
       && controls.throttle > 0.05;
     const limiterPhase = Math.floor(Number(previous.limiterSequence || 0)) % 4;
     const limiterTorqueScale = limiterActive && limiterPhase < 2 ? 0 : 1;
@@ -674,11 +687,11 @@ export class PowertrainModel {
     const handbrakeCombustionScale = handbrakeActive
       ? clamp(Number(tuning.handbrakeCombustionTorqueScale ?? 0.05), 0, 0.25)
       : 1;
-    const combustionTorqueNm = curveTorqueNm * clamp(Number(controls.throttle || 0), 0, 1)
+    const combustionTorqueNm = (electric ? 0 : curveTorqueNm) * clamp(Number(controls.throttle || 0), 0, 1)
       * engineDamageScale * limiterTorqueScale * launchTorqueScale * tractionTorqueScale
       * handbrakeCombustionScale * (mechanical?.effects?.torque ?? 1);
     const rpmRatio = clamp((engineRpm - idleRpm) / Math.max(1, maxRpm - idleRpm), 0, 1);
-    const engineBrakeTorqueNm = overallRatio > 0 && groundSpeedMps > 0.65
+    const engineBrakeTorqueNm = !electric && overallRatio > 0 && groundSpeedMps > 0.65
       ? Math.max(0, Number(tuning.engineBrakeTorqueNm || curveTorqueNm * 0.185))
         * (1 - clamp(Number(controls.throttle || 0), 0, 1)) * (0.35 + rpmRatio * 0.65)
       : 0;
@@ -694,7 +707,29 @@ export class PowertrainModel {
       && String(tuning.drivetrain || '').toLowerCase() === 'awd'
       ? clamp(Number(tuning.handbrakeAwdCenterCouplingScale ?? 0.05), 0, 0.2)
       : 1;
-    const wheelDriveTorqueTotalNm = (
+    // Conservative lift-off regen only: friction braking remains unchanged.
+    // Disable recovery during braking, handbrake, slip or missing contact so
+    // regen cannot fight ABS. No inferred OEM regenerative calibration.
+    const regenSafe = drivenIds.length > 0 && !handbrakeActive && Number(controls.brake || 0) === 0
+      && drivenIds.every(id => Number(capacityByWheel[id]) > 0
+        && Math.abs(Number(kinematicsByWheel[id]?.slipRatio || 0)) < .08);
+    const signedOmega = drivenIds.reduce((sum, id) => sum
+      + Number(kinematicsByWheel[id]?.wheelAngularVelocityRadps || 0)
+        * Number(driveShareByWheel[id] || 0), 0);
+    const electricStep = electric ? stepElectricPowertrain({
+      config: tuning.electricPowertrain, previous: previous.electric || {},
+      wheelOmegaRadps: signedOmega, direction,
+      throttle: Number(controls.throttle || 0),
+      regen: regenSafe ? (1 - clamp(Number(controls.throttle || 0), 0, 1))
+        * clamp(Number(tuning.electricPowertrain.liftOffRegen ?? 0), 0, 1) : 0,
+      torqueScale: engineDamageScale * tractionTorqueScale * handbrakeCombustionScale
+        * awdCenterCouplingScale * clamp(1 - transmissionDamage * .0045, .45, 1),
+      equivalentWheelInertiaKgM2: Math.max(.05, Number(config.wheelInertiaKgM2) || 1.35)
+        / Math.max(.001, drivenIds.reduce((sum,id) => sum + Number(driveShareByWheel[id] || 0) ** 2, 0)),
+      externalWheelAccelerationRadps2,
+      dt: seconds
+    }) : null;
+    const wheelDriveTorqueTotalNm = electricStep ? electricStep.axleTorqueNm : (
       direction * combustionTorqueNm - travelDirection * engineBrakeTorqueNm
     ) * overallRatio * transmissionEfficiency * clutchCoupling * converterTorqueMultiplier
       * awdCenterCouplingScale;
@@ -835,7 +870,8 @@ export class PowertrainModel {
       wheelDriveTorqueNm,
       wheelBrakeTorqueNm,
       state: {
-        engineRpm: mechanical?.engineRunning === false ? 0 : engineRpm,
+        ...(electricStep ? { electric: electricStep.state } : {}),
+        engineRpm: !electric && mechanical?.engineRunning === false ? 0 : engineRpm,
         gear,
         targetGear,
         shiftTimeRemainingSeconds,
@@ -851,6 +887,7 @@ export class PowertrainModel {
         absModulationByWheel
       },
       telemetry: {
+        ...(electricStep ? { electric: electricStep.telemetry } : {}),
         curveTorqueNm,
         combustionTorqueNm,
         engineBrakeTorqueNm,

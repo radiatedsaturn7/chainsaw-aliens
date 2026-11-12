@@ -1,0 +1,73 @@
+{
+  "asset": "rally-gravel.png",
+  "intendedCompound": "Rally (dirt)",
+  "method": "OpenAI built-in image generation",
+  "prompt": "Use case stylized-concept. Create original dirt/gravel RALLY tire texture sprite sheet for2994 salvaged racing game, using reference image only for crisp painted pixel-art2.5D material style. Exactly TWO equal columns ONE row: LEFT straight-on tread-facing upright tire (narrow oblong silhouette), RIGHT perfectly circular straight side-on wheel of same tire. Rally tread distinct from street: interlocking rectangular and chevron BLOCKS with deep visible channels, compact closely spaced gravel blocks rather than huge mud-paddle lugs, dust-brown rubber shoulders with dark charcoal center, light gravel scuffs, no snow, no studs. Right wheel: rugged scratched off-white eight-spoke rim, plain dark central hub and simple bolted outer ring. Entire circular wheel face MUST be OPAQUE, including dark recessed backing plate BETWEEN all spokes; no transparent holes inside circumference. Texture used on cylindrical engine wheels. No logos, branding, skulls, letters, numbers or labels. Equal tire height centered in each half; whole objects completely inside canvas; generous fully transparent center gutter and outer padding. TRUE alpha transparent background, NO gray haze, NO drop shadow, NO ground. Only these2views, no extra tires.",
+  "reference": "User-provided8582.png, visual style only",
+  "layout": {
+    "columns": 2,
+    "rows": 1,
+    "treadFrame": 0,
+    "wheelFrame": 1
+  },
+  "status": "Imported into Rally tire graphics; in-game visual placement review pending.",
+  "remainingGaps": "Stock/Street/Rain/Drift still share 8582; Snow/Offroad still share 8296. Rally and Tarmac now have independent sets. No claim of eight completed sets.",
+  "sourceSha256": "c2bd86510fdf900815c458d9bbdf2100948c92d19664ee7e425c8c9baeb9b158",
+  "import": {
+    "artRef": "catalog-rally-gravel",
+    "sourceWidth": 2172,
+    "sourceHeight": 724,
+    "frameWidth": 659,
+    "frameHeight": 659,
+    "frames": 2,
+    "solidifiedPixels": 476238,
+    "crops": [
+      {
+        "x": 466,
+        "y": 42,
+        "width": 265,
+        "height": 639
+      },
+      {
+        "x": 1158,
+        "y": 29,
+        "width": 657,
+        "height": 657
+      }
+    ],
+    "surfaces": {
+      "tread": {
+        "artRef": "catalog-rally-gravel",
+        "frameIndex": 0,
+        "region": {
+          "x": 220,
+          "y": 57,
+          "width": 219,
+          "height": 542
+        },
+        "bounds": {
+          "x": 220.5,
+          "y": 57.5,
+          "width": 218,
+          "height": 541
+        }
+      },
+      "wheel": {
+        "artRef": "catalog-rally-gravel",
+        "frameIndex": 1,
+        "region": {
+          "x": 328.5,
+          "y": 329,
+          "radius": 311.17880711899386
+        },
+        "bounds": {
+          "x": 17.321292881006116,
+          "y": 17.821292881006116,
+          "width": 622.3574142379878,
+          "height": 622.3574142379878
+        }
+      }
+    }
+  },
+  "physicalChanges": "None. Existing Rally compound, size and pressure retained byte-for-byte as JSON values."
+}

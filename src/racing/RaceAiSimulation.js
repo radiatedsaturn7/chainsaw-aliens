@@ -1220,8 +1220,8 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
           ?? contactState.pose?.yaw
           ?? 0
       );
-      if (ai.physicsBudgetDetail !== 'cheap') restoreRaceAiDetailedPhysics(editor,ai);
-      if (ai.physicsBudgetDetail !== 'cheap' || !ai.vehicleDynamicsRunner) editor.updateRaceAiVehiclePhysics(ai, {
+      if ((ai.physicsBudgetDetail !== 'cheap' || tuning.powertrainType === 'electric')) restoreRaceAiDetailedPhysics(editor,ai);
+      if ((ai.physicsBudgetDetail !== 'cheap' || tuning.powertrainType === 'electric') || !ai.vehicleDynamicsRunner) editor.updateRaceAiVehiclePhysics(ai, {
         car,
         tuning,
         seconds: ai.physicsBudgetDetail === 'cheap' ? 0 : dt,
@@ -1269,7 +1269,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     }
     if(ai.physicsBudgetDetail==='cheap' && ai.cheapPhysicsHeld)
       tryRecoverRaceAiCheap(editor,ai,{car,tuning});
-    if (ai.physicsBudgetDetail !== 'cheap' && waitForRaceAiRecovery(editor, ai, dt, car, tuning)) return;
+    if ((ai.physicsBudgetDetail !== 'cheap' || tuning.powertrainType === 'electric') && waitForRaceAiRecovery(editor, ai, dt, car, tuning)) return;
     const profile = editor.getRaceAiDifficultyProfile(ai.difficulty);
     const roadSafety = getRaceAiRoadSafety(editor, ai, tuning);
     const wakeState = ai.vehicleRenderState?.aeroState?.wake
@@ -1356,9 +1356,9 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     const targetMps = ai.drivingPlan.targetSpeedMps;
     const previousSpeedMps = Number(ai.speedMps || 0);
     const previousProjectedDistance = Number(ai.projectedDistance ?? ai.distance ?? 0);
-    const detailedControlsOnly = !editor.vehicleDynamicsAuthority?.workerBridge
+    const detailedControlsOnly = tuning.powertrainType === 'electric' || (!editor.vehicleDynamicsAuthority?.workerBridge
       && ai.physicsBudgetDetail !== 'cheap'
-      && (ai.physicsBudgetDetail === 'full' || !canUseRaceAiDistantPhysics(editor,ai,contactState,dt));
+      && (ai.physicsBudgetDetail === 'full' || !canUseRaceAiDistantPhysics(editor,ai,contactState,dt)));
     let aiPhysics;
     if (detailedControlsOnly) {
       const controls=planRaceAiControls(editor,ai,tuning,targetMps,profile);
@@ -1371,7 +1371,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
           * setupModifiers.grip,
         looseSurfaceFactor:editor.getRaceLooseSurfaceFactor(contactState.contacts)
       };
-    } else if (!editor.vehicleDynamicsAuthority?.workerBridge && useRaceAiRemotePowertrain(ai,session)) {
+    } else if (!editor.vehicleDynamicsAuthority?.workerBridge && tuning.powertrainType !== 'electric' && useRaceAiRemotePowertrain(ai,session)) {
       aiPhysics=stepRaceAiRemotePowertrain(editor,ai,{car,tuning,targetMps,profile,contactState,seconds:dt});
     } else {
       aiPhysics=editor.getRaceAiLongitudinalPhysicsStep(ai,{
@@ -1381,7 +1381,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     if (detailedControlsOnly || !advanceRaceAiDistantPhysics(editor, ai, {
       car, tuning, contactState, physics: aiPhysics, seconds: dt
     })) {
-      if (ai.physicsBudgetDetail === 'cheap') {
+      if (ai.physicsBudgetDetail === 'cheap' && tuning.powertrainType !== 'electric') {
         holdRaceAiCheapPhysics(editor,ai,dt);
       } else {
       restoreRaceAiDetailedPhysics(editor, ai);
