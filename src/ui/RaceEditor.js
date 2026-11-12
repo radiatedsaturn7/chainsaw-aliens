@@ -1,3 +1,4 @@
+import { normalizeCvtTuning, validateCvt } from '../racing/simulation/CvtTransmissionModel.js';
 import {raceDriftScoreVariables} from '../racing/RaceDriftScore.js';
 import {advanceDigitalThrottle, observeDrivingIntent, DIGITAL_THROTTLE_MODES, DRIVING_INTENT_STYLES} from '../racing/DigitalThrottle.js';
 import {DEBUG_ROAD_SURFACES, debugRoadTextureSettings} from '../racing/RaceDebugRoad.js';
@@ -8310,6 +8311,18 @@ export default class RaceEditor {
       car.audio.engineSfxVolume = Math.round(clamp(Number(value) || 0, 0, 2) * 100) / 100;
       this.status = `Engine SFX: ${Math.round(car.audio.engineSfxVolume * 100)}%`;
       return true;
+    }
+    if (transmission.cvt || car.tuning.cvt) {
+      if (path === 'gearCount' || path.startsWith('gearRatio-')) return false;
+      if (path.startsWith('cvt-')) {
+        const key = path.slice(4);
+        if (!['minRatio','maxRatio','cruiseRpm','powerRpm','ratioRatePerSecond'].includes(key)) return false;
+        const next = {...(transmission.cvt || car.tuning.cvt),[key]:rounded};
+        try { validateCvt(next); } catch { return false; }
+        transmission.cvt = next; car.tuning.cvt = {...next};
+        transmission.gearRatios = [next.maxRatio]; car.tuning.gearRatios = [next.maxRatio];
+        this.status = `CVT ${key}: ${rounded}`; return true;
+      }
     }
     if (path === 'gearCount') {
       const count = clamp(Math.round(Number(value) || 6), 4, 10);
@@ -17726,6 +17739,7 @@ export default class RaceEditor {
     const torquePoints = tuning.engineCurve?.torquePoints || [];
     return [
       tuning.transmissionType || '',
+      tuning.cvt ? JSON.stringify(tuning.cvt) : '',
       tuning.drivetrain || '',
       Math.round(Number(tuning.powerHp || 0) * 10),
       Math.round(Number(tuning.torqueLbFt || 0) * 10),
@@ -17987,6 +18001,11 @@ export default class RaceEditor {
       return target[key];
     };
     let value = 0;
+    if (path.startsWith('cvt-')) {
+      const key=path.slice(4), cvt=transmission.cvt || tuning.cvt;
+      return cvt && this.setCarTuneNumericValue(path,Number(cvt[key])+delta*(key.endsWith('Rpm')?100:.05));
+    }
+    if ((transmission.cvt || tuning.cvt) && path.startsWith('gearRatio-')) return;
     if (path === 'tuning-tab-prev' || path === 'tuning-tab-next') {
       const tabs = this.getRaceTuningTabs(car).map((tab) => tab.id);
       const index = Math.max(0, tabs.indexOf(this.preRaceTuningTab));
@@ -18116,7 +18135,7 @@ export default class RaceEditor {
       : (car?.tuning || {});
     const selectedTransmissionType = transmissionType || this.getRaceTransmissionType(car);
     const transmission = car?.transmissions?.[selectedTransmissionType] || {};
-    let merged = normalizeElectricTuning({ ...tuning, ...transmission });
+    let merged = normalizeCvtTuning(normalizeElectricTuning({ ...tuning, ...transmission }));
     // Saved built-in car documents can predate the authoritative SI profile.
     // Rehydrate only the physical profile by canonical chassis identity while
     // preserving every authored tuning, setup, transmission, and art value.
@@ -18141,6 +18160,7 @@ export default class RaceEditor {
     return {
       ...(tuning.garageEngineCurve?{engineCurve:tuning.engineCurve}:{}),
       ...(merged.powertrainType === 'electric' ? { powertrainType: 'electric', electricPowertrain: { ...merged.electricPowertrain } } : {}),
+      ...(merged.cvt && merged.powertrainType !== 'electric' ? {cvt:{...merged.cvt}} : {}),
       physicalVehicleProfile,
       physics: merged.physics || tuning.physics || {},
       bodyShapePreset: merged.physics?.bodyShapePreset || tuning.physics?.bodyShapePreset || 'car',
@@ -25366,6 +25386,9 @@ export default class RaceEditor {
       ];
     }
     if (tabId === 'gearing') {
+      const cvt = transmission.cvt || tuning.cvt;
+      if (cvt) return [['gearFinalDrive','Final Drive',transmission.gearFinalDrive || tuning.gearFinalDrive,''],
+        ...Object.entries(cvt).filter(([k])=>['minRatio','maxRatio','cruiseRpm','powerRpm','ratioRatePerSecond'].includes(k)).map(([k,v])=>[`cvt-${k}`,`CVT ${k}`,v,k.endsWith('Rpm')?'rpm':''])];
       return [
         ['gearFinalDrive', 'Final Drive', transmission.gearFinalDrive || tuning.gearFinalDrive, ''],
         ...gearRatios.map((ratio, index) => [`gearRatio-${index + 1}`, `${index + 1}${index === 0 ? 'st' : index === 1 ? 'nd' : index === 2 ? 'rd' : 'th'} Gear`, ratio, ''])
@@ -28931,7 +28954,7 @@ export default class RaceEditor {
       const gearCount = Array.isArray(transmission.gearRatios) ? transmission.gearRatios.length : 6;
       const sliderRows = [
         { id: 'gearFinalDrive', label: 'Final', value: transmission.gearFinalDrive ?? tuning.gearFinalDrive ?? 4.1, min: tuning.powertrainType === 'electric' ? 1 : 2.6, max: tuning.powertrainType === 'electric' ? 20 : 5.2, format: (value) => value.toFixed(2) },
-        { id: 'gearCount', label: 'Gears', value: tuning.powertrainType === 'electric' ? 1 : gearCount, min: tuning.powertrainType === 'electric' ? 1 : 4, max: tuning.powertrainType === 'electric' ? 1 : 10, format: (value) => `${Math.round(value)}` },
+        { id: 'gearCount', label: (transmission.cvt || tuning.cvt) ? 'CVT Drive' : 'Gears', value: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : gearCount, min: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : 4, max: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : 10, format: (value) => `${Math.round(value)}` },
         { id: 'redlineRpm', label: 'Redline Start', value: tuning.redlineRpm || 6500, min: 4500, max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
         { id: 'revLimitRpm', label: 'Rev Limiter', value: tuning.revLimitRpm || tuning.redlineRpm || 6800, min: Math.max(4500, Number(tuning.redlineRpm || 4500)), max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
         { id: 'tachometerMaxRpm', label: 'Tach Max', value: tuning.tachometerMaxRpm || tuning.revLimitRpm || tuning.redlineRpm || 6800, min: 1000, max: 20000, format: (value) => `${Math.round(value)} rpm` }
@@ -29067,7 +29090,7 @@ export default class RaceEditor {
       const gearCount = Array.isArray(transmission.gearRatios) ? transmission.gearRatios.length : 6;
       drawSliderRows([
         { id: 'gearFinalDrive', label: 'Final', value: transmission.gearFinalDrive ?? tuning.gearFinalDrive ?? 4.1, min: tuning.powertrainType === 'electric' ? 1 : 2.6, max: tuning.powertrainType === 'electric' ? 20 : 5.2, format: (value) => value.toFixed(2) },
-        { id: 'gearCount', label: 'Gears', value: tuning.powertrainType === 'electric' ? 1 : gearCount, min: tuning.powertrainType === 'electric' ? 1 : 4, max: tuning.powertrainType === 'electric' ? 1 : 10, format: (value) => `${Math.round(value)}` },
+        { id: 'gearCount', label: (transmission.cvt || tuning.cvt) ? 'CVT Drive' : 'Gears', value: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : gearCount, min: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : 4, max: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : 10, format: (value) => `${Math.round(value)}` },
         { id: 'redlineRpm', label: 'Redline Start', value: tuning.redlineRpm || 6500, min: 4500, max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
         { id: 'revLimitRpm', label: 'Rev Limiter', value: tuning.revLimitRpm || tuning.redlineRpm || 6800, min: Math.max(4500, Number(tuning.redlineRpm || 4500)), max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
         { id: 'tachometerMaxRpm', label: 'Tach Max', value: tuning.tachometerMaxRpm || tuning.revLimitRpm || tuning.redlineRpm || 6800, min: 1000, max: 20000, format: (value) => `${Math.round(value)} rpm` }
@@ -29075,6 +29098,17 @@ export default class RaceEditor {
       return;
     }
     if (this.carTuneTab === 'gear-ratios') {
+      const cvt = transmission.cvt || tuning.cvt;
+      if (cvt && tuning.powertrainType !== 'electric') {
+        drawSliderRows([
+          ['minRatio','Minimum Ratio',.1,5.5], ['maxRatio','Maximum Ratio',.1,8],
+          ['cruiseRpm','Cruise Target',500,10000], ['powerRpm','Power Target',500,12000],
+          ['ratioRatePerSecond','Ratio / Second',.05,10]
+        ].map(([key,label,min,max])=>({id:`cvt-${key}`,label,value:cvt[key],min,max,
+          format:value=>key.endsWith('Rpm')?`${Math.round(value)} rpm`:value.toFixed(3)})), {scrollKey:'car-tune-cvt'});
+        return;
+      }
+
       const gearRatios = Array.isArray(transmission.gearRatios) && transmission.gearRatios.length
         ? transmission.gearRatios
         : (Array.isArray(tuning.gearRatios) && tuning.gearRatios.length ? tuning.gearRatios : [3.45, 1.95, 1.37, 0.97, 0.74, 0.67]);

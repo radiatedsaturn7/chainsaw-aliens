@@ -1371,7 +1371,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
           * setupModifiers.grip,
         looseSurfaceFactor:editor.getRaceLooseSurfaceFactor(contactState.contacts)
       };
-    } else if (!editor.vehicleDynamicsAuthority?.workerBridge && tuning.powertrainType !== 'electric' && useRaceAiRemotePowertrain(ai,session)) {
+    } else if (!editor.vehicleDynamicsAuthority?.workerBridge && tuning.powertrainType !== 'electric' && useRaceAiRemotePowertrain(ai,session,tuning)) {
       aiPhysics=stepRaceAiRemotePowertrain(editor,ai,{car,tuning,targetMps,profile,contactState,seconds:dt});
     } else {
       aiPhysics=editor.getRaceAiLongitudinalPhysicsStep(ai,{

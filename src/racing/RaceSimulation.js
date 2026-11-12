@@ -4320,7 +4320,11 @@ export function estimateRacePowerLimitedTopSpeedMps(editor, {
     let bestDriveForce = 0;
     ratios.forEach((ratio, index) => {
       const gear = index + 1;
-      const rpm = editor.getRaceProjectedEngineRpmForGear(tuning, speed, gear);
+      const cvt=tuning.cvt && tuning.powertrainType !== 'electric';
+      if(cvt) ratio=clamp(tuning.cvt.powerRpm*Math.PI*2*Math.max(.01,tuning.wheelRadiusM)
+        /(60*Math.max(.01,speed)*Math.max(.1,tuning.finalDrive)),tuning.cvt.minRatio,tuning.cvt.maxRatio);
+      const rpm = cvt ? speed/Math.max(.01,tuning.wheelRadiusM)*ratio*tuning.finalDrive*60/(2*Math.PI)
+        : editor.getRaceProjectedEngineRpmForGear(tuning, speed, gear);
       if (rpm > redline * 1.015 || rpm < Math.max(400, Number(tuning.idleRpm || 800) * 0.55)) return;
       const engineTorqueNm = editor.getRaceTorqueNmAtRpm(clamp(rpm, Number(tuning.idleRpm || 800), redline), tuning);
       const driveForce = editor.getRaceDriveForceComponents({

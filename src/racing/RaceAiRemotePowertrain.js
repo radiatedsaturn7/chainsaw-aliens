@@ -6,8 +6,8 @@ import {planRaceAiControls} from './RaceAiControls.js';
 // friction circle instead of repeated differential/load-transfer solves. This
 // only supplies longitudinal forces to the existing swept, terrain-following
 // distant chassis; obstacles and traffic still promote detailed physics.
-export function useRaceAiRemotePowertrain(ai, session) {
-  return session?.debugAiDetailedLongitudinal !== true
+export function useRaceAiRemotePowertrain(ai, session, tuning = {}) {
+  return !tuning.cvt && tuning.powertrainType !== 'electric' && session?.debugAiDetailedLongitudinal !== true
     && (ai.physicsBudgetDetail === 'cheap' || Math.hypot(ai.worldX-session.worldX,ai.worldZ-session.worldZ)>120);
 }
 const scratchByCar=new WeakMap();

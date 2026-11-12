@@ -28,10 +28,11 @@ export function calculateCarPerformance(car = {}) {
   const lock=clamp(finite(t[drive==='fwd'?'frontDifferentialAccel':'rearDifferentialAccel'],finite(t.differentialAccel,0)),0,1);
   const traction=grip*9.81*drivenLoad*(.88+.12*lock);
   const validGears=(Array.isArray(t.gearRatios)?t.gearRatios:[]).filter(r=>Number.isFinite(r)&&r>0);
-  const gears=validGears.length?validGears:[3.45,1.95,1.37,.97,.74,.67];
+  const cvt=t.cvt && t.powertrainType!=='electric' && t.cvt.minRatio>0 && t.cvt.maxRatio>=t.cvt.minRatio ? t.cvt:null;
+  const gears=cvt?[cvt.maxRatio,cvt.minRatio]:validGears.length?validGears:[3.45,1.95,1.37,.97,.74,.67];
   const finalDrive=finite(t.finalDrive,finite(t.gearFinalDrive,4.11)),radius=finite(t.wheelRadiusM,.337),redline=finite(t.redlineRpm,6500);
   const gearing=clamp(gears[0]*finalDrive*.337/radius/12,.45,1.15);
-  const shifts=gears.filter(r=>redline*2*Math.PI*radius/(60*r*finalDrive)<26.8224).length;
+  const shifts=cvt?0:gears.filter(r=>redline*2*Math.PI*radius/(60*r*finalDrive)<26.8224).length;
   const zeroToSixtySec=Math.max(26.8224/Math.max(.1,traction),.5*mass*26.8224**2/(power*745.7*efficiency*.65*gearing))+.2+shifts*finite(t.shiftTimeMs,420)/1000;
   const area=finite(p.frontalAreaM2,finite(t.frontalAreaM2,Math.max(1.55,finite(t.widthM,1.8)*finite(t.lengthM,4.5)*.26)));
   const drag=.5*1.225*clamp(finite(p.dragCoefficient,finite(t.dragCoefficient,.35)),.08,.9)*area;
