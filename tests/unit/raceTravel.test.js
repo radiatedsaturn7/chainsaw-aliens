@@ -561,14 +561,16 @@ for(const opponents of [false,true])test(`race travel ${opponents?'hydrates oppo
  game.setRevAudio=()=>{};game.prepareRacePlaytestAudio=async()=>true;
  let catalogLoads=0;
  game.raceEditor={
-  hydrateSavedRaceCarsForTravel:async()=>{catalogLoads++;return [{id:'opponent'}];},
+  hydrateSavedRaceCarsForTravel:async()=>{catalogLoads++;return [{id:'opponent'},{id:'unused'}];},
+  selectRaceTravelGridCars:()=>opponents?['opponent']:[],
+  getRaceCarProjectIdentity:car=>car.id,
   collectRaceCarArtRefs:car=>[car.id+'-art'],
   loadRaceTravelDocument:async(name,options)=>{
    assert.deepEqual(options.artRefs,opponents?['player-art','opponent-art']:['player-art']);
    return {race};
   },
   applyLoadedRaceDocument:()=>true,
-  startPlaytest(){this.playtestSession={running:true};}
+  startPlaytest(id,options){assert.deepEqual(options.preparedAiCarIds,opponents?['opponent']:[]);this.playtestSession={running:true};}
  };
  try{
   assert.equal(await game.startRaceTravel({raceName:'Solo fixture',carSelection:'specific',carRef:'Player'}),true);
