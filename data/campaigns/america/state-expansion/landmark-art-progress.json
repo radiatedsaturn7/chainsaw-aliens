@@ -2048,7 +2048,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": -504.1328812268634,
         "worldZ": -460.8146515036883,
@@ -2057,97 +2057,106 @@
         "side": "right"
       },
       "candidateReview": {
-        "score": 5.312798546724715,
+        "score": -0.0631570533967325,
         "views": [
           {
             "beforeM": 65,
-            "angleDegrees": 3.736147175922325,
-            "angularWidthDegrees": 9.997641186390588,
-            "rangeM": 83.75838537971767,
-            "occluderIds": [],
-            "score": 0.850554112963107
+            "angleDegrees": 80.63261032381011,
+            "angularWidthDegrees": 11.498884615999419,
+            "rangeM": 72.76338203710782,
+            "occluderIds": [
+              "city-ga-prop-203"
+            ],
+            "score": 0
           },
           {
             "beforeM": 85,
-            "angleDegrees": 3.00343419724653,
-            "angularWidthDegrees": 8.080315835292694,
-            "rangeM": 103.7243577096934,
-            "occluderIds": [],
-            "score": 0.8798626321101388
+            "angleDegrees": 66.10314571049598,
+            "angularWidthDegrees": 10.65953045638884,
+            "rangeM": 78.5301557791677,
+            "occluderIds": [
+              "city-ga-prop-203"
+            ],
+            "score": 0
           },
           {
             "beforeM": 105,
-            "angleDegrees": 1.7486565098124645,
-            "angularWidthDegrees": 6.778730691594001,
-            "rangeM": 123.70132433874548,
-            "occluderIds": [],
-            "score": 0.9300537396075015
+            "angleDegrees": 54.90506723783556,
+            "angularWidthDegrees": 9.460158817128105,
+            "rangeM": 88.54073055900629,
+            "occluderIds": [
+              "city-ga-prop-203"
+            ],
+            "score": 0
           },
           {
             "beforeM": 135,
-            "angleDegrees": 0.9947855024077706,
-            "angularWidthDegrees": 5.458114781116302,
-            "rangeM": 153.6945482046858,
+            "angleDegrees": 42.2947288396279,
+            "angularWidthDegrees": 7.729974156224521,
+            "rangeM": 108.44068423697604,
             "occluderIds": [],
-            "score": 0.8734881071545033
+            "score": 0
           },
           {
             "beforeM": 165,
-            "angleDegrees": 0.42420324236901397,
-            "angularWidthDegrees": 4.567854840345514,
-            "rangeM": 183.69076499296224,
-            "occluderIds": [],
-            "score": 0.7483911478312819
+            "angleDegrees": 33.879870279113675,
+            "angularWidthDegrees": 6.344719572137686,
+            "rangeM": 132.18226414740275,
+            "occluderIds": [
+              "city-ga-prop-199"
+            ],
+            "score": 0
           },
           {
             "beforeM": 195,
-            "angleDegrees": 0.18990830675086057,
-            "angularWidthDegrees": 3.927130391586121,
-            "rangeM": 213.6900693708572,
+            "angleDegrees": 28.380905744563854,
+            "angularWidthDegrees": 5.314145616534303,
+            "rangeM": 157.8646138484661,
             "occluderIds": [],
-            "score": 0.6495497673773137
+            "score": 0
           },
           {
             "beforeM": 240,
-            "angleDegrees": 0.0385641254704489,
-            "angularWidthDegrees": 3.2443989343884914,
-            "rangeM": 258.6898651831783,
-            "occluderIds": [],
-            "score": 0.5398990396808688
+            "angleDegrees": 22.087903230175648,
+            "angularWidthDegrees": 4.22502554914289,
+            "rangeM": 198.61110752384624,
+            "occluderIds": [
+              "city-ga-prop-195",
+              "city-ga-prop-197"
+            ],
+            "score": 0.009842946603267493
           }
         ],
         "sourceDistanceShiftM": 150
       },
-      "signature": "50e1af4f31dc0f66256958c2d81298d7081f6db1d3c2b50d486f1b46eaed9d21",
+      "signature": "0836d21bbffb91784f5f9ad495cd94b76b4e962f54a3f6d53d7f9562e2764703",
       "sourceSha256": "23157c4677b3ed2e2d7eafd79ae4362bbdf44b8352ec4f9ed2c544a591ef391a",
       "roadSha256": "7916f7d1514c2356130abaf43eeec0e34b7198a25a8b1cf23016e060ff685105",
       "placementDetails": {
-        "x": -378.2174970403225,
-        "z": -288.74906631163446,
-        "yaw": -0.012782945827875345,
-        "facingApproachBeforeM": 150,
-        "trackDistance": 3745.6834408624663,
-        "trackLateral": -34.999357901554426,
-        "minimumRoadClearanceM": 17.492702019538257,
+        "x": -451.746919123961,
+        "z": -363.7052140784864,
+        "yaw": -0.909525954350244,
+        "facingApproachBeforeM": 115,
+        "trackDistance": 3746.3192794931724,
+        "trackLateral": 69.99871580310878,
+        "minimumRoadClearanceM": 52.492059921092675,
         "checkedSegments": 5030,
         "samplingStepM": 2,
         "samplingPaddingM": 2,
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Native desktop torch visible, but its identifying crown is clipped or hidden behind handheld pause overlay across25–275m windows; placement visual QA remains pending."
-      ],
+      "remaining": [],
       "visualEvidence": [
         "docs/art/landmark-previews/GA/centennial-olympic-park-desktop.png",
         "docs/art/landmark-previews/GA/centennial-olympic-park-mobile.png"
       ],
       "visualReview": {
-        "approachBeforeClosestRouteProjectionM": 115,
+        "approachBeforeClosestRouteProjectionM": 225,
         "desktopViewport": "960x540",
         "mobileViewport": "390x844 handheld",
         "conditions": "unchanged authored native conditions",
-        "notes": "Native desktop torch visible, but its identifying crown is clipped or hidden behind handheld pause overlay across25–275m windows; placement visual QA remains pending."
+        "notes": "One safe opposite-side alternate. At225m torch bowl and column are unobscured in both modes. Actual handheld silhouette is small (9x26px) but distinct, fully between central pause and top-right timing overlay; nearby robot does not overlap."
       }
     },
     "landmark-city-ga-georgia-state-capitol": {
