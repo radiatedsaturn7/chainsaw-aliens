@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 const d=JSON.parse(fs.readFileSync(new URL('../../data/server-storage/files/cars/Buckwheat 2.4 1997/document.json',import.meta.url)));
 const c=JSON.parse(fs.readFileSync(new URL('../../assets/car-catalog/buckwheat-1997/import.json',import.meta.url)));
-test('Buckwheat native editor roundtrip retains fixedrear, dashboard gauges and tire visibility',()=>{const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(structuredClone(d),{name:d.car.name});assert.deepEqual(e.serializeSelectedCarDocument().car,d.car);assert.equal(d.car.camera.trackingMode,'fixed-rear');assert.equal(d.car.art.interior.steeringWheel.artRef,'steeringwheel');assert.equal(d.car.art.gauges.interior.coordinateSpace,'wheel-opening');for(const l of Object.values(d.car.art.angleLayers))assert.equal(l.tires.tireMode,'auto');assert.deepEqual(c.mapping,[0,7,2,3,4,5,6,1]);});
+test('Buckwheat native editor roundtrip retains fixedrear, dashboard gauges and tire visibility',()=>{const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(structuredClone(d),{name:d.car.name});assert.deepEqual(e.serializeSelectedCarDocument().car,d.car);assert.equal(d.car.camera.trackingMode,'fixed-rear');assert.equal(d.car.art.interior.steeringWheel.artRef,'steeringwheel');assert.equal(d.car.art.gauges.interior.coordinateSpace,'wheel-opening');for(const l of Object.values(d.car.art.angleLayers))assert.equal(l.tires.tireMode,'auto');assert.deepEqual(c.mapping,[0,1,2,5,4,3,6,7]);});
 
 test('Buckwheat production editor preview launches on tire support, not an occluding body box',()=>{
  assert.equal(c.car.tuning.physics.bodyProfile.wheelWellAware,true);

@@ -1035,13 +1035,13 @@
   },
   "mapping": [
     0,
-    7,
+    1,
     2,
-    3,
-    4,
     5,
+    4,
+    3,
     6,
-    1
+    7
   ],
   "provenance": {
     "inspiration": "US 2000 Toyota Celica GT-S six-speed manual, LHD FWD, standard P205/55R15 package, no TRD/optional 16-inch package",
