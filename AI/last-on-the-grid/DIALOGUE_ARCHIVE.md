@@ -50,6 +50,9 @@ CAIT: “Right.”
 
 **Difference to note:** The current implemented garage cutscene does **not** contain Rob's “Good.” and uses different punctuation and timing. The earlier draft is preserved here as a draft, not misrepresented as implemented.
 
+## The Other Scientist — conversation-recovered draft dialogue
+The discovery and escape dialogue, including alternate versions, is collected in [the encounter draft](CAMPAIGN/the-other-scientist.md). These are **not implementation-verified** and must not be conflated with the Tower Hill cutscenes.
+
 ## Other dialogue fragments — context needed
 - “Humans built all this? To serve them?” — Cait, Machine City concept.
 - “I've been fixing your car this whole time…” — argument concept; wording and speaker context need verification.
