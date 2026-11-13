@@ -287,8 +287,15 @@
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
       "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+        "Check an approach that makes the landmark identifiable under the existing night conditions, or validate an approved targeted remedy."
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 105,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing night, default headlights",
+        "notes": "Gable and chimney outline at far left. The existing night exposure hides the brick pattern and many distinguishing details."
+      }
     },
     "landmark-city-ct-connecticut-state-capitol": {
       "raceRef": "Hartford, CT — Landmark Run",
@@ -376,8 +383,15 @@
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
       "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+        "Check an approach that makes the landmark identifiable under the existing night conditions, or validate an approved targeted remedy."
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 105,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing night, default headlights",
+        "notes": "Large dome can be seen above bend, but granite detailing and much of body disappear into shadow."
+      }
     },
     "landmark-city-ct-wadsworth-atheneum": {
       "raceRef": "Hartford, CT — Landmark Run",
@@ -473,8 +487,15 @@
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
       "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+        "Check an approach that makes the landmark identifiable under the existing night conditions, or validate an approved targeted remedy."
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 85,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing night, default headlights",
+        "notes": "Crenellations enter sightline, while facade merges into the generic foreground ruin in current night light."
+      }
     },
     "landmark-city-ct-bushnell-park": {
       "raceRef": "Hartford, CT — Landmark Run",
@@ -482,7 +503,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": 501.64440803261317,
         "worldZ": -264.8110835759898,
@@ -568,8 +589,17 @@
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      "remaining": [],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 105,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing night, default headlights",
+        "notes": "The Soldiers and Sailors Memorial Arch is readable as a silhouette on desktop and handheld: both towers and the open arch identify it, even though nighttime hides the stone texture."
+      },
+      "visualEvidence": [
+        "docs/art/landmark-previews/CT/bushnell-arch-desktop.png",
+        "docs/art/landmark-previews/CT/bushnell-arch-mobile.png"
       ]
     },
     "landmark-city-de-chase-center-on-the-riverfront": {
