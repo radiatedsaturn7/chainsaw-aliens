@@ -1,0 +1,92 @@
+{
+  "fictionalIdentity": "Bellflower 2006",
+  "reference": "2006 US Mazda5 Sport 5MT, LHD, standard equipment without Touring moonroof/spoiler",
+  "status": "source-only; no code, map or art edits",
+  "duplicateCheck": "No Mazda5 or Mazda 5 matches in inspected copperwing-work research ledger; recheck live staging before import",
+  "sources": [
+    {
+      "url": "https://news.mazdausa.com/download/SPECS-MAZDA5-06.pdf",
+      "type": "OEM US one-page technical sheet",
+      "verification": "Full text and actual page 0 screenshot visually inspected; two-column labels confirmed"
+    },
+    {
+      "url": "https://news.mazdausa.com/download/MZD-MAZDA5-06-Updated.pdf",
+      "type": "OEM US updated press kit September 19 2005",
+      "verification": "Full seven-page text read; Sport/Touring distinction, transmission, cockpit and output corroborated"
+    },
+    {
+      "url": "https://www.centuryu.com/uploads/1/4/4/6/144698822/2006_5.pdf",
+      "type": "OEM Mazda Canada document on third-party archive dated November 30 2005",
+      "verification": "Full text read; different market not authoritative substitute for US selected variant"
+    }
+  ],
+  "verifiedUS": {
+    "engine": "2260cc naturally aspirated gasoline I4 DOHC 16V VVT",
+    "compression": 9.7,
+    "powerHpSAENet": 157,
+    "powerRpm": 6500,
+    "torqueLbFt": 148,
+    "torqueRpmSourcePublished": 3500,
+    "redlineRpm": 6500,
+    "drivetrain": "FWD",
+    "transmission": "5MT",
+    "forwardRatiosPublishedRounded": [
+      3.31,
+      1.84,
+      1.31,
+      0.97,
+      0.76
+    ],
+    "reverseRatioPublishedRounded": 3.17,
+    "finalRatioPublishedRounded": 4.39,
+    "tires": "P205/50R17 all-season",
+    "wheel": "17 x 6.5 J alloy",
+    "curbMassLb": 3333,
+    "frontMassFraction": 0.556,
+    "massConvention": "OEM curb; driver/fuel inclusion not expressly defined. Do not add or remove driver or fuel by assumption. 3389lb AT excluded; 4572lb GVWR not curb.",
+    "wheelbaseMm": 2751,
+    "lengthMm": 4610,
+    "widthMm": 1755,
+    "heightMm": 1631,
+    "trackFrontMm": 1529,
+    "trackRearMm": 1514,
+    "minimumGroundClearanceLadenMm": 140,
+    "fuelUSGallons": 15.9,
+    "steeringRatio": 16.2,
+    "steeringTurnsLockToLock": 2.9,
+    "turningDiameterFeet": 34.8,
+    "brakeFrontInches": 11.8,
+    "brakeRearInches": 11.9,
+    "frontSuspension": "MacPherson strut",
+    "rearSuspension": "Independent multi-link",
+    "CdUSPressKit": 0.29
+  },
+  "derived": {
+    "curbMassKg": 1511.82336921,
+    "torqueNm": 200.66105635304717,
+    "nominalUnloadedTireRadiusM": 0.31839999999999996,
+    "fuelLiters": 60.1880473656
+  },
+  "conflictsAndPolicy": [
+    "US sheet and US September2005 updated kit both print 148lbft at3500rpm. Canada November2005 sheet prints4500rpm. Keep3500 as selected US source-published anchor with explicit conflict; do not silently call4500 a verified correction.",
+    "US gear ratios published to two decimals. Canada lists3.307,1.842,1.310,.970,.755,reverse3.166,final4.388, consistent rounding. Use US published rounded values unless importer explicitly labels Canadian cross-market precision inference. Do not claim US OEM precision.",
+    "US press kit Cd.29 differs Canada sheet Cd.31. Keep US source-published .29 with market conflict disclosed, or mark simulation drag estimate. Frontal area remains unknown.",
+    "Canada WB2750/height1630/tracks1530/1515 and clearance150 are not substituted for US sheet2751/1631/1529/1514/laden140."
+  ],
+  "unknowns": [
+    "idle",
+    "fuel cut rpm (redline is not limiter)",
+    "complete torque curve",
+    "CG height",
+    "frontal area",
+    "spring and damper rates",
+    "differential locking behavior",
+    "loaded rolling radius"
+  ],
+  "artPlan": {
+    "style": "Original logo-free 2994 salvage compact six-seat MPV; distinct altered fascia and lamp architecture, pale muted lavender/gray suggested; sliding rear-door seam cues, no Touring spoiler or moonroof",
+    "exterior": "eight body-only views, transparent wheel apertures, fixed rear camera, tires separate",
+    "cockpit": "LHD driver-facing three-dial binnacle, tall raised center gearshift console; blank instrument wells to place runtime gauges; existing shared steering wheel with clear opening",
+    "smoke": "combustion exhaust anchored after visual artwork inspection; tire smoke/spray correct wheel positions; no hybrid mechanisms"
+  }
+}
