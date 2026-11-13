@@ -137,64 +137,22 @@ test('race data scaffold supports playtest scenarios, hazardless Studio Sprint, 
   assert.equal(race.road.segments.some((segment) => segment.codriver), true);
 });
 
-test('built-in test races model requested real-world track references', () => {
-  const races = createBuiltInTestRaces();
-  const byId = Object.fromEntries(races.map((race) => [race.id, race]));
-
-  assert.deepEqual(races.map((race) => race.id), [
-    'weathertech-raceway',
-    'nurburgring-nordschleife',
-    'col-de-turini',
-    'ouninpohja',
-    'daytona-tri-oval'
-  ]);
-
-  assert.equal(byId['weathertech-raceway'].type, 'circuit');
-  assert.equal(Math.abs(routeLength(byId['weathertech-raceway']) - 3602) < 8, true);
-  assert.equal(byId['weathertech-raceway'].road.segments.every((segment) => segment.surface === 'asphalt'), true);
-  assert.equal(byId['weathertech-raceway'].hazards.some((hazard) => hazard.id === 'laguna-corkscrew-drop'), true);
-  assert.equal(byId['weathertech-raceway'].referenceFacts.sourceLengthKm, 3.602);
-  assert.equal(byId['weathertech-raceway'].referenceFacts.turns, 11);
-  assert.equal(byId['weathertech-raceway'].referenceFacts.roadWidthM, 10);
-  assert.equal(byId['weathertech-raceway'].referenceFacts.signatureSections.includes('Corkscrew'), true);
-
-  assert.equal(byId['nurburgring-nordschleife'].type, 'circuit');
-  assert.equal(Math.abs(routeLength(byId['nurburgring-nordschleife']) - 20832) < 24, true);
-  assert.equal(byId['nurburgring-nordschleife'].road.segments.some((segment) => segment.codriver === 'nurb-karussell'), true);
-  assert.equal(byId['nurburgring-nordschleife'].referenceFacts.referenceBasis.includes('Nordschleife'), true);
-  assert.equal(byId['nurburgring-nordschleife'].referenceFacts.sourceLengthKm, 20.832);
-  assert.equal(byId['nurburgring-nordschleife'].referenceFacts.elevationChangeM, 300);
-  assert.equal(byId['nurburgring-nordschleife'].referenceFacts.signatureSections.includes('Karussell'), true);
-
-  assert.equal(byId['col-de-turini'].type, 'destination');
-  assert.equal(Math.abs(routeLength(byId['col-de-turini']) - 31500) < 35, true);
-  assert.equal(byId['col-de-turini'].weather, 'snow');
-  assert.equal(byId['col-de-turini'].road.segments.some((segment) => segment.surface === 'asphalt'), true);
-  assert.equal(byId['col-de-turini'].road.segments.some((segment) => segment.surface === 'snow'), true);
-  assert.equal(Math.max(...byId['col-de-turini'].road.nodes.map((node) => node.elevation)) >= 0.42, true);
-  assert.deepEqual(byId['col-de-turini'].referenceFacts.surfaceSequence, ['asphalt', 'wet-asphalt', 'snow', 'wet-asphalt', 'asphalt']);
-  assert.equal(byId['col-de-turini'].referenceFacts.passElevationM, 1607);
-  assert.equal(byId['col-de-turini'].referenceFacts.roadWidthM, 6);
-
-  assert.equal(byId.ouninpohja.type, 'destination');
-  assert.equal(Math.abs(routeLength(byId.ouninpohja) - 33000) < 36, true);
-  assert.equal(byId.ouninpohja.road.segments.every((segment) => segment.surface === 'gravel'), true);
-  assert.equal(byId.ouninpohja.hazards.filter((hazard) => hazard.type === 'jump').length >= 3, true);
-  assert.equal(byId.ouninpohja.referenceFacts.surface, 'gravel');
-  assert.deepEqual(byId.ouninpohja.referenceFacts.elevationRangeM, [97, 180]);
-  assert.equal(byId.ouninpohja.referenceFacts.roadWidthM, 6);
-  assert.equal(byId.ouninpohja.referenceFacts.signatureSections.includes('Yellow House Jump'), true);
-
-  assert.equal(byId['daytona-tri-oval'].type, 'circuit');
-  assert.equal(Math.abs(routeLength(byId['daytona-tri-oval']) - 4023) < 8, true);
-  assert.equal(byId['daytona-tri-oval'].road.width, 14.4);
-  assert.equal(byId['daytona-tri-oval'].road.segments.some((segment) => segment.banking === 31), true);
-  assert.equal(byId['daytona-tri-oval'].renderSurfaceStepM, 10);
-  assert.deepEqual(byId['daytona-tri-oval'].scenery, []);
-  assert.equal(byId['daytona-tri-oval'].referenceFacts.sourceLengthMi, 2.5);
-  assert.equal(byId['daytona-tri-oval'].referenceFacts.bankingDegrees.turns, 31);
-  assert.equal(byId['daytona-tri-oval'].referenceFacts.bankingDegrees.triOval, 18);
-  assert.equal(byId['daytona-tri-oval'].referenceFacts.bankingDegrees.backstretch, 3);
+test('built-in real tracks use dense sourced geometry instead of scaled sketches', () => {
+ const races=createBuiltInTestRaces();
+ assert.deepEqual(races.map(r=>r.id),['weathertech-raceway','nurburgring-nordschleife','col-de-turini','ouninpohja','daytona-tri-oval']);
+ for(const r of races){
+  assert.match(r.source.provider,/OpenStreetMap/);assert.ok(r.source.osmWayIds.length>0);
+  assert.ok(r.road.nodes.length>60,r.name);assert.ok(Object.keys(r.road.tileMap.cells).length>0);
+  assert.ok(r.road.nodes.every(n=>Number.isFinite(n.elevation)));assert.equal(r.road.autoExtend,false);
+  const tolerance=r.type==='circuit'?30:150;
+  assert.ok(Math.abs(routeLength(r)-r.source.mappedLengthM)<tolerance,r.name);
+  assert.equal(r.hazards.length,0,'No invented drop/jump obstacles from the old sketches');
+ }
+ const daytona=races.find(r=>r.id==='daytona-tri-oval');
+ assert.ok(daytona.road.segments.some(s=>s.banking===31));
+ const ouni=races.find(r=>r.id==='ouninpohja');assert.ok(ouni.road.segments.filter(s=>s.surface==='gravel').length/ouni.road.segments.length>.99,'Mapped gravel road with an unspecified-surface bridge');
+ const again=createBuiltInTestRaces();races[0].road.nodes[0].x=999999;
+ assert.notEqual(again[0].road.nodes[0].x,999999,'Templates must be independent editable copies');
 });
 
 test('WRX race car tuning exposes real-world top speed calibration', () => {
@@ -252,24 +210,22 @@ test('built-in race car performance target bands match calibrated playtest range
   assert.deepEqual(RACE_STOCK_PERFORMANCE_TARGETS['honda-civic-type-r-2023'].topSpeedMph, [165, 171]);
 });
 
-test('built-in test races use Studio Sprint graphic settings by default', () => {
+test('built-in races retain renderer defaults and imported skybox/margin settings', () => {
   const races = [createDefaultRace(), ...createBuiltInTestRaces()];
   races.forEach((race) => {
     assert.equal(race.groundRenderer, STUDIO_SPRINT_GRAPHIC_SETTINGS.groundRenderer);
     assert.equal(race.groundTextureBaseWorldM, STUDIO_SPRINT_GRAPHIC_SETTINGS.groundTextureBaseWorldM);
     assert.equal(race.groundTextureFilterMode, STUDIO_SPRINT_GRAPHIC_SETTINGS.groundTextureFilterMode);
-    assert.equal(race.skyboxArtRef, STUDIO_SPRINT_GRAPHIC_SETTINGS.skyboxArtRef);
+    assert.ok(race.skyboxArtRef);
     assert.equal(race.surfaceArt.boundary, STUDIO_SPRINT_GRAPHIC_SETTINGS.surfaceArt.boundary);
-    assert.equal(race.margin.marginMode, STUDIO_SPRINT_GRAPHIC_SETTINGS.margin.marginMode);
+    assert.equal(race.margin.marginMode, race.source?'hidden':STUDIO_SPRINT_GRAPHIC_SETTINGS.margin.marginMode);
     assert.equal(race.margin.shoulderMode, STUDIO_SPRINT_GRAPHIC_SETTINGS.margin.shoulderMode);
     assert.equal(race.margin.collisionEdge, STUDIO_SPRINT_GRAPHIC_SETTINGS.margin.collisionEdge);
     assert.equal(race.margin.collisionEffect, STUDIO_SPRINT_GRAPHIC_SETTINGS.margin.collisionEffect);
     assert.equal(race.renderDebug.terrainEnabled, true);
     assert.equal(race.renderDebug.texturesEnabled, true);
     assert.equal(race.renderDebug.detailEnabled, false);
-    if (race.id === 'daytona-tri-oval') {
-      assert.equal(race.renderSurfaceStepM, 10);
-    }
+
   });
 });
 
@@ -290,12 +246,10 @@ test('built-in test races are seeded as editable storage race files', () => {
     assert.equal(payload.kind, 'race-track');
     assert.equal(payload.race.name, name);
     assert.equal(payload.race.groundRenderer, STUDIO_SPRINT_GRAPHIC_SETTINGS.groundRenderer);
-    assert.equal(payload.race.skyboxArtRef, STUDIO_SPRINT_GRAPHIC_SETTINGS.skyboxArtRef);
-    assert.equal(payload.race.renderDebug.terrainEnabled, true);
-    assert.equal(payload.race.renderDebug.detailEnabled, false);
-    if (name === 'Daytona Tri-Oval') {
-      assert.equal(payload.race.renderSurfaceStepM, 10);
-    }
+    assert.ok(payload.race.skyboxArtRef);
+    assert.ok(payload.race.roadTextures.road.artRef);
+    assert.match(payload.race.source.provider,/OpenStreetMap/);
+    assert.ok(payload.race.road.nodes.length>60);
   });
 });
 

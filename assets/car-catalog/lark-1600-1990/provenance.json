@@ -1,0 +1,43 @@
+{
+  "name": "Lark 1600 1990",
+  "status": "Source-only fictional artwork; not a completed runtime vehicle",
+  "settingYear": 2994,
+  "realWorldInspiration": "1990 US Mazda MX-5 Miata base 1.6L 5MT, early brochure specification choice",
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-11-13",
+    "calls": 2,
+    "corrections": 0,
+    "referenceRole": "Existing Sunstriker body/dashboard visually inspected for art and source layout conventions; no existing artwork pixels copied.",
+    "bodyPrompt": "Original tiny early-1990s-inspired two-seat roadster surviving year2994; faded teal, charcoal closed soft top, grey repairs; hand-painted outlined salvage style. Exactly eight separated wheel-less bodies in4x2 reading order front, front-left threequarter, leftprofile noseleft, rear-left threequarter, rear, rear-right threequarter, rightprofile noseright, front-right threequarter. Transparent background and semicircular wheel openings; no wheels,tires,axles,logos,text,ground or scenery.",
+    "dashboardPrompt": "Original compact left-hand-drive cockpit overlay, weathered charcoal vinyl and faded teal trim. Lower45percent dashboard,upper55percent transparent windshield. Broad empty dark left instrument binnacle, two round center vents, climate knobs, blankradio, smallglovebox. No baked gauges,ticks,numbers,needles,steeringwheel,column,wipers,mirror,logos or scenery."
+  },
+  "files": {
+    "body.png": {
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "sha256": "1538bfeb7c54f1879a2524d57fbb6795d3fcebc9d05fdb4e00391d34dddf2d74",
+      "transparentPixels": 876232,
+      "opaquePixels": 834,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    },
+    "dashboard.png": {
+      "width": 1983,
+      "height": 793,
+      "mode": "RGBA",
+      "sha256": "114b52bdf71ca3cbe840652c62873337c966f39fb411dae34af541b545ca592c",
+      "transparentPixels": 724344,
+      "opaquePixels": 1184,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    }
+  },
+  "review": "Actual generated images visually inspected: eight consistent small roadster views, visible empty wheel openings, no visible logos/text. Dashboard blank binnacle, no wheel/wiper, transparent windshield. Per-view crop/anchor calibration remains pending; unequal silhouette widths mean equal cells cannot be blindly used.",
+  "massDecision": "Use early brochure base2160lb explicitly; later OEM sheet2116lb unresolved. See research.json."
+}

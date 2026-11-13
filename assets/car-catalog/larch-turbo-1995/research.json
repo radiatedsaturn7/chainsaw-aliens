@@ -1,0 +1,44 @@
+{
+  "inspiration": "1995 US Volvo850 T-5R SportsWagon4AT LHD",
+  "sources": [
+    {
+      "url": "https://volvotips.com/brochures/850/Volvo-850-MY95-US-Canada-owners-manual.pdf",
+      "kind": "Archived OEM1995 US owners manual",
+      "fields": [
+        "{\"capacityCc\": 2319, \"basePowerHp\": 222, \"basePowerRpm\": 5280, \"overboostPowerHp\": 237, \"overboostPowerRpm\": 5600, \"overboostMaxSeconds\": 30, \"torqueNm\": 300, \"torquePlateauRpm\": [2000, 5600], \"gearRatios\": [3.61, 2.06, 1.37, 0.98], \"finalDrive\": 2.54, \"reverseRatio\": 3.95, \"tankLiters\": 73, \"wagonGrossLb\": 4340, \"t5rWagonCapacityLb\": 885, \"wagonRangeCurbLb\": [3230, 3460]}"
+      ]
+    },
+    {
+      "url": "https://volvoclub.org.uk/tech/T5R-MiniBrochure.pdf",
+      "kind": "Archived OEM US T5R mini brochure",
+      "fields": [
+        "{\"powerSAEHp\": 240, \"powerRpm\": 5200, \"torqueLbFt\": 221, \"torqueRpm\": 2100, \"tires\": \"205/45ZR17\", \"transmission\": \"4AT\", \"finalDrive\": 2.54, \"frontDiscIn\": 11, \"rearDiscIn\": 11.5, \"turnsLockToLock\": 3.2}"
+      ]
+    },
+    {
+      "url": "https://volvoclub.org.uk/press/pdf/presskits/1995MY-PressKit.pdf",
+      "kind": "Archived OEM US1995 press kit page29 base850Turbo wagon; manually visually verified table",
+      "fields": [
+        "{\"lengthIn\": 185.4, \"widthIn\": 69.3, \"heightIn\": 56.9, \"wheelbaseIn\": 104.9, \"frontTrackIn\": 59.8, \"rearTrackIn\": 57.9, \"frontWeightPercent\": 60, \"steeringRatio\": 16.8, \"baseTurboCurbLb\": 3387, \"groundClearanceIn\": 6.2}"
+      ]
+    },
+    {
+      "url": "https://volvoclub.org.uk/press/pdf/presskits/T5R-PressKit1995.pdf",
+      "kind": "UK press source NOT US authoritative",
+      "fields": [
+        "{\"overboostMaxSeconds\": 30, \"ukEstate0to62Seconds\": 7.0, \"ukPowerLabelBhp\": 240, \"ukPowerRpm\": 5600}"
+      ]
+    }
+  ],
+  "estimates": [
+    "US brochure240hp5200 conflicts with US owner237hp5600 and UK240bhp5600. Prefer detailed US owners manual237hp5600 peak; disclose source conflict, no mixture with later850R330Nm.",
+    "Need decide how to model30second overboost honestly; static237hp peak envelope withouttimer would be explicit game approximation, not exact permanent real output.",
+    "Derive estimated US curb3455lb from4340gross minus885capacity; not independent measured curb. BaseTurbo wagon3387lb is NOT T5Rcurb.",
+    "Carry over base850Turbo wagon dimensions/60:40/16.8 steering as same-platform assumption; T5Rlowered clearance andheight require estimates or exact source.",
+    "Do NOT use manualratio4.0 or4.45 for selected4AT; OEMexplicit2.54 and3.61/2.06/1.37/.98.",
+    "Native original ochre2994 wagon andLHDdashboard generated; no wheel/no logos; actualalpha/background review and8angles/390+1280cockpit/launch QA required.",
+    "Game uses static237hp overboost envelope, NOT a timed30second overboost simulation; actual sustained222hp is documented but not implemented in this variant.",
+    "3455lb mass is derived gross less capacity, not directly weighed. Body dimensions,60:40distribution and16.8steering are sameplatform baseTurbo approximations; .14mclearance,.52mCG,.32Cd,alignment,34/32psi,redline6200limit6500idle850,torque converter/suspension/braking/economy and torque curve away from anchors are game estimates.",
+    "155mph and0\u201360 6.7s are game reference targets, not validated performance measurements. Runtime wheels, fixedrear/sharedwheel/individualgauges/surfaceFX."
+  ]
+}

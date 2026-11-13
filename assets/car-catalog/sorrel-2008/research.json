@@ -1,0 +1,152 @@
+{
+  "fictionalName": "Sorrel 133",
+  "year": 2008,
+  "inspiration": "Renault Twingo Renaultsport 133 UK standard Sport chassis RHD 5MT, not optional Cup",
+  "status": "Source-supported candidate with calculated simulation gearing, not physical tooth ratios",
+  "duplicateCheck": "No Twingo/Sorrel matches in inspected copperwing-work data/vehicle-catalog, car-catalog scripts, or shared/car-next on 2026-11-13. Live roster must be rechecked before import.",
+  "sources": [
+    {
+      "url": "https://www.press.renault.co.uk/releases/335",
+      "publisher": "Renault UK",
+      "date": "2008-08-28",
+      "access": "indexed full release extract; live page only logo",
+      "facts": "UK launch September5; NA 1.6; JR5 five-speed; standard195/45R16 and optionalCup195/40R17; compression11:1"
+    },
+    {
+      "url": "https://presse.renault.de/kompaktes-kraftpaket-2/?lang=deu",
+      "publisher": "Renault Germany",
+      "date": "2008-09-03",
+      "access": "full OEM HTML read",
+      "facts": "98kW6750rpm;160Nm4400rpm;standard195/45R16;7000rpm instrument redline;280/240mm brakes;Cup lower by4mm than Sport"
+    },
+    {
+      "url": "https://autocatalogarchive.com/wp-content/uploads/2021/06/Renault-Twingo-Sport-133-2008-UK.pdf",
+      "publisher": "Renault UK archived brochure",
+      "access": "403 full retrieval; not visually inspected"
+    },
+    {
+      "url": "https://autocatalogarchive.com/wp-content/uploads/2021/06/Renault-Range-Sport-2010-UK.pdf",
+      "publisher": "Renault UK archived 2010 brochure",
+      "access": "indexed technical table extract only; later-year corroboration not 2008 primary",
+      "facts": "1598cc;79.5x80.5;1049kg kerb;40L; speed per1000rpm4.9/8.2/11.5/14.75/18.5mph"
+    },
+    {
+      "url": "https://www.carmanualsonline.info/renault-twingo-rs-2009-2-g-transmission-workshop-manual/4/",
+      "publisher": "Renault workshop manual third-party archive",
+      "access": "HTML text read; JR5-176 row indexed",
+      "facts": "JR5-176 teeth listed11/41,22/41,28/37,35/34,42/31;reverse11/39;final15/56. Application/row conflicts; NOT accepted runtime gearing."
+    },
+    {
+      "url": "https://www.yumpu.com/de/document/view/59417411/ar-2010-combined-d-compauto/452",
+      "publisher": "Automobil Revue secondary 2010 catalog",
+      "access": "indexed extract",
+      "facts": "Twingo Sport ratios3.09,1.86,1.32,1.03,.82 reverse3.55 final4.36; conflicts workshop row and OEM road-speed series; NOT accepted."
+    },
+    {
+      "url": "https://www.planetedacia.com/UserFiles/files/doc/Carac_Twingo_RS_aout_2008_FR.pdf",
+      "publisher": "Renault August 2008 launch technical kit archived by PlaneteDacia",
+      "access": "Web PDF text read, all 3 pages accessible; dimension diagram on page 3 visually inspected",
+      "facts": "JR5 176; road speeds 7.91/13.12/18.50/23.74/29.79 km/h per 1000 rpm. 1598cc, 1049kg MVODM, 40L. Dimension page confirms 2368 wheelbase, 3607 length, 1688 width, 1460 height, tracks1460/1445, laden clearance120mm. Axle715/375 sums1090, inconsistent with1049; reject axle weights."
+    },
+    {
+      "url": "https://autoprove.net/wp-content/uploads/2013/04/408f18f7f25b05ffb39ef07786ed277c.pdf",
+      "publisher": "Japanese 2013 Cup specification sheet archive",
+      "access": "indexed table only",
+      "facts": "3.091,1.864,1.321,1.029,.821 reverse3.545 final4.357. Different year/market/Cup; corroboration only, NOT exact2008UK proof."
+    }
+  ],
+  "acceptedAnchors": {
+    "fuel": "gasoline",
+    "aspiration": "naturally aspirated",
+    "cylinders": 4,
+    "drive": "FWD",
+    "gearbox": "JR5-176 five-speed manual",
+    "powerKW": 98,
+    "powerRpm": 6750,
+    "torqueNm": 160,
+    "torqueRpm": 4400,
+    "compression": 11,
+    "tires": "195/45R16",
+    "nominalTireRadiusM": 0.29095,
+    "instrumentRedlineRpm": 7000,
+    "fuelCutRpm": null,
+    "displacementCC": 1598,
+    "fuelLiters": 40,
+    "wheelbaseMm": 2368,
+    "lengthMm": 3607,
+    "widthMm": 1688,
+    "heightMm": 1460,
+    "frontTrackMm": 1460,
+    "rearTrackMm": 1445,
+    "ladenGroundClearanceMm": 120,
+    "massKg": 1049,
+    "massConvention": "OEM French launch kit MVODM (unladen running order); exact driver/fuel accounting unspecified, no conversion applied",
+    "roadSpeedKmhPer1000Rpm": [
+      7.91,
+      13.12,
+      18.5,
+      23.74,
+      29.79
+    ]
+  },
+  "candidateCorroborationOnly": {
+    "gearRatios": [
+      3.091,
+      1.864,
+      1.321,
+      1.029,
+      0.821
+    ],
+    "reverseRatio": 3.545,
+    "finalDrive": 4.357,
+    "restriction": "2013 Japanese Cup sheet only. Relative spacing matches2008 OEM road speeds; exact UK2008 applicability not proven. Do not silently import."
+  },
+  "blockedOrUnknown": [
+    "Exact UK2008 numerical gear ratios and final drive remain unsupported. OEM only gives road speeds; do not infer unique hardware split from those.",
+    "Archived workshop JR5-176 tooth row conflicts strongly with published road-speed spacing; reject row for this application.",
+    "2008 OEM axle715/375 sum1090 rather than1049; reject axle distribution.",
+    "Mass driver/fuel convention unknown beyond MVODM wording.",
+    "120mm clearance explicitly laden, not unladen.",
+    "CG, idle, complete torque curve, absolute suspension settings, steering ratio and exact ECU fuel-cut behavior unknown.",
+    "7000rpm redline supported; contemporary reproduced launch text calls it rev-limiter, but exact fuel-cut behavior not documented."
+  ],
+  "implementation": "Original candidate using explicitly labeled calculated effective gearing; actual browser acceptance pending",
+  "boundedConclusion": "2008 standard Sport RHD identity retained; authorized simulation-equivalent gearing used with documented limitations.",
+  "authorizedSimulationGearing": {
+    "method": "Nominal tire circumference times60 divided by OEM km/h per1000rpm gives effective overall reductions; divide by arbitrary effective final4 for editor compatibility, NOT physical tooth ratios",
+    "tire": "195/45R16",
+    "nominalUnloadedRadiusM": 0.29095,
+    "nominalCircumferenceM": 1.8280927651239005,
+    "publishedRoadSpeedKmhPer1000Rpm": [
+      7.91,
+      13.12,
+      18.5,
+      23.74,
+      29.79
+    ],
+    "effectiveOverallReductions": [
+      13.86669606920784,
+      8.36018032831052,
+      5.928949508509947,
+      4.620285000313144,
+      3.6819592449625387
+    ],
+    "effectiveFinalDrive": 4,
+    "caveat": "Simulation calibration using geometric unloaded circumference, not measured loaded rolling radius; cannot identify real gear/final split. Reverse not supplied by launch-kit road-speed table. Arbitrary final4 normalization retains speed calibration and keeps bounded editor gear fields valid.",
+    "workshopRowPredictedKmhPer1000UsingNominalTire": [
+      7.882455738121348,
+      15.764911476242697,
+      22.233560656912303,
+      30.244181775946885,
+      39.80524569221396
+    ],
+    "workshopRowRejected": "Differences exceed rounding and relative spacings differ.",
+    "normalizedGearRatios": [
+      3.46667401730196,
+      2.09004508207763,
+      1.4822373771274868,
+      1.155071250078286,
+      0.9204898112406347
+    ]
+  }
+}

@@ -55,8 +55,10 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
 
  // Match Pixel/MIDI: short press toggles, hold opens the shared transport.
  const transportPoint=await page.evaluate(()=>{const g=window.__game,b=g.radioEditor.buttons.filter(b=>b.id==='radio-play').at(-1).bounds,r=g.canvas.getBoundingClientRect();return{x:r.x+(b.x+b.w/2)*r.width/g.viewport.width,y:r.y+(b.y+b.h/2)*r.height/g.viewport.height};});
- await page.mouse.move(transportPoint.x,transportPoint.y);await page.mouse.down();await page.waitForTimeout(600);await page.mouse.up();
- await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.radioEditor.transportPopover))).toBe(true);
+ await page.mouse.move(transportPoint.x,transportPoint.y);await page.mouse.down();
+ // Keep the pointer held until the actual long-press timer is processed on CI.
+ try{await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.radioEditor.transportPopover))).toBe(true);}
+ finally{await page.mouse.up();}
  await page.screenshot({path:`test-results/radio-transport-${mobile?'portrait':'desktop'}.png`});
  await clickRadio(page,'radio-loop');
  await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.repeatMode)).toBe('all');
@@ -111,7 +113,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
 test('real race mix tape unlocks its track and pause radio obeys the race switch',async({page})=>{
  test.setTimeout(150000);await ready(page);await seedRaceRuntimeFixtures(page);
  await page.evaluate(async()=>{const g=window.__game;await g.radio.saveLibrary({tracks:[{id:'race-song',title:'Race Song',src:'/unused.mp3'}],stations:[{id:'race-station',name:'Race Station',trackIds:['race-song']},{id:'excluded-station',name:'Excluded Station',trackIds:['race-song']}]});void g.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef:'2022 Subaru WRX2'});});
- await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>{const g=window.__game,e=g.raceEditor;return {running:e.playtestSession?.running,state:g.state,phase:e.racePlaytestPreparation?.workerPhase,progress:e.racePlaytestPreparation?.progress,error:g.lastRaceTravelError,failure:e.lastRaceFailure};}),{timeout:60000}).toMatchObject({running:true});
  await page.evaluate(()=>{const g=window.__game,e=g.raceEditor,s=e.playtestSession,car=e.getRaceSessionCar(s),points=e.getRaceVehicleCollisionContactPoints({session:s,car,tuning:e.getRaceCarTuning(car)}),point=points[0];e.ensureRaceScenery().push({id:'race-tape',presetId:'doodad',x:point.x,z:point.z,previewDoodad:{itemType:'mix-tape',unlockTrackId:'race-song',widthM:2,heightM:4}});});
  await expect.poll(()=>page.evaluate(()=>Object.keys(window.__game.items.progress.bags.radio))).toContain('race-song');await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.removedSceneryIds)).toContain('race-tape');
  await page.evaluate(()=>window.__game.raceEditor.toggleRacePause());expect(await page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().some(row=>row.id==='race-radio'))).toBe(true);
@@ -262,7 +264,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
   };
   void g.startRaceTravel({raceName:'Music Drop Race',carSelection:'specific',carRef:'2022 Subaru WRX2'});
  });
- await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>{const g=window.__game,e=g.raceEditor;return {running:e.playtestSession?.running,state:g.state,phase:e.racePlaytestPreparation?.workerPhase,progress:e.racePlaytestPreparation?.progress,error:g.lastRaceTravelError,failure:e.lastRaceFailure};}),{timeout:60000}).toMatchObject({running:true});
  // Running is set before loading-screen presentation, the camera intro and
  // countdown finish. Software WebGL on CI can take longer than 15 wall-clock
  // seconds; still require the actual GO sample and all audio assertions below.

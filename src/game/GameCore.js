@@ -1965,9 +1965,33 @@ export default class Game {
     let missingArtRefs = [];
     let normalizedRaceDocument = false;
     let racePreparationError = null;
+    let preparedAiCarIds;
     try {
-      const savedCars = await this.raceEditor.hydrateSavedRaceCarsForTravel?.() || [];
+      // A solo stage needs no opponent catalog or artwork. Downloading every
+      // saved vehicle here made race startup scale with the entire collection.
+      let soloWithoutTraffic = false;
+      let gridRace = null;
+      try {
+        const payload = await hydrateProjectFilePayload('races', raceName);
+        gridRace = payload?.data?.race || payload?.data;
+        const competition = gridRace?.competition;
+        soloWithoutTraffic = competition?.mode === 'solo'
+          && competition.trafficEnabled === false
+          && Array.isArray(competition.aiDrivers)
+          && !competition.aiDrivers.some(driver => driver.enabled !== false);
+      } catch { /* Let the existing worker/fallback path report loading errors. */ }
+      let savedCars = soloWithoutTraffic ? []
+        : await this.raceEditor.hydrateSavedRaceCarsForTravel?.() || [];
       if (this.raceTravelSession !== travelSession) return false;
+      if (gridRace && this.raceEditor.selectRaceTravelGridCars) {
+        preparedAiCarIds = this.raceEditor.selectRaceTravelGridCars(gridRace, car.id);
+        // Select once, then use this exact grid when the runtime starts. Random
+        // selection must not pick different cars after their artwork was packed.
+        if (gridRace.competition?.trafficEnabled === false) {
+          const selected = new Set(preparedAiCarIds);
+          savedCars = savedCars.filter(candidate => selected.has(this.raceEditor.getRaceCarProjectIdentity(candidate)));
+        }
+      }
       const prepared = await this.raceEditor.loadRaceTravelDocument?.(raceName, {
         artRefs: [...new Set([
           ...(this.raceEditor.collectRaceCarArtRefs?.(runtimeCar) || car.artRefs || []),
@@ -2081,6 +2105,7 @@ export default class Game {
         preparedWorldBake,
         preparedArtOnly: true,
         runtimeCarOverrides: runtimeCar,
+        preparedAiCarIds,
         trackStateSnapshot: travelSession.trackStateByRace?.[raceName]
           || travelSession.trackStateByRace?.[raceDocument.id]
           || null

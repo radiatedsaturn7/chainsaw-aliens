@@ -1,0 +1,10 @@
+{
+  "generator": "built-in imagegen",
+  "bodySource": "exec-71a4f965-2c77-4d36-9026-a910924d3dad.png",
+  "dashboardSource": "exec-5dd4675d-de0d-4151-9a27-c68f5cfef0d9.png",
+  "sha256": {
+    "body.png": "9d8675f8c3125f1e186a9371926d6adc7eb191e34a301e8b336c69f5a777bfb1",
+    "dashboard.png": "a342cdfd87a33387223c3cfc438caf4acb3c280e74688b4e186357480e369dae"
+  },
+  "review": "Source artwork viewed; production renderer acceptance pending."
+}

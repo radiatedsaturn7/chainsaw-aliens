@@ -1,0 +1,90 @@
+{
+  "name": "Briar XT 2004",
+  "status": "original source artwork only; not imported or calibrated",
+  "settingYear": 2994,
+  "realWorldInspiration": "2004 US Subaru Forester 2.5 XT AWD 5MT standard non-Premium",
+  "artIdentity": "Fictional salvage compact wagon, not a factory-exact replica or official branded artwork",
+  "generation": {
+    "method": "OpenAI built-in image_gen",
+    "date": "2026-11-12",
+    "prompts": {
+      "body": "Use case: stylized-concept. Generate ORIGINAL fictional 'Briar XT 2004' body-only 8-view vehicle sprite sheet for a post-apocalyptic racing game set in 2994. Reference image is STYLE AND EXACT 4-column x 2-row layout guide only; create a DISTINCT low-roof compact AWD wagon inspired by the broad proportions of an early-2000s turbo Japanese utility wagon, not a real-brand replica. Long boxy wagon cabin, small hood scoop, narrow roof rails, plain rectangular twin headlamps, muted faded forest-green paint and sand-beige replacement front fender, rusty chipped seams, modest welded salvage bumper. No snow. No logos or text. Match reference detailed hand-painted gritty sprite rendering with crisp dark edges, restrained diffuse lighting. Exact same view order as reference: row1 straight FRONT, front-three-quarter nose RIGHT, LEFT-facing side profile, rear-three-quarter nose LEFT; row2 straight REAR, rear-three-quarter nose RIGHT, RIGHT-facing side profile, front-three-quarter nose LEFT. All8 are SAME car with consistent features, geometry and scale; fully inside each nonoverlapping cell, generous separation. CRITICAL no wheels, no tires, no axles, no black filled disks: wheel openings must be genuinely transparent semicircular cutouts open to bottom, equal-radius openings on both axles and consistent wheelbase. Body shell only; windshield dark opaque. Transparent background, no ground/shadows, no grid or labels. Wide 3:1 canvas.",
+      "dashboard": "Use case: stylized-concept. Original fictional Briar XT 2004 salvage AWD compact wagon cockpit overlay for 2994 racing game. Reference is style/composition guide only. Wide landscape dashboard lower half and narrow A-pillars outeredges, entire large windshield opening transparent alpha. No road, scenery, sky, reflections, hands, steeringwheel or wipers; shared game overlays supply those. Gritty detailed hand-painted sprite with crisp outlines, faded forest-green painted metal, cracked charcoal hard plastic, a small sand-beige replacement glovebox panel, minor rusty fasteners, rectangular early2000s vents, three simple climate knobs, little blank amber radio. Large EMPTY dark instrument binnacle on left for game gauges. No labels numbers logos badges text. Centered driver view at normal eyelevel, no perspective diagonal; unobstructed windshield upper55percent. No seats/moonroof/leather. Low modest dashboard preserves road visibility. Same renderer texture scale and diffuse neutral lighting as reference, but visibly distinct wagon cabin. PNG transparency aroundtop/betweenpillars; fullwidth loweredge. Do not draw steering wheel."
+    },
+    "styleReferences": [
+      "assets/car-catalog/trailglass-2024/body.png",
+      "assets/car-catalog/trailglass-2024/dashboard.png"
+    ]
+  },
+  "constraints": {
+    "noLogos": true,
+    "noSnow": true,
+    "noBakedWheels": true,
+    "reuseSharedSteeringWheel": true,
+    "noWipersInDashboard": true
+  },
+  "layout": {
+    "columns": 4,
+    "rows": 2,
+    "frameOrder": [
+      "front",
+      "frontLeft",
+      "leftFacingProfile",
+      "rearRight",
+      "rear",
+      "rearLeft",
+      "rightFacingProfile",
+      "frontRight"
+    ],
+    "note": "Same visual order as existing Trailglass source. Confirm importer mapping and measure hub anchors before runtime integration.",
+    "suggestedImporterMapping": [
+      0,
+      7,
+      2,
+      3,
+      4,
+      5,
+      6,
+      1
+    ]
+  },
+  "research": {
+    "packet": "recovery/forester-xt-2004-facts.json",
+    "sources": [
+      "https://xr793.com/wp-content/uploads/2020/02/2004-Subaru-Forester.pdf",
+      "https://www.scribd.com/document/851296404/Usdm-Forester-Fsm-2004-g8080be-v14-Sg"
+    ],
+    "unresolved": [
+      "Overall height: brochure65in versus service1585mm. Art proportions are illustrative, not a dimensional resolution.",
+      "Clearance: brochure7.5in versus service195mm. No physical value chosen here."
+    ]
+  },
+  "review": {
+    "originals": "Visually inspected generated8-view body sheet and dashboard. Transparent wheel cutouts, distinct green wagon hood scoop/rails, no wheel/wipers in cockpit.",
+    "pending": [
+      "Exact eight-frame bounds/hub calibration",
+      "Runtime import, test, and eight-angle/cockpit screenshot QA"
+    ],
+    "persistedFiles": "Both PNGs decoded successfully as RGBA; actual transparent pixels counted. Local Git blob hashes match separately uploaded original blobs exactly."
+  },
+  "files": {
+    "body.png": {
+      "bytes": 1690710,
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "transparentPixels": 779199,
+      "gitBlobSha": "7f162f40d06e7fdadb952ff833bb080911e3e714",
+      "sha256": "940beed5a9d22dd109defa6527eab24bd457b7da51964c43cc371ee8a92e6fcd"
+    },
+    "dashboard.png": {
+      "bytes": 1500182,
+      "width": 1983,
+      "height": 793,
+      "mode": "RGBA",
+      "transparentPixels": 874011,
+      "gitBlobSha": "279b33d01ae83c079fc9e9f77a1690d2edb05465",
+      "sha256": "b1fbb9daa3734308a13765533f1d4b2aa3d20adb7a934ad4295bae11f42385b3"
+    }
+  }
+}

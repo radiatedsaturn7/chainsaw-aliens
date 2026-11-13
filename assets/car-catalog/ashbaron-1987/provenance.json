@@ -1,0 +1,9 @@
+{
+  "method": "Built-in image generation with original Stormline art as style reference only",
+  "originalArtwork": true,
+  "logos": false,
+  "sha256": {
+    "body.png": "f9e9c1997331c3d002eb8905cf05eec1fec9b4f576e550018352865f6255c3bf",
+    "dashboard.png": "ff888694facfa59ae773fa3cc2a7d518c39eafcb8572abc538621efdc0ac19dd"
+  }
+}

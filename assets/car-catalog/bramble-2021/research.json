@@ -1,0 +1,98 @@
+{
+  "status": "Implemented on isolated draft branch; exact-head runtime QA pending.",
+  "variant": "2021 UK GR Yaris base 6MT, not Circuit Pack, Convenience Pack, Japan RZ or2024 update",
+  "sources": [
+    {
+      "url": "https://www.toyota.co.uk/content/dam/toyota/nmsc/united-kingdom/brochure-archive/gr-yaris/gr-yaris-jan-21.pdf",
+      "read": "Technical pages30\u201333, grades22\u201327 and differential table36\u201337 read in full",
+      "facts": {
+        "powerBhp": 257,
+        "powerKW": 192,
+        "powerRpm": 6500,
+        "torqueNm": 360,
+        "torqueRpm": [
+          3000,
+          4600
+        ],
+        "cc": 1618,
+        "tankLitres": 50,
+        "gears": [
+          3.538,
+          2.238,
+          1.535,
+          1.162,
+          1.081,
+          0.902
+        ],
+        "topMph": 142,
+        "zeroTo62": 5.5,
+        "cd": 0.352,
+        "curbKgRange": [
+          1280,
+          1305
+        ],
+        "grossKg": 1645,
+        "lengthMm": 3995,
+        "widthMm": 1805,
+        "heightMm": 1455,
+        "wbMm": 2560,
+        "frontTrackMm": 1536,
+        "rearTrackMm": 1572,
+        "frontOverhangMm": 830,
+        "rearOverhangMm": 605,
+        "clearanceMm": 124,
+        "tires": "225/40R18",
+        "differentials": "Base open front/rear. Torsen only Circuit Pack."
+      }
+    },
+    {
+      "url": "https://media.toyota.co.uk/the-new-toyota-gr-yaris-forged-in-the-heat-of-world-rally-competition/",
+      "read": true,
+      "facts": {
+        "minimumCurbKg": 1280,
+        "AWDNormalFrontPercent": 60,
+        "AWDSportFrontPercent": 30,
+        "AWDTrackFrontPercent": 50
+      }
+    },
+    {
+      "url": "https://media.toyota.co.uk/wp-content/uploads/sites/5/2021/03/1605890847201029MGRYarisFullRelease.pdf",
+      "read": "November 2020 UK launch press pack, specification pages23-24 and normal-mode text page10 read",
+      "facts": {
+        "reverse": 3.831,
+        "finalDriveGears1to4": 3.941,
+        "finalDriveGears5to6AndReverse": 3.35,
+        "steeringRatio": 13.6,
+        "turnsLockToLock": 2.36,
+        "minimumMassKg": 1280,
+        "maxMassKg": 1310,
+        "topMph": 143
+      },
+      "cautions": [
+        "Table torque3600 is typo; narrative and Jan2021 brochure corroborate360Nm.",
+        "Launch top143mph differs Jan2021 brochure142mph and maximum mass1310 differs1305; record rather than silently mixing."
+      ]
+    }
+  ],
+  "warnings": [
+    "Do not use 272PS Japanese output or2024 uprated output. 192kW and257bhp are rounded equivalents.",
+    "5.5s is0\u201362mph, not0\u201360mph.1280kg is range minimum, not all configurations.",
+    "Six-speed uses different final reductions for some gears; verify original and represent effective ratios correctly. Current game uses single final drive.",
+    "Torque distribution dynamically varies; static60percent front is only normal-mode approximation. Do not claim fullGR-FOUR ECU simulation."
+  ],
+  "runtimeRepresentation": {
+    "singleFinalDrive": 3.941,
+    "effectiveGears": [
+      3.538,
+      2.238,
+      1.535,
+      1.162,
+      0.9188911443795992,
+      0.7667343313879726
+    ],
+    "effectiveReverse": 3.2564958132453694,
+    "explanation": "Equivalent total reductions for single-final runtime, not literal OEM fifth/sixth/reverse ratios. Unit tests must compare each effective ratio*3.941 to OEM ratio*correct final. No dual-output shaft dynamics claimed.",
+    "centerDifferentialBalance": 0.4,
+    "centerBiasExplanation": "PowertrainModel interprets centerDifferentialBalance as rear share, so0.4 represents nominal Normal60/40. Runtime adaptive coupling is not GR-FOUR ECU."
+  }
+}

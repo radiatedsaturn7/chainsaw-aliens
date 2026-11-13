@@ -146,3 +146,21 @@ test('failed or abandoned car downloads cannot start an empty AI grid',async()=>
  e.game.state='title';release();
  assert.equal(await pending,false);assert.equal(starts,0);
 });
+
+test('travel starts the exact preselected grid whose artwork was prepared',()=>{
+ const e=editor();
+ const saved=['Grid A','Grid B','Grid C'].map(name=>{
+  const car=e.withSavedRaceCarRuntimeIdentity(structuredClone(e.selectedCar),name);
+  e.upsertRaceProjectCar(car);return car;
+ });
+ e.selectedRace.competition.carSelection={availableCarIds:saved.map(c=>e.getRaceCarProjectIdentity(c))};
+ e.setRaceAiCount(2);
+ const playerId=e.getRaceCarProjectIdentity(saved[0]);
+ const grid=e.selectRaceTravelGridCars(e.selectedRace,playerId);
+ assert.equal(grid.length,2);assert.ok(!grid.includes(playerId));
+ const oldRandom=Math.random;Math.random=()=>{throw Error('Grid must not be randomized again');};
+ try{
+  e.startPlaytest(playerId,{hydrateCars:false,preparedAiCarIds:grid});
+  assert.deepEqual(e.playtestSession.aiRuntime.map(ai=>ai.carId),grid);
+ }finally{Math.random=oldRandom;}
+});

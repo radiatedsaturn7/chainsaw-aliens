@@ -20,6 +20,7 @@ export function normalizeMenuAction(action,depth=0){
   if(!MENU_ACTION_TYPES.includes(action.type))throw Error(`Unknown menu action: ${action.type}`);
   const result={type:action.type,target:text(action.target),parameter:text(action.parameter),value:structuredClone(action.value??null)};
   if(result.parameter&&!validMenuParameter(result.parameter))throw Error('Invalid parameter name');
+  if(action.type==='screen'&&action.replace===true)result.replace=true;
   if(action.then&&!['race','level'].includes(action.type))result.then=normalizeMenuAction(action.then,depth+1);
   return result;
 }
@@ -62,7 +63,9 @@ export function normalizeMenuDocument(source={}){
     const migrate=a=>{if(!a)return;if(a.type==='grand-prix'){a.type='race';if(!a.target?.startsWith('$'))a.target=first(a.target);else{const key=a.target.slice(1);if(source.parameters?.[key])source.parameters[key]=first(source.parameters[key])||source.parameters[key];}}migrate(a.then)};
     for(const screen of source.screens||[]){migrate(screen.startAction);for(const e of screen.elements||[]){if(e.label==='Start Grand Prix')e.label='Start Race';if(e.source==='grandPrix'){e.source=source.grandPrix.length?'':'races';e.options=source.grandPrix.map(g=>({label:g.name,value:first(g.id)}));if(source.parameters?.[e.binding])source.parameters[e.binding]=first(source.parameters[e.binding])||source.parameters[e.binding];}migrate(e.action);}}
   }
-  const screens=(Array.isArray(source.screens)?source.screens:[]).slice(0,100).map((s,i)=>({id:text(s.id,`screen-${i+1}`),name:text(s.name,`Screen ${i+1}`),
+  // Campaign pagination can exceed 100 screens. Never silently discard linked pages.
+  if(Array.isArray(source.screens)&&source.screens.length>2048)throw Error('A menu supports at most 2048 screens');
+  const screens=(Array.isArray(source.screens)?source.screens:[]).map((s,i)=>({id:text(s.id,`screen-${i+1}`),name:text(s.name,`Screen ${i+1}`),
     useDefaultBackground:s.useDefaultBackground===true||(s.useDefaultBackground!==false&&s.background===undefined&&s.backgroundArt===undefined&&s.effect===undefined),background:text(s.background,'#101c28'),backgroundArt:text(s.backgroundArt),musicRef:text(s.musicRef),musicMode:['track','continue','silent'].includes(s.musicMode)?s.musicMode:(s.musicRef?'track':'silent'),musicLoop:s.musicLoop!==false,musicVolume:number(s.musicVolume,1,0,1),musicFadeIn:number(s.musicFadeIn,.4,0,30),musicFadeOut:number(s.musicFadeOut,.4,0,30),musicStart:number(s.musicStart,0,0,86400),effect:['none','stars','rain','snow'].includes(s.effect)?s.effect:'none',effectIntensity:number(s.effectIntensity,1,0,4),effectWind:number(s.effectWind,0,-3,3),
     transitionGroup:text(s.transitionGroup),
     backgroundRules:(Array.isArray(s.backgroundRules)?s.backgroundRules:[]).slice(0,100).map(r=>({when:r.when==='chapter'?'chapter':'lastCompletedRace',value:text(r.value),artRef:text(r.artRef)})).filter(r=>r.value&&r.artRef),

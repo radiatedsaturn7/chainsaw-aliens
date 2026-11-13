@@ -1,0 +1,105 @@
+{
+  "fictionalName": "Chicory GT 2008",
+  "reference": "US2008 Hyundai Tiburon GT V6 five-speed manual FWD LHD standard, not SE6MT or GT Limited AT",
+  "duplicateCheck": "No Hyundai/Tiburon/Chicory roster match",
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Hyundai/Tiburon/Hyundai_US%20Tiburon_2008.pdf",
+      "type": "OEM US brochure, independent archive",
+      "local": "oem-us-brochure.pdf",
+      "verification": "Actual physical page15 rendered and visually inspected; fulltext brochure.txt"
+    },
+    {
+      "url": "https://doczz.net/doc/4412711/tiburon---hyundaiproductinformation.com",
+      "type": "OEM2007 Hyundai product-information guide mirrored transcription",
+      "verification": "Read GT manual ratio column printedpage7; prior modelyear, not2008 exact-primary"
+    },
+    {
+      "url": "https://www.jbcarpages.com/hyundai/tiburon/2008/specs/trim2/",
+      "type": "Secondary exact2008GT specs",
+      "verification": "Rounded5MT ratios corroborate2007OEM values; erroneously also says GT Limited5MT, contradicted2008OEMbrochure"
+    }
+  ],
+  "engine": {
+    "layout": "NA gasoline all-aluminum DOHC24V V6",
+    "displacementCc": 2656,
+    "displacementProvenance": "Exactcc secondary2008 specs; OEMbrochure2.7L",
+    "powerHp": 172,
+    "powerRpm": 6000,
+    "torqueLbFt": 181,
+    "torqueRpm": 3800,
+    "compression": 10,
+    "boreMm": 86.7,
+    "strokeMm": 75,
+    "boreStrokeProvenance": "Secondary exact2008 specs",
+    "redlineRpm": null,
+    "fuelCutRpm": null,
+    "idleRpm": null
+  },
+  "transmission": {
+    "drive": "FWD",
+    "type": "5MT",
+    "physicalForwardRatiosProposed": [
+      3.231,
+      1.952,
+      1.296,
+      0.943,
+      0.775
+    ],
+    "reverseProposed": 3.455,
+    "finalDriveVerified2008": 4.063,
+    "provenance": "Individual forward/reverse ratios are2007OEM product-guide carryover inference, corroborated rounded2008 secondary forward ratios; NOTverified2008factory table. Final4.063 exact2008OEM brochure.",
+    "differential": "unknown; do not assumeLSD"
+  },
+  "mass": {
+    "curbLb": 2969,
+    "convertedKg": 1346.71574653,
+    "provenance": "Exact2008OEM GT manual column",
+    "convention": "Curb labelled, fuel/driver convention not defined",
+    "frontFraction": null
+  },
+  "tires": {
+    "size": "215/45VR17",
+    "nominalRadiusM": 0.31265,
+    "wheelDiameterIn": 17,
+    "wheelWidthInProposed": 7,
+    "widthProvenance": "2007OEM guide, not separately2008verified"
+  },
+  "dimensionsIn": {
+    "wheelbase": 99.6,
+    "length": 173,
+    "widthExcludingMirrors": 69.3,
+    "height": 52.4,
+    "frontTrack": 59.1,
+    "rearTrack": 59.1
+  },
+  "fuelTankUSGal": 14.5,
+  "fuelTankLConverted": 54.888470868,
+  "chassis": {
+    "front": "Independent MacPherson strut,coil,stabilizer",
+    "rear": "Independent multi-link,coil,stabilizer",
+    "turningDiameterFt": 35.8,
+    "brakes": "four-wheel disc; noSEcross-drilledrotors",
+    "steeringRatioProposed": 13.53,
+    "turnsLockToLockProposed": 2.6,
+    "steeringProvenance": "2007OEM guide carryover assumption"
+  },
+  "unknowns": [
+    "exact2008primary individual forward/reverse ratios",
+    "idle/redline/cutoff",
+    "full torque curve",
+    "frontmassfraction",
+    "Cd/frontal area",
+    "CG/inertia",
+    "handling coefficients",
+    "differential mechanism"
+  ],
+  "scopeNotes": [
+    "Primary2008actualtable anchors engine output,trimmanualcurb,tires,dimensions,finaldrive.",
+    "Physical ratio carryover is disclosed inference, not silently upgraded to verifiedyear-specific fact.",
+    "GTstandard suspension, noSEtracktuning,crossdrilledbrakes or6MT.",
+    "Original logo-free2994 fictionalcoupe; existing wheel, individually alignedLHDgauges,fixedrearcamera.",
+    "Noart,code,imports,maps orpublication."
+  ],
+  "retrievalNote": "2003servicePDF attempt returned nonPDF and is retained as failed-service-download.txt, not claimed inspected source."
+}

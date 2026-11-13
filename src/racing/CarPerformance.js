@@ -1,3 +1,4 @@
+import { axleTireGeometry, tireSizeForWheel } from './TireSizes.js';
 import {RACE_TIRE_COMPOUNDS} from './raceData.js';
 import {RACE_MAX_AI_DRIVERS} from './simulation/RaceSimulationConfig.js';
 import { isUserRaceCar } from './CarPresets.js';
@@ -14,11 +15,11 @@ export const carCategory = car => CAR_CATEGORIES.includes(car?.category) ? car.c
 // Versioned game-balance estimate, not a lap-time prediction. Recomputed from
 // current tuning rather than trusting a stale saved rating after an upgrade.
 export function calculateCarPerformance(car = {}) {
-  const t = {...car.tuning,...car.transmissions?.[car.defaultTransmissionType]}, p = t.physicalVehicleProfile || car.physicalVehicleProfile || t.physics || {};
+  const t = {...car.tuning,...car.transmissions?.[car.defaultTransmissionType],...axleTireGeometry(car.setup, car.tuning)}, p = t.physicalVehicleProfile || car.physicalVehicleProfile || t.physics || {};
   const mass = Math.max(100, finite(t.weightKg, 1500));
   const power = Math.max(1, finite(t.powerHp, 150));
   const compound=car.setup?.tireDefinition?.tire?.compound||RACE_TIRE_COMPOUNDS.find(c=>c.id===(car.setup?.defaultTireCompound||'stock'));
-  const width=clamp(Math.sqrt(finite(car.setup?.tireSize?.widthMm,245)/245),.8,1.2);
+  const width=clamp(Math.sqrt(((finite(tireSizeForWheel(car.setup,'fl').widthMm,245) + finite(tireSizeForWheel(car.setup,'rl').widthMm,245)) / 2)/245),.8,1.2);
   const grip = clamp(finite(t.tireGrip, 1)*finite(compound?.surfaceGrip?.asphalt,1)*width, 0.1, 3);
   const powerPerTonne = power * 1000 / mass;
   const efficiency=clamp(finite(t.drivetrainEfficiency,.84),.1,1),drive=String(t.drivetrain||'awd').toLowerCase();

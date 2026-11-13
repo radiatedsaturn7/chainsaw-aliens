@@ -1,6 +1,7 @@
 import {resolveMenuBackground} from './MenuDocument.js';
 import {menuElementVisible} from './MenuLayout.js';
 import {drawMenuScreen} from './MenuRenderer.js';
+import {showroomPage} from './MenuGarageWidgets.js';
 import {listProjectFiles,loadProjectFile,hydrateProjectFilePayload} from '../ui/projectFiles.js';
 import {getArtDocumentFrames} from '../ui/shared/artDocumentPixels.js';
 import {getRaceArtSpriteCanvasShared} from '../ui/shared/raceArtSpriteCanvas.js';
@@ -30,7 +31,12 @@ export function prepareMenuScreen(resources,document,screen,parameters,{bounds={
       await Promise.all(listProjectFiles('cars',{includeSystem:true}).map(entry=>resources.request(`car:${entry.name}`,async()=>{
         if(!loadProjectFile('cars',entry.name,{allowSyncFetch:false}))await hydrateProjectFilePayload('cars',entry.name);
       })));
-      for(const choice of resources.choices('cars',document,parameters)){carRefs.add(choice.value);liveCarRefs.add(choice.value);}
+      const choices=resources.choices('cars',document,parameters);
+      for(const element of elements.filter(e=>e.type==='car-showroom')){
+        for(const choice of showroomPage(choices,parameters[element.binding],element.maxVisible).entries){
+          carRefs.add(choice.value);liveCarRefs.add(choice.value);
+        }
+      }
     }
     for(const e of elements)if(e.type.startsWith('car-')||(['property-display','asset-preview'].includes(e.type)&&e.dataSource==='cars')){
       const ref=e.assetRef||parameters[e.binding];if(typeof ref==='string'&&ref){carRefs.add(ref);if(e.property!=='stock')liveCarRefs.add(ref);}

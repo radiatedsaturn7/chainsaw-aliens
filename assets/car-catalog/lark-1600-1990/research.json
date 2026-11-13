@@ -1,0 +1,29 @@
+{
+  "identity": "1990 US Mazda MX-5 Miata base 1.6L 5-speed manual, no A/B package, no optional LSD, no hardtop",
+  "candidateCheck": {"file":"sunstriker-work/data/vehicle-catalog/full-candidate-backlog.json","commit":"bdc84700","id":"mazda-mx-5-miata-1990-roster-candidate","implemented":false,"status":"needs-real-world-specs/art","note":"1994/2005/2013/2016/2017 variants also listed; do not combine specs. No implemented Miata folder found in recovered catalog."},
+  "sources": [
+    {"id":"early","publisher":"Mazda Motor of America","title":"1990 Mazda Miata brochure, 7/89 (325M) 9999-92-0105-90","url":"https://importarchive.com/brochure/mazdamiata1990_02","imageUrl":"https://importarchive.com/brochures/mazda/mazdamiata1990_02/mazdamiata1990_02_015.jpg","page":"scan 15, printed 16","access":"Actual scan visually inspected, low resolution. Search-index text from alternate OEM brochure mirror independently corroborates mass and reverse.","local":"/tmp/miata90early.jpg"},
+    {"id":"sheet","publisher":"Mazda Motor of America","title":"1990 Specifications and Features, printed 1/90","url":"https://importarchive.com/brochure/mazdamiata1990_04","page":"2","access":"Actual high-resolution OEM scan downloaded through page's public free download link and visually inspected.","local":"/tmp/miata90scan/02.jpg","sha256":"c6e040058260d05fcb443f3c4a0a37b49f1e03d6a9c2f58d4977eee6889ef851"},
+    {"id":"mirror-index","url":"https://www.motorologist.com/wp-content/uploads/1990-Mazda-Miata-MX5-brochure.pdf","access":"Search-index extracts only; direct fetch failed. Index explicitly states reverse 3.758 and base 2160 lb; package A 2182 lb, B 2189 lb. Not claimed downloaded."}
+  ],
+  "verified": {
+    "engine":{"configuration":"naturally aspirated DOHC 16-valve inline-4","displacementCc":1597,"compressionRatio":9.4,"powerHpSaeNet":116,"powerRpm":6500,"torqueLbFtSaeNet":100,"torqueRpm":5500,"fuel":"regular unleaded gasoline","source":["early","sheet"]},
+    "drivetrain":{"drive":"RWD","gears":[3.136,1.888,1.330,1,0.814],"reverse":3.758,"finalDrive":4.3,"source":"early","corroboration":"sheet confirms forward gears and final; reverse omitted from sheet, present early brochure and mirror-index"},
+    "dimensionsIn":{"length":155.4,"width":65.9,"height":48.2,"wheelbase":89.2,"frontTrack":55.5,"rearTrack":56.2,"source":["early","sheet"]},
+    "tires":{"front":"P185/60R14 82H","rear":"P185/60R14 82H","wheel":"5.5JJ-14 styled steel base; alloys optional","source":["early","sheet"]},
+    "chassis":{"suspension":"fully independent double wishbones, coil springs, gas dampers, front/rear stabilizer bars","steeringRatioBase":18,"steeringTurnsBase":3.3,"turningCircleFeet":30.8,"frontBrakeDiscIn":9.3,"frontBrakeVentilated":true,"rearBrakeDiscIn":9.1,"source":"sheet"},
+    "tankUsGallons":11.9,
+    "tachometer":{"displayMaxRpm":8000,"redlineRpm":7000,"note":"Instrument redline, NOT verified ECU rev limiter","source":"sheet"},
+    "speedometerMaxMph":140,
+    "mass":{"recommendedBaseLb":2160,"recommendedBaseKgConverted":979.7595192,"basis":"early brochure explicitly distinguishes base2160, packageA2182, packageB2189","status":"source conflict; not unconditional exact production mass"}
+  },
+  "conversions":{"lengthM":3.94716,"widthM":1.67386,"heightM":1.22428,"wheelbaseM":2.26568,"frontTrackM":1.4097,"rearTrackM":1.42748,"torqueNm":135.58179483314004,"tireNominalRadiusM":0.2888,"note":"Arithmetic conversions from rounded original specs, not extra measurement precision."},
+  "uncertainties":[
+    "Curb mass conflict: early7/89 OEM brochure base2160lb/A2182/B2189; actual1/90 OEM sheet prints2116lb manual and2264lb automatic. No explanation found. Use clearly-labelled early-brochure base2160lb if proceeding, not popular2182lb PackageA weight for base.",
+    "Miata.net 1990 manufacturer-specification PDF indexed at2182lb/990kg, but actual download403; not used to override trim-specific early brochure.",
+    "Full torque curve, ECU limiter, CG height/distribution, aeroCd/frontal area and tire-grip parameters not established by these primary sources. Any game values must be labelled estimates.",
+    "Viscous LSD is optional according to1/90 sheet; base should not be given standard LSD or later Torsen.",
+    "No art/code/repository edits performed. No copy of manufacturer logos requested or produced."
+  ],
+  "rejectedSources":["Project JDM search result contains plainly erroneous solid-rear-axle/noCV claims for Miata; not reliable evidence.","MotorTrend search snippet final3.48 conflicts with both OEM documents4.300; do not use."]
+}

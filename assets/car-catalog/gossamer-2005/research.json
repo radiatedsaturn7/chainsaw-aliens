@@ -1,0 +1,25 @@
+{
+  "inspiration": "2005 North American Elise standard chassis, handbook heaviest full-fuel mass reference, not Sport or European Rover variant",
+  "sources": [
+    {
+      "url": "https://www.billswebspace.com/Elise%20Owners%20Handbook%202005%20MY%20Onward.pdf",
+      "locator": "OEM North America owner handbook printed155-159, fully read PDF text",
+      "fields": [
+        "190bhp7800rpm/138lbft6800rpm;1796cc;8000continuous8500transient",
+        "6MT3.17/2.05/1.48/1.17/.92/.81 reverse3.25 final4.53;bevel differential",
+        "standard front175/55R16 rear225/45R17;26/29psi",
+        "length3785 width1719 height1117 wheelbase2300 tracks1457/1503mm,overhang783/702,clearance135mm",
+        "heaviest fullfuel912kg with344front/568rear;40litre tank",
+        "standard camber-.1/-1.8deg,caster3.8deg,frontzero toe;rear1.2mmtoe-in eachside"
+      ]
+    }
+  ],
+  "estimates": [
+    "Use handbook heaviest fullfuel912kg reference, NOT claim nominal1975lb base curb mass. No passengers included; not maxgross1162kg.",
+    "Engine torque interpolation apart from138lbft6800rpm and190hp7800rpm,850idle,shift/launch,drivetrain efficiency and transient8500 cut model are approximations. No VVTL-i actuator simulation.",
+    "Model bevel differential as open; no unverified factory LSD.150mph/4.9s performance displays are estimates, not simulated proof.",
+    "Cd.41,CG.38m,16.5steering,brakebalance,grip,spring/damper/antiroll tuning and collider subshapes are game estimates. Reartoe .15deg approximates1.2mm toe over wheel diameter; tire model is not specificOEM compound.",
+    "Fixedrear, surface smoke/spray, individual wheel anchors and shared wheel, dashboard-space gauges need browser visual QA.",
+    "Fuel tank40L converted to US gallons; mechanical wear/cooling/economy defaults are gameplay assumptions, not OEM measured data."
+  ]
+}

@@ -42,8 +42,12 @@ jobs:
         run: node --test tests/unit/editorMenuLayout.test.js tests/unit/editorMenuSpec.test.js tests/unit/portraitEditorMenuModels.test.js tests/unit/raceImageTrace.test.js tests/unit/raceTrackImport.test.js tests/unit/raceRouteImport.test.js tests/unit/raceTrackImportIntegration.test.js tests/unit/raceTerrainGuardBudget.test.js tests/unit/reverseRaceRoute.test.js tests/unit/raceImportedCircuitRegression.test.js tests/unit/raceTireTrackRenderer.test.js tests/unit/steeringCommandMapping.test.js tests/unit/racePauseRestart.test.js
       - name: Validate GPS America campaign
         run: |
-          node --test tests/unit/towerHillOpening.test.js tests/unit/campaignSaves.test.js tests/unit/americaCampaign.test.js tests/unit/raceDrivingAssists.test.js tests/unit/raceRecce.test.js tests/unit/raceDrivingGuideThree.test.js tests/unit/raceRacingLine.test.js tests/unit/raceAiRacingLinePhysics.test.js tests/unit/raceAiControls.test.js tests/unit/raceImportedElevationSmoothing.test.js
+          node --test tests/unit/towerHillOpening.test.js tests/unit/campaignSaves.test.js tests/unit/americaCampaign.test.js tests/unit/raceDrivingAssists.test.js tests/unit/raceCodriver.test.js tests/unit/raceDownhillCamera.test.js tests/unit/raceRecce.test.js tests/unit/raceDrivingGuideThree.test.js tests/unit/raceRacingLine.test.js tests/unit/raceAiRacingLinePhysics.test.js tests/unit/raceAiControls.test.js tests/unit/raceImportedElevationSmoothing.test.js
           python3 -m unittest discover -s tests/python -p 'test_campaign_terrain_tiles.py'
+          python3 tools/campaigns/test_side_race_import.py
+          python3 tools/campaigns/test_race_lines.py
+          python3 tools/campaigns/test_raceways.py
+          python3 tools/campaigns/test_state_expansion.py
 
       - name: Run race frame pacing and resource lifecycle regressions
         run: >-
@@ -105,6 +109,9 @@ jobs:
       - name: Run 3D model editor and runtime tests
         run: node --test tests/unit/model3d*.test.js
 
+      - name: Validate raceway imports and campaign categories
+        run: node --test tests/unit/racewayCatalog.test.js tests/unit/stateExpansion.test.js tests/unit/campaignHubMenus.test.js tests/unit/raceData.test.js
+
       - name: Run race physics feel unit tests
         run: npm run test:race-physics-feel
 
@@ -127,7 +134,13 @@ jobs:
         run: npm ci
 
       - name: Build the actual Pages artifact
-        run: python3 tools/build_static_site.py --output _site
+        env:
+          ASSET_REPOSITORY: ${{ github.repository }}
+          ASSET_COMMIT: ${{ github.sha }}
+        run: >-
+          python3 tools/build_static_site.py --output _site
+          --remote-repository "$ASSET_REPOSITORY"
+          --remote-commit "$ASSET_COMMIT"
 
       - name: Run static-host project loading browser tests
         env:
@@ -193,5 +206,39 @@ jobs:
             test-results/tuning-*.png
             test-results/car-presets-*.png
             test-results/network-*.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+  car-preview:
+    name: Production car previews (${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - shard: 1/4
+            artifact: 1-of-4
+          - shard: 2/4
+            artifact: 2-of-4
+          - shard: 3/4
+            artifact: 3-of-4
+          - shard: 4/4
+            artifact: 4-of-4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Run every production car preview
+        run: npx playwright test tests/playwright/car-catalog-preview.spec.js --reporter=line --workers=1 --shard=${{ matrix.shard }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-car-previews-${{ matrix.artifact }}
+          path: test-results/
           if-no-files-found: ignore
           retention-days: 7

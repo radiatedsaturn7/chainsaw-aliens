@@ -1,0 +1,31 @@
+{
+  "inspiration": "1986 US Toyota MR2 naturally aspirated 5MT",
+  "sources": [
+    {
+      "url": "https://xr793.com/wp-content/uploads/2024/12/1986-Toyota-MR2.pdf",
+      "kind": "archived OEM US brochure",
+      "fields": [
+        "Actual page8 specification table visually reviewed, page3 prose extracted."
+      ]
+    },
+    {
+      "url": "https://charm.li/Toyota/1986/MR2%20L4-1587cc%201.6L%20DOHC%20%284A-GE%29/Repair%20and%20Diagnosis/Engine%2C%20Cooling%20and%20Exhaust/Technical%20Service%20Bulletins/All%20Technical%20Service%20Bulletins/Vehicle%20-%20Specifications/Clutch%2C%20Transaxle/",
+      "kind": "archived factory technical service bulletin",
+      "fields": [
+        "Full HTML retrieved and read locally; web extraction returned404 but actual page accessible. C52 manual explicitly separated from A141E automatic."
+      ]
+    },
+    {
+      "url": "https://mag.toyota.co.uk/used-mr2-mk1-buyers-guide/",
+      "kind": "official Toyota UK historical specification",
+      "fields": [
+        "UK spec only:18:1steering,9.6/9.5in brake rotors,140mm ground clearance; any use for US must mark regional assumption. Conflicting UK44/56 distribution not used; US brochure46/54 preferred."
+      ]
+    }
+  ],
+  "estimates": [
+    "US brochure 112SAEnet hp,97lbft,2291lb5MT,46/54distribution and C52 factory ratios used; UK122bhp/975kg/44:56 not mixed into US trim.",
+    "18:1steering and .14mclearance are UK same-platform regional assumptions. Rev limit7700 beyond sourced7500redline,28/30psi,.44mCG,alignment,suspension,braking,open differential,economy,collision partitions and torque curve away from4800torque/6600power anchors are game estimates.",
+    "120mph and8.5s0-60 are game targets, not measured simulation. Existing shared runtime wheel and tires; fixed rear camera and surface smoke."
+  ]
+}

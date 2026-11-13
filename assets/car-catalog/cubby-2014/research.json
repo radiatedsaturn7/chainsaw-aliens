@@ -1,0 +1,101 @@
+{
+  "originalName": "Cubby 1.8 2014",
+  "status": "native candidate imported; exact-head CI and actual browser visual acceptance pending",
+  "inspiration": "2014 US Nissan cube 1.8 S 6MT, base 15-inch tires; not CVT or SL",
+  "checkedAt": "2026-11-13",
+  "duplicateCheck": {
+    "checkout": "copperwing-work",
+    "head": "c13dd86f1292c557c88c8b9371d105e786389e60",
+    "result": "No Cube/Cubby matches in data/vehicle-catalog, scripts, docs or shared/car-next; recheck live roster before implementation"
+  },
+  "sources": [
+    {
+      "id": "press",
+      "url": "https://usa.nissannews.com/en-US/releases/us-2014-nissan-cube-press-kit",
+      "publisher": "Nissan USA",
+      "access": "OEM specs tables read",
+      "sections": "Engine, Transmission, Steering, Wheels, Dimensions, Weights",
+      "specDate": "2013-11-25"
+    },
+    {
+      "id": "brochure",
+      "url": "https://www.nissanusa.com/content/dam/Nissan/us/vehicle-brochures/2014/2014-nissan-cube-en.pdf",
+      "publisher": "Nissan USA",
+      "access": "OEM PDF pages 16-17 text read",
+      "purpose": "Confirms base curb mass, tires, engine output and trim"
+    },
+    {
+      "id": "manual",
+      "url": "https://www.nissanusa.com/content/dam/Nissan/us/manuals-and-guides/cube/2014/2014-Nissan-Cube-owner-manual.pdf",
+      "publisher": "Nissan USA",
+      "access": "OEM PDF pages 310-311 text read",
+      "purpose": "Exact displacement; dimension discrepancy retained"
+    }
+  ],
+  "publishedSpecs": {
+    "engineCode": "MR18DE",
+    "displacementCc": 1798,
+    "layout": "transverse front engine FWD",
+    "induction": "naturally aspirated gasoline I4",
+    "hp": 122,
+    "powerRpm": 5200,
+    "torqueLbFt": 127,
+    "torqueRpm": 4800,
+    "maximumEngineRpm": 6400,
+    "gearRatios": [
+      3.727,
+      2.105,
+      1.451,
+      1.171,
+      0.971,
+      0.81
+    ],
+    "reverseRatio": 3.686,
+    "finalDrive": 3.933,
+    "transmission": "6MT",
+    "curbLb": 2798,
+    "frontAxleLb": 1644,
+    "rearAxleLb": 1154,
+    "publishedFrontFractionRounded": 0.59,
+    "steeringRatio": 18.4,
+    "lockToLockTurns": 3.25,
+    "turningDiameterFt": 33.4,
+    "tires": "195/60R15 all-season all corners",
+    "fuelUsGal": 13.2,
+    "wheelbaseIn": 99.6,
+    "lengthIn": 156.7,
+    "widthIn": 66.7,
+    "heightIn": 65,
+    "frontTrackIn": 58.1,
+    "rearTrackIn": 58.3,
+    "groundClearanceIn": 6.3,
+    "dragCd": 0.35,
+    "massConvention": "OEM brochure explicitly labels base curb weight, not dry mass or GVWR. Fuel fill fraction and driver accounting not specified in read table."
+  },
+  "derived": {
+    "curbKg": 1269.1514512600002,
+    "torqueNm": 172.18887943808778,
+    "fuelL": 49.9674355488,
+    "nominalTireRadiusM": 0.3075,
+    "frontFractionFromAxles": 0.5875625446747677,
+    "dimensionsM": {
+      "wheelbase": 2.5298399999999996,
+      "length": 3.9801799999999994,
+      "width": 1.69418,
+      "height": 1.651,
+      "frontTrack": 1.47574,
+      "rearTrack": 1.4808199999999998,
+      "clearance": 0.16002
+    }
+  },
+  "uncertainties": [
+    "OEM owner manual height is 1680mm/66.1in; press kit and sales brochure both say65.0in. Use press/brochure1651mm provisionally and retain discrepancy, not an exact consensus.",
+    "Manual metric wheelbase2530, width1695, tracks1475/1480 differ slightly from direct inch conversions because of rounding.",
+    "6400 is published maximum engine speed, not verified fuel-cut calibration.",
+    "Idle numeric rpm, CG height, sprung/unsprung split, springs/dampers, torque curve away from peak, clutch and shift timing, frontal area and performance claims not verified.",
+    "Do not add a complete fuel tank or driver mass to curb weight blindly; follow runtime mass convention and disclose approximation.",
+    "ABLS is brake-based assistance, not a verified mechanical limited-slip differential.",
+    "Owner manual covers optional trims; base tires are selected using S-specific brochure/press table."
+  ],
+  "artDirection": "Original 2994 logo-free compact tall five-door wagon, faded plum paint, pale mint repair door, short nose, upright cabin. Distinct split rear window with centered pillar and paired vertical rear lamps; round front lamps and narrow low grille avoid copying Cube face and trademark wraparound treatment. LHD broad shallow dash with left floating blank binnacle; reused shared wheel, no baked gauges."
+}

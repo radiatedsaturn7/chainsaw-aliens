@@ -1,3 +1,6 @@
+import { axleTireGeometry, tireSizeForWheel } from '../racing/TireSizes.js';
+import {stopCodriver} from '../racing/RaceCodriver.js';
+import {cockpitDashboardRect,cockpitWheelLayout,cockpitGaugeBounds} from '../racing/CarCockpitLayout.js';
 import { normalizeCvtTuning, validateCvt } from '../racing/simulation/CvtTransmissionModel.js';
 import {raceDriftScoreVariables} from '../racing/RaceDriftScore.js';
 import {advanceDigitalThrottle, observeDrivingIntent, DIGITAL_THROTTLE_MODES, DRIVING_INTENT_STYLES} from '../racing/DigitalThrottle.js';
@@ -1251,6 +1254,7 @@ export default class RaceEditor {
   }
 
   disposeRacePlaytestSession(session = this.playtestSession, reason = 'session-ended') {
+    stopCodriver(session?.drivingAssists);
     const result = disposeRaceSessionResources(this, session, { reason });
     if (result.disposed) {
       const release = operation => {
@@ -7729,9 +7733,9 @@ export default class RaceEditor {
 
   getCarTireSizeOptions() {
     return {
-      widthMm: [185, 205, 225, 245, 265, 285, 305, 325],
-      aspectRatio: [30, 35, 40, 45, 50, 55, 60],
-      wheelDiameterIn: [16, 17, 18, 19, 20]
+      widthMm: Array.from({length:29}, (_,i) => 125+i*10),
+      aspectRatio: Array.from({length:15}, (_,i) => 20+i*5),
+      wheelDiameterIn: Array.from({length:17}, (_,i) => 10+i)
     };
   }
 
@@ -7756,11 +7760,11 @@ export default class RaceEditor {
     return options.widthMm.includes(clean.widthMm)
       && options.aspectRatio.includes(clean.aspectRatio)
       && options.wheelDiameterIn.includes(clean.wheelDiameterIn)
-      && diameterM >= 0.55
-      && diameterM <= 0.82;
+      && diameterM >= 0.4
+      && diameterM <= 1.1;
   }
 
-  setCarTireSize(size = {}) {
+  setCarTireSize(size = {}, axle = null) {
     const car = this.selectedCar;
     if (!car) return false;
     const setup = this.getRaceCarSetup(car);
@@ -7769,6 +7773,12 @@ export default class RaceEditor {
       this.status = 'Invalid tire size';
       return false;
     }
+    if (axle === 'front' || axle === 'rear') {
+      setup.tireSizeByAxle = {...setup.tireSizeByAxle, [axle]: nextSize};
+      this.status = `${axle} tires ${nextSize.widthMm}/${nextSize.aspectRatio}R${nextSize.wheelDiameterIn}`;
+      return true;
+    }
+    delete setup.tireSizeByAxle;
     setup.tireSize = nextSize;
     const sidewallM = (setup.tireSize.widthMm * setup.tireSize.aspectRatio / 100) / 1000;
     const wheelRadiusM = (setup.tireSize.wheelDiameterIn * 0.0254) / 2 + sidewallM;
@@ -7778,20 +7788,20 @@ export default class RaceEditor {
     return true;
   }
 
-  setCarTireSizeComponent(component = '', value = 0) {
+  setCarTireSizeComponent(component = '', value = 0, axle = null) {
     const car = this.selectedCar;
     if (!car) return false;
     const cleanComponent = ['widthMm', 'aspectRatio', 'wheelDiameterIn'].includes(component) ? component : 'widthMm';
     const setup = this.getRaceCarSetup(car);
-    const current = this.normalizeCarTireSize(setup.tireSize || DEFAULT_TIRE_SIZE);
+    const current = this.normalizeCarTireSize(axle ? tireSizeForWheel(setup, axle === 'front' ? 'fl' : 'rl') : setup.tireSize || DEFAULT_TIRE_SIZE);
     const requested = { ...current, [cleanComponent]: Number(value) };
-    if (this.isValidCarTireSize(requested)) return this.setCarTireSize(requested);
+    if (this.isValidCarTireSize(requested)) return this.setCarTireSize(requested, axle);
     const options = this.getCarTireSizeOptions()[cleanComponent] || [];
     const fallback = options
       .map((option) => ({ option, size: { ...current, [cleanComponent]: option } }))
       .filter((entry) => this.isValidCarTireSize(entry.size))
       .sort((a, b) => Math.abs(a.option - Number(value)) - Math.abs(b.option - Number(value)))[0];
-    if (fallback) return this.setCarTireSize(fallback.size);
+    if (fallback) return this.setCarTireSize(fallback.size, axle);
     this.status = 'Invalid tire size';
     return false;
   }
@@ -7809,6 +7819,7 @@ export default class RaceEditor {
   adjustCarTireSize(delta = 1) {
     const car = this.selectedCar;
     if (!car) return;
+    delete car.setup.tireSizeByAxle;
     car.setup.tireSize = car.setup.tireSize || { ...DEFAULT_TIRE_SIZE };
     car.setup.tireSize.widthMm = clamp(Math.round((Number(car.setup.tireSize.widthMm) || DEFAULT_TIRE_SIZE.widthMm) + delta * 5), 125, 405);
     const sidewallM = (car.setup.tireSize.widthMm * (Number(car.setup.tireSize.aspectRatio) || 40) / 100) / 1000;
@@ -8293,6 +8304,8 @@ export default class RaceEditor {
       this.status = `${wheelId.toUpperCase()} pressure: ${setup.tirePressurePsi[wheelId]} psi`;
       return true;
     }
+    const axleSizeMatch = /^tireSize-(front|rear)-(widthMm|aspectRatio|wheelDiameterIn)$/.exec(path);
+    if (axleSizeMatch) return this.setCarTireSizeComponent(axleSizeMatch[2], value, axleSizeMatch[1]);
     if (path === 'tireSizeWidthMm' || path === 'tireSizeAspectRatio' || path === 'tireSizeWheelDiameterIn') {
       const options = this.getCarTireSizeOptions();
       const component = path === 'tireSizeWidthMm'
@@ -9018,7 +9031,8 @@ export default class RaceEditor {
     const torquePoints = sourcePoints
       .map((point) => ({
         rpm: Math.max(0, Math.round(Number(point?.rpm) || 0)),
-        torqueLbFt: Math.max(0, Math.round(Number(point?.torqueLbFt) || 0))
+        // Preserve authored fractional torque: rounding can change a sourced horsepower anchor.
+        torqueLbFt: Math.max(0, Number.isFinite(Number(point?.torqueLbFt)) ? Number(point.torqueLbFt) : 0)
       }))
       .filter((point) => (tuning.powertrainType === 'electric' ? point.rpm >= 0 : point.rpm > 0) && point.torqueLbFt > 0)
       .sort((a, b) => a.rpm - b.rpm);
@@ -9098,6 +9112,8 @@ export default class RaceEditor {
     clone.art.brakeLightOffsetY = clamp(Number(clone.art.brakeLightOffsetY || 0), -16, 16);
     const interior = clone.art.interior && typeof clone.art.interior === 'object' ? clone.art.interior : {};
     const normalizeInteriorLayer = (layer = {}) => ({
+      ...(layer.sizeSpace==='viewport'?{sizeSpace:'viewport'}:{}),
+      ...(layer.coordinateSpace==='dashboard'?{coordinateSpace:'dashboard',anchorX:clamp(Number(layer.anchorX)||0,-4,4),anchorY:clamp(Number(layer.anchorY)||0,-4,4),width:clamp(Number(layer.width)||.24,.01,2)}:{}),
       artRef: String(layer?.artRef || '').trim() || null,
       frameIndex: Number.isFinite(Number(layer?.frameIndex)) ? Math.max(0, Math.round(Number(layer.frameIndex))) : 0,
       scaleX: clamp(Number(layer?.scaleX ?? 1) || 1, 0.05, 12),
@@ -10802,6 +10818,13 @@ export default class RaceEditor {
         rubberBanding: difficulty === 'expert' ? 0 : 0.12,
         enabled: true
       };
+    });
+  }
+
+  selectRaceTravelGridCars(race, playerCarId) {
+    const count = (race?.competition?.aiDrivers || []).filter(driver => driver.enabled).length;
+    return selectEligibleRaceAiCars(this.project.cars, Math.min(RACE_MAX_AI_DRIVERS, count), {
+      playerCarId, selection: normalizeAiCarSelection(race?.competition?.carSelection)
     });
   }
 
@@ -13608,7 +13631,9 @@ export default class RaceEditor {
     const hazards = this.selectedRace.hazards || [];
     const diagnosticMode = this.pendingDiagnosticMode || this.selectedRace.diagnosticMode || null;
     const rules = this.getRaceAiCarSelection();
-    const gridCars = selectEligibleRaceAiCars(this.project.cars, Math.min(RACE_MAX_AI_DRIVERS, aiDrivers.length), { playerCarId: playtestCarId, selection: rules });
+    const gridCars = Array.isArray(options?.preparedAiCarIds)
+      ? options.preparedAiCarIds.slice(0, Math.min(RACE_MAX_AI_DRIVERS, aiDrivers.length))
+      : selectEligibleRaceAiCars(this.project.cars, Math.min(RACE_MAX_AI_DRIVERS, aiDrivers.length), { playerCarId: playtestCarId, selection: rules });
     const normalizedAiDrivers = aiDrivers.slice(0, gridCars.length).map((driver, index) => this.normalizeRaceAiDriver({
       ...driver, carId: gridCars[index] || this.selectedCar?.id
     }, index));
@@ -13634,7 +13659,7 @@ export default class RaceEditor {
       speedMps: initialSpeedMps,
       countdownRemainingMs: options?.carEditorPreview === true
         ? 0
-        : (raceStart.countdown ? 4000 : 0),
+        : (raceStart.countdown ? 6000 : 0),
       rollingStart: raceStart.rollingStart,
       rollingStartSpeedMps: raceStart.rollingStartSpeedMps,
       firedTriggerIds: new Set(),
@@ -15765,10 +15790,24 @@ export default class RaceEditor {
     const verticalCue = clamp(Number(session?.verticalVelocityMps || 0) / 28, -0.18, 0.18);
     const terrainHillPitch = clamp(closeDelta * 1.15 + farDelta * 0.52, -0.34, 0.34);
     const hillPitch = clamp(terrainHillPitch + verticalCue, -0.34, 0.34);
-    const terrainHorizonRatio = clamp(0.31 - speedFactor * 0.04 - terrainHillPitch * 0.16, 0.16, 0.48);
+    const fixedRear = this.getCarCameraTrackingMode(this.getRaceSessionCar(session)) === 'fixed-rear'
+      && (session?.cameraView || this.raceInput.cameraView) !== 'first-person'
+      && !this.isCarExteriorArtPreview(session);
+    // Positive road grade needs more sky; a descent needs the horizon higher
+    // on screen. Use the local driving deck, not distant raw GPS heights.
+    let gradeHorizon = null;
+    if (fixedRear) {
+      const direction=this.getRaceCameraRouteSampleDirection(Number(session?.cameraYaw??session?.carYaw??0),
+        this.getRaceWorldPoseAtDistance(visualTravel,{runtimeType:routeRuntimeType}).yaw);
+      const near=this.getRaceRoadSurfaceProfileAtDistance(visualTravel+direction*10,{runtimeType:routeRuntimeType});
+      const far=this.getRaceRoadSurfaceProfileAtDistance(visualTravel+direction*60,{runtimeType:routeRuntimeType});
+      const grade=(Number(far.elevation||0)-Number(near.elevation||0))*RACE_THREE_ELEVATION_M/50;
+      gradeHorizon=clamp(.31-speedFactor*.04+Math.atan(grade)/(2*Math.tan(48*Math.PI/360)),.08,.58);
+    }
+    const terrainHorizonRatio = gradeHorizon ?? clamp(0.31 - speedFactor * 0.04 - terrainHillPitch * 0.16, 0.16, 0.48);
     return {
       hillPitch,
-      horizonRatio: clamp(terrainHorizonRatio - verticalCue * 0.16, 0.16, 0.48),
+      horizonRatio: clamp(terrainHorizonRatio - verticalCue * 0.16, 0.08, 0.58),
       nearPlaneBoost: Math.abs(closeDelta) * 0.52 + Math.abs(farDelta) * 0.24,
       terrainHillPitch,
       terrainHorizonRatio,
@@ -15821,7 +15860,7 @@ export default class RaceEditor {
       visualTravel: Number(visualTravel || 0)
     };
     smoothed.hillPitch = clamp(smoothed.terrainHillPitch + smoothed.verticalCue, -0.34, 0.34);
-    smoothed.horizonRatio = clamp(smoothed.terrainHorizonRatio - smoothed.verticalCue * 0.16, 0.16, 0.48);
+    smoothed.horizonRatio = clamp(smoothed.terrainHorizonRatio - smoothed.verticalCue * 0.16, 0.08, 0.58);
     session.cameraSmoothing = smoothed;
     return {
       ...pitchProfile,
@@ -18189,6 +18228,7 @@ export default class RaceEditor {
       reverseRatio: Math.max(0.1, Number(merged.reverseRatio) || 3.33),
       finalDrive: Math.max(0.5, Number(merged.gearFinalDrive) || 4.11),
       wheelRadiusM: Math.max(0.18, Number(merged.wheelRadiusM) || 0.337),
+      ...axleTireGeometry(car?.setup, merged),
       wheelInertiaKgM2: merged.wheelInertiaKgM2,
       unsprungMassKg: merged.unsprungMassKg,
       topSpeedMps: Math.max(20, (Number(merged.topSpeedMph) || 135) * 0.44704),
@@ -24300,15 +24340,8 @@ export default class RaceEditor {
     const steeringCanvas = steeringWheel.artRef
       ? this.getRaceArtSpriteCanvas(steeringWheel.artRef, { frameIndex: Number(steeringWheel.frameIndex) || 0 })
       : null;
-    const dashboardScaleX = clamp(Number(dashboard.scaleX ?? 1) || 1, 0.05, 12);
-    const dashboardScaleY = clamp(Number(dashboard.scaleY ?? 1) || 1, 0.05, 12);
-    const dashboardW = bounds.w * dashboardScaleX;
-    // Keep authored transparent windshield space and the image aspect ratio.
-    const dashboardH = (dashboardCanvas
-      ? bounds.w * dashboardCanvas.height / Math.max(1, dashboardCanvas.width)
-      : bounds.h * 0.22) * dashboardScaleY;
-    const dashboardX = bounds.x + (bounds.w - dashboardW) * 0.5 + clamp(Number(dashboard.offsetX || 0), -4, 4) * bounds.w * 0.2;
-    const dashboardY = bounds.y + bounds.h - dashboardH + clamp(Number(dashboard.offsetY || 0), -4, 4) * bounds.h * 0.2;
+    const dashboardRect = cockpitDashboardRect(bounds,dashboard,dashboardCanvas);
+    const {x:dashboardX,y:dashboardY,w:dashboardW,h:dashboardH}=dashboardRect;
     if(layer!=='wheel'){
     if (dashboardCanvas && typeof ctx.drawImage === 'function') {
       const previousSmoothing = ctx.imageSmoothingEnabled;
@@ -24322,10 +24355,9 @@ export default class RaceEditor {
     }
     if(layer==='dashboard')return;
     ctx.save();
-    const steeringScaleX = clamp(Number(steeringWheel.scaleX ?? 1) || 1, 0.05, 12);
-    const steeringScaleY = clamp(Number(steeringWheel.scaleY ?? 1) || 1, 0.05, 12);
-    const steeringX = wheelX + clamp(Number(steeringWheel.offsetX || 0), -4, 4) * bounds.w * 0.2;
-    const steeringY = wheelY + clamp(Number(steeringWheel.offsetY || 0), -4, 4) * bounds.h * 0.2;
+    const placement=cockpitWheelLayout(bounds,steeringWheel,dashboardRect);
+    const steeringScaleX=placement.width/(wheelR*2),steeringScaleY=placement.heightScale/(wheelR*2);
+    const steeringX=placement.x,steeringY=placement.y;
     ctx.translate(steeringX, steeringY);
     ctx.rotate(rotation);
     if (steeringCanvas && typeof ctx.drawImage === 'function') {
@@ -24382,7 +24414,9 @@ export default class RaceEditor {
     const editing=session.carEditorPreview&&this.activeAction?.startsWith('car-gauges-');
     if(layout&&(layout.enabled||editing)){
       const weather=createRaceTrackStateWeatherForcing({race:this.selectedRace});
-      drawCarGauges(ctx,bounds,layout,{testIndicators:this.raceInput.testIndicators===true,session,car,gear:this.raceInput.gear,race:this.selectedRace,temperatureC:weather.ambientTemperatureC},{getArt:(ref,options)=>this.getRaceArtSpriteCanvas(ref,options),drawMap:(r,gauge)=>this.drawRaceTrackMinimap(ctx,r,{gauge}),selectedId:editing?this.carGaugeId:null});
+      const dash=car?.art?.interior?.dashboard;
+      const gaugeBounds=cockpitGaugeBounds(bounds,car,dash?.artRef?this.getRaceArtSpriteCanvas(dash.artRef,{frameIndex:dash.frameIndex||0}):null,side);
+      drawCarGauges(ctx,gaugeBounds,layout,{testIndicators:this.raceInput.testIndicators===true,session,car,gear:this.raceInput.gear,race:this.selectedRace,temperatureC:weather.ambientTemperatureC},{getArt:(ref,options)=>this.getRaceArtSpriteCanvas(ref,options),drawMap:(r,gauge)=>this.drawRaceTrackMinimap(ctx,r,{gauge}),selectedId:editing?this.carGaugeId:null});
       if(side==='interior')this.drawRaceSteeringWheel(ctx,bounds,{layer:'wheel'});
     }else{
     this.drawRaceTrackMinimap(ctx, {
@@ -24598,7 +24632,7 @@ export default class RaceEditor {
   drawRaceCountdown(ctx, bounds) {
     const remaining = Number(this.playtestSession?.countdownRemainingMs || 0);
     if (remaining <= 0) return;
-    const label = remaining > 3000 ? '3' : remaining > 2000 ? '2' : remaining > 1000 ? '1' : 'GO!';
+    const label = remaining > 1000 ? String(Math.ceil((remaining - 1000) / 1000)) : 'GO!';
     ctx.save();
     ctx.fillStyle = 'rgba(5,8,7,0.58)';
     ctx.fillRect(bounds.x + bounds.w / 2 - 42, bounds.y + bounds.h * 0.2 - 30, 84, 60);
@@ -29060,13 +29094,16 @@ export default class RaceEditor {
       return;
     }
     if (this.carTuneTab === 'size') {
-      const size = this.normalizeCarTireSize(setup.tireSize || DEFAULT_TIRE_SIZE);
-      const sizeOptions = this.getCarTireSizeOptions();
-      drawSliderRows([
-        { id: 'tireSizeWidthMm', label: 'Width', value: size.widthMm, min: sizeOptions.widthMm[0], max: sizeOptions.widthMm[sizeOptions.widthMm.length - 1], format: (value) => `${Math.round(value)} mm` },
-        { id: 'tireSizeAspectRatio', label: 'Profile', value: size.aspectRatio, min: sizeOptions.aspectRatio[0], max: sizeOptions.aspectRatio[sizeOptions.aspectRatio.length - 1], format: (value) => `${Math.round(value)}` },
-        { id: 'tireSizeWheelDiameterIn', label: 'Wheel', value: size.wheelDiameterIn, min: sizeOptions.wheelDiameterIn[0], max: sizeOptions.wheelDiameterIn[sizeOptions.wheelDiameterIn.length - 1], format: (value) => `${Math.round(value)} in` }
-      ]);
+      const options = this.getCarTireSizeOptions();
+      drawSliderRows(['front', 'rear'].flatMap(axle => {
+        const size = this.normalizeCarTireSize(tireSizeForWheel(setup, axle === 'front' ? 'fl' : 'rl'));
+        return ['widthMm', 'aspectRatio', 'wheelDiameterIn'].map(component => ({
+          id: `tireSize-${axle}-${component}`,
+          label: `${axle === 'front' ? 'Front' : 'Rear'} ${component === 'widthMm' ? 'width' : component === 'aspectRatio' ? 'profile' : 'rim'}`,
+          value: size[component], min: options[component][0], max: options[component].at(-1),
+          format: value => `${Math.round(value)}${component === 'widthMm' ? ' mm' : component === 'wheelDiameterIn' ? ' in' : '%'}`
+        }));
+      }));
       return;
     }
     if (this.carTuneTab === 'pressure') {
@@ -37602,9 +37639,9 @@ export default class RaceEditor {
           : presentedContact.geometricProximity
             ? wheelMaterials.proximity : wheelMaterials.unsupported;
       const cylinder = new THREE.Mesh(new THREE.CylinderGeometry(
-        Math.max(0.04, Number(profile.wheelRadiusM || 0.337)),
-        Math.max(0.04, Number(profile.wheelRadiusM || 0.337)),
-        Math.max(0.04, Number(profile.tireWidthMByWheel?.[wheelId] || 0.225)),
+        Math.max(0.04, Number(wheel.radiusM || profile.wheelRadiusMByWheel?.[wheelId] || profile.wheelRadiusM || 0.337)),
+        Math.max(0.04, Number(wheel.radiusM || profile.wheelRadiusMByWheel?.[wheelId] || profile.wheelRadiusM || 0.337)),
+        Math.max(0.04, Number(wheel.widthM || profile.tireWidthMByWheel?.[wheelId] || 0.225)),
         12, 1, true
       ), wheelMaterial);
       cylinder.name = `physicsWheelCylinder:${wheelId}`;
@@ -37627,7 +37664,7 @@ export default class RaceEditor {
           contactIndicators[indicator]
         );
         marker.name = `physicsWheelContactIndicator:${wheelId}:${indicator}`;
-        marker.position.set(offset, Number(profile.wheelRadiusM || 0.337) + 0.08, 0);
+        marker.position.set(offset, Number(wheel.radiusM || profile.wheelRadiusMByWheel?.[wheelId] || profile.wheelRadiusM || 0.337) + 0.08, 0);
         marker.renderOrder = 16;
         wheelGroup.add(marker);
       }

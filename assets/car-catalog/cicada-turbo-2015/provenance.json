@@ -1,0 +1,17 @@
+{
+  "inspiration": "2015 US Alfa Romeo 4C base coupe, standard17/18 inch wheels; not Spider, Launch or European dry-weight version",
+  "sources": [
+    {
+      "url": "https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2015_AR_4C_4CSpider_SPj23a58s7rdl2f6oi4jt6oabq56.pdf",
+      "fields": [
+        "{\"engine\":\"1742cc turbo I4 transverse midengine RWD\",\"hpSAE\":237,\"powerRpm\":6000,\"torqueLbFt\":258,\"torqueNm\":350,\"torqueRpm\":[2200,4250],\"fuelCutoffRpm\":6500,\"transmission\":\"6-speed TCT dual-clutch automatic with sequential paddles\",\"gearRatios\":[4.154,2.269,1.435,0.978,0.755,0.622],\"finalDrive\":4.118,\"steeringRatio\":15.7,\"curbMassKg\":1118,\"dryMassKg_NOT_CURB\":1050,\"lengthM\":3.989,\"widthM\":1.868,\"heightM\":1.183,\"wheelbaseM\":2.38,\"frontTrackM\":1.639,\"rearTrackM\":1.604,\"clearanceM\":0.114,\"frontWeightFraction\":0.41,\"dragCd\":0.335,\"fuelCapacityL\":40,\"frontTire\":\"205/45ZR17\",\"rearTire\":\"235/40ZR18\",\"frontNominalRadiusM\":0.30815,\"rearNominalRadiusM\":0.3226,\"frontRevsPerMile\":835,\"rearRevsPerMile\":764}"
+      ]
+    }
+  ],
+  "estimates": [
+    "US base coupe1118kg curb, not1050kg dry or940kg European dry. Standard205/45R17 front235/40R18 rear; nominal geometric radii differ from OEM rolling revs/mile.",
+    "OEM6500rpm cutoff verified;6250redline850idle, torque interpolation apart from quoted plateau and power anchor,88%efficiency,.42mCG,29psi,collider details and braking/suspension are game estimates.",
+    "Six-speed TCT represented by existing automatic runtime with6DCT label; does not implement factory dual-clutch/DNA/launch controller.180ms shift30ms clutchdelay3000launch are estimates;reverse4.0 not confirmed by OEM2015sheet and explicitly provisional.",
+    "160mph top speed and4.3sec0–60 display values provisional, not measured game performance. Original art/cockpit coordinates artistic calibration."
+  ]
+}

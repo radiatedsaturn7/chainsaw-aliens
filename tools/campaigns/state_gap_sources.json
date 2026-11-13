@@ -1,0 +1,429 @@
+[
+  {
+    "id": "state-al",
+    "stateCode": "AL",
+    "state": "Alabama",
+    "name": "Barber Motorsports Park",
+    "kind": "circuit",
+    "lat": 33.5332,
+    "lon": -86.6188,
+    "selection": 3830,
+    "references": [
+      "https://www.imsa.com/nascar-tracks/barber-motorsports-park/"
+    ],
+    "layoutIndex": 0,
+    "mappedLengthM": 3720.116
+  },
+  {
+    "id": "state-ak",
+    "stateCode": "AK",
+    "state": "Alaska",
+    "name": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+    "kind": "road",
+    "lat": 61.738,
+    "lon": -149.24,
+    "selection": "Palmer.Fishhook|Hatcher Pass",
+    "references": [
+      "https://dnr.alaska.gov/parks/aspunits/matsu/hatcherpassema.htm"
+    ],
+    "reverse": true
+  },
+  {
+    "id": "state-ar",
+    "stateCode": "AR",
+    "state": "Arkansas",
+    "name": "Pig Trail \u2014 Arkansas 23",
+    "kind": "road",
+    "lat": 35.672,
+    "lon": -93.816,
+    "selection": "AR 23|Pig Trail",
+    "references": [
+      "https://www.arkansas.com/experiences/discover/all-experiences/road-trips"
+    ]
+  },
+  {
+    "id": "state-de",
+    "stateCode": "DE",
+    "state": "Delaware",
+    "name": "Brandywine Valley \u2014 Montchanin Road",
+    "kind": "road",
+    "lat": 39.805,
+    "lon": -75.591,
+    "selection": "Montchanin|DE 100",
+    "references": [
+      "https://deldot.gov/Programs/byways/index.shtml?dc=brandywine"
+    ]
+  },
+  {
+    "id": "state-hi",
+    "stateCode": "HI",
+    "state": "Hawaii",
+    "name": "Hana Highway \u2014 Rainforest Bends",
+    "kind": "road",
+    "lat": 20.855,
+    "lon": -156.145,
+    "selection": "Hana Highway|360",
+    "references": [
+      "https://www.gohawaii.com/islands/maui/regions/east-maui/Hana"
+    ]
+  },
+  {
+    "id": "state-id",
+    "stateCode": "ID",
+    "state": "Idaho",
+    "name": "Ponderosa Pine \u2014 Idaho 21",
+    "kind": "road",
+    "lat": 43.822,
+    "lon": -115.846,
+    "selection": "(?:ID|SH) ?21|Ponderosa Pine",
+    "references": [
+      "https://visitidaho.org/things-to-do/road-trips/ponderosa-pine-scenic-byway/"
+    ]
+  },
+  {
+    "id": "state-ia",
+    "stateCode": "IA",
+    "state": "Iowa",
+    "name": "Raceway Park of the Midlands",
+    "kind": "circuit",
+    "lat": 41.024,
+    "lon": -95.823,
+    "selection": 3589,
+    "references": [
+      "https://www.midiv.org/midwest-division-track-records/"
+    ],
+    "layoutIndex": 1,
+    "mappedLengthM": 3572.266
+  },
+  {
+    "id": "state-ks",
+    "stateCode": "KS",
+    "state": "Kansas",
+    "name": "Heartland Motorsports Park",
+    "kind": "circuit",
+    "lat": 38.924,
+    "lon": -95.672,
+    "selection": 4023,
+    "references": [
+      "https://heartlandmotorsports.us/tracks/track-roadcourse/"
+    ],
+    "layoutIndex": 0,
+    "mappedLengthM": 3967.718
+  },
+  {
+    "id": "state-ky",
+    "stateCode": "KY",
+    "state": "Kentucky",
+    "name": "NCM Motorsports Park",
+    "kind": "circuit",
+    "lat": 37.004,
+    "lon": -86.367,
+    "selection": 5070,
+    "references": [
+      "https://motorsportspark.org/wp-content/uploads/2017/12/facility-overview.compressed.pdf"
+    ],
+    "layoutIndex": 3,
+    "mappedLengthM": 5053.71
+  },
+  {
+    "id": "state-la",
+    "stateCode": "LA",
+    "state": "Louisiana",
+    "name": "NOLA Motorsports Park",
+    "kind": "circuit",
+    "lat": 29.886,
+    "lon": -90.194,
+    "selection": 4426,
+    "references": [
+      "https://nolamotor.com/track-events/"
+    ],
+    "layoutIndex": 2,
+    "mappedLengthM": 4424.183
+  },
+  {
+    "id": "state-me",
+    "stateCode": "ME",
+    "state": "Maine",
+    "name": "Grafton Notch \u2014 Maine 26",
+    "kind": "road",
+    "lat": 44.589,
+    "lon": -70.94,
+    "selection": "ME 26|Bear River|Grafton Notch",
+    "references": [
+      "https://www.exploremaine.org/byways/"
+    ]
+  },
+  {
+    "id": "state-md",
+    "stateCode": "MD",
+    "state": "Maryland",
+    "name": "National Road \u2014 Sideling Hill",
+    "kind": "road",
+    "lat": 39.694,
+    "lon": -78.359,
+    "selection": "US 40|National Pike|National Road",
+    "references": [
+      "https://www.visitmaryland.org/scenic-byways/historic-national-road"
+    ]
+  },
+  {
+    "id": "state-mi",
+    "stateCode": "MI",
+    "state": "Michigan",
+    "name": "GingerMan Raceway",
+    "kind": "circuit",
+    "lat": 42.409,
+    "lon": -86.147,
+    "selection": 3444,
+    "references": [
+      "https://www.gingermanraceway.com/about-track-maps.html"
+    ],
+    "layoutIndex": 1,
+    "mappedLengthM": 3438.954
+  },
+  {
+    "id": "state-mn",
+    "stateCode": "MN",
+    "state": "Minnesota",
+    "name": "Brainerd \u2014 Competition Course",
+    "kind": "circuit",
+    "lat": 46.418,
+    "lon": -94.274,
+    "selection": 4023,
+    "references": [
+      "https://www.birmn.com/apex-hpde"
+    ],
+    "layoutIndex": 1,
+    "mappedLengthM": 3891.875
+  },
+  {
+    "id": "state-ms",
+    "stateCode": "MS",
+    "state": "Mississippi",
+    "name": "Natchez Trace \u2014 Tishomingo",
+    "kind": "road",
+    "lat": 34.602,
+    "lon": -88.215,
+    "selection": "Natchez Trace",
+    "references": [
+      "https://www.nps.gov/natr/planyourvisit/tishomingo-state-park.htm"
+    ]
+  },
+  {
+    "id": "state-mt",
+    "stateCode": "MT",
+    "state": "Montana",
+    "name": "Beartooth Highway \u2014 Rock Creek Climb",
+    "kind": "road",
+    "lat": 45.068,
+    "lon": -109.411,
+    "selection": "US 212|Beartooth",
+    "references": [
+      "https://www.fs.usda.gov/sites/nfs/files/r01/custergallatin/publication/Beartooth%20Sign%20Map%20Brochure_FINAL5_PRINT.pdf"
+    ]
+  },
+  {
+    "id": "state-ne",
+    "stateCode": "NE",
+    "state": "Nebraska",
+    "name": "Motorsport Park Hastings",
+    "kind": "circuit",
+    "lat": 40.57976,
+    "lon": -98.3496,
+    "selection": 3460,
+    "references": [
+      "https://racemph.com/track-rental/"
+    ],
+    "layoutIndex": 0,
+    "mappedLengthM": 3366.608339825151
+  },
+  {
+    "id": "state-nv",
+    "stateCode": "NV",
+    "state": "Nevada",
+    "name": "Spring Mountain \u2014 North South",
+    "kind": "circuit",
+    "lat": 36.17,
+    "lon": -115.912,
+    "selection": 3862,
+    "references": [
+      "https://www.springmountainmotorsports.com/track-rentals-group-events/track-rentals/north-south/"
+    ],
+    "includeWayIds": [
+      127683895,
+      155843656,
+      155843697,
+      155843698,
+      263987755,
+      263987757,
+      263987761,
+      263987764,
+      263987765,
+      325827622,
+      325827635,
+      325827696
+    ],
+    "layoutIndex": 35,
+    "mappedLengthM": 3502.833,
+    "layoutNotes": "Mapped North/South configuration; excludes Charleston Peak connectors and pit-lane variants. Approximately the published 2.2-mile footprint, not a surveyed named configuration."
+  },
+  {
+    "id": "state-nj",
+    "stateCode": "NJ",
+    "state": "New Jersey",
+    "name": "NJMP \u2014 Thunderbolt",
+    "kind": "circuit",
+    "lat": 39.355,
+    "lon": -75.061,
+    "selection": 3621,
+    "references": [
+      "https://njmp.com/track-map/"
+    ],
+    "layoutIndex": 0,
+    "mappedLengthM": 3500.33
+  },
+  {
+    "id": "state-nm",
+    "stateCode": "NM",
+    "state": "New Mexico",
+    "name": "Sandia Speedway \u2014 Road Course",
+    "kind": "circuit",
+    "lat": 35.028,
+    "lon": -106.858,
+    "selection": 2736,
+    "references": [
+      "https://www.smri-racing.org/Directions",
+      "https://static1.squarespace.com/static/5dfaaf2503a8984f92e8f45e/t/604841e1cd6aa951fd199432/1615348194341/Sandia.pdf"
+    ],
+    "layoutIndex": 2,
+    "mappedLengthM": 2643.099
+  },
+  {
+    "id": "state-nc",
+    "stateCode": "NC",
+    "state": "North Carolina",
+    "name": "NCCAR \u2014 Road Course",
+    "kind": "circuit",
+    "lat": 36.468,
+    "lon": -77.569,
+    "selection": 3219,
+    "references": [
+      "https://nccar.us/contact-us/"
+    ],
+    "layoutIndex": 0,
+    "mappedLengthM": 3270.906
+  },
+  {
+    "id": "state-nd",
+    "stateCode": "ND",
+    "state": "North Dakota",
+    "name": "Theodore Roosevelt \u2014 North Unit Drive",
+    "kind": "road",
+    "lat": 47.588,
+    "lon": -103.327,
+    "selection": "Scenic.*Drive",
+    "references": [
+      "https://www.nps.gov/thingstodo/drive-the-north-unit-scenic-drive.htm"
+    ]
+  },
+  {
+    "id": "state-or",
+    "stateCode": "OR",
+    "state": "Oregon",
+    "name": "Portland International Raceway",
+    "kind": "circuit",
+    "lat": 45.596,
+    "lon": -122.696,
+    "selection": 3170,
+    "references": [
+      "https://portlandraceway.com/"
+    ],
+    "layoutIndex": 2,
+    "mappedLengthM": 3159.055183940583
+  },
+  {
+    "id": "state-sc",
+    "stateCode": "SC",
+    "state": "South Carolina",
+    "name": "Carolina Motorsports Park",
+    "kind": "circuit",
+    "lat": 34.488,
+    "lon": -80.595,
+    "selection": 3668,
+    "references": [
+      "https://carolinamotorsportspark.com/the-road-course/"
+    ],
+    "layoutIndex": 0,
+    "mappedLengthM": 3676.4347233334083
+  },
+  {
+    "id": "state-sd",
+    "stateCode": "SD",
+    "state": "South Dakota",
+    "name": "Needles Highway \u2014 Granite Gates",
+    "kind": "road",
+    "lat": 43.85,
+    "lon": -103.531,
+    "selection": "SD 87|Needles",
+    "references": [
+      "https://gfp.sd.gov/userdocs/docs/tatanka_2022.pdf"
+    ]
+  },
+  {
+    "id": "state-tn",
+    "stateCode": "TN",
+    "state": "Tennessee",
+    "name": "Flatrock Motorclub \u2014 Club Course",
+    "kind": "circuit",
+    "lat": 35.8793707,
+    "lon": -84.7538283,
+    "selection": 5632,
+    "references": [
+      "https://www.flatrockmotorclub.com/drive"
+    ],
+    "layoutIndex": 1,
+    "mappedLengthM": 5629.284753627071,
+    "layoutNotes": "Mapped 3.5-mile Club Course; excludes pit lanes. Banking and as-built grading are not surveyed."
+  },
+  {
+    "id": "state-vt",
+    "stateCode": "VT",
+    "state": "Vermont",
+    "name": "Smugglers Notch \u2014 Vermont 108",
+    "kind": "road",
+    "lat": 44.556,
+    "lon": -72.792,
+    "selection": "VT 108|Mountain Road",
+    "references": [
+      "https://www.vtstateparks.com/parks/smugglers-notch"
+    ]
+  },
+  {
+    "id": "state-wa",
+    "stateCode": "WA",
+    "state": "Washington",
+    "name": "Pacific Raceways",
+    "kind": "circuit",
+    "lat": 47.32,
+    "lon": -122.141,
+    "selection": 3621,
+    "references": [
+      "https://pacificraceways.com/road-course-track-map/"
+    ],
+    "layoutIndex": 0,
+    "mappedLengthM": 3622.02743142652
+  },
+  {
+    "id": "state-wy",
+    "stateCode": "WY",
+    "state": "Wyoming",
+    "name": "Wind River Canyon \u2014 Canyon Walls",
+    "kind": "road",
+    "lat": 43.658,
+    "lon": -108.204,
+    "selection": "US 20|US 26|Wind River|US 20;WY 789",
+    "references": [
+      "https://travelwyoming.com/wp-content/uploads/2023/04/Wind-River-Scenic-Byway.pdf"
+    ]
+  }
+]

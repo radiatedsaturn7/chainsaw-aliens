@@ -114,7 +114,9 @@ export class GarageSystem {
   const baseline=structuredClone(stock);
   const tire=await this.loadTire('Stock');
   const pressure=baseline.setup?.tirePressurePsi,size=structuredClone(baseline.setup?.tireSize);
+  const axleSizes=structuredClone(baseline.setup?.tireSizeByAxle);
   applyTireDefinition(baseline,tire,'Stock');
+  if(axleSizes)baseline.setup.tireSizeByAxle=axleSizes;
   if(pressure)baseline.setup.tirePressurePsi=pressure;
   if(size)baseline.setup.tireSize=size;
   return baseline;
