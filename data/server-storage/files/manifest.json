@@ -612,7 +612,11 @@
       "landmark-city-nd-fargo-theatre": "art/landmark-city-nd-fargo-theatre/document.json",
       "landmark-city-nd-plains-art-museum": "art/landmark-city-nd-plains-art-museum/document.json",
       "landmark-city-nd-island-park": "art/landmark-city-nd-island-park/document.json",
-      "landmark-city-nd-fargo-civic-center": "art/landmark-city-nd-fargo-civic-center/document.json"
+      "landmark-city-nd-fargo-civic-center": "art/landmark-city-nd-fargo-civic-center/document.json",
+      "landmark-city-de-chase-center-on-the-riverfront": "art/landmark-city-de-chase-center-on-the-riverfront/document.json",
+      "landmark-city-de-grand-opera-house": "art/landmark-city-de-grand-opera-house/document.json",
+      "landmark-city-de-delaware-history-museum": "art/landmark-city-de-delaware-history-museum/document.json",
+      "landmark-city-de-rodney-square": "art/landmark-city-de-rodney-square/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -960,7 +964,11 @@
       "landmark-city-nd-fargo-theatre": "doodads/landmark-city-nd-fargo-theatre/document.json",
       "landmark-city-nd-plains-art-museum": "doodads/landmark-city-nd-plains-art-museum/document.json",
       "landmark-city-nd-island-park": "doodads/landmark-city-nd-island-park/document.json",
-      "landmark-city-nd-fargo-civic-center": "doodads/landmark-city-nd-fargo-civic-center/document.json"
+      "landmark-city-nd-fargo-civic-center": "doodads/landmark-city-nd-fargo-civic-center/document.json",
+      "landmark-city-de-chase-center-on-the-riverfront": "doodads/landmark-city-de-chase-center-on-the-riverfront/document.json",
+      "landmark-city-de-grand-opera-house": "doodads/landmark-city-de-grand-opera-house/document.json",
+      "landmark-city-de-delaware-history-museum": "doodads/landmark-city-de-delaware-history-museum/document.json",
+      "landmark-city-de-rodney-square": "doodads/landmark-city-de-rodney-square/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

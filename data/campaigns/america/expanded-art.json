@@ -2792,6 +2792,34 @@
       "heightM": 16,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-de-chase-center-on-the-riverfront",
+      "source": "landmarks/DE/landmark-city-de-chase-center-on-the-riverfront.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-de-grand-opera-house",
+      "source": "landmarks/DE/landmark-city-de-grand-opera-house.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-de-delaware-history-museum",
+      "source": "landmarks/DE/landmark-city-de-delaware-history-museum.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-de-rodney-square",
+      "source": "landmarks/DE/landmark-city-de-rodney-square.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

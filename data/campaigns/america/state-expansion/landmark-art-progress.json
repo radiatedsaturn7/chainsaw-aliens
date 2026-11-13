@@ -1467,35 +1467,501 @@
     },
     "landmark-city-de-chase-center-on-the-riverfront": {
       "raceRef": "Wilmington, DE — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -947.375478365934,
+        "worldZ": 1308.6326602522565,
+        "routeDistanceM": 1559,
+        "offsetFromRoadM": 63,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.7452830984242018,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 15.831838612318016,
+            "angularWidthDegrees": 23.726344462680693,
+            "rangeM": 128.28302976261807,
+            "occluderIds": [
+              "city-de-prop-92"
+            ],
+            "score": 0.04400717466087352
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 13.816245184340643,
+            "angularWidthDegrees": 20.690988404998237,
+            "rangeM": 147.615427780006,
+            "occluderIds": [],
+            "score": 0.4473501926263743
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 12.178400371839011,
+            "angularWidthDegrees": 18.321314038679052,
+            "rangeM": 167.10503897541525,
+            "occluderIds": [
+              "city-de-prop-91"
+            ],
+            "score": 0.06154367821517275
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 10.883513370676255,
+            "angularWidthDegrees": 16.425918839392956,
+            "rangeM": 186.7026360873875,
+            "occluderIds": [
+              "city-de-prop-91",
+              "city-de-prop-93"
+            ],
+            "score": 0.06775913582075396
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 9.382464311378847,
+            "angularWidthDegrees": 14.207094743003886,
+            "rangeM": 216.2372449730973,
+            "occluderIds": [
+              "city-de-prop-91",
+              "city-de-prop-93"
+            ],
+            "score": 0.07496417130538154
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.488834283516497,
+            "angularWidthDegrees": 12.026997326160538,
+            "rangeM": 255.80733129982673,
+            "occluderIds": [
+              "city-de-prop-89",
+              "city-de-prop-91",
+              "city-de-prop-93"
+            ],
+            "score": 0.09365359543912082
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.320816703370849,
+            "angularWidthDegrees": 10.414895341478884,
+            "rangeM": 295.67591043879185,
+            "occluderIds": [
+              "city-de-prop-89",
+              "city-de-prop-91"
+            ],
+            "score": 0.09926007982381992
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 15.88644363901978,
+            "angularWidthDegrees": 8.924220817212655,
+            "rangeM": 345.31816768008764,
+            "occluderIds": [
+              "city-de-prop-87",
+              "city-de-prop-89",
+              "city-de-prop-91",
+              "city-de-prop-95"
+            ],
+            "score": 0.04374507053270506
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "38bc547a3db9b6928b490384bdcd5fe84a9b874b5bb00fa4184b30a7e4f5813d",
+      "sourceSha256": "fb57e32aaca4e6d99c1c1c9551f1ce9f90aaa737fa3af43c0db28b7f09031d51",
+      "roadSha256": "1fed985fcdda50a67bb772966e1d68e7423051bb7d4795025078539cee7dbc8f",
+      "placementDetails": {
+        "x": -1022.2813756064263,
+        "z": 1525.4746661924773,
+        "yaw": -0.02092149516570455,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1708.6763040795272,
+        "trackLateral": 104.99999999999979,
+        "minimumRoadClearanceM": 67.10706619238039,
+        "checkedSegments": 4320,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-de-grand-opera-house": {
       "raceRef": "Wilmington, DE — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 301.32805660578464,
+        "worldZ": -82.98488837782634,
+        "routeDistanceM": 4360,
+        "offsetFromRoadM": 41,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.870867779882877,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 55.27222820308932,
+            "angularWidthDegrees": 21.801605138873548,
+            "rangeM": 79.08812517052422,
+            "occluderIds": [
+              "city-de-prop-243",
+              "city-de-prop-245",
+              "city-de-prop-247"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 65.61836706544999,
+            "angularWidthDegrees": 18.92807736683581,
+            "rangeM": 91.36984776455725,
+            "occluderIds": [
+              "city-de-prop-243",
+              "city-de-prop-245"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 124.03057332784732,
+            "angularWidthDegrees": 20.541668710079968,
+            "rangeM": 84.05464102692387,
+            "occluderIds": [
+              "city-de-prop-243",
+              "city-de-prop-245"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 111.29927391556309,
+            "angularWidthDegrees": 23.04944204443012,
+            "rangeM": 74.69836763783955,
+            "occluderIds": [
+              "city-de-prop-241"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 87.32882876684992,
+            "angularWidthDegrees": 24.66883740896505,
+            "rangeM": 69.65516985275582,
+            "occluderIds": [
+              "city-de-prop-241"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 10.48468222395554,
+            "angularWidthDegrees": 17.301088206678212,
+            "rangeM": 100.11369475894894,
+            "occluderIds": [],
+            "score": 0.5806127110417785
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 7.496621966011659,
+            "angularWidthDegrees": 12.45014605940704,
+            "rangeM": 139.63570262375433,
+            "occluderIds": [],
+            "score": 0.7001351213595337
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 5.522001312960879,
+            "angularWidthDegrees": 9.199238322891102,
+            "rangeM": 189.32077425262625,
+            "occluderIds": [],
+            "score": 0.7791199474815649
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "6d360a668f51ba89c3cbe46f50a486b5bd9299c86464672162f24efd1f505654",
+      "sourceSha256": "e0a47a9597e022e452ed0d45130057d93bc3258f93d79868a3c2c1804765c375",
+      "roadSha256": "1fed985fcdda50a67bb772966e1d68e7423051bb7d4795025078539cee7dbc8f",
+      "placementDetails": {
+        "x": 259.08078956685904,
+        "z": 45.270547816405966,
+        "yaw": -0.12035760181283256,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4569.9452591995805,
+        "trackLateral": -65.00000000000003,
+        "minimumRoadClearanceM": 41.19095045656289,
+        "checkedSegments": 4320,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/DE/grand-opera-house-desktop.png",
+        "docs/art/landmark-previews/DE/grand-opera-house-mobile.png"
+      ]
     },
     "landmark-city-de-delaware-history-museum": {
       "raceRef": "Wilmington, DE — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 148.6419505741073,
+        "worldZ": 185.5178718616032,
+        "routeDistanceM": 4745,
+        "offsetFromRoadM": 32,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.567621817622272,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 12.007210057015758,
+            "angularWidthDegrees": 14.205330236109376,
+            "rangeM": 120.49921576085065,
+            "occluderIds": [],
+            "score": 0.5197115977193697
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 10.315774291712966,
+            "angularWidthDegrees": 12.232232699036999,
+            "rangeM": 140.12270465225512,
+            "occluderIds": [],
+            "score": 0.5873690283314814
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 9.031862405221961,
+            "angularWidthDegrees": 10.7327595684143,
+            "rangeM": 159.8395584886604,
+            "occluderIds": [
+              "city-de-prop-260"
+            ],
+            "score": 0.07664706045493458
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.03494018462725,
+            "angularWidthDegrees": 9.556686709515725,
+            "rangeM": 179.61903377799362,
+            "occluderIds": [
+              "city-de-prop-260"
+            ],
+            "score": 0.0814322871137892
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.902617890530697,
+            "angularWidthDegrees": 8.203879986833604,
+            "rangeM": 209.3659421054457,
+            "occluderIds": [
+              "city-de-prop-256",
+              "city-de-prop-258",
+              "city-de-prop-260",
+              "city-de-prop-261"
+            ],
+            "score": 0.08686743412545264
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.7969184021774405,
+            "angularWidthDegrees": 6.898113896096766,
+            "rangeM": 249.12242172355096,
+            "occluderIds": [
+              "city-de-prop-256",
+              "city-de-prop-258",
+              "city-de-prop-260",
+              "city-de-prop-261"
+            ],
+            "score": 0.09217479166954828
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.9957691081608475,
+            "angularWidthDegrees": 5.9492317375481205,
+            "rangeM": 288.9461320937299,
+            "occluderIds": [
+              "city-de-prop-252",
+              "city-de-prop-254",
+              "city-de-prop-256",
+              "city-de-prop-258",
+              "city-de-prop-260",
+              "city-de-prop-261"
+            ],
+            "score": 0.09520784424557602
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 4.259373905329688,
+            "angularWidthDegrees": 5.075291216965731,
+            "rangeM": 338.78419268803697,
+            "occluderIds": [
+              "city-de-prop-252",
+              "city-de-prop-254",
+              "city-de-prop-256",
+              "city-de-prop-258",
+              "city-de-prop-260",
+              "city-de-prop-261"
+            ],
+            "score": 0.08421177396212039
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "abb5de3fb4f2f33589fb06f46d000b5d56953fac927c7c8ff73c88aca4a39c35",
+      "sourceSha256": "a73a4c836d943752994b28d3d9c272b0a15f5019e34c2d9f8be23f74876bc966",
+      "roadSha256": "1fed985fcdda50a67bb772966e1d68e7423051bb7d4795025078539cee7dbc8f",
+      "placementDetails": {
+        "x": 36.50244000368359,
+        "z": 276.4659885618551,
+        "yaw": -0.6221588353350428,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4805.15032020851,
+        "trackLateral": -94.99998827808353,
+        "minimumRoadClearanceM": 71.45113952897,
+        "checkedSegments": 4320,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/DE/delaware-history-museum-desktop.png",
+        "docs/art/landmark-previews/DE/delaware-history-museum-mobile.png"
+      ]
     },
     "landmark-city-de-rodney-square": {
       "raceRef": "Wilmington, DE — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 421.29326848319,
+        "worldZ": -307.7101455297032,
+        "routeDistanceM": 6161,
+        "offsetFromRoadM": 39,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.90557245758082,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 8.50775913281763,
+            "angularWidthDegrees": 26.17306407562936,
+            "rangeM": 90.16221360937995,
+            "occluderIds": [],
+            "score": 0.6596896346872947
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 6.966132316947741,
+            "angularWidthDegrees": 21.578772372203176,
+            "rangeM": 109.98194823578294,
+            "occluderIds": [],
+            "score": 0.7213547073220903
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 5.895817846143833,
+            "angularWidthDegrees": 18.33707114850612,
+            "rangeM": 129.8569745960407,
+            "occluderIds": [],
+            "score": 0.7641672861542467
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 4.990979264570293,
+            "angularWidthDegrees": 15.93316095294122,
+            "rangeM": 149.76528136867705,
+            "occluderIds": [],
+            "score": 0.8003608294171882
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 80.48772241168105,
+            "angularWidthDegrees": 14.061053322151322,
+            "rangeM": 169.9492644674491,
+            "occluderIds": [
+              "city-de-prop-332"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 68.0754208630561,
+            "angularWidthDegrees": 13.22602976528654,
+            "rangeM": 180.78421950517597,
+            "occluderIds": [
+              "city-de-prop-328",
+              "city-de-prop-332",
+              "city-de-prop-334",
+              "city-de-prop-336"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 57.00867123707196,
+            "angularWidthDegrees": 12.00858554261692,
+            "rangeM": 199.2685587860717,
+            "occluderIds": [
+              "city-de-prop-326",
+              "city-de-prop-336"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 46.51210845338374,
+            "angularWidthDegrees": 10.397785346285385,
+            "rangeM": 230.35066848865867,
+            "occluderIds": [],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "cf278c58e75b57647129daa547bd79e2369967b7732228684cf9b0642987167c",
+      "sourceSha256": "0784f890f99daaa94937a514e7e02edefa1ed59229557b3d6e477d8bfa0534d5",
+      "roadSha256": "1fed985fcdda50a67bb772966e1d68e7423051bb7d4795025078539cee7dbc8f",
+      "placementDetails": {
+        "x": 418.8902918015007,
+        "z": -191.13388816300215,
+        "yaw": -0.3963409673615342,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6220.890601945484,
+        "trackLateral": 54.998132759352295,
+        "minimumRoadClearanceM": 22.703628686759313,
+        "checkedSegments": 4320,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-fl-historymiami-museum": {
       "raceRef": "Miami, FL — Landmark Run",

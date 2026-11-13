@@ -2210,5 +2210,33 @@
     "documentSha256": "ee9a8d9ba2e86ddb79e5cca607a55c6fe2eb13b111abe4c724d50493776597e0",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-de-chase-center-on-the-riverfront": {
+    "source": "assets/campaign-art/landmarks/DE/landmark-city-de-chase-center-on-the-riverfront.png",
+    "sourceSha256": "fb57e32aaca4e6d99c1c1c9551f1ce9f90aaa737fa3af43c0db28b7f09031d51",
+    "documentSha256": "e66f638aa5dc7f65905f1bbc0afda84ba66ef6cc91fd3c7053982c54cdd54612",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-de-grand-opera-house": {
+    "source": "assets/campaign-art/landmarks/DE/landmark-city-de-grand-opera-house.png",
+    "sourceSha256": "e0a47a9597e022e452ed0d45130057d93bc3258f93d79868a3c2c1804765c375",
+    "documentSha256": "5ca9b00c2d9b7cffc163f5605f586306cc3511b477a3d1259d87de1a9f5d80fe",
+    "width": 512,
+    "height": 437
+  },
+  "landmark-city-de-delaware-history-museum": {
+    "source": "assets/campaign-art/landmarks/DE/landmark-city-de-delaware-history-museum.png",
+    "sourceSha256": "a73a4c836d943752994b28d3d9c272b0a15f5019e34c2d9f8be23f74876bc966",
+    "documentSha256": "9df4224055413f246def45221e179287546cf85892739195e2f64898b45a76df",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-de-rodney-square": {
+    "source": "assets/campaign-art/landmarks/DE/landmark-city-de-rodney-square.png",
+    "sourceSha256": "0784f890f99daaa94937a514e7e02edefa1ed59229557b3d6e477d8bfa0534d5",
+    "documentSha256": "323be512a985a7ba3352e2c57565ae02169b4418b9e67d26d260d1887100cb2c",
+    "width": 512,
+    "height": 171
   }
 }
