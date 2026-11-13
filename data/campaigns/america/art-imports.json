@@ -1622,5 +1622,33 @@
     "documentSha256": "18529234e32114c15e2ab71b47f84776b6f6020c684115d14b7e1367c533fbdb",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-ct-mark-twain-house": {
+    "source": "assets/campaign-art/landmarks/CT/landmark-city-ct-mark-twain-house.png",
+    "sourceSha256": "a4452ec2b47060d4b6b1fdbf1e321eb7bc2457f41690d4419301bd3cd218e3d4",
+    "documentSha256": "7946066843ec2af315dd360bf96b1382fe03966268491d33e5e83403292d5f6f",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ct-connecticut-state-capitol": {
+    "source": "assets/campaign-art/landmarks/CT/landmark-city-ct-connecticut-state-capitol.png",
+    "sourceSha256": "747a5fa71d75afc6d8e7f8a22fc8956fa2080e935eede669dc34591591e9cdf5",
+    "documentSha256": "df8a3340fe378eef53be54490cfced68b8ce4dfa43d45bb9e0e54828771673c0",
+    "width": 512,
+    "height": 285
+  },
+  "landmark-city-ct-wadsworth-atheneum": {
+    "source": "assets/campaign-art/landmarks/CT/landmark-city-ct-wadsworth-atheneum.png",
+    "sourceSha256": "ee9f4f35c20198b926c7684632ffc1445149d8c2a43fdafaa5040929e10d41f7",
+    "documentSha256": "fcc903bcd5e40ce8af4b9b8bab3815f3d35067b1cb07dcf3be27d2498723bde1",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ct-bushnell-park": {
+    "source": "assets/campaign-art/landmarks/CT/landmark-city-ct-bushnell-park.png",
+    "sourceSha256": "f7b5d16b84e68bc2c1830b43de9ee4d020168014487a3ec5922fd55c91b10099",
+    "documentSha256": "0056cd091de6c85def334f74ab311615ecf69a05697ee3dc9630b5ce7365ce2b",
+    "width": 512,
+    "height": 450
   }
 }

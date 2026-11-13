@@ -196,35 +196,381 @@
     },
     "landmark-city-ct-mark-twain-house": {
       "raceRef": "Hartford, CT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -1190.8601312954315,
+        "worldZ": -452.6418131066158,
+        "routeDistanceM": 1314,
+        "offsetFromRoadM": 48,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.1189884061611046,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 16.07984595516102,
+            "angularWidthDegrees": 14.590927008965343,
+            "rangeM": 93.82516479565864,
+            "occluderIds": [],
+            "score": 0.3568061617935592
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 29.119476596582608,
+            "angularWidthDegrees": 11.495654421575555,
+            "rangeM": 119.3339955041066,
+            "occluderIds": [
+              "city-ct-prop-63"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 22.56461636616922,
+            "angularWidthDegrees": 8.58833209408674,
+            "rangeM": 159.96874630690766,
+            "occluderIds": [
+              "city-ct-prop-61",
+              "city-ct-prop-63"
+            ],
+            "score": 0.01168984144238775
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 15.128537360555837,
+            "angularWidthDegrees": 6.5382065988957025,
+            "rangeM": 210.29450436275897,
+            "occluderIds": [],
+            "score": 0.39485850557776647
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 11.976614308930305,
+            "angularWidthDegrees": 5.214510049669881,
+            "rangeM": 263.7817685191689,
+            "occluderIds": [],
+            "score": 0.452737170445399
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 9.550891118180928,
+            "angularWidthDegrees": 4.199006500875389,
+            "rangeM": 327.655309148674,
+            "occluderIds": [
+              "city-ct-prop-53"
+            ],
+            "score": 0.051896726901992006
+          }
+        ],
+        "sourceDistanceShiftM": -90
+      },
+      "signature": "8a8651bc57c2707151872b270127ef5163d7120e92fe3311f8a115126b04395d",
+      "sourceSha256": "a4452ec2b47060d4b6b1fdbf1e321eb7bc2457f41690d4419301bd3cd218e3d4",
+      "roadSha256": "5dd8fb7fb4e66b0eaf79cc9b8798038b8f23b1193b3d40091e4149c0c328ecf5",
+      "placementDetails": {
+        "x": -1314.3581128579533,
+        "z": -534.6676757413452,
+        "yaw": 2.269305226232296,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1224.1034691883804,
+        "trackLateral": -54.99998399237739,
+        "minimumRoadClearanceM": 33.4609049930866,
+        "checkedSegments": 4067,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ct-connecticut-state-capitol": {
       "raceRef": "Hartford, CT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 392.60173364381274,
+        "worldZ": -126.76239146616912,
+        "routeDistanceM": 3711,
+        "offsetFromRoadM": 138,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 4.831587371679184,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 11.321491880950799,
+            "angularWidthDegrees": 26.018529633508543,
+            "rangeM": 124.41154803274817,
+            "occluderIds": [],
+            "score": 0.547140324761968
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.744609126798673,
+            "angularWidthDegrees": 21.152939908395794,
+            "rangeM": 153.9410733696269,
+            "occluderIds": [],
+            "score": 0.650215634928053
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 1.9357001842098918,
+            "angularWidthDegrees": 16.45274496575081,
+            "rangeM": 198.8202714899745,
+            "occluderIds": [],
+            "score": 0.9225719926316043
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 1.5162910577348134,
+            "angularWidthDegrees": 12.923103212831064,
+            "rangeM": 253.7956977292993,
+            "occluderIds": [],
+            "score": 0.9393483576906074
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 0.7723369315218761,
+            "angularWidthDegrees": 10.63641891195478,
+            "rangeM": 308.7823930497338,
+            "occluderIds": [],
+            "score": 0.969106522739125
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 0.7698865268043658,
+            "angularWidthDegrees": 8.794893910649868,
+            "rangeM": 373.7775283895225,
+            "occluderIds": [],
+            "score": 0.9692045389278253
+          }
+        ],
+        "sourceDistanceShiftM": -120
+      },
+      "signature": "c46a0cd2f70d5cc41d7229b983595136eb3894c8fe60d150fafb2a581db87ebc",
+      "sourceSha256": "747a5fa71d75afc6d8e7f8a22fc8956fa2080e935eede669dc34591591e9cdf5",
+      "roadSha256": "5dd8fb7fb4e66b0eaf79cc9b8798038b8f23b1193b3d40091e4149c0c328ecf5",
+      "placementDetails": {
+        "x": 556.0192160552448,
+        "z": 55.93233826566768,
+        "yaw": 1.3620477610604549,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3600.7639724486617,
+        "trackLateral": 74.88890655438577,
+        "minimumRoadClearanceM": 34.83644382625829,
+        "checkedSegments": 4067,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ct-wadsworth-atheneum": {
       "raceRef": "Hartford, CT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1169.3452079387296,
+        "worldZ": -51.51668067217726,
+        "routeDistanceM": 4647,
+        "offsetFromRoadM": 34,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 2.457855959200094,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 5.9756725973309885,
+            "angularWidthDegrees": 22.392663964387946,
+            "rangeM": 111.14546295834336,
+            "occluderIds": [],
+            "score": 0.7609730961067604
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 4.7066059808694485,
+            "angularWidthDegrees": 17.73441592948139,
+            "rangeM": 141.01704467246148,
+            "occluderIds": [],
+            "score": 0.811735760765222
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 3.5685164169086003,
+            "angularWidthDegrees": 13.498206831774919,
+            "rangeM": 185.90198424952473,
+            "occluderIds": [],
+            "score": 0.8572593433236559
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 8.508017947064381,
+            "angularWidthDegrees": 10.449353079823707,
+            "rangeM": 240.59124135839895,
+            "occluderIds": [
+              "city-ct-prop-260"
+            ],
+            "score": 0.07916151385409097
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 7.348698927007412,
+            "angularWidthDegrees": 8.527202125099173,
+            "rangeM": 295.09788013830996,
+            "occluderIds": [
+              "city-ct-prop-260",
+              "city-ct-prop-262"
+            ],
+            "score": 0.08472624515036441
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 83.43379951064763,
+            "angularWidthDegrees": 8.058696245477593,
+            "rangeM": 312.31564311120815,
+            "occluderIds": [
+              "city-ct-prop-260",
+              "city-ct-prop-262"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "25e653ac849c115edff80b232edac2a3ee5b21709d19b05d346d6c56f7e2757e",
+      "sourceSha256": "ee9f4f35c20198b926c7684632ffc1445149d8c2a43fdafaa5040929e10d41f7",
+      "roadSha256": "5dd8fb7fb4e66b0eaf79cc9b8798038b8f23b1193b3d40091e4149c0c328ecf5",
+      "placementDetails": {
+        "x": 1210.3419681792875,
+        "z": -141.1694669703071,
+        "yaw": 3.0221554795738426,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4707.02735777329,
+        "trackLateral": 44.9954174888461,
+        "minimumRoadClearanceM": 13.049623872469244,
+        "checkedSegments": 4067,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ct-bushnell-park": {
       "raceRef": "Hartford, CT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 501.64440803261317,
+        "worldZ": -264.8110835759898,
+        "routeDistanceM": 5381,
+        "offsetFromRoadM": 143,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 3.6670793375128676,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 13.800119565668961,
+            "angularWidthDegrees": 14.85236811701523,
+            "rangeM": 96.02085268233179,
+            "occluderIds": [],
+            "score": 0.44799521737324155
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 3.2670702995386525,
+            "angularWidthDegrees": 11.383976218590995,
+            "rangeM": 125.56736068613877,
+            "occluderIds": [],
+            "score": 0.8693171880184539
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 1.1880912551914087,
+            "angularWidthDegrees": 8.394948411709397,
+            "rangeM": 170.5323602305116,
+            "occluderIds": [],
+            "score": 0.9524763497923436
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 4.66001933164841,
+            "angularWidthDegrees": 6.35502182862911,
+            "rangeM": 225.44476563824324,
+            "occluderIds": [],
+            "score": 0.8135992267340636
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 7.026387904838009,
+            "angularWidthDegrees": 5.113257304799224,
+            "rangeM": 280.2958964788456,
+            "occluderIds": [],
+            "score": 0.6126913555947648
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 52.968517418435475,
+            "angularWidthDegrees": 4.304070498160576,
+            "rangeM": 333.0574007280747,
+            "occluderIds": [
+              "city-ct-prop-282",
+              "city-ct-prop-286",
+              "city-ct-prop-288",
+              "city-ct-prop-290",
+              "city-ct-prop-292",
+              "city-ct-prop-296"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -30
+      },
+      "signature": "8365bd574da812760383395cd5897c8a977d5e473b779d63565845ad93d862ae",
+      "sourceSha256": "f7b5d16b84e68bc2c1830b43de9ee4d020168014487a3ec5922fd55c91b10099",
+      "roadSha256": "5dd8fb7fb4e66b0eaf79cc9b8798038b8f23b1193b3d40091e4149c0c328ecf5",
+      "placementDetails": {
+        "x": 604.1235767340195,
+        "z": -282.1845237717105,
+        "yaw": -1.733786282127591,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5351.789004593824,
+        "trackLateral": -49.99933713918442,
+        "minimumRoadClearanceM": 29.454618992978972,
+        "checkedSegments": 4067,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-de-chase-center-on-the-riverfront": {
       "raceRef": "Wilmington, DE — Landmark Run",

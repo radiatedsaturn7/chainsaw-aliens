@@ -2204,6 +2204,34 @@
       "heightM": 24,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ct-mark-twain-house",
+      "source": "landmarks/CT/landmark-city-ct-mark-twain-house.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ct-connecticut-state-capitol",
+      "source": "landmarks/CT/landmark-city-ct-connecticut-state-capitol.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ct-wadsworth-atheneum",
+      "source": "landmarks/CT/landmark-city-ct-wadsworth-atheneum.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ct-bushnell-park",
+      "source": "landmarks/CT/landmark-city-ct-bushnell-park.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

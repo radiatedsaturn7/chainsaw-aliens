@@ -230,5 +230,81 @@
     "allowOppositeSide": true,
     "facingApproachBeforeM": 105,
     "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-ct-mark-twain-house": {
+    "reason": "Hartford safe approach candidates; game-scale dimensions not survey measurements. Preserve authored night; rendered QA remains pending.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-ct-connecticut-state-capitol": {
+    "reason": "Hartford safe approach candidates; game-scale dimensions not survey measurements. Preserve authored night; rendered QA remains pending.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-ct-wadsworth-atheneum": {
+    "reason": "Hartford safe approach candidates; game-scale dimensions not survey measurements. Preserve authored night; rendered QA remains pending.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-ct-bushnell-park": {
+    "reason": "Hartford safe approach candidates; game-scale dimensions not survey measurements. Preserve authored night; rendered QA remains pending.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
   }
 }
