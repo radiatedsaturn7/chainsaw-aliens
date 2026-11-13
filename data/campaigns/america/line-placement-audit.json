@@ -1,0 +1,2019 @@
+{
+  "applied": false,
+  "windowM": 80,
+  "thresholdDegrees": 10,
+  "races": [
+    {
+      "name": "Amarillo Dragway",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 402.34,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Amarillo \u2014 Historic 6th Avenue alignment",
+      "beforeDegrees": [
+        0.03,
+        0.0
+      ],
+      "lengthBeforeM": 4312.12,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Angeles Crest Highway",
+      "beforeDegrees": [
+        39.1,
+        10.12
+      ],
+      "lengthBeforeM": 12144.4,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 370.85,
+      "trimFinishM": 254.58,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        6.49,
+        8.58
+      ],
+      "lengthAfterM": 11518.97,
+      "geometrySignature": "1d924bc793bd9f10b15b40172ad33d73775e0420cba92d5e74018e9f502eee33"
+    },
+    {
+      "name": "Angeles Forest Highway \u2014 County N3",
+      "beforeDegrees": [
+        7.8,
+        19.66
+      ],
+      "lengthBeforeM": 7679.76,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 63.41,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        7.8,
+        0.0
+      ],
+      "lengthAfterM": 7616.35,
+      "geometrySignature": "fecb0dc1db3f8da3ee1724315e7fca5c2294b653e08347901f3613543736e8d5"
+    },
+    {
+      "name": "Bear Notch Road \u2014 Bartlett",
+      "beforeDegrees": [
+        6.01,
+        0.0
+      ],
+      "lengthBeforeM": 8042.41,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Beaverhead Flat Road \u2014 CR 78",
+      "beforeDegrees": [
+        4.99,
+        0.0
+      ],
+      "lengthBeforeM": 9811.49,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Big Tujunga Canyon Road",
+      "beforeDegrees": [
+        3.85,
+        25.95
+      ],
+      "lengthBeforeM": 6965.03,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 133.21,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        3.85,
+        4.77
+      ],
+      "lengthAfterM": 6831.82,
+      "geometrySignature": "6f4719f94ba8fe9cd4a4df9129168428658137e53b931f89053b1af2b7068b8f"
+    },
+    {
+      "name": "Boynton Pass Road FR 525 loop",
+      "beforeDegrees": [
+        0.0,
+        14.39
+      ],
+      "lengthBeforeM": 4866.93,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Burr Trail switchbacks \u2014 Capitol Reef",
+      "beforeDegrees": [
+        30.06,
+        50.09
+      ],
+      "lengthBeforeM": 3859.06,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "trimStartM": 109.6,
+      "trimFinishM": 67.52,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        7.67,
+        0.0
+      ],
+      "lengthAfterM": 3681.94,
+      "geometrySignature": "a42e10931a8d7fc839683d100c7e13eff5f5dc37045d6212a187fa916504a804"
+    },
+    {
+      "name": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "beforeDegrees": [
+        20.99,
+        12.95
+      ],
+      "lengthBeforeM": 7249.33,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 101.62,
+      "trimFinishM": 70.93,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        5.15
+      ],
+      "lengthAfterM": 7076.79,
+      "geometrySignature": "98fa24e1095481655a0b5bdfcd230faa265a5a7de733a4d69cb631430bdfb171"
+    },
+    {
+      "name": "Club Motorsports \u2014 Tamworth",
+      "beforeDegrees": [
+        87.46,
+        33.45
+      ],
+      "lengthBeforeM": 3601.52,
+      "gridWindowM": 80,
+      "rotatedM": 201.48,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 3601.52,
+      "geometrySignature": "e8eabfdfe9d949ac6bc9876d7df4f0a3dd342c8218677d59eacb213494717177"
+    },
+    {
+      "name": "County Line Road \u2014 Seven Springs",
+      "beforeDegrees": [
+        4.08,
+        0.0
+      ],
+      "lengthBeforeM": 9341.18,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Crawford Notch \u2014 US 302",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 10643.04,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Data Center City",
+      "beforeDegrees": [
+        5.94,
+        6.84
+      ],
+      "lengthBeforeM": 10644.8,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+      "beforeDegrees": [
+        314.08,
+        33.73
+      ],
+      "lengthBeforeM": 525.49,
+      "gridWindowM": 80,
+      "rotatedM": 336.23,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 525.49,
+      "geometrySignature": "895f43823f793dc0f5af5ada4b7160d30128b61571c4aa7ec1e09702db0752f1"
+    },
+    {
+      "name": "Firebird Motorsports Park \u2014 Chandler",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 402.34,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Forbes State Forest \u2014 designated gravel roads",
+      "beforeDegrees": [
+        0.0,
+        1.65
+      ],
+      "lengthBeforeM": 5640.5,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Garden of the Gods \u2014 paved park road",
+      "beforeDegrees": [
+        9.68,
+        126.92
+      ],
+      "lengthBeforeM": 4558.9,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 125.7,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        9.68,
+        0.0
+      ],
+      "lengthAfterM": 4433.21,
+      "geometrySignature": "1aefa77aee52d00c4296f812453cb3654c56d019014f062447d08e48103c9a2e"
+    },
+    {
+      "name": "Gateway Kartplex \u2014 WWT complex",
+      "beforeDegrees": [
+        25.56,
+        47.82
+      ],
+      "lengthBeforeM": 1241.94,
+      "gridWindowM": 80,
+      "rotatedM": 698.97,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 1241.94,
+      "geometrySignature": "6e6d5824661c4105e6f7b50c50465767359770c95902d48c0b0f7e0033765956"
+    },
+    {
+      "name": "Glade Top Trail \u2014 Mark Twain National Forest",
+      "beforeDegrees": [
+        9.59,
+        4.17
+      ],
+      "lengthBeforeM": 6158.02,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Glendora Mountain Road",
+      "beforeDegrees": [
+        76.98,
+        25.04
+      ],
+      "lengthBeforeM": 4343.81,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "trimStartM": 137.28,
+      "trimFinishM": 33.23,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        9.81,
+        0.0
+      ],
+      "lengthAfterM": 4173.3,
+      "geometrySignature": "554a5279599590e1bdbc9190791a001128e3c73f2cad3b87c2551c043da76dfa"
+    },
+    {
+      "name": "Glendora Ridge Road",
+      "beforeDegrees": [
+        19.23,
+        36.25
+      ],
+      "lengthBeforeM": 4921.5,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 267.66,
+      "trimFinishM": 337.29,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 4316.55,
+      "geometrySignature": "66e5162c25701cfd08c651550d65018c1f646395015ecdb27aa230377e388f2f"
+    },
+    {
+      "name": "Gold Camp Road \u2014 Colorado Springs",
+      "beforeDegrees": [
+        35.07,
+        9.65
+      ],
+      "lengthBeforeM": 5350.62,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 57.06,
+      "trimFinishM": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        8.56,
+        9.65
+      ],
+      "lengthAfterM": 5293.56,
+      "geometrySignature": "31ae657ab58d0d5e202c960c17f87b70e444b654551e4cedc915c3bf59734262"
+    },
+    {
+      "name": "Hallett Motor Racing Circuit \u2014 Jennings, Oklahoma",
+      "beforeDegrees": [
+        76.77,
+        36.23
+      ],
+      "lengthBeforeM": 2830.23,
+      "gridWindowM": 80,
+      "rotatedM": 2736.33,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 2830.23,
+      "geometrySignature": "947cf0f0d5895dace9465fc3793198da8dae5f8026dde2726bd6a954af691b9f"
+    },
+    {
+      "name": "Historic Route 66",
+      "beforeDegrees": [
+        0.0,
+        0.1
+      ],
+      "lengthBeforeM": 15654.45,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Hurricane Mountain Road \u2014 Conway",
+      "beforeDegrees": [
+        7.06,
+        27.44
+      ],
+      "lengthBeforeM": 6832.08,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 158.73,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        7.06,
+        8.76
+      ],
+      "lengthAfterM": 6673.35,
+      "geometrySignature": "ae53238e74da200086269ea3057a1685f07d48ccee8545c9324c4c10a79b400f"
+    },
+    {
+      "name": "I-64 \u2014 St. Louis downtown approaches",
+      "beforeDegrees": [
+        4.55,
+        0.0
+      ],
+      "lengthBeforeM": 10171.16,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "I-70 \u2014 Stan Musial Veterans Memorial Bridge",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 9055.46,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "I-95 \u2014 Attleboro to Warwick curves",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 17965.23,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "IL 100 \u2014 Great River Road bluffs",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 12069.37,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "In-N-Out Burger Pomona Dragstrip",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 402.34,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Jennerstown Speedway \u2014 oval",
+      "beforeDegrees": [
+        40.0,
+        11.46
+      ],
+      "lengthBeforeM": 825.03,
+      "gridWindowM": 80,
+      "rotatedM": 260.13,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 825.03,
+      "geometrySignature": "43e5645fd0c9c7b283993de92e8baa952250630db21ccf8beca4ce66c994011e"
+    },
+    {
+      "name": "Jerktail Landing gravel road",
+      "beforeDegrees": [
+        44.09,
+        50.61
+      ],
+      "lengthBeforeM": 4168.24,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 139.21,
+      "trimFinishM": 146.15,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        7.53,
+        0.0
+      ],
+      "lengthAfterM": 3882.88,
+      "geometrySignature": "84ba976328bff9b6abc0cdb3b645c0af4d4aceaa5c3e97be70cdd3989c8c9b19"
+    },
+    {
+      "name": "Kancamagus Highway \u2014 NH 112",
+      "beforeDegrees": [
+        6.99,
+        9.79
+      ],
+      "lengthBeforeM": 8873.89,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Keystone Motorsports Park \u2014 New Alexandria",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 402.34,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Laurel Highlands Scenic Byway",
+      "beforeDegrees": [
+        21.75,
+        9.44
+      ],
+      "lengthBeforeM": 14461.63,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 99.92,
+      "trimFinishM": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        9.44,
+        9.44
+      ],
+      "lengthAfterM": 14361.72,
+      "geometrySignature": "b088ac3e5064ba23611a1e0c7286a054c205e9cc753acfc426609a0d2b759bf2"
+    },
+    {
+      "name": "Lime Rock Park \u2014 Connecticut",
+      "beforeDegrees": [
+        0.0,
+        1.32
+      ],
+      "lengthBeforeM": 2371.08,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Little Tujunga Canyon Road",
+      "beforeDegrees": [
+        37.2,
+        67.59
+      ],
+      "lengthBeforeM": 4464.31,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 45.58,
+      "trimFinishM": 176.09,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        5.39,
+        9.22
+      ],
+      "lengthAfterM": 4242.63,
+      "geometrySignature": "2c8d103982b8b538a4583ddd331bde43b1984fa62d51d05de5988f6b9129149b"
+    },
+    {
+      "name": "MO 106 \u2014 Alley Spring approach",
+      "beforeDegrees": [
+        0.0,
+        8.05
+      ],
+      "lengthBeforeM": 9924.84,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "MO 106 \u2014 Powder Mill approach",
+      "beforeDegrees": [
+        0.0,
+        13.39
+      ],
+      "lengthBeforeM": 9507.72,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 79.34,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        4.03
+      ],
+      "lengthAfterM": 9428.38,
+      "geometrySignature": "0c2d356dfed57a3a5d0dade0333726249718031a02af19aa06c3eca350b95cd4"
+    },
+    {
+      "name": "MO 19 \u2014 Eminence Current River",
+      "beforeDegrees": [
+        8.68,
+        11.46
+      ],
+      "lengthBeforeM": 9558.58,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 51.41,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        8.68,
+        0.0
+      ],
+      "lengthAfterM": 9507.17,
+      "geometrySignature": "4b6df1abc7f58354571eae72e8727fcd918b0de0bf333d70b235baa55f515ee7"
+    },
+    {
+      "name": "MO 94 \u2014 Defiance Augusta",
+      "beforeDegrees": [
+        5.49,
+        55.9
+      ],
+      "lengthBeforeM": 10322.46,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 178.14,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        5.49,
+        4.96
+      ],
+      "lengthAfterM": 10144.32,
+      "geometrySignature": "2c4fbf177c6e78b348592c26b74dc398d845cff0e60e728f4f5a011cd6597dd3"
+    },
+    {
+      "name": "MO H NN \u2014 Roberts Field access",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 10180.5,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "MO V \u2014 Two Rivers access",
+      "beforeDegrees": [
+        5.1,
+        14.6
+      ],
+      "lengthBeforeM": 4723.03,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 25.51,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        5.1,
+        0.0
+      ],
+      "lengthAfterM": 4697.51,
+      "geometrySignature": "1df0f2008178cce1b3519b7c459f897ffdac830cbf298b17a28f587fe8fbcd57"
+    },
+    {
+      "name": "Marietta\u2013Williamstown \u2014 I-77 river bridge",
+      "beforeDegrees": [
+        0.0,
+        4.09
+      ],
+      "lengthBeforeM": 12987.34,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Mid-Ohio Sports Car Course \u2014 Lexington",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3612.81,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 2.28
+    },
+    {
+      "name": "Moki Dugway",
+      "beforeDegrees": [
+        0.0,
+        5.48
+      ],
+      "lengthBeforeM": 12365.71,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Mount Washington Auto Road \u2014 point-to-point",
+      "beforeDegrees": [
+        13.49,
+        172.82
+      ],
+      "lengthBeforeM": 12117.07,
+      "status": "preserved-authored-stage",
+      "reason": "Keep the authored cold-open staging or existing mountain summit finish."
+    },
+    {
+      "name": "Muley Point Road \u2014 CR 241",
+      "beforeDegrees": [
+        9.46,
+        155.59
+      ],
+      "lengthBeforeM": 5663.7,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 194.73,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        9.46,
+        0.0
+      ],
+      "lengthAfterM": 5468.98,
+      "geometrySignature": "54c1d4461a2103a315111d6fe0ffd0e9ebf2f4a55b9d8e6bc5d65e13d9357b86"
+    },
+    {
+      "name": "New England Dragway \u2014 Epping",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 402.34,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "New Hampshire Motor Speedway \u2014 Loudon",
+      "beforeDegrees": [
+        30.88,
+        9.89
+      ],
+      "lengthBeforeM": 2571.66,
+      "gridWindowM": 80,
+      "rotatedM": 2186.29,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 2571.66,
+      "geometrySignature": "9bd4b8cf0900431c76c9284e50962df8b4b0b75b76354169753974b439861a0a"
+    },
+    {
+      "name": "OH 26 \u2014 Covered Bridge Scenic Byway",
+      "beforeDegrees": [
+        0.0,
+        7.27
+      ],
+      "lengthBeforeM": 6849.91,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "OH 536 \u2014 Ohio River hills",
+      "beforeDegrees": [
+        29.15,
+        79.66
+      ],
+      "lengthBeforeM": 5379.13,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "trimStartM": 131.9,
+      "trimFinishM": 79.61,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        9.6,
+        0.0
+      ],
+      "lengthAfterM": 5167.62,
+      "geometrySignature": "c8646ec37929362ec6f7a7ee7bdde1b4eaeee3060124ad36586af8b507925076"
+    },
+    {
+      "name": "OH 550 \u2014 Barlow approach",
+      "beforeDegrees": [
+        15.95,
+        17.17
+      ],
+      "lengthBeforeM": 11544.04,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 95.91,
+      "trimFinishM": 22.55,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        3.96,
+        9.5
+      ],
+      "lengthAfterM": 11425.59,
+      "geometrySignature": "61b45476e32ffd5986f596565e61a2a636dd74549fc2a97cc8e4e1e09b175c4a"
+    },
+    {
+      "name": "OH 555 \u2014 Triple Nickel",
+      "beforeDegrees": [
+        72.3,
+        47.36
+      ],
+      "lengthBeforeM": 7030.47,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 71.89,
+      "trimFinishM": 67.57,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        9.22,
+        0.0
+      ],
+      "lengthAfterM": 6891.01,
+      "geometrySignature": "039e5d4e303563f0c3c156258d773055463177b16bdf79780339f57d58491288"
+    },
+    {
+      "name": "OH 676 \u2014 Western county hills",
+      "beforeDegrees": [
+        63.08,
+        46.51
+      ],
+      "lengthBeforeM": 5919.88,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 372.25,
+      "trimFinishM": 61.52,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        3.71,
+        6.37
+      ],
+      "lengthAfterM": 5486.11,
+      "geometrySignature": "a36a6a61c30b493317b4b865b72380dff2106656f529a3239c8526cbc2ea8cbb"
+    },
+    {
+      "name": "Oak Creek Canyon",
+      "beforeDegrees": [
+        29.69,
+        17.57
+      ],
+      "lengthBeforeM": 12861.86,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 178.83,
+      "trimFinishM": 77.33,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        9.17,
+        7.3
+      ],
+      "lengthAfterM": 12605.7,
+      "geometrySignature": "64198061bf7c298b93b47671aa7ad88b912521ab95dd1a025b003dc90aea5a9c"
+    },
+    {
+      "name": "Ohio River Crossing",
+      "beforeDegrees": [
+        7.57,
+        25.52
+      ],
+      "lengthBeforeM": 13252.97,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 99.51,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        7.57,
+        6.5
+      ],
+      "lengthAfterM": 13153.46,
+      "geometrySignature": "cbf6bfba4d0faba344f74c645c44e27f64f1b773a2a3c92bebbeae09dc9082dd"
+    },
+    {
+      "name": "Ohio Valley Speedway \u2014 Washington, West Virginia",
+      "beforeDegrees": [
+        125.07,
+        0.0
+      ],
+      "lengthBeforeM": 452.42,
+      "gridWindowM": 80,
+      "rotatedM": 402.48,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 452.42,
+      "geometrySignature": "2e4f27be4796eb358063ea9016a9c5a9c131e17e3230f56e745cf22826904c04"
+    },
+    {
+      "name": "Old Route 66 \u2014 Adrian Glenrio",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 13648.11,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Old Route 66 \u2014 Groom Conway",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 13366.98,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Old Route 66 \u2014 Shamrock McLean",
+      "beforeDegrees": [
+        0.0,
+        23.13
+      ],
+      "lengthBeforeM": 9613.43,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 92.04,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        6.06
+      ],
+      "lengthAfterM": 9521.4,
+      "geometrySignature": "a4f81adf9c2faaafb04016405e08d24add77950bb87ccdbbde52de331c95d128"
+    },
+    {
+      "name": "Old Route 66 \u2014 Vega Adrian",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 11643.51,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Ozark Backroads",
+      "beforeDegrees": [
+        3.77,
+        11.41
+      ],
+      "lengthBeforeM": 13929.32,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 228.21,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        3.77,
+        5.99
+      ],
+      "lengthAfterM": 13701.11,
+      "geometrySignature": "f85da7b0f8cca043bc5fb307aa17b60c382b24f0a8266526fe7e97860729eaa0"
+    },
+    {
+      "name": "Ozarks International Raceway \u2014 Gravois Mills",
+      "beforeDegrees": [
+        68.41,
+        71.0
+      ],
+      "lengthBeforeM": 6399.97,
+      "gridWindowM": 80,
+      "rotatedM": 6019.66,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 6399.97,
+      "geometrySignature": "f4b52c8487f70166e7b6cf983910939054a89b769c2f86ad57929a6de26f8c68"
+    },
+    {
+      "name": "PA 31 \u2014 Donegal to Laurel Ridge",
+      "beforeDegrees": [
+        5.39,
+        5.61
+      ],
+      "lengthBeforeM": 11569.47,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "PA 381 \u2014 Ohiopyle approach",
+      "beforeDegrees": [
+        14.56,
+        5.43
+      ],
+      "lengthBeforeM": 11193.04,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 59.78,
+      "trimFinishM": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        9.39,
+        5.43
+      ],
+      "lengthAfterM": 11133.26,
+      "geometrySignature": "d465454467e62d769610adc7f2c02d1d0dcf0446f8b579fdd08edfe0eb79b32e"
+    },
+    {
+      "name": "PA 711 \u2014 Normalville Champion",
+      "beforeDegrees": [
+        9.19,
+        6.43
+      ],
+      "lengthBeforeM": 12163.05,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Pachaug State Forest \u2014 public gravel access roads",
+      "beforeDegrees": [
+        6.43,
+        41.55
+      ],
+      "lengthBeforeM": 4947.42,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 192.94,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        6.43,
+        0.0
+      ],
+      "lengthAfterM": 4754.48,
+      "geometrySignature": "cb17149abcc4f71de18b5f9ba2dda1721512bc968d3274a33aeb3115053c2f47"
+    },
+    {
+      "name": "Page Springs Road",
+      "beforeDegrees": [
+        0.0,
+        6.37
+      ],
+      "lengthBeforeM": 8319.08,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Palmer Motorsports Park \u2014 Massachusetts",
+      "beforeDegrees": [
+        47.15,
+        22.85
+      ],
+      "lengthBeforeM": 3659.85,
+      "gridWindowM": 80,
+      "rotatedM": 172.07,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 3659.85,
+      "geometrySignature": "806e5a06ef73920c251e06c2c934950f1bd57bea336f58f735bbce6fc77294b8"
+    },
+    {
+      "name": "Palo Duro Canyon \u2014 Park Road 5",
+      "beforeDegrees": [
+        55.67,
+        23.22
+      ],
+      "lengthBeforeM": 6711.63,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 204.96,
+      "trimFinishM": 262.52,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        6.76,
+        7.51
+      ],
+      "lengthAfterM": 6244.15,
+      "geometrySignature": "f21b56b0982070b3a9cbb8e7b1a0d0357d7f33754115bdbe8a74acfd4685fdf2"
+    },
+    {
+      "name": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "beforeDegrees": [
+        70.65,
+        8.07
+      ],
+      "lengthBeforeM": 3320.54,
+      "lineWindowsM": [
+        40,
+        80
+      ],
+      "trimStartM": 318.39,
+      "trimFinishM": 0.0,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        8.07
+      ],
+      "lengthAfterM": 3002.15,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "geometrySignature": "a76bf363e3d74b6982cb63108af3127d884d89fda54864eb85159c9d704bb7d6"
+    },
+    {
+      "name": "Pikes Peak Highway",
+      "beforeDegrees": [
+        159.5,
+        66.7
+      ],
+      "lengthBeforeM": 10424.16,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 210.04,
+      "trimFinishM": 268.5,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        5.83,
+        0.0
+      ],
+      "lengthAfterM": 9945.62,
+      "geometrySignature": "00f8b7ff57cc8313640f93cde75f8411bb412fe2a5a10153551262f50b02f03d"
+    },
+    {
+      "name": "Pikes Peak International Raceway \u2014 Fountain",
+      "beforeDegrees": [
+        33.75,
+        32.6
+      ],
+      "lengthBeforeM": 2113.15,
+      "gridWindowM": 80,
+      "rotatedM": 261.59,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 2113.15,
+      "geometrySignature": "bab486655b117edcd6cac7b3ba5b0ef8d9dd112116713f3e75661d37500c2040"
+    },
+    {
+      "name": "Pinkham Notch \u2014 NH 16",
+      "beforeDegrees": [
+        8.88,
+        0.0
+      ],
+      "lengthBeforeM": 10995.59,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Pittsburgh International Race Complex \u2014 Wampum",
+      "beforeDegrees": [
+        169.86,
+        93.76
+      ],
+      "lengthBeforeM": 4471.43,
+      "gridWindowM": 80,
+      "rotatedM": 4132.24,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 4471.43,
+      "geometrySignature": "d60b4e5fadb95765b68af0769cbcd8fcf711f9bdbe8ac6ebae3153c41e7678fe"
+    },
+    {
+      "name": "Podium Club at Attesa \u2014 Casa Grande",
+      "beforeDegrees": [
+        7.69,
+        17.74
+      ],
+      "lengthBeforeM": 3724.7,
+      "gridWindowM": 80,
+      "rotatedM": 2990.86,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 3724.7,
+      "geometrySignature": "31f2d1b4b0f0d40aeb68fab9b537b647512a58ffd137e01879385de47ab3ace1"
+    },
+    {
+      "name": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "beforeDegrees": [
+        59.88,
+        15.26
+      ],
+      "lengthBeforeM": 3509.56,
+      "gridWindowM": 80,
+      "rotatedM": 796.17,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 3509.56,
+      "geometrySignature": "9b67a422967d4e922012f20e5e152edc9b21d41609fb4857d30a222e41bc4ed4"
+    },
+    {
+      "name": "RI 102 \u2014 Victory Highway",
+      "beforeDegrees": [
+        0.0,
+        5.37
+      ],
+      "lengthBeforeM": 10426.37,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "RI 116 \u2014 North Smithfield Scituate",
+      "beforeDegrees": [
+        26.92,
+        9.07
+      ],
+      "lengthBeforeM": 9373.98,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 140.95,
+      "trimFinishM": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        7.81,
+        9.07
+      ],
+      "lengthAfterM": 9233.03,
+      "geometrySignature": "77bf3aa41fa458e43dff445ee24fbc5ca81065b1e3def794c7ae45ccac3b57f4"
+    },
+    {
+      "name": "RI 44 \u2014 Putnam Pike Glocester",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 10908.15,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Route 66 \u2014 Bridgeport Pony Bridge, Oklahoma",
+      "beforeDegrees": [
+        0.0,
+        4.73
+      ],
+      "lengthBeforeM": 12489.13,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "SR 179 \u2014 Red Rock Scenic Byway",
+      "beforeDegrees": [
+        166.48,
+        0.0
+      ],
+      "lengthBeforeM": 7880.67,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 59.12,
+      "trimFinishM": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        6.28,
+        0.0
+      ],
+      "lengthAfterM": 7821.55,
+      "geometrySignature": "9922aa4084481d666275f1d681fa9e72386169b180e871c894cca8c8391ff2c8"
+    },
+    {
+      "name": "SR 89A \u2014 Mingus Mountain Jerome",
+      "beforeDegrees": [
+        7.34,
+        13.2
+      ],
+      "lengthBeforeM": 6159.93,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 47.87,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        7.34,
+        9.07
+      ],
+      "lengthAfterM": 6112.06,
+      "geometrySignature": "38ac72795d6f3cecfbd6fbfd77930ec5daeaa80533bde1b0001f72fb04c48c9a"
+    },
+    {
+      "name": "San Gabriel Canyon Road \u2014 SR 39",
+      "beforeDegrees": [
+        11.65,
+        44.51
+      ],
+      "lengthBeforeM": 6771.95,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 165.1,
+      "trimFinishM": 182.37,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        6.32
+      ],
+      "lengthAfterM": 6424.49,
+      "geometrySignature": "9198415dae3edcab6ce5efcf55e9aaabaadb9ae5c1c3e4f32312efc18e13f3e8"
+    },
+    {
+      "name": "Schnebly Hill Road \u2014 Sedona",
+      "beforeDegrees": [
+        107.74,
+        41.68
+      ],
+      "lengthBeforeM": 3944.48,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "trimStartM": 199.95,
+      "trimFinishM": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 3744.53,
+      "geometrySignature": "9a9ed0a2b07bf394941dcf6d3a69b0083d01abbcc47e4e3ae04f61f0ca717bb8"
+    },
+    {
+      "name": "Seekonk Speedway \u2014 oval",
+      "beforeDegrees": [
+        56.44,
+        81.28
+      ],
+      "lengthBeforeM": 448.76,
+      "gridWindowM": 40,
+      "rotatedM": 41.7,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 448.76,
+      "geometrySignature": "208f7187577283a2a2954e3dca73f47c02c598c198b362adecfc6b2443e5c166"
+    },
+    {
+      "name": "Shafer Trail \u2014 Canyonlands National Park",
+      "beforeDegrees": [
+        97.76,
+        20.6
+      ],
+      "lengthBeforeM": 3537.95,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "trimStartM": 136.15,
+      "trimFinishM": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        8.06,
+        0.0
+      ],
+      "lengthAfterM": 3401.8,
+      "geometrySignature": "fbdcce58201bfd6e4f03eee76f682ed67d75836dae671169163016355e51b97a"
+    },
+    {
+      "name": "Shelf Road \u2014 Gold Belt Tour",
+      "beforeDegrees": [
+        92.05,
+        19.37
+      ],
+      "lengthBeforeM": 3665.56,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "trimStartM": 67.03,
+      "trimFinishM": 19.96,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 3578.58,
+      "geometrySignature": "46357202409651cba3089c26236fd938d6540a0ea38b6131a7bafd68119c2ad1"
+    },
+    {
+      "name": "Skyline Drive \u2014 Ca\u00f1on City",
+      "beforeDegrees": [
+        2.13,
+        11.32
+      ],
+      "lengthBeforeM": 4136.58,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 110.46,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        2.13,
+        0.0
+      ],
+      "lengthAfterM": 4026.13,
+      "geometrySignature": "776fdbf88ff40e76c7f6be7b01db26ef3bd2a3ba140b3476e31aa1f243f933b1"
+    },
+    {
+      "name": "Team O\u2019Neil-inspired Rally Stage (2994)",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3103.15,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Thompson Speedway \u2014 1.7-mile road course",
+      "beforeDegrees": [
+        48.72,
+        45.15
+      ],
+      "lengthBeforeM": 2415.51,
+      "gridWindowM": 80,
+      "rotatedM": 1442.19,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 2415.51,
+      "geometrySignature": "833923abf21c419f9eb338403ce6befd10f8ea2795afab60ff6778488f0258cf"
+    },
+    {
+      "name": "Tower Hill Road",
+      "beforeDegrees": [
+        44.21,
+        10.65
+      ],
+      "lengthBeforeM": 3916.24,
+      "status": "preserved-authored-stage",
+      "reason": "Keep the authored cold-open staging or existing mountain summit finish."
+    },
+    {
+      "name": "US 163 \u2014 Mexican Hat Monument Valley approach",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 12943.06,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "US 191 \u2014 Bluff Blanding",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 13437.94,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "US 24 \u2014 Ute Pass Woodland Park",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 9545.78,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "US 40 \u2014 Chalk Hill Summit",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 11886.05,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "US 60 \u2014 Winona Van Buren",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 12783.86,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "UT 276 \u2014 Halls Crossing approach",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 12056.59,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "UT 316 \u2014 Goosenecks State Park Road",
+      "beforeDegrees": [
+        26.67,
+        13.71
+      ],
+      "lengthBeforeM": 5673.56,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 78.48,
+      "trimFinishM": 16.75,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        7.79,
+        0.0
+      ],
+      "lengthAfterM": 5578.33,
+      "geometrySignature": "436ccf2f66f4cf2c053a99f2e0e36c9d0865041aafd8587266de7babe5e4b9b7"
+    },
+    {
+      "name": "UT 95 \u2014 Comb Ridge Cedar Mesa",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 13300.36,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "Upper Big Tujunga Canyon Road",
+      "beforeDegrees": [
+        7.31,
+        56.19
+      ],
+      "lengthBeforeM": 8223.0,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 52.43,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        7.31,
+        0.0
+      ],
+      "lengthAfterM": 8170.57,
+      "geometrySignature": "5c03bef489b0018ec34889ac3fed11dfcbc743b029c8ed27d274e7ab9ba5faec"
+    },
+    {
+      "name": "Upper Lower Red Rock Loop Road",
+      "beforeDegrees": [
+        42.99,
+        18.29
+      ],
+      "lengthBeforeM": 6045.03,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 98.93,
+      "trimFinishM": 37.2,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        5.26,
+        10.0
+      ],
+      "lengthAfterM": 5908.91,
+      "geometrySignature": "2d3e20c4a75970f7c9004dd4c645c49cd4ab6751930c87f90842ab7d7af952fe"
+    },
+    {
+      "name": "Valley of the Gods Road \u2014 San Juan CR 242",
+      "beforeDegrees": [
+        23.05,
+        48.16
+      ],
+      "lengthBeforeM": 4253.53,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "trimStartM": 123.48,
+      "trimFinishM": 36.5,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        9.81,
+        0.0
+      ],
+      "lengthAfterM": 4093.56,
+      "geometrySignature": "3a22df94799d13095be42ff97cd670d5a7a6866ec4242a85c746e592d77a44b2"
+    },
+    {
+      "name": "Washington County western covered-bridge gravel loop",
+      "beforeDegrees": [
+        9.07,
+        21.62
+      ],
+      "lengthBeforeM": 5515.78,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 36.12,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        9.07,
+        6.85
+      ],
+      "lengthAfterM": 5479.66,
+      "geometrySignature": "8115ed377d416999053bf66921d3f1c8f3164dade7b77b70475deeb11df2f219"
+    },
+    {
+      "name": "Willow Springs \u2014 Horse Thief Mile",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 1607.59,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "World Wide Technology Raceway \u2014 drag strip",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 402.34,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "status": "already-straight",
+      "reason": "Existing line fits the checked window."
+    },
+    {
+      "name": "World Wide Technology Raceway \u2014 oval",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 2042.49,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.41
+    },
+    {
+      "name": "World Wide Technology Raceway \u2014 road course",
+      "beforeDegrees": [
+        0.0,
+        52.56
+      ],
+      "lengthBeforeM": 2807.45,
+      "gridWindowM": 80,
+      "rotatedM": 2535.38,
+      "seamDegrees": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "status": "already-reviewed",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 2807.45,
+      "geometrySignature": "3347655606a7e0bc47588210cc1ec341871b0ed06670b33213f9e1e062e786c7"
+    }
+  ]
+}

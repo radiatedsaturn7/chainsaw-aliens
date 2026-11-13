@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {analyzeRaceRecce,steeringSeverity} from '../../src/racing/RaceRecce.js';
+import {analyzeRaceRecce,steeringSeverity,recceTurnShape} from '../../src/racing/RaceRecce.js';
 const fixture=(yaw,extra={})=>({selectedRace:{scenery:[]},getSelectedRaceRuntimeType:()=> 'destination',getRaceRouteLength:()=>600,
  getRaceWorldPoseAtDistance:d=>({x:0,z:d,yaw:yaw(d),elevation:0}),getRaceRoadHalfWidthWorld:()=>4,...extra});
 const bend=(start,span,turn)=>d=>d<start?0:d>start+span?turn:(d-start)*turn/span;
@@ -9,7 +9,7 @@ test('reference steering scale is monotonic, independent of gears',()=>{
 });
 test('square and hairpin describe overall shape, not a single tight radius',()=>{
  assert.equal(analyzeRaceRecce(fixture(bend(200,30,Math.PI/2)))[0].shape,'Square');
- assert.equal(analyzeRaceRecce(fixture(bend(200,70,Math.PI)))[0].shape,'Hairpin');
+ assert.equal(analyzeRaceRecce(fixture(bend(200,40,Math.PI)))[0].shape,'Hairpin');
  const wide=analyzeRaceRecce(fixture(bend(200,200,Math.PI/2)))[0];assert.equal(wide.shape,null);assert.ok(wide.modifiers.includes('long'));
  const short=analyzeRaceRecce(fixture(bend(200,12,.5)))[0];assert.notEqual(short.shape,'Hairpin');
 });
@@ -52,4 +52,33 @@ test('vertical calls follow the smoothed driving surface rather than raw GPS hei
  const editor=fixture(()=>0,{getRaceWorldPoseAtDistance:d=>({x:0,z:d,yaw:0,elevation:(d<300?d*.2:120-d*.2)/12}),
  getRaceRoadbedProfile:()=>({}),sampleRaceRoadbedProfileAtDistance:()=>({elevation:0})});
  assert.ok(!analyzeRaceRecce(editor).some(n=>n.kind==='crest'));
+});
+
+test('recce calls persistent surfaces, structures and bumps without inventing them',()=>{
+ const editor=fixture(()=>0,{getRaceWorldPoseAtDistance:d=>({x:0,z:d,yaw:0,elevation:0,segment:{surface:d<120?'asphalt':'gravel',structure:d>=240&&d<300?'bridge':d>=400?'tunnel':'road',bumpiness:d>=320?.4:0}})});
+ const notes=analyzeRaceRecce(editor).map(n=>n.body).join('; ');
+ assert.match(notes,/onto gravel/);assert.match(notes,/over bridge/);assert.match(notes,/through tunnel/);assert.match(notes,/bumps/);
+ assert.doesNotMatch(notes,/junction|flat out/);
+});
+test('adverse banking and actual width changes add modifiers to turns',()=>{
+ const yaw=bend(200,80,1.4),editor=fixture(yaw,{getRaceWorldPoseAtDistance:d=>({x:0,z:d,yaw:yaw(d),elevation:0,segment:{banking:-8,width:d<240?6:10}}),getRaceRoadHalfWidthWorld:s=>s.width/2});
+ const note=analyzeRaceRecce(editor)[0];assert.ok(note.modifiers.includes('off camber'));assert.ok(note.modifiers.includes('widens'));
+});
+test('a tiny alternating surface patch is not a spoken surface transition',()=>{
+ const editor=fixture(()=>0,{getRaceWorldPoseAtDistance:d=>({x:0,z:d,yaw:0,elevation:0,segment:{surface:d>=120&&d<128?'gravel':'asphalt'}})});
+ assert.deepEqual(analyzeRaceRecce(editor),[]);
+});
+
+test('surface transitions coincident with a standalone crest combine safely',()=>{
+ const editor=fixture(()=>0,{getRaceWorldPoseAtDistance:d=>({x:0,z:d,yaw:0,elevation:(d<300?d*.1:60-d*.1)/12,segment:{surface:d<300?'asphalt':'gravel'}})});
+ const notes=analyzeRaceRecce(editor);assert.ok(notes.some(n=>n.body.includes('Crest')&&n.body.includes('onto gravel')));
+});
+
+test('hairpins require a compact reversal; broad U bends and long spirals stay numbered',()=>{
+ assert.equal(recceTurnShape(180,55,9),'Hairpin');
+ assert.equal(recceTurnShape(180,25,18),'Acute');
+ assert.equal(recceTurnShape(180,170,3),null);
+ assert.equal(recceTurnShape(150,110,6),null);
+ assert.equal(recceTurnShape(120,35,12),null);
+ assert.equal(recceTurnShape(300,85,9),null);
 });

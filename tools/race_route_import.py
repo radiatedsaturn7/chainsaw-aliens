@@ -67,7 +67,7 @@ def graph(ways, origin):
     return points,edges
 
 
-def trace(ways, origin, waypoints, max_snap=150):
+def trace(ways, origin, waypoints, max_snap=150, avoid_repeated_edges=False):
     """Snap to edge interiors, split them, then Dijkstra each ordered waypoint leg.
     Topology is OSM node IDs: crossing bridges never become junctions by proximity.
     """
@@ -98,7 +98,7 @@ def trace(ways, origin, waypoints, max_snap=150):
             d=math.hypot(points[u]['x']-points[v]['x'],points[u]['y']-points[v]['y'])
             if one!='-1':adjacency.setdefault(u,[]).append((v,d,tags))
             if one not in ('yes','1','true'):adjacency.setdefault(v,[]).append((u,d,tags))
-    result=[]; counter=0
+    result=[]; counter=0; used_edges=set()
     for start,finish in zip(targets,targets[1:]):
         queue=[(0,0,start)];dist={start:0};parents={}
         while queue:
@@ -106,12 +106,14 @@ def trace(ways, origin, waypoints, max_snap=150):
             if cost!=dist[u]:continue
             if u==finish:break
             for v,d,tags in adjacency.get(u,[]):
+                if avoid_repeated_edges and frozenset((u,v)) in used_edges:continue
                 if cost+d<dist.get(v,math.inf):
                     dist[v]=cost+d;parents[v]=(u,tags);counter+=1;heapq.heappush(queue,(cost+d,counter,v))
         if finish not in dist:raise ValueError('These waypoints are not connected in the selected road network/direction. Add roads, move the points, or expand the map. No gap was joined.')
         leg=[];v=finish
         while v!=start:
-            u,tags=parents[v];leg.append({**points[u],'tags':tags});v=u
+            u,tags=parents[v];leg.append({**points[u],'tags':tags})
+            used_edges.add(frozenset((u,v)));v=u
         result.extend(reversed(leg))
     result.append({**points[targets[-1]],'tags':result[-1]['tags'] if result else {}})
     return result

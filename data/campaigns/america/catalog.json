@@ -22,7 +22,7 @@
     "branch": "middle",
     "stage": 2,
     "difficulty": 2,
-    "name": "Mount Washington Auto Road — point-to-point",
+    "name": "Mount Washington Auto Road \u2014 point-to-point",
     "label": "Mount Washington Auto Road",
     "documentPath": "races/Mount Washington Auto Road %E2%80%94 point-to-point/document.json",
     "location": {
@@ -54,8 +54,8 @@
       "lat": 39.8430562,
       "lon": -79.5194493
     },
-    "lengthM": 14466.799236914194,
-    "estimatedDrivingSeconds": 664,
+    "lengthM": 14361.717892325662,
+    "estimatedDrivingSeconds": 659,
     "durationRangeSeconds": [
       531,
       863
@@ -63,8 +63,8 @@
     "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
     "segmentDescription": "PA 381 through the wooded Ohiopyle / Mill Run hills, including the gorge approaches.",
     "startGps": {
-      "lat": 39.8791752,
-      "lon": -79.4800172
+      "lat": 39.8792335,
+      "lon": -79.4811649
     },
     "finishGps": {
       "lat": 39.789282098061676,
@@ -82,7 +82,22 @@
       "rally-suspension"
     ],
     "conditionBriefing": "Rally suspension recommended. Long frost-damaged sections interrupt the pavement. Stock suspension can get through at a slower pace.",
-    "conditionsAuthored": true
+    "conditionsAuthored": true,
+    "linePlacement": {
+      "beforeDegrees": [
+        21.75,
+        9.44
+      ],
+      "lengthBeforeM": 14461.63,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 99.92,
+      "trimFinishM": 0.0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "america-middle-ohio",
@@ -95,8 +110,8 @@
       "lat": 39.4460693,
       "lon": -81.342806
     },
-    "lengthM": 13259.99625583758,
-    "estimatedDrivingSeconds": 662,
+    "lengthM": 13153.459351413096,
+    "estimatedDrivingSeconds": 657,
     "durationRangeSeconds": [
       530,
       860
@@ -108,8 +123,8 @@
       "lon": -81.38146488267053
     },
     "finishGps": {
-      "lat": 39.4817009,
-      "lon": -81.2888697
+      "lat": 39.4816114,
+      "lon": -81.2900007
     },
     "weather": "storm",
     "surface": "wet-asphalt",
@@ -123,7 +138,22 @@
       "rain-tires"
     ],
     "conditionBriefing": "Rain tires recommended. A winter thaw has soaked the valley road. Leave braking room and ease off through wet corners.",
-    "conditionsAuthored": true
+    "conditionsAuthored": true,
+    "linePlacement": {
+      "beforeDegrees": [
+        7.57,
+        25.52
+      ],
+      "lengthBeforeM": 13252.97,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 99.51,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "america-middle-ozark",
@@ -136,8 +166,8 @@
       "lat": 37.3089267,
       "lon": -91.4130785
     },
-    "lengthM": 13931.236493572598,
-    "estimatedDrivingSeconds": 665,
+    "lengthM": 13701.106505701651,
+    "estimatedDrivingSeconds": 654,
     "durationRangeSeconds": [
       532,
       864
@@ -149,8 +179,8 @@
       "lon": -91.4012082
     },
     "finishGps": {
-      "lat": 37.3606788,
-      "lon": -91.4232627
+      "lat": 37.3588053,
+      "lon": -91.4227299
     },
     "weather": "clear",
     "surface": "dirt / gravel",
@@ -164,7 +194,22 @@
       "rally-tires"
     ],
     "conditionBriefing": "Rally tires recommended. Exposed dirt dominates this abandoned highway, with loose gravel sections between the wooded bends. Reuse your rally setup and keep the throttle measured.",
-    "conditionsAuthored": true
+    "conditionsAuthored": true,
+    "linePlacement": {
+      "beforeDegrees": [
+        3.77,
+        11.41
+      ],
+      "lengthBeforeM": 13929.32,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 228.21,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "america-middle-city",
@@ -259,8 +304,8 @@
       "lat": 38.8669027,
       "lon": -105.0630189
     },
-    "lengthM": 10427.295165882573,
-    "estimatedDrivingSeconds": 661,
+    "lengthM": 9945.622241683406,
+    "estimatedDrivingSeconds": 630,
     "durationRangeSeconds": [
       529,
       859
@@ -268,12 +313,12 @@
     "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
     "segmentDescription": "Upper Pikes Peak Highway: technical alpine hairpins and high-altitude climbs.",
     "startGps": {
-      "lat": 38.8872562,
-      "lon": -105.0731591
+      "lat": 38.8872234,
+      "lon": -105.0714256
     },
     "finishGps": {
-      "lat": 38.8456018,
-      "lon": -105.0528846
+      "lat": 38.8471991,
+      "lon": -105.0546601
     },
     "weather": "clear",
     "surface": "asphalt / snow",
@@ -287,7 +332,22 @@
       "race-tires"
     ],
     "conditionBriefing": "Road tires recommended for this mostly dry climb. Use the gearbox through the uphill hairpins, then slow well down for the short snow-covered summit approach. Snow tires sacrifice grip over most of the route.",
-    "conditionsAuthored": true
+    "conditionsAuthored": true,
+    "linePlacement": {
+      "beforeDegrees": [
+        159.5,
+        66.7
+      ],
+      "lengthBeforeM": 10424.16,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 210.04,
+      "trimFinishM": 268.5,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "america-middle-moki",
@@ -342,8 +402,8 @@
       "lat": 35.0234889,
       "lon": -111.7361826
     },
-    "lengthM": 12869.842870124301,
-    "estimatedDrivingSeconds": 664,
+    "lengthM": 12605.7038216061,
+    "estimatedDrivingSeconds": 650,
     "durationRangeSeconds": [
       531,
       864
@@ -351,12 +411,12 @@
     "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
     "segmentDescription": "Arizona 89A through the upper Oak Creek Canyon and the Oak Creek Vista switchbacks.",
     "startGps": {
-      "lat": 35.0308709,
-      "lon": -111.733943
+      "lat": 35.0296231,
+      "lon": -111.7350021
     },
     "finishGps": {
-      "lat": 34.95467168319066,
-      "lon": -111.75437662524838
+      "lat": 34.9553255,
+      "lon": -111.7546584
     },
     "weather": "clear",
     "surface": "asphalt / wet-asphalt",
@@ -370,7 +430,22 @@
       "street-tires"
     ],
     "conditionBriefing": "A balanced road setup works here. Dry canyon bends alternate with shaded wet stretches left by the thaw. Adjust braking at each surface change; rain tires trade some dry grip for wet confidence.",
-    "conditionsAuthored": true
+    "conditionsAuthored": true,
+    "linePlacement": {
+      "beforeDegrees": [
+        29.69,
+        17.57
+      ],
+      "lengthBeforeM": 12861.86,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 178.83,
+      "trimFinishM": 77.33,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "america-middle-angeles",
@@ -383,8 +458,8 @@
       "lat": 34.2585694,
       "lon": -118.1045935
     },
-    "lengthM": 12157.005108511306,
-    "estimatedDrivingSeconds": 663,
+    "lengthM": 11518.973877376411,
+    "estimatedDrivingSeconds": 628,
     "durationRangeSeconds": [
       530,
       862
@@ -392,12 +467,12 @@
     "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
     "segmentDescription": "California 2 in the San Gabriel Mountains: sustained sweeping bends, ridge exposure and steep wooded slopes.",
     "startGps": {
-      "lat": 34.2695498,
-      "lon": -118.1407479
+      "lat": 34.2677799,
+      "lon": -118.1378067
     },
     "finishGps": {
-      "lat": 34.2707542,
-      "lon": -118.0525024
+      "lat": 34.2713954,
+      "lon": -118.0550284
     },
     "weather": "clear",
     "surface": "asphalt",
@@ -412,6 +487,21 @@
       "race-suspension"
     ],
     "conditionBriefing": "Tarmac tires and road suspension recommended. Dry technical corners reward a road setup; snow and off-road tires give up substantial asphalt grip.",
-    "conditionsAuthored": true
+    "conditionsAuthored": true,
+    "linePlacement": {
+      "beforeDegrees": [
+        39.1,
+        10.12
+      ],
+      "lengthBeforeM": 12144.4,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 370.85,
+      "trimFinishM": 254.58,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   }
 ]

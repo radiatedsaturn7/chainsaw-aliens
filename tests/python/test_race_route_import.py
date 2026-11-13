@@ -23,6 +23,17 @@ class RouteImportTests(unittest.TestCase):
     def test_crossing_is_not_junction(self):
         ways=[way(1,[1,2],[(-.001,0),(.001,0)]),way(2,[3,4],[(0,-.001),(0,.001)])]
         with self.assertRaisesRegex(ValueError,'not connected'):route.trace(ways,(0,0),[{'x':-100,'y':0},{'x':0,'y':-100}])
+    def test_no_repeated_edges_option_takes_alternate_streets(self):
+        anchors=[{'x':111.1950802335,'y':0},{'x':222.390160467,'y':0},{'x':111.1950802335,'y':0}]
+        normal=route.trace(self.ways,(0,0),anchors)
+        unique=route.trace(self.ways,(0,0),anchors,avoid_repeated_edges=True)
+        self.assertTrue(all(abs(p['y'])<.01 for p in normal))
+        self.assertLess(min(p['y'] for p in unique),-100)
+        edges=[tuple(sorted(((round(a['x'],3),round(a['y'],3)),(round(b['x'],3),round(b['y'],3))))) for a,b in zip(unique,unique[1:])]
+        self.assertEqual(len(edges),len(set(edges)))
+        with self.assertRaisesRegex(ValueError,'not connected'):
+            route.trace(self.ways[:1],(0,0),anchors,avoid_repeated_edges=True)
+
     def test_open_elevation_and_reference(self):
         points=route.trace(self.ways[:1],(0,0),[{'x':0,'y':0},{'x':220,'y':0}])
         layout={'points':points,'open':True,'name':'Hill','place':{'lat':0,'lon':0,'country':'us'},'routeReference':{'waypoints':[1,2]}}

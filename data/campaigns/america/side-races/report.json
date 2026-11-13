@@ -110,19 +110,19 @@
     "durationLimitedBySource": false,
     "roadWidthRangeM": [
       11.572799999999999,
-      15.2304
+      18.888
     ],
-    "lengthM": 13019.62131457946,
+    "lengthM": 17968.68710665636,
     "laps": 1,
-    "estimatedDrivingSeconds": 223,
+    "estimatedDrivingSeconds": 325,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s\u00b2 acceleration, 6 m/s\u00b2 braking; not a measured gameplay run",
     "startGps": {
-      "lat": 41.870576,
-      "lon": -71.3997193
+      "lat": 41.9040701,
+      "lon": -71.350996
     },
     "finishGps": {
-      "lat": 41.9520034,
-      "lon": -71.306101
+      "lat": 41.7830262,
+      "lon": -71.4238989
     },
     "surface": [
       "asphalt"

@@ -139,10 +139,11 @@ def metric(lat, lon, origin):
             -(lat-origin[0])*math.pi/180*6371008.8)
 
 
-def extract_layouts(elements, origin):
+def extract_layouts(elements, origin, *, max_layouts=24, max_cycles=64):
     """Find closed circuits through shared OSM node IDs; never join nearby crossings.
     Degree-two chains are collapsed before bounded cycle enumeration. Pit lanes omitted.
     """
+    max_layouts=max(1,min(256,int(max_layouts)));max_cycles=max(1,min(512,int(max_cycles)))
     points, graph, tags, allowed = {}, {}, {}, set()
     for way in elements:
         t = way.get('tags', {})
@@ -199,7 +200,7 @@ def extract_layouts(elements, origin):
     cycles, keys, budget = [], set(), 50000
     for start in sorted(anchors):
         stack = [(start, [start], [], {start})]
-        while stack and budget > 0 and len(cycles) < 64:
+        while stack and budget > 0 and len(cycles) < max_cycles:
             current, route, edges, visited = stack.pop(); budget -= 1
             for edge, end, reverse in links.get(current, []):
                 if edge in edges: continue
@@ -227,7 +228,7 @@ def extract_layouts(elements, origin):
         result.append({'points': pts, 'lengthM': length, 'name': ' / '.join(names) or 'Mapped circuit'})
     result.sort(key=lambda r:(' / ' in r['name'], -r['lengthM']))
     if not result: raise ValueError('No closed circuit between 200 m and 30 km found. The venue may be incompletely mapped.')
-    return result[:24]
+    return result[:max_layouts]
 
 
 def layouts(token, fetch=request_json):
@@ -338,14 +339,15 @@ def densify(points, max_segment_length_m):
     return result+[points[-1]]
 
 
-def build(layout, width=12, use_elevation=True, reverse=False, fetch=request_json, max_segment_length_m=None):
+def build(layout, width=12, use_elevation=True, reverse=False, fetch=request_json, max_segment_length_m=None, max_control_points=600):
+    max_control_points=max(3,min(2000,int(max_control_points)))
     width=float(width)
     if not math.isfinite(width) or not 3<=width<=30: raise ValueError('Road width must be 3–30 metres.')
     is_open=bool(layout.get('open'))
     pts=densify(simplify(layout['points']),max_segment_length_m)
     if reverse:
         pts=[{**p,'tags':pts[i-1].get('tags',{})} for i,p in reversed(list(enumerate(pts)))]
-    if len(pts)>600: raise ValueError('This circuit has too many editable points (limit 600).')
+    if len(pts)>max_control_points: raise ValueError(f'This circuit has too many editable points (limit {max_control_points}).')
     warnings=['Banking is set to 0°; set banking per segment in the editor.', 'Start line and driving direction are provisional; verify against the real circuit.', 'Road width uses OSM width where available, otherwise your default.']
     heights=[0.0]*len(pts); cells={}; base=0
     origin=layout['place']; grid=[]; samples=[]; sampled={}

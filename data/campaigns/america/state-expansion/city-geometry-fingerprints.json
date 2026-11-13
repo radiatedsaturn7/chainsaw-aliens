@@ -1,0 +1,202 @@
+{
+  "city-ak": {
+    "originalGeometrySha256": "d3a3eb2cc1f9c67f8fbe45e23488bacefda0bd7d8709724e0f8eb467de282d7a",
+    "portableGeometrySha256": "ffeeedd84556443f3ee80d426c1562cd7465183fba58df775164d22f400e27b8"
+  },
+  "city-al": {
+    "originalGeometrySha256": "ff6b4d6eedf2dd838f4e82687ea92c10fa0a90ba3226e9dc9fb85e4d35e7370e",
+    "portableGeometrySha256": "0b095b49c88f8f4258d7e79a221b3af87bc35efc69b4a8614730dbd662764cd9"
+  },
+  "city-ar": {
+    "originalGeometrySha256": "e186c77b579197182cec594ab7bcbb9fa9f9f5e91090e24016900b9af84badba",
+    "portableGeometrySha256": "9bb7129dab5ec2847806c9e7f0b923322bff474b9a776451c31619792dc07986"
+  },
+  "city-az": {
+    "originalGeometrySha256": "ea3f6c7596ee2573e89de5de744495fc807920250a418744630847216211a358",
+    "portableGeometrySha256": "25aeab710b4dd5441d2b472d6f62784b6cea1963e635ed3d54fa6cb7605f548b"
+  },
+  "city-ca": {
+    "originalGeometrySha256": "c555f4747e4a516b9ea5b89ffdabf782a3153a732efd48bc071b4b2bc2b7bb54",
+    "portableGeometrySha256": "0eba0f9cef4000feb50a3e3ec504a0fc5c9a9373af75b01c949e8a6e9aa1ce0a"
+  },
+  "city-co": {
+    "originalGeometrySha256": "1460a3db7ed80b1c03e9f28703603711868a7715ab6860a1a647aed51fecada4",
+    "portableGeometrySha256": "b670e3c0835ffcea3be3e58e3e2e50727b018c337c7e04333c7f6be38e84dd83"
+  },
+  "city-ct": {
+    "originalGeometrySha256": "e117ebf6d27f802cc86b1ecb417a9bd6ed7a4d075e4fb2c20f0d0de27419e8fd",
+    "portableGeometrySha256": "46f16ff873b5ed471d86ecc796056305eac5fee4d3a2dba80117ed01138693ea"
+  },
+  "city-de": {
+    "originalGeometrySha256": "25cdf5f1174ef77da29827009f55d0f4ab967a7f5cc93baba6e9c8903516a89b",
+    "portableGeometrySha256": "1cb4f1548a2e28d7d5a99119ce3f71d603840f2401caa7092487e3df43ac90a8"
+  },
+  "city-fl": {
+    "originalGeometrySha256": "57ee350e9914ce87a18d089b40bb6e205dd89c5ff222da74266634546ab2b2f2",
+    "portableGeometrySha256": "8345a817de01e295214c40e8ba338d1521c23c53ff0b9e4343f5370064fdd6e2"
+  },
+  "city-ga": {
+    "originalGeometrySha256": "0e9556a8b5794a77854d56b51e331335aef2142ca75b5c467c3d4f7e30f77884",
+    "portableGeometrySha256": "45181cc0a75208b76fe0a0fc4800be671c381c6279d92f33e062f91afa9b22a9"
+  },
+  "city-hi": {
+    "originalGeometrySha256": "d20b0dc37770d9679b0047918a475264e712e9fd678acb12cfddf842d2a6f7d0",
+    "portableGeometrySha256": "6c17a21c91087b4582acc53f3b4be35060464fff9d397290499e5a82a062dec3"
+  },
+  "city-ia": {
+    "originalGeometrySha256": "0cca531d2c59fbdefbe97c67591594b3ad123b208fac9b27fd0dfc71ed202341",
+    "portableGeometrySha256": "aa6f30bcf01a152c7cb9f48c35e272527d7ef42d65baf8391f5c80373b864308"
+  },
+  "city-id": {
+    "originalGeometrySha256": "b695377bf2c766df4da1e3454f76ea34e0496a04c35563462c88e3e9bc076ac3",
+    "portableGeometrySha256": "930bde1b59b793622405755c71ff4159acf5a90bae62b837fcbea40d729d182c"
+  },
+  "city-il": {
+    "originalGeometrySha256": "82f811bfa4477a490533dcd9f5458b77c530643a7c68dbf6fd4bcd71ee03d068",
+    "portableGeometrySha256": "b522ea2da807107612e1a0cdab6c21016c420b532fc1279748c5b8f41cc9fb4b"
+  },
+  "city-in": {
+    "originalGeometrySha256": "43856c85c6ff9f99e55f25c599dfcd636217fbe29d6e8675ee1b63df7c83e4fb",
+    "portableGeometrySha256": "0f1485548a945470c93356eb09132274b3cd14d9b6097c35a943825dd3b38a11"
+  },
+  "city-ks": {
+    "originalGeometrySha256": "3daab22a7c48e27561c6ae14c4dbd3ae7b7eac2697d5c7d379324230d3cf4135",
+    "portableGeometrySha256": "e25a9c8674ddf56b9ce8c421d9191aba1f18b1e285310270dcbd05642072fef1"
+  },
+  "city-ky": {
+    "originalGeometrySha256": "a255afbf8a24dbbd7965ff7d1ea34127bc78076534de4dc0f4934c1c2cbb09f0",
+    "portableGeometrySha256": "0eae604e2532839e7e2f20abbc7f2ab1bee3eb1dd4e5f6738779c7ef5dcfe766"
+  },
+  "city-la": {
+    "originalGeometrySha256": "0461f362f671a753687d9dcbadebccc5ca278c874d07e98c5da1e05b22ca69b4",
+    "portableGeometrySha256": "9011158f94ca557fe30c7d63d80324b6fcac7e70d32f045fd003b6f82f2353fa"
+  },
+  "city-ma": {
+    "originalGeometrySha256": "5dc069c53c8bddb4ca9fdf51f93085dbf22c25bf82de37009d60852d1a93d64f",
+    "portableGeometrySha256": "e68c1e997623a77b1620f3a114681ed78a84e64e9cc1dc71d27266e71d58790d"
+  },
+  "city-md": {
+    "originalGeometrySha256": "982a358752b1d58169cbf2a11055cc66217d44fdb08dbbf31df13c5754085390",
+    "portableGeometrySha256": "323fbf089c2488344407ece23685383b04a634fd382b7d02a58966e77b3fed20"
+  },
+  "city-me": {
+    "originalGeometrySha256": "6615c92bc6bceb85423423c1152cf6b5588ed7e24bee6638fb359248c26ae927",
+    "portableGeometrySha256": "df3ef54e8a090abd649f2aadc9c802f90ce97438acd642baca521f6a72ca1843"
+  },
+  "city-mi": {
+    "originalGeometrySha256": "5e385192e41a76a98639c90857887603e870aca97125370a6e0751849048b13f",
+    "portableGeometrySha256": "3ed1052da645e081206078235ef9e940eb29d3b4a415961b5333afe5b9b69d2b"
+  },
+  "city-mn": {
+    "originalGeometrySha256": "a84db288d2aba4a29969eb764ce926481c3a38ed5463646ad789af0f37256228",
+    "portableGeometrySha256": "ead3d2944f2ed5702235e697a9dbb81d92fb1326f78b71a05e829e839135eaf2"
+  },
+  "city-mo": {
+    "originalGeometrySha256": "c67b60db051fa518c56face552b7c7633b3b50d78fd3b2ad008ae909229a5454",
+    "portableGeometrySha256": "846025184d4b495287fa1b624c4811d66735e7dafea66b1fd54125a127e0213b"
+  },
+  "city-ms": {
+    "originalGeometrySha256": "7aa1e2b3b23d3bfa5ee105ba9ccd6ff77519dc3793cb6d4b05ff69aa4763477a",
+    "portableGeometrySha256": "a36e120ac8b4589f9cbafc0b80c7569cdb41101c0fdd53d9b985a6824e42f235"
+  },
+  "city-mt": {
+    "originalGeometrySha256": "d1442f0df6cc97cc4173e249d87c0b33570764d272d3f838092709255662234c",
+    "portableGeometrySha256": "616c5cafe692ceb73f7bac70d79d37d5d752e1623dd90cf7e05f32399f80761d"
+  },
+  "city-nc": {
+    "originalGeometrySha256": "d1ad3a3b233e2a87f18b3d9e585c2f405938f71fc13e77492f6bbf64fa54674f",
+    "portableGeometrySha256": "e53174602b92b74575ffeb09d7b5424faa8b9c4c9cf744ee691fa3b043b56196"
+  },
+  "city-nd": {
+    "originalGeometrySha256": "bf902206829da136324576d55242da172dda3ea37c1b8d3fce831758b081761e",
+    "portableGeometrySha256": "c91124869e1925b4a37c44541cc1869c75417330e1625b3b2f36a1dd98167a41"
+  },
+  "city-ne": {
+    "originalGeometrySha256": "41e07113cc0e11a9cc65d1c14c1fc9f5330b98936a5194ee048c023ed4aff930",
+    "portableGeometrySha256": "385f589a1e00f33a4aa0f60cc1c650af430cdff90edb93c726e4dda3f1f072d2"
+  },
+  "city-nh": {
+    "originalGeometrySha256": "d8da9884958194b85991a6bc49d568c79dd2b65abb87acc2d235376d16aec585",
+    "portableGeometrySha256": "beadc91cc58744435f830639f68d8bd9f237589c5d066d0a32dc73d34ebb1612"
+  },
+  "city-nj": {
+    "originalGeometrySha256": "47e7f7219fb8a95f87a0628c6f29e15bdf84e5c8e45017aff060cc67ebc184c1",
+    "portableGeometrySha256": "dd5aad25fcabc6d4c1ae2e8512293b1be6df224ee08a1464cc5e4b799b209fb1"
+  },
+  "city-nm": {
+    "originalGeometrySha256": "940587ed24a782162b9df85bfd0d878182ddb0a6974f923552d8ffa1c6c8bfe7",
+    "portableGeometrySha256": "2f28610d42a62f494b8d7c20cae61c6a4ac18dec5b110c9f38ab6c2bced296f9"
+  },
+  "city-nv": {
+    "originalGeometrySha256": "8598a7040aa00a31ac7ade1b3c4edbca7a1d5c27ffbb0ba9c2dc1004894a536e",
+    "portableGeometrySha256": "f01e99e307286f9cb0ccd8fa20553f07eec28bab89653ab357348a6eabf4f0c2"
+  },
+  "city-ny": {
+    "originalGeometrySha256": "3ac65a3511cac293092f898eb60e53a0f09c87c9f88ff98f43b14fa50fbf38f8",
+    "portableGeometrySha256": "31af7e155efd8902807747569a8acc805c8a74d42663b06ba6c3e6b13457de07"
+  },
+  "city-oh": {
+    "originalGeometrySha256": "e2515440b24e5791ba42cc19ee46a00fbee28c4acb1091b3b79aa04c7cf661fa",
+    "portableGeometrySha256": "7e828b87063324818df04c9363da93faeaad08609c8abcaddaad5ef0e1aa3e84"
+  },
+  "city-ok": {
+    "originalGeometrySha256": "31df15905655882284773b343ec6671954b3297e9af15e171a469f523315f0ae",
+    "portableGeometrySha256": "cd7e0fd8adffc79fd616043be757a072130aae8fb0f80a1741b81de3ce61b873"
+  },
+  "city-or": {
+    "originalGeometrySha256": "152c9297ab92964bb38d07513cb8062c02605c70a45a733a96defe83a0f2db4b",
+    "portableGeometrySha256": "6b19b60e8d4a1624942d8101dc6b6054dc4053a85fd2ab912443204fe51ecac8"
+  },
+  "city-pa": {
+    "originalGeometrySha256": "c80af6650eb6027439fbcba18069e6e8acd2a79a2ce70c7125c59d90f657f07b",
+    "portableGeometrySha256": "e85563a7924a664a9f3a156defd7629240dd2b94cd99140f9d969b6929ad9088"
+  },
+  "city-ri": {
+    "originalGeometrySha256": "fda5f0a00928c2edb546fed7288753b678a3f8b4af47203ed71ac0ebd403ad78",
+    "portableGeometrySha256": "f1d79414682d61d80a159240341039d223c178aa9c7393e36fe96d1d5a7587c6"
+  },
+  "city-sc": {
+    "originalGeometrySha256": "12b9a657343327451e40d7bc5f15a45553f56e2d96f78553f3b82a67cf4aa929",
+    "portableGeometrySha256": "683be8da7d51ddd1d1542e6b47571a12067222396b1a4fecbee129214b40d3d7"
+  },
+  "city-sd": {
+    "originalGeometrySha256": "f59fbbbb83d12f3380efc1c0ef649420876f1dab44308f2a3139ab4ac4c4729a",
+    "portableGeometrySha256": "77c6206743cde10d9abe59d8912cb770da0172446866cc9e5814bd21ee8b7b93"
+  },
+  "city-tn": {
+    "originalGeometrySha256": "02f299c67582d5f3c3b6680a8358bef25e1d0f3c7aa8f14f976d9180921c98ca",
+    "portableGeometrySha256": "635153480db15869ed9ade74f4bd2a3b7a60cb0102e49ee6a453aa166ccd9bb9"
+  },
+  "city-tx": {
+    "originalGeometrySha256": "c3874e8b6eff9884936850aed3b1d530d0867089a2820a77177c24d936927878",
+    "portableGeometrySha256": "ff5378550389af9c623f2109307faa82da4c1f94168316c5c8034cd4aeaa2f4e"
+  },
+  "city-ut": {
+    "originalGeometrySha256": "5e75a9e1e180a6e6b666f1e9c930729a8093ea98ee4dfe20780fe3db62fc9cba",
+    "portableGeometrySha256": "67e7054748e6c67a49ac0b3577033defe1d8bbb66e299be7b6a8f39012255370"
+  },
+  "city-va": {
+    "originalGeometrySha256": "3b22587848ee0b74ffdd7738a774b510bb562edaf34afa9e85e467a51523747f",
+    "portableGeometrySha256": "3e1ff18703d4d7e34aac01765523162e8d34a32028526ea1cbb065948ebaf631"
+  },
+  "city-vt": {
+    "originalGeometrySha256": "14b21de68f607c5207a344a74ab85e8da6145bf97213fd6698a8df309f2dd607",
+    "portableGeometrySha256": "6cc7bb2e7eaca58978743205a1728d1ab3cbab55bf18eb169d65c39af38629b0"
+  },
+  "city-wa": {
+    "originalGeometrySha256": "3f93db1d329f72e50941d5dacdcf94bac2ac56e754aa33ef306ed668332dfa6d",
+    "portableGeometrySha256": "eac4d0799c5dd15b09b46c1ef14f9955c47bd5b3e02031b7ddd8747ba37b3774"
+  },
+  "city-wi": {
+    "originalGeometrySha256": "e757528ce8568331b75b416794392ca1a59962d54780a56808d31f3ae795b1f6",
+    "portableGeometrySha256": "c63208a244e296782a21091dba42d3608c14ee28460a9906cfe0867b5d6854da"
+  },
+  "city-wv": {
+    "originalGeometrySha256": "e3a09775ca1daca8f0165ca333f9b65666f7d744da3d854021bf7299c4bbb587",
+    "portableGeometrySha256": "74f61daa446acb9629d9971dec378e67e2586c06c81dd234f3c7c9f59b9c12fe"
+  },
+  "city-wy": {
+    "originalGeometrySha256": "b614ab6e33b27871f447c1c77318bb1d21a0293efd87bdd06ad7a36f0cc8aff2",
+    "portableGeometrySha256": "d3570911f940c8a7774e20959defb04b35197be02018e0bcfabbb5850908d4ae"
+  }
+}
