@@ -1,0 +1,39 @@
+{
+  "inspiration": "2007 UK Panda 100HP 6MT right-hand-drive FWD",
+  "sources": [
+    {
+      "url": "https://xr793.com/wp-content/uploads/2023/01/2007-Fiat-Panda-UK.pdf",
+      "fields": [
+        "{\"powerKw\": 73.5, \"powerRpm\": 6000, \"torqueNm\": 131, \"torqueRpm\": 4250, \"capacityCc\": 1368, \"massKg\": 975, \"finalDrive\": 4.071, \"tire\": \"195/45R15\", \"fuelLitres\": 35, \"lengthM\": 3.578, \"widthM\": 1.606, \"heightM\": 1.522, \"wheelbaseM\": 2.299, \"frontTrackM\": 1.378, \"rearTrackM\": 1.368, \"topMph\": 115, \"zeroTo62Seconds\": 9.5}"
+      ],
+      "kind": "archived OEM UK brochure"
+    },
+    {
+      "url": "https://www.fiat-forum.de/attachment/14-panda-100hp-11-06-pdf/",
+      "fields": [
+        "{\"gears\": [3.545, 2.158, 1.48, 1.121, 0.921, 0.766], \"reverse\": 3.818, \"finalDrive\": 4.071, \"Cd\": 0.33, \"massWithDriverKg\": 1050}"
+      ],
+      "kind": "archived OEM German press data November2006"
+    },
+    {
+      "url": "https://www.media.stellantis.com/uk-en/fiat/press/new-panda-100hp-spearheads-expanded-uk-range",
+      "fields": [
+        "\"2007range 100HP 1.4L6MT; not4x4 orDualogic\""
+      ],
+      "kind": "OEM UK launch December2006"
+    }
+  ],
+  "estimates": [
+    "UK brochure calls100bhp but also73.5kW; German sheet clarifies100PS. Use73.5kW convertedmechanicalhp,not100bhp.",
+    "975kgUK excludesdriver whereasGerman1050includesdriver; do notcombine.",
+    "UK9.5to62mph NOT0to60; estimate separate.",
+    "German sheet secondaryarchive ratios corroborateUKfinaldrive; regional assumption flag.",
+    "Brake rear diameter conflictingGerman257 vsUK240; preferUK240. Dimensions total overhangs don'tsum exactly; don'tsilently invent.",
+    "73.5kW converted to mechanical hp; not100bhp. Source0\u201362mph9.5s is distinct from game estimated0\u201360mph9.2s. Rated115mph is source target, not measured simulated speed.",
+    "Gear ratios and .33Cd from archived OEM German sheet applied to UK car as regional assumption; final4.071 corroborated UK.975kg UK excludes driver; not German1050kg including driver.",
+    "UK frontoverhang720mm retained; rear559mm inferred from length minus wheelbase minus front. Brochure548mm does not sum by11mm. This is explicitly an approximation.",
+    "850idle,6500redline,6800cutoff, torque curve outside131Nm4250rpm and73.5kW6000rpm,62percentfront mass,.55CG,.13clearance,15steering,32psi and suspension/alignment/brake/economy settings are game estimates, not claimed OEM measurements.",
+    "UK brake diameter257front240rear preferred to conflicting German257rear; not independently modelled brake geometry. Open differential approximation and no electronic Sport mode simulation.",
+    "Original native art and RHD cockpit; fixedrear, existing smoke and shared steering wheel. Wheel-well-aware collider prevents runtime tire occlusion."
+  ]
+}
