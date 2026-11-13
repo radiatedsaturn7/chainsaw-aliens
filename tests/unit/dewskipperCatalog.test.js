@@ -21,3 +21,5 @@ test('Dewskipper production editor preview launches on tire support, not an occl
  for(const patch of Object.values(patches))assert.notEqual(patch.invalidContactReason,'body-occluded');
  e.disposeRacePlaytestSession(s,'test-complete');
 });
+
+test('Dewskipper description and fuel economy match its roadster source',()=>{for(const x of [c,d]){assert.match(x.car.description,/UK2004 60kW standard roadster/);assert.doesNotMatch(x.car.description,/utility|2019|4H/);assert.ok(Math.abs(x.car.mechanics.fuelMpg-235.214583/5.1)<1e-5);}});
