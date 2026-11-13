@@ -23,3 +23,5 @@ test('Glasswing production editor preview launches on tire support, not an occlu
 });
 
 test("Naturally aspirated source engine is not mislabeled turbo",()=>{assert.equal(c.car.tuning.aspiration,"Naturally Aspirated");assert.equal(d.car.tuning.aspiration,"Naturally Aspirated");assert.equal(d.car.mechanics.boostBar,0);});
+
+test("Glasswing wheel-opening instruments align with authored binnacle vertically",()=>{assert.equal(d.car.art.interior.steeringWheel.anchorY,660/793);assert.equal(c.car.art.interior.steeringWheel.anchorY,660/793);});

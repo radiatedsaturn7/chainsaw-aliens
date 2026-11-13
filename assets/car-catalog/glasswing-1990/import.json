@@ -75,7 +75,7 @@
           "centerY": 0.5448717948717948,
           "coordinateSpace": "dashboard",
           "anchorX": 0.7463439233484619,
-          "anchorY": 1,
+          "anchorY": 0.832282471626734,
           "width": 0.1260716086737267,
           "sizeSpace": "viewport"
         },
@@ -1214,7 +1214,7 @@
     ],
     "wheelPivotAndWidthPixels": [
       1480,
-      793,
+      660,
       250
     ],
     "method": "Viewport-sized shared wheel with wheel-opening normalized gauges; individual rendered QA pending."
