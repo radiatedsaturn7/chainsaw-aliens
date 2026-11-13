@@ -21,3 +21,5 @@ test('Glimmer production editor preview launches on tire support, not an occludi
  for(const patch of Object.values(patches))assert.notEqual(patch.invalidContactReason,'body-occluded');
  e.disposeRacePlaytestSession(s,'test-complete');
 });
+
+test('Naturally aspirated source label is corrected without physics or artwork changes',async()=>{const{createHash}=await import('node:crypto');for(const [car,expected]of[[c.car,'d77be7173d5e60c237c7827fd09af024703d3e8b762e4ae97db6849ec6a10d4e'],[d.car,'cbb2a9d38b547522e5d9b1e184b7e97d6e787448f3210963a55846c29b736760']]){assert.equal(car.tuning.aspiration,'Naturally Aspirated');assert.equal(car.mechanics.boostBar,0);const rest=structuredClone(car);delete rest.tuning.aspiration;assert.equal(createHash('sha256').update(JSON.stringify(rest)).digest('hex'),expected);}});
