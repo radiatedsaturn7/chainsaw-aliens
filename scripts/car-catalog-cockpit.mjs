@@ -7,6 +7,7 @@ import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
  'cicada-turbo-2015':{size:[1983,793],cluster:[250,550,510,130],wheel:[505,793,255]},
+ 'marigold-1991':{size:[1983,793],cluster:[1240,585,490,125],wheel:[1485,793,250]},
  'glimmer-1986':{size:[1983,793],cluster:[260,580,520,125],wheel:[520,793,250]},
  'rosefinch-1991':{size:[1983,793],cluster:[1335,545,475,130],wheel:[1573,793,250]},
  'larch-turbo-1995':{size:[1983,793],cluster:[230,560,420,125],wheel:[440,793,250]},
