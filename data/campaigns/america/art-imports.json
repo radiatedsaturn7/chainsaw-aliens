@@ -1790,5 +1790,33 @@
     "documentSha256": "507b630e43456b9018075a2e37d9a33c9d081b3550fc81ca3e67f1a5ad780494",
     "width": 512,
     "height": 341
+  },
+  "landmark-city-az-chase-field": {
+    "source": "assets/campaign-art/landmarks/AZ/landmark-city-az-chase-field.png",
+    "sourceSha256": "bf07f68ae3c2f74e92b7c7aee9771698b8e1eb0e320c32335b0e3a35a7ad7c46",
+    "documentSha256": "8b417f52fc9ca232623fc12f515565903e67302933596671c1efb86c041506d3",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-az-heritage-square": {
+    "source": "assets/campaign-art/landmarks/AZ/landmark-city-az-heritage-square.png",
+    "sourceSha256": "9a30da2f01e88a9f63057ce35f96142740214e1239b246426bdad8de30c699b5",
+    "documentSha256": "93f9daff6e10914d1d15ebc92d90b23bbc5f1f8ba1ae005942e9066f239b1bc7",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-az-orpheum-theatre": {
+    "source": "assets/campaign-art/landmarks/AZ/landmark-city-az-orpheum-theatre.png",
+    "sourceSha256": "e1cbaa3db3bffd7caa77ff5d33ff2c864948329c77597426084bd4018d730cc3",
+    "documentSha256": "197ec5ed8b3d58db1eeb3da610dbded235486b43a21576cc7ef05913f3b6f1a5",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-az-arizona-state-capitol": {
+    "source": "assets/campaign-art/landmarks/AZ/landmark-city-az-arizona-state-capitol.png",
+    "sourceSha256": "ba1126b87f3aab40e3d32c451f8a778d0ddd77ccfa66023edce5a3b661e4ca71",
+    "documentSha256": "435c618232cdec7b22d14e1433b18ebf4646293bfde24edc9fa04d7b17db3235",
+    "width": 512,
+    "height": 207
   }
 }

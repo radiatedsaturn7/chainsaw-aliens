@@ -100,35 +100,481 @@
     },
     "landmark-city-az-chase-field": {
       "raceRef": "Phoenix, AZ — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 1042.3461969890668,
+        "worldZ": 518.3025079846583,
+        "routeDistanceM": 2181,
+        "offsetFromRoadM": 134,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.4024916495378414,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 8.345538000641275,
+            "angularWidthDegrees": 19.811234300939187,
+            "rangeM": 148.8870993191534,
+            "occluderIds": [],
+            "score": 0.666178479974349
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 13.096745615734964,
+            "angularWidthDegrees": 17.561863147025687,
+            "rangeM": 168.32029059377123,
+            "occluderIds": [],
+            "score": 0.4761301753706014
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 11.71437217931028,
+            "angularWidthDegrees": 15.75989809315245,
+            "rangeM": 187.85476911542952,
+            "occluderIds": [
+              "city-az-prop-106"
+            ],
+            "score": 0.06377101353931067
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 10.592933727671833,
+            "angularWidthDegrees": 14.28551654017512,
+            "rangeM": 207.47797631188465,
+            "occluderIds": [
+              "city-az-prop-104",
+              "city-az-prop-106"
+            ],
+            "score": 0.0691539181071752
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 9.25973350798053,
+            "angularWidthDegrees": 12.51953427297752,
+            "rangeM": 237.03092534385723,
+            "occluderIds": [
+              "city-az-prop-102",
+              "city-az-prop-104",
+              "city-az-prop-106"
+            ],
+            "score": 0.07555327916169347
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 7.926279428540057,
+            "angularWidthDegrees": 10.740476184483677,
+            "rangeM": 276.584645717791,
+            "occluderIds": [
+              "city-az-prop-102",
+              "city-az-prop-104",
+              "city-az-prop-106"
+            ],
+            "score": 0.08195385874300773
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 6.926890699644999,
+            "angularWidthDegrees": 9.399806556143291,
+            "rangeM": 316.25066357116526,
+            "occluderIds": [
+              "city-az-prop-98",
+              "city-az-prop-100",
+              "city-az-prop-102",
+              "city-az-prop-104",
+              "city-az-prop-106"
+            ],
+            "score": 0.086750924641704
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 90.80333186991543,
+            "angularWidthDegrees": 8.815869784441803,
+            "rangeM": 337.28948859331337,
+            "occluderIds": [
+              "city-az-prop-96",
+              "city-az-prop-98",
+              "city-az-prop-102",
+              "city-az-prop-106",
+              "city-az-prop-107"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "d5ba53c82f49aa105f27e49badf71c1e4a29c8fa8772dc0346736b01d0d98fa7",
+      "sourceSha256": "bf07f68ae3c2f74e92b7c7aee9771698b8e1eb0e320c32335b0e3a35a7ad7c46",
+      "roadSha256": "83b3dc6c44e6d668d2e7db3db875df7fcb014d7f9d189ecb7a8d329e4319b6ae",
+      "placementDetails": {
+        "x": 784.5298210091671,
+        "z": 534.5498421433775,
+        "yaw": 0.18497373570874565,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1971.163861167778,
+        "trackLateral": 134.99999999999994,
+        "minimumRoadClearanceM": 96.64588027155457,
+        "checkedSegments": 4221,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/AZ/chase-field-desktop.png",
+        "docs/art/landmark-previews/AZ/chase-field-mobile.png"
+      ]
     },
     "landmark-city-az-heritage-square": {
       "raceRef": "Phoenix, AZ — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 1086.1928545197447,
+        "worldZ": 70.51991988414684,
+        "routeDistanceM": 2661,
+        "offsetFromRoadM": 109,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 5.7624354270644265,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 7.117872773222727,
+            "angularWidthDegrees": 12.302551139845534,
+            "rangeM": 83.58939750909485,
+            "occluderIds": [],
+            "score": 0.7152850890710909
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 5.745375936959217,
+            "angularWidthDegrees": 9.952499646747672,
+            "rangeM": 103.46497680830078,
+            "occluderIds": [],
+            "score": 0.7701849625216313
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 4.791214633104154,
+            "angularWidthDegrees": 8.352219870767122,
+            "rangeM": 123.38078374355958,
+            "occluderIds": [],
+            "score": 0.8083514146758338
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 3.521046535017335,
+            "angularWidthDegrees": 7.193509491677259,
+            "rangeM": 143.32027592290984,
+            "occluderIds": [],
+            "score": 0.8591581385993066
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.17755838113521,
+            "angularWidthDegrees": 5.952196126575756,
+            "rangeM": 173.28118107792585,
+            "occluderIds": [],
+            "score": 0.9056243240187223
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 1.3438242516018992,
+            "angularWidthDegrees": 4.837736745433658,
+            "rangeM": 213.26476475290974,
+            "occluderIds": [],
+            "score": 0.7629490044964138
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 3.26463756776615,
+            "angularWidthDegrees": 4.091856720844933,
+            "rangeM": 252.18218388051457,
+            "occluderIds": [],
+            "score": 0.592919925655577
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 2.9589835198753702,
+            "angularWidthDegrees": 3.416103121730963,
+            "rangeM": 302.1063185043039,
+            "occluderIds": [],
+            "score": 0.501962568025849
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "8872e29cfc62b1a4a57f59ac63511eb574ad0498e088a7dd3207632b8594c25c",
+      "sourceSha256": "9a30da2f01e88a9f63057ce35f96142740214e1239b246426bdad8de30c699b5",
+      "roadSha256": "83b3dc6c44e6d668d2e7db3db875df7fcb014d7f9d189ecb7a8d329e4319b6ae",
+      "placementDetails": {
+        "x": 1184.9048561187944,
+        "z": -88.53164569677891,
+        "yaw": -3.0737884371790463,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2780.931678318739,
+        "trackLateral": 44.99999975800438,
+        "minimumRoadClearanceM": 20.17069050853626,
+        "checkedSegments": 4221,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/AZ/heritage-square-desktop.png",
+        "docs/art/landmark-previews/AZ/heritage-square-mobile.png"
+      ]
     },
     "landmark-city-az-orpheum-theatre": {
       "raceRef": "Phoenix, AZ — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 104.83860137612753,
+        "worldZ": 109.47155649005504,
+        "routeDistanceM": 3965,
+        "offsetFromRoadM": 33,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 2.35200034647635,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 8.958364258511105,
+            "angularWidthDegrees": 18.282480269220517,
+            "rangeM": 124.29124738058096,
+            "occluderIds": [],
+            "score": 0.6416654296595559
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 7.719808364973008,
+            "angularWidthDegrees": 15.805550065359112,
+            "rangeM": 144.08097364336268,
+            "occluderIds": [],
+            "score": 0.6912076654010797
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 6.780722767773092,
+            "angularWidthDegrees": 13.912487564742529,
+            "rangeM": 163.92175596253813,
+            "occluderIds": [],
+            "score": 0.7287710892890763
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 6.044573716605428,
+            "angularWidthDegrees": 12.42048788132331,
+            "rangeM": 183.79706066988234,
+            "occluderIds": [
+              "city-az-prop-229"
+            ],
+            "score": 0.09098604616029395
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 5.197371396405856,
+            "angularWidthDegrees": 10.695683086146127,
+            "rangeM": 213.6536683812217,
+            "occluderIds": [
+              "city-az-prop-229"
+            ],
+            "score": 0.09505261729725188
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 4.3784174993552085,
+            "angularWidthDegrees": 9.021528411621606,
+            "rangeM": 253.51516484460984,
+            "occluderIds": [
+              "city-az-prop-221",
+              "city-az-prop-229"
+            ],
+            "score": 0.09898359600309499
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 3.7820946235635002,
+            "angularWidthDegrees": 7.798839419258162,
+            "rangeM": 293.4143774332162,
+            "occluderIds": [
+              "city-az-prop-221",
+              "city-az-prop-225",
+              "city-az-prop-229"
+            ],
+            "score": 0.1018459458068952
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 3.2316756543536034,
+            "angularWidthDegrees": 6.667932592216259,
+            "rangeM": 343.3213983126046,
+            "occluderIds": [
+              "city-az-prop-221",
+              "city-az-prop-225",
+              "city-az-prop-228",
+              "city-az-prop-229"
+            ],
+            "score": 0.1044879568591027
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "300f0264d00276a6548b8f51cd5bb9023be7bf5719abb6f49782ec947651c5a8",
+      "sourceSha256": "e1cbaa3db3bffd7caa77ff5d33ff2c864948329c77597426084bd4018d730cc3",
+      "roadSha256": "83b3dc6c44e6d668d2e7db3db875df7fcb014d7f9d189ecb7a8d329e4319b6ae",
+      "placementDetails": {
+        "x": -182.9021599364657,
+        "z": 96.68235062942179,
+        "yaw": -1.4635186454413367,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4175.294880155639,
+        "trackLateral": 94.99991353240594,
+        "minimumRoadClearanceM": 65.45828297206333,
+        "checkedSegments": 4221,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/AZ/orpheum-theatre-desktop.png",
+        "docs/art/landmark-previews/AZ/orpheum-theatre-mobile.png"
+      ]
     },
     "landmark-city-az-arizona-state-capitol": {
       "raceRef": "Phoenix, AZ — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -1782.3861119217718,
+        "worldZ": 208.82436067912312,
+        "routeDistanceM": 5995,
+        "offsetFromRoadM": 124,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.9002223648540255,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 49.37709231487571,
+            "angularWidthDegrees": 44.15730513427688,
+            "rangeM": 88.41868179759336,
+            "occluderIds": [
+              "city-az-prop-317"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 37.34554040590299,
+            "angularWidthDegrees": 38.45869044114589,
+            "rangeM": 102.81989643765027,
+            "occluderIds": [
+              "city-az-prop-317"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 25.085864578131346,
+            "angularWidthDegrees": 33.22180934201521,
+            "rangeM": 120.2222805742506,
+            "occluderIds": [
+              "city-az-prop-317"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.615299140740394,
+            "angularWidthDegrees": 28.890225558322506,
+            "rangeM": 139.22872144278088,
+            "occluderIds": [],
+            "score": 0.6553880343703842
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 5.619457938669186,
+            "angularWidthDegrees": 23.94886643046457,
+            "rangeM": 169.1013106321378,
+            "occluderIds": [],
+            "score": 0.7752216824532325
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 4.701842932833502,
+            "angularWidthDegrees": 19.48059602301315,
+            "rangeM": 208.9324250585153,
+            "occluderIds": [],
+            "score": 0.8119262826866599
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 6.232840866406279,
+            "angularWidthDegrees": 16.402204789771357,
+            "rangeM": 248.85009769486248,
+            "occluderIds": [],
+            "score": 0.7506863653437489
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 28.873241494571484,
+            "angularWidthDegrees": 13.817838148053525,
+            "rangeM": 295.9838683966578,
+            "occluderIds": [
+              "city-az-prop-305",
+              "city-az-prop-309"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "ab704d2c31ed79227ae24e0f07b50a7946ce3e80050ec853b5e2303ffc05cc95",
+      "sourceSha256": "ba1126b87f3aab40e3d32c451f8a778d0ddd77ccfa66023edce5a3b661e4ca71",
+      "roadSha256": "83b3dc6c44e6d668d2e7db3db875df7fcb014d7f9d189ecb7a8d329e4319b6ae",
+      "placementDetails": {
+        "x": -1566.197746737414,
+        "z": 8.780983903523705,
+        "yaw": -2.3163305187218644,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5785.098132797644,
+        "trackLateral": 75,
+        "minimumRoadClearanceM": 26.387665391308303,
+        "checkedSegments": 4221,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/AZ/arizona-state-capitol-desktop.png",
+        "docs/art/landmark-previews/AZ/arizona-state-capitol-mobile.png"
+      ]
     },
     "landmark-city-ca-crypto-com-arena": {
       "raceRef": "Los Angeles, CA — Landmark Run",

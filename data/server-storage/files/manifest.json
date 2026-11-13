@@ -552,7 +552,11 @@
       "landmark-city-co-coors-field": "art/landmark-city-co-coors-field/document.json",
       "landmark-city-co-union-station": "art/landmark-city-co-union-station/document.json",
       "landmark-city-co-colorado-state-capitol": "art/landmark-city-co-colorado-state-capitol/document.json",
-      "landmark-city-co-denver-art-museum": "art/landmark-city-co-denver-art-museum/document.json"
+      "landmark-city-co-denver-art-museum": "art/landmark-city-co-denver-art-museum/document.json",
+      "landmark-city-az-chase-field": "art/landmark-city-az-chase-field/document.json",
+      "landmark-city-az-heritage-square": "art/landmark-city-az-heritage-square/document.json",
+      "landmark-city-az-orpheum-theatre": "art/landmark-city-az-orpheum-theatre/document.json",
+      "landmark-city-az-arizona-state-capitol": "art/landmark-city-az-arizona-state-capitol/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -840,7 +844,11 @@
       "landmark-city-co-coors-field": "doodads/landmark-city-co-coors-field/document.json",
       "landmark-city-co-union-station": "doodads/landmark-city-co-union-station/document.json",
       "landmark-city-co-colorado-state-capitol": "doodads/landmark-city-co-colorado-state-capitol/document.json",
-      "landmark-city-co-denver-art-museum": "doodads/landmark-city-co-denver-art-museum/document.json"
+      "landmark-city-co-denver-art-museum": "doodads/landmark-city-co-denver-art-museum/document.json",
+      "landmark-city-az-chase-field": "doodads/landmark-city-az-chase-field/document.json",
+      "landmark-city-az-heritage-square": "doodads/landmark-city-az-heritage-square/document.json",
+      "landmark-city-az-orpheum-theatre": "doodads/landmark-city-az-orpheum-theatre/document.json",
+      "landmark-city-az-arizona-state-capitol": "doodads/landmark-city-az-arizona-state-capitol/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

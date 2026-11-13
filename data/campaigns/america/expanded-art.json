@@ -2372,6 +2372,34 @@
       "heightM": 24,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-az-chase-field",
+      "source": "landmarks/AZ/landmark-city-az-chase-field.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-az-heritage-square",
+      "source": "landmarks/AZ/landmark-city-az-heritage-square.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-az-orpheum-theatre",
+      "source": "landmarks/AZ/landmark-city-az-orpheum-theatre.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-az-arizona-state-capitol",
+      "source": "landmarks/AZ/landmark-city-az-arizona-state-capitol.png",
+      "heightM": 29,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
