@@ -1,0 +1,129 @@
+{
+  "name": "STI Airslayer",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "wheelFit": "cover",
+  "preservedDocumentSha256": "7a1a02c8991a851a10853d285b8521b36e15e8bbcdbc5ce2a9c4c900b0e319f8",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 80,
+        "y": 305,
+        "radius": 34
+      },
+      {
+        "wheel": "fr",
+        "x": 363,
+        "y": 305,
+        "radius": 34
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 573,
+        "y": 280,
+        "radius": 57
+      },
+      {
+        "wheel": "fl",
+        "x": 744,
+        "y": 290,
+        "radius": 63
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1227,
+        "y": 292,
+        "radius": 62
+      },
+      {
+        "wheel": "rr",
+        "x": 1573,
+        "y": 288,
+        "radius": 58
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1753,
+        "y": 283,
+        "radius": 43
+      },
+      {
+        "wheel": "rr",
+        "x": 1861,
+        "y": 287,
+        "radius": 60
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 78,
+        "y": 647,
+        "radius": 35
+      },
+      {
+        "wheel": "rl",
+        "x": 375,
+        "y": 647,
+        "radius": 35
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 804,
+        "y": 628,
+        "radius": 56
+      },
+      {
+        "wheel": "fl",
+        "x": 960,
+        "y": 619,
+        "radius": 37
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 1171,
+        "y": 639,
+        "radius": 62
+      },
+      {
+        "wheel": "fl",
+        "x": 1527,
+        "y": 637,
+        "radius": 63
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1990,
+        "y": 638,
+        "radius": 61
+      },
+      {
+        "wheel": "rr",
+        "x": 2111,
+        "y": 613,
+        "radius": 40
+      }
+    ]
+  }
+}

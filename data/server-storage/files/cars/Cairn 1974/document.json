@@ -3615,7 +3615,7 @@
           },
           "collisionFriction": 0.62,
           "collisionRestitution": 0.08,
-          "wheelWellAware": false,
+          "wheelWellAware": true,
           "wheelWellClearanceMarginM": 0.06,
           "maximumTireDeflectionM": 0.04,
           "wheelRadiusM": 0.2946,
@@ -3625,24 +3625,168 @@
           "customColliders": [],
           "pieces": [
             {
-              "id": "lower-chassis",
+              "id": "central-underfloor",
               "type": "box",
               "centerM": {
                 "x": 0,
-                "y": -0.21000000000000005,
+                "y": -0.32000000000000006,
+                "z": -0.07499999999999996
+              },
+              "sizeM": {
+                "x": 0.5593000000000001,
+                "y": 0.2,
+                "z": 1.6908
+              },
+              "exposedFaces": [
+                "bottom",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "transmission-tunnel",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.19000000000000006,
                 "z": 0
               },
               "sizeM": {
+                "x": 0.26846400000000004,
+                "y": 0.273,
+                "z": 1.6908
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "left-rocker-rail",
+              "type": "box",
+              "centerM": {
+                "x": -0.7145370000000001,
+                "y": -0.2800000000000001,
+                "z": -0.07499999999999996
+              },
+              "sizeM": {
+                "x": 0.19092599999999998,
+                "y": 0.28,
+                "z": 1.6908
+              },
+              "exposedFaces": [
+                "left",
+                "bottom",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "right-rocker-rail",
+              "type": "box",
+              "centerM": {
+                "x": 0.7145370000000001,
+                "y": -0.2800000000000001,
+                "z": -0.07499999999999996
+              },
+              "sizeM": {
+                "x": 0.19092599999999998,
+                "y": 0.28,
+                "z": 1.6908
+              },
+              "exposedFaces": [
+                "right",
+                "bottom",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "front-subframe",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.29000000000000004,
+                "z": 1.175
+              },
+              "sizeM": {
+                "x": 0.5593000000000001,
+                "y": 0.26,
+                "z": 0.5918999999999999
+              },
+              "exposedFaces": [
+                "bottom",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "rear-subframe",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.29000000000000004,
+                "z": -1.325
+              },
+              "sizeM": {
+                "x": 0.5593000000000001,
+                "y": 0.26,
+                "z": 0.5918999999999999
+              },
+              "exposedFaces": [
+                "bottom",
+                "front",
+                "rear"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "front-bumper-structure",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.15960000000000008,
+                "z": 1.8448
+              },
+              "sizeM": {
                 "x": 1.62,
-                "y": 0.42,
-                "z": 4.22
+                "y": 0.3024,
+                "z": 0.5303999999999999
               },
               "exposedFaces": [
                 "left",
                 "right",
                 "bottom",
                 "top",
-                "front",
+                "front"
+              ],
+              "vertices": []
+            },
+            {
+              "id": "rear-bumper-structure",
+              "type": "box",
+              "centerM": {
+                "x": 0,
+                "y": -0.15960000000000008,
+                "z": -1.9197999999999997
+              },
+              "sizeM": {
+                "x": 1.62,
+                "y": 0.3024,
+                "z": 0.38039999999999996
+              },
+              "exposedFaces": [
+                "left",
+                "right",
+                "bottom",
+                "top",
                 "rear"
               ],
               "vertices": []
@@ -3656,17 +3800,15 @@
                 "z": 0.825
               },
               "sizeM": {
-                "x": 1.55,
+                "x": 0.5593000000000001,
                 "y": 0.3,
                 "z": 1.15
               },
               "exposedFaces": [
                 "left",
                 "right",
-                "bottom",
                 "top",
-                "front",
-                "rear"
+                "front"
               ],
               "vertices": []
             },
@@ -3679,17 +3821,14 @@
                 "z": -0.15
               },
               "sizeM": {
-                "x": 1.5,
+                "x": 0.5593000000000001,
                 "y": 0.8,
                 "z": 1.9
               },
               "exposedFaces": [
                 "left",
                 "right",
-                "bottom",
-                "top",
-                "front",
-                "rear"
+                "top"
               ],
               "vertices": []
             },
@@ -3702,16 +3841,14 @@
                 "z": -0.9249999999999998
               },
               "sizeM": {
-                "x": 1.5228,
+                "x": 0.5593000000000001,
                 "y": 0.252,
                 "z": 0.35
               },
               "exposedFaces": [
                 "left",
                 "right",
-                "bottom",
                 "top",
-                "front",
                 "rear"
               ],
               "vertices": []

@@ -1,0 +1,38 @@
+{
+  "inspiration": "1987US production Buick GNX4AT, not prototype or standardGrandNational",
+  "sources": [
+    {
+      "url": "https://www.americanmusclecarmuseum.com/buick-vehicles/137-1987-buick-grand-national-regal-gnx.html",
+      "fields": [
+        "Museum production GNX155276hp4400rpm360lbft3000rpm;prepared2004R"
+      ]
+    },
+    {
+      "url": "https://www.ultimatecarpage.com/spec/2302/Buick-Grand-National-GNX.html",
+      "fields": [
+        "Secondary3791cc1575kg5095/1918/1387mm2746wheelbase1509/1506tracks"
+      ]
+    },
+    {
+      "url": "https://over-drive-magazine.com/wp-content/uploads/2022/12/1987-Buick-Regal-Grand-National-MVMA-1-43.pdf",
+      "fields": [
+        "October1986factory relatedGrandNational physicalpage16printed9 sharedTHM200-4R2.74/1.57/1/.67 reverse2.07 final3.42;not GNX-specificconverter or shifts"
+      ]
+    },
+    {
+      "url": "https://www.hotrod.com/features/the-final-option-april-1987-982-1324-52-1",
+      "fields": [
+        "Periodprototype article shows front245/50R16rear255/50R16,3.42final;300hpengine ignored"
+      ]
+    }
+  ],
+  "estimates": [
+    "1575kgsecondary curb weight differs from3545lbC&Dprototype;1918mmwidthsecondary versus narrower baseRegal not factoryverifiedGNX.",
+    "Use production rated276hp/360lbft, not prototype300/380 or rumored dyno420lbft.",
+    "All torque interpolation except3000torque and4400power-derived anchors;5500redline5800limiter750idle83%efficiency and automatic calibration are provisional.",
+    "Converter1.8sharedGN baseline is an estimate for modifiedGNX, not verifiedGNXstall; no detailed torque-arm liveaxle fidelity claimed.",
+    "57%frontmass,.55CG,suspension/brakes/aero/steering/32psi and collidergeometry development assumptions.",
+    "124mph and5.4sec0-60 display estimates, not verifiedsimulation or implemented speedgovernor.",
+    "Nominal front radius.3257 rear.3307 from245/50R16and255/50R16. Wheel anchors and cockpit must pass productionQA."
+  ]
+}

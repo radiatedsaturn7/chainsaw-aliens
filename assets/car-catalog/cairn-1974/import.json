@@ -982,7 +982,7 @@
           },
           "collisionFriction": 0.62,
           "collisionRestitution": 0.08,
-          "wheelWellAware": false,
+          "wheelWellAware": true,
           "wheelWellClearanceMarginM": 0.06,
           "maximumTireDeflectionM": 0.04,
           "wheelRadiusM": 0.2946,
