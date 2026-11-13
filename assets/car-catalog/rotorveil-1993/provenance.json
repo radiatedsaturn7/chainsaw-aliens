@@ -1,0 +1,7 @@
+{
+  "generator": "built-in image_gen",
+  "styleReference": "cinder-si-1991 original game art",
+  "bodySha256": "7751cf322f17a2845ce7248b896f96b3249a1fd8f9167e1ea7caee06a3a17940",
+  "dashboardSha256": "5be3c6419f6539ef8794e2a9f3eb748307c084bf1177c978a48e66b5480f962a",
+  "status": "Original PNGs generated and visually inspected; runtime gates pending"
+}

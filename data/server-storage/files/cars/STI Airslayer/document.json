@@ -81,10 +81,10 @@
             "artRef": "catalog-sti-airslayer-body",
             "frameIndex": 0,
             "transforms": {
-              "bodyScaleX": 2.3804876119041634,
+              "bodyScaleX": 2.396226372974604,
               "bodyScaleY": 1.3558729976224293,
-              "bodyOffsetX": 0.024591814172563176,
-              "bodyOffsetY": 1.643003213620644,
+              "bodyOffsetX": -8.881784197001252e-16,
+              "bodyOffsetY": 1.61883435448299,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -96,7 +96,7 @@
               "tireScaleX": 0.6199105044315235,
               "tireScaleY": 0.6199105044315235,
               "tireSpacingScale": 1,
-              "frontTireOffsetX": 1.1054209979214846e-15,
+              "frontTireOffsetX": 6.632525987528907e-16,
               "frontTireOffsetY": 0,
               "rearTireOffsetX": 0,
               "rearTireOffsetY": 0
@@ -113,10 +113,10 @@
             "artRef": "catalog-sti-airslayer-body",
             "frameIndex": 7,
             "transforms": {
-              "bodyScaleX": 3.704942954099545,
-              "bodyScaleY": 2.110253413659558,
-              "bodyOffsetX": -4.36001835757599,
-              "bodyOffsetY": 0.7716674483318396,
+              "bodyScaleX": 3.6993083742321824,
+              "bodyScaleY": 2.093204711820899,
+              "bodyOffsetX": -5.794304699643725,
+              "bodyOffsetY": 0.709989467488438,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -125,13 +125,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 1.7454432864275342,
-              "tireScaleY": 1.7454432864275342,
+              "tireScaleX": 1.7313418794713966,
+              "tireScaleY": 1.7313418794713966,
               "tireSpacingScale": 1,
-              "frontTireOffsetX": -0.12732800854937038,
-              "frontTireOffsetY": -0.6551886085977181,
-              "rearTireOffsetX": 0.12732800854936902,
-              "rearTireOffsetY": 0.6551886085977167
+              "frontTireOffsetX": 0.9018917624168118,
+              "frontTireOffsetY": -0.6589717736594534,
+              "rearTireOffsetX": -0.9018917624168077,
+              "rearTireOffsetY": 0.6589717736594554
             },
             "cylinder": true,
             "tireMode": "right"
@@ -145,10 +145,10 @@
             "artRef": "catalog-sti-airslayer-body",
             "frameIndex": 2,
             "transforms": {
-              "bodyScaleX": 2.522739193242554,
-              "bodyScaleY": 1.4368963463856408,
-              "bodyOffsetX": -4.561016329363497,
-              "bodyOffsetY": 0.18369564776764738,
+              "bodyScaleX": 2.5467578203487133,
+              "bodyScaleY": 1.4410492259994718,
+              "bodyOffsetX": -4.470893752430107,
+              "bodyOffsetY": 0.1539296425497942,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -157,13 +157,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 2,
             "transforms": {
-              "tireScaleX": 1.4198153911041218,
-              "tireScaleY": 1.4198153911041218,
+              "tireScaleX": 1.423918903795174,
+              "tireScaleY": 1.423918903795174,
               "tireSpacingScale": 1,
-              "frontTireOffsetX": 2.0301221021717147e-15,
-              "frontTireOffsetY": 0.05634887632884894,
-              "rearTireOffsetX": 2.9817418375647058e-15,
-              "rearTireOffsetY": -0.05634887632884846
+              "frontTireOffsetX": 0,
+              "frontTireOffsetY": 0.05651173435292056,
+              "rearTireOffsetX": -1.0785023667787234e-15,
+              "rearTireOffsetY": -0.05651173435292008
             },
             "cylinder": true,
             "tireMode": "right"
@@ -177,10 +177,10 @@
             "artRef": "catalog-sti-airslayer-body",
             "frameIndex": 3,
             "transforms": {
-              "bodyScaleX": 3.4655526777465813,
-              "bodyScaleY": 1.9739020165856114,
-              "bodyOffsetX": -0.1897159250627869,
-              "bodyOffsetY": -1.6903279230064185,
+              "bodyScaleX": 3.4829585057940546,
+              "bodyScaleY": 1.97078600048259,
+              "bodyOffsetX": 0.017941787835159317,
+              "bodyOffsetY": -1.7221196062985917,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -189,13 +189,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 1.9269575946092987,
-              "tireScaleY": 1.9269575946092987,
+              "tireScaleX": 1.9239156853127934,
+              "tireScaleY": 1.9239156853127934,
               "tireSpacingScale": 1,
-              "frontTireOffsetX": 1.165038038308543,
-              "frontTireOffsetY": 1.0956605103283579,
-              "rearTireOffsetX": -1.1650380383085415,
-              "rearTireOffsetY": -1.0956605103283585
+              "frontTireOffsetX": 0.9861667545503585,
+              "frontTireOffsetY": 1.0957969706630484,
+              "rearTireOffsetX": -0.9861667545503583,
+              "rearTireOffsetY": -1.0957969706630468
             },
             "cylinder": true,
             "tireMode": "left"
@@ -209,9 +209,9 @@
             "artRef": "catalog-sti-airslayer-body",
             "frameIndex": 4,
             "transforms": {
-              "bodyScaleX": 1.7502027942125888,
+              "bodyScaleX": 1.7617743829346557,
               "bodyScaleY": 0.9968767311239898,
-              "bodyOffsetX": 0,
+              "bodyOffsetX": -0.01808060737822892,
               "bodyOffsetY": -0.6246280785718072,
               "bodyRotationDeg": 0
             },
@@ -226,7 +226,7 @@
               "tireSpacingScale": 1,
               "frontTireOffsetX": 0,
               "frontTireOffsetY": 0,
-              "rearTireOffsetX": 5.955685353758556e-16,
+              "rearTireOffsetX": 0,
               "rearTireOffsetY": -7.042195519646941e-17
             },
             "cylinder": true,
@@ -241,10 +241,10 @@
             "artRef": "catalog-sti-airslayer-body",
             "frameIndex": 5,
             "transforms": {
-              "bodyScaleX": 2.9329839158381223,
-              "bodyScaleY": 1.670562650298685,
-              "bodyOffsetX": 0.504232668635419,
-              "bodyOffsetY": -1.0526879276056966,
+              "bodyScaleX": 2.9396334381032805,
+              "bodyScaleY": 1.6633526976353272,
+              "bodyOffsetX": 0.747759032557795,
+              "bodyOffsetY": -1.075963133408419,
               "bodyRotationDeg": 0
             },
             "visible": true,
@@ -254,13 +254,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 1.5221102509653368,
-              "tireScaleY": 1.5221102509653368,
+              "tireScaleX": 1.5155410014637336,
+              "tireScaleY": 1.5155410014637336,
               "tireSpacingScale": 1,
-              "frontTireOffsetX": -0.25934839582241487,
-              "frontTireOffsetY": 1.0174955960679362,
-              "rearTireOffsetX": 0.2593483958224123,
-              "rearTireOffsetY": -1.0174955960679368
+              "frontTireOffsetX": -0.44638079773277034,
+              "frontTireOffsetY": 1.0182060266858384,
+              "rearTireOffsetX": 0.4463807977327678,
+              "rearTireOffsetY": -1.0182060266858382
             },
             "cylinder": true,
             "tireMode": "right"
@@ -274,10 +274,10 @@
             "artRef": "catalog-sti-airslayer-body",
             "frameIndex": 6,
             "transforms": {
-              "bodyScaleX": 2.452074229846404,
-              "bodyScaleY": 1.3966471490078913,
-              "bodyOffsetX": 4.725195567667157,
-              "bodyOffsetY": 0.24812306175199395,
+              "bodyScaleX": 2.475219679327682,
+              "bodyScaleY": 1.40057031515679,
+              "bodyOffsetX": 4.307833190845838,
+              "bodyOffsetY": 0.21937415615819425,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -286,13 +286,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 2,
             "transforms": {
-              "tireScaleX": 1.402303436564887,
-              "tireScaleY": 1.402303436564887,
+              "tireScaleX": 1.406242491161979,
+              "tireScaleY": 1.406242491161979,
               "tireSpacingScale": 1,
-              "frontTireOffsetX": 0,
-              "frontTireOffsetY": -0.027385238215841178,
-              "rearTireOffsetX": 6.344131569286608e-17,
-              "rearTireOffsetY": 0.027385238215841656
+              "frontTireOffsetX": -2.0301221021717147e-15,
+              "frontTireOffsetY": -0.02746216304229032,
+              "rearTireOffsetX": -4.4408920985006257e-16,
+              "rearTireOffsetY": 0.027462163042289836
             },
             "cylinder": true,
             "tireMode": "auto"
@@ -306,10 +306,10 @@
             "artRef": "catalog-sti-airslayer-body",
             "frameIndex": 1,
             "transforms": {
-              "bodyScaleX": 3.1101729573123857,
-              "bodyScaleY": 1.7714856022217074,
-              "bodyOffsetX": 4.394584148030114,
-              "bodyOffsetY": 0.5710429837157577,
+              "bodyScaleX": 3.122773358622209,
+              "bodyScaleY": 1.7669799992203952,
+              "bodyOffsetX": 4.91467579552883,
+              "bodyOffsetY": 0.5441319308129862,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -318,13 +318,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 1.6602754792749106,
-              "tireScaleY": 1.6602754792749106,
+              "tireScaleX": 1.656052728509652,
+              "tireScaleY": 1.656052728509652,
               "tireSpacingScale": 1,
-              "frontTireOffsetX": 0.24547707781228226,
-              "frontTireOffsetY": -0.966221557679276,
-              "rearTireOffsetX": -0.2454770778122818,
-              "rearTireOffsetY": 0.9662215576792771
+              "frontTireOffsetX": -0.44327321838139405,
+              "frontTireOffsetY": -0.9666214811460109,
+              "rearTireOffsetX": 0.44327321838139266,
+              "rearTireOffsetY": 0.966621481146012
             },
             "cylinder": true,
             "tireMode": "auto"
