@@ -1,0 +1,124 @@
+{
+  "researchedAt": "2026-11-13",
+  "vehicle": "2004 US Subaru Forester 2.5 XT AWD 5MT, standard non-Premium",
+  "fictionalName": "Briar XT 2004",
+  "sources": [
+    {
+      "id": "soa-brochure",
+      "url": "https://xr793.com/wp-content/uploads/2020/02/2004-Subaru-Forester.pdf",
+      "kind": "Subaru of America manufacturer brochure hosted by archive",
+      "locator": "PDF page14, printed pages24–25; page15 footnotes",
+      "access": "PDF downloaded, text extracted, specification spread visually inspected",
+      "sha256": "7ff44f68f9fa2fab9804793bfe7c52b34219acb320c8247ae3a03c2be72fceea",
+      "fields": [
+        "210hp@5600rpm",
+        "235lb-ft@3600rpm",
+        "3210lb manual XT curb weight",
+        "175.2in length",
+        "68.3in width",
+        "65in height all models",
+        "99.4in wheelbase",
+        "7.5in minimum clearance at curb weight all models",
+        "215/60R16 94H M+S tires",
+        "16x6.5in wheels",
+        "15.9USgal tank",
+        "full-time AWD; viscous-locking center differential, limited-slip rear"
+      ]
+    },
+    {
+      "id": "usdm-service",
+      "url": "https://www.scribd.com/document/851296404/Usdm-Forester-Fsm-2004-g8080be-v14-Sg",
+      "kind": "Manufacturer service manual G8080BE, 2004MY, third-party hosted copy",
+      "locator": "SPC-2 dimensions/engine, SPC-3 transmission/tires, SPC-6 US XT weights",
+      "access": "Full relevant text retrieved through web reader; specification table has explicit2.5L turbo5MT column",
+      "fields": [
+        "4450mm length",
+        "1735mm width",
+        "1585mm height at C.W. turbo",
+        "2525mm wheelbase",
+        "195mm clearance turbo",
+        "gear ratios3.454/1.947/1.366/.972/.738;reverse3.333;front/rearfinal4.444;transfer1.000",
+        "1455kg US XT5MT non-sunroof variants",
+        "700±100rpm idle",
+        "2457cc",
+        "8.2±.2 compression",
+        "60L tank"
+      ]
+    },
+    {
+      "id": "usdm-service-mirror",
+      "url": "https://www.manualslib.com/manual/1556059/Subaru-Forester-Sg-2004.html?page=60",
+      "kind": "Same manufacturer manual hosted by ManualsLib",
+      "locator": "page60/SPC-2",
+      "access": "Read dimensions and turbo engine values; page61 unavailable in web reader",
+      "fields": [
+        "4450mm length",
+        "1735mm width",
+        "1585mm turboheight atC.W.",
+        "2525mm wheelbase",
+        "195mm clearance",
+        "210hp/235lb-ft"
+      ]
+    }
+  ],
+  "recommendedRuntimeAnchors": {
+    "powerHp": 210,
+    "powerPeakRpm": 5600,
+    "torqueLbFt": 235,
+    "torquePeakRpm": 3600,
+    "weightKg": 1455,
+    "lengthM": 4.45,
+    "widthM": 1.735,
+    "wheelbaseM": 2.525,
+    "stockTire": "215/60R16 94H M+S",
+    "wheelRimIn": 16,
+    "nominalTireDiameterM": 0.6644,
+    "driveType": "AWD",
+    "manualForwardRatios": [
+      3.454,
+      1.947,
+      1.366,
+      0.972,
+      0.738
+    ],
+    "reverseRatio": 3.333,
+    "finalDrive": 4.444,
+    "transferRatio": 1,
+    "idleRpm": 700,
+    "fuelTankL": 60
+  },
+  "derivations": {
+    "nominalTireDiameterM": "16*0.0254 +2*(215/1000)*0.60; unloaded nominal tire geometry, not measured rolling radius",
+    "brochure3210lbToKg": 1456.0315077,
+    "weightDecision": "Use1455kg direct service-manual metric value rather than1456.0315kg derived from rounded3210lb; cite both. Two source unit values differ because rounded manufacturer tables."
+  },
+  "unresolvedConflicts": [
+    {
+      "field": "heightM",
+      "brochure": 1.651,
+      "service": 1.585,
+      "explanation": "Brochure65.0in all models; service1585mm turbo at curbweight. Roof rails/crossbars may explain some difference but neither inspected source explicitly establishes inclusion, so NOT resolved. Choose one named convention and retain discrepancy, do not label roofrail exclusion verified."
+    },
+    {
+      "field": "groundClearanceM",
+      "brochure": 0.1905,
+      "service": 0.195,
+      "explanation": "Brochure7.5in at curbweight allmodels vs service195mm turbo. Difference not just rounding to one decimal inch. Retain documented source choice, no silent averaging."
+    }
+  ],
+  "modelingNotVerified": [
+    "redline/limiter",
+    "complete torque curve and turbo response",
+    "aerodynamic drag/frontalarea",
+    "brake torque and tire friction",
+    "suspension spring/damper values",
+    "CG height",
+    "clutch/shifting control dynamics",
+    "damage/wear effects",
+    "factory acceleration calibration"
+  ],
+  "excludedSource": {
+    "url": "https://vmx.yourcmc.ru/var/subaru/Impreza/Forester.pdf",
+    "reason": "Search result misleading: downloaded PDF cover is2001 Forester G8050GE1, NOT2004. No values used."
+  }
+}

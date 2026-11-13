@@ -400,7 +400,9 @@
       "catalog-ember-pod-body": "art/catalog-ember-pod-body/document.json",
       "catalog-ember-pod-dashboard": "art/catalog-ember-pod-dashboard/document.json",
       "catalog-nightcoil-gt-1995-body": "art/catalog-nightcoil-gt-1995-body/document.json",
-      "catalog-nightcoil-gt-1995-dashboard": "art/catalog-nightcoil-gt-1995-dashboard/document.json"
+      "catalog-nightcoil-gt-1995-dashboard": "art/catalog-nightcoil-gt-1995-dashboard/document.json",
+      "catalog-briar-xt-2004-body": "art/catalog-briar-xt-2004-body/document.json",
+      "catalog-briar-xt-2004-dashboard": "art/catalog-briar-xt-2004-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -420,7 +422,8 @@
       "Trailglass 2024": "cars/Trailglass 2024/document.json",
       "2024 Sentinel Sedan": "cars/2024 Sentinel Sedan/document.json",
       "Ember Pod Prototype": "cars/Ember Pod Prototype/document.json",
-      "Nightcoil GT 1995": "cars/Nightcoil GT 1995/document.json"
+      "Nightcoil GT 1995": "cars/Nightcoil GT 1995/document.json",
+      "Briar XT 2004": "cars/Briar XT 2004/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
