@@ -16,7 +16,7 @@ export class RaceRadioDirector {
   }
   update(session, {paused=false,dt=0}={}) {
     if(session)session.raceMusicCountdownClock=false;
-    if(session!==this.session){this.reset(!session);this.session=session;}
+    if(session!==this.session){this.reset(!session);this.session=session;this.countdownLeadSeconds=Math.max(0,Math.min(5,(Number(session?.countdownRemainingMs||0)-1000)/1000));}
     if(!session||!session.running||session.preparing||(session.startupFramePending&&!session.raceIntroVisible)||session.carEditorPreview)return;
     if(!this.radio.available){session.raceMusicPending=false;this.radio.setGain(1);return;}
     if(this.starting&&session.raceMusicPending){
@@ -42,7 +42,7 @@ export class RaceRadioDirector {
         // A delayed/ignored initial media seek must not turn a long musical
         // intro into a long wait at the rear camera. Catch up before countdown;
         // never seek at GO or restart an unmarked song.
-        const maximumLeadSeconds = 3;
+        const maximumLeadSeconds = this.countdownLeadSeconds;
         if (startCue-position > maximumLeadSeconds+.25) {
           if (!this.countdownCatchupAudio || this.countdownCatchupAudio !== this.radio.audio) {
             this.countdownCatchupAudio = this.radio.audio;

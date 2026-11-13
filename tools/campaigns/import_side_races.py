@@ -8,6 +8,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import race_track_import as track
 import import_america as america
 import terrain_tiles
+import race_route_import as route
 
 IMPORT_VERSION=3
 TARGET_SECONDS=210
@@ -30,18 +31,20 @@ def mapped_road_width(tags, default=7):
     return default
 
 
-def snapshot(spec, key=None):
+def snapshot(spec, key=None, bounds=None, max_depth=2, request_interval=8, accept=None):
     lat,lon,kind,pattern=spec[:4]
     # Small API map extracts rather than routing across unrelated roads.
     radius=.008 if key in ('H06-S04','H06-S05','H07-S03','H08-S07') else .018
-    ways={}
+    ways={};accepted=False
     def box(s,w,n,e,depth=0):
+        nonlocal accepted
+        if accepted:return
         url=f'https://api.openstreetmap.org/api/0.6/map.json?bbox={w:.5f},{s:.5f},{e:.5f},{n:.5f}'
         try:
-            if track.cached_json(url) is None:time.sleep(8)
+            if track.cached_json(url) is None:time.sleep(request_interval)
             data=track.request_json(url)
         except ValueError as exc:
-            if depth>=2 or not any(x in str(exc) for x in ('400','size limit')):raise
+            if depth>=max_depth or not any(x in str(exc) for x in ('400','size limit')):raise
             a,b=(s+n)/2,(w+e)/2
             for bounds in [(s,w,a,b),(s,b,a,e),(a,w,n,b),(a,b,n,e)]:box(*bounds,depth+1)
             return
@@ -56,7 +59,8 @@ def snapshot(spec, key=None):
             elif not re.search(pattern,(tags.get('name','')+' '+tags.get('ref','')) if kind=='nameOrRef' else tags.get(kind,''),re.I):continue
             if not all(i in nodes for i in way.get('nodes',[])):continue
             ways[way['id']]={**way,'geometry':[{k:nodes[i][k] for k in ('lat','lon')} for i in way['nodes']]}
-    box(lat-radius,lon-radius,lat+radius,lon+radius)
+        if accept is not None and ways:accepted=bool(accept(list(ways.values())))
+    box(*(bounds or (lat-radius,lon-radius,lat+radius,lon+radius)))
     for bounds in (spec[4] if len(spec)>4 else []):box(*bounds)
     if not ways:raise ValueError('No matching motorable mapped geometry in candidate search area; needs source review')
     return list(ways.values())
@@ -91,10 +95,15 @@ def build(candidate,hub):
         if key not in ('H06-S08','H04-S08') and abs(layout['lengthM']-pattern)>pattern*.2:raise ValueError('Mapped circuit lengths do not match intended venue configuration within 20%; review required')
         layout={**layout,'place':origin,'open':False}
     else:
+        override=json.loads(Path('tools/campaigns/side_route_overrides.json').read_text()).get(key)
         if kind=='drag':
             ways=[w for w in ways if (key=='H03-S08' and w['id']==1568814841) or w.get('tags',{}).get('sport')=='drag_racing' or re.search('drag',w.get('tags',{}).get('name',''),re.I)]
             if not ways:raise ValueError('No explicitly mapped drag strip; do not substitute an oval or access road')
-        points=america.longest_connected_trace(ways,(lat,lon))
+        if override:
+            selected=[w for w in ways if w.get('tags',{}).get('highway')==override['requiredHighway'] and override['requiredRef'] in w.get('tags',{}).get('ref','').split(';')]
+            targets=[dict(zip(('x','y'),track.metric(p['lat'],p['lon'],(lat,lon)))) for p in override['waypoints']]
+            points=route.trace(selected,(lat,lon),targets,max_snap=5)
+        else:points=america.longest_connected_trace(ways,(lat,lon))
         if kind=='drag':
             # Keep a real contiguous quarter mile; the remaining source is runoff.
             distances,_,_=america.profile(points)
@@ -103,7 +112,7 @@ def build(candidate,hub):
             a,b=points[end-1],points[end];t=(402.336-distances[end-1])/(distances[end]-distances[end-1])
             p={**a,**{k:a[k]+t*(b[k]-a[k]) for k in ('x','y','lat','lon')}}
             points=points[:end]+[p]
-        else:
+        elif not override:
             america.TARGET_SECONDS=TARGET_SECONDS
             points=america.select_section(points,{'lat':lat,'lon':lon,'paceCapMps':PACE_CAP_MPS,'paceSettings':PACE_SETTINGS})
         distances,_,_=america.profile(points)
@@ -115,7 +124,11 @@ def build(candidate,hub):
     layout['displayName']=authored['name'] if authored else candidate['name']
     result=track.build(layout,width=12 if kind=='drag' else 10 if kind=='circuit' else 4.5 if candidate['import_kind']=='forest_check' else 7,use_elevation=True,fetch=terrain_tiles.importer_fetch,max_segment_length_m=50)
     race=result['race'];race['id']='side-'+key.lower()
+    # Simplification can discard all vertices of a short way; retain every
+    # traversed source ID, not just tags left on the simplified control points.
+    race['source']['osmWayIds']=sorted({p.get('tags',{}).get('osmWayId') for p in layout['points'] if p.get('tags',{}).get('osmWayId') is not None})
     race['source'].update(provider='OpenStreetMap / Mapzen Terrain Tiles',elevationProvider='Mapzen / Tilezen Terrarium DEM, zoom 12',candidateId=key,sourceSnapshot=str(source),selectionGuidance=candidate['selection_guidance'])
+    if kind not in ('circuit','drag') and not authored and override:race['source']['routeSelection']=override
     if authored:race['source'].update(provider='Original fictional course / Mapzen Terrain Tiles',geometryMethod=authored['geometryMethod'],geometryAdaptation=authored['description'],license=authored['license'],attribution=authored['license'],sourceSnapshot=str(authored_path))
     points=track.densify(track.simplify(layout['points']),50)
     # DEM describes the ground/water below a bridge, not its deck. Join the
