@@ -1,0 +1,127 @@
+{
+  "fictionalName": "Aster 170 2003",
+  "inspiration": "2003 US Ford Focus SVT ZX3 three-door hatchback, standard six-speed manual, LHD, standard wheels; no European Appearance Package",
+  "status": "Additive original-art candidate; actual browser acceptance pending",
+  "duplicateCheck": "No Focus/SVT match in inspected copperwing-work/data/vehicle-catalog/research.json or shared car-next directories; recheck latest roster before import",
+  "sources": [
+    {
+      "id": "owner2003",
+      "url": "https://www.fordservicecontent.com/Ford_Content/catalog/owner_guides/03focsv1e.pdf",
+      "type": "Direct Ford OEM 2003 supplement",
+      "evidence": "Downloaded genuine 16-page PDF; pages 10 and 11 rendered and visually inspected. Engine and overall ratios on 10; suspension/brakes on 11. Text extraction partly corrupt; actual table image authoritative."
+    },
+    {
+      "id": "training2003",
+      "url": "https://terminator-cobra.com/SVT%20Training%202003.pdf",
+      "type": "Ford OEM SVT Classroom Course September 2003, third-party archive",
+      "evidence": "Downloaded genuine PDF; physical pages93\u201395 (printed 3-45\u20133-47) rendered and visually inspected. Model-family technical table, not individual VIN certification or explicit option-weight table."
+    }
+  ],
+  "engine": {
+    "source": "owner2003 page 10 and training2003 printed 3-45",
+    "layout": "Naturally aspirated gasoline transverse front inline four-cylinder DOHC 16-valve, variable intake cam timing, dual-stage intake",
+    "displacementCc": 1988,
+    "powerHp": 170,
+    "powerRpm": 7000,
+    "torqueLbFt": 145,
+    "torqueRpm": 5500,
+    "compression": 10.2,
+    "redlineRpm": 7200,
+    "redlineNote": "Training labels redline, not independently established fuel-cut rpm",
+    "fuel": "91 octane recommended in US owner supplement"
+  },
+  "drivetrain": {
+    "drivenWheels": "FWD",
+    "transmission": "Getrag twin-layshaft six-speed manual",
+    "physicalPublishedGearRatios": [
+      4.44,
+      2.67,
+      1.33,
+      1.08,
+      1.33,
+      1.08
+    ],
+    "physicalPublishedFinalByGear": [
+      2.88,
+      2.88,
+      4.25,
+      4.25,
+      2.88,
+      2.88
+    ],
+    "physicalPublishedReverse": 2.82,
+    "physicalReverseFinal": 4.25,
+    "ownerPublishedOverallRatios": [
+      12.7,
+      7.7,
+      5.7,
+      4.6,
+      3.8,
+      3.1
+    ],
+    "ownerPublishedReverseOverall": 12.0,
+    "runtimeRepresentation": {
+      "effectiveFinal": 4.0,
+      "effectiveForwardRatios": [
+        3.175,
+        1.925,
+        1.425,
+        1.15,
+        0.95,
+        0.775
+      ],
+      "effectiveReverse": 3.0,
+      "label": "Effective scaled representation of rounded OEM overall reductions; final 4 is arbitrary scaling, NOT physical Ford differential ratio. Necessary because editor gear clamp 5.5 would lose first with final 1. Verify actual editor roundtrip and overall products before import."
+    },
+    "rounding": "Do not claim exact tooth counts or reconcile rounded physical products as exact. Use consistent rounded owner overall values; archive racing classification has different more precise values not substituted."
+  },
+  "chassis": {
+    "source": "training2003 printed3-46\u20133-47",
+    "curbWeightLb": 2750,
+    "curbWeightKgDerived": 1247.3790175000001,
+    "massConvention": "Manufacturer classroom table says curb weight only. Driver/fuel convention and optional-equipment inclusion not defined. Do not silently add fuel twice; this is not a measured specific-car weight. Table does not separately label three/five-door, so retain model-family provenance caveat. Contemporary 2003 three-door roadtest independently corroborates 2750 lb.",
+    "frontMassFraction": 0.61,
+    "fuelCapacityLitresPublished": 50,
+    "fuelCapacityUSGallons": 13.2,
+    "wheelbaseMm": 2615,
+    "lengthMm": 4270,
+    "widthMm": 1699,
+    "heightMm": 1430,
+    "trackFrontMm": 1494,
+    "trackRearMm": 1486,
+    "tiresFrontRear": "P215/45R17 Continental ContiSportContact",
+    "wheelsFrontRear": "17x7 inch",
+    "nominalTireRadiusMetresDerived": 0.31265,
+    "steeringLockToLockTurns": 2.6,
+    "turningDiameterFeet": 39.1,
+    "frontSuspension": "MacPherson independent",
+    "rearSuspension": "Independent multilink/SLA",
+    "frontBrakesMm": 300,
+    "rearBrakesMm": 280,
+    "brakeConstruction": "Front vented, rear solid; single piston both ends; four-channel ABS"
+  },
+  "conflicts": [
+    "Owner page 11 publishes front 22 N/mm and rear 27.5 N/mm spring rates,21 mm anti-roll bars. Racing classification search index calls 2003 front bar 22 mm. Do not treat bar or spring constants as production-confirmed runtime handling without motion-ratio and variant evidence.",
+    "Secondary databases return conflicting 2551/2593/2675 lb, likely mixed trims; use OEM model-family 2750 lb with disclosed convention caveat.",
+    "Owner compression printed 10:2:1 typography; training clearly 10.2:1.",
+    "No single physical final drive applies to every gear."
+  ],
+  "unknowns": [
+    "Exact fuel cutoff and idle speed",
+    "Full torque curve",
+    "Differential type not independently verified from inspected tables",
+    "Cd, frontal area, CG height",
+    "Damper curves, suspension motion ratios, tire friction and load sensitivity"
+  ],
+  "implementationNotes": [
+    "Original logo-free 2994 three-door hatch, not a five-door or exact replica.",
+    "LHD blank binnacle and shared runtime steering wheel, fixed-rear camera, surface tire effects.",
+    "No maps changed; physical dual final drives represented by explicitly effective ratios."
+  ],
+  "secondaryCorroboration": [
+    {
+      "url": "https://www.theautochannel.com/news/2002/10/21/149314.html",
+      "note": "Contemporary 2003 roadtest search-index corroboration 2750 lb; not used as primary gearing evidence"
+    }
+  ]
+}

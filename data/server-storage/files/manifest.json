@@ -476,7 +476,9 @@
       "catalog-ironbloom-gt-2005-body": "art/catalog-ironbloom-gt-2005-body/document.json",
       "catalog-ironbloom-gt-2005-dashboard": "art/catalog-ironbloom-gt-2005-dashboard/document.json",
       "catalog-foxglove-z-2003-body": "art/catalog-foxglove-z-2003-body/document.json",
-      "catalog-foxglove-z-2003-dashboard": "art/catalog-foxglove-z-2003-dashboard/document.json"
+      "catalog-foxglove-z-2003-dashboard": "art/catalog-foxglove-z-2003-dashboard/document.json",
+      "catalog-aster-170-2003-body": "art/catalog-aster-170-2003-body/document.json",
+      "catalog-aster-170-2003-dashboard": "art/catalog-aster-170-2003-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -533,7 +535,8 @@
       "Bellflower 2006": "cars/Bellflower 2006/document.json",
       "Starwort 2005": "cars/Starwort 2005/document.json",
       "Ironbloom GT 2005": "cars/Ironbloom GT 2005/document.json",
-      "Foxglove Z 2003": "cars/Foxglove Z 2003/document.json"
+      "Foxglove Z 2003": "cars/Foxglove Z 2003/document.json",
+      "Aster 170 2003": "cars/Aster 170 2003/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
