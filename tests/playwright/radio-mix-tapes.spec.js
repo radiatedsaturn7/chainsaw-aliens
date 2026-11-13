@@ -113,7 +113,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
 test('real race mix tape unlocks its track and pause radio obeys the race switch',async({page})=>{
  test.setTimeout(150000);await ready(page);await seedRaceRuntimeFixtures(page);
  await page.evaluate(async()=>{const g=window.__game;await g.radio.saveLibrary({tracks:[{id:'race-song',title:'Race Song',src:'/unused.mp3'}],stations:[{id:'race-station',name:'Race Station',trackIds:['race-song']},{id:'excluded-station',name:'Excluded Station',trackIds:['race-song']}]});void g.startRaceTravel({raceName:'Studio Sprint2',carSelection:'specific',carRef:'2022 Subaru WRX2'});});
- await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>{const g=window.__game,e=g.raceEditor;return {running:e.playtestSession?.running,state:g.state,phase:e.racePlaytestPreparation?.workerPhase,progress:e.racePlaytestPreparation?.progress,error:g.lastRaceTravelError,failure:e.lastRaceFailure};}),{timeout:60000}).toMatchObject({running:true});
  await page.evaluate(()=>{const g=window.__game,e=g.raceEditor,s=e.playtestSession,car=e.getRaceSessionCar(s),points=e.getRaceVehicleCollisionContactPoints({session:s,car,tuning:e.getRaceCarTuning(car)}),point=points[0];e.ensureRaceScenery().push({id:'race-tape',presetId:'doodad',x:point.x,z:point.z,previewDoodad:{itemType:'mix-tape',unlockTrackId:'race-song',widthM:2,heightM:4}});});
  await expect.poll(()=>page.evaluate(()=>Object.keys(window.__game.items.progress.bags.radio))).toContain('race-song');await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.removedSceneryIds)).toContain('race-tape');
  await page.evaluate(()=>window.__game.raceEditor.toggleRacePause());expect(await page.evaluate(()=>window.__game.raceEditor.getRacePauseMenuRows().some(row=>row.id==='race-radio'))).toBe(true);
@@ -264,7 +264,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} music drop
   };
   void g.startRaceTravel({raceName:'Music Drop Race',carSelection:'specific',carRef:'2022 Subaru WRX2'});
  });
- await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession?.running),{timeout:60000}).toBe(true);
+ await expect.poll(()=>page.evaluate(()=>{const g=window.__game,e=g.raceEditor;return {running:e.playtestSession?.running,state:g.state,phase:e.racePlaytestPreparation?.workerPhase,progress:e.racePlaytestPreparation?.progress,error:g.lastRaceTravelError,failure:e.lastRaceFailure};}),{timeout:60000}).toMatchObject({running:true});
  // Running is set before loading-screen presentation, the camera intro and
  // countdown finish. Software WebGL on CI can take longer than 15 wall-clock
  // seconds; still require the actual GO sample and all audio assertions below.

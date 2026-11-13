@@ -1966,7 +1966,19 @@ export default class Game {
     let normalizedRaceDocument = false;
     let racePreparationError = null;
     try {
-      const savedCars = await this.raceEditor.hydrateSavedRaceCarsForTravel?.() || [];
+      // A solo stage needs no opponent catalog or artwork. Downloading every
+      // saved vehicle here made race startup scale with the entire collection.
+      let soloWithoutTraffic = false;
+      try {
+        const payload = await hydrateProjectFilePayload('races', raceName);
+        const competition = (payload?.data?.race || payload?.data)?.competition;
+        soloWithoutTraffic = competition?.mode === 'solo'
+          && competition.trafficEnabled === false
+          && Array.isArray(competition.aiDrivers)
+          && !competition.aiDrivers.some(driver => driver.enabled !== false);
+      } catch { /* Let the existing worker/fallback path report loading errors. */ }
+      const savedCars = soloWithoutTraffic ? []
+        : await this.raceEditor.hydrateSavedRaceCarsForTravel?.() || [];
       if (this.raceTravelSession !== travelSession) return false;
       const prepared = await this.raceEditor.loadRaceTravelDocument?.(raceName, {
         artRefs: [...new Set([
