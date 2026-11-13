@@ -482,7 +482,9 @@
       "catalog-snowdrop-t5-2008-body": "art/catalog-snowdrop-t5-2008-body/document.json",
       "catalog-snowdrop-t5-2008-dashboard": "art/catalog-snowdrop-t5-2008-dashboard/document.json",
       "catalog-copperhead-sc-2006-body": "art/catalog-copperhead-sc-2006-body/document.json",
-      "catalog-copperhead-sc-2006-dashboard": "art/catalog-copperhead-sc-2006-dashboard/document.json"
+      "catalog-copperhead-sc-2006-dashboard": "art/catalog-copperhead-sc-2006-dashboard/document.json",
+      "catalog-firethorn-turbo-2005-body": "art/catalog-firethorn-turbo-2005-body/document.json",
+      "catalog-firethorn-turbo-2005-dashboard": "art/catalog-firethorn-turbo-2005-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -542,7 +544,8 @@
       "Foxglove Z 2003": "cars/Foxglove Z 2003/document.json",
       "Aster 170 2003": "cars/Aster 170 2003/document.json",
       "Snowdrop T5 2008": "cars/Snowdrop T5 2008/document.json",
-      "Copperhead SC 2006": "cars/Copperhead SC 2006/document.json"
+      "Copperhead SC 2006": "cars/Copperhead SC 2006/document.json",
+      "Firethorn Turbo 2005": "cars/Firethorn Turbo 2005/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
