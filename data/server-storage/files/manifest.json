@@ -462,7 +462,9 @@
       "catalog-sorrel-2008-body": "art/catalog-sorrel-2008-body/document.json",
       "catalog-sorrel-2008-dashboard": "art/catalog-sorrel-2008-dashboard/document.json",
       "catalog-clover-2007-body": "art/catalog-clover-2007-body/document.json",
-      "catalog-clover-2007-dashboard": "art/catalog-clover-2007-dashboard/document.json"
+      "catalog-clover-2007-dashboard": "art/catalog-clover-2007-dashboard/document.json",
+      "catalog-stonepod-2006-body": "art/catalog-stonepod-2006-body/document.json",
+      "catalog-stonepod-2006-dashboard": "art/catalog-stonepod-2006-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -512,7 +514,8 @@
       "Cubby 1.8 2014": "cars/Cubby 1.8 2014/document.json",
       "Buttoncap Turbo 2003": "cars/Buttoncap Turbo 2003/document.json",
       "Sorrel 133 2008": "cars/Sorrel 133 2008/document.json",
-      "Clover Sport 2007": "cars/Clover Sport 2007/document.json"
+      "Clover Sport 2007": "cars/Clover Sport 2007/document.json",
+      "Stonepod 2006": "cars/Stonepod 2006/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
