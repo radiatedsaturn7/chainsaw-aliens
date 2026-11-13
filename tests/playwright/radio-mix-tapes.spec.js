@@ -55,8 +55,10 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} authors a 
 
  // Match Pixel/MIDI: short press toggles, hold opens the shared transport.
  const transportPoint=await page.evaluate(()=>{const g=window.__game,b=g.radioEditor.buttons.filter(b=>b.id==='radio-play').at(-1).bounds,r=g.canvas.getBoundingClientRect();return{x:r.x+(b.x+b.w/2)*r.width/g.viewport.width,y:r.y+(b.y+b.h/2)*r.height/g.viewport.height};});
- await page.mouse.move(transportPoint.x,transportPoint.y);await page.mouse.down();await page.waitForTimeout(600);await page.mouse.up();
- await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.radioEditor.transportPopover))).toBe(true);
+ await page.mouse.move(transportPoint.x,transportPoint.y);await page.mouse.down();
+ // Keep the pointer held until the actual long-press timer is processed on CI.
+ try{await expect.poll(()=>page.evaluate(()=>Boolean(window.__game.radioEditor.transportPopover))).toBe(true);}
+ finally{await page.mouse.up();}
  await page.screenshot({path:`test-results/radio-transport-${mobile?'portrait':'desktop'}.png`});
  await clickRadio(page,'radio-loop');
  await expect.poll(()=>page.evaluate(()=>window.__game.radioEditor.preview.repeatMode)).toBe('all');
