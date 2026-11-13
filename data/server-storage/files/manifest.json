@@ -472,7 +472,9 @@
       "catalog-bellflower-2006-body": "art/catalog-bellflower-2006-body/document.json",
       "catalog-bellflower-2006-dashboard": "art/catalog-bellflower-2006-dashboard/document.json",
       "catalog-starwort-2005-body": "art/catalog-starwort-2005-body/document.json",
-      "catalog-starwort-2005-dashboard": "art/catalog-starwort-2005-dashboard/document.json"
+      "catalog-starwort-2005-dashboard": "art/catalog-starwort-2005-dashboard/document.json",
+      "catalog-ironbloom-gt-2005-body": "art/catalog-ironbloom-gt-2005-body/document.json",
+      "catalog-ironbloom-gt-2005-dashboard": "art/catalog-ironbloom-gt-2005-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -527,7 +529,8 @@
       "Boxelder 2005": "cars/Boxelder 2005/document.json",
       "Redbud V6 2007": "cars/Redbud V6 2007/document.json",
       "Bellflower 2006": "cars/Bellflower 2006/document.json",
-      "Starwort 2005": "cars/Starwort 2005/document.json"
+      "Starwort 2005": "cars/Starwort 2005/document.json",
+      "Ironbloom GT 2005": "cars/Ironbloom GT 2005/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
