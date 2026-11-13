@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794610573629,
+  "doodad": {
+    "id": "campaign-landmark-city-ks-union-station",
+    "name": "landmark-city-ks-union-station",
+    "artRef": "landmark-city-ks-union-station",
+    "widthM": 52.882629107981224,
+    "heightM": 22,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 44.95023474178404,
+    "hitboxHeightM": 19.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

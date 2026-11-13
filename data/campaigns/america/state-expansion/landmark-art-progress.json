@@ -2296,35 +2296,485 @@
     },
     "landmark-city-ks-old-cowtown-museum": {
       "raceRef": "Wichita, KS — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -1957.9370812922648,
+        "worldZ": -532.7356293985588,
+        "routeDistanceM": 1893,
+        "offsetFromRoadM": 81,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.46806039751062295,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 19.195012762568975,
+            "angularWidthDegrees": 15.343441809735992,
+            "rangeM": 72.45234880952155,
+            "occluderIds": [
+              "city-ks-prop-79"
+            ],
+            "score": 0.02786393873966892
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.276789839990172,
+            "angularWidthDegrees": 12.114753923825479,
+            "rangeM": 91.9696862517218,
+            "occluderIds": [
+              "city-ks-prop-78",
+              "city-ks-prop-79"
+            ],
+            "score": 0.08027140876804717
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.216413997654106,
+            "angularWidthDegrees": 9.974093260879572,
+            "rangeM": 111.84316710950004,
+            "occluderIds": [
+              "city-ks-prop-78",
+              "city-ks-prop-79"
+            ],
+            "score": 0.1141612128112603
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 4.650912256846669,
+            "angularWidthDegrees": 7.873583951335908,
+            "rangeM": 141.8158938724086,
+            "occluderIds": [
+              "city-ks-prop-78",
+              "city-ks-prop-79"
+            ],
+            "score": 0.09767562116713599
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 10.425986197054705,
+            "angularWidthDegrees": 6.5138119014061715,
+            "rangeM": 171.50557221221428,
+            "occluderIds": [
+              "city-ks-prop-78",
+              "city-ks-prop-79"
+            ],
+            "score": 0.06995526625413742
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 10.915721736523844,
+            "angularWidthDegrees": 5.561600649761931,
+            "rangeM": 200.92805284710295,
+            "occluderIds": [
+              "city-ks-prop-79"
+            ],
+            "score": 0.06266490491326147
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 0.15995750034048486,
+            "angularWidthDegrees": 4.55253070009601,
+            "rangeM": 245.52748274590235,
+            "occluderIds": [
+              "city-ks-prop-79"
+            ],
+            "score": 0.09046804485711166
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "18b707fc34045b2dd445865fb140ffb91f447ced251cced0ed97b67e8d814a34",
+      "sourceSha256": "520e5a60edf1124c3cf88dade1813a8e568a318d21c0dde763312db182e77b86",
+      "roadSha256": "0de26e06f673f5b58e5115e9d4a628379add485cf8c76b722e9a2409951f5e5c",
+      "placementDetails": {
+        "x": -1760.8434867690316,
+        "z": -679.722453479401,
+        "yaw": -1.869287816156685,
+        "facingApproachBeforeM": 135,
+        "trackDistance": 1683.803593183582,
+        "trackLateral": 30.000000000000025,
+        "minimumRoadClearanceM": 12.768248313076203,
+        "checkedSegments": 4986,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/KS/old-cowtown-museum-desktop.png",
+        "docs/art/landmark-previews/KS/old-cowtown-museum-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 65,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Western false-front facade and porch recognizable in native desktop and handheld; existing robot partially overlaps right edge, without hiding identifying frontage."
+      }
     },
     "landmark-city-ks-exploration-place": {
       "raceRef": "Wichita, KS — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -603.7830601190187,
+        "worldZ": -43.377200798774524,
+        "routeDistanceM": 3828,
+        "offsetFromRoadM": 130,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.26431794792392005,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 38.72727895027163,
+            "angularWidthDegrees": 25.392536966498835,
+            "rangeM": 97.65135220499265,
+            "occluderIds": [
+              "city-ks-prop-158"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 24.629019995819686,
+            "angularWidthDegrees": 21.655323943910687,
+            "rangeM": 115.02629877876895,
+            "occluderIds": [
+              "city-ks-prop-157"
+            ],
+            "score": 0.0017807040200655021
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 15.860362068055464,
+            "angularWidthDegrees": 18.677635947027166,
+            "rangeM": 133.77761544944804,
+            "occluderIds": [
+              "city-ks-prop-156",
+              "city-ks-prop-157"
+            ],
+            "score": 0.04387026207333377
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 3.88305611718251,
+            "angularWidthDegrees": 15.34768598414178,
+            "rangeM": 163.2768634747145,
+            "occluderIds": [
+              "city-ks-prop-156"
+            ],
+            "score": 0.10136133063752395
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 3.2093314471296592,
+            "angularWidthDegrees": 12.989516006165267,
+            "rangeM": 193.24871303179972,
+            "occluderIds": [
+              "city-ks-prop-156"
+            ],
+            "score": 0.10459520905377763
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 9.018657887662666,
+            "angularWidthDegrees": 11.272662386839393,
+            "rangeM": 222.91778802721382,
+            "occluderIds": [
+              "city-ks-prop-156"
+            ],
+            "score": 0.0767104421392192
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 177.89062551411823,
+            "angularWidthDegrees": 11.77930408860315,
+            "rangeM": 213.26629548396735,
+            "occluderIds": [
+              "city-ks-prop-157"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "55b73bfb921f5aa839f2912ec5ed9a1fa8403185640ea42e3d773c4869a2ec6a",
+      "sourceSha256": "3659e0dddcbc0c9d4fdc7347043bb75a558b5fad60d3205b69d330bb0b985d7f",
+      "roadSha256": "0de26e06f673f5b58e5115e9d4a628379add485cf8c76b722e9a2409951f5e5c",
+      "placementDetails": {
+        "x": -787.6316450401087,
+        "z": -38.19422263746715,
+        "yaw": -2.308485099281042,
+        "facingApproachBeforeM": 135,
+        "trackDistance": 3948.3732924961773,
+        "trackLateral": 70.00000000000001,
+        "minimumRoadClearanceM": 38.05420638362314,
+        "checkedSegments": 4986,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/KS/exploration-place-desktop.png",
+        "docs/art/landmark-previews/KS/exploration-place-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 85,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Distinctive sloping glass wing and roof recognizable in native desktop and handheld; existing generic building partially overlaps left wing."
+      }
     },
     "landmark-city-ks-orpheum-theatre": {
       "raceRef": "Wichita, KS — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 428.92293841893536,
+        "worldZ": 86.05387259258232,
+        "routeDistanceM": 6660,
+        "offsetFromRoadM": 32,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 6.723845901549097,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 0.15543502503781548,
+            "angularWidthDegrees": 12.555700777524267,
+            "rangeM": 150.1333216309874,
+            "occluderIds": [],
+            "score": 0.9937825989984874
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.1158386186343975,
+            "angularWidthDegrees": 11.089523147323266,
+            "rangeM": 170.13328620995097,
+            "occluderIds": [],
+            "score": 0.9953664552546241
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.09275096116561252,
+            "angularWidthDegrees": 9.92919410449814,
+            "rangeM": 190.13326053377182,
+            "occluderIds": [],
+            "score": 0.9962899615533755
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.0421294182771823,
+            "angularWidthDegrees": 8.581482405629643,
+            "rangeM": 220.13325348965915,
+            "occluderIds": [],
+            "score": 0.9983148232689127
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 0.05218715081089146,
+            "angularWidthDegrees": 7.555435118633528,
+            "rangeM": 250.13326270169117,
+            "occluderIds": [],
+            "score": 0.9979125139675643
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 0.031554444024387465,
+            "angularWidthDegrees": 6.74829026301599,
+            "rangeM": 280.1332668397885,
+            "occluderIds": [],
+            "score": 0.9987378222390245
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 0.4615669536073705,
+            "angularWidthDegrees": 5.8160298447030065,
+            "rangeM": 325.13305776917076,
+            "occluderIds": [],
+            "score": 0.951441726267107
+          }
+        ],
+        "sourceDistanceShiftM": -240
+      },
+      "signature": "cd3e84f20753cd9a2858a606ef7a14308954d376afe2649b814ea3365425380b",
+      "sourceSha256": "ed2c085081b65b2f9c1924fb8bc81a448f4f0c083ca0ec4ebff5715e89c6d7ec",
+      "roadSha256": "0de26e06f673f5b58e5115e9d4a628379add485cf8c76b722e9a2409951f5e5c",
+      "placementDetails": {
+        "x": 478.2603488988783,
+        "z": 328.51957501456644,
+        "yaw": 1.585638734188823,
+        "facingApproachBeforeM": 135,
+        "trackDistance": 6419.731620724183,
+        "trackLateral": 89.91385389632241,
+        "minimumRoadClearanceM": 59.84040470347027,
+        "checkedSegments": 4986,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/KS/orpheum-theatre-desktop.png",
+        "docs/art/landmark-previews/KS/orpheum-theatre-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 85,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Ornate theater corner facade, window bays and marquee clearly visible ahead of turn in native desktop and handheld."
+      }
     },
     "landmark-city-ks-union-station": {
       "raceRef": "Wichita, KS — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 919.8722958126439,
+        "worldZ": 415.94743662975395,
+        "routeDistanceM": 7415,
+        "offsetFromRoadM": 111,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.40394949316441686,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 9.391830878815425,
+            "angularWidthDegrees": 17.40174982663921,
+            "rangeM": 172.7771190821056,
+            "occluderIds": [
+              "city-ks-prop-329"
+            ],
+            "score": 0.07491921178168597
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.420558222387937,
+            "angularWidthDegrees": 15.639179073443087,
+            "rangeM": 192.5367022964573,
+            "occluderIds": [
+              "city-ks-prop-325",
+              "city-ks-prop-329"
+            ],
+            "score": 0.0795813205325379
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.63026934244777,
+            "angularWidthDegrees": 14.19617721257999,
+            "rangeM": 212.34130887804045,
+            "occluderIds": [
+              "city-ks-prop-325",
+              "city-ks-prop-327",
+              "city-ks-prop-329"
+            ],
+            "score": 0.0833747071562507
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.540008549769429,
+            "angularWidthDegrees": 12.465305393231308,
+            "rangeM": 242.11125419017804,
+            "occluderIds": [
+              "city-ks-prop-325",
+              "city-ks-prop-327"
+            ],
+            "score": 0.08860795896110674
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 5.934243468305135,
+            "angularWidthDegrees": 11.107229777024985,
+            "rangeM": 271.9360780690651,
+            "occluderIds": [
+              "city-ks-prop-322",
+              "city-ks-prop-325",
+              "city-ks-prop-327"
+            ],
+            "score": 0.09151563135213535
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 5.352058680272867,
+            "angularWidthDegrees": 10.014330864204384,
+            "rangeM": 301.79090752189586,
+            "occluderIds": [
+              "city-ks-prop-323",
+              "city-ks-prop-325",
+              "city-ks-prop-327"
+            ],
+            "score": 0.09431011833469023
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 4.658219782081243,
+            "angularWidthDegrees": 8.724520330822779,
+            "rangeM": 346.62016315044065,
+            "occluderIds": [
+              "city-ks-prop-319",
+              "city-ks-prop-323",
+              "city-ks-prop-325",
+              "city-ks-prop-327"
+            ],
+            "score": 0.09764054504601002
+          }
+        ],
+        "sourceDistanceShiftM": -180
+      },
+      "signature": "7321e4fe90f35301db421cd3b8665e69b5c51c0e51ce9b3897eec9b671b4dc48",
+      "sourceSha256": "133995ec4a603d5cd30ec703eb5e8af32007ff01466fd2c17591009c676b8922",
+      "roadSha256": "0de26e06f673f5b58e5115e9d4a628379add485cf8c76b722e9a2409951f5e5c",
+      "placementDetails": {
+        "x": 1109.3353124329062,
+        "z": 144.6486435211508,
+        "yaw": 1.4571451383641982,
+        "facingApproachBeforeM": 135,
+        "trackDistance": 7234.91539741977,
+        "trackLateral": -130,
+        "minimumRoadClearanceM": 92.71538419815737,
+        "checkedSegments": 4986,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/KS/union-station-desktop.png",
+        "docs/art/landmark-previews/KS/union-station-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 65,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Station central arched facade and flanking wings clearly visible outside bend in native desktop and handheld."
+      }
     },
     "landmark-city-ky-louisville-slugger-field": {
       "raceRef": "Louisville, KY — Landmark Run",

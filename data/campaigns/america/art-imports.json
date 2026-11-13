@@ -1846,5 +1846,33 @@
     "documentSha256": "83143ebe341e5fe3afc8107e4ec499e6cd4e4f3f436435114a4c4a970355336e",
     "width": 512,
     "height": 341
+  },
+  "landmark-city-ks-old-cowtown-museum": {
+    "source": "assets/campaign-art/landmarks/KS/landmark-city-ks-old-cowtown-museum.png",
+    "sourceSha256": "520e5a60edf1124c3cf88dade1813a8e568a318d21c0dde763312db182e77b86",
+    "documentSha256": "408a2de0b436a7177b61e3a275aca95de11ecd29fefc4b70da09300c7be0aac1",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ks-exploration-place": {
+    "source": "assets/campaign-art/landmarks/KS/landmark-city-ks-exploration-place.png",
+    "sourceSha256": "3659e0dddcbc0c9d4fdc7347043bb75a558b5fad60d3205b69d330bb0b985d7f",
+    "documentSha256": "e4387a74170d45a201a004d3859c307dc55af95ebbdcbfd49dc28765355c8e8f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ks-orpheum-theatre": {
+    "source": "assets/campaign-art/landmarks/KS/landmark-city-ks-orpheum-theatre.png",
+    "sourceSha256": "ed2c085081b65b2f9c1924fb8bc81a448f4f0c083ca0ec4ebff5715e89c6d7ec",
+    "documentSha256": "5999ced92d1c4d00930642b2e7f23455a475f658f3d6bce02dec8dda6b07bbec",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ks-union-station": {
+    "source": "assets/campaign-art/landmarks/KS/landmark-city-ks-union-station.png",
+    "sourceSha256": "133995ec4a603d5cd30ec703eb5e8af32007ff01466fd2c17591009c676b8922",
+    "documentSha256": "d1bd51e7776252eee4045c9ce73482dd58915849b60a9eac32aea61fd470abb4",
+    "width": 512,
+    "height": 213
   }
 }

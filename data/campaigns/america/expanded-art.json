@@ -2428,6 +2428,34 @@
       "heightM": 32,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ks-old-cowtown-museum",
+      "source": "landmarks/KS/landmark-city-ks-old-cowtown-museum.png",
+      "heightM": 13,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ks-exploration-place",
+      "source": "landmarks/KS/landmark-city-ks-exploration-place.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ks-orpheum-theatre",
+      "source": "landmarks/KS/landmark-city-ks-orpheum-theatre.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ks-union-station",
+      "source": "landmarks/KS/landmark-city-ks-union-station.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
