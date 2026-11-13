@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-robot-hub",
+    "name": "expanded-robot-hub",
+    "artRef": "expanded-robot-hub",
+    "widthM": 9.008797653958945,
+    "heightM": 6,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 7.657478005865103,
+    "hitboxHeightM": 5.4,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

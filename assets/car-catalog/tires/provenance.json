@@ -1,0 +1,9 @@
+{
+  "asset": "tarmac-slick.png",
+  "method": "OpenAI built-in image generation",
+  "reference": "User-provided 8582.png, style reference only",
+  "prompt": "Use case: stylized-concept. Asset type: 2994 post-apocalyptic racing game tire sprite sheet. Reference image provides painted pixel-art style only. Generate ONE original two-frame sheet, exactly TWO equal columns and ONE row on truly transparent background. LEFT frame: straight-on tread-facing view of an upright wide slick racing tire, showing mostly smooth dark rubber with two very shallow longitudinal grooves and subtle wear flecks, narrow oblong shape. RIGHT frame: perfectly circular straight side-on view of same tire, showing weathered gunmetal six-spoke alloy wheel, plain unmarked center hub, thin bronze fastener details, solid smooth sidewall. This is a Tarmac semi-slick tire, sharply different from the reference's deep curved rain tread. Crisp detailed pixel-art/painted 2.5D edges matching game reference. Entire objects contained within own half, equal height, centered, with generous completely transparent gutter at center and around all outer edges. No contact shadows, no ground, no background haze, no logos, skulls, trademarks, lettering, labels, numbers, or extra tires. Wide landscape.",
+  "revision": "Opaque dark backing plate added behind spokes via image generation to support cylinder UV fitting.",
+  "physicalChanges": "None. Existing Tarmac compound, size and pressure retained.",
+  "status": "Imported; in-game visual review pending."
+}

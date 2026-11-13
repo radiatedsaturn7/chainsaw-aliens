@@ -52,14 +52,14 @@ test('renderer animates car smoke without tinting the uploaded colors',()=>{
  e.drawRaceTireFxParticles(ctx,{x:0,y:0,w:300,h:200});
  assert.equal(frame,1);assert.equal(drawn,true);
 });
-test('all seven saved cars have smoke assignments for every surface and cloud type',()=>{
+test('all saved cars have smoke assignments for every surface and cloud type',()=>{
  const root='data/server-storage/files/cars';let count=0;
  for(const dir of fs.readdirSync(root)){
   const file=`${root}/${dir}/document.json`;if(!fs.existsSync(file))continue;
   const doc=JSON.parse(fs.readFileSync(file));if(!doc.car)continue;
   assert.deepEqual(doc.car.art.smoke,DEFAULT_CAR_SMOKE,dir);count++;
  }
- assert.equal(count,7);
+ assert.ok(count>=7);
 });
 test('car normalization preserves smoke choices and race loading includes smoke artwork',()=>{
  const e=new RaceEditor({deviceIsMobile:false,isMobile:false,exitRaceEditor(){}});
@@ -91,4 +91,19 @@ test('new plume artwork origin projects to its center at the rear contact',()=>{
  let rect;
  e.drawRaceTireFxParticles({save(){},restore(){},drawImage(image,...args){rect=args;}},{x:0,y:0,w:300,h:200});
  assert.equal(rect[0]+rect[2]/2,100);assert.equal(rect[1]+rect[3]/2,90);
+});
+
+test('rolling snow tires emit saved powder art at 5 mph without skidding; parked wheels do not',()=>{
+ const e=Object.create(RaceEditor.prototype);
+ Object.defineProperty(e,'selectedRace',{value:{}});
+ e.playtestSession={runtimeCar:{art:{smoke:{snow:'snowsmoke'}}},elapsedMs:0};
+ e.getRaceWheelFxEmissionPosition=id=>({x:id==='rl'?-1:1,z:-2,elevation:0});
+ e.getRaceTireFxVisualMaterialAtWorldPoint=()=>({region:'road',materialId:'snow',surfaceId:'snow',effectSlotId:'snowDust',sampledColor:'#ffffff'});
+ e.emitRaceTireFxParticles(1,{speedMps:0});assert.equal(e.playtestSession.tireFxParticles.length,0);
+ // Particle lifetimes are randomized; observe emissions throughout the run,
+ // rather than requiring one to remain alive at an arbitrary final frame.
+ const emitted=[];
+ for(let frame=0;frame<180;frame++){e.stepRaceTireFxParticles(1/60,{speedMps:5/2.236936});emitted.push(...e.playtestSession.tireFxParticles.map(p=>({...p})));}
+ assert.ok(emitted.length>0);
+ for(const p of emitted){assert.equal(p.artRef,'snowsmoke');assert.ok(['rl','rr'].includes(p.wheelId));assert.equal(p.slotId,'snowDust');}
 });

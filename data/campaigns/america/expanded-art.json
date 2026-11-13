@@ -1,0 +1,2097 @@
+{
+  "assets": [
+    {
+      "name": "expanded-abandoned-business-building",
+      "source": "expanded/abandoned-buildings/abandoned-business-building.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.12,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-church",
+      "source": "expanded/abandoned-buildings/abandoned-church.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.22,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-civic-center",
+      "source": "expanded/abandoned-buildings/abandoned-civic-center.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.16,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-fire-station",
+      "source": "expanded/abandoned-buildings/abandoned-fire-station.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.24,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-hospital",
+      "source": "expanded/abandoned-buildings/abandoned-hospital.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.2,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-mall",
+      "source": "expanded/abandoned-buildings/abandoned-mall.png",
+      "heightM": 9,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.24,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-police-station",
+      "source": "expanded/abandoned-buildings/abandoned-police-station.png",
+      "heightM": 9,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.28,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-school",
+      "source": "expanded/abandoned-buildings/abandoned-school.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.26,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-solar-facility",
+      "source": "expanded/abandoned-buildings/abandoned-solar-facility.png",
+      "heightM": 5,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "route66",
+          "fraction": 0.65,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-waste-management-facility",
+      "source": "expanded/abandoned-buildings/abandoned-waste-management-facility.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.32,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-collapsed-barn",
+      "source": "expanded/abandoned-buildings/collapsed-barn.png",
+      "heightM": 7,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.18,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-graveyard",
+      "source": "expanded/abandoned-buildings/graveyard.png",
+      "heightM": 4,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.23,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-unfinished-human-building",
+      "source": "expanded/abandoned-buildings/unfinished-human-building.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.36,
+          "lateralM": 50
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-electrical-substation",
+      "source": "expanded/infrastructure/abandoned-electrical-substation.png",
+      "heightM": 7,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.4,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-farm-fence-loop",
+      "source": "expanded/infrastructure/farm-fence-loop.png",
+      "heightM": 1.4,
+      "kind": "fence",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.19,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-high-tension-power-pylon",
+      "source": "expanded/infrastructure/high-tension-power-pylon.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.44,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-highway-sign-gantry",
+      "source": "expanded/infrastructure/highway-sign-gantry.png",
+      "heightM": 7,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.48,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-oil-pipeline-loop",
+      "source": "expanded/infrastructure/oil-pipeline-loop.png",
+      "heightM": 2,
+      "kind": "fence",
+      "placements": [
+        {
+          "race": "route66",
+          "fraction": 0.67,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-robot-construction-vehicle",
+      "source": "expanded/infrastructure/robot-construction-vehicle.png",
+      "heightM": 3.5,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.52,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-stacked-new-england-stone-wall-loop",
+      "source": "expanded/infrastructure/stacked-new-england-stone-wall-loop.png",
+      "heightM": 1.3,
+      "kind": "fence",
+      "placements": [
+        {
+          "race": "laurel",
+          "fraction": 0.16,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-texas-oil-pumpjack",
+      "source": "expanded/infrastructure/texas-oil-pumpjack.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "route66",
+          "fraction": 0.69,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-dead-farm-crop-patch",
+      "source": "expanded/landscape/dead-farm-crop-patch.png",
+      "heightM": 2,
+      "kind": "vegetation",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.2,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-grass-clump",
+      "source": "expanded/landscape/grass-clump.png",
+      "heightM": 1,
+      "kind": "vegetation",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.21,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-red-rock-arch-background",
+      "source": "expanded/landscape/red-rock-arch-background.png",
+      "heightM": 22,
+      "kind": "background",
+      "placements": [
+        {
+          "race": "moki",
+          "fraction": 0.55,
+          "lateralM": 200
+        }
+      ]
+    },
+    {
+      "name": "expanded-rolling-hills-background",
+      "source": "expanded/landscape/rolling-hills-background.png",
+      "heightM": 30,
+      "kind": "background",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.42,
+          "lateralM": 200
+        }
+      ]
+    },
+    {
+      "name": "expanded-small-pond",
+      "source": "expanded/landscape/small-pond.png",
+      "heightM": 1,
+      "kind": "sprite",
+      "placements": [],
+      "deferredReason": "Needs a suitable watercourse and terrain integration; do not paste a water feature onto unrelated land."
+    },
+    {
+      "name": "expanded-swamp-reeds",
+      "source": "expanded/landscape/swamp-reeds.png",
+      "heightM": 2,
+      "kind": "vegetation",
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.6,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-waterfall",
+      "source": "expanded/landscape/waterfall.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": [],
+      "deferredReason": "Needs a suitable watercourse and terrain integration; do not paste a water feature onto unrelated land."
+    },
+    {
+      "name": "expanded-network-node",
+      "source": "expanded/robots/network-node.png",
+      "heightM": 4,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.56,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-robot-building",
+      "source": "expanded/robots/robot-building.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.6,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-robot-hub",
+      "source": "expanded/robots/robot-hub.png",
+      "heightM": 6,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.64,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-abandoned-farm-tractor",
+      "source": "expanded/vehicles/abandoned-farm-tractor.png",
+      "heightM": 2.5,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.22,
+          "lateralM": 32
+        }
+      ]
+    },
+    {
+      "name": "expanded-broken-old-pickup",
+      "source": "expanded/vehicles/broken-old-pickup.png",
+      "heightM": 2,
+      "kind": "sprite",
+      "placements": [
+        {
+          "race": "route66",
+          "fraction": 0.7,
+          "lateralM": 30
+        }
+      ]
+    },
+    {
+      "name": "skybox-angeles-crest",
+      "source": "skyboxes/angeles-crest.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "angeles"
+        }
+      ]
+    },
+    {
+      "name": "skybox-badlands",
+      "source": "skyboxes/badlands.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-big-bend",
+      "source": "skyboxes/big-bend.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-col-de-turini",
+      "source": "skyboxes/col-de-turini.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-data-center-city",
+      "source": "skyboxes/data-center-city.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "city"
+        }
+      ]
+    },
+    {
+      "name": "skybox-daytona",
+      "source": "skyboxes/daytona.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-death-valley",
+      "source": "skyboxes/death-valley.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-eifel-circuit",
+      "source": "skyboxes/eifel-circuit.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-finnish-lakes",
+      "source": "skyboxes/finnish-lakes.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-la-basin",
+      "source": "skyboxes/la-basin.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-la-sunset-coast",
+      "source": "skyboxes/la-sunset-coast.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-laguna-seca",
+      "source": "skyboxes/laguna-seca.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-lake-michigan-woods",
+      "source": "skyboxes/lake-michigan-woods.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-laurel-highlands",
+      "source": "skyboxes/laurel-highlands.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "laurel"
+        }
+      ]
+    },
+    {
+      "name": "skybox-moki-dugway",
+      "source": "skyboxes/moki-dugway.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "moki"
+        }
+      ]
+    },
+    {
+      "name": "skybox-mount-washington",
+      "source": "skyboxes/mount-washington.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "mount"
+        }
+      ]
+    },
+    {
+      "name": "skybox-natchez",
+      "source": "skyboxes/natchez.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-oak-creek",
+      "source": "skyboxes/oak-creek.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "oak"
+        }
+      ]
+    },
+    {
+      "name": "skybox-ohio-river-crossing",
+      "source": "skyboxes/ohio-river-crossing.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "ohio"
+        }
+      ]
+    },
+    {
+      "name": "skybox-ozarks",
+      "source": "skyboxes/ozarks.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "ozark"
+        }
+      ]
+    },
+    {
+      "name": "skybox-palms-to-pines",
+      "source": "skyboxes/palms-to-pines.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-pikes-peak",
+      "source": "skyboxes/pikes-peak.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "pikes"
+        }
+      ]
+    },
+    {
+      "name": "skybox-providence-harbor",
+      "source": "skyboxes/providence-harbor.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-route-66",
+      "source": "skyboxes/route-66.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "route66"
+        }
+      ]
+    },
+    {
+      "name": "skybox-sawtooth",
+      "source": "skyboxes/sawtooth.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-tioga-pass",
+      "source": "skyboxes/tioga-pass.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+    },
+    {
+      "name": "skybox-tower-hill",
+      "source": "skyboxes/tower-hill.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "tower"
+        }
+      ]
+    },
+    {
+      "name": "expanded-bush-blackberry-bramble-01",
+      "source": "foliage-expansion/eastern/bush-blackberry-bramble-01.png",
+      "heightM": 1.2,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.0905,
+          "lateralM": -16
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.2272,
+          "lateralM": 18
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.3638,
+          "lateralM": -20
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.5005,
+          "lateralM": 16
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6372,
+          "lateralM": -18
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.7738,
+          "lateralM": 20
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.0905,
+          "lateralM": -16
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.2272,
+          "lateralM": 18
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.3638,
+          "lateralM": -20
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.5005,
+          "lateralM": 16
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.6372,
+          "lateralM": -18
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.7738,
+          "lateralM": 20
+        }
+      ],
+      "groundOffsetM": 0.2766
+    },
+    {
+      "name": "expanded-bush-blueberry-01",
+      "source": "foliage-expansion/eastern/bush-blueberry-01.png",
+      "heightM": 1.2,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "laurel",
+          "fraction": 0.0987,
+          "lateralM": 19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.2012,
+          "lateralM": -21
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.3037,
+          "lateralM": 23
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.4062,
+          "lateralM": -19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.5087,
+          "lateralM": 21
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.6112,
+          "lateralM": -23
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.7137,
+          "lateralM": 19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.8162,
+          "lateralM": -21
+        }
+      ],
+      "groundOffsetM": 0.225
+    },
+    {
+      "name": "expanded-bush-dogwood-sapling-01",
+      "source": "foliage-expansion/eastern/bush-dogwood-sapling-01.png",
+      "heightM": 2.8,
+      "kind": "vegetation",
+      "maxEdge": 512,
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.1372,
+          "lateralM": -22
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.3012,
+          "lateralM": 24
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.4652,
+          "lateralM": -26
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6292,
+          "lateralM": 22
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.7932,
+          "lateralM": -24
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.1372,
+          "lateralM": -22
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.3012,
+          "lateralM": 24
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.4652,
+          "lateralM": -26
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.6292,
+          "lateralM": 22
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.7932,
+          "lateralM": -24
+        }
+      ],
+      "groundOffsetM": 0.0656
+    },
+    {
+      "name": "expanded-bush-mountain-laurel-01",
+      "source": "foliage-expansion/eastern/bush-mountain-laurel-01.png",
+      "heightM": 1.4,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "laurel",
+          "fraction": 0.1438,
+          "lateralM": 25
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.2805,
+          "lateralM": -27
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.4171,
+          "lateralM": 29
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.5538,
+          "lateralM": -25
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.6905,
+          "lateralM": 27
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.8271,
+          "lateralM": -29
+        }
+      ],
+      "groundOffsetM": 0.2953
+    },
+    {
+      "name": "expanded-bush-willow-river-01",
+      "source": "foliage-expansion/eastern/bush-willow-river-01.png",
+      "heightM": 2,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.2355,
+          "lateralM": -16
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.2765,
+          "lateralM": 18
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.3175,
+          "lateralM": -20
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.3585,
+          "lateralM": 16
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.3995,
+          "lateralM": -18
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.4405,
+          "lateralM": 20
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.4815,
+          "lateralM": -16
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.5225,
+          "lateralM": 18
+        }
+      ],
+      "groundOffsetM": 0.3672
+    },
+    {
+      "name": "expanded-bush-winterberry-01",
+      "source": "foliage-expansion/eastern/bush-winterberry-01.png",
+      "heightM": 1.7,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "tower",
+          "fraction": 0.1757,
+          "lateralM": 19
+        },
+        {
+          "race": "tower",
+          "fraction": 0.3069,
+          "lateralM": -21
+        },
+        {
+          "race": "tower",
+          "fraction": 0.4381,
+          "lateralM": 23
+        },
+        {
+          "race": "tower",
+          "fraction": 0.5693,
+          "lateralM": -19
+        },
+        {
+          "race": "tower",
+          "fraction": 0.7005,
+          "lateralM": 21
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.0946,
+          "lateralM": 19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.2586,
+          "lateralM": -21
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.4226,
+          "lateralM": 23
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.5866,
+          "lateralM": -19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.7506,
+          "lateralM": 21
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.0946,
+          "lateralM": 19
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.2586,
+          "lateralM": -21
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.4226,
+          "lateralM": 23
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.5866,
+          "lateralM": -19
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.7506,
+          "lateralM": 21
+        }
+      ],
+      "groundOffsetM": 0.1992
+    },
+    {
+      "name": "expanded-fern-bracken-dry-01",
+      "source": "foliage-expansion/eastern/fern-bracken-dry-01.png",
+      "heightM": 0.7,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "tower",
+          "fraction": 0.1866,
+          "lateralM": -22
+        },
+        {
+          "race": "tower",
+          "fraction": 0.2959,
+          "lateralM": 24
+        },
+        {
+          "race": "tower",
+          "fraction": 0.4053,
+          "lateralM": -26
+        },
+        {
+          "race": "tower",
+          "fraction": 0.5146,
+          "lateralM": 22
+        },
+        {
+          "race": "tower",
+          "fraction": 0.6239,
+          "lateralM": -24
+        },
+        {
+          "race": "tower",
+          "fraction": 0.7333,
+          "lateralM": 26
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.1083,
+          "lateralM": -22
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.2449,
+          "lateralM": 24
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.3816,
+          "lateralM": -26
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.5183,
+          "lateralM": 22
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.6549,
+          "lateralM": -24
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.7916,
+          "lateralM": 26
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.1083,
+          "lateralM": -22
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.2449,
+          "lateralM": 24
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.3816,
+          "lateralM": -26
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.5183,
+          "lateralM": 22
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6549,
+          "lateralM": -24
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.7916,
+          "lateralM": 26
+        }
+      ],
+      "groundOffsetM": 0.082
+    },
+    {
+      "name": "expanded-fern-christmas-01",
+      "source": "foliage-expansion/eastern/fern-christmas-01.png",
+      "heightM": 0.65,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "laurel",
+          "fraction": 0.126,
+          "lateralM": 25
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.2627,
+          "lateralM": -27
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.3994,
+          "lateralM": 29
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.536,
+          "lateralM": -25
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.6727,
+          "lateralM": 27
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.8094,
+          "lateralM": -29
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.126,
+          "lateralM": 25
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.2627,
+          "lateralM": -27
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.3994,
+          "lateralM": 29
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.536,
+          "lateralM": -25
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6727,
+          "lateralM": 27
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.8094,
+          "lateralM": -29
+        }
+      ],
+      "groundOffsetM": 0.0914
+    },
+    {
+      "name": "expanded-grass-little-bluestem-01",
+      "source": "foliage-expansion/eastern/grass-little-bluestem-01.png",
+      "heightM": 1,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.1438,
+          "lateralM": -16
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.2805,
+          "lateralM": 18
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.4171,
+          "lateralM": -20
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.5538,
+          "lateralM": 16
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6905,
+          "lateralM": -18
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.8271,
+          "lateralM": 20
+        },
+        {
+          "race": "city",
+          "fraction": 0.1438,
+          "lateralM": -16
+        },
+        {
+          "race": "city",
+          "fraction": 0.2805,
+          "lateralM": 18
+        },
+        {
+          "race": "city",
+          "fraction": 0.4171,
+          "lateralM": -20
+        },
+        {
+          "race": "city",
+          "fraction": 0.5538,
+          "lateralM": 16
+        },
+        {
+          "race": "city",
+          "fraction": 0.6905,
+          "lateralM": -18
+        },
+        {
+          "race": "city",
+          "fraction": 0.8271,
+          "lateralM": 20
+        }
+      ],
+      "groundOffsetM": 0.0312
+    },
+    {
+      "name": "expanded-grass-little-bluestem-02",
+      "source": "foliage-expansion/eastern/grass-little-bluestem-02.png",
+      "heightM": 0.7,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "laurel",
+          "fraction": 0.1616,
+          "lateralM": 19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.2982,
+          "lateralM": -21
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.4349,
+          "lateralM": 23
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.5716,
+          "lateralM": -19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.7082,
+          "lateralM": 21
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.8449,
+          "lateralM": -23
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.1616,
+          "lateralM": 19
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.2982,
+          "lateralM": -21
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.4349,
+          "lateralM": 23
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.5716,
+          "lateralM": -19
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.7082,
+          "lateralM": 21
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.8449,
+          "lateralM": -23
+        }
+      ],
+      "groundOffsetM": 0.1559
+    },
+    {
+      "name": "expanded-grass-roadside-weeds-01",
+      "source": "foliage-expansion/eastern/grass-roadside-weeds-01.png",
+      "heightM": 0.65,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "city",
+          "fraction": 0.0905,
+          "lateralM": -22
+        },
+        {
+          "race": "city",
+          "fraction": 0.2272,
+          "lateralM": 24
+        },
+        {
+          "race": "city",
+          "fraction": 0.3638,
+          "lateralM": -26
+        },
+        {
+          "race": "city",
+          "fraction": 0.5005,
+          "lateralM": 22
+        },
+        {
+          "race": "city",
+          "fraction": 0.6372,
+          "lateralM": -24
+        },
+        {
+          "race": "city",
+          "fraction": 0.7738,
+          "lateralM": 26
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.0905,
+          "lateralM": -22
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.2272,
+          "lateralM": 24
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.3638,
+          "lateralM": -26
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.5005,
+          "lateralM": 22
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.6372,
+          "lateralM": -24
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.7738,
+          "lateralM": 26
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.0905,
+          "lateralM": -22
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.2272,
+          "lateralM": 24
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.3638,
+          "lateralM": -26
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.5005,
+          "lateralM": 22
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6372,
+          "lateralM": -24
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.7738,
+          "lateralM": 26
+        }
+      ],
+      "groundOffsetM": 0.165
+    },
+    {
+      "name": "expanded-grass-sedge-wetland-01",
+      "source": "foliage-expansion/eastern/grass-sedge-wetland-01.png",
+      "heightM": 0.75,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.2233,
+          "lateralM": 25
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.278,
+          "lateralM": -27
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.3326,
+          "lateralM": 29
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.3873,
+          "lateralM": -25
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.442,
+          "lateralM": 27
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.4966,
+          "lateralM": -29
+        }
+      ],
+      "groundOffsetM": 0.0645
+    },
+    {
+      "name": "expanded-grass-woodoats-01",
+      "source": "foliage-expansion/eastern/grass-woodoats-01.png",
+      "heightM": 0.8,
+      "kind": "vegetation",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "laurel",
+          "fraction": 0.126,
+          "lateralM": -16
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.2627,
+          "lateralM": 18
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.3994,
+          "lateralM": -20
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.536,
+          "lateralM": 16
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.6727,
+          "lateralM": -18
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.8094,
+          "lateralM": 20
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.126,
+          "lateralM": -16
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.2627,
+          "lateralM": 18
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.3994,
+          "lateralM": -20
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.536,
+          "lateralM": 16
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6727,
+          "lateralM": -18
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.8094,
+          "lateralM": 20
+        }
+      ],
+      "groundOffsetM": 0.0312
+    },
+    {
+      "name": "expanded-log-rotten-moss-01",
+      "source": "foliage-expansion/eastern/log-rotten-moss-01.png",
+      "heightM": 0.65,
+      "kind": "rock",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "tower",
+          "fraction": 0.2268,
+          "lateralM": 19
+        },
+        {
+          "race": "tower",
+          "fraction": 0.358,
+          "lateralM": -21
+        },
+        {
+          "race": "tower",
+          "fraction": 0.4892,
+          "lateralM": 23
+        },
+        {
+          "race": "tower",
+          "fraction": 0.6204,
+          "lateralM": -19
+        },
+        {
+          "race": "tower",
+          "fraction": 0.7516,
+          "lateralM": 21
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.1586,
+          "lateralM": 19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.3226,
+          "lateralM": -21
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.4866,
+          "lateralM": 23
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.6506,
+          "lateralM": -19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.8146,
+          "lateralM": 21
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.1586,
+          "lateralM": 19
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.3226,
+          "lateralM": -21
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.4866,
+          "lateralM": 23
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6506,
+          "lateralM": -19
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.8146,
+          "lateralM": 21
+        }
+      ],
+      "groundOffsetM": 0.2133
+    },
+    {
+      "name": "expanded-rock-chert-cluster-01",
+      "source": "foliage-expansion/eastern/rock-chert-cluster-01.png",
+      "heightM": 0.8,
+      "kind": "rock",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.1387,
+          "lateralM": -22
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.2412,
+          "lateralM": 24
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.3437,
+          "lateralM": -26
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.4462,
+          "lateralM": 22
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.5487,
+          "lateralM": -24
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6512,
+          "lateralM": 26
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.7537,
+          "lateralM": -22
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.8562,
+          "lateralM": 24
+        }
+      ],
+      "groundOffsetM": 0.1438
+    },
+    {
+      "name": "expanded-rock-granite-moss-01",
+      "source": "foliage-expansion/eastern/rock-granite-moss-01.png",
+      "heightM": 1.1,
+      "kind": "rock",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "tower",
+          "fraction": 0.1806,
+          "lateralM": 25
+        },
+        {
+          "race": "tower",
+          "fraction": 0.3446,
+          "lateralM": -27
+        },
+        {
+          "race": "tower",
+          "fraction": 0.5086,
+          "lateralM": 29
+        },
+        {
+          "race": "tower",
+          "fraction": 0.6726,
+          "lateralM": -25
+        },
+        {
+          "race": "mount",
+          "fraction": 0.0541,
+          "lateralM": 25
+        },
+        {
+          "race": "mount",
+          "fraction": 0.0931,
+          "lateralM": -27
+        },
+        {
+          "race": "mount",
+          "fraction": 0.132,
+          "lateralM": 29
+        },
+        {
+          "race": "mount",
+          "fraction": 0.171,
+          "lateralM": -25
+        }
+      ],
+      "groundOffsetM": 0.1977
+    },
+    {
+      "name": "expanded-rock-limestone-flat-01",
+      "source": "foliage-expansion/eastern/rock-limestone-flat-01.png",
+      "heightM": 0.65,
+      "kind": "rock",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.1159,
+          "lateralM": -16
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.2799,
+          "lateralM": 18
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.4439,
+          "lateralM": -20
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6079,
+          "lateralM": 16
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.7719,
+          "lateralM": -18
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.1159,
+          "lateralM": -16
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.2799,
+          "lateralM": 18
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.4439,
+          "lateralM": -20
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.6079,
+          "lateralM": 16
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.7719,
+          "lateralM": -18
+        }
+      ],
+      "groundOffsetM": 0.2158
+    },
+    {
+      "name": "expanded-stump-oak-decayed-01",
+      "source": "foliage-expansion/eastern/stump-oak-decayed-01.png",
+      "heightM": 0.8,
+      "kind": "rock",
+      "maxEdge": 256,
+      "placements": [
+        {
+          "race": "tower",
+          "fraction": 0.2098,
+          "lateralM": 19
+        },
+        {
+          "race": "tower",
+          "fraction": 0.341,
+          "lateralM": -21
+        },
+        {
+          "race": "tower",
+          "fraction": 0.4722,
+          "lateralM": 23
+        },
+        {
+          "race": "tower",
+          "fraction": 0.6034,
+          "lateralM": -19
+        },
+        {
+          "race": "tower",
+          "fraction": 0.7346,
+          "lateralM": 21
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.1372,
+          "lateralM": 19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.3012,
+          "lateralM": -21
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.4652,
+          "lateralM": 23
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.6292,
+          "lateralM": -19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.7932,
+          "lateralM": 21
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.1372,
+          "lateralM": 19
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.3012,
+          "lateralM": -21
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.4652,
+          "lateralM": 23
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6292,
+          "lateralM": -19
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.7932,
+          "lateralM": 21
+        }
+      ],
+      "groundOffsetM": 0.0938
+    },
+    {
+      "name": "expanded-tree-hickory-young-01",
+      "source": "foliage-expansion/eastern/tree-hickory-young-01.png",
+      "heightM": 4,
+      "kind": "tree",
+      "maxEdge": 512,
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.1586,
+          "lateralM": -22
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.3226,
+          "lateralM": 24
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.4866,
+          "lateralM": -26
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6506,
+          "lateralM": 22
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.8146,
+          "lateralM": -24
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.1586,
+          "lateralM": -22
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.3226,
+          "lateralM": 24
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.4866,
+          "lateralM": -26
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.6506,
+          "lateralM": 22
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.8146,
+          "lateralM": -24
+        }
+      ],
+      "groundOffsetM": 0.2344
+    },
+    {
+      "name": "expanded-tree-river-birch-young-01",
+      "source": "foliage-expansion/eastern/tree-river-birch-young-01.png",
+      "heightM": 4.5,
+      "kind": "tree",
+      "maxEdge": 512,
+      "placements": [
+        {
+          "race": "ohio",
+          "fraction": 0.2355,
+          "lateralM": 25
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.2765,
+          "lateralM": -27
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.3175,
+          "lateralM": 29
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.3585,
+          "lateralM": -25
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.3995,
+          "lateralM": 27
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.4405,
+          "lateralM": -29
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.4815,
+          "lateralM": 25
+        },
+        {
+          "race": "ohio",
+          "fraction": 0.5225,
+          "lateralM": -27
+        }
+      ],
+      "groundOffsetM": 0.1934
+    },
+    {
+      "name": "expanded-tree-shortleaf-pine-young-01",
+      "source": "foliage-expansion/eastern/tree-shortleaf-pine-young-01.png",
+      "heightM": 5,
+      "kind": "tree",
+      "maxEdge": 512,
+      "placements": [
+        {
+          "race": "ozark",
+          "fraction": 0.0854,
+          "lateralM": -16
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.1879,
+          "lateralM": 18
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.2904,
+          "lateralM": -20
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.3929,
+          "lateralM": 16
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.4954,
+          "lateralM": -18
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.5979,
+          "lateralM": 20
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.7004,
+          "lateralM": -16
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.8029,
+          "lateralM": 18
+        }
+      ],
+      "groundOffsetM": 0.2148
+    },
+    {
+      "name": "expanded-tree-white-oak-young-01",
+      "source": "foliage-expansion/eastern/tree-white-oak-young-01.png",
+      "heightM": 4.5,
+      "kind": "tree",
+      "maxEdge": 512,
+      "placements": [
+        {
+          "race": "laurel",
+          "fraction": 0.1159,
+          "lateralM": 19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.2799,
+          "lateralM": -21
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.4439,
+          "lateralM": 23
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.6079,
+          "lateralM": -19
+        },
+        {
+          "race": "laurel",
+          "fraction": 0.7719,
+          "lateralM": 21
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.1159,
+          "lateralM": 19
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.2799,
+          "lateralM": -21
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.4439,
+          "lateralM": 23
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.6079,
+          "lateralM": -19
+        },
+        {
+          "race": "ozark",
+          "fraction": 0.7719,
+          "lateralM": 21
+        }
+      ],
+      "groundOffsetM": 0.2549
+    }
+  ]
+}

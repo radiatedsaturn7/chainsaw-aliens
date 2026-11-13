@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import zlib from 'node:zlib';
+import RaceEditor from '../../src/ui/RaceEditor.js';
+const doc=JSON.parse(fs.readFileSync(process.argv[2]));
+const data=doc.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(doc.data,'base64'))):doc;
+const editor=new RaceEditor({});editor.applyLoadedRaceDocument(data);
+const bake=editor.buildRaceWorldBake({buildSurfaceSampler:false});
+const vertices=[...new Set(bake.terrainCells.flatMap(c=>c.points))];
+const x=Number(process.argv[3]),z=Number(process.argv[4]);
+const near=vertices.filter(v=>Math.hypot(v.x-x,v.z-z)<.02);
+const road=bake.surfaceBake.sections.flatMap(s=>[s.left,s.right,s.shoulderLeft,s.shoulderRight].filter(Boolean)).filter(v=>Math.hypot(v.x-x,v.z-z)<5);
+console.log(JSON.stringify({near,road},null,2));

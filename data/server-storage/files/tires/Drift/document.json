@@ -29,34 +29,34 @@
   "graphics": {
     "tireSurfaces": {
       "tread": {
-        "artRef": "8582 tires 3",
+        "artRef": "catalog-drift-worn",
         "frameIndex": 0,
         "region": {
-          "x": 138,
-          "y": 27,
-          "width": 158,
-          "height": 379
+          "x": 204,
+          "y": 48,
+          "width": 255,
+          "height": 594
         },
         "bounds": {
-          "x": 138.5,
-          "y": 27.5,
-          "width": 157,
-          "height": 378
+          "x": 204.5,
+          "y": 48.5,
+          "width": 254,
+          "height": 593
         }
       },
       "wheel": {
-        "artRef": "8582 tires 3",
-        "frameIndex": 2,
+        "artRef": "catalog-drift-worn",
+        "frameIndex": 1,
         "region": {
-          "x": 218,
-          "y": 213,
-          "radius": 204.24005483743878
+          "x": 333,
+          "y": 340,
+          "radius": 324.4225639501667
         },
         "bounds": {
-          "x": 13.760045162561227,
-          "y": 8.760045162561227,
-          "width": 408.47990967487755,
-          "height": 408.47990967487755
+          "x": 8.57753604983327,
+          "y": 15.57753604983327,
+          "width": 648.8449279003335,
+          "height": 648.8449279003335
         }
       }
     },
@@ -65,19 +65,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-drift-worn",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 204,
+            "y": 48,
+            "width": 255,
+            "height": 594
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 204.5,
+            "y": 48.5,
+            "width": 254,
+            "height": 593
           }
         }
       },
@@ -85,19 +85,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-drift-worn",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 204,
+            "y": 48,
+            "width": 255,
+            "height": 594
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 204.5,
+            "y": 48.5,
+            "width": 254,
+            "height": 593
           }
         }
       },
@@ -105,18 +105,18 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
-          "frameIndex": 2,
+          "artRef": "catalog-drift-worn",
+          "frameIndex": 1,
           "region": {
-            "x": 218,
-            "y": 213,
-            "radius": 204.24005483743878
+            "x": 333,
+            "y": 340,
+            "radius": 324.4225639501667
           },
           "bounds": {
-            "x": 13.760045162561227,
-            "y": 8.760045162561227,
-            "width": 408.47990967487755,
-            "height": 408.47990967487755
+            "x": 8.57753604983327,
+            "y": 15.57753604983327,
+            "width": 648.8449279003335,
+            "height": 648.8449279003335
           }
         }
       },
@@ -124,19 +124,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-drift-worn",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 204,
+            "y": 48,
+            "width": 255,
+            "height": 594
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 204.5,
+            "y": 48.5,
+            "width": 254,
+            "height": 593
           }
         }
       },
@@ -144,19 +144,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-drift-worn",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 204,
+            "y": 48,
+            "width": 255,
+            "height": 594
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 204.5,
+            "y": 48.5,
+            "width": 254,
+            "height": 593
           }
         }
       },
@@ -164,19 +164,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-drift-worn",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 204,
+            "y": 48,
+            "width": 255,
+            "height": 594
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 204.5,
+            "y": 48.5,
+            "width": 254,
+            "height": 593
           }
         }
       },
@@ -184,18 +184,18 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
-          "frameIndex": 2,
+          "artRef": "catalog-drift-worn",
+          "frameIndex": 1,
           "region": {
-            "x": 218,
-            "y": 213,
-            "radius": 204.24005483743878
+            "x": 333,
+            "y": 340,
+            "radius": 324.4225639501667
           },
           "bounds": {
-            "x": 13.760045162561227,
-            "y": 8.760045162561227,
-            "width": 408.47990967487755,
-            "height": 408.47990967487755
+            "x": 8.57753604983327,
+            "y": 15.57753604983327,
+            "width": 648.8449279003335,
+            "height": 648.8449279003335
           }
         }
       },
@@ -203,19 +203,19 @@
         "tires": {
           "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8582 tires 3",
+          "artRef": "catalog-drift-worn",
           "frameIndex": 0,
           "region": {
-            "x": 138,
-            "y": 27,
-            "width": 158,
-            "height": 379
+            "x": 204,
+            "y": 48,
+            "width": 255,
+            "height": 594
           },
           "bounds": {
-            "x": 138.5,
-            "y": 27.5,
-            "width": 157,
-            "height": 378
+            "x": 204.5,
+            "y": 48.5,
+            "width": 254,
+            "height": 593
           }
         }
       }

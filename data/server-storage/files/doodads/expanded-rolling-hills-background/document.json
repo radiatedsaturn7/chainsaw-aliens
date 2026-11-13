@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-rolling-hills-background",
+    "name": "expanded-rolling-hills-background",
+    "artRef": "expanded-rolling-hills-background",
+    "widthM": 89.82456140350877,
+    "heightM": 30,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 0,
+    "hitboxHeightM": 0,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "decoration",
+      "speedDrainPercent": 0,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

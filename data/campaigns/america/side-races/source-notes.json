@@ -1,0 +1,39 @@
+{
+  "scope": "99 researched optional events grouped under the existing eleven campaign hubs; main mission documents are not regenerated.",
+  "geography": "OSM motorable ways and raceway graph cycles. Source search centers are approximate query locations; report startGps/finishGps are the actual imported endpoints.",
+  "license": "OpenStreetMap contributors, ODbL-1.0, https://www.openstreetmap.org/copyright",
+  "elevation": "Mapzen / Tilezen Terrarium DEM zoom 12; ground elevation is not a surveyed track deck, tunnel, or banking profile.",
+  "timing": "210-second target using fast-build planning: paved cap 65 m/s (145 mph), loose cap 32 m/s (72 mph), lateral acceleration 7/3.5 m/s\u00b2, acceleration 3.2 m/s\u00b2 and braking 6 m/s\u00b2. Circuits round up to whole laps. Real short access roads retain endpoints; quarter-mile drags remain short. Not measured player runs or limits imposed on physics.",
+  "events": "Destination and circuit timing use existing race functionality. PPIR, Little Tujunga and Horse Thief Mile also score controlled on-course drift distance and retain the best score in the save slot. Firebird uses the drag variant.",
+  "limits": "Failed source lookups remain unavailable with an explicit report. Circuit direction, grid position, width defaults and banking need driving review. No substitute boss-road clones are used.",
+  "verifiedSources": {
+    "H01-S06": "https://www.seekonkspeedway.com/about",
+    "H01-S09": "https://www.palmermotorsportspark.com/Contacts.aspx?ID=Directions",
+    "H02-S06": "https://clubmotorsports.com/_pdfs/ClubMotorsportsMap.pdf",
+    "H02-S07": "https://teamoneil.com/contact-team-oneil/",
+    "H03-S08": "https://keystoneracewaypark.com/directions/",
+    "H04-S08": "https://www.raceovs.com/press/2021/article/99590",
+    "H05-S06": "https://www.nps.gov/ozar/planyourvisit/park-brochure.htm",
+    "H05-S07": "https://www.modot.org/sites/default/files/documents/Winona.pdf",
+    "H06-S08": "https://www.gatewaykartplex.com/facility"
+  },
+  "reviewedExceptions": {
+    "H03-S08": "OSM way 1568814841 is the straight raceway at the venue coordinates published by Keystone. It lacks a drag-specific name/tag; reviewed as the historical venue's drag strip.",
+    "H04-S08": "Use the mapped oval centerline at the verified venue even though its length differs from advertised track circumference. Do not enlarge the oval to match the published figure.",
+    "H06-S08": "Use the named OSM Gateway Kartplex layout, scaled 2x in the fictional 2994 environment as expressly allowed by the handoff. Keep source GPS unchanged for provenance and label the geometric adaptation."
+  },
+  "commands": {
+    "import": "python tools/campaigns/import_side_races.py",
+    "reimportOne": "python tools/campaigns/import_side_races.py --only H06-S07 --rebuild",
+    "install": "node tools/campaigns/install_side_races.mjs",
+    "previews": "python tools/campaigns/report_side_races.py",
+    "loadingValidation": "node tools/campaigns/validate_loading.mjs --side-races --report=artifacts/campaign-import/side-races/loading-report.json"
+  },
+  "geometryExceptions": {
+    "H02-S07": "Original fictional training stage at the published regional anchor; expressly not a trace or survey of Team O\u2019Neil.",
+    "H06-S08": "Mapped Kartplex plan enlarged 2x as a fictional 2994 adaptation."
+  },
+  "widths": "Valid mapped widths win. Missing or out-of-range widths fall back to mapped lane count: motorway/trunk lanes 3.6576 m (12 ft), other lanes 3.2 m, plus 0.6 m total edge allowance. Widths without a surveyed source are estimates. This fixes I-95 width=61.0 being rejected into a 7 m road.",
+  "laneWidthReference": "https://www.fhwa.dot.gov/policy/23cpr/chap4.cfm",
+  "lighting": "Side events receive stable seeded morning/noon/evening/night presets; H01-S01 is fixed noon. Skybox brightness remains 100%; main missions are unchanged."
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-dead-farm-crop-patch",
+    "name": "expanded-dead-farm-crop-patch",
+    "artRef": "expanded-dead-farm-crop-patch",
+    "widthM": 3.002932551319648,
+    "heightM": 2,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 2.5524926686217007,
+    "hitboxHeightM": 1.8,
+    "weightKg": 5,
+    "defaultRule": {
+      "behavior": "flatten",
+      "speedDrainPercent": 1,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

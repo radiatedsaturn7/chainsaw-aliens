@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "file": "server-building.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: a low industrial data center server building, rectangular gray concrete and metal structure, heavy dark service doors, minimal slit windows, rooftop ventilation housings, weathered panels with light frost, no logos or text. Existing house image is reference for crisp detailed pixel-art rendering and near-frontal three-quarter view only. Match muted gray-brown and faded material colors with restrained icy accents and subdued diffuse lighting. Entire object including roof and base inside canvas, tightly framed with a small transparent margin. Genuine alpha background, no scene, landscape, people, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1752,
+        "height": 897,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaAbove32": [
+          28,
+          54,
+          1722,
+          841
+        ],
+        "bytes": 2483495,
+        "sha256": "493a4cb91492cae50e01690e5320345f52e4482c654e40caae7d6cdb93c76b4e",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "cooling-units.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: a compact paired industrial data center cooling unit assembly, squat rectangular gray metal equipment boxes, large circular top fan grilles, side louvers, subtle rust, sparse frost, no brand labels. Existing house image is a reference for crisp detailed pixel-art rendering and near-frontal three-quarter viewing angle only. Subdued diffuse lighting, muted industrial gray-brown palette. Whole object and base fully inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette. No scene, people, landscape, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaAbove32": [
+          61,
+          94,
+          1481,
+          936
+        ],
+        "bytes": 2609768,
+        "sha256": "df9bb95183bdb53c439fdd5c2668d6dc70cde2315bcdc99092e3f662052bfe83",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "transformer.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one weathered industrial electrical transformer, heavy gray ribbed metal tank on short concrete plinth with ceramic insulators on top and simple cable connection stubs, faint rust and light frost, no text. Existing house image is a reference for crisp detailed pixel-art rendering and near-frontal three-quarter viewing angle only. Subdued diffuse lighting, muted industrial gray-brown palette. Whole object and base fully inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette. No scene, people, landscape, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1312,
+        "height": 1199,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaAbove32": [
+          169,
+          50,
+          1139,
+          1152
+        ],
+        "bytes": 1984108,
+        "sha256": "501682932c88e7685ba448cb9dccca6c917258d0b688a5be9179258343e48646",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "security-fencing.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one short security fence section, dark galvanized chain-link mesh between two steel posts with three strands of barbed wire above, small frost deposits, complete both ends, genuine transparent gaps in mesh. Existing house image is a reference for crisp detailed pixel-art rendering and near-frontal three-quarter viewing angle only. Subdued diffuse lighting, muted industrial gray-brown palette. Whole object and base fully inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette. No scene, people, landscape, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          78,
+          53,
+          1453,
+          968
+        ],
+        "bytes": 2542414,
+        "sha256": "ea3cdad2739d9db9914cb8cef2b4ce48ad592ec67b87cf6d28599f43c4c8c778",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "loading-dock.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one compact industrial loading-dock facade section, gray concrete platform with black rubber bumpers, closed corrugated steel roll-up door in a weathered concrete frame, a short side stair, subtle frost. Standalone facade prop, no giant building. Existing house image is a reference for crisp detailed pixel-art rendering and near-frontal three-quarter viewing angle only. Subdued diffuse lighting, muted industrial gray-brown palette. Whole object and base fully inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette. No scene, people, landscape, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          177,
+          0,
+          1369,
+          980
+        ],
+        "bytes": 2609782,
+        "sha256": "9f64646c8329d7dfafec4b307bf3dc604ab2fc5bc64c45a93e90bc45eccafcb8",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    },
+    {
+      "file": "shipping-container.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one closed weathered steel shipping container in faded blue-gray, corrugated sides and double end doors with locking bars, small rust patches and subtle frost on top, no logos or writing. Existing house image is a reference for crisp detailed pixel-art rendering and near-frontal three-quarter viewing angle only. Subdued diffuse lighting, muted industrial gray-brown palette. Whole object and base fully inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette. No scene, people, landscape, ground rectangle, dramatic shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite. Architectural openings are artwork only; no traversable geometry.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          99,
+          48,
+          1431,
+          971
+        ],
+        "bytes": 2524452,
+        "sha256": "6c3159ccfdd024dd5c0ecafaf7f1f1ee085ef998d8832d6461653e5c0c5e402d",
+        "visualReview": "Subject complete; style consistent; MOTEL and DINER lettering verified where applicable."
+      }
+    }
+  ]
+}

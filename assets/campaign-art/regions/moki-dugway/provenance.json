@@ -1,0 +1,26 @@
+[
+  {
+    "path": "assets/campaign-art/regions/moki-dugway/sandstone-outcrop.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for moki-dugway. Subject: Rugged red sandstone outcrop, terraced rock layers. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-8d068a23-7c41-47e4-b349-975779ea0cfe.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/moki-dugway/desert-scrub.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for moki-dugway. Subject: Small dry desert scrub plant cluster, muted brown and sage. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-5faf3082-02b2-47ae-9c20-efd51389dbaa.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/moki-dugway/warning-sign.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for moki-dugway. Subject: Weathered yellow steep winding mountain-road warning sign on metal pole, black switchback pictogram, no words. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-0097e6b9-8bad-40c5-8496-d483d6b19fd4.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/moki-dugway/mesa-silhouette.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for moki-dugway. Subject: Distant red mesa formation silhouette, landscape wide, BACKGROUND SCENERY ONLY. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-ca568cfc-a017-4d7e-adc7-b931849883f5.png",
+    "generator": "built-in imagegen"
+  }
+]

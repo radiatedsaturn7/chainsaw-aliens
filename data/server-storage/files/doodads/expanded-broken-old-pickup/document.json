@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-broken-old-pickup",
+    "name": "expanded-broken-old-pickup",
+    "artRef": "expanded-broken-old-pickup",
+    "widthM": 4,
+    "heightM": 2,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 3.4,
+    "hitboxHeightM": 1.8,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

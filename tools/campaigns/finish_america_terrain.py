@@ -41,9 +41,10 @@ def finish_terrain(race):
 
 
 if __name__=='__main__':
-    folder=Path('artifacts/campaign-import/america')
+    folder=Path('artifacts/campaign-import/middle')
     files=sorted(folder.glob('america-*.json'))
-    if len(files)!=24:raise SystemExit('Expected all 24 generated races before finishing terrain.')
+    expected=len(json.loads(Path('tools/campaigns/middle_route.json').read_text()))
+    if len(files)!=expected:raise SystemExit('Expected every configured Middle Route race before finishing terrain.')
     for path in files:
         race=finish_terrain(json.loads(path.read_text()))
         path.write_text(json.dumps(race,separators=(',',':'))+'\n')

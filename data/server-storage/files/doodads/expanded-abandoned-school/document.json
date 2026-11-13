@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-abandoned-school",
+    "name": "expanded-abandoned-school",
+    "artRef": "expanded-abandoned-school",
+    "widthM": 20,
+    "heightM": 10,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 17,
+    "hitboxHeightM": 9,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

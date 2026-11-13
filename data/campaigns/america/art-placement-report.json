@@ -1,0 +1,90 @@
+[
+  {
+    "race": "Tower Hill Road",
+    "replacedGenericProps": 0,
+    "regionalSceneryCount": 0,
+    "untexturedCells": 0,
+    "sceneryPlacements": 26,
+    "decals": 0
+  },
+  {
+    "race": "Mount Washington Auto Road — point-to-point",
+    "replacedGenericProps": 0,
+    "regionalSceneryCount": 7484,
+    "untexturedCells": 0,
+    "sceneryPlacements": 10,
+    "decals": 0
+  },
+  {
+    "race": "Laurel Highlands Scenic Byway",
+    "replacedGenericProps": 0,
+    "regionalSceneryCount": 0,
+    "untexturedCells": 0,
+    "sceneryPlacements": 73,
+    "decals": 2
+  },
+  {
+    "race": "Ohio River Crossing",
+    "replacedGenericProps": 0,
+    "regionalSceneryCount": 673,
+    "untexturedCells": 0,
+    "sceneryPlacements": 66,
+    "decals": 2
+  },
+  {
+    "race": "Ozark Backroads",
+    "replacedGenericProps": 0,
+    "regionalSceneryCount": 719,
+    "untexturedCells": 0,
+    "sceneryPlacements": 114,
+    "decals": 1
+  },
+  {
+    "race": "Data Center City",
+    "replacedGenericProps": 0,
+    "regionalSceneryCount": 250,
+    "untexturedCells": 0,
+    "sceneryPlacements": 80,
+    "decals": 2
+  },
+  {
+    "race": "Historic Route 66",
+    "replacedGenericProps": 0,
+    "regionalSceneryCount": 446,
+    "untexturedCells": 0,
+    "sceneryPlacements": 24,
+    "decals": 0
+  },
+  {
+    "race": "Pikes Peak Highway",
+    "replacedGenericProps": 0,
+    "regionalSceneryCount": 270,
+    "untexturedCells": 0,
+    "sceneryPlacements": 2,
+    "decals": 1
+  },
+  {
+    "race": "Moki Dugway",
+    "replacedGenericProps": 0,
+    "regionalSceneryCount": 333,
+    "untexturedCells": 0,
+    "sceneryPlacements": 32,
+    "decals": 0
+  },
+  {
+    "race": "Oak Creek Canyon",
+    "replacedGenericProps": 0,
+    "regionalSceneryCount": 630,
+    "untexturedCells": 0,
+    "sceneryPlacements": 8,
+    "decals": 0
+  },
+  {
+    "race": "Angeles Crest Highway",
+    "replacedGenericProps": 0,
+    "regionalSceneryCount": 346,
+    "untexturedCells": 0,
+    "sceneryPlacements": 3,
+    "decals": 2
+  }
+]

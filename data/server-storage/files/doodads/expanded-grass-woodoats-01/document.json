@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-expanded-grass-woodoats-01",
+    "name": "expanded-grass-woodoats-01",
+    "artRef": "expanded-grass-woodoats-01",
+    "widthM": 0.8,
+    "heightM": 0.8,
+    "groundOffsetM": 0.0312,
+    "hitboxWidthM": 0.68,
+    "hitboxHeightM": 0.7200000000000001,
+    "weightKg": 5,
+    "defaultRule": {
+      "behavior": "flatten",
+      "speedDrainPercent": 1,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

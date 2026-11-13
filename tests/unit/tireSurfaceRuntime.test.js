@@ -5,10 +5,10 @@ import RaceEditor from '../../src/ui/RaceEditor.js';
 import {applyTireDefinition} from '../../src/racing/raceTires.js';
 import {calculateBrushTireForce} from '../../src/racing/simulation/ContactPatchTireModel.js';
 
-function sample(tireName,surface){
+function sample(tireName,surface,bumpiness=0){
  const editor=new RaceEditor({exitRaceEditor(){}});
  editor.selectedRace.road.network=null;
- editor.selectedRace.road.segments=[{length:800,curve:0,elevation:0,surface,banking:0,bumpiness:0,hazardIds:[]}];
+ editor.selectedRace.road.segments=[{length:800,curve:0,elevation:0,surface,banking:0,bumpiness,hazardIds:[]}];
  editor.selectedRace.weather='clear';editor.selectedRace.hazards=[];
  const saved=JSON.parse(fs.readFileSync(new URL(`../../data/server-storage/files/tires/${tireName}/document.json`,import.meta.url)));
  applyTireDefinition(editor.selectedCar,saved,tireName);
@@ -40,4 +40,20 @@ test('saved rally tires are usable on asphalt but rain tires lead on wet asphalt
  assert.ok(rallyWet.mu<rallyDry.mu);
  assert.ok(rainWet.mu>rallyWet.mu*1.2);
  assert.ok(rallyWet.mu>.35);
+});
+
+test('authored roughness reaches production tire contact material',()=>{
+ assert.equal(sample('Stock','asphalt',.36).material.roughness,.36);
+ assert.equal(sample('Stock','asphalt',0).material.roughness,0);
+});
+
+test('stock road tires have limited but usable packed-snow grip and winter tires still lead',()=>{
+ const stock=sample('Stock','snow'),snow=sample('Snow','snow');
+ assert.ok(stock.mu>.20 && stock.mu<.29,`stock snow ${stock.mu}`);
+ assert.ok(snow.mu>stock.mu*1.35 && snow.mu<.45,`winter ${snow.mu}, stock ${stock.mu}`);
+});
+test('winter tires remain usable on dry and wet pavement without matching dry race tires',()=>{
+ const dry=sample('Snow','asphalt'),wet=sample('Snow','wet-asphalt'),race=sample('Tarmac','asphalt');
+ assert.ok(dry.mu>.75 && dry.mu<race.mu*.8,`winter dry ${dry.mu}`);
+ assert.ok(wet.mu>.55 && wet.mu<dry.mu,`winter wet ${wet.mu}`);
 });

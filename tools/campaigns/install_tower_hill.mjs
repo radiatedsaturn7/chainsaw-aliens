@@ -49,7 +49,7 @@ menu.parameters.campaignOpeningRace=race.name;menu.parameters.campaignStartingCa
 const map=menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.type==='world-map');
 Object.assign(map,createAmericaWorldMap(read('data/campaigns/america/catalog.json')));
 const heading=menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.id==='america-heading');
-if(heading)heading.label='CUMBERLAND TO LA · 25 RACES · WESTBOUND ←';
+if(heading)heading.label=`MIDDLE ROUTE · ${read('data/campaigns/america/catalog.json').length} RACES`;
 write(menuPath,menu);
 const metaPath=`${root}/menus/Game Menu/metadata.json`;write(metaPath,{...read(metaPath),savedAt});
 console.log(JSON.stringify({name:race.name,length,scenery:race.scenery.length,weatherRamp:race.weatherRamp}));

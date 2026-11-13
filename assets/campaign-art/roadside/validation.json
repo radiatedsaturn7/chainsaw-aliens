@@ -1,0 +1,443 @@
+{
+  "png_count": 23,
+  "assets": [
+    {
+      "file": "abandoned-car-01.png",
+      "width": 1719,
+      "height": 915,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        19,
+        42,
+        1698,
+        889
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 2344708,
+      "sha256": "ef4bbe6024af49f9d13b4cc5ca9eb791fd8902f510395c88cdda92e2cebec934"
+    },
+    {
+      "file": "abandoned-car-02.png",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        14,
+        73,
+        1760,
+        818
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 2185689,
+      "sha256": "33a747b2690073005bb9d38991e28bf9ded7610f0b513f34960d69654c315b53"
+    },
+    {
+      "file": "abandoned-car-03.png",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        23,
+        48,
+        1763,
+        851
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 2530727,
+      "sha256": "2301addf4b54612836e8982225d90ee7c3106a748d2dc4b506a86c4c04949d73"
+    },
+    {
+      "file": "chevron-left.png",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "visible_bounds_alpha_32": [
+        176,
+        25,
+        847,
+        1509
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1671669,
+      "sha256": "ec07496647fd142c8dc2b9000f6e80ddf0444ba3b0c70841893e0ba0b63162f3"
+    },
+    {
+      "file": "chevron-right.png",
+      "width": 1315,
+      "height": 1196,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        369,
+        12,
+        946,
+        1180
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 760185,
+      "sha256": "e5d0df034d82915ac3392e79dbec073ae2b9dffecfbec712c3249fb1eef6cd2a"
+    },
+    {
+      "file": "concrete-barrier-clean.png",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        82,
+        93,
+        1695,
+        796
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1611052,
+      "sha256": "9ea5981a05296adcefa013d0af7f02550eca01445e4b2f076e4d8aad0908ff59"
+    },
+    {
+      "file": "concrete-barrier-damaged.png",
+      "width": 1754,
+      "height": 897,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        28,
+        19,
+        1728,
+        882
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 2267681,
+      "sha256": "b218647ee1c806e371d3a390c0cd3f0711857747491993166e9469784e5fc0ff"
+    },
+    {
+      "file": "drainage-culvert-entrance.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "visible_bounds_alpha_32": [
+        61,
+        160,
+        1476,
+        881
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 2102661,
+      "sha256": "969d15d083eaf4975884cad4a70497d10503d20272741d58058db6a562a5b64a"
+    },
+    {
+      "file": "hairpin-warning-sign.png",
+      "width": 1263,
+      "height": 1246,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        296,
+        18,
+        959,
+        1225
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 827052,
+      "sha256": "e5aed416c050d964a0f9a801915fe729d2dfa0464dbbd2e69ec17bd7f2e63dcb"
+    },
+    {
+      "file": "metal-guardrail-damaged.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        37,
+        4,
+        2136,
+        719
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1760234,
+      "sha256": "e7dd339ac32498a7c011ff661576e69318a78703e922136e4b1e4f5d5891e222"
+    },
+    {
+      "file": "metal-guardrail-intact.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        83,
+        41,
+        2098,
+        683
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1361783,
+      "sha256": "f1bb28f7352d1a432858351673bfafece970096451b47dd1e550e586b3e20196"
+    },
+    {
+      "file": "reflector-post.png",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "visible_bounds_alpha_32": [
+        342,
+        24,
+        683,
+        1509
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1559621,
+      "sha256": "db087da0661fd6660ce1d9d41aaa78dea02e3e37f657f2658fe1220aab04408f"
+    },
+    {
+      "file": "road-closed-barricade.png",
+      "width": 1536,
+      "height": 1024,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "visible_bounds_alpha_32": [
+        61,
+        22,
+        1476,
+        1008
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 2161882,
+      "sha256": "11d06835ca0987ff11fd075e3007c75bf6a1570f6f973316fc430280f6c420b2"
+    },
+    {
+      "file": "rockfall-warning-sign.png",
+      "width": 1230,
+      "height": 1278,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        311,
+        14,
+        918,
+        1266
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 822902,
+      "sha256": "e24d124771167373bf624a65135fb730fc7fcd35bc09174cb1d11086c5db39e0"
+    },
+    {
+      "file": "rubble-pile.png",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        61,
+        88,
+        1713,
+        799
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1528812,
+      "sha256": "8d9a1ecf961e9d605e429174f9762804e4a4d5eddf128f5c09bad96dbecf2a2f"
+    },
+    {
+      "file": "snow-depth-marker-pole.png",
+      "width": 1025,
+      "height": 1535,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        442,
+        21,
+        583,
+        1514
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 463126,
+      "sha256": "1539eb6e46a7e89bfc4400559392e7be3dfd932691108b9157ea12312a4e7cdf"
+    },
+    {
+      "file": "snowbank-mound.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        35,
+        31,
+        2136,
+        693
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1605306,
+      "sha256": "98fe33689aedf1bea255cbf68af2bfdf2fb1270c45a7b245a838fc934db58f48"
+    },
+    {
+      "file": "steep-grade-warning-sign.png",
+      "width": 1246,
+      "height": 1263,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        251,
+        13,
+        980,
+        1250
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1023324,
+      "sha256": "e0d3d136e736c3c7178df1dcba02dd5f46c43cb02e48db0407556f3f99702fce"
+    },
+    {
+      "file": "streetlight.png",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "visible_bounds_alpha_32": [
+        122,
+        8,
+        937,
+        1524
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1363663,
+      "sha256": "d97d10e50514f62c724136379d37f38e66b07f0a7f800b64c17928fc06b64644"
+    },
+    {
+      "file": "traffic-cone.png",
+      "width": 1268,
+      "height": 1240,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        191,
+        13,
+        1077,
+        1227
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1242240,
+      "sha256": "bea7c04fa322059fb279594cb7fa3f564105c90b6f54065d9f3c6ef46a01bada"
+    },
+    {
+      "file": "wooden-fence-broken.png",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        50,
+        18,
+        1733,
+        871
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1794791,
+      "sha256": "3c0fbbacde613ae5f7fbe6014cb94f19aeb0136dc14abfa5b1cd5c2858b958a0"
+    },
+    {
+      "file": "wooden-fence-intact.png",
+      "width": 1774,
+      "height": 887,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "visible_bounds_alpha_32": [
+        67,
+        118,
+        1705,
+        776
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1408746,
+      "sha256": "b9ff7e3b63afd314cc7cf02c8f359dddafbfd52139fab844fba47e41e933439c"
+    },
+    {
+      "file": "wooden-utility-pole.png",
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alpha_extrema": [
+        0,
+        254
+      ],
+      "visible_bounds_alpha_32": [
+        244,
+        17,
+        781,
+        1519
+      ],
+      "uncropped_alpha_32": true,
+      "bytes": 1515977,
+      "sha256": "9638c0bee2837e172042e051325fa49f6d94eff0bfff22b51b083f98325af9ce"
+    }
+  ],
+  "visual_review": "All 23 PNGs inspected; left/right chevrons, warning symbols, ROAD CLOSED text and distinct car variants verified. Clean barrier regenerated to remove cracks. Narrow poles retain substantial transparent horizontal padding at native generator resolution."
+}

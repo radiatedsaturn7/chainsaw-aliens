@@ -1,50 +1,97 @@
-import {prepareAmericaRace} from './prepare_america.mjs';
-// Install only campaign files and the world-map screen; retain other user content.
+import {applySavedMissionConditions} from './apply_mission_conditions.mjs';
+// Install the single Middle Route, preserving the two existing opening races.
 import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
+import {prepareAmericaRace} from './prepare_america.mjs';
 import {raceFxPreset} from '../../src/racing/RaceVisualFx.js';
-import {createAmericaWorldMap} from '../../src/menus/AmericaWorldMap.js';
-const source='data/campaigns/america',generated='artifacts/campaign-import/america',root='data/server-storage/files';
-const catalog=JSON.parse(fs.readFileSync(`${source}/catalog.json`));
-if(catalog.length!==24)throw Error('Expected all 24 imported stages before installation');
+import {createAmericaWorldMap, AMERICA_ROUTE_NAME} from '../../src/menus/AmericaWorldMap.js';
+import RaceEditor from '../../src/ui/RaceEditor.js';
+import {analyzeRaceDrivingRoute,racePaceNotes} from '../../src/racing/RaceDrivingAssists.js';
+const source='data/campaigns/america',generated='artifacts/campaign-import/middle',root='data/server-storage/files';
 const decode=d=>d.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(d.data,'base64'))):d;
+const read=p=>decode(JSON.parse(fs.readFileSync(p)));
+const write=(p,d)=>fs.writeFileSync(p,JSON.stringify(d,null,2)+'\n');
 const encode=d=>({__chainsawStorage:'compact-v1',encoding:'json-gzip-base64',data:zlib.gzipSync(Buffer.from(JSON.stringify(d)),{level:9,mtime:0}).toString('base64')});
-const write=(file,d)=>fs.writeFileSync(file,JSON.stringify(d,null,2)+'\n');
-const manifestPath=`${root}/manifest.json`,manifest=JSON.parse(fs.readFileSync(manifestPath));
-const savedAt=Date.parse('2026-11-05T17:00:00Z');
-for(const stage of catalog){
- const race=JSON.parse(fs.readFileSync(`${generated}/${stage.id}.json`));
- Object.assign(race,raceFxPreset(stage.timeOfDay==='night'?'night':stage.stage>=4?'evening':'noon'));
- race.weatherIntensity=stage.stage<=2?0:Math.min(1,.25+stage.stage*.09);
- race.weatherVisibilityM=[0,0,1800,1400,1000,750,500,300][stage.stage-1];
- race.weatherTemperatureC=stage.weather==='snow'?-8:16;
- race.source.elevationAttribution='Mapzen/Tilezen Terrain Tiles; United States 3DEP, GMTED2010 and SRTM terrain data courtesy of the U.S. Geological Survey.';
- race.source.elevationLicenseUrl='https://github.com/tilezen/joerd/blob/master/docs/attribution.md';
- race.source.warnings=race.source.warnings.map(w=>w.startsWith('Road width uses OSM')?'Road width is authored for campaign difficulty; original OSM geometry is retained.':w);
- const branchLabel={north:'Northern',middle:'Middle',south:'Southern'}[stage.branch];
- race.description=`${branchLabel} route · Stage ${stage.stage}/8 · ${(stage.lengthM/1000).toFixed(1)} km\n${stage.location.name}\nDifficulty ${stage.difficulty}/8 · ${stage.surface.replaceAll('-',' ')} · ${stage.weather} · ${stage.timeOfDay}`;
-
- prepareAmericaRace(race, stage);
+const imported=read(`${source}/imported-middle.json`);
+const specs=read('tools/campaigns/middle_route.json');
+if(imported.length!==specs.length || imported.some((stage,i)=>stage.sourceKey!==specs[i].key))throw Error('Import every configured Middle Route stage in order before installation');
+const manifestPath=`${root}/manifest.json`,manifest=read(manifestPath);
+const existing=[['Tower Hill Road','Tower Hill Road',41.9964,-71.437],['Mount Washington Auto Road — point-to-point','Mount Washington Auto Road',44.271,-71.303]];
+const opening=existing.map(([name,label,lat,lon],i)=>{
+ const relative=manifest.folders.races[name];if(!relative)throw Error(`Missing preserved race ${name}`);
+ const doc=read(`${root}/${relative}`),race=doc.race;
+ return {id:race.id,branch:'middle',stage:i+1,difficulty:i+1,name,label,documentPath:relative,
+  location:{lat,lon,place:i?'Mount Washington, New Hampshire':'Cumberland, Rhode Island'},lengthM:race.source.mappedLengthM,
+  preserveExisting:true,estimatedDrivingSeconds:i?null:210,
+  durationMethod:i?'Existing Mount Washington implementation retained; no new lap-time measurement.':'Existing opening ends at completion or 210 seconds, whichever comes first.'};
+});
+const catalog=[...opening,...imported];
+const savedAt=Date.parse('2026-11-10T12:00:00Z');
+const definitions=Object.fromEntries(['tree','frozenbush','frozenrock','Factory'].map(ref=>[ref,read(`${root}/doodads/${ref}/document.json`).doodad]));
+const editor=new RaceEditor({deviceIsMobile:true,isMobile:true,exitRaceEditor(){}});
+for(const stage of imported){
+ const race=read(`${generated}/${stage.id}.json`);
+ Object.assign(race,raceFxPreset(stage.timeOfDay==='night'?'night':'evening'));
+ prepareAmericaRace(race,stage);
+ editor.applyLoadedRaceDocument(race);
+ const length=editor.getRaceRouteLength();
+ let seed=stage.stage*733;const random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
+ race.scenery=[];
+ const industrial=stage.sceneryTheme==='industrial',forest=['forest','river','canyon'].includes(stage.sceneryTheme);
+ for(let d=30;d<length-30;d+=industrial?85:forest?35:70){
+  const pose=editor.getRaceWorldPoseAtDistance(d);
+  for(const side of [-1,1]){
+   const ref=industrial&&random()<.55?'Factory':forest&&random()<.65?'tree':random()<.5?'frozenrock':'frozenbush';
+   const def=definitions[ref],width=ref==='Factory'?38:def.widthM,height=ref==='Factory'?27:def.heightM;
+   const offset=side*(ref==='Factory'?55+random()*35:14+random()*24);
+   const x=pose.x+Math.cos(pose.yaw)*offset,z=pose.z-Math.sin(pose.yaw)*offset;
+   const projection=editor.getRaceRouteProjectionForWorldPoint({x,z});
+   // Protect the complete road corridor, including adjacent switchback legs.
+   if(Math.abs(projection.lateral)<10+width/2)continue;
+   race.scenery.push({id:`${stage.id}-scenery-${race.scenery.length}`,presetId:'doodad',definitionId:def.id,doodadRef:ref,artRef:def.artRef,
+    label:ref==='Factory'?'Automated data-center cooling block':def.name,x,z,yaw:pose.yaw,trackDistance:projection.distance,trackLateral:projection.lateral,
+    widthM:width,heightM:height,groundOffsetM:ref==='Factory'?0:def.groundOffsetM,behavior:ref==='Factory'?'collide':def.defaultRule.behavior,
+    weightKg:ref==='Factory'?100000:def.weightKg,state:'standing',
+    ...(ref==='Factory'?{previewDoodad:{...def,widthM:width,heightM:height,hitboxWidthM:width,hitboxHeightM:height,groundOffsetM:0,weightKg:100000}}:{})});
+  }
+ }
+ // Re-run notes after scenery placement so apex hazards are considered.
+ editor.applyLoadedRaceDocument(race);
+ race.codriver.calls=racePaceNotes(race,analyzeRaceDrivingRoute(editor));
+ race.description=`Middle Route · ${stage.stage}/${catalog.length} · ${(stage.lengthM/1000).toFixed(1)} km · ~${(stage.estimatedDrivingSeconds/60).toFixed(1)} min\n${stage.segmentDescription}`;
+ race.source.sceneryDescription='Fictional frozen-world roadside scenery; trees, rocks, snow patches and abandoned industrial structures are authored, not imported building footprints.';
  const folder=path.join(root,'races',stage.name);fs.mkdirSync(folder,{recursive:true});
+ stage.documentPath=`races/${stage.name}/document.json`;
  write(`${folder}/document.json`,encode({schemaVersion:1,kind:'race-track',savedAt,selectedRaceId:race.id,race}));
  write(`${folder}/metadata.json`,{name:stage.name,folder:'races',savedAt,version:1});
- manifest.folders.races[stage.name]=`races/${encodeURIComponent(stage.name).replace(/%20/g,' ')}/document.json`;
+ manifest.folders.races[stage.name]=stage.documentPath;
+ console.log(`Installed ${stage.stage}: ${stage.name}, ${race.scenery.length} roadside props`);
 }
-const menuPath=`${root}/menus/Game Menu/document.json`,menu=decode(JSON.parse(fs.readFileSync(menuPath)));
+// Retire precisely the previous campaign stages. Their documents, assets and
+// source snapshots remain archived outside the playable project asset folders.
+for(const old of read(`${source}/legacy-catalog.json`)){
+ const relative=manifest.folders.races[old.name];
+ if(relative){
+  const oldFolder=path.dirname(`${root}/${relative}`),archive=`${source}/retired-races/${old.name}`;
+  if(fs.existsSync(oldFolder)&&!fs.existsSync(archive)){fs.mkdirSync(path.dirname(archive),{recursive:true});fs.renameSync(oldFolder,archive);}
+  delete manifest.folders.races[old.name];
+ }
+}
+write(`${source}/catalog.json`,catalog);
+const menuPath=`${root}/menus/Game Menu/document.json`,menu=read(menuPath);
 menu.parameters.campaignOpeningRace='Tower Hill Road';
-menu.parameters.campaignStartingCar='RTG-001';
 const screen=menu.screens.find(s=>s.id==='world-map');
 if(!screen)throw Error('Game Menu world-map screen is missing');
 const map=screen.elements.find(e=>e.type==='world-map');
 Object.assign(map,createAmericaWorldMap(catalog),{showSelectedLabel:true,fontSize:16});
 screen.elements=screen.elements.filter(e=>!e.id.startsWith('america-'));
-const label=(id,text,x,y,w,color='#ffffff')=>({id:`america-${id}`,type:'text',label:text,x,y,w,h:.035,fontSize:16,color,visible:true,useDefaultFont:true});
-screen.elements.push(label('heading','CUMBERLAND TO LA · 25 RACES · WESTBOUND ←',.08,.07,.84),
- label('north','NORTHERN ROUTE',.34,.15,.32,'#7dd9ed'),
- label('middle','MIDDLE ROUTE',.34,.34,.32,'#efc36b'),
- label('south','SOUTHERN ROUTE',.34,.53,.32,'#f59987'));
+screen.elements.push({id:'america-heading',type:'text',label:`${AMERICA_ROUTE_NAME.toUpperCase()} · ${catalog.length} RACES`,x:.08,y:.07,w:.84,h:.035,fontSize:16,color:'#ffffff',visible:true,useDefaultFont:true});
 write(menuPath,menu);
-write(`${root}/menus/Game Menu/metadata.json`,{...JSON.parse(fs.readFileSync(`${root}/menus/Game Menu/metadata.json`)),savedAt});
+write(`${root}/menus/Game Menu/metadata.json`,{...read(`${root}/menus/Game Menu/metadata.json`),savedAt});
 write(manifestPath,manifest);
-console.log('Installed 24 races and the three-branch world map.');
+console.log('Installed single Middle Route; applying mission conditions while retaining the existing opening tracks.');
+
+await applySavedMissionConditions();
+
+if(fs.existsSync('data/campaigns/america/art-imports.json'))await import('./apply_campaign_art.mjs');

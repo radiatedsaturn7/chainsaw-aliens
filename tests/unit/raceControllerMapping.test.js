@@ -129,7 +129,7 @@ test('simulated gamepad reaches the live steering rack promptly in both directio
 });
 
 
-test('on-screen D-pad uses controller response and reverses promptly through the live rack',()=>{
+test('on-screen D-pad builds steering progressively and unwinds promptly through the live rack',()=>{
  for(const fps of [30,60,120]){
   const editor=new RaceEditor({input:{getGamepadAxes:()=>({leftX:0})}});
   editor.startPlaytest(editor.selectedCar.id);
@@ -137,11 +137,11 @@ test('on-screen D-pad uses controller response and reverses promptly through the
   const hit={playtestControl:'dpad',bounds:{x:0,y:0,w:100,h:100}};
   editor.handleRacePlaytestPointerDown(hit,{id:1,x:95,y:50});
   for(let i=0;i<fps*.2;i++)editor.updatePlaytest(1/fps);
-  assert.equal(editor.raceInput.controllerSteeringMode,'gamepad');
-  assert.ok(editor.raceInput.steeringWheel>.9);
+  assert.equal(editor.raceInput.controllerSteeringMode,'digital');
+  assert.ok(editor.raceInput.steeringWheel>.25&&editor.raceInput.steeringWheel<.7);
   editor.handleRaceDpadPoint(hit.bounds,{id:1,x:5,y:50});
   for(let i=0;i<fps*.2;i++)editor.updatePlaytest(1/fps);
-  assert.ok(editor.raceInput.steeringWheel<-.85);
+  assert.ok(editor.raceInput.steeringWheel<-.2&&editor.raceInput.steeringWheel>-.7);
   editor.raceInput.activeDpadPointerId=null;editor.raceInput.binarySteer=0;
   for(let i=0;i<fps*.2;i++)editor.updatePlaytest(1/fps);
   assert.ok(Math.abs(editor.raceInput.steeringWheel)<.04);
@@ -161,22 +161,20 @@ test('touch brake applies and releases fully in one frame with or without gamepa
 });
 
 
-test('touch steering preserves small corrections through analog sampling and keeps full lock at pad edges',()=>{
+test('touch direction buttons supply on/off intent independent of where the button is pressed',()=>{
  const editor=new RaceEditor({input:{getGamepadAxes:()=>({leftX:0})}});
  const bounds={x:0,y:0,w:100,h:100};
  editor.raceInput.activeDpadPointerId=1;
- const values=[];
- for(const x of [50,59,60,65,75,90,100]){
+ for(const x of [60,65,75,90,100]){
   editor.handleRaceDpadPoint(bounds,{x,y:50});editor.applyRaceAnalogInput();
-  values.push(editor.raceInput.analogSteeringIntent);
+  assert.equal(editor.raceInput.analogSteeringIntent,1);
  }
- assert.equal(values[0],0);assert.ok(Math.abs(values[1])<1e-12);
- assert.ok(values[2]>0&&values[2]<.05);
- assert.ok(values[3]>.1&&values[3]<.3);
- assert.ok(values[4]>.4&&values[4]<.6);
- assert.equal(values[5],1);assert.equal(values[6],1);
- editor.handleRaceDpadPoint(bounds,{x:35,y:50});editor.applyRaceAnalogInput();
- assert.ok(Math.abs(editor.raceInput.analogSteeringIntent+values[3])<1e-12);
+ for(const x of [0,10,25,35,40]){
+  editor.handleRaceDpadPoint(bounds,{x,y:50});editor.applyRaceAnalogInput();
+  assert.equal(editor.raceInput.analogSteeringIntent,-1);
+ }
+ editor.handleRaceDpadPoint(bounds,{x:50,y:50});editor.applyRaceAnalogInput();
+ assert.equal(editor.raceInput.analogSteeringIntent,0);
 });
 
 
@@ -189,4 +187,20 @@ test('repeated keyboard service-brake taps never issue a timed handbrake command
   assert.equal(editor.raceInput.handbrakeHoldSequence,0);
   assert.equal(editor.raceInput.handbrake,false);
  }
+});
+
+test('double touch brake taps request one timed handbrake pulse, not a stuck brake',()=>{
+ const editor=new RaceEditor({});editor.playtestSession={running:true};
+ const tap=t=>{editor.raceInput.inputClockMs=t;editor.handleRacePlaytestPointerDown({playtestControl:'brake'},{id:'r'});};
+ tap(1000);assert.equal(editor.raceInput.handbrakeHoldSequence,0);
+ tap(1100);assert.equal(editor.raceInput.handbrakeHoldSequence,0,'duplicate down is not a tap');
+ editor.raceInput.brake=false;tap(1200);
+ assert.equal(editor.raceInput.handbrakeHoldSequence,1);
+ assert.equal(editor.raceInput.handbrakeHoldSeconds,.36);
+ assert.equal(editor.raceInput.handbrake,false,'pulse is owned by physics, not a sticky button');
+ editor.raceInput.brake=false;tap(1300);
+ assert.equal(editor.raceInput.handbrakeHoldSequence,1,'triple tap does not extend the pulse');
+ editor.raceInput.brake=false;tap(1800);
+ assert.equal(editor.raceInput.handbrakeHoldSequence,1,'slow taps are normal braking');
+ editor.resetRacePlaytestInputs();assert.equal(editor.raceInput.lastTouchBrakeTapMs,null);
 });

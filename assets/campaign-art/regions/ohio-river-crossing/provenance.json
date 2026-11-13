@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "file": "riverside-building.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: a small aging Ohio River riverside boathouse building raised slightly on masonry footings, weathered timber siding, simple sloped snow-dusted metal roof, dark windows and closed doors. No water or ground landscape. Use reference house only for matching crisp detailed frozen pixel-art rendering and near-frontal three-quarter angle. Desaturated gray-brown and icy blue palette, restrained diffuse lighting. Entire object visible, tight framing with small margin. Genuine transparent alpha outside silhouette. No backdrop, scene, people, cars, large cast shadows, glow, or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          104,
+          48,
+          1361,
+          993
+        ],
+        "bytes": 2682209,
+        "sha256": "3adeddbf9a31c7e712cc63bb817cfbadfda0edeb47e45eaa68703566fff93778",
+        "visualReview": "Subject complete, style consistent, meaningful silhouette inside canvas."
+      }
+    },
+    {
+      "file": "distant-bridge-silhouette.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one wide distant Ohio River steel truss bridge silhouette, horizontal bridge deck with two restrained triangular truss spans and stone piers beneath. Background scenery artwork only, seen from side at a distance, no foreground drive-through perspective. Muted blue-gray steel with tiny snow highlights, recognizable simple silhouette. No water or landscape. Reference house and bush are style references only: match their crisp detailed frozen pixel-art rendering and subdued diffuse lighting. Desaturated gray-brown and icy blue palette. Whole object and base completely inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette and through gaps. No scene, people, large shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Background scenery only. Not a traversable structure.",
+      "validation": {
+        "format": "PNG",
+        "width": 2172,
+        "height": 724,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          255
+        ],
+        "visibleBoundsAlphaAbove32": [
+          30,
+          172,
+          2141,
+          665
+        ],
+        "bytes": 1214203,
+        "sha256": "5e17e2ff1505d6a87eaef9f7df25813d353e5a22e5bebac812c4b61fdfe9c9b2",
+        "visualReview": "Subject complete, style consistent, meaningful silhouette inside canvas."
+      }
+    },
+    {
+      "file": "flood-marker.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one old riverside flood-depth marker post, weathered pale rectangular measuring board fixed to a narrow timber post with dark horizontal measurement ticks, several faded red high-water lines, light snow cap. No words or numbers. Reference house and bush are style references only: match their crisp detailed frozen pixel-art rendering and subdued diffuse lighting. Desaturated gray-brown and icy blue palette. Whole object and base completely inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette and through gaps. No scene, people, large shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite.",
+      "validation": {
+        "format": "PNG",
+        "width": 1024,
+        "height": 1536,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          124,
+          17,
+          890,
+          1483
+        ],
+        "bytes": 1895881,
+        "sha256": "a3d7478388ca95f2f384ab39c8df54c6df3cfb447f1735cbb3899d5b962d04c9",
+        "visualReview": "Subject complete, style consistent, meaningful silhouette inside canvas."
+      }
+    },
+    {
+      "file": "riverbank-vegetation.png",
+      "prompt": "Use case: stylized-concept. New standalone game scenery sprite: one compact clump of winter riverbank reeds and leafless willow brush, tan dead reed stalks with several dark seed heads, thin brown bare willow twigs, sparse snow clinging near roots. No water or ground rectangle. Reference house and bush are style references only: match their crisp detailed frozen pixel-art rendering and subdued diffuse lighting. Desaturated gray-brown and icy blue palette. Whole object and base completely inside canvas, tightly framed with small transparent margin. Genuine alpha background outside silhouette and through gaps. No scene, people, large shadows, glow or checkerboard. PNG.",
+      "generator": "built-in image_gen",
+      "postprocessing": "None. Native generated PNG copied unchanged; alpha preserved.",
+      "usage": "Standalone scenery sprite.",
+      "validation": {
+        "format": "PNG",
+        "width": 1536,
+        "height": 1024,
+        "mode": "RGBA",
+        "alphaRange": [
+          0,
+          254
+        ],
+        "visibleBoundsAlphaAbove32": [
+          83,
+          23,
+          1443,
+          998
+        ],
+        "bytes": 2334917,
+        "sha256": "32a6c3355dd223fc04cf97ee67aac135cf7550df1b74d01658b8481ee79c05a2",
+        "visualReview": "Subject complete, style consistent, meaningful silhouette inside canvas."
+      }
+    }
+  ]
+}

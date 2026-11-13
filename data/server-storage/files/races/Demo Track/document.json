@@ -6845,11 +6845,11 @@
       "shoulderEnabled": true,
       "widthM": 0.22,
       "shoulderWidthM": 12,
-      "collisionMode": "shoulder",
+      "collisionMode": "none",
       "artRef": "apron",
       "marginMode": "hidden",
       "shoulderMode": "hidden",
-      "collisionEdge": "shoulder",
+      "collisionEdge": "none",
       "collisionEffect": "reset"
     },
     "renderDebug": {
@@ -6879,6 +6879,9 @@
     "snowClouds": {
       "enabled": true,
       "artRef": "snowcloud"
+    },
+    "visualFx": {
+      "skyBrightness": 1
     }
   },
   "savedAt": 1794194665421

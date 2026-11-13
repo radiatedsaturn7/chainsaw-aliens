@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-expanded-fern-bracken-dry-01",
+    "name": "expanded-fern-bracken-dry-01",
+    "artRef": "expanded-fern-bracken-dry-01",
+    "widthM": 1.4,
+    "heightM": 0.7,
+    "groundOffsetM": 0.082,
+    "hitboxWidthM": 1.19,
+    "hitboxHeightM": 0.63,
+    "weightKg": 5,
+    "defaultRule": {
+      "behavior": "flatten",
+      "speedDrainPercent": 1,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

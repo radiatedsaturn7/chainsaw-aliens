@@ -1,0 +1,26 @@
+[
+  {
+    "path": "assets/campaign-art/regions/pikes-peak/granite-outcrop.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for pikes-peak. Subject: Weathered rugged gray granite outcrop with a light dusting of snow. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-48905b50-29a0-409c-a4cd-1f89e9593d09.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/pikes-peak/alpine-vegetation.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for pikes-peak. Subject: Small cluster of sparse stunted alpine vegetation, frosted grasses and dwarf shrubs. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-97807475-5804-4875-a2ee-ec9306c95c83.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/pikes-peak/snow-fence.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for pikes-peak. Subject: Short weathered wooden slat snow fence section on two posts. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-0db312eb-4eee-4c30-bd6a-5d99d03e5b1c.png",
+    "generator": "built-in imagegen"
+  },
+  {
+    "path": "assets/campaign-art/regions/pikes-peak/summit-sign.png",
+    "prompt": "Use case: stylized-concept. New standalone game sprite PNG for pikes-peak. Subject: Weathered summit roadside sign with exact legible text PIKES PEAK. References are STYLE ONLY: match detailed crisp pixel-art of supplied frozen house/tree art, fine pixel clusters, restrained highlights, muted natural palette, slightly three-quarter eye-level object view with visible top planes where appropriate. Single isolated object, genuine transparent background, complete uncropped silhouette entirely inside canvas, tight framing with only small margin. No scene, horizon or opaque ground rectangle. Subtle diffuse lighting, no dramatic cast shadow. No extra text or watermark.",
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-42142e40-c99e-4fa0-8d72-5e431143b6b9.png",
+    "generator": "built-in imagegen"
+  }
+]

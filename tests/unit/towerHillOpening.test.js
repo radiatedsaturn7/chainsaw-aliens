@@ -123,6 +123,11 @@ test('Tower Hill homes use all four saved doodads, wooded setbacks and mostly fi
   assert.ok(race.scenery.some(s=>s.doodadRef==='tree'&&Math.hypot(s.x-h.x,s.z-h.z)<40),'woodland remains around each home');
  }
  const copy=structuredClone(race);placeTowerHillHouses(copy,loadTowerHillHouseDefinitions());
- assert.deepEqual(copy.scenery,race.scenery,'re-authoring must not duplicate homes or keep removing vegetation');
+ // Saved placement can predate geometry/art-dimension revisions. Idempotence
+ // compares two runs with the same current authoring inputs.
+ const authored=structuredClone(copy.scenery);
+ placeTowerHillHouses(copy,loadTowerHillHouseDefinitions());
+ assert.deepEqual(copy.scenery,authored,'re-authoring must not duplicate homes or keep removing vegetation');
+ assert.equal(copy.scenery.filter(s=>s.id?.startsWith('tower-house-')).length,18);
  assert.ok(e.collectSelectedRaceArtRefs().includes('house1'));
 });

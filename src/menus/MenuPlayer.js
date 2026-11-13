@@ -10,9 +10,9 @@ import {musicMediaVolume} from '../audio/musicVolume.js';
 import {GarageTuner} from '../garage/GarageTuning.js';
 import {drawGarageTuner} from './MenuTuningRenderer.js';
 import {menuCodeValue,cycleCodeLetter} from './MenuCodeEntry.js';
-import {redeemGarageCheat} from '../garage/GarageCheats.js';
-import {loadMenuProgress,commitMenuCar} from './MenuProgress.js';
-import {worldMapNodes,worldMapNodePoint,worldMapRaceNodes,worldMapSelection,worldMapDirectionalNode} from './MenuWorldMap.js';
+import {redeemGarageCheat,GARAGE_CHEAT_CODES} from '../garage/GarageCheats.js';
+import {loadMenuProgress,commitMenuCar,setMenuProgress} from './MenuProgress.js';
+import {raceCompletionKey,worldMapNodes,worldMapNodePoint,worldMapRaceNodes,worldMapSelection,worldMapDirectionalNode} from './MenuWorldMap.js';
 import {showroomPage,garageBrowserRows,garageCardBounds,garageGridBounds,upgradeGridArea} from './MenuGarageWidgets.js';
 import {createMenuRepeatState,resetMenuRepeatState,getMenuRepeatDirection} from '../ui/shared/menuRepeat.js';
 import {ItemSystem} from '../items/ItemSystem.js';
@@ -51,13 +51,7 @@ export default class MenuPlayer {
       wheelSettings:()=>openWheelSettings(this.game.wheelService),
       haptics:target=>target==='test'?this.game.raceHaptics?.test():this.openHaptics(target==='effects'),
       saveSlot:(action,index)=>this.saveSlotAction(action,index),
-      cheatCode:async(code,params)=>{
-        const garage=this.resources.garage;if(!garage)throw Error('Garage unavailable');
-        const carRef=this.flow.lockedCarRef||'',stock=carRef?(await this.game.resolveRaceTravelCarAsync(carRef))?.car:null;
-        this.message=await redeemGarageCheat(garage,code,{carRef,stock});
-        this.resources.garageCars.clear();
-        if(this.preview)this.message+=' (preview only)';
-      },
+      cheatCode:code=>this.redeemCheat(code),
       parameterChanged:(key,value)=>{void (key.startsWith('haptics.')?this.setHaptic(key.slice(8),value):this.settings.set(key,value)).catch(error=>{if(this.flow)this.flow.error=error.message})},
       screenLeaving:screen=>{this.screenFocus.set(screen.id,this.interactive()[this.focus]?.id);},
       screenChanged:()=>this.enterScreen(),stop:()=>{this.cleanup();this.restorePreview();this.game.transitionTo(this.preview?'menu-editor':'title',{forceCleanup:true})},
@@ -157,6 +151,28 @@ export default class MenuPlayer {
       if(result?.ok===false)throw Error('Could not save vibration settings');
     });return this.hapticSave;
   }
+  async redeemCheat(code){
+    const normalized=String(code).toUpperCase();
+    if(!GARAGE_CHEAT_CODES.includes(normalized))throw Error('Invalid cheat code');
+    if(!this.preview&&!this.game.campaignSaves?.hasActive){
+      (this.game.pendingMenuCheats||=[]).push(normalized);
+      this.message=`${normalized} — Choose a save slot to apply`;return;
+    }
+    const garage=this.resources.garage;if(!garage)throw Error('Garage unavailable');
+    const carRef=this.flow.lockedCarRef||'',stock=carRef?(await this.game.resolveRaceTravelCarAsync(carRef))?.car:null;
+    this.message=await redeemGarageCheat(garage,normalized,{carRef,stock});
+    await this.applyOpeningSkip();
+    this.resources.garageCars.clear();
+    if(this.preview)this.message+=' (preview only)';
+  }
+  async applyOpeningSkip(){
+    if(!this.resources.garage?.items.progress.unlocks['cheat.skipme'])return;
+    const opening=this.flow.document.parameters.campaignOpeningRace||'Tower Hill Road';
+    const key=raceCompletionKey(opening);
+    if(this.preview)this.flow.setParameter(key,true);
+    else await setMenuProgress(this.game,{[key]:true});
+    this.flow.pendingOpeningRace='';
+  }
   async selectSaveSlot(mode,index,target='cars',overwrite=false){
     const flow=this.flow;
     const snapshot=mode==='new'?await this.game.campaignSaves.startNew(index,{overwrite}):await this.game.campaignSaves.resume(index);
@@ -166,15 +182,21 @@ export default class MenuPlayer {
     flow.lockedCarRef='';flow.history=[];
     const car=snapshot.progress.selectedGameCar;
     if(car)flow.lockCar(car);else flow.newGameSelection=true;
+    // Codes entered before selecting a save belong to the next selected slot.
+    while(this.game.pendingMenuCheats?.length){
+      await this.redeemCheat(this.game.pendingMenuCheats[0]);
+      this.game.pendingMenuCheats.shift();
+    }
     this.refreshSaveButtons();
     // A slot with no chosen car is still an unfinished new game.
     flow.pendingOpeningRace=!car?flow.document.parameters.campaignOpeningRace||'':'';
+    await this.applyOpeningSkip();
     flow.goTo(car?'world-map':target,{remember:!car});
   }
   restorePreview(){const snapshot=this.previewSnapshot;if(!snapshot)return;this.previewSnapshot=null;if(snapshot.worldData)this.game.applyWorldData(snapshot.worldData);for(const key of ['menuParameters','storyData','gameMode','playtestActive','simulationActive'])this.game[key]=snapshot[key];this.game.raceEditorPlaytestReturn=false;this.game.raceTravelSession=null;}
   releasePauseAudio(){const context=this.pausedAudioContext;this.pausedAudioContext=null;if(context)void context.resume().catch(()=>{});}
   togglePause(){if(!this.preview||(this.flow.busy&&!this.cutscene.active&&!this.movie))return;this.paused=!this.paused;if(this.paused){this.tuner?.stopRev();this.slider=null;this.cancelKeyCapture();const context=this.game.audio?.ctx;if(context?.state==='running'){this.pausedAudioContext=context;void context.suspend().catch(()=>{});}this.pausedVideos=[...this.videos.values(),this.movie,...(this.game.musicPlayers||[]).map(p=>p.media)].filter(v=>v&&!v.paused);for(const v of this.pausedVideos)v.pause();}else{this.releasePauseAudio();for(const v of this.pausedVideos||[])void v.play().catch(()=>{});this.pausedVideos=[];}}
-  cleanupScreen({keepMusic=false,immediateMusic=false}={}){this.tuner?.dispose();this.tuner=null;this.tunerModal=false;this.mediaGeneration++;this.choicePopup=null;this.slider=null;if(!keepMusic)this.screenMusic.stop(immediateMusic?{fadeOut:0}:{});for(const video of this.videos.values()){video.pause();video.removeAttribute('src');video.load();}this.videos.clear();}
+  cleanupScreen({keepMusic=false,immediateMusic=false}={}){this.resources.cancelAutoUpgradeQuotes();this.tuner?.dispose();this.tuner=null;this.tunerModal=false;this.mediaGeneration++;this.choicePopup=null;this.slider=null;if(!keepMusic)this.screenMusic.stop(immediateMusic?{fadeOut:0}:{});for(const video of this.videos.values()){video.pause();video.removeAttribute('src');video.load();}this.videos.clear();}
   cleanup(){this.screenEntryGeneration=(this.screenEntryGeneration||0)+1;this.screenEntryTask=null;this.pendingScreenSnapshot=null;this.enteredTransitionGroup=null;this.screenTransition.reset();this.lastDrawCanvas=null;this.lastDrawTransform=null;this.pendingScreenEntry=false;this.transitionBlackDrawn=false;resetMenuRepeatState(this.navigationRepeat);this.releasePauseAudio();if(this.tabListener&&typeof window!=='undefined')window.removeEventListener('keydown',this.tabListener);this.tabListener=null;this.surface.reset();this.resources.carPreview.dispose();this.cleanupScreen({immediateMusic:true});this.cancelKeyCapture();if(this.cutscene.active){this.cutscene.onDone=null;this.cutscene.stop();}if(this.movie){this.movie.pause();this.movie.removeAttribute('src');this.movie.load();this.movie=null;}this.rejectMovie?.(Error('Playback cancelled'));this.rejectMovie=null;this.resolveMovie=null;}
   enterScreen({prepared=false}={}){
     this.screenEntryGeneration=(this.screenEntryGeneration||0)+1;
@@ -206,7 +228,7 @@ export default class MenuPlayer {
     this.pendingScreenEntry=false;this.flow.time=0;
     this.cleanupScreen({keepMusic:true});this.widgetStates.clear();this.focus=0;this.message='';const flow=this.flow,screen=flow.screen,generation=this.mediaGeneration;
     for(const e of screen.elements){if(['choice','car-showroom'].includes(e.type)&&e.binding){const choices=e.type==='car-showroom'?this.resources.choices('cars',flow.document,flow.parameters):e.source?this.resources.choices(e.source,flow.document,flow.parameters):e.options;if(choices.length&&!choices.some(o=>JSON.stringify(o.value)===JSON.stringify(flow.parameters[e.binding])))flow.setParameter(e.binding,choices[0].value);}
-      if(e.type==='world-map'){const node=worldMapSelection(worldMapNodes(e,this.resources,flow.document,flow.parameters),flow.parameters[e.binding]);flow.setParameter(e.binding,node?.raceRef||'');}
+      if(e.type==='world-map'){const hub=flow.document.parameters.campaignEventHubs?.[flow.parameters[e.binding]];if(hub)flow.setParameter(e.binding,hub);const node=worldMapSelection(worldMapNodes(e,this.resources,flow.document,flow.parameters),flow.parameters[e.binding]);flow.setParameter(e.binding,node?.raceRef||'');}
       if(e.type==='car-showroom')this.widgetStates.set(e.id,{value:flow.parameters[e.binding],selectedAt:flow.time});
       if(e.type==='video'&&e.videoUrl&&typeof document!=='undefined'){const video=document.createElement('video');video.src=e.videoUrl;video.loop=e.loop;video.playsInline=true;video.muted=true;video.onerror=()=>{flow.error=`Video could not load: ${e.videoUrl}`};this.videos.set(e.id,video);void video.play().catch(()=>{this.message='Tap to play video'});}
     }
@@ -265,6 +287,8 @@ export default class MenuPlayer {
         this.flow.setParameter(element.binding,selected.raceRef);
         // A stale disabled selection must not launch a different race on Confirm.
         if(value&&selected.raceRef!==value)return;
+        const hub=this.flow.document.parameters.campaignHubs?.[selected.raceRef];
+        if(hub)return this.flow.goTo(hub);
         return this.flow.run(element.action);
       }
       const bounds=menuElementBounds(element,this.bounds||{x:0,y:0,w:960,h:540},menuElementPose(element,this.flow.time||0));
@@ -272,7 +296,13 @@ export default class MenuPlayer {
       this.flow.setParameter(element.binding,node.raceRef);return;
     }
     if(element.type==='car-showroom'||element.type==='garage-browser')return this.activateGarageWidget(element,direction,choose);
-    if(element.type==='button')return this.flow.run(element.action);
+    if(element.type==='button'){
+      const gate=this.flow.document.parameters.campaignSideGates?.[element.action?.target];
+      if(gate&&!this.flow.parameters[raceCompletionKey(gate)]&&!this.resources?.garage?.items?.progress?.unlocks?.['cheat.travel']&&!this.resources?.garage?.items?.progress?.unlocks?.['cheat.skipme']){
+        this.flow.error='Complete the opening mission first.';return;
+      }
+      return this.flow.run(element.action);
+    }
     if(element.type==='keybind')return this.captureKey(element.binding);
     if(!element.binding){this.flow.error='This control needs a parameter binding';return;}
     const value=this.flow.parameters[element.binding];
@@ -389,7 +419,7 @@ export default class MenuPlayer {
       const directions={...held};for(const [direction,code] of Object.entries({up:'ArrowUp',down:'ArrowDown',left:'ArrowLeft',right:'ArrowRight'}))directions[direction]||=Boolean(input?.isDownCode?.(code)||pressed(code));
       this.tuner.update({held:directions,confirmHeld:Boolean(input?.isDownCode?.('Enter')||input?.isDownCode?.('Space')||input?.isGamepadDown?.('jump')||touchHeld.jump),confirm:pressed('Enter')||pressed('Space')||pad('jump'),cancel:pressed('Escape')||pad('cancel')},dt);return;
     }
-    if(pressed('Escape')||pad('cancel')){if(flow.busy){flow.stop();return;}if(!this.backGarageWidget())flow.back();return;}
+    if(pressed('Escape')||pad('cancel')){if(flow.busy)return;if(!this.backGarageWidget())flow.back();return;}
     if(this.movie){if(pressed('Space')||pressed('Enter')||pad('gamepadStart')||pad('jump'))void this.resumeMovie();return;}
     if(flow.busy)return;
     for(const element of flow.screen.elements.filter(e=>e.type==='car-showroom')){

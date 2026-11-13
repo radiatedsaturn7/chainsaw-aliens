@@ -1,0 +1,1402 @@
+{
+  "reason": "Player reported roughly 100 seconds on the I-95 S-curves with high-speed driving. The old 24 m/s winter planning cap underestimated achievable pace.",
+  "targetSeconds": 210,
+  "widthReference": "https://www.fhwa.dot.gov/policy/23cpr/chap4.cfm",
+  "widthFix": "Invalid mapped widths now use mapped lane counts before falling back to the default; I-95 width=61.0 no longer becomes a 7 m road. Freeway lane estimate 12 feet plus 0.6 m total edge allowance.",
+  "lengthenedEvents": 91,
+  "lightingCounts": {
+    "morning": 27,
+    "noon": 28,
+    "evening": 26,
+    "night": 18
+  },
+  "limits": "Planning estimates depend on car and driver. Whole circuit laps, quarter-mile drag strips, finite named streets and finite access roads are preserved. No road geometry is stretched or repeated.",
+  "races": [
+    {
+      "id": "H01-S02",
+      "race": "RI 116 \u2014 North Smithfield Scituate",
+      "previousDistanceM": 3451,
+      "distanceM": 9374,
+      "laps": 1,
+      "estimatedSeconds": 225,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        13.4
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H01-S05",
+      "race": "Thompson Speedway \u2014 1.7-mile road course",
+      "previousDistanceM": 2417,
+      "distanceM": 7250,
+      "laps": 3,
+      "estimatedSeconds": 315,
+      "lighting": "noon",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H01-S01",
+      "race": "I-95 \u2014 Attleboro to Warwick curves",
+      "previousDistanceM": 3705,
+      "distanceM": 13020,
+      "laps": 1,
+      "estimatedSeconds": 223,
+      "lighting": "noon",
+      "widthRangeM": [
+        11.572799999999999,
+        15.2304
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H01-S03",
+      "race": "RI 102 \u2014 Victory Highway",
+      "previousDistanceM": 3411,
+      "distanceM": 10426,
+      "laps": 1,
+      "estimatedSeconds": 227,
+      "lighting": "evening",
+      "widthRangeM": [
+        3.8000000000000003,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H01-S04",
+      "race": "Pachaug State Forest \u2014 public gravel access roads",
+      "previousDistanceM": 2451,
+      "distanceM": 4947,
+      "laps": 1,
+      "estimatedSeconds": 224,
+      "lighting": "evening",
+      "widthRangeM": [
+        4.5,
+        4.5
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H01-S06",
+      "race": "Seekonk Speedway \u2014 oval",
+      "previousDistanceM": 2247,
+      "distanceM": 4045,
+      "laps": 9,
+      "estimatedSeconds": 213,
+      "lighting": "noon",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H01-S07",
+      "race": "RI 44 \u2014 Putnam Pike Glocester",
+      "previousDistanceM": 3453,
+      "distanceM": 10908,
+      "laps": 1,
+      "estimatedSeconds": 227,
+      "lighting": "morning",
+      "widthRangeM": [
+        3.8000000000000003,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H01-S08",
+      "race": "Lime Rock Park \u2014 Connecticut",
+      "previousDistanceM": 2411,
+      "distanceM": 7234,
+      "laps": 3,
+      "estimatedSeconds": 253,
+      "lighting": "noon",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H01-S09",
+      "race": "Palmer Motorsports Park \u2014 Massachusetts",
+      "previousDistanceM": 3667,
+      "distanceM": 7333,
+      "laps": 2,
+      "estimatedSeconds": 277,
+      "lighting": "night",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H02-S01",
+      "race": "Kancamagus Highway \u2014 NH 112",
+      "previousDistanceM": 3399,
+      "distanceM": 8874,
+      "laps": 1,
+      "estimatedSeconds": 226,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H02-S02",
+      "race": "Bear Notch Road \u2014 Bartlett",
+      "previousDistanceM": 3487,
+      "distanceM": 8042,
+      "laps": 1,
+      "estimatedSeconds": 223,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H02-S03",
+      "race": "Hurricane Mountain Road \u2014 Conway",
+      "previousDistanceM": 3019,
+      "distanceM": 6832,
+      "laps": 1,
+      "estimatedSeconds": 227,
+      "lighting": "evening",
+      "widthRangeM": [
+        3.8000000000000003,
+        3.8000000000000003
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H02-S04",
+      "race": "Crawford Notch \u2014 US 302",
+      "previousDistanceM": 3633,
+      "distanceM": 10643,
+      "laps": 1,
+      "estimatedSeconds": 222,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H02-S05",
+      "race": "Pinkham Notch \u2014 NH 16",
+      "previousDistanceM": 3674,
+      "distanceM": 10996,
+      "laps": 1,
+      "estimatedSeconds": 238,
+      "lighting": "noon",
+      "widthRangeM": [
+        7.9152,
+        11.572799999999999
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H02-S06",
+      "race": "Club Motorsports \u2014 Tamworth",
+      "previousDistanceM": 3602,
+      "distanceM": 7203,
+      "laps": 2,
+      "estimatedSeconds": 273,
+      "lighting": "noon",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H02-S07",
+      "race": "Team O\u2019Neil-inspired Rally Stage (2994)",
+      "previousDistanceM": 3103,
+      "distanceM": 3103,
+      "laps": 1,
+      "estimatedSeconds": 154,
+      "lighting": "noon",
+      "widthRangeM": [
+        5,
+        5
+      ],
+      "sourceLimited": true
+    },
+    {
+      "id": "H02-S08",
+      "race": "New Hampshire Motor Speedway \u2014 Loudon",
+      "previousDistanceM": 2576,
+      "distanceM": 7727,
+      "laps": 3,
+      "estimatedSeconds": 302,
+      "lighting": "evening",
+      "widthRangeM": [
+        7,
+        16.6
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H02-S09",
+      "race": "New England Dragway \u2014 Epping",
+      "previousDistanceM": 402,
+      "distanceM": 402,
+      "laps": 1,
+      "estimatedSeconds": null,
+      "lighting": "morning",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H03-S01",
+      "race": "PA 381 \u2014 Ohiopyle approach",
+      "previousDistanceM": 3674,
+      "distanceM": 11193,
+      "laps": 1,
+      "estimatedSeconds": 231,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H03-S02",
+      "race": "PA 711 \u2014 Normalville Champion",
+      "previousDistanceM": 3671,
+      "distanceM": 12163,
+      "laps": 1,
+      "estimatedSeconds": 234,
+      "lighting": "evening",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H03-S03",
+      "race": "US 40 \u2014 Chalk Hill Summit",
+      "previousDistanceM": 3654,
+      "distanceM": 11886,
+      "laps": 1,
+      "estimatedSeconds": 228,
+      "lighting": "evening",
+      "widthRangeM": [
+        4.2576,
+        7.9152
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H03-S04",
+      "race": "PA 31 \u2014 Donegal to Laurel Ridge",
+      "previousDistanceM": 3613,
+      "distanceM": 11569,
+      "laps": 1,
+      "estimatedSeconds": 210,
+      "lighting": "night",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H03-S05",
+      "race": "County Line Road \u2014 Seven Springs",
+      "previousDistanceM": 3619,
+      "distanceM": 9341,
+      "laps": 1,
+      "estimatedSeconds": 228,
+      "lighting": "night",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H03-S06",
+      "race": "Forbes State Forest \u2014 designated gravel roads",
+      "previousDistanceM": 3261,
+      "distanceM": 5640,
+      "laps": 1,
+      "estimatedSeconds": 190,
+      "lighting": "morning",
+      "widthRangeM": [
+        4.5,
+        4.5
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H03-S07",
+      "race": "Jennerstown Speedway \u2014 oval",
+      "previousDistanceM": 2475,
+      "distanceM": 5775,
+      "laps": 7,
+      "estimatedSeconds": 229,
+      "lighting": "night",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H03-S08",
+      "race": "Keystone Motorsports Park \u2014 New Alexandria",
+      "previousDistanceM": 402,
+      "distanceM": 402,
+      "laps": 1,
+      "estimatedSeconds": null,
+      "lighting": "morning",
+      "widthRangeM": [
+        12,
+        12
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H03-S09",
+      "race": "Pittsburgh International Race Complex \u2014 Wampum",
+      "previousDistanceM": 4474,
+      "distanceM": 8948,
+      "laps": 2,
+      "estimatedSeconds": 339,
+      "lighting": "noon",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H04-S01",
+      "race": "OH 26 \u2014 Covered Bridge Scenic Byway",
+      "previousDistanceM": 3189,
+      "distanceM": 6850,
+      "laps": 1,
+      "estimatedSeconds": 219,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H04-S02",
+      "race": "OH 555 \u2014 Triple Nickel",
+      "previousDistanceM": 3173,
+      "distanceM": 7030,
+      "laps": 1,
+      "estimatedSeconds": 216,
+      "lighting": "evening",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H04-S03",
+      "race": "OH 550 \u2014 Barlow approach",
+      "previousDistanceM": 3576,
+      "distanceM": 11544,
+      "laps": 1,
+      "estimatedSeconds": 232,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H04-S04",
+      "race": "OH 536 \u2014 Ohio River hills",
+      "previousDistanceM": 2696,
+      "distanceM": 5379,
+      "laps": 1,
+      "estimatedSeconds": 215,
+      "lighting": "night",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H04-S05",
+      "race": "OH 676 \u2014 Western county hills",
+      "previousDistanceM": 3114,
+      "distanceM": 5920,
+      "laps": 1,
+      "estimatedSeconds": 214,
+      "lighting": "night",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H04-S06",
+      "race": "Marietta\u2013Williamstown \u2014 I-77 river bridge",
+      "previousDistanceM": 3666,
+      "distanceM": 12987,
+      "laps": 1,
+      "estimatedSeconds": 220,
+      "lighting": "evening",
+      "widthRangeM": [
+        7.9152,
+        7.9152
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H04-S07",
+      "race": "Washington County western covered-bridge gravel loop",
+      "previousDistanceM": 2911,
+      "distanceM": 5516,
+      "laps": 1,
+      "estimatedSeconds": 215,
+      "lighting": "morning",
+      "widthRangeM": [
+        4.5,
+        4.5
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H04-S08",
+      "race": "Ohio Valley Speedway \u2014 Washington, West Virginia",
+      "previousDistanceM": 1810,
+      "distanceM": 3620,
+      "laps": 8,
+      "estimatedSeconds": 230,
+      "lighting": "night",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H04-S09",
+      "race": "Mid-Ohio Sports Car Course \u2014 Lexington",
+      "previousDistanceM": 3646,
+      "distanceM": 7292,
+      "laps": 2,
+      "estimatedSeconds": 265,
+      "lighting": "evening",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H05-S01",
+      "race": "MO 19 \u2014 Eminence Current River",
+      "previousDistanceM": 3606,
+      "distanceM": 9559,
+      "laps": 1,
+      "estimatedSeconds": 230,
+      "lighting": "evening",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H05-S02",
+      "race": "MO 106 \u2014 Alley Spring approach",
+      "previousDistanceM": 3671,
+      "distanceM": 9925,
+      "laps": 1,
+      "estimatedSeconds": 236,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H05-S03",
+      "race": "MO 106 \u2014 Powder Mill approach",
+      "previousDistanceM": 3620,
+      "distanceM": 9508,
+      "laps": 1,
+      "estimatedSeconds": 233,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H05-S04",
+      "race": "MO V \u2014 Two Rivers access",
+      "previousDistanceM": 3467,
+      "distanceM": 4723,
+      "laps": 1,
+      "estimatedSeconds": 135,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": true
+    },
+    {
+      "id": "H05-S05",
+      "race": "MO H NN \u2014 Roberts Field access",
+      "previousDistanceM": 3545,
+      "distanceM": 10181,
+      "laps": 1,
+      "estimatedSeconds": 238,
+      "lighting": "evening",
+      "widthRangeM": [
+        4.5,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H05-S06",
+      "race": "Jerktail Landing gravel road",
+      "previousDistanceM": 2886,
+      "distanceM": 4168,
+      "laps": 1,
+      "estimatedSeconds": 187,
+      "lighting": "morning",
+      "widthRangeM": [
+        4.5,
+        4.5
+      ],
+      "sourceLimited": true
+    },
+    {
+      "id": "H05-S07",
+      "race": "US 60 \u2014 Winona Van Buren",
+      "previousDistanceM": 3653,
+      "distanceM": 12784,
+      "laps": 1,
+      "estimatedSeconds": 229,
+      "lighting": "noon",
+      "widthRangeM": [
+        7.9152,
+        7.9152
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H05-S08",
+      "race": "Glade Top Trail \u2014 Mark Twain National Forest",
+      "previousDistanceM": 2890,
+      "distanceM": 6158,
+      "laps": 1,
+      "estimatedSeconds": 220,
+      "lighting": "morning",
+      "widthRangeM": [
+        4.5,
+        4.5
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H05-S09",
+      "race": "Ozarks International Raceway \u2014 Gravois Mills",
+      "previousDistanceM": 6408,
+      "distanceM": 6408,
+      "laps": 1,
+      "estimatedSeconds": 218,
+      "lighting": "morning",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H06-S01",
+      "race": "World Wide Technology Raceway \u2014 road course",
+      "previousDistanceM": 2809,
+      "distanceM": 5618,
+      "laps": 2,
+      "estimatedSeconds": 216,
+      "lighting": "noon",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H06-S02",
+      "race": "World Wide Technology Raceway \u2014 oval",
+      "previousDistanceM": 4086,
+      "distanceM": 8171,
+      "laps": 4,
+      "estimatedSeconds": 244,
+      "lighting": "night",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H06-S03",
+      "race": "World Wide Technology Raceway \u2014 drag strip",
+      "previousDistanceM": 402,
+      "distanceM": 402,
+      "laps": 1,
+      "estimatedSeconds": null,
+      "lighting": "night",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H06-S04",
+      "race": "I-64 \u2014 St. Louis downtown approaches",
+      "previousDistanceM": 3673,
+      "distanceM": 10171,
+      "laps": 1,
+      "estimatedSeconds": 178,
+      "lighting": "morning",
+      "widthRangeM": [
+        7.9152,
+        18.888
+      ],
+      "sourceLimited": true
+    },
+    {
+      "id": "H06-S05",
+      "race": "I-70 \u2014 Stan Musial Veterans Memorial Bridge",
+      "previousDistanceM": 2524,
+      "distanceM": 9055,
+      "laps": 1,
+      "estimatedSeconds": 166,
+      "lighting": "noon",
+      "widthRangeM": [
+        7.9152,
+        15.2304
+      ],
+      "sourceLimited": true
+    },
+    {
+      "id": "H06-S06",
+      "race": "IL 100 \u2014 Great River Road bluffs",
+      "previousDistanceM": 3656,
+      "distanceM": 12069,
+      "laps": 1,
+      "estimatedSeconds": 217,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H06-S07",
+      "race": "MO 94 \u2014 Defiance Augusta",
+      "previousDistanceM": 3656,
+      "distanceM": 10322,
+      "laps": 1,
+      "estimatedSeconds": 227,
+      "lighting": "evening",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H06-S08",
+      "race": "Gateway Kartplex \u2014 WWT complex",
+      "previousDistanceM": 2486,
+      "distanceM": 4971,
+      "laps": 4,
+      "estimatedSeconds": 269,
+      "lighting": "morning",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H06-S09",
+      "race": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+      "previousDistanceM": 1585,
+      "distanceM": 3170,
+      "laps": 6,
+      "estimatedSeconds": 224,
+      "lighting": "evening",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H07-S01",
+      "race": "Old Route 66 \u2014 Shamrock McLean",
+      "previousDistanceM": 3656,
+      "distanceM": 9613,
+      "laps": 1,
+      "estimatedSeconds": 181,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": true
+    },
+    {
+      "id": "H07-S02",
+      "race": "Old Route 66 \u2014 Groom Conway",
+      "previousDistanceM": 3685,
+      "distanceM": 13367,
+      "laps": 1,
+      "estimatedSeconds": 215,
+      "lighting": "night",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H07-S03",
+      "race": "Amarillo \u2014 Historic 6th Avenue alignment",
+      "previousDistanceM": 3559,
+      "distanceM": 4312,
+      "laps": 1,
+      "estimatedSeconds": 83,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        13.4
+      ],
+      "sourceLimited": true
+    },
+    {
+      "id": "H07-S04",
+      "race": "Old Route 66 \u2014 Vega Adrian",
+      "previousDistanceM": 3683,
+      "distanceM": 11644,
+      "laps": 1,
+      "estimatedSeconds": 216,
+      "lighting": "night",
+      "widthRangeM": [
+        4.2576,
+        7.9152
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H07-S05",
+      "race": "Old Route 66 \u2014 Adrian Glenrio",
+      "previousDistanceM": 3682,
+      "distanceM": 13648,
+      "laps": 1,
+      "estimatedSeconds": 219,
+      "lighting": "noon",
+      "widthRangeM": [
+        7.9152,
+        7.9152
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H07-S06",
+      "race": "Palo Duro Canyon \u2014 Park Road 5",
+      "previousDistanceM": 2917,
+      "distanceM": 6712,
+      "laps": 1,
+      "estimatedSeconds": 220,
+      "lighting": "night",
+      "widthRangeM": [
+        3.8000000000000003,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H07-S07",
+      "race": "Amarillo Dragway",
+      "previousDistanceM": 402,
+      "distanceM": 402,
+      "laps": 1,
+      "estimatedSeconds": null,
+      "lighting": "noon",
+      "widthRangeM": [
+        12,
+        12
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H07-S08",
+      "race": "Route 66 \u2014 Bridgeport Pony Bridge, Oklahoma",
+      "previousDistanceM": 3609,
+      "distanceM": 12489,
+      "laps": 1,
+      "estimatedSeconds": 230,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        13.4
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H07-S09",
+      "race": "Hallett Motor Racing Circuit \u2014 Jennings, Oklahoma",
+      "previousDistanceM": 2833,
+      "distanceM": 5666,
+      "laps": 2,
+      "estimatedSeconds": 218,
+      "lighting": "evening",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H08-S01",
+      "race": "Gold Camp Road \u2014 Colorado Springs",
+      "previousDistanceM": 2892,
+      "distanceM": 5351,
+      "laps": 1,
+      "estimatedSeconds": 217,
+      "lighting": "night",
+      "widthRangeM": [
+        3,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H08-S02",
+      "race": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "previousDistanceM": 1996,
+      "distanceM": 3563,
+      "laps": 1,
+      "estimatedSeconds": 214,
+      "lighting": "morning",
+      "widthRangeM": [
+        4.5,
+        4.5
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H08-S03",
+      "race": "Shelf Road \u2014 Gold Belt Tour",
+      "previousDistanceM": 2153,
+      "distanceM": 3666,
+      "laps": 1,
+      "estimatedSeconds": 220,
+      "lighting": "morning",
+      "widthRangeM": [
+        4.5,
+        4.5
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H08-S04",
+      "race": "Skyline Drive \u2014 Ca\u00f1on City",
+      "previousDistanceM": 3248,
+      "distanceM": 4137,
+      "laps": 1,
+      "estimatedSeconds": 124,
+      "lighting": "night",
+      "widthRangeM": [
+        3.8000000000000003,
+        7
+      ],
+      "sourceLimited": true
+    },
+    {
+      "id": "H08-S05",
+      "race": "US 24 \u2014 Ute Pass Woodland Park",
+      "previousDistanceM": 3488,
+      "distanceM": 9546,
+      "laps": 1,
+      "estimatedSeconds": 226,
+      "lighting": "morning",
+      "widthRangeM": [
+        7.9152,
+        7.9152
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H08-S06",
+      "race": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "previousDistanceM": 3294,
+      "distanceM": 7249,
+      "laps": 1,
+      "estimatedSeconds": 224,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H08-S07",
+      "race": "Garden of the Gods \u2014 paved park road",
+      "previousDistanceM": 2878,
+      "distanceM": 4559,
+      "laps": 1,
+      "estimatedSeconds": 163,
+      "lighting": "night",
+      "widthRangeM": [
+        3.8000000000000003,
+        7
+      ],
+      "sourceLimited": true
+    },
+    {
+      "id": "H08-S08",
+      "race": "Pikes Peak International Raceway \u2014 Fountain",
+      "previousDistanceM": 2116,
+      "distanceM": 6347,
+      "laps": 3,
+      "estimatedSeconds": 249,
+      "lighting": "noon",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H08-S09",
+      "race": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "previousDistanceM": 3514,
+      "distanceM": 7027,
+      "laps": 2,
+      "estimatedSeconds": 251,
+      "lighting": "evening",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H09-S01",
+      "race": "Valley of the Gods Road \u2014 San Juan CR 242",
+      "previousDistanceM": 2337,
+      "distanceM": 4254,
+      "laps": 1,
+      "estimatedSeconds": 214,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H09-S02",
+      "race": "Muley Point Road \u2014 CR 241",
+      "previousDistanceM": 2715,
+      "distanceM": 5664,
+      "laps": 1,
+      "estimatedSeconds": 218,
+      "lighting": "evening",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H09-S03",
+      "race": "UT 316 \u2014 Goosenecks State Park Road",
+      "previousDistanceM": 3591,
+      "distanceM": 5674,
+      "laps": 1,
+      "estimatedSeconds": 120,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": true
+    },
+    {
+      "id": "H09-S04",
+      "race": "US 163 \u2014 Mexican Hat Monument Valley approach",
+      "previousDistanceM": 3673,
+      "distanceM": 12943,
+      "laps": 1,
+      "estimatedSeconds": 231,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H09-S05",
+      "race": "UT 95 \u2014 Comb Ridge Cedar Mesa",
+      "previousDistanceM": 3672,
+      "distanceM": 13300,
+      "laps": 1,
+      "estimatedSeconds": 231,
+      "lighting": "evening",
+      "widthRangeM": [
+        7,
+        10.200000000000001
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H09-S06",
+      "race": "UT 276 \u2014 Halls Crossing approach",
+      "previousDistanceM": 3633,
+      "distanceM": 12057,
+      "laps": 1,
+      "estimatedSeconds": 238,
+      "lighting": "night",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H09-S07",
+      "race": "US 191 \u2014 Bluff Blanding",
+      "previousDistanceM": 3676,
+      "distanceM": 13438,
+      "laps": 1,
+      "estimatedSeconds": 224,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        13.4
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H09-S08",
+      "race": "Shafer Trail \u2014 Canyonlands National Park",
+      "previousDistanceM": 1894,
+      "distanceM": 3538,
+      "laps": 1,
+      "estimatedSeconds": 214,
+      "lighting": "night",
+      "widthRangeM": [
+        4.5,
+        4.5
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H09-S09",
+      "race": "Burr Trail switchbacks \u2014 Capitol Reef",
+      "previousDistanceM": 2119,
+      "distanceM": 3859,
+      "laps": 1,
+      "estimatedSeconds": 219,
+      "lighting": "noon",
+      "widthRangeM": [
+        4.5,
+        4.5
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H10-S01",
+      "race": "SR 179 \u2014 Red Rock Scenic Byway",
+      "previousDistanceM": 3651,
+      "distanceM": 7881,
+      "laps": 1,
+      "estimatedSeconds": 220,
+      "lighting": "evening",
+      "widthRangeM": [
+        4.2576,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H10-S02",
+      "race": "Upper Lower Red Rock Loop Road",
+      "previousDistanceM": 2791,
+      "distanceM": 6045,
+      "laps": 1,
+      "estimatedSeconds": 218,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H10-S03",
+      "race": "Page Springs Road",
+      "previousDistanceM": 3565,
+      "distanceM": 8319,
+      "laps": 1,
+      "estimatedSeconds": 225,
+      "lighting": "evening",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H10-S04",
+      "race": "Beaverhead Flat Road \u2014 CR 78",
+      "previousDistanceM": 3691,
+      "distanceM": 9811,
+      "laps": 1,
+      "estimatedSeconds": 211,
+      "lighting": "evening",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H10-S05",
+      "race": "Boynton Pass Road FR 525 loop",
+      "previousDistanceM": 2498,
+      "distanceM": 4867,
+      "laps": 1,
+      "estimatedSeconds": 221,
+      "lighting": "night",
+      "widthRangeM": [
+        4.5,
+        4.5
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H10-S06",
+      "race": "Schnebly Hill Road \u2014 Sedona",
+      "previousDistanceM": 2146,
+      "distanceM": 3944,
+      "laps": 1,
+      "estimatedSeconds": 221,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H10-S07",
+      "race": "SR 89A \u2014 Mingus Mountain Jerome",
+      "previousDistanceM": 2829,
+      "distanceM": 6160,
+      "laps": 1,
+      "estimatedSeconds": 218,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        10.200000000000001
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H10-S08",
+      "race": "Podium Club at Attesa \u2014 Casa Grande",
+      "previousDistanceM": 3726,
+      "distanceM": 7452,
+      "laps": 2,
+      "estimatedSeconds": 308,
+      "lighting": "evening",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H10-S09",
+      "race": "Firebird Motorsports Park \u2014 Chandler",
+      "previousDistanceM": 402,
+      "distanceM": 402,
+      "laps": 1,
+      "estimatedSeconds": null,
+      "lighting": "evening",
+      "widthRangeM": [
+        12,
+        12
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H11-S01",
+      "race": "Angeles Forest Highway \u2014 County N3",
+      "previousDistanceM": 3256,
+      "distanceM": 7680,
+      "laps": 1,
+      "estimatedSeconds": 231,
+      "lighting": "evening",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H11-S02",
+      "race": "Upper Big Tujunga Canyon Road",
+      "previousDistanceM": 3559,
+      "distanceM": 8223,
+      "laps": 1,
+      "estimatedSeconds": 226,
+      "lighting": "evening",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H11-S03",
+      "race": "Big Tujunga Canyon Road",
+      "previousDistanceM": 3304,
+      "distanceM": 6965,
+      "laps": 1,
+      "estimatedSeconds": 200,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H11-S04",
+      "race": "Glendora Mountain Road",
+      "previousDistanceM": 2191,
+      "distanceM": 4344,
+      "laps": 1,
+      "estimatedSeconds": 211,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H11-S05",
+      "race": "Glendora Ridge Road",
+      "previousDistanceM": 2517,
+      "distanceM": 4922,
+      "laps": 1,
+      "estimatedSeconds": 223,
+      "lighting": "evening",
+      "widthRangeM": [
+        3.8000000000000003,
+        3.8000000000000003
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H11-S06",
+      "race": "San Gabriel Canyon Road \u2014 SR 39",
+      "previousDistanceM": 3204,
+      "distanceM": 6772,
+      "laps": 1,
+      "estimatedSeconds": 219,
+      "lighting": "morning",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H11-S07",
+      "race": "Little Tujunga Canyon Road",
+      "previousDistanceM": 2130,
+      "distanceM": 4464,
+      "laps": 1,
+      "estimatedSeconds": 210,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H11-S08",
+      "race": "Willow Springs \u2014 Horse Thief Mile",
+      "previousDistanceM": 1611,
+      "distanceM": 4834,
+      "laps": 3,
+      "estimatedSeconds": 238,
+      "lighting": "evening",
+      "widthRangeM": [
+        10,
+        10
+      ],
+      "sourceLimited": false
+    },
+    {
+      "id": "H11-S09",
+      "race": "In-N-Out Burger Pomona Dragstrip",
+      "previousDistanceM": 402,
+      "distanceM": 402,
+      "laps": 1,
+      "estimatedSeconds": null,
+      "lighting": "noon",
+      "widthRangeM": [
+        7,
+        7
+      ],
+      "sourceLimited": false
+    }
+  ]
+}

@@ -2104,7 +2104,7 @@
     {
       "id": "offroad-tires",
       "name": "Offroad Tires",
-      "description": "Offroad Tires. These are meant for loose ground. Probably a good idea if we're leaving the pavement.",
+      "description": "Offroad Tires. An all-terrain set for loose ground and snow. Dedicated snow tires still give us more winter grip.",
       "effects": [],
       "carPart": {
         "slot": "tires",

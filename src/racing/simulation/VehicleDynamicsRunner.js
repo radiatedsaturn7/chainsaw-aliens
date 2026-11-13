@@ -1,3 +1,5 @@
+import { normalizeCvtTuning } from './CvtTransmissionModel.js';
+import { normalizeElectricTuning } from './ElectricPowertrainModel.js';
 import {contactTireWear,applySuspensionContactDamage,applySuspensionLandingDamage} from './SurfaceWearModel.js';
 import {mapThrottlePedal} from './PowertrainModel.js';
 import {chassisComplianceScale} from './ChassisUpgrades.js';
@@ -8,6 +10,7 @@ import {addItemVehicleForce} from '../../items/ItemVehicleEffect.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './SimulationMath.js';
 import {
   ContactPatchTireModel,
+  updateCountersteeringRange,
   resolvePhysicalCenterSteeringAngle
 } from './ContactPatchTireModel.js';
 import { HandlingAssist } from './HandlingAssist.js';
@@ -364,6 +367,7 @@ const KNOWN_ASSIST_FIELDS = Object.freeze([
   'absEnabled',
   'autoShift',
   'launchControlEnabled',
+  'launchControlStaging',
   'stabilityControlEnabled',
   'tractionControlEnabled'
 ]);
@@ -837,6 +841,8 @@ export function createVehicleDynamicsState(initial = {}) {
     )),
     bodyLongitudinalSpeedMps: quantize(initial.bodyLongitudinalSpeedMps ?? initialSpeed),
     bodyLateralSpeedMps: quantize(initial.bodyLateralSpeedMps ?? 0),
+    countersteerRangeLeft: clamp(Number(initial.countersteerRangeLeft)||0,0,1),
+    countersteerRangeRight: clamp(Number(initial.countersteerRangeRight)||0,0,1),
     signedTravelSpeedMps: quantize(initial.signedTravelSpeedMps ?? initialSpeed),
     yawRad: quantize(initialYaw),
     yawRateRadps: quantize(initial.yawRateRadps ?? initial.yawVelocityRadps ?? 0),
@@ -1165,6 +1171,8 @@ export function createVehicleDynamicsConfig(config = {}) {
     contactFootprintSamples: clamp(Math.trunc(Number(config.contactFootprintSamples) || 6), 4, 8),
     contactFootprintMaxGapM: clamp(Number(config.contactFootprintMaxGapM) || 0.045, 0.015, 0.12),
     maxSteerAngleRad: clamp(Number(config.maxSteerAngleRad) || 0.52, 0.05, 1.2),
+    // Selected by the ABS/TC matrix and the separate all-aids-off late-release audit.
+    digitalRecoverySlipAngleRad: clamp(Number(config.digitalRecoverySlipAngleRad) || 0.5 * Math.PI / 180, 0.25 * Math.PI / 180, 3 * Math.PI / 180),
     steeringWheelRatio: Math.max(1, Number(config.steeringWheelRatio) || 14),
     physicalProfileId: config.physicalProfileId ? String(config.physicalProfileId) : null,
     powerHp: Math.max(0, Number(config.powerHp) || 0),
@@ -1192,7 +1200,7 @@ export function createVehicleDynamicsConfig(config = {}) {
     damageDragGain: clamp(Number(config.damageDragGain) || 0.55, 0, 3),
     aeroMap: clone(config.aeroMap || {}),
     yawResponsePerSecond: Math.max(0.1, Number(config.yawResponsePerSecond) || 9),
-    idleRpm: Math.max(0, Number(config.idleRpm) || 800),
+    idleRpm: config.powertrainTuning?.powertrainType === 'electric' ? 0 : Math.max(0, Number(config.idleRpm) || 800),
     maxRpm: Math.max(1000, Number(config.maxRpm) || 7000),
     revLimiterDropRpm: Math.max(40, Number(config.revLimiterDropRpm) || 280),
     handlingPreset: String(config.handlingPreset || 'sport').toLowerCase(),
@@ -1214,6 +1222,7 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
   inputTimelineLimit = 0,
   physicsIncidentRecordingEnabled = false
 } = {}) {
+  tuning = normalizeCvtTuning(normalizeElectricTuning(tuning));
   const physical = tuning.physicalVehicleProfile || null;
   const powerW = Math.max(0, Number(tuning.powerHp || 0) * 745.7);
   const massKg = Math.max(100, Number(tuning.weightKg ?? physical?.massKg) || 1450);
@@ -2232,6 +2241,10 @@ export class VehicleDynamicsRunner {
     physicsCostAccounting = null
   } = {}) {
     this.config = createVehicleDynamicsConfig(config);
+    if (this.config.powertrainTuning?.powertrainType === 'electric') {
+      initialState = { ...initialState, engineRpm: initialState.engineRpm ?? 0,
+        powertrainState: { engineRpm: initialState.engineRpm ?? 0, gear: initialState.gear ?? 0, ...initialState.powertrainState } };
+    }
     this.initialState = createVehicleDynamicsState(initialState);
     this.state = createVehicleDynamicsState(initialState);
     if (!initialState.wheelAngularVelocityRadps) {
@@ -2513,7 +2526,7 @@ export class VehicleDynamicsRunner {
     // next attempt to reuse the failed prepared-query generation on a hill.
     this.authoritativeResetAttemptSequence = vehicleResetGeneration;
     const routeDistance = finiteNumber(nextState.routeDistance);
-    const idleRpm = Math.max(0, Number(this.config.idleRpm || 800));
+    const idleRpm = Math.max(0, Number(this.config.idleRpm ?? 800));
     const requestedGear = Math.trunc(Number(nextState.gear ?? 1) || 0);
     // TireState also carries a copy of the last contact patch for thermal
     // accounting. That patch contains crash-frame hub/contact geometry,
@@ -2532,6 +2545,10 @@ export class VehicleDynamicsRunner {
     let resetState = createVehicleDynamicsState({
       ...nextState,
       mechanical:nextState.mechanical || this.state.mechanical,
+      ...(this.config.powertrainTuning?.powertrainType === 'electric' ? { powertrainState: {
+        electric: clone(nextState.powertrainState?.electric || this.state.powertrainState?.electric || {}),
+        engineRpm: idleRpm, gear: requestedGear
+      } } : {}),
       orientation: uprightRequestedOrientation,
       yawRad: uprightRequestedEuler.yaw,
       pitchRad: uprightRequestedEuler.pitch,
@@ -2541,6 +2558,8 @@ export class VehicleDynamicsRunner {
       groundSpeedMps: 0,
       bodyLongitudinalSpeedMps: 0,
       bodyLateralSpeedMps: 0,
+      countersteerRangeLeft: 0,
+      countersteerRangeRight: 0,
       signedTravelSpeedMps: 0,
       yawRateRadps: 0,
       angularVelocityWorld: { x: 0, y: 0, z: 0 },
@@ -4689,6 +4708,7 @@ export class VehicleDynamicsRunner {
       this.stationaryResetHold = null;
       suppressThrottleForResetRelease = true;
     }
+    updateCountersteeringRange(this.state, this.config, 1 / this.config.chassisHz);
     const previousHandbrakeCommand = this.state.handbrakeCommandState || {};
     const holdSequence = Math.max(0, Math.trunc(Number(sampledControls.handbrakeHoldSequence || 0)));
     const newHoldCommand = holdSequence > Math.max(0, Math.trunc(Number(
@@ -6577,7 +6597,18 @@ export class VehicleDynamicsRunner {
       ) % (Math.PI * 2), 12);
     }
     applySuspensionContactDamage(this.state,this.config,chassisStepDt);
-    if (this.state.mechanical) stepMechanicalState(this.state.mechanical, chassisStepDt, {
+    if (this.state.mechanical && this.config.powertrainTuning?.powertrainType === 'electric') {
+      for (const key of ['headlights', 'highBeams', 'auxLights']) {
+        if (typeof controls[key] === 'boolean') this.state.mechanical[key] = controls[key];
+      }
+      // Traction energy lives in powertrainState.electric, never the accessory
+      // 12 V charge/fuel fields. ICE wear/stall simulation is not run for EVs.
+      this.state.mechanical.engineRunning = true;
+      this.state.mechanical.warnings = (this.state.mechanical.warnings || []).filter(warning =>
+        !['ENGINE SEIZED','ENGINE STALLED','OIL PRESSURE','FUEL LOW'].includes(warning));
+      this.state.mechanical.effects.lights = (this.state.mechanical.headlights || this.state.mechanical.auxLights) ? 1 : 0;
+    }
+    if (this.state.mechanical && this.config.powertrainTuning?.powertrainType !== 'electric') stepMechanicalState(this.state.mechanical, chassisStepDt, {
       rpm:this.state.engineRpm, maxRpm:this.config.maxRpm,
       throttle:controls.throttle, brake:controls.brake, headlights:controls.headlights,highBeams:controls.highBeams,auxLights:controls.auxLights,
       clutchCoupling:this.state.powertrainState?.clutchCoupling,

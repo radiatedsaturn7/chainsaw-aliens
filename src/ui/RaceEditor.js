@@ -1,3 +1,10 @@
+import { normalizeCvtTuning, validateCvt } from '../racing/simulation/CvtTransmissionModel.js';
+import {raceDriftScoreVariables} from '../racing/RaceDriftScore.js';
+import {advanceDigitalThrottle, observeDrivingIntent, DIGITAL_THROTTLE_MODES, DRIVING_INTENT_STYLES} from '../racing/DigitalThrottle.js';
+import {DEBUG_ROAD_SURFACES, debugRoadTextureSettings} from '../racing/RaceDebugRoad.js';
+import { doodadVisualLayout } from '../racing/RaceDoodadVisualBounds.js';
+import { normalizeElectricTuning } from '../racing/simulation/ElectricPowertrainModel.js';
+import {terrainBlendGrid,createTerrainBlendMaterial} from '../racing/RaceTerrainTextureBlend.js';
 import {normalizeSnowClouds,syncSnowClouds,disposeSnowClouds} from '../racing/RaceSnowClouds.js';
 import {editSnowClouds} from './RaceSnowCloudEditor.js';
 import {normalizeCarSmoke,carSmokeArtRef,carSmokeArtRefs,smokeAnimationFrame} from '../racing/CarSmoke.js';
@@ -29,7 +36,7 @@ import {prepareRaceAiRoadPlan} from '../racing/RaceAiDirector.js';
 import { recordRaceRecoveryPosition, getRaceRecoveryHistoryCandidates } from '../racing/RaceRecoveryHistory.js';
 import {changeRaceDebugAi} from '../racing/RaceDebugAi.js';
 import {buildRaceRouteNearestIndex, nearestRaceRouteSegment} from '../racing/RaceRouteNearestIndex.js';
-import {triangulateSplitTerrainTriangle} from '../racing/RaceTerrainTriangulation.js';
+import { buildAdaptiveRaceTerrain, ADAPTIVE_TERRAIN_REVISION } from '../racing/RaceAdaptiveTerrain.js';
 import {partitionRaceTerrainForRendering} from '../racing/RaceTerrainRenderChunks.js';
 import {reverseRaceRoute} from '../racing/reverseRaceRoute.js';
 import {importRealTrack} from './RaceTrackImport.js';
@@ -61,12 +68,12 @@ import {createLoadingMenuScreen} from '../menus/MenuLoadingScreen.js';
 import {normalizeMenuElement,normalizeMenuDocument,createMenuDocument} from '../menus/MenuDocument.js';
 import {drawMenuScreen} from '../menus/MenuRenderer.js';
 import {MenuResources} from '../menus/MenuResources.js';
-import { buildRaceDecalTriangles } from '../racing/RaceDecals.js';
+import { buildRaceDecalTriangles, configureRaceDecalAlpha } from '../racing/RaceDecals.js';
 import { buildRaceFencePlacements } from '../racing/RaceFences.js';
 import { createRaceNetworkQueryIndex } from '../racing/RaceNetworkQueryIndex.js';
 import { queryTrackStateCells } from '../racing/trackState/TrackStateSpatialIndex.js';
 import { getNetworkFinishNodes, resolveRaceNodeFinish } from '../racing/RaceFinishNodes.js';
-import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings, roadTextureSampling, roadTextureMipBias } from '../racing/RaceRoadTextures.js';
+import { shoulderTextureForSegment, roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings, roadTextureSampling, roadTextureMipBias } from '../racing/RaceRoadTextures.js';
 import {firstPersonCameraFrame,applyFirstPersonCameraFrame,firstPersonCameraSpace} from '../racing/RaceFirstPersonCamera.js';
 import {buildNetworkMarkings} from '../racing/RaceNetworkMarkings.js';
 import {scaleRace} from '../racing/RaceScale.js';
@@ -732,6 +739,7 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'race-fuel',
   'race-tiles',
   'race-road-textures',
+  'race-shoulder-textures',
   'race-margin',
   'race-tire-fx',
   'race-texture-scale',
@@ -1510,6 +1518,7 @@ export default class RaceEditor {
     this.raceInput.brake = false;
     this.raceInput.handbrake = false;
     this.raceInput.handbrakeHoldSequence = 0;
+    this.raceInput.lastTouchBrakeTapMs = null;
     this.raceInput.inputClockMs = 0;
     this.raceInput.rawThrottleAxis = 0;
     this.raceInput.rawBrakeAxis = 0;
@@ -1608,13 +1617,10 @@ export default class RaceEditor {
       ? this.playtestFps * 0.88 + instant * 0.12
       : instant;
     if (this.getRaceGroundRenderer() === 'webgl-track') {
-      if (this.shouldHoldRaceWebGLDynamicScale()) {
-        this.raceWebGLTrackDynamicScale = 1;
-      } else if (this.playtestFps < 34) {
-        this.raceWebGLTrackDynamicScale = Math.max(0.62, Number(this.raceWebGLTrackDynamicScale || 1) - 0.045);
-      } else if (this.playtestFps > 56) {
-        this.raceWebGLTrackDynamicScale = Math.min(1, Number(this.raceWebGLTrackDynamicScale || 1) + 0.015);
-      }
+      // FPS includes physics/AI/recording cost; it is not a GPU bottleneck
+      // measurement. Reducing resolution here blurred the car and world while
+      // running, then sharpened them when paused. Honor the configured quality.
+      this.raceWebGLTrackDynamicScale = 1;
     }
   }
 
@@ -2499,19 +2505,20 @@ export default class RaceEditor {
     return `Margin: ${margin.marginMode === 'off' ? 'Off' : margin.marginMode === 'hidden' ? 'Hidden' : `${Math.round(margin.widthM * 100)}cm`}`;
   }
 
-  getRaceShoulderWidthWorld() {
+  getRaceShoulderWidthWorld(segment = null) {
     const margin = this.ensureRaceMarginSettings();
     if (margin.shoulderMode !== 'on') return 0;
-    return this.getRaceConfiguredShoulderWidthWorld();
+    return this.getRaceConfiguredShoulderWidthWorld(segment);
   }
 
-  getRaceConfiguredShoulderWidthWorld() {
+  getRaceConfiguredShoulderWidthWorld(segment = null) {
+    if (shoulderTextureForSegment(this.selectedRace?.roadTextures, segment).enabled === false) return 0;
     const margin = this.ensureRaceMarginSettings();
     return clamp(Number(margin.shoulderWidthM) || 12, 2, 50);
   }
 
-  isRaceShoulderVisible() {
-    return this.ensureRaceMarginSettings().shoulderMode === 'on';
+  isRaceShoulderVisible(segment = null) {
+    return this.ensureRaceMarginSettings().shoulderMode === 'on' && (!segment || shoulderTextureForSegment(this.selectedRace?.roadTextures, segment).enabled !== false);
   }
 
   getRaceCollisionMarginWidthWorld(segment = null, collisionEdge = this.getRaceEdgeCollisionMode(segment)) {
@@ -2884,6 +2891,9 @@ export default class RaceEditor {
   }
 
   getRaceShoulderArtRef(segment = {}, worldPoint = null) {
+    const shoulder = shoulderTextureForSegment(this.selectedRace?.roadTextures, segment);
+    if (shoulder.enabled === false) return '';
+    if (shoulder.artRef) return shoulder.artRef;
     const patch = this.getRaceGroundPaintAtWorldPoint(worldPoint);
     const patchArt = patch?.tileId ? this.getRaceSurfaceArtRefForSlot(patch.tileId) : '';
     return patchArt || this.getRaceSurfaceArtRefForSlot('shoulder') || this.getRaceSurfaceArtRefForSlot('grass');
@@ -4279,6 +4289,7 @@ export default class RaceEditor {
     const raceIdentity = session?.raceDocumentName || session?.raceId || this.selectedRace?.id || 'race';
     const options = {
       seed: createRaceTrackStateSeed(raceIdentity),
+      initialSurfaceTemperatureC: createRaceTrackStateWeatherForcing({race: this.selectedRace}).ambientTemperatureC,
       surfaceModel: this.getRaceSurfaceModel(),
       elevationScaleM: RACE_THREE_ELEVATION_M,
       // Environment evolution is exact-on-access through TrackState's cell
@@ -4911,7 +4922,7 @@ export default class RaceEditor {
     const z0 = Math.floor(gz);
     const tx = clamp(gx - x0, 0, 1);
     const tz = clamp(gz - z0, 0, 1);
-    const cacheKey = `smooth:${Number(tileMap?.revision) || 0}:${Math.round(worldX)},${Math.round(worldZ)}:${Math.round((Number(fallbackElevation) || 0) * 1000)}`;
+    const cacheKey = `smooth:${Number(tileMap?.revision) || 0}:${Math.round(worldX*1000000)},${Math.round(worldZ*1000000)}:${Math.round((Number(fallbackElevation) || 0) * 1000)}`;
     const cached = this.raceTerrainElevationCache?.get?.(cacheKey);
     if (Number.isFinite(cached)) return cached;
     const sampleCell = (cellX, cellY) => {
@@ -4935,6 +4946,33 @@ export default class RaceEditor {
 
   getRaceGroundElevationAtWorldPoint(worldPoint = null, fallbackElevation = 0) {
     return this.getRaceSmoothedGroundElevationAtWorldPoint(worldPoint, fallbackElevation);
+  }
+
+  createRaceBakeGroundSampler(fallbackElevation = 0) {
+    // A synchronous bake reads an immutable survey. Cache its four corner
+    // heights per interpolation cell rather than repeating editor lookups for
+    // millions of adaptive mesh probes. Keep the same bilinear arithmetic.
+    const cellSize = Math.max(1, Number(this.ensureRaceTileMap()?.cellSizeM) || RACE_TILE_MAP_CELL_SIZE_M);
+    const rows = new Map();
+    return ({x, z}) => {
+      const gx = Number(x || 0) / cellSize - 0.5;
+      const gz = Number(z || 0) / cellSize - 0.5;
+      const x0 = Math.floor(gx), z0 = Math.floor(gz);
+      let row = rows.get(x0);
+      if (!row) rows.set(x0, row = new Map());
+      let heights = row.get(z0);
+      if (!heights) {
+        const sample = (dx, dz) => this.getRaceRawGroundElevationAtWorldPoint({
+          x: (x0 + dx + 0.5) * cellSize, z: (z0 + dz + 0.5) * cellSize
+        }, fallbackElevation);
+        heights = [sample(0, 0), sample(1, 0), sample(0, 1), sample(1, 1)];
+        row.set(z0, heights);
+      }
+      const tx = clamp(gx - x0, 0, 1), tz = clamp(gz - z0, 0, 1);
+      const top = heights[0] + (heights[1] - heights[0]) * tx;
+      const bottom = heights[2] + (heights[3] - heights[2]) * tx;
+      return this.clampRaceElevation(top + (bottom - top) * tz);
+    };
   }
 
   getRaceRoadDeckElevationAtDistance(distance = 0, {
@@ -7239,6 +7277,7 @@ export default class RaceEditor {
       'delete-trigger': 'Delete Trigger',
       'race-tiles': this.getRaceSurfaceArtLabel(),
       'race-road-textures': 'Road Textures',
+      'race-shoulder-textures': 'Shoulders',
       'race-margin': this.getRaceMarginLabel(),
       'race-tire-fx': 'Tire FX',
       'race-texture-scale': this.getRaceTextureScaleLabel(),
@@ -8219,6 +8258,20 @@ export default class RaceEditor {
     const transmissionType = this.getRaceTransmissionType(car);
     const transmission = car.transmissions?.[transmissionType] || {};
     const rounded = Math.round(Number(value || 0) * 1000) / 1000;
+    if (car.tuning.powertrainType === 'electric') {
+      if (path === 'gearCount' || path.startsWith('gearRatio-')) return false;
+      const electricKey = path.startsWith('electric-') ? path.slice(9) : ({gearFinalDrive:'reductionRatio', redlineRpm:'maxMotorRpm', revLimitRpm:'maxMotorRpm'})[path];
+      if (electricKey) {
+        const next = { ...car.tuning.electricPowertrain, [electricKey]: rounded };
+        try { car.tuning = normalizeElectricTuning({ ...car.tuning, electricPowertrain: next }); }
+        catch { return false; }
+        for (const preset of Object.values(car.transmissions || {})) {
+          preset.gearRatios = [1]; preset.reverseRatio = 1; preset.gearFinalDrive = next.reductionRatio;
+        }
+        this.status = `Electric ${electricKey}: ${rounded}`;
+        return true;
+      }
+    }
     if (path.startsWith('body-')) {
       const profile = JSON.parse(JSON.stringify(this.getCarPhysicsBodyProfile(car)));
       const key = path.slice(5);
@@ -8258,6 +8311,18 @@ export default class RaceEditor {
       car.audio.engineSfxVolume = Math.round(clamp(Number(value) || 0, 0, 2) * 100) / 100;
       this.status = `Engine SFX: ${Math.round(car.audio.engineSfxVolume * 100)}%`;
       return true;
+    }
+    if (transmission.cvt || car.tuning.cvt) {
+      if (path === 'gearCount' || path.startsWith('gearRatio-')) return false;
+      if (path.startsWith('cvt-')) {
+        const key = path.slice(4);
+        if (!['minRatio','maxRatio','cruiseRpm','powerRpm','ratioRatePerSecond'].includes(key)) return false;
+        const next = {...(transmission.cvt || car.tuning.cvt),[key]:rounded};
+        try { validateCvt(next); } catch { return false; }
+        transmission.cvt = next; car.tuning.cvt = {...next};
+        transmission.gearRatios = [next.maxRatio]; car.tuning.gearRatios = [next.maxRatio];
+        this.status = `CVT ${key}: ${rounded}`; return true;
+      }
     }
     if (path === 'gearCount') {
       const count = clamp(Math.round(Number(value) || 6), 4, 10);
@@ -8653,6 +8718,7 @@ export default class RaceEditor {
     return [
       { id: 'cycle-surface', label: compact ? surface.label.slice(0, 6) : `Surface: ${surface.label}`, onClick: () => this.cycleSelectedSurface() },
       { id: 'segment-width', label: compact ? 'Width' : `Width: ${this.getRaceRoadWidthMForSegment(selected)}m`, onClick: () => this.handleMenuAction('segment-width') },
+      { id: 'segment-shoulder', label: 'Shoulder', onClick: () => this.openRaceShoulderTextures(openEditorForm, this.selectedSegment).catch(error => { this.status = error.message; }) },
       { id: 'segment-banking', label: 'Banking', onClick: () => this.handleMenuAction('segment-banking') },
       { id: 'segment-bumpiness', label: compact ? 'Bump' : `Bumpiness: ${Math.round((Number(selected.bumpiness) || 0) * 100)}%`, onClick: () => this.handleMenuAction('segment-bumpiness') },
       { id: 'boundary-collidable', label: selected.boundaryCollidable ? 'Boundary Solid' : 'Boundary Line', onClick: () => this.handleMenuAction('boundary-collidable') },
@@ -8954,10 +9020,10 @@ export default class RaceEditor {
         rpm: Math.max(0, Math.round(Number(point?.rpm) || 0)),
         torqueLbFt: Math.max(0, Math.round(Number(point?.torqueLbFt) || 0))
       }))
-      .filter((point) => point.rpm > 0 && point.torqueLbFt > 0)
+      .filter((point) => (tuning.powertrainType === 'electric' ? point.rpm >= 0 : point.rpm > 0) && point.torqueLbFt > 0)
       .sort((a, b) => a.rpm - b.rpm);
     const normalized = torquePoints.length >= 2 ? torquePoints : fallback.torquePoints;
-    const rpmMin = Math.max(1, Math.round(Number(curve.rpmMin) || normalized[0]?.rpm || fallback.rpmMin));
+    const rpmMin = tuning.powertrainType === 'electric' ? 0 : Math.max(1, Math.round(Number(curve.rpmMin) || normalized[0]?.rpm || fallback.rpmMin));
     const rpmMax = Math.max(rpmMin + 1, Math.round(Number(curve.rpmMax) || normalized[normalized.length - 1]?.rpm || fallback.rpmMax));
     return {
       rpmMin,
@@ -8967,6 +9033,7 @@ export default class RaceEditor {
   }
 
   syncCarTuningFromEngineCurve(tuning = {}) {
+    if (tuning.powertrainType === 'electric') return normalizeElectricTuning(tuning);
     const curve = this.normalizeCarEngineCurve(tuning);
     let peakTorque = 0;
     let peakHp = 0;
@@ -10238,6 +10305,8 @@ export default class RaceEditor {
       this.openRaceTilesDialog();
     } else if (action === 'race-road-textures') {
       this.openRaceRoadTextures().catch(error => { this.status = error.message; });
+    } else if (action === 'race-shoulder-textures') {
+      this.openRaceShoulderTextures().catch(error => { this.status = error.message; });
     } else if (action === 'race-margin') {
       this.openRaceMarginDialog();
     } else if (action === 'race-tire-fx') {
@@ -10413,7 +10482,7 @@ export default class RaceEditor {
     if (action === 'sprite-size' || action === 'sprite-height' || action === 'sprite-behavior') {
       this.activeAction = 'paint-sprite';
     }
-    if (!['generate-random-race', ...BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => entry.id), ...Object.keys(CAR_EDITOR_TUNING_ACTION_PATHS), 'ground-tile-next', 'paint-ground', 'paint-elevation', 'elevation-up', 'elevation-down', 'elevation-brush-size', 'race-ground-mode', 'race-ground-paint', 'race-ground-intensity', 'race-ground-brush', 'race-ground-mode-track', 'race-ground-mode-ground', 'race-ground-mode-elevation', 'race-ground-mode-sprites', 'race-ground-mode-doodad', 'race-ground-paint-raise', 'race-ground-paint-lower', 'race-ground-intensity-erase', 'edge-tile', 'segment-width', 'segment-bumpiness', 'boundary-collidable', 'snow-condition', 'move-node', 'insert-node', 'snap-node', 'remove-node', 'remove-edge', 'transmission-type', 'load-preset', 'summary-sheet', 'engine-sound-next', 'engine-sfx', 'add-sprite', 'sprite-select', 'doodad-select', 'paint-sprite', 'erase-sprite', 'move-sprite', 'delete-sprite', 'sprite-size', 'sprite-height', 'sprite-behavior', 'weather-intensity', 'skybox-next', 'ai-count', 'race-sun', 'race-fx', 'race-weather', 'race-tiles', 'race-road-textures', 'race-margin', 'race-tire-fx', 'race-texture-scale', 'race-debug', 'race-decal', 'race-ground-box', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile', 'sprite-brush-settings'].includes(action) && !action.startsWith('weather-') && !action.startsWith('ground-tile-') && !action.startsWith('ground-brush-') && !action.startsWith('elevation-up-') && !action.startsWith('elevation-down-')) {
+    if (!['generate-random-race', ...BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => entry.id), ...Object.keys(CAR_EDITOR_TUNING_ACTION_PATHS), 'ground-tile-next', 'paint-ground', 'paint-elevation', 'elevation-up', 'elevation-down', 'elevation-brush-size', 'race-ground-mode', 'race-ground-paint', 'race-ground-intensity', 'race-ground-brush', 'race-ground-mode-track', 'race-ground-mode-ground', 'race-ground-mode-elevation', 'race-ground-mode-sprites', 'race-ground-mode-doodad', 'race-ground-paint-raise', 'race-ground-paint-lower', 'race-ground-intensity-erase', 'edge-tile', 'segment-width', 'segment-bumpiness', 'boundary-collidable', 'snow-condition', 'move-node', 'insert-node', 'snap-node', 'remove-node', 'remove-edge', 'transmission-type', 'load-preset', 'summary-sheet', 'engine-sound-next', 'engine-sfx', 'add-sprite', 'sprite-select', 'doodad-select', 'paint-sprite', 'erase-sprite', 'move-sprite', 'delete-sprite', 'sprite-size', 'sprite-height', 'sprite-behavior', 'weather-intensity', 'skybox-next', 'ai-count', 'race-sun', 'race-fx', 'race-weather', 'race-tiles', 'race-road-textures', 'race-shoulder-textures', 'race-margin', 'race-tire-fx', 'race-texture-scale', 'race-debug', 'race-decal', 'race-ground-box', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile', 'sprite-brush-settings'].includes(action) && !action.startsWith('weather-') && !action.startsWith('ground-tile-') && !action.startsWith('ground-brush-') && !action.startsWith('elevation-up-') && !action.startsWith('elevation-down-')) {
       this.status = `${action.replace(/-/g, ' ')} selected`;
     }
     this.activeRootId = this.findRootForAction(action) || this.activeRootId;
@@ -10792,17 +10861,51 @@ export default class RaceEditor {
     this.status = 'Default ground texture updated';
   }
 
+  async openRaceShoulderTextures(showForm = openEditorForm, segment = null) {
+    const race = this.selectedRace;
+    if (!race) return;
+    const textures = race.roadTextures || {};
+    const targets = segment ? [{ id: 'section', label: 'This section', entry: segment.shoulderTexture }]
+      : [{ id: 'default', label: 'Race default', entry: textures.shoulder },
+        ...[...new Set((race.road?.segments || []).map(s => s.surface).filter(Boolean))].map(surface => ({ id: surface, label: getSurfaceById(surface).label, entry: textures.surfaceShoulders?.[surface] }))];
+    const names = new Set(listProjectFiles('art').map(file => file.name));
+    targets.forEach(target => { if (target.entry?.artRef) names.add(target.entry.artRef); });
+    const fields = targets.flatMap(target => [
+      { id: target.id, type: 'select', label: target.label, value: target.entry?.enabled === false ? '__none' : target.entry?.artRef || '',
+        options: [{ value: '', label: target.id === 'default' ? 'Terrain default' : 'Inherit' }, { value: '__none', label: 'No shoulder' }, ...[...names].sort().map(name => ({ value: name, label: name }))] },
+      { id: target.id + 'Repeat', type: 'number', label: target.label + ' repeat (meters)', min: .1, max: 1000, step: .1, value: target.entry?.repeatM || 12 }
+    ]);
+    const result = await showForm(segment ? 'Section Shoulder' : 'Shoulders by Surface', fields, { description: 'Section settings override surface settings. Inherit uses the race default. No shoulder removes the shoulder strip; the surrounding terrain remains. Overall shoulder visibility and width are in Settings → Margin. Save the race to keep changes.' });
+    if (!result || race !== this.selectedRace || (segment && !(race.road?.segments || []).includes(segment))) return;
+    this.captureRaceHistory('Shoulder textures');
+    race.roadTextures ||= {};
+    race.roadTextures.surfaceShoulders ||= {};
+    for (const target of targets) {
+      const value = result[target.id];
+      if (value === undefined) continue;
+      const entry = { ...target.entry, enabled: value !== '__none', artRef: value === '__none' ? '' : String(value), repeatM: clamp(Number(result[target.id + 'Repeat']) || 12, .1, 1000), repeatWidthM: target.entry?.repeatWidthM || 0 };
+      if (segment) { if (!value) delete segment.shoulderTexture; else segment.shoulderTexture = entry; }
+      else if (target.id === 'default') race.roadTextures.shoulder = entry;
+      else if (!value) delete race.roadTextures.surfaceShoulders[target.id];
+      else race.roadTextures.surfaceShoulders[target.id] = entry;
+    }
+    this.clearRaceRuntimeSurfaceCaches();
+    this.status = 'Shoulders updated. Save the race to keep changes.';
+  }
+
   async openRaceRoadTextures(showForm = openEditorForm) {
     const race = this.selectedRace;
     if (!race) return;
     const settings = roadTextureSettings(race);
     const names = new Set(listProjectFiles('art').map(file => file.name));
     for (const entry of Object.values(settings)) if (entry.artRef) names.add(entry.artRef);
+    for (const surface of DEBUG_ROAD_SURFACES) names.add(race.roadTextures?.debugSurfaces?.[surface.id]||surface.artRef);
     const options = [{ value: '', label: 'Default surface' }, ...[...names].sort().map(name => ({ value: name, label: name }))];
     const result = await showForm('Road & Margin Textures', [
       { id: 'roadArt', label: 'Road artwork', type: 'select', options, value: settings.road.artRef },
       { id: 'roadRepeat', label: 'Road repeat length (meters)', type: 'number', min: .1, max: 1000, step: .1, value: settings.road.repeatM },
       { id: 'roadRepeatWidth', label: 'Road repeat width (meters; 0 = fit road)', type: 'number', min: 0, max: 1000, step: .1, value: settings.road.repeatWidthM },
+      { id: 'roadLaneWidth', label: 'Lane stripe spacing (meters; 0 = off)', type: 'number', min: 0, max: 5, step: .01, value: settings.road.laneWidthM },
       {id:'roadFilter',label:'Road filtering',type:'select',value:settings.road.filterMode,options:[{value:'inherit',label:'Use race setting'},{value:'crisp',label:'Crisp pixels'},{value:'balanced',label:'Crisp pixels / smooth distance'},{value:'smooth',label:'Smooth'}]},
       {id:'roadMipmaps',label:'Road distance mipmaps',type:'checkbox',value:settings.road.mipmaps},
       {id:'roadMipmapDistance',label:'Road mipmap distance multiplier',type:'number',min:.25,max:16,step:.25,value:settings.road.mipmapDistance},
@@ -10814,14 +10917,16 @@ export default class RaceEditor {
       {id:'marginMipmaps',label:'Margin distance mipmaps',type:'checkbox',value:settings.margin.mipmaps},
       {id:'marginMipmapDistance',label:'Margin mipmap distance multiplier',type:'number',min:.25,max:16,step:.25,value:settings.margin.mipmapDistance},
       {id:'marginAnisotropy',label:'Margin angled detail (Smooth + mipmaps; 1–16)',type:'number',min:1,max:16,step:1,value:settings.margin.anisotropy},
+      ...DEBUG_ROAD_SURFACES.map(surface=>({id:'debugRoad_'+surface.id,label:'Debug '+surface.label+' artwork',type:'select',options,value:race.roadTextures?.debugSurfaces?.[surface.id]||surface.artRef})),
       { id: 'builtInLines', label: 'Show built-in lane markings', type: 'checkbox', value: race.roadTextures?.builtInLines !== false, visibleWhen: state => !state.roadArt }
     ], { description: 'Choose saved graphic tiles. Image width spans the road or margin; image height repeats along curves. Put center lines vertically in the middle of the road image. Margin visibility and width remain in Settings → Margin. Mipmap distance: 1 is normal; 2–4 keeps sharper mip levels farther away without changing tile size. Higher values can shimmer. Disable distance mipmaps for the sharpest pixels (may shimmer far away); use Smooth filtering with mipmaps on to enable angled-distance detail. Save the race to keep changes.' });
     if (!result || this.selectedRace !== race) return;
     this.captureRaceHistory('Road textures');
     race.roadTextures = { ...roadTextureSettings({ roadTextures: {
-      road: { mipmapDistance:result.roadMipmapDistance,filterMode:result.roadFilter,mipmaps:result.roadMipmaps,anisotropy:result.roadAnisotropy,artRef: result.roadArt, repeatM: result.roadRepeat, repeatWidthM: result.roadRepeatWidth || 0 },
+      ...race.roadTextures,
+      road: { laneWidthM:result.roadLaneWidth??settings.road.laneWidthM,mipmapDistance:result.roadMipmapDistance,filterMode:result.roadFilter,mipmaps:result.roadMipmaps,anisotropy:result.roadAnisotropy,artRef: result.roadArt, repeatM: result.roadRepeat, repeatWidthM: result.roadRepeatWidth || 0 },
       margin: { mipmapDistance:result.marginMipmapDistance,filterMode:result.marginFilter,mipmaps:result.marginMipmaps,anisotropy:result.marginAnisotropy,artRef: result.marginArt, repeatM: result.marginRepeat, repeatWidthM: result.marginRepeatWidth || 0 }
-    }}), builtInLines: result.builtInLines !== false };
+    }}), debugSurfaces:Object.fromEntries(DEBUG_ROAD_SURFACES.map(surface=>[surface.id,result['debugRoad_'+surface.id]||surface.artRef])), builtInLines: result.builtInLines !== false };
     this.raceStaticTrackSurfaceMeshCache = null;
     this.status = 'Road textures updated. Playtest to preview; save the race to keep changes.';
   }
@@ -10990,8 +11095,13 @@ export default class RaceEditor {
     add(race.snowClouds?.artRef);
     Object.values(race.surfaceArt || {}).forEach(add);
     add(race.margin?.artRef);
+    Object.values(race.roadTextures?.debugSurfaces || {}).forEach(add);
     add(race.roadTextures?.road?.artRef);
     add(race.roadTextures?.margin?.artRef);
+    add(race.roadTextures?.shoulder?.artRef);
+    for(const entry of Object.values(race.roadTextures?.surfaceRoads||{})){add(entry.artRef);add(entry.roughArtRef);}
+    for(const entry of Object.values(race.roadTextures?.surfaceShoulders||{}))add(entry.artRef);
+    for(const segment of race.road?.segments || [])add(segment.shoulderTexture?.artRef);
     (race.sceneryDefinitions || []).forEach((definition) => add(definition?.artRef));
     (race.scenery || []).forEach((sprite) => add(sprite?.artRef));
     (race.decals || []).forEach((decal) => add(decal?.artRef));
@@ -11023,8 +11133,13 @@ export default class RaceEditor {
     add(race.skyboxArtRef || race.visuals?.skyboxArtRef);
     Object.values(race.surfaceArt || {}).forEach(add);
     add(race.margin?.artRef);
+    Object.values(race.roadTextures?.debugSurfaces || {}).forEach(add);
     add(race.roadTextures?.road?.artRef);
     add(race.roadTextures?.margin?.artRef);
+    add(race.roadTextures?.shoulder?.artRef);
+    for(const entry of Object.values(race.roadTextures?.surfaceRoads||{})){add(entry.artRef);add(entry.roughArtRef);}
+    for(const entry of Object.values(race.roadTextures?.surfaceShoulders||{}))add(entry.artRef);
+    for(const segment of race.road?.segments || [])add(segment.shoulderTexture?.artRef);
     (race.sceneryDefinitions || []).forEach((definition) => add(definition?.artRef));
     (race.scenery || []).forEach((sprite) => add(sprite?.artRef));
     (race.decals || []).forEach((decal) => add(decal?.artRef));
@@ -11251,6 +11366,7 @@ export default class RaceEditor {
     const surfaceStep = this.getRaceWorldBakeSurfaceStep({ renderDebug });
     return [
       this.selectedRace?.id || 'race',
+      ADAPTIVE_TERRAIN_REVISION,
       Number(tileMap?.revision) || 0,
       this.getRacePathSampleCacheSignature(2.5),
       runtimeType,
@@ -11283,825 +11399,25 @@ export default class RaceEditor {
     runtimeType = this.getSelectedRaceRuntimeType(),
     routeLength = this.getRaceRouteLength()
   } = {}) {
-    const entries = this.getRaceTileMapEntries(tileMap);
-    if (!entries.length) return [];
-    const surfaceModel = this.getRaceSurfaceModel();
     const sourceCellSize = Math.max(1, Number(tileMap.cellSizeM) || RACE_TILE_MAP_CELL_SIZE_M);
-    const gridSize = Math.max(sourceCellSize, RACE_COMPLETE_HEIGHTMAP_GRID_SIZE_M);
-    const gridRadius = Math.SQRT2 * gridSize * 0.5;
-    const terrainBounds = getRaceTerrainBounds(entries, sourceCellSize);
-    if (!terrainBounds) return [];
-    let {minX:minWorldX, maxX:maxWorldX, minZ:minWorldZ, maxZ:maxWorldZ} = terrainBounds;
-    (surfaceBake?.sections || []).forEach((section) => {
-      const center = section?.center;
-      if (!center) return;
-      const sectionDistance = Number(center.routeDistance ?? center.distance ?? section.deck?.distance);
-      if (this.selectedRace?.road?.autoExtend !== false && runtimeType !== 'circuit' && Number.isFinite(sectionDistance) && (sectionDistance < 0 || sectionDistance > routeLength)) return;
-      const reach = Math.max(gridSize, Number(section.metrics?.outerHalfWidth || 0));
-      minWorldX = Math.min(minWorldX, Number(center.x || 0) - reach);
-      maxWorldX = Math.max(maxWorldX, Number(center.x || 0) + reach);
-      minWorldZ = Math.min(minWorldZ, Number(center.z ?? center.y ?? 0) - reach);
-      maxWorldZ = Math.max(maxWorldZ, Number(center.z ?? center.y ?? 0) + reach);
-    });
-    const padding = RACE_COMPLETE_HEIGHTMAP_GRID_PADDING_M;
-    const minGridX = Math.floor((minWorldX - padding) / gridSize);
-    const maxGridX = Math.ceil((maxWorldX + padding) / gridSize) - 1;
-    const minGridZ = Math.floor((minWorldZ - padding) / gridSize);
-    const maxGridZ = Math.ceil((maxWorldZ + padding) / gridSize) - 1;
-    const nearCorridorCellKeys = new Set();
-    const corridorSections = surfaceBake?.sections || [];
-    const markNearCorridor = (section) => {
-      const center = section?.center;
-      if (!center) return;
-      const reach = Math.max(12, Number(section.metrics?.outerHalfWidth || 0) + gridRadius + gridSize);
-      const minCellX = Math.floor((Number(center.x || 0) - reach) / gridSize);
-      const maxCellX = Math.floor((Number(center.x || 0) + reach) / gridSize);
-      const minCellY = Math.floor((Number(center.z ?? center.y ?? 0) - reach) / gridSize);
-      const maxCellY = Math.floor((Number(center.z ?? center.y ?? 0) + reach) / gridSize);
-      for (let y = minCellY; y <= maxCellY; y += 1) {
-        for (let x = minCellX; x <= maxCellX; x += 1) nearCorridorCellKeys.add(`${x},${y}`);
-      }
-    };
-    corridorSections.forEach((section, sectionIndex) => {
-      markNearCorridor(section);
-      const next = corridorSections[sectionIndex + 1];
-      if (!next?.center || !section?.center) return;
-      const dx = Number(next.center.x || 0) - Number(section.center.x || 0);
-      const dz = Number(next.center.z ?? next.center.y ?? 0) - Number(section.center.z ?? section.center.y ?? 0);
-      const steps = Math.max(1, Math.ceil(Math.hypot(dx, dz) / gridSize));
-      for (let stepIndex = 1; stepIndex < steps; stepIndex += 1) {
-        const t = stepIndex / steps;
-        markNearCorridor({
-          ...section,
-          metrics: {
-            ...(section.metrics || {}),
-            outerHalfWidth: Number(section.metrics?.outerHalfWidth || 0)
-              + (Number(next.metrics?.outerHalfWidth || 0) - Number(section.metrics?.outerHalfWidth || 0)) * t
-          },
-          center: {
-            ...section.center,
-            x: Number(section.center.x || 0) + dx * t,
-            z: Number(section.center.z ?? section.center.y ?? 0) + dz * t
-          }
-        });
-      }
-    });
-    const vertexElevationCache = new Map();
-    const sampleElevation = (x, z) => {
-      const key = `${x},${z}`;
-      if (vertexElevationCache.has(key)) return vertexElevationCache.get(key);
-      const elevation = this.getRaceGroundElevationAtWorldPoint({ x, z }, 0);
-      vertexElevationCache.set(key, elevation);
-      return elevation;
-    };
-    const aggregateTileCell = (x0, z0, x1, z1) => {
-      const weights = new Map();
-      let explicit = false;
-      let artRef = '';
-      let artRefWeight = -1;
-      let samples = 0;
-      const minSourceX = Math.floor(x0 / sourceCellSize);
-      const maxSourceX = Math.ceil(x1 / sourceCellSize) - 1;
-      const minSourceZ = Math.floor(z0 / sourceCellSize);
-      const maxSourceZ = Math.ceil(z1 / sourceCellSize) - 1;
-      for (let sourceZ = minSourceZ; sourceZ <= maxSourceZ; sourceZ += 1) {
-        for (let sourceX = minSourceX; sourceX <= maxSourceX; sourceX += 1) {
-          const source = this.getRaceTileMapCell(sourceX, sourceZ, tileMap);
-          if (!source) continue;
-          samples += 1;
-          explicit = explicit || source.explicit === true;
-          Object.entries(source.tileWeights || { [source.tileId || tileMap.defaultTileId || 'grass']: 1 }).forEach(([tileId, weight]) => {
-            weights.set(tileId, (weights.get(tileId) || 0) + Math.max(0, Number(weight) || 0));
-          });
-          const sourceArtWeight = Math.max(...Object.values(source.tileWeights || {}).map((weight) => Number(weight) || 0), 0);
-          if (source.artRef && sourceArtWeight > artRefWeight) {
-            artRef = source.artRef;
-            artRefWeight = sourceArtWeight;
-          }
-        }
-      }
-      const total = [...weights.values()].reduce((sum, weight) => sum + weight, 0) || Math.max(1, samples);
-      const tileWeights = Object.fromEntries(
-        [...weights.entries()]
-          .map(([tileId, weight]) => [tileId, weight / total])
-          .filter(([, weight]) => weight > 0.0005)
-      );
-      const tileId = Object.entries(tileWeights).sort((a, b) => b[1] - a[1])[0]?.[0]
-        || tileMap.defaultTileId
-        || 'grass';
-      return {
-        tileId,
-        tileWeights: Object.keys(tileWeights).length ? tileWeights : { [tileId]: 1 },
-        artRef,
-        explicit,
-        source: explicit ? 'heightmap-grid-aggregate' : 'heightmap-grid-default',
-        elevation: sampleElevation((x0 + x1) * 0.5, (z0 + z1) * 0.5)
-      };
-    };
-    const roadFootprintTriangles = [];
-    let correctedExactSeamVertices = 0;
-    let correctedJaggedSeamEdges = 0;
-    let unmatchedExactSeamVertices = 0;
-    const footprintSections = surfaceBake?.sections || [];
-    const footprintPairCount = runtimeType === 'circuit' ? footprintSections.length : Math.max(0, footprintSections.length - 1);
-    for (let sectionIndex = 0; sectionIndex < footprintPairCount; sectionIndex += 1) {
-      const near = footprintSections[sectionIndex];
-      const far = footprintSections[(sectionIndex + 1) % footprintSections.length];
-      // This builder supplies the complete roadside terrain. Only remove the
-      // area occupied by road/margin/shoulder meshes; cutting at the outer
-      // transition would leave an unfilled strip beside large imported roads.
-      const nearLeft = near?.shoulderLeft || near?.marginLeft || near?.left;
-      const nearRight = near?.shoulderRight || near?.marginRight || near?.right;
-      const farLeft = far?.shoulderLeft || far?.marginLeft || far?.left;
-      const farRight = far?.shoulderRight || far?.marginRight || far?.right;
-      if (!nearLeft || !nearRight || !farLeft || !farRight) continue;
-      [
-        {
-          points: [nearLeft, nearRight, farRight],
-          seamEdges: [runtimeType !== 'circuit' && sectionIndex === 0, true, false]
-        },
-        {
-          points: [nearLeft, farRight, farLeft],
-          seamEdges: [false, runtimeType !== 'circuit' && sectionIndex === footprintPairCount - 1, true]
-        }
-      ].forEach(({ points, seamEdges }) => {
-        const xs = points.map((point) => Number(point.x || 0));
-        const zs = points.map((point) => Number(point.z ?? point.y ?? 0));
-        roadFootprintTriangles.push({
-          points,
-          minX: Math.min(...xs),
-          maxX: Math.max(...xs),
-          minZ: Math.min(...zs),
-          maxZ: Math.max(...zs),
-          seamEdges,
-          boundaryEdges: points.map((point, edgeIndex) => (
-            seamEdges[edgeIndex] === true
-              ? [point, points[(edgeIndex + 1) % points.length]]
-              : null
-          )).filter(Boolean)
-        });
-      });
+    const bounds = getRaceTerrainBounds(this.getRaceTileMapEntries(tileMap), sourceCellSize);
+    if (!bounds) return [];
+    for (const section of surfaceBake?.sections || []) {
+      if (!section.center) continue;
+      bounds.minX = Math.min(bounds.minX, section.center.x);
+      bounds.maxX = Math.max(bounds.maxX, section.center.x);
+      bounds.minZ = Math.min(bounds.minZ, section.center.z);
+      bounds.maxZ = Math.max(bounds.maxZ, section.center.z);
     }
-    const footprintBuckets = new Map();
-    roadFootprintTriangles.forEach((footprint, footprintIndex) => {
-      const minBucketX = Math.floor(footprint.minX / gridSize);
-      const maxBucketX = Math.floor(footprint.maxX / gridSize);
-      const minBucketZ = Math.floor(footprint.minZ / gridSize);
-      const maxBucketZ = Math.floor(footprint.maxZ / gridSize);
-      for (let bucketZ = minBucketZ; bucketZ <= maxBucketZ; bucketZ += 1) {
-        for (let bucketX = minBucketX; bucketX <= maxBucketX; bucketX += 1) {
-          const key = `${bucketX},${bucketZ}`;
-          const bucket = footprintBuckets.get(key) || [];
-          bucket.push(footprintIndex);
-          footprintBuckets.set(key, bucket);
-        }
-      }
+    const result = buildAdaptiveRaceTerrain({
+      surfaceBake, runtimeType, bounds, sourceCellSize,
+      onProgress: this.onRaceTerrainBuildProgress,
+      elevationScaleM: RACE_THREE_ELEVATION_M,
+      sampleGround: this.createRaceBakeGroundSampler(0),
+      tileAt: point => this.getRaceTileMapCellAtWorldPoint(point)
     });
-    const subtractRoadFootprint = (triangle = []) => {
-      const xs = triangle.map((point) => Number(point.x || 0));
-      const zs = triangle.map((point) => Number(point.z ?? point.y ?? 0));
-      const minX = Math.min(...xs);
-      const maxX = Math.max(...xs);
-      const minZ = Math.min(...zs);
-      const maxZ = Math.max(...zs);
-      const candidates = new Set();
-      for (let bucketZ = Math.floor(minZ / gridSize); bucketZ <= Math.floor(maxZ / gridSize); bucketZ += 1) {
-        for (let bucketX = Math.floor(minX / gridSize); bucketX <= Math.floor(maxX / gridSize); bucketX += 1) {
-          (footprintBuckets.get(`${bucketX},${bucketZ}`) || []).forEach((index) => candidates.add(index));
-        }
-      }
-      let pieces = [triangle];
-      candidates.forEach((footprintIndex) => {
-        const footprint = roadFootprintTriangles[footprintIndex];
-        if (!footprint || footprint.maxX < minX - 0.001 || footprint.minX > maxX + 0.001
-          || footprint.maxZ < minZ - 0.001 || footprint.minZ > maxZ + 0.001) return;
-        pieces = pieces.flatMap((piece) => subtractRaceTerrainPolygonByConvexPolygon(piece, footprint.points, {
-          seamEdges: footprint.seamEdges
-        }));
-      });
-      const snapToRoadBoundary = (point = {}) => {
-        // Clipping uses infinite half-planes. Re-resolve against finite road
-        // edges even when an earlier clip marked this point as a seam.
-        let nearest = null;
-        candidates.forEach((footprintIndex) => {
-          const footprint = roadFootprintTriangles[footprintIndex];
-          const boundary = footprint?.boundaryEdges || [];
-          boundary.forEach(([edgeA, edgeB]) => {
-            const edgeDx = Number(edgeB.x || 0) - Number(edgeA.x || 0);
-            const edgeDz = Number(edgeB.z ?? edgeB.y ?? 0) - Number(edgeA.z ?? edgeA.y ?? 0);
-            const edgeLengthSq = edgeDx * edgeDx + edgeDz * edgeDz;
-            if (edgeLengthSq <= 0.0000001) return;
-            const edgeT = clamp((
-              (Number(point.x || 0) - Number(edgeA.x || 0)) * edgeDx
-                + (Number(point.z ?? point.y ?? 0) - Number(edgeA.z ?? edgeA.y ?? 0)) * edgeDz
-            ) / edgeLengthSq, 0, 1);
-            const edgeX = Number(edgeA.x || 0) + edgeDx * edgeT;
-            const edgeZ = Number(edgeA.z ?? edgeA.y ?? 0) + edgeDz * edgeT;
-            const distance = Math.hypot(Number(point.x || 0) - edgeX, Number(point.z ?? point.y ?? 0) - edgeZ);
-            if (!nearest || distance < nearest.distance) nearest = {
-              distance,
-              edgeA,
-              edgeB,
-              edgeT,
-              edgeX,
-              edgeZ
-            };
-          });
-        });
-        // Use the finite road edge height within the seam tolerance, but
-        // retain grid coordinates so neighboring terrain edges still match.
-        if (!nearest || nearest.distance > 0.02) {
-          point.trackSeam = false;
-          point.exactRoadSeam = false;
-          delete point.roadSeamElevation;
-          delete point.roadSeamDistance;
-          return point;
-        }
-        const edgeADistance = Number(nearest.edgeA.roadDistance ?? nearest.edgeA.routeDistance ?? nearest.edgeA.distance);
-        const edgeBDistance = Number(nearest.edgeB.roadDistance ?? nearest.edgeB.routeDistance ?? nearest.edgeB.distance);
-        const roadSeamDistance = Number.isFinite(edgeADistance) && Number.isFinite(edgeBDistance)
-          ? edgeADistance + (edgeBDistance - edgeADistance) * nearest.edgeT
-          : Number.isFinite(edgeADistance)
-            ? edgeADistance
-            : Number.isFinite(edgeBDistance)
-              ? edgeBDistance
-              : null;
-        const canonicalSeamElevation = Number(nearest.edgeA.elevation || 0)
-          + (Number(nearest.edgeB.elevation || 0) - Number(nearest.edgeA.elevation || 0)) * nearest.edgeT;
-
-        point.trackSeam = true;
-        point.exactRoadSeam = true;
-        point.roadSeamElevation = canonicalSeamElevation;
-        if (roadSeamDistance !== null) point.roadSeamDistance = roadSeamDistance;
-        point.elevation = point.roadSeamElevation;
-        return point;
-      };
-      pieces.forEach((piece) => piece.forEach(snapToRoadBoundary));
-      return pieces.flatMap((piece) => this.triangulateRaceTerrainPolygon(piece));
-    };
-    const surfacePointCache = new Map();
-    const roadSeamPointBuckets = new Map();
-    const sampleCompositedPoint = (point = {}, nearCorridor = false) => {
-      const x = Number(point.x || 0);
-      const z = Number(point.z ?? point.y ?? 0);
-      // Canonicalize numerical duplicates without merging distinct edge
-      // intersections: even nearby points can carry different seam heights.
-      const seamBucketX = Math.floor(x * 20);
-      const seamBucketZ = Math.floor(z * 20);
-      if (point.exactRoadSeam === true) {
-        const pointDistance = Number(point.roadSeamDistance);
-        let cachedSeam = null;
-        for (let zOffset = -1; zOffset <= 1; zOffset += 1) {
-          for (let xOffset = -1; xOffset <= 1; xOffset += 1) {
-            (roadSeamPointBuckets.get(`${seamBucketX + xOffset},${seamBucketZ + zOffset}`) || []).forEach((candidate) => {
-              const horizontalM = Math.hypot(
-                x - Number(candidate.x || 0),
-                z - Number(candidate.z ?? candidate.y ?? 0)
-              );
-              const candidateDistance = Number(candidate.roadSeamDistance);
-              const routeDistanceDelta = Number.isFinite(pointDistance) && Number.isFinite(candidateDistance)
-                ? Math.abs(pointDistance - candidateDistance)
-                : 0;
-              if (horizontalM > 0.001 || routeDistanceDelta > 0.15
-                || (cachedSeam && horizontalM >= cachedSeam.horizontalM)) return;
-              cachedSeam = { point: candidate, horizontalM };
-            });
-          }
-        }
-        if (cachedSeam) return cachedSeam.point;
-      }
-      const key = `${Math.round(x * 1000)},${Math.round(z * 1000)}`;
-      const cached = surfacePointCache.get(key);
-      if (cached) {
-        if (point.trackSeam === true) cached.trackSeam = true;
-        if (point.exactRoadSeam === true) {
-          cached.exactRoadSeam = true;
-          cached.elevation = Number(point.roadSeamElevation ?? point.elevation);
-          cached.roadSeamElevation = cached.elevation;
-          cached.roadSeamDistance = point.roadSeamDistance;
-        }
-        return cached;
-      }
-      const rawElevation = sampleElevation(x, z);
-      let sample = {
-        elevation: rawElevation,
-        terrainRegion: 'terrain',
-        region: 'terrain',
-        roadDeckElevation: false
-      };
-      const projection = nearCorridor || point.trackSeam === true
-        ? this.getRaceRouteProjectionForWorldPoint({ x, z }) : null;
-      if (projection?.segment && Number.isFinite(Number(projection.lateral))) {
-        const track = surfaceModel.sampleTrack(Number(projection.distance || 0), Number(projection.lateral || 0), {
-          runtimeType,
-          routeLength,
-          allowVisualExtension: runtimeType !== 'circuit',
-          fallbackSurfaceId: projection.segment?.surface || 'asphalt'
-        });
-        if (nearCorridor || point.trackSeam === true || Math.abs(Number(projection.lateral || 0)) <= Number(track.metrics?.transitionEnd || 0)) {
-          sample = {
-            elevation: Number(track.elevation || 0),
-            terrainRegion: track.region || 'terrain',
-            region: track.region || 'terrain',
-            lateralOffset: Number(projection.lateral || 0),
-            roadDistance: Number(projection.distance || 0),
-            hardCorridorEnd: Number(track.metrics?.hardHalfWidth || 0),
-            terrainBlend: Number(track.blend || 0),
-            roadDeckElevation: ['road', 'margin', 'shoulder'].includes(track.region)
-          };
-        }
-      }
-      const canonical = cached || {};
-      Object.assign(canonical, point, sample, { x, z, y: z });
-      if (point.exactRoadSeam === true) {
-        // Keep the height of the exact baked road edge used for clipping.
-        // Reprojecting onto the analytic curve can choose a different height
-        // on bends and hairpins, opening a crack or forming a collision lip.
-        canonical.elevation = Number(point.roadSeamElevation ?? point.elevation);
-        canonical.trackSeam = true;
-        canonical.exactRoadSeam = true;
-        canonical.roadSeamElevation = Number(canonical.elevation || 0);
-        const bucketKey = `${seamBucketX},${seamBucketZ}`;
-        const bucket = roadSeamPointBuckets.get(bucketKey) || [];
-        bucket.push(canonical);
-        roadSeamPointBuckets.set(bucketKey, bucket);
-      }
-      surfacePointCache.set(key, canonical);
-      return canonical;
-    };
-    const cells = [];
-    let emittedCells = 0;
-    let rejectedByRoad = 0;
-    const emitPolygon = ({
-      polygon = [],
-      gridX = 0,
-      gridZ = 0,
-      subIndex = 0,
-      nearCorridor = false,
-      domainBoundary = false
-    } = {}) => {
-      const retained = subtractRoadFootprint(polygon);
-      if (!retained.length) rejectedByRoad += 1;
-      retained.forEach((retainedPolygon, retainedIndex) => {
-        this.triangulateRaceTerrainPolygon(retainedPolygon).forEach((retainedTriangle, triangleIndex) => {
-          const points = retainedTriangle.map((point) => sampleCompositedPoint(point, nearCorridor));
-          const xs = points.map((point) => Number(point.x || 0));
-          const zs = points.map((point) => Number(point.z ?? point.y ?? 0));
-          const x0 = Math.min(...xs);
-          const x1 = Math.max(...xs);
-          const z0 = Math.min(...zs);
-          const z1 = Math.max(...zs);
-          const tileCell = aggregateTileCell(x0, z0, x1 || x0 + sourceCellSize, z1 || z0 + sourceCellSize);
-          const region = points.some((point) => point.terrainRegion === 'transition')
-            ? 'transition'
-            : points.some((point) => point.terrainRegion === 'shoulder')
-              ? 'shoulder'
-              : 'terrain';
-          cells.push({
-            points,
-            tileCell,
-            key: `heightmap:${gridX},${gridZ}:${subIndex}:${retainedIndex}:${triangleIndex}`,
-            groupKey: `heightmap:${gridX},${gridZ}`,
-            terrainLayer: 'base',
-            terrainTopology: 'constrained-road-first',
-            terrainSide: 'raw',
-            terrainRail: 'heightmap',
-            terrainRegion: region,
-            roadAdjacent: nearCorridor,
-            nearRoad: nearCorridor,
-            clippedToTrackCorridor: points.some((point) => point.trackSeam === true),
-            constrainedTerrainCell: true,
-            adaptiveTerrainCellSizeM: Math.max(x1 - x0, z1 - z0),
-            domainBoundary
-          });
-        });
-      });
-      emittedCells += 1;
-    };
-    for (let gridZ = minGridZ; gridZ <= maxGridZ; gridZ += 1) {
-      for (let gridX = minGridX; gridX <= maxGridX; gridX += 1) {
-        const cellKey = `${gridX},${gridZ}`;
-        const x0 = gridX * gridSize;
-        const z0 = gridZ * gridSize;
-        const x1 = x0 + gridSize;
-        const z1 = z0 + gridSize;
-        const nearCorridor = nearCorridorCellKeys.has(cellKey);
-        const domainBoundary = gridX === minGridX || gridX === maxGridX || gridZ === minGridZ || gridZ === maxGridZ;
-        emitPolygon({
-          polygon: [
-            { x: x0, z: z0, elevation: sampleElevation(x0, z0), terrainRegion: 'terrain' },
-            { x: x1, z: z0, elevation: sampleElevation(x1, z0), terrainRegion: 'terrain' },
-            { x: x1, z: z1, elevation: sampleElevation(x1, z1), terrainRegion: 'terrain' },
-            { x: x0, z: z1, elevation: sampleElevation(x0, z1), terrainRegion: 'terrain' }
-          ],
-          gridX,
-          gridZ,
-          nearCorridor,
-          domainBoundary
-        });
-      }
-    }
-    const conformingVertexBuckets = new Map();
-    const conformingVertexKey = (point = {}) => [
-      Math.round(Number(point.x || 0) * 1000),
-      Math.round(Number(point.z ?? point.y ?? 0) * 1000)
-    ].join(',');
-    const uniqueConformingVertices = new Map();
-    const registerConformingVertex = (point) => {
-      const key = conformingVertexKey(point);
-      if (uniqueConformingVertices.has(key)) return;
-      uniqueConformingVertices.set(key, point);
-      const bucketKey = `${Math.floor(Number(point.x || 0) / gridSize)},${Math.floor(Number(point.z ?? point.y ?? 0) / gridSize)}`;
-      const bucket = conformingVertexBuckets.get(bucketKey) || [];
-      bucket.push(point);
-      conformingVertexBuckets.set(bucketKey, bucket);
-    };
-    cells.forEach((cell) => (cell.points || []).forEach(registerConformingVertex));
-    // A straight road edge may cross several sections with changing grade.
-    // Those section vertices must also split the neighboring terrain edge.
-    roadFootprintTriangles.forEach((footprint) => footprint.boundaryEdges.forEach((edge) => edge.forEach((point) => {
-      registerConformingVertex(sampleCompositedPoint({
-        ...point,
-        trackSeam: true,
-        exactRoadSeam: true,
-        roadSeamElevation: point.elevation,
-        roadSeamDistance: point.roadDistance ?? point.routeDistance ?? point.distance
-      }, true));
-    })));
-    let resolvedTJunctions = 0;
-    const omittedBoundaryOnlyTriangles = 0;
-    let promotedBoundaryVertices = 0;
-    const conformingCells = [];
-    cells.forEach((cell) => {
-      const sourcePolygon = cell.points || [];
-      if (sourcePolygon.length !== 3) {
-        conformingCells.push(cell);
-        return;
-      }
-      const polygon = [];
-      sourcePolygon.forEach((edgeA, edgeIndex) => {
-        const edgeB = sourcePolygon[(edgeIndex + 1) % sourcePolygon.length];
-        polygon.push(edgeA);
-        const ax = Number(edgeA.x || 0);
-        const az = Number(edgeA.z ?? edgeA.y ?? 0);
-        const dx = Number(edgeB.x || 0) - ax;
-        const dz = Number(edgeB.z ?? edgeB.y ?? 0) - az;
-        const lengthSq = dx * dx + dz * dz;
-        if (lengthSq <= 0.0000001) return;
-        const candidates = new Set();
-        for (let bucketZ = Math.floor((Math.min(az, az + dz) - 0.001) / gridSize); bucketZ <= Math.floor((Math.max(az, az + dz) + 0.001) / gridSize); bucketZ += 1) {
-          for (let bucketX = Math.floor((Math.min(ax, ax + dx) - 0.001) / gridSize); bucketX <= Math.floor((Math.max(ax, ax + dx) + 0.001) / gridSize); bucketX += 1) {
-            (conformingVertexBuckets.get(`${bucketX},${bucketZ}`) || []).forEach((point) => candidates.add(point));
-          }
-        }
-        const splits = [];
-        candidates.forEach((point) => {
-          if (point === edgeA || point === edgeB) return;
-          const px = Number(point.x || 0);
-          const pz = Number(point.z ?? point.y ?? 0);
-          const t = ((px - ax) * dx + (pz - az) * dz) / lengthSq;
-          if (t <= 0.00000001 || t >= 0.99999999) return;
-          const distance = Math.abs(dx * (pz - az) - dz * (px - ax)) / Math.sqrt(lengthSq);
-          if (distance > 0.001) return;
-          splits.push({ point, t });
-        });
-        splits.sort((a, b) => a.t - b.t).forEach(({ point }) => {
-          const previous = polygon[polygon.length - 1];
-          if (conformingVertexKey(previous) === conformingVertexKey(point)) return;
-          polygon.push(point);
-          resolvedTJunctions += 1;
-        });
-      });
-      const triangles = triangulateSplitTerrainTriangle(polygon, sourcePolygon)
-        .filter((triangle) => this.getRaceTerrainTriangleArea(triangle) > 0.000001);
-      triangles.forEach((points, triangleIndex) => {
-        const seamPoints = points.filter((point) => point?.trackSeam === true);
-        if (seamPoints.length === 2) {
-          const candidate = points.find((point) => point?.trackSeam !== true);
-          const [edgeA, edgeB] = seamPoints;
-          const ax = Number(edgeA.x || 0);
-          const az = Number(edgeA.z ?? edgeA.y ?? 0);
-          const dx = Number(edgeB.x || 0) - ax;
-          const dz = Number(edgeB.z ?? edgeB.y ?? 0) - az;
-          const lengthSq = dx * dx + dz * dz;
-          if (candidate && lengthSq > 0.000001) {
-            const t = (
-              (Number(candidate.x || 0) - ax) * dx
-                + (Number(candidate.z ?? candidate.y ?? 0) - az) * dz
-            ) / lengthSq;
-            const edgeLength = Math.sqrt(lengthSq);
-            const extensionDistanceM = (t < 0 ? -t : t > 1 ? t - 1 : 0) * edgeLength;
-            const seamX = ax + dx * t;
-            const seamZ = az + dz * t;
-            const seamDistanceM = Math.hypot(
-              Number(candidate.x || 0) - seamX,
-              Number(candidate.z ?? candidate.y ?? 0) - seamZ
-            );
-            if (seamDistanceM <= 0.05 && extensionDistanceM <= 10) {
-              candidate.trackSeam = true;
-              candidate.exactRoadSeam = true;
-              candidate.roadSeamElevation = Number(candidate.elevation || 0);
-              promotedBoundaryVertices += 1;
-            }
-          }
-        }
-        // Boolean clipping already excludes the road. A non-degenerate
-        // triangle with three seam vertices can fill the outside of a bend;
-        // dropping it would leave a hole between curved road edges.
-        conformingCells.push({
-          ...cell,
-          key: `${cell.key}:conform:${triangleIndex}`,
-          points
-        });
-      });
-    });
-    const seamAnchorBucketSizeM = 10;
-    const seamAnchorBuckets = new Map();
-    const uniqueTerrainPoints = new Set();
-    conformingCells.forEach((cell) => (cell.points || []).forEach((point) => uniqueTerrainPoints.add(point)));
-    uniqueTerrainPoints.forEach((point) => {
-      if (point?.exactRoadSeam !== true || !Number.isFinite(Number(point.roadSeamDistance))) return;
-      const bucketKey = `${Math.floor(Number(point.x || 0) / seamAnchorBucketSizeM)},${Math.floor(Number(point.z ?? point.y ?? 0) / seamAnchorBucketSizeM)}`;
-      const bucket = seamAnchorBuckets.get(bucketKey) || [];
-      bucket.push(point);
-      seamAnchorBuckets.set(bucketKey, bucket);
-    });
-    let reanchoredTransitionVertices = 0;
-    uniqueTerrainPoints.forEach((point) => {
-      if (point?.exactRoadSeam === true || point?.terrainRegion !== 'transition') return;
-      const pointX = Number(point.x || 0);
-      const pointZ = Number(point.z ?? point.y ?? 0);
-      const bucketX = Math.floor(pointX / seamAnchorBucketSizeM);
-      const bucketZ = Math.floor(pointZ / seamAnchorBucketSizeM);
-      const pointSide = Math.sign(Number(point.lateralOffset || 0));
-      let nearest = null;
-      for (let zOffset = -2; zOffset <= 2; zOffset += 1) {
-        for (let xOffset = -2; xOffset <= 2; xOffset += 1) {
-          (seamAnchorBuckets.get(`${bucketX + xOffset},${bucketZ + zOffset}`) || []).forEach((anchor) => {
-            const anchorSide = Math.sign(Number(anchor.lateralOffset || 0));
-            if (pointSide && anchorSide && pointSide !== anchorSide) return;
-            const distance = Math.hypot(
-              pointX - Number(anchor.x || 0),
-              pointZ - Number(anchor.z ?? anchor.y ?? 0)
-            );
-            if (distance > 12 || (nearest && distance >= nearest.distance)) return;
-            nearest = { anchor, distance };
-          });
-        }
-      }
-      if (!nearest) return;
-      const anchorDistance = Number(nearest.anchor.roadSeamDistance);
-      const deck = surfaceModel.sampleDeckAtDistance(anchorDistance, {
-        runtimeType,
-        routeLength,
-        allowVisualExtension: runtimeType !== 'circuit'
-      });
-      const right = deck.right || this.getRaceRightVector(Number(deck.yaw || 0));
-      const lateral = (
-        (pointX - Number(deck.x || 0)) * Number(right.x || 0)
-        + (pointZ - Number(deck.z || 0)) * Number(right.z || 0)
-      );
-      const track = surfaceModel.sampleTrack(anchorDistance, lateral, {
-        deckSample: deck,
-        runtimeType,
-        routeLength,
-        allowVisualExtension: runtimeType !== 'circuit'
-      });
-      if (track.region !== 'transition') return;
-      point.elevation = Number(track.elevation || 0);
-      point.roadDistance = anchorDistance;
-      point.lateralOffset = lateral;
-      point.hardCorridorEnd = Number(track.metrics?.hardHalfWidth || point.hardCorridorEnd || 0);
-      point.terrainBlend = Number(track.blend || point.terrainBlend || 0);
-      point.transitionSeamAnchored = true;
-      reanchoredTransitionVertices += 1;
-    });
-    const transitionAdjacency = new Map();
-    cells.forEach((cell) => {
-      const points = cell.points || [];
-      if (points.length !== 3) return;
-      [
-        [points[0], points[1]],
-        [points[1], points[2]],
-        [points[2], points[0]]
-      ].forEach(([a, b]) => {
-        if (!a || !b) return;
-        const aNeighbors = transitionAdjacency.get(a) || new Set();
-        const bNeighbors = transitionAdjacency.get(b) || new Set();
-        aNeighbors.add(b);
-        bNeighbors.add(a);
-        transitionAdjacency.set(a, aNeighbors);
-        transitionAdjacency.set(b, bNeighbors);
-      });
-    });
-    const transitionEdges = [];
-    const transitionEdgeKeys = new Set();
-    const transitionVertexId = new Map();
-    let nextTransitionVertexId = 0;
-    const getTransitionVertexId = (point) => {
-      if (!transitionVertexId.has(point)) {
-        transitionVertexId.set(point, nextTransitionVertexId);
-        nextTransitionVertexId += 1;
-      }
-      return transitionVertexId.get(point);
-    };
-    transitionAdjacency.forEach((neighbors, point) => {
-      neighbors.forEach((neighbor) => {
-        const aId = getTransitionVertexId(point);
-        const bId = getTransitionVertexId(neighbor);
-        const key = aId < bId ? `${aId}:${bId}` : `${bId}:${aId}`;
-        if (transitionEdgeKeys.has(key)) return;
-        transitionEdgeKeys.add(key);
-        transitionEdges.push([point, neighbor]);
-      });
-    });
-    const slopeLimitedPoints = new Set();
-    for (let pass = 0; pass < 8; pass += 1) {
-      const proposals = new Map();
-      const addProposal = (point, elevation) => {
-        const values = proposals.get(point) || [];
-        values.push(elevation);
-        proposals.set(point, values);
-      };
-      transitionEdges.forEach(([a, b]) => {
-        const horizontalM = Math.hypot(
-          Number(b.x || 0) - Number(a.x || 0),
-          Number(b.z ?? b.y ?? 0) - Number(a.z ?? a.y ?? 0)
-        );
-        if (horizontalM <= 0.0001) return;
-        const aElevation = Number(a.elevation || 0);
-        const bElevation = Number(b.elevation || 0);
-        const maximumDelta = horizontalM * 0.75 / RACE_THREE_ELEVATION_M;
-        const delta = bElevation - aElevation;
-        if (Math.abs(delta) <= maximumDelta + 0.000001) return;
-        const aMovable = a?.exactRoadSeam !== true && a?.terrainRegion === 'transition';
-        const bMovable = b?.exactRoadSeam !== true && b?.terrainRegion === 'transition';
-        if (!aMovable && !bMovable) return;
-        const sign = delta < 0 ? -1 : 1;
-        if (aMovable && bMovable) {
-          const midpoint = (aElevation + bElevation) * 0.5;
-          addProposal(a, midpoint - sign * maximumDelta * 0.5);
-          addProposal(b, midpoint + sign * maximumDelta * 0.5);
-        } else if (aMovable) {
-          addProposal(a, bElevation - sign * maximumDelta);
-        } else {
-          addProposal(b, aElevation + sign * maximumDelta);
-        }
-      });
-      if (!proposals.size) break;
-      proposals.forEach((values, point) => {
-        point.elevation = values.reduce((sum, value) => sum + value, 0) / values.length;
-        point.transitionSeamSmoothed = true;
-        slopeLimitedPoints.add(point);
-      });
-    }
-    for (let pass = 0; pass < 6; pass += 1) {
-      const proposals = new Map();
-      cells.forEach((cell) => {
-        const points = cell.points || [];
-        if (points.length !== 3 || !points.some((point) => point?.terrainRegion === 'transition')) return;
-        points.forEach((opposite, oppositeIndex) => {
-          if (opposite?.exactRoadSeam === true || opposite?.terrainRegion !== 'transition') return;
-          const edgeA = points[(oppositeIndex + 1) % 3];
-          const edgeB = points[(oppositeIndex + 2) % 3];
-          const ax = Number(edgeA.x || 0);
-          const az = Number(edgeA.z ?? edgeA.y ?? 0);
-          const dx = Number(edgeB.x || 0) - ax;
-          const dz = Number(edgeB.z ?? edgeB.y ?? 0) - az;
-          const lengthSq = dx * dx + dz * dz;
-          if (lengthSq <= 0.000001) return;
-          const t = (
-            (Number(opposite.x || 0) - ax) * dx
-              + (Number(opposite.z ?? opposite.y ?? 0) - az) * dz
-          ) / lengthSq;
-          const edgeLength = Math.sqrt(lengthSq);
-          const extensionDistanceM = (t < 0 ? -t : t > 1 ? t - 1 : 0) * edgeLength;
-          if (extensionDistanceM > 10) return;
-          const chordX = ax + dx * t;
-          const chordZ = az + dz * t;
-          const altitudeM = Math.hypot(
-            Number(opposite.x || 0) - chordX,
-            Number(opposite.z ?? opposite.y ?? 0) - chordZ
-          );
-          if (altitudeM > 1) return;
-          const chordElevation = Number(edgeA.elevation || 0)
-            + (Number(edgeB.elevation || 0) - Number(edgeA.elevation || 0)) * t;
-          const maximumDelta = altitudeM * 0.75 / RACE_THREE_ELEVATION_M;
-          const target = clamp(
-            Number(opposite.elevation || 0),
-            chordElevation - maximumDelta,
-            chordElevation + maximumDelta
-          );
-          if (Math.abs(target - Number(opposite.elevation || 0)) <= 0.000001) return;
-          const values = proposals.get(opposite) || [];
-          values.push(target);
-          proposals.set(opposite, values);
-        });
-      });
-      if (!proposals.size) break;
-      proposals.forEach((values, point) => {
-        point.elevation = values.reduce((sum, value) => sum + value, 0) / values.length;
-        point.transitionSeamSmoothed = true;
-        slopeLimitedPoints.add(point);
-      });
-    }
-    const smoothedTransitionVertices = slopeLimitedPoints.size;
-    const seamEdgeMap = new Map();
-    const seamVertexKey = (point = {}) => [
-      Math.round(Number(point.x || 0) * 1000),
-      Math.round(Number(point.elevation || 0) * 1000),
-      Math.round(Number(point.z ?? point.y ?? 0) * 1000)
-    ].join(',');
-    conformingCells.forEach((cell) => {
-      const points = cell.points || [];
-      if (points.length !== 3) return;
-      points.forEach((point, index) => {
-        const next = points[(index + 1) % points.length];
-        const a = seamVertexKey(point);
-        const b = seamVertexKey(next);
-        if (a === b) return;
-        const key = a < b ? `${a}|${b}` : `${b}|${a}`;
-        const entry = seamEdgeMap.get(key);
-        if (entry) entry.count += 1;
-        else seamEdgeMap.set(key, { count: 1, points: [point, next] });
-      });
-    });
-    const correctedPoints = new Set();
-    const correctJaggedSeamPoint = (point = {}) => {
-      const projection = this.getRaceRouteProjectionForWorldPoint(point);
-      if (!projection?.segment || !Number.isFinite(Number(projection.distance))) {
-        unmatchedExactSeamVertices += 1;
-        return false;
-      }
-      const section = this.getRaceSurfaceSectionAtDistance(Number(projection.distance || 0), {
-        routeLength,
-        runtimeType,
-        allowVisualExtension: runtimeType !== 'circuit'
-      });
-      const side = Number(projection.lateral || 0) < 0 ? 'left' : 'right';
-      const edge = this.isRaceShoulderVisible()
-        ? (side === 'left' ? section?.shoulderLeft : section?.shoulderRight)
-        : this.isRaceMarginVisible()
-          ? (side === 'left' ? section?.marginLeft : section?.marginRight)
-          : (side === 'left' ? section?.left : section?.right);
-      if (!edge || !Number.isFinite(Number(edge.elevation))) {
-        unmatchedExactSeamVertices += 1;
-        return false;
-      }
-      point.elevation = Number(edge.elevation);
-      point.roadSeamElevation = Number(edge.elevation);
-      point.roadSeamDistance = Number(projection.distance || 0);
-      point.trackSeam = true;
-      point.exactRoadSeam = true;
-      if (!correctedPoints.has(point)) {
-        correctedPoints.add(point);
-        correctedExactSeamVertices += 1;
-      }
-      return true;
-    };
-    seamEdgeMap.forEach((entry) => {
-      const points = entry.points || [];
-      if (entry.count !== 1 || points.length !== 2 || !points.every((point) => point?.exactRoadSeam === true)) return;
-      const horizontalM = Math.hypot(
-        Number(points[1].x || 0) - Number(points[0].x || 0),
-        Number(points[1].z ?? points[1].y ?? 0) - Number(points[0].z ?? points[0].y ?? 0)
-      );
-      const verticalM = Math.abs(Number(points[1].elevation || 0) - Number(points[0].elevation || 0)) * RACE_THREE_ELEVATION_M;
-      if (horizontalM >= 0.01 || verticalM <= 0.02) return;
-      const corrected = points.map(correctJaggedSeamPoint);
-      if (corrected.every(Boolean)) correctedJaggedSeamEdges += 1;
-    });
-    // Fan centers are derived geometry, not independent smoothing samples.
-    // Resolve them only after the original terrain vertices have settled.
-    uniqueTerrainPoints.forEach((point) => {
-      if (!point.terrainFanCorners) return;
-      point.elevation = point.terrainFanCorners.reduce((sum, corner) => sum + corner.elevation, 0) / point.terrainFanCorners.length;
-      delete point.terrainFanCorners;
-    });
-    // Preserve the array identity without passing every terrain cell as an argument.
-    cells.length = 0;
-    for (const cell of conformingCells) cells.push(cell);
-    cells.constrainedRoadFirst = true;
-    cells.adaptiveTerrainGrid = false;
-    cells.uniformTerrainGrid = true;
-    cells.adaptiveTerrainNearSizeM = gridSize;
-    cells.adaptiveTerrainFarSizeM = gridSize;
-    cells.adaptiveTerrainBounds = { minGridX, maxGridX, minGridZ, maxGridZ };
-    cells.conformingOuterJoin = false;
-    cells.adaptiveTerrainStats = {
-      refinedCoarseCells: 0,
-      emittedSubcells: emittedCells,
-      rejectedByRoad,
-      resolvedTJunctions,
-      omittedBoundaryOnlyTriangles,
-      promotedBoundaryVertices,
-      reanchoredTransitionVertices,
-      smoothedTransitionVertices,
-      correctedExactSeamVertices,
-      correctedJaggedSeamEdges,
-      unmatchedExactSeamVertices
-    };
-    return cells;
+    result.terrainCells.adaptiveTerrainStats = result.stats;
+    return result.terrainCells;
   }
 
   conformRaceCorridorTerrainToHeightmap(corridorCells = [], explicitCells = []) {
@@ -12731,6 +12047,7 @@ export default class RaceEditor {
         terrainChunks: corridorTerrain.terrainChunks || [],
         terrainGenerationStats: {
           ...(corridorTerrain.stats || {}),
+          ...(corridorTerrain.terrainCells?.adaptiveTerrainStats || {}),
           terrainTopology,
           explicitHeightmapCells: importedHeightmap ? corridorTerrain.terrainCells.length : 0,
           corridorJoinCells: 0,
@@ -12754,7 +12071,7 @@ export default class RaceEditor {
       bake.surfaceSampler = buildSurfaceSampler
         ? packRaceCanonicalSurfaceMesh(bake.mesh, {
             elevationScaleM: RACE_THREE_ELEVATION_M,
-            bucketSizeM: Math.max(10, Math.min(24, effectiveTerrainSize * 0.2))
+            bucketSizeM: bake.terrainGenerationStats?.algorithm ? 12 : Math.max(10, Math.min(24, effectiveTerrainSize * 0.2))
           })
         : null;
       bake.validation = validate && this.playtestSession?.carEditorPreview !== true
@@ -12935,7 +12252,7 @@ export default class RaceEditor {
         surfaceBake: bake.surfaceBake,
         runtimeType,
         elevationScaleM: RACE_THREE_ELEVATION_M,
-        bucketSizeM: Math.max(10, Math.min(24, effectiveTerrainSize * 0.2))
+        bucketSizeM: bake.terrainGenerationStats?.algorithm ? 12 : Math.max(10, Math.min(24, effectiveTerrainSize * 0.2))
       })
       : null;
     bake.validation = validate ? this.validateRaceSurfaceGeometry(bake) : null;
@@ -14256,6 +13573,8 @@ export default class RaceEditor {
         this.selectedRace.codriver={...this.selectedRace.codriver,enabled:mode!=='Off',spoken:mode==='Voice'||mode==='Both',icons:mode==='Icons'||mode==='Both'};
       }
     }
+    if (typeof savedDriving?.raceLaunchControl === 'boolean') this.raceInput.launchControlEnabled = savedDriving.raceLaunchControl;
+    if(DIGITAL_THROTTLE_MODES.includes(savedDriving?.raceDigitalThrottle))this.raceInput.digitalThrottleMode=savedDriving.raceDigitalThrottle;
     const preferredTransmission=savedDriving?.raceTransmission;
     const transmissionType = preferredTransmission&&car.transmissions?.[preferredTransmission]?preferredTransmission:this.getRaceTransmissionType(car);
     const tuning = this.getRaceCarTuning(car, { transmissionType });
@@ -14386,6 +13705,10 @@ export default class RaceEditor {
       handbrakeSlipMs: 0,
       absEnabled: startAbsEnabled,
       tractionControlEnabled: startTractionControlEnabled,
+      launchControlEnabled: this.raceInput.launchControlEnabled === true,
+      digitalThrottleMode:this.raceInput.digitalThrottleMode||'off',
+      drivingIntentVisible:this.raceInput.drivingIntentVisible===true,
+      drivingIntentStyle:this.raceInput.drivingIntentStyle||'rally',
       telemetryVisible: this.raceInput.telemetryVisible === true,
       physicsSurfaceVisible: this.raceInput.physicsSurfaceVisible === true,
       physicsPerformanceVisible: this.raceInput.physicsPerformanceVisible === true,
@@ -14454,6 +13777,10 @@ export default class RaceEditor {
       transmissionMode: transmissionType,
       absEnabled: startAbsEnabled,
       tractionControlEnabled: startTractionControlEnabled,
+      launchControlEnabled: this.raceInput.launchControlEnabled === true,
+      digitalThrottleMode:this.raceInput.digitalThrottleMode||'off',
+      drivingIntentVisible:this.raceInput.drivingIntentVisible===true,
+      drivingIntentStyle:this.raceInput.drivingIntentStyle||'rally',
       telemetryVisible: this.raceInput.telemetryVisible === true,
       debugHudVisible: this.raceInput.debugHudVisible === true,
       physicsSurfaceVisible: this.raceInput.physicsSurfaceVisible === true,
@@ -14556,7 +13883,7 @@ export default class RaceEditor {
       const ref=session.raceDocumentName||session.raceId;
       const finish=resolveRaceNodeFinish(this.selectedRace,session.networkProgress?.finishNodeId);
       const mission=mechanicalMissionVariables(session.mechanical,this.selectedRace?.mechanicalMission,this.game.items?.progress?.bags?.items);
-      await setMenuProgress(this.game,{...(ref?{[raceCompletionKey(ref)]:mission.success,lastCompletedRace:ref,
+      await setMenuProgress(this.game,{...raceDriftScoreVariables(this.selectedRace,session.driftScore,this.game.menuProgress),...(ref?{[raceCompletionKey(ref)]:mission.success,lastCompletedRace:ref,
         garageReturnCount:Number(this.game.menuProgress?.garageReturnCount||0)+1,garageDialogueEvent:''}:{}),...finish.variables,...mission.variables});
       session.campaignProgressSaved=true;
     })().finally(()=>{session.campaignSaveTask=null;});
@@ -15102,7 +14429,8 @@ export default class RaceEditor {
       Math.round(Number(segment.roadWidthM || segment.roadWidth || 0) * 100),
       Math.round(Number(segment.bumpiness || 0) * 1000),
       segment.snowCondition || '',
-      segment.edgeTileId || ''
+      segment.edgeTileId || '',
+      JSON.stringify(segment.shoulderTexture || {})
     ].join(':')).join('|');
     const signature = [
       race.id || '',
@@ -15142,11 +14470,13 @@ export default class RaceEditor {
       Math.round(Number(segment.roadWidthM || segment.roadWidth || road.width || 0) * 100),
       Math.round(this.getRaceRoadHalfWidthWorld(segment) * 100),
       Math.round(this.getRaceBoundaryWidthWorld(segment) * 100),
+      Math.round(this.getRaceShoulderWidthWorld(segment) * 100),
       Math.round(this.getRaceRoadTerrainBlendWidthWorld(segment) * 100),
       Math.round(Number(segment.banking || segment.bankingDegrees || 0) * 100),
       segment.surface || ''
     ].join(':')).join('|');
     const signature = [
+      ADAPTIVE_TERRAIN_REVISION,
       this.getRacePathSampleCacheSignature(step),
       String(runtimeType || ''),
       allowVisualExtension ? 1 : 0,
@@ -16927,6 +16257,7 @@ export default class RaceEditor {
     const { near, far } = quad || {};
     if (!near?.shoulderLeft || !near?.shoulderRight || !far?.shoulderLeft || !far?.shoulderRight) return [];
     const segment = near?.center?.segment || currentSegment;
+    if (!this.isRaceShoulderVisible(segment)) return [];
     const groundPalette = this.getRaceGroundPaletteForSegment(segment, near?.center);
     const nearLeftInner = this.isRaceMarginVisible() ? (near.marginLeft || near.left) : near.left;
     const farLeftInner = this.isRaceMarginVisible() ? (far.marginLeft || far.left) : far.left;
@@ -17511,6 +16842,44 @@ export default class RaceEditor {
     return sun==null?fx:{...fx,enabled:true,sunEnabled:true,sunIntensity:sun};
   }
 
+  cycleRaceDigitalThrottle(delta=1) {
+    const index=Math.max(0,DIGITAL_THROTTLE_MODES.indexOf(this.raceInput.digitalThrottleMode||'off'));
+    this.raceInput.digitalThrottleMode=DIGITAL_THROTTLE_MODES[(index+(delta<0?-1:1)+3)%3];
+    if(this.playtestSession)this.playtestSession.digitalThrottle={output:0};
+    this.raceInput.throttleAxis=0;
+    void this.saveDrivingPreference({raceDigitalThrottle:this.raceInput.digitalThrottleMode});
+  }
+
+  getRaceRuntimeRoadTextures() {
+    return debugRoadTextureSettings(this.selectedRace, this.playtestSession?.debugRoad);
+  }
+
+  adjustRaceDebugRoad(key, delta = 1) {
+    const session = this.playtestSession;
+    if (!session) return;
+    const debug = session.debugRoad ||= {};
+    if (key === 'reset') session.debugRoad = {};
+    else if (key === 'decals') debug.hideDecals = !(debug.hideDecals ?? Boolean(debug.surface));
+    else {
+      const choices = key === 'surface' ? [null, ...DEBUG_ROAD_SURFACES.map(s=>s.id)]
+        : [null, 0, 6.35, 12.7, 25.4, 50.8, 76.2, 152.4, 304.8];
+      const index = Math.max(0, choices.indexOf(debug[key] ?? null));
+      debug[key] = choices[(index + (delta < 0 ? -1 : 1) + choices.length) % choices.length];
+    }
+    session.trackState?.setDebugRoad(session.debugRoad);
+    this.vehicleDynamicsAuthority?.workerBridge?.client.submitDebugRoad(session.debugRoad);
+    this.raceStaticTrackSurfaceMeshCache = null;
+    this.invalidateRaceTrackStateVisualPresentation();
+    const artRef = this.getRaceRuntimeRoadTextures().overrideRoad?.artRef;
+    if (artRef) void this.hydrateRaceArt(artRef).catch(error=>{this.status='Road artwork: '+error.message;});
+    this.status = 'Debug road updated (this race only)';
+  }
+
+  areRaceDebugDecalsHidden() {
+    const debug = this.playtestSession?.debugRoad;
+    return debug?.hideDecals ?? Boolean(debug?.surface);
+  }
+
   adjustRaceDebugEnvironment(key,delta=1) {
     if(!this.playtestSession)return;
     const debug=this.playtestSession.debugEnvironment ||= {};
@@ -17532,6 +16901,7 @@ export default class RaceEditor {
     const frame = this.raceGeometryReadCache;
     const cached = frame?.weatherState;
     if (cached && cached.weather === race?.weather
+      && cached.snowDepthMm === race?.trackState?.surfaceProfiles?.snow?.snowDepthMm
       && cached.intensity === race?.weatherIntensity
       && cached.weatherRamp === race?.weatherRamp
       && cached.visibility === race?.weatherVisibilityM
@@ -17572,7 +16942,11 @@ export default class RaceEditor {
       ? 0
       : debug?.weather || rampActive ? 1 : clamp(elapsedSeconds / Math.max(1, Number(preset.buildupSeconds) || 1), 0, 1);
     const effectiveIntensity = clamp(targetIntensity * buildup, 0, 1);
-    const snowDepthInches = preset.id === 'snow' ? effectiveIntensity * 6 : 0;
+    // Explicit surface depth is independent of the visual storm intensity.
+    const authoredSnowMm = race?.trackState?.surfaceProfiles?.snow?.snowDepthMm;
+    const snowDepthInches = preset.id === 'snow'
+      ? authoredSnowMm != null ? Math.max(0, Number(authoredSnowMm) || 0) / 25.4 : effectiveIntensity * 6
+      : 0;
     const visibility = this.getRaceWeatherVisibilityProfile(preset.id, visualIntensity);
     if(!debug?.autoVisibility&&!debug?.weather&&debug?.weatherIntensity==null&&Number(race?.weatherVisibilityM)>0)visibility.visibilityDistanceM=clamp(Number(race.weatherVisibilityM),25,10000);
     const result = {
@@ -17587,6 +16961,7 @@ export default class RaceEditor {
       ...visibility
     };
     if (frame) frame.weatherState = {
+      snowDepthMm: sourceRace?.trackState?.surfaceProfiles?.snow?.snowDepthMm,
       weather: sourceRace?.weather, intensity: sourceRace?.weatherIntensity, weatherRamp: sourceRace?.weatherRamp,
       visibility: sourceRace?.weatherVisibilityM, trigger: session?.triggerWeather,
       elapsedMs: session?.elapsedMs, debugWeather: debug?.weather,
@@ -17606,6 +16981,7 @@ export default class RaceEditor {
       : 0;
     if (String(surfaceId || '').toLowerCase() !== 'snow' && segment?.surface !== 'snow') return weatherDepth;
     const authoredDepth = {
+      fresh: 1,
       ice: 0.15,
       dusting: 0.5,
       'three-inch': 3,
@@ -18364,6 +17740,7 @@ export default class RaceEditor {
     const torquePoints = tuning.engineCurve?.torquePoints || [];
     return [
       tuning.transmissionType || '',
+      tuning.cvt ? JSON.stringify(tuning.cvt) : '',
       tuning.drivetrain || '',
       Math.round(Number(tuning.powerHp || 0) * 10),
       Math.round(Number(tuning.torqueLbFt || 0) * 10),
@@ -18625,6 +18002,11 @@ export default class RaceEditor {
       return target[key];
     };
     let value = 0;
+    if (path.startsWith('cvt-')) {
+      const key=path.slice(4), cvt=transmission.cvt || tuning.cvt;
+      return cvt && this.setCarTuneNumericValue(path,Number(cvt[key])+delta*(key.endsWith('Rpm')?100:.05));
+    }
+    if ((transmission.cvt || tuning.cvt) && path.startsWith('gearRatio-')) return;
     if (path === 'tuning-tab-prev' || path === 'tuning-tab-next') {
       const tabs = this.getRaceTuningTabs(car).map((tab) => tab.id);
       const index = Math.max(0, tabs.indexOf(this.preRaceTuningTab));
@@ -18754,7 +18136,7 @@ export default class RaceEditor {
       : (car?.tuning || {});
     const selectedTransmissionType = transmissionType || this.getRaceTransmissionType(car);
     const transmission = car?.transmissions?.[selectedTransmissionType] || {};
-    let merged = { ...tuning, ...transmission };
+    let merged = normalizeCvtTuning(normalizeElectricTuning({ ...tuning, ...transmission }));
     // Saved built-in car documents can predate the authoritative SI profile.
     // Rehydrate only the physical profile by canonical chassis identity while
     // preserving every authored tuning, setup, transmission, and art value.
@@ -18764,8 +18146,8 @@ export default class RaceEditor {
       || canonicalPhysicalProfile;
     ({tuning:merged,physical:physicalVehicleProfile}=resolveChassisMass(merged,physicalVehicleProfile));
     const dimensions = this.getRaceCarDimensions(car);
-    const idleRpm = Math.max(500, Number(merged.idleRpm) || 850);
-    const redlineRpm = Math.max(3000, Number(merged.redlineRpm) || 6100);
+    const idleRpm = merged.powertrainType === 'electric' ? 0 : Math.max(500, Number(merged.idleRpm) || 850);
+    const redlineRpm = merged.powertrainType === 'electric' ? merged.electricPowertrain.maxMotorRpm : Math.max(3000, Number(merged.redlineRpm) || 6100);
     const revLimitRpm = Math.max(redlineRpm, Number(merged.revLimitRpm) || 6300);
     const stockTarget = RACE_STOCK_PERFORMANCE_TARGETS[car?.id] || null;
     const closeToStock = stockTarget
@@ -18778,18 +18160,20 @@ export default class RaceEditor {
       : Number(merged.accelerationCalibration);
     return {
       ...(tuning.garageEngineCurve?{engineCurve:tuning.engineCurve}:{}),
+      ...(merged.powertrainType === 'electric' ? { powertrainType: 'electric', electricPowertrain: { ...merged.electricPowertrain } } : {}),
+      ...(merged.cvt && merged.powertrainType !== 'electric' ? {cvt:{...merged.cvt}} : {}),
       physicalVehicleProfile,
       physics: merged.physics || tuning.physics || {},
       bodyShapePreset: merged.physics?.bodyShapePreset || tuning.physics?.bodyShapePreset || 'car',
       bodyProfile: resolveVehicleBodyProfile({ ...merged, physics: merged.physics || tuning.physics }),
       underbodyProtection: clamp(Number(merged.underbodyProtection)||0,0,.85),
       drivetrain: merged.drivetrain || 'awd',
-      transmissionType: selectedTransmissionType,
+      transmissionType: merged.powertrainType === 'electric' ? 'automatic' : selectedTransmissionType,
       shiftMode: merged.shiftMode || selectedTransmissionType || 'manual',
-      powerHp: Math.max(80, Number(merged.powerHp) || 271),
-      torqueLbFt: Math.max(80, Number(merged.torqueLbFt) || 258),
-      engineDisplacementL: Math.max(0.5, Number(merged.engineDisplacementL) || 2.4),
-      aspiration: merged.aspiration || 'Turbocharged',
+      powerHp: merged.powertrainType === 'electric' ? merged.powerHp : Math.max(80, Number(merged.powerHp) || 271),
+      torqueLbFt: merged.powertrainType === 'electric' ? merged.torqueLbFt : Math.max(80, Number(merged.torqueLbFt) || 258),
+      engineDisplacementL: merged.powertrainType === 'electric' ? 0 : Math.max(0.5, Number(merged.engineDisplacementL) || 2.4),
+      aspiration: merged.powertrainType === 'electric' ? 'Electric' : merged.aspiration || 'Turbocharged',
       weightKg: Math.max(450, Number(merged.weightKg) || 1495),
       frontWeightDistribution: clamp(Number(merged.frontWeightDistribution) || 0.54, 0.35, 0.72),
       tireGrip: Math.max(0.2, Number(merged.tireGrip) || 1),
@@ -18894,6 +18278,14 @@ export default class RaceEditor {
   updateRaceEngineAudio({ tuning, throttle = 0, load = 0 } = {}) {
     const session = this.playtestSession;
     if (!session) return;
+    // No inherited combustion idle/rev loop for an electric car.
+    if (tuning?.powertrainType === 'electric') {
+      this.game?.audio?.setVehicleSound?.(false);
+      this.game?.audio?.setEngineRev?.(false);
+      if (session.activeEngineSoundId) this.game?.stopSfxById?.(session.activeEngineSoundId, { key: 'race-engine' });
+      session.activeEngineSoundId = null;
+      return;
+    }
     const audioReady = session.running === true && session.startupFramePending !== true && session.mechanical?.engineRunning !== false;
     if(session.engineSoundId&&this.game?.audio?.engineRevActive)this.game.audio.setEngineRev(false);
     this.game?.audio?.setVehicleSound?.(audioReady, {
@@ -19900,8 +19292,10 @@ export default class RaceEditor {
     const segment = surface.segment || surface.projection?.segment || physicalWheel?.surface?.segment || null;
     const roadContact = region === 'road' || region === 'margin';
     if (roadContact) {
+      const debugSurface = region === 'road' && this.playtestSession?.debugRoad?.surface
+        ? this.playtestSession.trackState?.sample?.(worldPoint)?.effectiveSurfaceId || this.playtestSession.debugRoad.surface : null;
       const surfaceId = this.getRaceEffectiveSurfaceId(
-        surface.surfaceId
+        debugSurface || surface.surfaceId
           || surface.materialId
           || physicalWheel?.surfaceId
           || physicalWheel?.surface?.surfaceId
@@ -19914,7 +19308,7 @@ export default class RaceEditor {
       return {
         region,
         surfaceId,
-        materialId: surface.materialId || surfaceId,
+        materialId: debugSurface || surface.materialId || surfaceId,
         effectSlotId: this.getRaceTireFxMaterialSlotId(surfaceId, region),
         sampledColor: this.getRaceTireFxTextureSampleColor(worldPoint, artRef, palette.roadA, {
           terrainTexture: false
@@ -20041,7 +19435,12 @@ export default class RaceEditor {
       const contactWheelSpin = Number(wheelSpinByWheel?.[wheelId] ?? wheelSpin) || 0;
       const wheelSpinSlip = contactWheelSpin > 0.72 ? contactWheelSpin * contact : 0;
       const effectiveSlip = Math.max(slip, brakeLock, handbrakeRearSlip, wheelSpinSlip);
-      const roadDustKick = looseSurface ? clamp((speed - 3.2) / 20, 0, 1) * (0.34 + Math.min(0.9, slip) * 0.42) : 0;
+      // Rolling through powder displaces snow even without wheelspin. The
+      // generic dust threshold otherwise suppresses plumes below ~14 mph.
+      const snowPowder = visualMaterial.effectSlotId === 'snowDust' && surfaceId !== 'ice';
+      const roadDustKick = snowPowder
+        ? clamp((speed - 0.5) / 8, 0, 1) * (0.65 + Math.min(0.9, slip) * 0.25)
+        : looseSurface ? clamp((speed - 3.2) / 20, 0, 1) * (0.34 + Math.min(0.9, slip) * 0.42) : 0;
       if (!looseSurface && effectiveSlip < 0.24) return;
       if (looseSurface && Math.max(effectiveSlip, roadDustKick) < 0.05) return;
       const slotId = visualMaterial.effectSlotId || this.getRaceTireFxSlotForWheel({
@@ -20073,7 +19472,7 @@ export default class RaceEditor {
         ? clamp(speed / 34, 0.25, 1.1)
         : slotId === 'skidSmoke'
           ? Math.max(clamp(speed / 22, 0.35, 1.45), clamp(contactWheelSpin,0,1.8))
-          : clamp(speed / 16, 0.35, 2.6);
+          : snowPowder ? clamp(speed / 8, 0.55, 2.6) : clamp(speed / 16, 0.35, 2.6);
       const accumulatorKey = `${slotId}:${wheelId}`;
       session.tireFxEmitAccumulators[accumulatorKey] = Number(session.tireFxEmitAccumulators[accumulatorKey] || 0)
         + slotIntensity * density * speedFactor * seconds * (slotId === 'asphaltSkid' ? 5 : 16);
@@ -20701,9 +20100,16 @@ export default class RaceEditor {
   }
 
   getRaceVisibleSteeringWheelRotationRad(steering = this.raceInput.steeringWheel, speedMps = this.playtestSession?.speedMps || 0) {
-    return this.getRaceSteeringWheelRotationForTireAngle(
-      this.getRacePhysicalTireAngleForSteering(steering, speedMps)
-    );
+    const session=this.playtestSession;
+    const actual=getAuthoritativeChassisState(session)?.steeringTelemetry?.resolvedCenterRackAngleRad;
+    const wheels=session?.vehicleRenderState?.wheels;
+    const rendered=Number.isFinite(wheels?.fl?.steeringAngleRad)&&Number.isFinite(wheels?.fr?.steeringAngleRad)
+      ? (wheels.fl.steeringAngleRad+wheels.fr.steeringAngleRad)*.5 : null;
+    // UI input is opposite the physics sign. Show the actual rack instead of
+    // the legacy speed-only estimate, which concealed corrective lock.
+    const physical=Number.isFinite(actual)?-actual:Number.isFinite(rendered)?-rendered
+      : this.getRacePhysicalTireAngleForSteering(steering,speedMps);
+    return this.getRaceSteeringWheelRotationForTireAngle(physical);
   }
 
   getRaceSteeringReturnRate(speedMps = 0) {
@@ -20740,7 +20146,7 @@ export default class RaceEditor {
     return from + Math.sign(to - from) * maxStep;
   }
 
-  updateRacePedalAxes(seconds = 0) {
+  updateRacePedalAxes(seconds = 0, {tuning = {}} = {}) {
     const dt = Math.max(0, Number(seconds) || 0);
     const throttleTarget = clamp(Number(this.raceInput.rawThrottleAxis || 0), 0, 1);
     const brakeTarget = clamp(Number(this.raceInput.rawBrakeAxis || 0), 0, 1);
@@ -20769,6 +20175,25 @@ export default class RaceEditor {
       RACE_PEDAL_INPUT.digitalBrakePressRate,
       RACE_PEDAL_INPUT.digitalBrakeReleaseRate
     ), 0, 1);
+    const session=this.playtestSession;
+    if(session){
+      const chassis=getAuthoritativeChassisState(session)||{};
+      const staging=Number(session.countdownRemainingMs||0)>1000;
+      session.digitalThrottle=advanceDigitalThrottle(session.digitalThrottle,{
+        mode:this.raceInput.digitalThrottleMode||'off',raw:throttleTarget,legacy:this.raceInput.throttleAxis,
+        analog:this.raceInput.analogThrottleActive===true,brake:brakeTarget,staging,
+        launchEnabled:session.launchControlEnabled===true,dt,tuning,
+        gear:Number(chassis.gear??session.gear??this.raceInput.gear??1)
+      });
+      this.raceInput.throttleAxis=session.digitalThrottle.output;
+      session.drivingIntent=observeDrivingIntent(session.drivingIntent,{
+        throttle:throttleTarget,brake:brakeTarget,handbrake:this.raceInput.handbrake?1:0,
+        steering:Number(this.raceInput.analogSteeringActive?this.raceInput.analogSteeringIntent:this.raceInput.binarySteer)||0,
+        longitudinalSpeed:Number(chassis.bodyLongitudinalSpeedMps??session.speedMps)||0,
+        lateralSpeed:Number(chassis.bodyLateralSpeedMps)||0,yawRate:Number(chassis.yawRateRadps)||0,
+        style:this.raceInput.drivingIntentStyle||'rally',dt,staging
+      });
+    }
     this.raceInput.throttle = this.raceInput.throttleAxis > RACE_PEDAL_INPUT.activeThreshold;
     this.raceInput.brake = this.raceInput.brakeAxis > RACE_PEDAL_INPUT.activeThreshold;
   }
@@ -20784,8 +20209,8 @@ export default class RaceEditor {
       && this.raceInput.activeBrakePointerId !== undefined;
     const digitalThrottle = heldThrottle || this.raceInput.keyboardThrottle;
     const digitalBrake = heldBrake || this.raceInput.keyboardBrake;
-    // The on-screen D-pad is a controller, not a held keyboard key. Feed its
-    // direction into the same single rack-response stage as a physical pad.
+    // Keep touch intent available to sampling; RaceSimulation identifies the
+    // active D-pad and applies the progressive digital response, not stick filtering.
     const touchSteering = this.raceInput.activeDpadPointerId != null;
     if (touchSteering) {
       this.raceInput.analogSteeringIntent = clamp(Number(this.raceInput.binarySteer || 0), -1, 1);
@@ -20941,6 +20366,7 @@ export default class RaceEditor {
   getRacePauseMenuRows() {
     if(this.playtestSession?.raceResults)return [
       ...(this.playtestSession.mechanicalMissionSuccess===false?[{id:'mission-failed',label:'Mechanical mission incomplete',value:'Salvage / condition requirement unmet',disabled:true}]:[]),
+      ...(this.selectedRace?.campaign?.scoring==='drift'?[{id:'race-result-drift',label:'Drift score',value:String(Math.floor(this.playtestSession.driftScore?.points||0)),disabled:true}]:[]),
       {id:'race-result-time',label:'Finish time',value:(Number(this.playtestSession.elapsedMs||0)/1000).toFixed(2)+' s',disabled:true},
       {id:'race-results-continue',label:'Continue',value:'',onClick:()=>this.finishPlaytest()}
     ];
@@ -20963,6 +20389,13 @@ export default class RaceEditor {
         {id:'race-debug-ai-remove',label:'Remove AI racer',value:'',disabled:!this.playtestSession?.aiRuntime?.length,onClick:()=>changeRaceDebugAi(this,-1)},
         {id:'race-debug-visibility',label:'Visibility (Auto)',value:this.raceInput.pauseMenuMode!=='debug-weather'?'':Number.isFinite(this.getRaceWeatherState().visibilityDistanceM)?Math.round(this.getRaceWeatherState().visibilityDistanceM)+' m':'Clear',onClick:()=>this.adjustRaceDebugEnvironment('visibilityDistanceM'),onAdjust:d=>this.adjustRaceDebugEnvironment('visibilityDistanceM',d)},
         {id:'race-debug-tires',label:'Swap tires',value:this.raceInput.pauseMenuMode==='debug-vehicle'?this.getSelectedCarTireLabel(this.getRaceSessionCar()||this.selectedCar):'',onClick:()=>this.selectRaceDebugTires().catch(error=>{this.status='Tire swap failed: '+error.message;this.game?.showSystemToast?.(this.status);})},
+        {id:'race-debug-input-pedal',label:'Digital throttle',value:this.raceInput.digitalThrottleMode||'off',onClick:()=>this.cycleRaceDigitalThrottle(),onAdjust:d=>this.cycleRaceDigitalThrottle(d)},
+        {id:'race-debug-input-intent',label:'Intent display',value:this.raceInput.drivingIntentVisible?'On':'Off',onClick:()=>{this.raceInput.drivingIntentVisible=!this.raceInput.drivingIntentVisible;},onAdjust:()=>{this.raceInput.drivingIntentVisible=!this.raceInput.drivingIntentVisible;}},
+        {id:'race-debug-input-style',label:'Intent preference',value:this.raceInput.drivingIntentStyle||'rally',onClick:()=>{const i=DRIVING_INTENT_STYLES.indexOf(this.raceInput.drivingIntentStyle||'rally');this.raceInput.drivingIntentStyle=DRIVING_INTENT_STYLES[(i+1)%3];},onAdjust:d=>{const i=DRIVING_INTENT_STYLES.indexOf(this.raceInput.drivingIntentStyle||'rally');this.raceInput.drivingIntentStyle=DRIVING_INTENT_STYLES[(i+(d<0?-1:1)+3)%3];}},
+        {id:'race-debug-road-surface',label:'Surface',value:DEBUG_ROAD_SURFACES.find(s=>s.id===this.playtestSession?.debugRoad?.surface)?.label||'Authored',onClick:()=>this.adjustRaceDebugRoad('surface'),onAdjust:d=>this.adjustRaceDebugRoad('surface',d)},
+        {id:'race-debug-road-snow',label:'Snow depth',value:this.playtestSession?.debugRoad?.snowDepthMm == null ? 'Authored' : this.playtestSession.debugRoad.snowDepthMm === 0 ? 'None' : (this.playtestSession.debugRoad.snowDepthMm/25.4)+' in',onClick:()=>this.adjustRaceDebugRoad('snowDepthMm'),onAdjust:d=>this.adjustRaceDebugRoad('snowDepthMm',d)},
+        {id:'race-debug-road-decals',label:'Decals',value:this.areRaceDebugDecalsHidden()?'Off':'On',onClick:()=>this.adjustRaceDebugRoad('decals'),onAdjust:()=>this.adjustRaceDebugRoad('decals')},
+        {id:'race-debug-road-reset',label:'Restore authored',value:'',onClick:()=>this.adjustRaceDebugRoad('reset')},
         {id:'race-debug-weather',label:'Weather',value:this.playtestSession?.debugEnvironment?.weather||'Authored',onClick:()=>this.adjustRaceDebugEnvironment('weather'),onAdjust:d=>this.adjustRaceDebugEnvironment('weather',d)},
         ...[['weatherIntensity','Weather intensity'],['sunIntensity','Sun brightness'],['brightness','Scene brightness']].map(([key,label])=>({id:'race-debug-'+key,label,value:this.raceInput.pauseMenuMode!=='debug-weather'?'':Math.round(100*(this.playtestSession?.debugEnvironment?.[key]??(key==='brightness'?this.getRaceRenderBrightness():key==='sunIntensity'?this.getRaceRenderVisualFx().sunIntensity:this.getRaceWeatherState().visualIntensity)))+'%',onClick:()=>this.adjustRaceDebugEnvironment(key),onAdjust:d=>this.adjustRaceDebugEnvironment(key,d)})),
         {id:'race-debug-environment-reset',label:'Reset weather / lighting',value:'',onClick:()=>{if(this.playtestSession)delete this.playtestSession.debugEnvironment;}},
@@ -21012,10 +20445,12 @@ export default class RaceEditor {
       ];
       const groups = [
         ['performance','Recording'], ['ai','AI racers'],
-        ['weather','Weather & lighting'], ['vehicle','Vehicle & indicators'],
-        ['overlays','Physics & debug overlays']
+        ['weather','Weather & lighting'], ['road','Road'], ['vehicle','Vehicle & indicators'],
+        ['overlays','Physics & debug overlays'], ['input','Input assistance']
       ];
       const groupFor = id => id.startsWith('race-perf-') ? 'performance'
+        : id.startsWith('race-debug-input-') ? 'input'
+        : id.startsWith('race-debug-road-') ? 'road'
         : id.startsWith('race-debug-ai-') ? 'ai'
         : ['race-debug-tires','race-test-indicators'].includes(id) ? 'vehicle'
         : id.startsWith('race-toggle-') ? 'overlays' : 'weather';
@@ -21027,7 +20462,7 @@ export default class RaceEditor {
       const group=this.raceInput.pauseMenuMode.slice(6);
       return [...debugRows.filter(row=>row.id!=='race-pause-back'&&groupFor(row.id)===group),back];
     }
-    if (['settings','car-controls'].includes(this.raceInput.pauseMenuMode)) {
+    if (['settings','car-controls','car-lights','car-signals'].includes(this.raceInput.pauseMenuMode)) {
       const settingsRows = [
         {
           id: 'race-toggle-abs',
@@ -21072,7 +20507,14 @@ export default class RaceEditor {
       ];
       const open = mode => {this.raceInput.pauseMenuMode=mode;this.raceInput.pauseMenuIndex=0;};
       const back=settingsRows.at(-1);
-      if(this.raceInput.pauseMenuMode==='car-controls')return [...settingsRows.slice(0,9),back];
+      if(this.raceInput.pauseMenuMode==='car-lights')return [...settingsRows.slice(2,5),back];
+      if(this.raceInput.pauseMenuMode==='car-signals')return [...settingsRows.slice(6,9),back];
+      if(this.raceInput.pauseMenuMode==='car-controls')return [
+        ...settingsRows.slice(0,2),
+        {id:'race-launch-control',label:'Launch Control',value:this.raceInput.launchControlEnabled===true?'On':'Off',onClick:()=>this.toggleRaceLaunchControl(),onAdjust:()=>this.toggleRaceLaunchControl()},
+        {id:'race-car-lights',label:'Lights',value:'›',onClick:()=>open('car-lights')},
+        settingsRows[5],
+        {id:'race-car-signals',label:'Signals',value:'›',onClick:()=>open('car-signals')},back];
       return [
         {id:'race-car-controls',label:'Car Controls',value:'›',onClick:()=>open('car-controls')},
         ...settingsRows.slice(9,-1),
@@ -21135,6 +20577,11 @@ export default class RaceEditor {
   }
 
   backRacePauseMenu() {
+    if (['car-lights','car-signals'].includes(this.raceInput.pauseMenuMode)) {
+      const id=this.raceInput.pauseMenuMode==='car-lights'?'race-car-lights':'race-car-signals';
+      this.raceInput.pauseMenuMode='car-controls';
+      this.raceInput.pauseMenuIndex=Math.max(0,this.getRacePauseMenuRows().findIndex(row=>row.id===id));return;
+    }
     if(this.raceInput.pauseMenuMode?.startsWith('debug-')){
       this.raceInput.pauseMenuMode='debug';this.raceInput.pauseMenuIndex=0;return;
     }
@@ -21214,6 +20661,14 @@ export default class RaceEditor {
     this.raceInput.absEnabled = this.raceInput.absEnabled === false;
     if (this.playtestSession) this.playtestSession.absEnabled = this.raceInput.absEnabled !== false;
     this.status = `ABS ${this.raceInput.absEnabled === false ? 'Off' : 'On'}`;
+  }
+
+  toggleRaceLaunchControl() {
+    this.raceInput.launchControlEnabled = this.raceInput.launchControlEnabled !== true;
+    if (this.playtestSession) this.playtestSession.launchControlEnabled = this.raceInput.launchControlEnabled;
+    void this.saveDrivingPreference({raceLaunchControl:this.raceInput.launchControlEnabled});
+    this.status = this.raceInput.launchControlEnabled
+      ? 'Launch Control on: hold throttle during the countdown' : 'Launch Control off';
   }
 
   toggleRaceTractionControl() {
@@ -22009,6 +21464,24 @@ export default class RaceEditor {
       || this.playtestSession?.physicsSurfaceVisible === true;
     const physicsVehicleRigVisible = this.raceInput.physicsVehicleRigVisible === true
       || this.playtestSession?.physicsVehicleRigVisible === true;
+    // Keep the fallback world's darkness off the panorama. Reuse one transparent
+    // layer; the sky paints directly to the destination, then lit geometry goes over it.
+    const destinationCtx=ctx;
+    const brightness=clamp(Number(this.getRaceLightingBrightness()),0,1);
+    let worldLayer=null;
+    if(brightness<1&&ctx.canvas&&ctx.getTransform){
+      worldLayer=this.raceLightingWorldLayer;
+      if(!worldLayer){worldLayer=typeof OffscreenCanvas!=='undefined'?new OffscreenCanvas(ctx.canvas.width,ctx.canvas.height):globalThis.document?.createElement('canvas');this.raceLightingWorldLayer=worldLayer;}
+      if(worldLayer){
+        if(worldLayer.width!==ctx.canvas.width)worldLayer.width=ctx.canvas.width;
+        if(worldLayer.height!==ctx.canvas.height)worldLayer.height=ctx.canvas.height;
+        const layerCtx=worldLayer.getContext('2d');
+        layerCtx.setTransform(1,0,0,1,0,0);layerCtx.clearRect(0,0,worldLayer.width,worldLayer.height);
+        layerCtx.save();layerCtx.setTransform(ctx.getTransform());layerCtx.beginPath();layerCtx.rect(bounds.x,bounds.y,bounds.w,bounds.h);layerCtx.clip();
+        this.raceSkyboxCompositeTarget=ctx;ctx=layerCtx;
+      }
+    }
+    try {
     if (physicsSurfaceVisible || physicsVehicleRigVisible) {
       this.drawRacePhysicsSurfaceView(ctx, bounds);
     } else {
@@ -22034,8 +21507,11 @@ export default class RaceEditor {
         });
       }
     }
-    const brightness=clamp(Number(this.getRaceLightingBrightness()),0,1);
-    if(brightness<1&&!this.raceHeadlightsRendered){ctx.save();ctx.fillStyle=`rgba(0,0,0,${1-brightness})`;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.restore();}
+    if(brightness<1&&!this.raceHeadlightsRendered){ctx.save();if(worldLayer)ctx.globalCompositeOperation='source-atop';ctx.fillStyle=`rgba(0,0,0,${1-brightness})`;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.restore();}
+    } finally {
+      this.raceSkyboxCompositeTarget=null;
+      if(worldLayer){ctx.restore();ctx=destinationCtx;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(worldLayer,0,0);ctx.restore();}
+    }
     if (!physicsSurfaceVisible && !physicsVehicleRigVisible) drawRaceDrivingLine(this, ctx, bounds);
     if(!physicsSurfaceVisible&&!physicsVehicleRigVisible&&!this.playtestSession?.carEditorPreview){
       drawRaceSpeedFx(ctx,bounds,this.getRaceRenderVisualFx(),{speedMps:this.playtestSession?.speedMps,paused:this.raceInput.paused||Boolean(this.playtestSession?.raceIntro?.active),time:(this.playtestSession?.elapsedMs||0)/1000,state:this.raceVisualFxState||={},getArt:ref=>this.getRaceArtSpriteCanvas(ref)});
@@ -24920,6 +24396,24 @@ export default class RaceEditor {
     this.drawRaceTachPanel(ctx, bounds, { speedMph });
     }
     drawRaceDrivingAssistHud(this, ctx, bounds, layout);
+    if(this.selectedRace?.campaign?.scoring==='drift'){
+      ctx.save();const x=bounds.x+8,y=bounds.y+bounds.h*.46;
+      ctx.fillStyle='rgba(0,0,0,.8)';ctx.fillRect(x,y,146,28);
+      ctx.fillStyle=session.driftScore?.sliding?'#efc36b':'#fff';ctx.font=`600 13px ${UI_SUITE.font.family}`;
+      ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(`Drift ${Math.floor(session.driftScore?.points||0)}`,x+6,y+14);ctx.restore();
+    }
+
+    if(this.raceInput.drivingIntentVisible && session.drivingIntent){
+      const intent=session.drivingIntent,pedal=session.digitalThrottle;
+      ctx.save();
+      const x=bounds.x+8,y=bounds.y+bounds.h*.57,w=Math.min(245,bounds.w-16);
+      ctx.fillStyle='rgba(0,0,0,.8)';ctx.fillRect(x,y,w,44);
+      ctx.fillStyle='#fff';ctx.font=`600 10px ${UI_SUITE.font.family}`;
+      ctx.textAlign='left';ctx.textBaseline='top';
+      ctx.fillText(`Intent (observe): ${intent.label}`,x+6,y+6);
+      ctx.fillText(`Pedal ${Math.round((pedal?.output||0)*100)}% | ${this.raceInput.digitalThrottleMode||'off'} | ${intent.style}`,x+6,y+24);
+      ctx.restore();
+    }
     this.drawRaceSelectResetProgress(ctx, bounds);
     if (this.raceInput.telemetryVisible || this.playtestSession?.diagnosticMode) {
       this.drawRaceDiagnosticsHud(ctx, bounds);
@@ -25113,6 +24607,10 @@ export default class RaceEditor {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(label, bounds.x + bounds.w / 2, bounds.y + bounds.h * 0.2);
+    if (remaining > 1000 && this.playtestSession?.launchControlEnabled === true) {
+      ctx.font = `700 10px ${UI_SUITE.font.family}`;
+      ctx.fillText('HOLD THROTTLE TO LAUNCH', bounds.x + bounds.w / 2, bounds.y + bounds.h * .2 + 42);
+    }
     ctx.restore();
   }
 
@@ -25563,11 +25061,13 @@ export default class RaceEditor {
     const selectedIndex = clamp(Math.round(Number(this.raceInput.pauseMenuIndex || 0)), 0, Math.max(0, rows.length - 1));
     const pauseTitle = this.playtestSession?.raceResults ? 'Race Results' : this.raceInput.pauseMenuMode === 'inventory' ? 'Inventory' : this.raceInput.pauseMenuMode === 'radio' ? 'Radio' : this.raceInput.pauseMenuMode === 'settings'
       ? 'Settings'
+      : this.raceInput.pauseMenuMode === 'car-lights' ? 'Lights'
+      : this.raceInput.pauseMenuMode === 'car-signals' ? 'Signals'
       : this.raceInput.pauseMenuMode === 'car-controls' ? 'Car Controls'
       : this.raceInput.pauseMenuMode?.startsWith('debug')
-        ? ({'debug-performance':'Recording','debug-ai':'AI racers','debug-weather':'Weather & lighting','debug-vehicle':'Vehicle & indicators','debug-overlays':'Debug overlays'}[this.raceInput.pauseMenuMode]||'Debug')
+        ? ({'debug-performance':'Recording','debug-ai':'AI racers','debug-input':'Input assistance','debug-road':'Road','debug-weather':'Weather & lighting','debug-vehicle':'Vehicle & indicators','debug-overlays':'Debug overlays'}[this.raceInput.pauseMenuMode]||'Debug')
         : 'Paused';
-    const footer = ['settings','car-controls'].includes(this.raceInput.pauseMenuMode) || this.raceInput.pauseMenuMode?.startsWith('debug')
+    const footer = ['settings','car-controls','car-lights','car-signals'].includes(this.raceInput.pauseMenuMode) || this.raceInput.pauseMenuMode?.startsWith('debug')
       ? 'D-pad: Navigate   Left/Right: Change   B: Back'
       : 'D-pad: Navigate   A: Select   START: Return';
     const menu = drawInGameTextMenu(ctx, {
@@ -25682,9 +25182,8 @@ export default class RaceEditor {
       if (relY < -0.18) this.shiftRaceGear(1);
       if (relY > 0.18) this.shiftRaceGear(-1);
     } else if (Math.abs(relX) > 0.18) {
-      // Touch position supplies proportional steering. The outer pad still
-      // reaches full lock; moving near the centre allows small corrections.
-      this.raceInput.binarySteer = Math.sign(relX) * clamp((Math.abs(relX) - 0.18) / 0.62, 0, 1);
+      // Direction buttons are on/off. Hold duration controls wheel movement.
+      this.raceInput.binarySteer = Math.sign(relX);
     } else {
       this.raceInput.binarySteer = 0;
     }
@@ -25711,7 +25210,17 @@ export default class RaceEditor {
         this.backRacePauseMenu();
         return true;
       }
-      // Repeated service-brake taps must not silently engage the handbrake.
+      // A second distinct touch press requests the replayable physics pulse.
+      // Keyboard/service-brake triggers retain ordinary braking behavior.
+      const now = Number(this.raceInput.inputClockMs) || 0;
+      const previous = this.raceInput.lastTouchBrakeTapMs;
+      if (!this.raceInput.brake && previous !== null && previous !== undefined
+        && now > previous && now - previous <= 300) {
+        this.raceInput.handbrakeHoldSequence += 1;
+        this.raceInput.lastTouchBrakeTapMs = null;
+      } else if (!this.raceInput.brake) {
+        this.raceInput.lastTouchBrakeTapMs = now;
+      }
       this.raceInput.brake = true;
       this.raceInput.activeBrakePointerId = payload.id ?? 'pointer';
       return true;
@@ -25878,6 +25387,9 @@ export default class RaceEditor {
       ];
     }
     if (tabId === 'gearing') {
+      const cvt = transmission.cvt || tuning.cvt;
+      if (cvt) return [['gearFinalDrive','Final Drive',transmission.gearFinalDrive || tuning.gearFinalDrive,''],
+        ...Object.entries(cvt).filter(([k])=>['minRatio','maxRatio','cruiseRpm','powerRpm','ratioRatePerSecond'].includes(k)).map(([k,v])=>[`cvt-${k}`,`CVT ${k}`,v,k.endsWith('Rpm')?'rpm':''])];
       return [
         ['gearFinalDrive', 'Final Drive', transmission.gearFinalDrive || tuning.gearFinalDrive, ''],
         ...gearRatios.map((ratio, index) => [`gearRatio-${index + 1}`, `${index + 1}${index === 0 ? 'st' : index === 1 ? 'nd' : index === 2 ? 'rd' : 'th'} Gear`, ratio, ''])
@@ -29442,10 +28954,10 @@ export default class RaceEditor {
       });
       const gearCount = Array.isArray(transmission.gearRatios) ? transmission.gearRatios.length : 6;
       const sliderRows = [
-        { id: 'gearFinalDrive', label: 'Final', value: transmission.gearFinalDrive ?? tuning.gearFinalDrive ?? 4.1, min: 2.6, max: 5.2, format: (value) => value.toFixed(2) },
-        { id: 'gearCount', label: 'Gears', value: gearCount, min: 4, max: 10, format: (value) => `${Math.round(value)}` },
-        { id: 'redlineRpm', label: 'Redline Start', value: tuning.redlineRpm || 6500, min: 4500, max: 12000, format: (value) => `${Math.round(value)} rpm` },
-        { id: 'revLimitRpm', label: 'Rev Limiter', value: tuning.revLimitRpm || tuning.redlineRpm || 6800, min: Math.max(4500, Number(tuning.redlineRpm || 4500)), max: 12000, format: (value) => `${Math.round(value)} rpm` },
+        { id: 'gearFinalDrive', label: 'Final', value: transmission.gearFinalDrive ?? tuning.gearFinalDrive ?? 4.1, min: tuning.powertrainType === 'electric' ? 1 : 2.6, max: tuning.powertrainType === 'electric' ? 20 : 5.2, format: (value) => value.toFixed(2) },
+        { id: 'gearCount', label: (transmission.cvt || tuning.cvt) ? 'CVT Drive' : 'Gears', value: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : gearCount, min: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : 4, max: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : 10, format: (value) => `${Math.round(value)}` },
+        { id: 'redlineRpm', label: 'Redline Start', value: tuning.redlineRpm || 6500, min: 4500, max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
+        { id: 'revLimitRpm', label: 'Rev Limiter', value: tuning.revLimitRpm || tuning.redlineRpm || 6800, min: Math.max(4500, Number(tuning.redlineRpm || 4500)), max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
         { id: 'tachometerMaxRpm', label: 'Tach Max', value: tuning.tachometerMaxRpm || tuning.revLimitRpm || tuning.redlineRpm || 6800, min: 1000, max: 20000, format: (value) => `${Math.round(value)} rpm` }
       ];
       sliderRows.forEach((row, index) => {
@@ -29463,6 +28975,19 @@ export default class RaceEditor {
     }
     if (this.carTuneTab === 'summary') {
       this.drawRaceTuningStats(ctx, content, car);
+      return;
+    }
+    if (this.carTuneTab === 'power-curve' && tuning.powertrainType === 'electric') {
+      const fields = [
+        ['peakTorqueNm','Combined torque Nm',1,3000], ['peakPowerKw','Combined power kW',1,2000],
+        ['maxMotorRpm','Motor limit rpm',1000,30000], ['reductionRatio','Single reduction',1,20],
+        ['usableBatteryKwh','Usable pack kWh',1,250], ['driveEfficiency','Drive efficiency',.1,1],
+        ['regenEfficiency','Regen efficiency',.1,1], ['maxRegenTorqueNm','Regen torque Nm',0,1000],
+        ['maxRegenPowerKw','Regen power kW',0,500], ['standstillLossKw','Winding loss kW',0,20],
+        ['regenFullSpeedRadps','Regen full wheel rad/s',1,30], ['liftOffRegen','Lift-off regen',0,1]
+      ];
+      drawSliderRows(fields.map(([key,label,min,max]) => ({id:`electric-${key}`,label,min,max,
+        value:tuning.electricPowertrain?.[key] ?? 0,format:value=>value.toFixed(2)})));
       return;
     }
     if (this.carTuneTab === 'power-curve') {
@@ -29565,15 +29090,26 @@ export default class RaceEditor {
     if (this.carTuneTab === 'gearing') {
       const gearCount = Array.isArray(transmission.gearRatios) ? transmission.gearRatios.length : 6;
       drawSliderRows([
-        { id: 'gearFinalDrive', label: 'Final', value: transmission.gearFinalDrive ?? tuning.gearFinalDrive ?? 4.1, min: 2.6, max: 5.2, format: (value) => value.toFixed(2) },
-        { id: 'gearCount', label: 'Gears', value: gearCount, min: 4, max: 10, format: (value) => `${Math.round(value)}` },
-        { id: 'redlineRpm', label: 'Redline Start', value: tuning.redlineRpm || 6500, min: 4500, max: 12000, format: (value) => `${Math.round(value)} rpm` },
-        { id: 'revLimitRpm', label: 'Rev Limiter', value: tuning.revLimitRpm || tuning.redlineRpm || 6800, min: Math.max(4500, Number(tuning.redlineRpm || 4500)), max: 12000, format: (value) => `${Math.round(value)} rpm` },
+        { id: 'gearFinalDrive', label: 'Final', value: transmission.gearFinalDrive ?? tuning.gearFinalDrive ?? 4.1, min: tuning.powertrainType === 'electric' ? 1 : 2.6, max: tuning.powertrainType === 'electric' ? 20 : 5.2, format: (value) => value.toFixed(2) },
+        { id: 'gearCount', label: (transmission.cvt || tuning.cvt) ? 'CVT Drive' : 'Gears', value: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : gearCount, min: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : 4, max: (transmission.cvt || tuning.cvt || tuning.powertrainType === 'electric') ? 1 : 10, format: (value) => `${Math.round(value)}` },
+        { id: 'redlineRpm', label: 'Redline Start', value: tuning.redlineRpm || 6500, min: 4500, max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
+        { id: 'revLimitRpm', label: 'Rev Limiter', value: tuning.revLimitRpm || tuning.redlineRpm || 6800, min: Math.max(4500, Number(tuning.redlineRpm || 4500)), max: tuning.powertrainType === 'electric' ? 30000 : 12000, format: (value) => `${Math.round(value)} rpm` },
         { id: 'tachometerMaxRpm', label: 'Tach Max', value: tuning.tachometerMaxRpm || tuning.revLimitRpm || tuning.redlineRpm || 6800, min: 1000, max: 20000, format: (value) => `${Math.round(value)} rpm` }
       ]);
       return;
     }
     if (this.carTuneTab === 'gear-ratios') {
+      const cvt = transmission.cvt || tuning.cvt;
+      if (cvt && tuning.powertrainType !== 'electric') {
+        drawSliderRows([
+          ['minRatio','Minimum Ratio',.1,5.5], ['maxRatio','Maximum Ratio',.1,8],
+          ['cruiseRpm','Cruise Target',500,10000], ['powerRpm','Power Target',500,12000],
+          ['ratioRatePerSecond','Ratio / Second',.05,10]
+        ].map(([key,label,min,max])=>({id:`cvt-${key}`,label,value:cvt[key],min,max,
+          format:value=>key.endsWith('Rpm')?`${Math.round(value)} rpm`:value.toFixed(3)})), {scrollKey:'car-tune-cvt'});
+        return;
+      }
+
       const gearRatios = Array.isArray(transmission.gearRatios) && transmission.gearRatios.length
         ? transmission.gearRatios
         : (Array.isArray(tuning.gearRatios) && tuning.gearRatios.length ? tuning.gearRatios : [3.45, 1.95, 1.37, 0.97, 0.74, 0.67]);
@@ -33134,6 +32670,13 @@ export default class RaceEditor {
   }
 
   drawRaceParallaxBackground(ctx, bounds, { firstPersonFrame=null,coverageBounds=null,horizon = 0, cameraYaw = 0, heading = 0, velocityYaw = 0, speedMps = 0, hillPitch = 0, suppressGroundFill = false, groundFillOverride = '' } = {}) {
+    const skyTarget=this.raceSkyboxCompositeTarget;
+    if(skyTarget&&ctx!==skyTarget){
+      ctx.clearRect(bounds.x,bounds.y,bounds.w,bounds.h);
+      skyTarget.save();skyTarget.setTransform(ctx.getTransform());
+      try{return this.drawRaceParallaxBackground(skyTarget,bounds,arguments[2]);}finally{skyTarget.restore();}
+    }
+
     if (firstPersonFrame) {
       const f = firstPersonFrame;
       const side = Math.hypot(bounds.w, bounds.h) * 2;
@@ -33257,7 +32800,7 @@ export default class RaceEditor {
     }
     this.drawRaceSkyVisibility(ctx, coverage);
     if(this.getRaceLightningFlash()>0)this.drawRaceWeatherLightning(ctx,{...bounds,h:Math.max(0,horizon-bounds.y)},this.playtestSession?.weatherFxState,{cameraYaw});
-    if(skyFx.enabled&&skyFx.skyBrightness<1){ctx.save();ctx.fillStyle=`rgba(0,0,0,${1-skyFx.skyBrightness})`;ctx.fillRect(coverage.x,coverage.y,coverage.w,coverage.h);ctx.restore();}
+    if(skyFx.skyBrightness<1){ctx.save();ctx.fillStyle=`rgba(0,0,0,${1-skyFx.skyBrightness})`;ctx.fillRect(coverage.x,coverage.y,coverage.w,coverage.h);ctx.restore();}
   }
 
   drawRaceSkyVisibility(ctx, bounds) {
@@ -34516,8 +34059,9 @@ export default class RaceEditor {
       this.isRaceMarginVisible() ? 1 : 0,
       this.isRaceShoulderVisible() ? 1 : 0,
       this.getRaceGroundTextureFilterMode(),
-      JSON.stringify(this.selectedRace?.roadTextures || {}),
-      JSON.stringify(this.selectedRace?.waterRegions || [])
+      JSON.stringify(this.getRaceRuntimeRoadTextures()),
+      JSON.stringify(this.selectedRace?.waterRegions || []),
+      JSON.stringify((this.selectedRace?.road?.segments || []).map(segment => segment.shoulderTexture || null))
     ].join('::static-track-surface::');
     if (this.raceStaticTrackSurfaceMeshCache?.key === cacheKey) {
       return this.raceStaticTrackSurfaceMeshCache.meshes;
@@ -34586,6 +34130,7 @@ export default class RaceEditor {
       });
     };
     const pushShoulderMeshes = (near, far) => {
+      if (!this.isRaceShoulderVisible(near?.center?.segment)) return;
       const nearInnerLeft = near?.marginLeft || near?.left;
       const nearInnerRight = near?.marginRight || near?.right;
       const farInnerLeft = far?.marginLeft || far?.left;
@@ -34740,7 +34285,7 @@ export default class RaceEditor {
           });
           return;
         }
-        if (!this.isRaceShoulderVisible()) return;
+        if (!this.isRaceShoulderVisible(segment)) return;
         const midpoint = {
           x: points.reduce((sum, point) => sum + Number(point.x || 0), 0) / points.length,
           z: points.reduce((sum, point) => sum + Number(point.z ?? point.y ?? 0), 0) / points.length
@@ -34805,21 +34350,22 @@ export default class RaceEditor {
         fullRoute: true
       }))
     ];
-    const roadTextures = roadTextureSettings(this.selectedRace);
-    if (texturesEnabled && (roadTextures.road.artRef || roadTextures.margin.artRef)) {
+    const roadTextures = this.getRaceRuntimeRoadTextures();
+    if (texturesEnabled) {
       const strips = buildRoadTextureStrips(worldBake, roadTextures, {
-        marginWidth: this.getRaceBoundaryWidthWorld(), marginVisible: this.isRaceMarginVisible(), networkDefinition: this.selectedRace?.road?.network
+        marginWidth: this.getRaceBoundaryWidthWorld(), marginVisible: this.isRaceMarginVisible(), shoulderVisible:this.isRaceShoulderVisible(), networkDefinition: this.selectedRace?.road?.network
       });
       if (roadTextures.road.artRef) {
         roadMeshes.length = 0;
         roadMeshes.push(...strips.roadMeshes, ...strips.junctionMeshes);
       }
+      for (const mesh of strips.shoulderMeshes) shoulderMeshes.push(mesh);
       if (roadTextures.margin.artRef) {
         boundaryMeshes.length = 0;
         boundaryMeshes.push(...strips.boundaryMeshes);
       }
     }
-    if (!showBuiltInRoadMarkings(this.selectedRace)) roadPaintMeshes.length = 0;
+    if (roadTextures.overrideRoad || !showBuiltInRoadMarkings(this.selectedRace)) roadPaintMeshes.length = 0;
     const meshes = {
       cacheKey,
       roadMeshes,
@@ -36843,6 +36389,8 @@ export default class RaceEditor {
   }
 
   clearRaceThreeStaticWorld(renderer) {
+    renderer.materialCache?.get('terrain-world-blend')?.dispose();
+    renderer.materialCache?.delete('terrain-world-blend');
     for(const child of renderer.staticWorldObjects || []) {
       renderer.scene.remove(child);
       child.traverse?.(entry=>entry.geometry?.dispose?.());
@@ -37216,7 +36764,7 @@ export default class RaceEditor {
       cellKey,
       Math.round(Number(textureWorldM || 0) * 10000),
       artRef,
-      [...new Set([...(this.getRaceTileMapStats().artRefs || []), ...Object.values(this.ensureRaceSurfaceArt()), this.selectedRace?.roadTextures?.road?.artRef, this.selectedRace?.roadTextures?.margin?.artRef])].filter(Boolean)
+      [...new Set([...(this.getRaceTileMapStats().artRefs || []), ...Object.values(this.ensureRaceSurfaceArt()), ...[shoulderMeshes,roadMeshes,boundaryMeshes].flatMap(meshes=>meshes.map(mesh=>mesh.artRef)), this.selectedRace?.roadTextures?.road?.artRef, this.selectedRace?.roadTextures?.margin?.artRef])].filter(Boolean)
         .map((ref) => `${ref}:${Boolean(this.getRaceArtSpriteCanvas(ref))}`).join('|'),
       textured ? 1 : 0,
       useSunShading ? 1 : 0,
@@ -37396,12 +36944,15 @@ export default class RaceEditor {
     if (!canvas) return null;
     const sampling=roadTextureSampling(textureOptions);
     const filterMode=sampling.filterMode==='inherit'?this.getRaceGroundTextureFilterMode():sampling.filterMode;
-    const key = `${canvas.__raceArtCacheKey || clean}:${Number(canvas.width || 0)}x${Number(canvas.height || 0)}:${filterMode}:${sampling.mipmaps}:${sampling.anisotropy}`;
+    const clampEdges = textureOptions.clampEdges === true;
+    const premultiplyAlpha = textureOptions.premultiplyAlpha === true;
+    const key = `${canvas.__raceArtCacheKey || clean}:${Number(canvas.width || 0)}x${Number(canvas.height || 0)}:${filterMode}:${sampling.mipmaps}:${sampling.anisotropy}:${clampEdges}:${premultiplyAlpha}`;
     const cached = renderer.textureCache.get(key);
     if (cached) return cached;
     const texture = new THREE.CanvasTexture(canvas);
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
+    texture.premultiplyAlpha = premultiplyAlpha;
+    texture.wrapS = clampEdges ? THREE.ClampToEdgeWrapping : THREE.RepeatWrapping;
+    texture.wrapT = clampEdges ? THREE.ClampToEdgeWrapping : THREE.RepeatWrapping;
     texture.magFilter = filterMode === 'smooth' ? THREE.LinearFilter : THREE.NearestFilter;
     texture.minFilter = !sampling.mipmaps ? texture.magFilter : filterMode === 'smooth' ? THREE.LinearMipmapLinearFilter : filterMode === 'balanced' ? THREE.NearestMipmapLinearFilter : THREE.NearestMipmapNearestFilter;
     texture.generateMipmaps = sampling.mipmaps;
@@ -37424,6 +36975,7 @@ export default class RaceEditor {
     texture = null,
     depthWrite = true,
     polygonOffset = true,
+    vertexAlpha = false,
     opacity = 1
   } = {}) {
     if (!renderer || !THREE?.MeshBasicMaterial) return null;
@@ -37431,14 +36983,14 @@ export default class RaceEditor {
     opacity = clamp(Number(opacity), 0, 1);
     const mipmapBias = texture ? roadTextureMipBias(textureOptions) : 0;
     const textureKey = `${texture?.uuid || 'solid'}:${mipmapBias}`;
-    const key = `${textureKey}:${depthWrite ? 1 : 0}:${polygonOffset ? 1 : 0}:${opacity}`;
+    const key = `${textureKey}:${depthWrite ? 1 : 0}:${polygonOffset ? 1 : 0}:${opacity}:${vertexAlpha}`;
     const cached = renderer.materialCache.get(key);
     if (cached) return cached;
     const material = new THREE.MeshBasicMaterial({
       map: texture || null,
       vertexColors: true,
       side: THREE.DoubleSide,
-      transparent: opacity < 1,
+      transparent: vertexAlpha || opacity < 1,
       opacity,
       depthTest: true,
       depthWrite,
@@ -37506,8 +37058,8 @@ export default class RaceEditor {
     texture.wrapS = THREE.ClampToEdgeWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
     texture.magFilter = THREE.LinearFilter;
-    texture.minFilter = THREE.LinearFilter;
-    texture.generateMipmaps = false;
+    texture.minFilter = THREE.LinearMipmapLinearFilter;
+    texture.generateMipmaps = true;
     texture.needsUpdate = true;
     const material = new THREE.MeshBasicMaterial({
       map: texture,
@@ -37529,13 +37081,21 @@ export default class RaceEditor {
     return material;
   }
 
+  getRaceDoodadVisualLayout(sprite = {}, doodad = this.getRaceDoodadForScenery(sprite), canvas = null) {
+    const source = { ...doodad, widthM: doodad.widthM || sprite.widthM, heightM: doodad.heightM || sprite.heightM,
+      groundOffsetM: doodad.groundOffsetM ?? sprite.groundOffsetM };
+    const art = canvas || (!doodad.isFence && !sprite.fenceId && !doodad.model?.ref
+      ? this.getRaceArtSpriteCanvas(doodad.artRef || sprite.artRef) : null);
+    return doodadVisualLayout(source, art, { fence: Boolean(sprite.fenceId) });
+  }
+
   getRaceDoodadWorldQuad(sprite = {}) {
     if (!sprite) return null;
     const doodad = this.getRaceDoodadForScenery(sprite);
-    const widthM = Math.max(0.001, Number(doodad.widthM) || Number(sprite.widthM) || 1.5);
-    const heightM = Math.max(0.05, Number(doodad.heightM) || Number(sprite.heightM) || 2);
+    const visual = this.getRaceDoodadVisualLayout(sprite, doodad);
+    const { widthM, heightM } = visual;
     const groundOffsetLimitM = getRaceDoodadGroundOffsetLimit(heightM);
-    const groundOffsetM = clamp(Number(doodad.groundOffsetM ?? sprite.groundOffsetM) || 0, -groundOffsetLimitM, groundOffsetLimitM);
+    const groundOffsetM = clamp(Number(visual.groundOffsetM) || 0, -groundOffsetLimitM, groundOffsetLimitM);
     const x = Number(sprite.x || 0);
     const z = Number(sprite.z || 0);
     const yaw = Number.isFinite(Number(sprite.yaw)) ? Number(sprite.yaw) : 0;
@@ -37545,16 +37105,33 @@ export default class RaceEditor {
     const leftZ = z - right.z * halfWidth;
     const rightX = x + right.x * halfWidth;
     const rightZ = z + right.z * halfWidth;
-    const leftGround = this.sampleRaceDoodadGroundPoint(leftX, leftZ, sprite, doodad);
-    const rightGround = this.sampleRaceDoodadGroundPoint(rightX, rightZ, sprite, doodad);
+    const visualDoodad = { ...doodad, heightM, groundOffsetM };
+    // Ordinary billboards stand upright at their root, rather than stretching
+    // the canopy between two different hillside elevations. Fences keep their
+    // terrain-following panel geometry.
+    const anchor = !doodad.isFence && !sprite.fenceId
+      ? this.sampleRaceDoodadGroundPoint(x, z, sprite, visualDoodad) : null;
+    if (anchor) {
+      // Keep the sprite upright, but bury the uphill portion instead of
+      // suspending its downhill half above the terrain. Sample intermediate
+      // points too: the lowest point need not be either endpoint.
+      const steps = Math.max(2, Math.min(16, Math.ceil(widthM / 2)));
+      for (let i = 0; i <= steps; i++) {
+        const offset = -halfWidth + widthM * i / steps;
+        const ground = this.sampleRaceDoodadGroundPoint(x + right.x * offset, z + right.z * offset, sprite, visualDoodad);
+        anchor.elevation = Math.min(anchor.elevation, ground.elevation);
+      }
+    }
+    const leftGround = anchor ? { ...anchor, x: leftX, z: leftZ } : this.sampleRaceDoodadGroundPoint(leftX, leftZ, sprite, visualDoodad);
+    const rightGround = anchor ? { ...anchor, x: rightX, z: rightZ } : this.sampleRaceDoodadGroundPoint(rightX, rightZ, sprite, visualDoodad);
     const leftElevation = leftGround.elevation;
     const rightElevation = rightGround.elevation;
     const heightElevation = heightM / RACE_THREE_ELEVATION_M;
-    const u0 = Number(sprite.fenceU0) || 0, u1 = Number.isFinite(sprite.fenceU1) ? sprite.fenceU1 : 1;
-    const bottomLeft = { ...leftGround, u: u0, v: 0 };
-    const bottomRight = { ...rightGround, u: u1, v: 0 };
-    const topRight = { ...rightGround, elevation: rightElevation + heightElevation, u: u1, v: 1 };
-    const topLeft = { ...leftGround, elevation: leftElevation + heightElevation, u: u0, v: 1 };
+    const u0 = Number(sprite.fenceU0) || visual.u0, u1 = Number.isFinite(sprite.fenceU1) ? sprite.fenceU1 : visual.u1;
+    const bottomLeft = { ...leftGround, u: u0, v: visual.v0 };
+    const bottomRight = { ...rightGround, u: u1, v: visual.v0 };
+    const topRight = { ...rightGround, elevation: rightElevation + heightElevation, u: u1, v: visual.v1 };
+    const topLeft = { ...leftGround, elevation: leftElevation + heightElevation, u: u0, v: visual.v1 };
     return {
       sprite,
       doodad,
@@ -37674,9 +37251,21 @@ export default class RaceEditor {
     return buildRaceDecalTriangles(decal, point => surface.sampleWorld(point, 0));
   }
 
+  getRaceWebGLDecalMeshes(){
+    if(this.areRaceDebugDecalsHidden()||this.getRaceRenderDebugSettings().overlaysEnabled===false)return [];
+    const decals=this.ensureRaceDecals().filter(d=>d.kind!=='tile'),surface=this.getRaceSurfaceModel();
+    const key=JSON.stringify(decals),cached=this.raceWebGLDecalMeshes;
+    if(cached?.key===key&&cached.surface===surface)return cached.meshes;
+    const meshes=decals.flatMap(decal=>this.getRaceDecalTriangles(decal).map(points=>({
+      source:'road-decal',points,artRef:decal.artRef,textured:true,color:'#ffffff',
+      textureWorldM:1,depthOffset:-.08001,elevationOffset:.02/RACE_THREE_ELEVATION_M
+    })));
+    this.raceWebGLDecalMeshes={key,surface,meshes};return meshes;
+  }
+
   syncRaceThreeDecals(renderer, { stats = null } = {}) {
     if (!renderer?.scene) return false;
-    const decals = this.getRaceRenderDebugSettings().overlaysEnabled === false ? [] : this.ensureRaceDecals().filter(d=>d.kind !== 'tile');
+    const decals = this.areRaceDebugDecalsHidden() || this.getRaceRenderDebugSettings().overlaysEnabled === false ? [] : this.ensureRaceDecals().filter(d=>d.kind !== 'tile');
     const surface = this.getRaceSurfaceModel();
     const key = JSON.stringify(decals) + ':' + decals.map(d=> {
       const art=this.getRaceArtSpriteCanvas(d.artRef); return art?.__raceArtCacheKey || (art ? `${art.width}x${art.height}` : 'pending');
@@ -37685,7 +37274,9 @@ export default class RaceEditor {
       this.clearRaceThreeDecals(renderer);
       const group = new THREE.Group(); group.name = 'terrainDecals';
       for (const decal of decals) {
-        const texture = this.getRaceThreeTexture(renderer, decal.artRef); if (!texture) continue;
+        // Decal UVs describe one image, not a repeating road tile. Keep a
+        // separate texture so filtering cannot pull the opposite edge across.
+        const texture = this.getRaceThreeTexture(renderer, decal.artRef, {clampEdges:true,premultiplyAlpha:true,filterMode:'smooth',anisotropy:8}); if (!texture) continue;
         const positions=[],uvs=[];
         for (const triangle of this.getRaceDecalTriangles(decal)) for (const p of triangle) {
           positions.push(p.x, this.getRaceThreeElevationM(p, 0.02), p.z); uvs.push(p.u, p.v);
@@ -37696,6 +37287,7 @@ export default class RaceEditor {
         geometry.computeBoundingSphere();
         const material = new THREE.MeshBasicMaterial({map:texture,side:THREE.DoubleSide,transparent:true,
           opacity:1,alphaTest:0.01,depthTest:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+        configureRaceDecalAlpha(material);
         const mesh = new THREE.Mesh(geometry,material); mesh.name=`raceDecal:${decal.id}`; mesh.renderOrder=4; group.add(mesh);
       }
       renderer.scene.add(group); renderer.decalGroup=group; renderer.decalKey=key; renderer.decalSurface=surface;
@@ -37749,7 +37341,7 @@ export default class RaceEditor {
         const instance=new ModelAssetInstance();instance.setModel(model,doodad.model);
         const placement=new THREE.Group();placement.userData.modelInstance=instance;placement.userData.spriteId=sprite.id;
         placement.add(instance.object);
-        const ground=this.sampleRaceDoodadGroundPoint(sprite.x,sprite.z,sprite,doodad);
+        const ground={...quad.points[2],x:Number(sprite.x)||0,z:Number(sprite.z)||0};
         placement.position.set(Number(sprite.x)||0,this.getRaceThreeElevationM(ground),Number(sprite.z)||0);
         placement.rotation.y=Number(sprite.yaw)||0;
         if((doodad.itemType==='mix-tape'||(doodad.itemType==='item'&&doodad.rotate))){placement.userData.mixTape=true;placement.userData.baseYaw=placement.rotation.y;placement.rotation.y+=mixTapeRotation(Number(this.playtestSession?.elapsedMs||0)/1000);}
@@ -38347,7 +37939,7 @@ export default class RaceEditor {
   getRaceThreeSurfacePoint(point = {}, source = '') {
     const cleanSource = String(source || '');
     if (cleanSource === 'terrain' || cleanSource.includes('terrain-roadside') || cleanSource.includes('seam-underlap')) return point;
-    if (point?.roadDeckElevation === true || cleanSource === 'road-texture' || cleanSource.startsWith('boundary-texture')) return point;
+    if (point?.roadDeckElevation === true || cleanSource.startsWith('road-texture') || cleanSource.startsWith('boundary-texture')) return point;
     if (/^(bridge|tunnel|water):/.test(cleanSource)
       || (this.selectedRace?.road?.network && cleanSource === 'road-canonical')) return point;
     const x = Number(point?.x || 0);
@@ -38386,6 +37978,7 @@ export default class RaceEditor {
     textureWorldM = 2.5
   } = {}) {
     if (!Array.isArray(meshes) || !meshes.length || !THREE?.BufferGeometry) return null;
+    const vertexAlpha=meshes.some(m=>m.vertexAlpha);
     const positions = [];
     const uvs = [];
     const colors = [];
@@ -38404,7 +37997,7 @@ export default class RaceEditor {
         Number.isFinite(point.u) ? point.u : (Number(point.x || 0) - originX) / scale,
         Number.isFinite(point.v) ? point.v : -(Number(point.z || 0) - originZ) / scale
       );
-      colors.push(color[0], color[1], color[2]);
+      colors.push(color[0], color[1], color[2]);if(vertexAlpha)colors.push(Number(point.alpha??1));
     };
     meshes.forEach((mesh) => {
       const points = Array.isArray(mesh?.points)
@@ -38428,7 +38021,7 @@ export default class RaceEditor {
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
-    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, vertexAlpha?4:3));
     geometry.computeBoundingSphere();
     return geometry;
   }
@@ -38482,6 +38075,8 @@ export default class RaceEditor {
     const colors = new Float32Array(triangleCount * 9);
     const textureColors = new Float32Array(triangleCount * 9);
     const artGroups=[];
+    const materialAppearance = new WeakMap();
+    const sun = useSunShading ? this.getRaceSunSettings() : null;
     const textureScale = Math.max(0.001, Number(textureWorldM) || 2.5);
     let writeOffset = 0;
     const pushVertex = (point = {}, color = [1, 1, 1]) => {
@@ -38505,21 +38100,33 @@ export default class RaceEditor {
         .map((point) => this.getRaceThreeSurfacePoint(point, 'terrain'));
       if (points.length < 3) return;
       const tileCell = triangle.tileCell || triangle.terrainCell?.tileCell || {};
-      const palette = this.getRaceWeightedGroundTilePalette(
-        tileCell.tileWeights,
-        tileCell.tileId || tileMap?.defaultTileId || 'grass'
-      );
-      const css = useSunShading ? this.getRaceTerrainSunTint(points, palette.groundA) : palette.groundA;
+      let appearance = materialAppearance.get(tileCell);
+      if (!appearance) {
+        const palette = this.getRaceWeightedGroundTilePalette(
+          tileCell.tileWeights, tileCell.tileId || tileMap?.defaultTileId || 'grass'
+        );
+        const artRef = textured ? String(tileCell.artRef || tileCell.tileArtRef
+          || this.getRaceSurfaceArtRefForSlot(tileCell.tileId || tileMap?.defaultTileId || 'grass')
+          || this.getRaceDefaultGroundArtRef(tileCell.tileId, tileCell.tileWeights, tileMap) || '').trim() : '';
+        appearance = {palette, artRef};
+        materialAppearance.set(tileCell, appearance);
+      }
+      const {palette, artRef} = appearance;
+      const shade = useSunShading ? this.getRaceTerrainSunShade(points, sun) : 1;
+      const css = useSunShading ? this.getRaceTerrainSunTint(points, palette.groundA, shade) : palette.groundA;
       const color = this.getRaceWebGLColorArray(css);
-      const textureColor=this.getRaceWebGLColorArray(useSunShading?this.getRaceTextureSunTint(points):'#ffffff');
+      const textureColor = this.getRaceWebGLColorArray(useSunShading ? this.getRaceTextureSunTint(points, shade) : '#ffffff');
       const first=writeOffset/3;
-      const artRef=textured?String(tileCell.artRef||tileCell.tileArtRef||this.getRaceSurfaceArtRefForSlot(tileCell.tileId||tileMap?.defaultTileId||'grass')||this.getRaceDefaultGroundArtRef(tileCell.tileId,tileCell.tileWeights,tileMap)||'').trim():'';
       for (let index = 1; index < points.length - 1; index += 1) {
         pushVertex(points[0], color);
         pushVertex(points[index], color);
         pushVertex(points[index + 1], color);
       }
-      for(let offset=first*3;offset<writeOffset;offset+=3)textureColors.set(textureColor.slice(0,3),offset);
+      for (let offset = first * 3; offset < writeOffset; offset += 3) {
+        textureColors[offset] = textureColor[0];
+        textureColors[offset + 1] = textureColor[1];
+        textureColors[offset + 2] = textureColor[2];
+      }
       if(artRef){const previous=artGroups.at(-1),count=writeOffset/3-first;if(previous?.artRef===artRef&&previous.start+previous.count===first)previous.count+=count;else artGroups.push({artRef,start:first,count});}
     });
     const uvs = this.buildRacePackedTerrainUvs(positions, textureScale);
@@ -38622,6 +38229,17 @@ export default class RaceEditor {
 
   addRaceThreeTerrainArtwork(renderer, baseGeometry, packed) {
     if (this.getRaceRenderDebugSettings().texturesEnabled === false || !packed?.artGroups?.length) return 0;
+    let blend=renderer.materialCache?.get('terrain-world-blend');
+    if(!blend){
+      const map=this.ensureRaceTileMap();
+      const grid=terrainBlendGrid(map,cell=>String(cell.artRef||cell.tileArtRef||this.getRaceSurfaceArtRefForSlot(cell.tileId||map.defaultTileId||'grass')||this.getRaceDefaultGroundArtRef(cell.tileId,cell.tileWeights,map)||'').trim());
+      if(grid)blend=createTerrainBlendMaterial({THREE,grid,getCanvas:ref=>this.getRaceArtSpriteCanvas(ref),textureWorldM:packed.textureWorldM||2.5,makeMaterial:texture=>new THREE.MeshBasicMaterial({map:texture,vertexColors:true,side:THREE.DoubleSide,depthWrite:false})});
+      if(blend)renderer.materialCache.set('terrain-world-blend',blend);
+    }
+    if(blend){
+      const geometry=baseGeometry.clone();geometry.setAttribute('color',new THREE.BufferAttribute(packed.textureColors,3));
+      const overlay=new THREE.Mesh(geometry,blend);overlay.name='terrain-art:blended';overlay.renderOrder=1;renderer.scene.add(overlay);return 1;
+    }
     const buckets = new Map();
     for (const group of packed.artGroups) {
       if (!buckets.has(group.artRef)) buckets.set(group.artRef, []);
@@ -38828,9 +38446,7 @@ export default class RaceEditor {
     const compositeStartMs = this.getNowMs();
     const previousSmoothing = ctx.imageSmoothingEnabled;
     ctx.imageSmoothingEnabled = false;
-    // Darken the already-painted sky, then composite lit world surfaces. Never
-    // darken the headlights a second time with the legacy full-screen overlay.
-    if(brightness<1){ctx.save();ctx.fillStyle=`rgba(0,0,0,${1-brightness})`;ctx.fillRect(bounds.x,bounds.y,bounds.w,bounds.h);ctx.restore();}
+    // Sky brightness is applied by the background pass; world light affects only geometry.
     ctx.drawImage(renderer.canvas, Number(bounds.x || 0), Number(bounds.y || 0), Number(bounds.w || 1), Number(bounds.h || 1));
     this.raceHeadlightsRendered=true;
     ctx.imageSmoothingEnabled = previousSmoothing;
@@ -39217,9 +38833,8 @@ export default class RaceEditor {
     return meshes;
   }
 
-  getRaceTerrainSunShade(points = []) {
+  getRaceTerrainSunShade(points = [], sun = this.getRaceSunSettings()) {
     if (!Array.isArray(points) || points.length < 3) return 1;
-    const sun = this.getRaceSunSettings();
     const intensity = clamp(Number(sun.intensity ?? 0.72), 0, 1);
     if (intensity <= 0.01) return 1;
     // Area-weighted polygon normal: canonical terrain is triangulated, and
@@ -39246,14 +38861,13 @@ export default class RaceEditor {
     return 1 - intensity * 0.55 * (1 - diffuse);
   }
 
-  getRaceTerrainSunTint(points = [], base = '#ffffff') {
-    const shade = this.getRaceTerrainSunShade(points);
+  getRaceTerrainSunTint(points = [], base = '#ffffff', shade = this.getRaceTerrainSunShade(points)) {
     const rgba = this.parseRaceCssColor(base);
     return `rgba(${Math.round(rgba[0] * 255 * shade)}, ${Math.round(rgba[1] * 255 * shade)}, ${Math.round(rgba[2] * 255 * shade)}, ${rgba[3]})`;
   }
 
-  getRaceTextureSunTint(points = []) {
-    const shade = Math.round(this.getRaceTerrainSunShade(points) * 12) / 12;
+  getRaceTextureSunTint(points = [], sunShade = this.getRaceTerrainSunShade(points)) {
+    const shade = Math.round(sunShade * 12) / 12;
     const value = clamp(Math.round(255 * shade), 56, 255);
     return `rgba(${value}, ${value}, ${value}, 1)`;
   }
@@ -39627,19 +39241,20 @@ export default class RaceEditor {
       });
     }
     if (!staticTrackMeshes && texturesEnabled) {
-      const settings = roadTextureSettings(this.selectedRace);
-      if (settings.road.artRef || settings.margin.artRef) {
+      const settings = this.getRaceRuntimeRoadTextures();
+      if (settings.road.artRef || settings.margin.artRef || settings.shoulder.artRef) {
         const strips = buildRoadTextureStrips({ surfaceBake: { paths: trackBands.map(({ near, far }) => ({ sections: [near, far] })) } }, settings,
-          { marginWidth: this.getRaceBoundaryWidthWorld(), marginVisible: this.isRaceMarginVisible() });
+          { marginWidth: this.getRaceBoundaryWidthWorld(), marginVisible: this.isRaceMarginVisible(), shoulderVisible:this.isRaceShoulderVisible() });
         if (settings.road.artRef) roadMeshes = strips.roadMeshes;
         if (settings.margin.artRef) boundaryMeshes = strips.boundaryMeshes;
+        for (const mesh of strips.shoulderMeshes) shoulderMeshes.push(mesh);
       }
     }
     const canDrawThreeTerrain = threeEnabled
       && terrainEnabled
       && (terrainCells.length > 0 || worldBake?.packedTerrain?.positions?.length > 0);
     const overlaysEnabled = renderDebug.overlaysEnabled !== false;
-    const roadPaintMeshes = canDrawThreeTerrain && overlaysEnabled && showBuiltInRoadMarkings(this.selectedRace)
+    const roadPaintMeshes = canDrawThreeTerrain && overlaysEnabled && !this.playtestSession?.debugRoad?.surface && showBuiltInRoadMarkings(this.selectedRace)
       ? staticTrackMeshes
         ? staticTrackMeshes.roadPaintMeshes
         : this.getRaceThreeTrackPaintMeshes({
@@ -39780,6 +39395,9 @@ export default class RaceEditor {
     });
     renderStats.trackFurniturePolygons = Math.max(0, Number(renderStats.polygons || 0) - furniturePolygonsBefore);
     renderStats.trackFurnitureDrawCalls = Math.max(0, Number(renderStats.drawCalls || 0) - furnitureDrawCallsBefore);
+    gl.depthMask(false);
+    this.drawRaceWebGLWorldMeshBatch(ctx,bounds,renderer,this.getRaceWebGLDecalMeshes(),{camera,cameraYaw,textureWorldM:1,stats:renderStats});
+    gl.depthMask(true);
     const doodadPolygonsBefore = Number(renderStats.polygons || 0);
     const doodadDrawCallsBefore = Number(renderStats.drawCalls || 0);
     this.drawRaceWebGLWorldMeshBatch(ctx, bounds, renderer, this.getRaceDoodadWorldMeshes(), {
@@ -40065,6 +39683,7 @@ export default class RaceEditor {
     // attached to each triangle rather than stretching a screen-space rectangle.
     for (const decal of this.ensureRaceDecals()) {
       if (kind && decal.kind !== kind) continue;
+      if (decal.kind !== 'tile' && this.areRaceDebugDecalsHidden()) continue;
       const art=this.getRaceArtSpriteCanvas(decal.artRef); if(!art)continue;
       for(const triangle of this.getRaceDecalTriangles(decal)) {
         const p=triangle.map(v=>({...this.projectRaceWorldPointToCamera({...v,elevation:v.elevation+0.02/RACE_THREE_ELEVATION_M},camera,cameraYaw,bounds),u:v.u,v:v.v}));
@@ -40363,7 +39982,7 @@ export default class RaceEditor {
       this.drawRaceProjectedFlatTileMap(ctx, bounds, mode7Bands, { camera, cameraYaw });
       for (const quad of mode7Bands) {
         const { near, far } = quad;
-        if (!this.isRaceShoulderVisible()) continue;
+        if (!this.isRaceShoulderVisible(near.center.segment || currentSegment)) continue;
         const groundPalette = this.getRaceGroundPaletteForSegment(near.center.segment || currentSegment, near.center);
         this.drawRaceProjectedTexturedQuad(
           ctx,
@@ -40844,14 +40463,19 @@ export default class RaceEditor {
     scenery.forEach(({ sprite, projected }) => {
       const doodad = this.getRaceDoodadForScenery(sprite);
       const preset = RACE_SCENERY_PRESET_BY_ID[sprite.presetId] || RACE_SCENERY_PRESETS[0];
-      const widthM = Number(doodad.widthM) || Number(sprite.widthM) || preset.widthM;
-      const heightM = Number(doodad.heightM) || Number(sprite.heightM) || preset.heightM;
+      const frameIndex = sprite.animated ? Math.floor(Math.max(0, Number(this.playtestSession?.elapsedMs || 0)-Number(sprite.spawnedAtMs || 0))/90) : 0;
+      const artCanvas = doodad.model?.ref ? modelSprites.snapshot(doodad.model,Number(this.playtestSession?.elapsedMs||0)/1000,{width:256,height:256}) : this.getRaceArtSpriteCanvas(doodad.artRef || sprite.artRef, { frameIndex });
+      const visual = this.getRaceDoodadVisualLayout(sprite, doodad, artCanvas);
+      const widthM = visual.widthM;
+      const heightM = visual.heightM;
       const groundOffsetLimitM = getRaceDoodadGroundOffsetLimit(heightM);
-      const groundOffsetM = clamp(Number(doodad.groundOffsetM ?? sprite.groundOffsetM) || 0, -groundOffsetLimitM, groundOffsetLimitM);
+      const groundOffsetM = clamp(Number(visual.groundOffsetM) || 0, -groundOffsetLimitM, groundOffsetLimitM);
       const spriteYaw = (Number.isFinite(Number(sprite.yaw)) ? Number(sprite.yaw) : Number(cameraYaw || 0)) + ((doodad.itemType==='mix-tape'||(doodad.itemType==='item'&&doodad.rotate)) ? mixTapeRotation(Number(this.playtestSession?.elapsedMs||0)/1000) : 0);
       const right = this.getRaceRightVector(spriteYaw);
       const halfWidthM = Math.max(0.05, widthM * 0.5);
-      const baseElevation = Number(projected.elevation || 0) - groundOffsetM / RACE_THREE_ELEVATION_M;
+      const plantedQuad = !doodad.isFence && !sprite.fenceId ? this.getRaceDoodadWorldQuad(sprite) : null;
+      const baseElevation = plantedQuad?.points[2]?.elevation
+        ?? (Number(projected.elevation || 0) - groundOffsetM / RACE_THREE_ELEVATION_M);
       const visualBase = this.projectRaceWorldPointToCamera({
         x: Number(sprite.x || 0),
         z: Number(sprite.z || 0),
@@ -40877,7 +40501,7 @@ export default class RaceEditor {
         ? Math.abs(Number(rightBase.screenX) - Number(leftBase.screenX))
         : widthM * perspective;
       const projectedHeight = Number.isFinite(topCenter?.screenY)
-        ? Math.abs(Number(projected.screenY) - Number(topCenter.screenY))
+        ? Math.abs(Number(visualBase?.screenY ?? projected.screenY) - Number(topCenter.screenY))
         : heightM * perspective;
       const width = clamp(projectedWidth, 2, bounds.w * 0.4);
       const height = clamp(projectedHeight, 3, bounds.h * 0.9);
@@ -40887,12 +40511,9 @@ export default class RaceEditor {
       const groundY = Number.isFinite(visualBase?.screenY) ? Number(visualBase.screenY) : Number(projected.screenY);
       const y = groundY - height;
       if (x > bounds.x + bounds.w || x + width < bounds.x) return;
-      const frameIndex = sprite.animated
-        ? Math.floor(Math.max(0, Number(this.playtestSession?.elapsedMs || 0) - Number(sprite.spawnedAtMs || 0)) / 90)
-        : 0;
-      const artCanvas = doodad.model?.ref?modelSprites.snapshot(doodad.model,Number(this.playtestSession?.elapsedMs||0)/1000,{width:256,height:256}):this.getRaceArtSpriteCanvas(doodad.artRef || sprite.artRef, { frameIndex });
       if (artCanvas && typeof ctx.drawImage === 'function') {
-        ctx.drawImage(artCanvas, x, y, width, height);
+        if (visual.crop) { const c=visual.crop; ctx.drawImage(artCanvas,c.x,c.y,c.width,c.height,x,y,width,height); }
+        else ctx.drawImage(artCanvas, x, y, width, height);
         return;
       }
       ctx.fillStyle = preset.colors?.[1] || '#1f3d22';

@@ -270,3 +270,53 @@ test('budgeted full cars never take cheap path, and demotion does not snap an ov
  assert.deepEqual(runner.state.orientation,before.orientation);
 });
 
+
+
+
+test('CVT real editor AI remains authoritative across far, cheap and near budgets',async()=>{
+ const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');
+ const e=new RaceEditor({},{mode:'race'});
+ e.selectedRace.road.network.nodes[1].z=1500;
+ e.selectedRace.road.network.edges[0].widthM=12;
+ e.selectedRace.road.network.finishNodeId='end';
+ e.selectedRace.road.nodes=[];
+ e.selectedRace.road.segments=[{length:1500,curve:0,elevation:0,surface:'asphalt',roadWidthM:12,hazardIds:[]}];
+ e.selectedRace.hazards=[];e.selectedRace.scenery=[];
+ const cvt={minRatio:.357,maxRatio:2.805,cruiseRpm:1800,powerRpm:6000,ratioRatePerSecond:1};
+ e.selectedCar.tuning.cvt={...cvt};
+ for(const t of Object.values(e.selectedCar.transmissions)) {t.cvt={...cvt};t.gearRatios=[cvt.maxRatio];}
+ e.startPlaytest(e.selectedCar.id,{hydrateCars:false});
+ const session=e.playtestSession;
+ Object.assign(session,{countdownRemainingMs:0,startupFramePending:false,preparing:false,running:true,launchLockMs:0});
+ if(session.raceIntro)session.raceIntro.active=false;
+ e.updatePlaytest(1/60);
+ const car=e.selectedCar,tuning=e.getRaceCarTuning(car);
+ const pose=e.getRaceWorldPoseAtDistance(200);
+ const ai={id:'distant-integration',carId:car.id,runtimeCar:car,worldX:pose.x,worldZ:pose.z??pose.y,carYaw:pose.yaw,
+  speedMps:5,projectedDistance:200,distance:200,gear:1,rpm:2200,lap:1,currentLapMs:0,
+  engineDrive:{throttle:.5,brake:0},difficulty:'hard',lineOffset:0};
+ e.updateRaceAiVehiclePhysics(ai,{car,tuning,seconds:1/60});
+ const nearby=Array.from({length:4},(_,i)=>{
+  const d=20+i*15,p=e.getRaceWorldPoseAtDistance(d);
+  return {...ai,id:`near-${i}`,worldX:p.x,worldZ:p.z??p.y,carYaw:p.yaw,distance:d,projectedDistance:d,
+    vehicleDynamicsRunner:null,engineDrive:{throttle:.5,brake:0}};
+ });
+ session.aiRuntime=[...nearby,ai];
+ let distantFrames=0;
+ for(let i=0;i<120;i++){
+  e.updateRaceAiDrivers(1/60);
+  if(ai.simulationDetail==='distant')distantFrames++;
+ }
+ assert.equal(distantFrames,0,'CVT must never enter fixed-ratio distant approximation');
+ assert.ok(ai.vehicleDynamicsRunner.state.powertrainState.cvt.ratio>=cvt.minRatio);
+ assert.notEqual(ai.cheapPhysicsHeld,true);
+ assert.ok(ai.distance>200,`opponent must progress: ${JSON.stringify({distance:ai.distance,worldX:ai.worldX,worldZ:ai.worldZ,pose,routeLength:session.routeLength,speed:ai.speedMps,projection:e.getRaceRouteProjectionForWorldPoint({x:ai.worldX,z:ai.worldZ,heightM:ai.heightM})})}`);
+ assert.ok(ai.currentLapMs>1999 && ai.currentLapMs<2001);
+ const before={x:ai.worldX,z:ai.worldZ,speed:ai.speedMps,step:ai.vehicleDynamicsRunner.stepIndex};
+ session.worldX=ai.worldX;session.worldZ=ai.worldZ-10;
+ e.updateRaceAiDrivers(1/60);
+ assert.notEqual(ai.simulationDetail,'distant');
+ assert.ok(Math.hypot(ai.worldX-before.x,ai.worldZ-before.z)<1,'no promotion teleport');
+ assert.ok(ai.speedMps>before.speed*.7,'no promotion stop');
+ assert.ok(ai.vehicleDynamicsRunner.stepIndex>before.step,'physics clock advances');
+});

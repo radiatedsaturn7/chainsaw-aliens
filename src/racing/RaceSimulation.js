@@ -1,3 +1,4 @@
+import {advanceRaceDriftScore} from './RaceDriftScore.js';
 import { advanceRaceSimulationClock } from './RaceFrameBudget.js';
 import {updateGlassWeather} from './GlassWeather.js';
 import {prepareRaceSceneryTriggers} from './simulation/DamageModel.js';
@@ -2492,6 +2493,7 @@ export function updateRaceSimulation({
     : Math.abs(Number(editor.playtestSession.speedMps) || 0);
   tuning.absEnabled = editor.playtestSession.absEnabled !== false;
   tuning.tractionControlEnabled = editor.playtestSession.tractionControlEnabled !== false;
+  tuning.launchControlEnabled = editor.playtestSession.launchControlEnabled === true;
   // Staged countdown/rolling formation follows presentation and the music clock.
   // The bounded clock governs active racing, not how long the player waits for GO.
   const wallSeconds = Number.isFinite(Number(dt)) ? Math.max(0, Number(dt)) : 0;
@@ -2538,6 +2540,7 @@ export function updateRaceSimulation({
       absEnabled: tuning.absEnabled,
       tractionControlEnabled: tuning.tractionControlEnabled,
       launchControlEnabled: tuning.launchControlEnabled === true,
+      launchControlStaging: preStart,
       stabilityControlEnabled: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
         ? editor.playtestSession.stabilityControlExplicitlyEnabled === true
         : editor.playtestSession.stabilityControlEnabled !== false,
@@ -2567,7 +2570,7 @@ export function updateRaceSimulation({
   editor.raceInput.lookAngle = stepRaceLookAngle(
     Number(editor.raceInput.lookAngle || 0), look.angle, seconds, editor.raceInput.lookStickActive
   );
-  editor.updateRacePedalAxes(seconds);
+  editor.updateRacePedalAxes(seconds, {tuning});
   const launchSteeringLocked = countdownActive || (
     editor.isRaceLaunchSteeringLocked(editor.playtestSession)
     && editor.raceInput.analogSteeringActive
@@ -2732,62 +2735,26 @@ export function updateRaceSimulation({
   const binarySteer = launchSteeringLocked ? 0 : clamp(Number(editor.raceInput.binarySteer || 0), -1, 1);
   const binaryActive = Math.abs(binarySteer) > 0.01;
   const simulationWheelInput = editor.raceInput.wheelSteeringActive || String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation';
-  if (launchSteeringLocked) {
-    editor.raceInput.digitalSteerHoldMs = 0;
-  } else if (editor.raceInput.analogSteeringActive) {
-    editor.raceInput.lastSteeringInputMode = 'analog';
-    editor.raceInput.digitalSteerHoldMs = 0;
-    const analogIntent = clamp(Number(editor.raceInput.analogSteeringIntent || 0), -1, 1);
-    // Analog intent is the target. A single controller response stage below
-    // produces the rack command; filtering this target first caused the old
-    // disconnected, cascaded response on dirt.
-    editor.raceInput.steeringTarget = analogIntent;
-  } else {
-    if (binaryActive) {
-      editor.raceInput.lastSteeringInputMode = 'binary';
-      editor.raceInput.digitalSteerHoldMs = Number(editor.raceInput.digitalSteerHoldMs || 0) + seconds * 1000;
-      const hold = clamp(
-        Number(editor.raceInput.digitalSteerHoldMs || 0) / RACE_CONTROLLER_STEERING.digitalTargetHoldRampMs,
-        0,
-        1
-      );
-      const speedFactor = clamp(
-        steeringSafetySpeedMps / RACE_CONTROLLER_STEERING.speedReferenceMps,
-        0,
-        1
-      );
-      const nudgeRate = (
-        RACE_CONTROLLER_STEERING.digitalTargetPressBase
-        + hold * RACE_CONTROLLER_STEERING.digitalTargetPressHoldBonus
-      ) * (1 - speedFactor * 0.35);
-      editor.raceInput.steeringTarget += binarySteer * seconds * nudgeRate;
-    } else {
-      editor.raceInput.digitalSteerHoldMs = 0;
-      const analogCentered = editor.raceInput.lastSteeringInputMode === 'analog';
-      const centeredMs = Number(editor.raceInput.analogSteeringCenteredMs || 0) + (analogCentered ? seconds * 1000 : 0);
-      if (analogCentered) editor.raceInput.analogSteeringCenteredMs = centeredMs;
-      if (analogCentered) {
-        editor.raceInput.steeringTarget = 0;
-      } else {
-        const returnRate = editor.getRaceSteeringReturnRate(steeringSafetySpeedMps);
-        editor.raceInput.steeringTarget += (0 - Number(editor.raceInput.steeringTarget || 0)) * Math.min(0.88, seconds * returnRate);
-      }
-    }
-  }
-  editor.raceInput.steeringTarget = clamp(editor.raceInput.steeringTarget, -1, 1);
+  const touchButtons = editor.raceInput.activeDpadPointerId != null;
+  if (touchButtons) editor.raceInput.lastSteeringInputMode = 'digital';
+  else if (editor.raceInput.analogSteeringActive) editor.raceInput.lastSteeringInputMode = 'analog';
+  else if (binaryActive) editor.raceInput.lastSteeringInputMode = 'binary';
+  const controllerInputMode = simulationWheelInput ? 'simulation-wheel'
+    : editor.raceInput.lastSteeringInputMode === 'digital' ? 'digital'
+      : editor.raceInput.lastSteeringInputMode === 'analog' ? 'gamepad' : 'keyboard';
+  const digitalInput = controllerInputMode === 'digital' || controllerInputMode === 'keyboard';
+  const intent = launchSteeringLocked ? 0 : touchButtons || !editor.raceInput.analogSteeringActive
+    ? binarySteer : clamp(Number(editor.raceInput.analogSteeringIntent || 0), -1, 1);
+  editor.raceInput.steeringTarget = intent;
   const activeTurnInput = !launchSteeringLocked && (binaryActive || editor.raceInput.analogSteeringActive);
-  const controllerInputMode = simulationWheelInput
-    ? 'simulation-wheel'
-    : editor.raceInput.analogSteeringActive || editor.raceInput.lastSteeringInputMode === 'analog'
-      ? 'gamepad'
-      : 'keyboard';
-  editor.raceInput.steeringWheel = controllerInputMode === 'keyboard'
-    ? editor.raceInput.steeringTarget
+  editor.raceInput.steeringWheel = launchSteeringLocked ? 0 : digitalInput
+    ? systems.handlingAssist.stepDigitalSteering({
+      intent, currentOutput: editor.raceInput.steeringWheel,
+      speedMps: steeringSafetySpeedMps, seconds
+    })
     : systems.handlingAssist.stepControllerToRackInput({
-      mode: controllerInputMode,
-      intent: editor.raceInput.steeringTarget,
-      currentOutput: editor.raceInput.steeringWheel,
-      seconds
+      mode: controllerInputMode, intent,
+      currentOutput: editor.raceInput.steeringWheel, seconds
     });
   editor.raceInput.controllerSteeringMode = controllerInputMode;
   if (!editor.raceInput.analogSteeringActive
@@ -3876,7 +3843,7 @@ export function updateRaceSimulation({
     counterSteerRecovery,
     selfAligningSteeringCorrection,
     frontTireAngle: steeringAngle,
-    steeringInputMode: editor.raceInput.analogSteeringActive ? 'analog' : binaryActive ? 'digital' : 'centered',
+    steeringInputMode: editor.raceInput.controllerSteeringMode || 'centered',
     requestedSteering: effectiveRoadSteer,
     rawSteeringAngle,
     usableFullLockTireAngle,
@@ -4067,6 +4034,7 @@ export function updateRaceSimulation({
         absEnabled: tuning.absEnabled,
         tractionControlEnabled: tuning.tractionControlEnabled,
         launchControlEnabled: tuning.launchControlEnabled === true,
+      launchControlStaging: countdownActive,
         stabilityControlEnabled: String(tuning.handlingPreset || 'sport').toLowerCase() === 'simulation'
           ? editor.playtestSession.stabilityControlExplicitlyEnabled === true
           : editor.playtestSession.stabilityControlEnabled !== false,
@@ -4149,6 +4117,16 @@ export function updateRaceSimulation({
     travelM: Math.hypot(Number(authoritativeVelocity.x || 0), Number(authoritativeVelocity.z || 0)) * seconds,
     onRoad: Number(projection.distanceToRoute) <= projectedRoadHalfWidth
   });
+  if(editor.selectedRace?.campaign?.scoring==='drift'){
+    editor.playtestSession.driftScore=advanceRaceDriftScore(editor.playtestSession.driftScore,{
+      distanceM:Math.max(0,Math.min(routeAdvance,Math.hypot(Number(authoritativeVelocity.x||0),Number(authoritativeVelocity.z||0))*seconds)),
+      longitudinalSpeed:Number(presentationState.bodyLongitudinalSpeedMps)||0,
+      lateralSpeed:Number(presentationState.bodyLateralSpeedMps)||0,
+      contactCount:Object.values(presentationState.contactPatches||{}).filter(p=>p?.inContact).length,
+      onCourse:Math.abs(projectedLateralMeters)<=projectedRoadHalfWidth,
+      active:!countdownActive&&!editor.playtestSession.pendingEdgeCenterReset
+    });
+  }
   const integratedDistance = previousDistance + routeAdvance;
   if (routeRuntimeType === 'circuit') {
     const nextDistance = ((integratedDistance % routeLength) + routeLength) % routeLength;
@@ -4342,7 +4320,11 @@ export function estimateRacePowerLimitedTopSpeedMps(editor, {
     let bestDriveForce = 0;
     ratios.forEach((ratio, index) => {
       const gear = index + 1;
-      const rpm = editor.getRaceProjectedEngineRpmForGear(tuning, speed, gear);
+      const cvt=tuning.cvt && tuning.powertrainType !== 'electric';
+      if(cvt) ratio=clamp(tuning.cvt.powerRpm*Math.PI*2*Math.max(.01,tuning.wheelRadiusM)
+        /(60*Math.max(.01,speed)*Math.max(.1,tuning.finalDrive)),tuning.cvt.minRatio,tuning.cvt.maxRatio);
+      const rpm = cvt ? speed/Math.max(.01,tuning.wheelRadiusM)*ratio*tuning.finalDrive*60/(2*Math.PI)
+        : editor.getRaceProjectedEngineRpmForGear(tuning, speed, gear);
       if (rpm > redline * 1.015 || rpm < Math.max(400, Number(tuning.idleRpm || 800) * 0.55)) return;
       const engineTorqueNm = editor.getRaceTorqueNmAtRpm(clamp(rpm, Number(tuning.idleRpm || 800), redline), tuning);
       const driveForce = editor.getRaceDriveForceComponents({

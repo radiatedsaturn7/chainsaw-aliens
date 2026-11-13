@@ -1,0 +1,11 @@
+{
+ "name":"Team O’Neil-inspired Rally Stage (2994)",
+ "origin":{"lat":44.36779,"lon":-71.709566},
+ "surface":"gravel",
+ "widthM":5,
+ "pointsM":[[-150,320],[-90,200],[20,130],[125,180],[215,130],[210,25],[85,-50],[-30,-15],[-145,-95],[-180,-220],[-75,-310],[70,-270],[200,-365],[240,-495],[130,-580],[-20,-520],[-135,-615],[-80,-745],[95,-810],[245,-755],[340,-850],[270,-970],[100,-1035]],
+ "geometryMethod":"hand-authored-fictional",
+ "description":"A fictional 2994 gravel training stage inspired by the facility's described crests, junctions and varied corners. This is an original course design, not a surveyed or traced Team O'Neil road. The geographic anchor is the school's published location; elevation comes from the regional DEM.",
+ "reference":"https://teamoneil.com/facility/",
+ "license":"Original project-authored geometry; no copyrighted facility map or imagery copied."
+}

@@ -206,6 +206,10 @@ export class VehicleDynamicsWorkerClient {
     });
   }
 
+  submitDebugRoad(update) {
+    this.worker.postMessage({type:'debugRoad',update});
+  }
+
   submitDebugTireSwap(update,vehicleId='player') {
     this.worker.postMessage({type:'debugTireSwap',vehicleId,update});
   }
@@ -279,6 +283,7 @@ export class VehicleDynamicsWorkerClient {
       } else {
         decoded = readVehicleRenderSnapshot(message.buffer);
       }
+      decoded.tractionBattery = message.tractionBattery || null;
       decoded.mechanical = message.mechanical || this.snapshotsByVehicle.get(String(message.vehicleId || 'player'))?.latest?.mechanical || null;
       decoded.workerSequence = Number(message.snapshotSequence || decoded.stepIndex || 0);
       if (message.trackStateVisualDelta?.cells) {
@@ -435,6 +440,7 @@ export class VehicleDynamicsWorkerClient {
       renderTimeSeconds
     );
     if (rendered && history) {
+      rendered.tractionBattery = history.latest?.tractionBattery || latest?.tractionBattery || null;
       rendered.mechanical = history.latest?.mechanical || latest?.mechanical;
       history.displayedSequence = Number(
         rendered.interpolationAlpha < 1

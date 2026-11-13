@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-abandoned-solar-facility",
+    "name": "expanded-abandoned-solar-facility",
+    "artRef": "expanded-abandoned-solar-facility",
+    "widthM": 10,
+    "heightM": 5,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 8.5,
+    "hitboxHeightM": 4.5,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

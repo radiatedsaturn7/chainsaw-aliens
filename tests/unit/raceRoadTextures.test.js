@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {prepareRaceSurfaceBakeForTransfer} from '../../src/ui/raceWorldBakeWorker.js';
 import * as THREE from '../../src/vendorBridge/three.js';
 import assert from 'node:assert/strict';
 import { roadTextureSettings, buildRoadTextureStrips, showBuiltInRoadMarkings, roadTextureMipBias } from '../../src/racing/RaceRoadTextures.js';
@@ -48,8 +49,8 @@ test('static renderer uses textures, preserves road elevation/UVs and invalidate
 });
 test('editor settings save/load, collect artwork, cancel cleanly and restore default mapping',async()=>{
  const e=new RaceEditor({});let fields;
- await e.openRaceRoadTextures(async(title,f)=>{fields=f;return {roadMipmapDistance:4,roadFilter:'crisp',roadMipmaps:false,roadAnisotropy:16,roadArt:'center line',roadRepeat:7,roadRepeatWidth:4,marginRepeatWidth:.1,marginArt:'curb',marginRepeat:2,builtInLines:false};});
- assert.equal(fields.length,15);assert.equal(e.selectedRace.roadTextures.road.repeatM,7);
+ await e.openRaceRoadTextures(async(title,f)=>{fields=f;return {roadLaneWidth:3.6576,roadMipmapDistance:4,roadFilter:'crisp',roadMipmaps:false,roadAnisotropy:16,roadArt:'center line',roadRepeat:7,roadRepeatWidth:4,marginRepeatWidth:.1,marginArt:'curb',marginRepeat:2,builtInLines:false};});
+ assert.ok(fields.some(field=>field.id==='roadLaneWidth'));assert.equal(e.selectedRace.roadTextures.road.laneWidthM,3.6576);assert.ok(fields.some(field=>field.id==='debugRoad_asphalt'));assert.equal(e.selectedRace.roadTextures.road.repeatM,7);
  assert.ok(e.collectSelectedRaceTextureArtRefs().includes('center line'));
  const loaded=e.normalizeLoadedRaceDocument(e.serializeSelectedRaceDocument());
  assert.deepEqual(loaded.roadTextures,e.selectedRace.roadTextures);
@@ -150,5 +151,145 @@ test('three- and four-way junctions retain textured coverage and match every roa
   const rendered=editor.getRaceStaticTrackSurfaceMeshes(bake).roadMeshes;
   assert.equal(rendered.filter(m=>m.source==='road-texture-junction').length,triangles.length);
   assert.ok(rendered.every(m=>m.textured&&m.artRef==='asphalt'));
+ }
+});
+
+test('physical surface ribbons and mirrored shoulder UVs survive editing and preload', async()=>{
+ const e=new RaceEditor({});
+ e.selectedRace.roadTextures={road:{artRef:'asphalt'},shoulder:{artRef:'transition'},surfaceRoads:{gravel:{artRef:'gravel',roughArtRef:'ruts'}}};
+ const settings=roadTextureSettings(e.selectedRace);
+ const section=(distance,surface,bumpiness)=>({center:{distance,segment:{surface,bumpiness}},left:{x:-4,z:distance},right:{x:4,z:distance},marginLeft:{x:-4.2,z:distance},marginRight:{x:4.2,z:distance},shoulderLeft:{x:-6,z:distance},shoulderRight:{x:6,z:distance}});
+ const meshes=buildRoadTextureStrips({surfaceBake:{sections:[section(0,'asphalt',0),section(10,'gravel',.1),section(20,'gravel',.6),section(30,'asphalt',0)]}},settings);
+ assert.deepEqual(meshes.roadMeshes.filter(m=>!m.vertexAlpha).map(m=>m.artRef),['asphalt','gravel','ruts']);
+ const transferred=prepareRaceSurfaceBakeForTransfer({sections:[section(0,'gravel',.6),section(10,'gravel',.6)]});
+ assert.equal(buildRoadTextureStrips({surfaceBake:transferred},settings).roadMeshes[0].artRef,'ruts');
+ assert.equal(buildRoadTextureStrips({surfaceBake:transferred},settings,{shoulderVisible:false}).shoulderMeshes.length,0);
+ for(const shoulder of meshes.shoulderMeshes){assert.equal(shoulder.artRef,'transition');assert.deepEqual(shoulder.points.map(p=>p.u),[0,1,1,0]);assert.ok(Math.abs(shoulder.points[0].x)<Math.abs(shoulder.points[1].x));}
+ for(const ref of ['gravel','ruts','transition'])assert.ok(e.collectSelectedRaceTextureArtRefs().includes(ref));
+ await e.openRaceRoadTextures(async()=>({roadArt:'asphalt',roadRepeat:5}));
+ assert.equal(e.selectedRace.roadTextures.surfaceRoads.gravel.roughArtRef,'ruts');
+ assert.equal(e.selectedRace.roadTextures.shoulder.artRef,'transition');
+});
+
+test('static scene rebuilds when mixed road and shoulder artwork arrives',()=>{
+ const e=new RaceEditor({});e.getRaceSurfaceGeometryRevisionKey=()=> 'same';e.getRaceTileMapStats=()=>({artRefs:[]});
+ e.ensureRaceSurfaceArt=()=>({});e.ensureRaceTileMap=()=>({revision:1});e.getRaceGroundTextureFilterMode=()=> 'balanced';
+ const loaded=new Set(['main']);e.getRaceArtSpriteCanvas=ref=>loaded.has(ref)?{}:null;
+ const options={staticRevisionKey:'unchanged',roadMeshes:[{artRef:'main'},{artRef:'rough'}],shoulderMeshes:[{artRef:'edge'}]};
+ const first=e.getRaceThreeStaticWorldKey([],options);loaded.add('rough');
+ const second=e.getRaceThreeStaticWorldKey([],options);assert.notEqual(first,second);
+ loaded.add('edge');assert.notEqual(second,e.getRaceThreeStaticWorldKey([],options));
+});
+
+test('road, shoulder and decal images are critical startup artwork',async()=>{
+ const {buildRaceTransferPackage}=await import('../../src/ui/raceWorldBakeWorker.js');
+ const e=new RaceEditor({}),{network}=fixture();
+ e.selectedRace.road.network=network;e.selectedRace.road.mode='network';
+ e.selectedRace.roadTextures={road:{artRef:'main'},shoulder:{artRef:'edge'},surfaceRoads:{gravel:{artRef:'gravel',roughArtRef:'ruts'}}};
+ e.selectedRace.road.segments=[{surface:'asphalt',length:20,shoulderTexture:{artRef:'section shoulder',repeatM:6}}];
+ e.selectedRace.decals=[{id:'mark',kind:'decal',artRef:'skids',x:0,z:10,widthM:2,heightM:3}];
+ const p=await buildRaceTransferPackage(e.selectedRace,{includeArtAssets:false});
+ for(const ref of ['main','edge','gravel','ruts','skids','section shoulder'])assert.ok(p.artPlan.criticalRefs.includes(ref),ref);
+});
+
+ test('surface crossfades stay on the road deck with a continuous half blend at the join',()=>{
+ const section=(d,surface)=>({center:{distance:d,segment:{surface}},left:{x:-4,z:d,elevation:10+d*.1},right:{x:4,z:d,elevation:10+d*.1}});
+ const bake={surfaceBake:{sections:[section(0,'asphalt'),section(20,'gravel'),section(40,'gravel')]}};
+ const settings=roadTextureSettings({roadTextures:{road:{artRef:'asphalt'},surfaceRoads:{gravel:{artRef:'gravel'}}}});
+ const before=JSON.stringify(bake),meshes=buildRoadTextureStrips(bake,settings).roadMeshes,blends=meshes.filter(m=>m.vertexAlpha);
+ assert.ok(blends.length);assert.equal(JSON.stringify(bake),before);
+ const editor=new RaceEditor({});
+ for(const m of blends){
+  const geometry=editor.getRaceThreeMeshGeometry([m]);assert.equal(geometry.getAttribute('color').itemSize,4);
+  for(const p of m.points){assert.ok(p.z>=12&&p.z<=28);assert.ok(p.alpha>=0&&p.alpha<=.5);assert.ok(Math.abs(p.elevation-(10+p.z*.1))<1e-8);if(p.z===20)assert.equal(p.alpha,.5);}
+ }
+ assert.ok(blends.some(m=>m.artRef==='asphalt'));assert.ok(blends.some(m=>m.artRef==='gravel'));
+});
+
+test('section shoulders override surface mappings and survive worker transfer',()=>{
+ const e=new RaceEditor({});
+ e.selectedRace.roadTextures={shoulder:{artRef:'default',repeatM:8},surfaceShoulders:{gravel:{artRef:'gravel edge',repeatM:8},dirt:{enabled:false}}};
+ const settings=roadTextureSettings(e.selectedRace);
+ const section=(distance,segment)=>({center:{distance,segment},left:{x:-4,z:distance},right:{x:4,z:distance},marginLeft:{x:-4.2,z:distance},marginRight:{x:4.2,z:distance},shoulderLeft:{x:-6,z:distance},shoulderRight:{x:6,z:distance}});
+ const sections=[section(0,{surface:'asphalt'}),section(20,{surface:'gravel'}),section(40,{surface:'dirt'}),section(60,{surface:'dirt',shoulderTexture:{artRef:'section edge',repeatM:8}}),section(80,{surface:'gravel',shoulderTexture:{enabled:false}}),section(100,{surface:'asphalt'})];
+ const transferred=prepareRaceSurfaceBakeForTransfer({sections});
+ const meshes=buildRoadTextureStrips({surfaceBake:transferred},settings).shoulderMeshes;
+ assert.deepEqual(meshes.filter(m=>!m.vertexAlpha).map(m=>m.artRef),['default','default','gravel edge','gravel edge','section edge','section edge']);
+ assert.ok(meshes.some(m=>m.vertexAlpha));
+ for(const mesh of meshes){
+  assert.ok(mesh.depthOffset < -.09,'art sits above the base shoulder in fallback WebGL');
+  if(mesh.vertexAlpha) for(const p of mesh.points){assert.ok(p.z>=12&&p.z<=28);assert.ok(p.alpha>=0&&p.alpha<=.5);}
+ }
+ assert.equal(buildRoadTextureStrips({surfaceBake:transferred},settings,{shoulderVisible:false}).shoulderMeshes.length,0);
+});
+
+test('shoulder editor saves surface and section overrides, removes inheritance overrides and cancels cleanly',async()=>{
+ const e=new RaceEditor({}),segment={length:100,surface:'gravel'};
+ e.selectedRace.road.segments=[segment];
+ e.selectedRace.road.nodes=[{x:0,y:0,elevation:0},{x:0,y:100,elevation:0}];
+ e.selectedRace.margin.shoulderMode='on';
+ await e.openRaceShoulderTextures(async()=>({default:'base',defaultRepeat:12,gravel:'edge',gravelRepeat:6}));
+ assert.equal(e.selectedRace.roadTextures.surfaceShoulders.gravel.artRef,'edge');
+ const before=JSON.stringify(e.selectedRace);
+ await e.openRaceShoulderTextures(async()=>null,segment);assert.equal(JSON.stringify(e.selectedRace),before);
+ const key=e.getRaceSurfaceGeometryRevisionKey();
+ await e.openRaceShoulderTextures(async()=>({section:'__none'}),segment);
+ assert.equal(e.getRaceShoulderWidthWorld(segment),0);
+ assert.equal(e.getRaceCollisionShoulderWidthWorld(segment,'shoulder'),0);
+ assert.equal(e.isRaceShoulderVisible(segment),false);
+ assert.notEqual(e.getRaceSurfaceGeometryRevisionKey(),key);
+ const loaded=e.normalizeLoadedRaceDocument(e.serializeSelectedRaceDocument());
+ assert.equal(loaded.road.segments[0].shoulderTexture.enabled,false);
+ await e.openRaceShoulderTextures(async()=>({section:'custom edge',sectionRepeat:7}),segment);
+ assert.ok(e.getRaceShoulderWidthWorld(segment)>0);
+ assert.ok(e.collectSelectedRaceTextureArtRefs().includes('custom edge'));
+ assert.equal(e.getRaceShoulderArtRef(segment),'custom edge');
+ await e.openRaceShoulderTextures(async()=>({section:''}),segment);
+ assert.equal(segment.shoulderTexture,undefined);
+ assert.equal(e.getRaceShoulderArtRef(segment),'edge');
+ await e.openRaceShoulderTextures(async()=>({default:'__none',gravel:'edge',gravelRepeat:6}));
+ assert.ok(e.getRaceShoulderWidthWorld(segment)>0,'surface can override a disabled default');
+ assert.equal(e.getRaceShoulderWidthWorld({surface:'asphalt'}),0);
+ await e.openRaceShoulderTextures(async()=>({section:'__none'}),segment);
+ const section=e.getRaceRoadCrossSectionAtDistance(50);
+ assert.ok(Math.hypot(section.shoulderLeft.x-section.marginLeft.x,section.shoulderLeft.z-section.marginLeft.z)<1e-6,'disabled shoulder has no strip width in the baked cross section');
+});
+
+test('surface-only shoulder textures render without a default road or shoulder texture',()=>{
+ const e=new RaceEditor({});e.selectedRace.margin.shoulderMode='on';e.selectedRace.roadTextures={surfaceShoulders:{gravel:{artRef:'gravel edge',repeatM:8}}};
+ const section=distance=>({center:{distance,segment:{surface:'gravel'}},left:{x:-4,z:distance},right:{x:4,z:distance},marginLeft:{x:-4.2,z:distance},marginRight:{x:4.2,z:distance},shoulderLeft:{x:-6,z:distance},shoulderRight:{x:6,z:distance}});
+ const bake={key:'shoulders-only',runtimeType:'destination',routeLength:20,surfaceBake:{sections:[section(0),section(20)]}};
+ assert.equal(e.getRaceStaticTrackSurfaceMeshes(bake).shoulderMeshes.filter(m=>m.artRef==='gravel edge').length,2);
+});
+
+
+test('live debug road swaps snow artwork in static renderer and restores it without mutating bake',()=>{
+ const {bake,network}=fixture(),editor=new RaceEditor({});
+ editor.selectedRace.road.network=network;
+ editor.selectedRace.roadTextures={road:{artRef:'snowroad',repeatM:5},surfaceRoads:{asphalt:{artRef:'road-snow-packed'}}};
+ const before=JSON.stringify(bake);
+ const authored=editor.getRaceStaticTrackSurfaceMeshes(bake);
+ editor.playtestSession={debugRoad:{surface:'asphalt'}};
+ const dry=editor.getRaceStaticTrackSurfaceMeshes(bake);
+ assert.notEqual(dry,authored);
+ assert.ok(dry.roadMeshes.length);
+ assert.ok(dry.roadMeshes.every(mesh=>mesh.artRef==='road-asphalt-worn'));
+ assert.equal(dry.roadPaintMeshes.length,0);
+ editor.playtestSession.debugRoad={};
+ const restored=editor.getRaceStaticTrackSurfaceMeshes(bake);
+ assert.deepEqual(restored.roadMeshes,authored.roadMeshes);
+ assert.equal(JSON.stringify(bake),before);
+});
+
+test('highway stripes use physical lane spacing for three and four lane carriageways',async()=>{
+ const {roadTextureCrossSection}=await import('../../src/racing/RaceRoadTextures.js');
+ for(const lanes of [3,4]){
+  const width=lanes*3.6576,options=roadTextureSettings({roadTextures:{road:{laneWidthM:3.6576}}}).road;
+  const {span,center}=roadTextureCrossSection({x:-width/2,z:0},{x:width/2,z:0},options);
+  const left=center-span/2,right=center+span/2;
+  const stripes=[];
+  for(let u=-5.5;u<6;u+=1)if(u>left+1e-8&&u<right-1e-8)stripes.push((u-left)/span*width);
+  assert.equal(stripes.length,lanes-1);
+  stripes.forEach((x,i)=>assert.ok(Math.abs(x-(i+1)*3.6576)<1e-8));
  }
 });

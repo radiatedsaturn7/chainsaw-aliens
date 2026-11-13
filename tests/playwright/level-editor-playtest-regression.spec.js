@@ -17,7 +17,7 @@ test.beforeEach(async ({page}) => {
 });
 
 async function waitForGameReady(page) {
-  await page.goto('/index.html', { waitUntil: 'load' });
+  await page.goto('/index.html?hideFullscreenForTesting', { waitUntil: 'load' });
   await page.waitForFunction(() => Boolean(window.__gameReady && window.__game));
 }
 

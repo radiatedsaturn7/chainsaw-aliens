@@ -29,185 +29,193 @@
   "graphics": {
     "tireSurfaces": {
       "tread": {
-        "artRef": "8296 tires 3",
+        "artRef": "catalog-offroad-allterrain",
         "frameIndex": 0,
         "region": {
-          "x": 121,
-          "y": 30,
-          "width": 138,
-          "height": 332
+          "x": 186,
+          "y": 67,
+          "width": 333,
+          "height": 600
         },
         "bounds": {
-          "x": 121.5,
-          "y": 30.5,
-          "width": 137,
-          "height": 331
+          "x": 186.5,
+          "y": 67.5,
+          "width": 332,
+          "height": 599
         }
       },
       "wheel": {
-        "artRef": "8296 tires 3",
-        "frameIndex": 2,
+        "artRef": "catalog-offroad-allterrain",
+        "frameIndex": 1,
         "region": {
-          "x": 191,
-          "y": 192.5,
-          "radius": 177.45210621460654
+          "x": 353,
+          "y": 358.5,
+          "radius": 332.3345453003645
         },
         "bounds": {
-          "x": 13.547993785393459,
-          "y": 15.047993785393459,
-          "width": 354.9040124292131,
-          "height": 354.9040124292131
+          "x": 20.665554699635493,
+          "y": 26.165554699635493,
+          "width": 664.668890600729,
+          "height": 664.668890600729
         }
       }
     },
     "angleLayers": {
       "front": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-offroad-allterrain",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 186,
+            "y": 67,
+            "width": 333,
+            "height": 600
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 186.5,
+            "y": 67.5,
+            "width": 332,
+            "height": 599
           }
         }
       },
       "frontRight": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-offroad-allterrain",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 186,
+            "y": 67,
+            "width": 333,
+            "height": 600
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 186.5,
+            "y": 67.5,
+            "width": 332,
+            "height": 599
           }
         }
       },
       "right": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
-          "frameIndex": 2,
+          "artRef": "catalog-offroad-allterrain",
+          "frameIndex": 1,
           "region": {
-            "x": 191,
-            "y": 192.5,
-            "radius": 177.45210621460654
+            "x": 353,
+            "y": 358.5,
+            "radius": 332.3345453003645
           },
           "bounds": {
-            "x": 13.547993785393459,
-            "y": 15.047993785393459,
-            "width": 354.9040124292131,
-            "height": 354.9040124292131
+            "x": 20.665554699635493,
+            "y": 26.165554699635493,
+            "width": 664.668890600729,
+            "height": 664.668890600729
           }
         }
       },
       "rearRight": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-offroad-allterrain",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 186,
+            "y": 67,
+            "width": 333,
+            "height": 600
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 186.5,
+            "y": 67.5,
+            "width": 332,
+            "height": 599
           }
         }
       },
       "rear": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-offroad-allterrain",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 186,
+            "y": 67,
+            "width": 333,
+            "height": 600
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 186.5,
+            "y": 67.5,
+            "width": 332,
+            "height": 599
           }
         }
       },
       "rearLeft": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-offroad-allterrain",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 186,
+            "y": 67,
+            "width": 333,
+            "height": 600
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 186.5,
+            "y": 67.5,
+            "width": 332,
+            "height": 599
           }
         }
       },
       "left": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
-          "frameIndex": 2,
+          "artRef": "catalog-offroad-allterrain",
+          "frameIndex": 1,
           "region": {
-            "x": 191,
-            "y": 192.5,
-            "radius": 177.45210621460654
+            "x": 353,
+            "y": 358.5,
+            "radius": 332.3345453003645
           },
           "bounds": {
-            "x": 13.547993785393459,
-            "y": 15.047993785393459,
-            "width": 354.9040124292131,
-            "height": 354.9040124292131
+            "x": 20.665554699635493,
+            "y": 26.165554699635493,
+            "width": 664.668890600729,
+            "height": 664.668890600729
           }
         }
       },
       "frontLeft": {
         "tires": {
+          "tireMode": "auto",
           "cylinder": true,
-          "artRef": "8296 tires 3",
+          "artRef": "catalog-offroad-allterrain",
           "frameIndex": 0,
           "region": {
-            "x": 121,
-            "y": 30,
-            "width": 138,
-            "height": 332
+            "x": 186,
+            "y": 67,
+            "width": 333,
+            "height": 600
           },
           "bounds": {
-            "x": 121.5,
-            "y": 30.5,
-            "width": 137,
-            "height": 331
+            "x": 186.5,
+            "y": 67.5,
+            "width": 332,
+            "height": 599
           }
         }
       }

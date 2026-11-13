@@ -40,3 +40,30 @@ test('decal renderer uses cached depth-tested terrain geometry and clears remove
   e.selectedRace.decals=[];e.syncRaceThreeDecals(renderer);
   assert.equal(renderer.decalGroup.children.length,0);assert.equal(group.parent,null);
 });
+
+test('fallback WebGL has terrain-conforming textured decals with cached UVs',async()=>{
+ const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');
+ const e=new RaceEditor({}),surface={sampleWorld:({x,z})=>({elevation:x*.2+z*.1})};
+ e.getRaceSurfaceModel=()=>surface;
+ e.selectedRace.decals=[{id:'test',kind:'decal',artRef:'Art',x:0,z:0,widthM:4,heightM:4}];
+ const meshes=e.getRaceWebGLDecalMeshes();assert.ok(meshes.length);
+ assert.equal(e.getRaceWebGLDecalMeshes(),meshes);
+ for(const m of meshes){assert.equal(m.artRef,'Art');assert.equal(m.textured,true);assert.ok(m.depthOffset<-.08);
+  for(const p of m.points){assert.equal(p.elevation,p.x*.2+p.z*.1);assert.ok(Number.isFinite(p.u)&&Number.isFinite(p.v));}}
+ e.selectedRace.decals=[];assert.deepEqual(e.getRaceWebGLDecalMeshes(),[]);
+ e.selectedRace.renderDebug={overlaysEnabled:false};assert.deepEqual(e.getRaceWebGLDecalMeshes(),[]);
+});
+
+test('decal textures clamp filtered edges without changing repeating road textures', async()=>{
+ const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');
+ const THREE=await import('../../src/vendorBridge/three.js');
+ const e=new RaceEditor({});e.getRaceArtSpriteCanvas=()=>({width:32,height:32});e.getRaceGroundTextureFilterMode=()=> 'smooth';
+ const renderer={textureCache:new Map()};
+ const road=e.getRaceThreeTexture(renderer,'same-art');
+ const decal=e.getRaceThreeTexture(renderer,'same-art',{clampEdges:true,premultiplyAlpha:true,filterMode:'smooth'});
+ assert.notEqual(road,decal);assert.equal(road.wrapS,THREE.RepeatWrapping);assert.equal(road.wrapT,THREE.RepeatWrapping);
+ assert.equal(decal.wrapS,THREE.ClampToEdgeWrapping);assert.equal(decal.wrapT,THREE.ClampToEdgeWrapping);
+ assert.equal(decal.minFilter,THREE.LinearMipmapLinearFilter);
+ assert.equal(decal.premultiplyAlpha,true);assert.equal(road.premultiplyAlpha,false);
+ assert.equal(e.getRaceThreeTexture(renderer,'same-art',{clampEdges:true,premultiplyAlpha:true,filterMode:'smooth'}),decal);
+});

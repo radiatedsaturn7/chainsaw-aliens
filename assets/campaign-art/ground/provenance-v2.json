@@ -1,0 +1,72 @@
+[
+  {
+    "path": "assets/campaign-art/ground/ground-clean-snow-v2.png",
+    "prompt": "Use case: stylized-concept. Asset type: homogeneous isotropic ground material swatch PNG. Make a NEW standalone square macro orthographic overhead material texture showing clean white fine-grained snow, subtle tiny irregular frozen crystals. Equal surface distribution across the entire canvas including center, corners, left and right edges. Visually uniform statistical material, random nondirectional detail, no orientation or intentional composition. Fine detailed pixel-texture treatment for a retro racing game. Low-contrast diffuse neutral lighting with no cast shadows. Entire canvas one ground material. NO ROAD, NO central corridor, NO side strips, NO paths, NO wheel tracks, NO shoulders, NO border, NO landscape, NO horizon, NO perspective, NO large identifiable objects. Four-way repeating texture; opposite edges should match without special border bands. No lettering or watermark.",
+    "generator": "built-in imagegen",
+    "referencesIncluded": false,
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-28e7c9c9-03be-4d20-b91d-be812673af77.png"
+  },
+  {
+    "path": "assets/campaign-art/ground/ground-dirty-snow-v2.png",
+    "prompt": "Use case: stylized-concept. Asset type: homogeneous isotropic ground material swatch PNG. Make a NEW standalone square macro orthographic overhead material texture showing dirty roadside snow material, fine snow granules mixed evenly with gray-brown road dust and tiny grit throughout the entire image, still predominantly snow. Equal surface distribution across the entire canvas including center, corners, left and right edges. Visually uniform statistical material, random nondirectional detail, no orientation or intentional composition. Fine detailed pixel-texture treatment for a retro racing game. Low-contrast diffuse neutral lighting with no cast shadows. Entire canvas one ground material. NO ROAD, NO central corridor, NO side strips, NO paths, NO wheel tracks, NO shoulders, NO border, NO landscape, NO horizon, NO perspective, NO large identifiable objects. Four-way repeating texture; opposite edges should match without special border bands. No lettering or watermark.",
+    "generator": "built-in imagegen",
+    "referencesIncluded": false,
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-b85a6a46-7eb1-4bd9-b699-17f7dd6df077.png"
+  },
+  {
+    "path": "assets/campaign-art/ground/ground-brown-dirt-v2.png",
+    "prompt": "Use case: stylized-concept. Asset type: homogeneous isotropic ground material swatch PNG. Make a NEW standalone square macro orthographic overhead material texture showing muted brown soil with tiny random pebbles and irregular fine dry clods. Equal surface distribution across the entire canvas including center, corners, left and right edges. Visually uniform statistical material, random nondirectional detail, no orientation or intentional composition. Fine detailed pixel-texture treatment for a retro racing game. Low-contrast diffuse neutral lighting with no cast shadows. Entire canvas one ground material. NO ROAD, NO central corridor, NO side strips, NO paths, NO wheel tracks, NO shoulders, NO border, NO landscape, NO horizon, NO perspective, NO large identifiable objects. Four-way repeating texture; opposite edges should match without special border bands. No lettering or watermark.",
+    "generator": "built-in imagegen",
+    "referencesIncluded": false,
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-b316911f-78e6-47af-a1d2-992f864f33d3.png"
+  },
+  {
+    "path": "assets/campaign-art/ground/ground-gray-gravel-v2.png",
+    "prompt": "Use case: stylized-concept. Asset type: homogeneous isotropic ground material swatch PNG. Make a NEW standalone square macro orthographic overhead material texture showing neutral gray fine crushed gravel with uniformly mixed tiny irregular stones, no grass. Equal surface distribution across the entire canvas including center, corners, left and right edges. Visually uniform statistical material, random nondirectional detail, no orientation or intentional composition. Fine detailed pixel-texture treatment for a retro racing game. Low-contrast diffuse neutral lighting with no cast shadows. Entire canvas one ground material. NO ROAD, NO central corridor, NO side strips, NO paths, NO wheel tracks, NO shoulders, NO border, NO landscape, NO horizon, NO perspective, NO large identifiable objects. Four-way repeating texture; opposite edges should match without special border bands. No lettering or watermark.",
+    "generator": "built-in imagegen",
+    "referencesIncluded": false,
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-5b8f276a-2f4f-4de2-bb36-b3febcd90fc9.png"
+  },
+  {
+    "path": "assets/campaign-art/ground/ground-red-gravel-v2.png",
+    "prompt": "Use case: stylized-concept. Asset type: homogeneous isotropic ground material swatch PNG. Make a NEW standalone square macro orthographic overhead material texture showing muted reddish fine crushed gravel with uniformly mixed tiny irregular stones. Equal surface distribution across the entire canvas including center, corners, left and right edges. Visually uniform statistical material, random nondirectional detail, no orientation or intentional composition. Fine detailed pixel-texture treatment for a retro racing game. Low-contrast diffuse neutral lighting with no cast shadows. Entire canvas one ground material. NO ROAD, NO central corridor, NO side strips, NO paths, NO wheel tracks, NO shoulders, NO border, NO landscape, NO horizon, NO perspective, NO large identifiable objects. Four-way repeating texture; opposite edges should match without special border bands. No lettering or watermark.",
+    "generator": "built-in imagegen",
+    "referencesIncluded": false,
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-20a4dfc5-50ee-4dea-8522-a59d7ba6aadf.png"
+  },
+  {
+    "path": "assets/campaign-art/ground/ground-alpine-rock-v2.png",
+    "prompt": "Use case: stylized-concept. Asset type: homogeneous isotropic ground material swatch PNG. Make a NEW standalone square macro orthographic overhead material texture showing pale gray alpine rock surface, small irregular cracks and tiny grit, no vegetation. Equal surface distribution across the entire canvas including center, corners, left and right edges. Visually uniform statistical material, random nondirectional detail, no orientation or intentional composition. Fine detailed pixel-texture treatment for a retro racing game. Low-contrast diffuse neutral lighting with no cast shadows. Entire canvas one ground material. NO ROAD, NO central corridor, NO side strips, NO paths, NO wheel tracks, NO shoulders, NO border, NO landscape, NO horizon, NO perspective, NO large identifiable objects. Four-way repeating texture; opposite edges should match without special border bands. No lettering or watermark.",
+    "generator": "built-in imagegen",
+    "referencesIncluded": false,
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-4424d018-11b7-45ea-adf7-6c5c58c935f8.png"
+  },
+  {
+    "path": "assets/campaign-art/ground/ground-canyon-rock-v2.png",
+    "prompt": "Use case: stylized-concept. Asset type: homogeneous isotropic ground material swatch PNG. Make a NEW standalone square macro orthographic overhead material texture showing muted red sandstone rock surface, small irregular erosion cracks and tiny grit, no large slabs. Equal surface distribution across the entire canvas including center, corners, left and right edges. Visually uniform statistical material, random nondirectional detail, no orientation or intentional composition. Fine detailed pixel-texture treatment for a retro racing game. Low-contrast diffuse neutral lighting with no cast shadows. Entire canvas one ground material. NO ROAD, NO central corridor, NO side strips, NO paths, NO wheel tracks, NO shoulders, NO border, NO landscape, NO horizon, NO perspective, NO large identifiable objects. Four-way repeating texture; opposite edges should match without special border bands. No lettering or watermark.",
+    "generator": "built-in imagegen",
+    "referencesIncluded": false,
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-7e0b5ba5-830f-419a-a137-87037cfebbe3.png"
+  },
+  {
+    "path": "assets/campaign-art/ground/ground-desert-scrub-v2.png",
+    "prompt": "Use case: stylized-concept. Asset type: homogeneous isotropic ground material swatch PNG. Make a NEW standalone square macro orthographic overhead material texture showing dry tan desert soil, very small dead twig fragments and tiny sparse dry scrub litter evenly scattered throughout. Equal surface distribution across the entire canvas including center, corners, left and right edges. Visually uniform statistical material, random nondirectional detail, no orientation or intentional composition. Fine detailed pixel-texture treatment for a retro racing game. Low-contrast diffuse neutral lighting with no cast shadows. Entire canvas one ground material. NO ROAD, NO central corridor, NO side strips, NO paths, NO wheel tracks, NO shoulders, NO border, NO landscape, NO horizon, NO perspective, NO large identifiable objects. Four-way repeating texture; opposite edges should match without special border bands. No lettering or watermark.",
+    "generator": "built-in imagegen",
+    "referencesIncluded": false,
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-8f2481c2-d0c9-4acb-a54f-1647047e5b12.png"
+  },
+  {
+    "path": "assets/campaign-art/ground/ground-industrial-concrete-v2.png",
+    "prompt": "Use case: stylized-concept. Asset type: homogeneous isotropic ground material swatch PNG. Make a NEW standalone square macro orthographic overhead material texture showing weathered industrial gray concrete with fine random cracks and tiny stains evenly distributed throughout. Equal surface distribution across the entire canvas including center, corners, left and right edges. Visually uniform statistical material, random nondirectional detail, no orientation or intentional composition. Fine detailed pixel-texture treatment for a retro racing game. Low-contrast diffuse neutral lighting with no cast shadows. Entire canvas one ground material. NO ROAD, NO central corridor, NO side strips, NO paths, NO wheel tracks, NO shoulders, NO border, NO landscape, NO horizon, NO perspective, NO large identifiable objects. Four-way repeating texture; opposite edges should match without special border bands. No lettering or watermark.",
+    "generator": "built-in imagegen",
+    "referencesIncluded": false,
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-5a196116-9497-40a4-a94a-b1124a9972e9.png"
+  },
+  {
+    "path": "assets/campaign-art/ground/ground-industrial-rubble-v2.png",
+    "prompt": "Use case: stylized-concept. Asset type: homogeneous isotropic ground material swatch PNG. Make a NEW standalone square macro orthographic overhead material texture showing dark weathered industrial ground with many tiny randomly scattered concrete fragments and small brick chips evenly throughout. Equal surface distribution across the entire canvas including center, corners, left and right edges. Visually uniform statistical material, random nondirectional detail, no orientation or intentional composition. Fine detailed pixel-texture treatment for a retro racing game. Low-contrast diffuse neutral lighting with no cast shadows. Entire canvas one ground material. NO ROAD, NO central corridor, NO side strips, NO paths, NO wheel tracks, NO shoulders, NO border, NO landscape, NO horizon, NO perspective, NO large identifiable objects. Four-way repeating texture; opposite edges should match without special border bands. No lettering or watermark.",
+    "generator": "built-in imagegen",
+    "referencesIncluded": false,
+    "source": "/workspace/scratch/893b3860b735/generated_images/exec-486adcb2-6ea9-413a-9c7a-8fd9c7a4767e.png"
+  }
+]

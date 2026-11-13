@@ -1,0 +1,779 @@
+{
+  "car": {
+    "id": "dustjack-v8",
+    "name": "Dustjack V8",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "tires": [],
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": null
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": "steeringwheel",
+          "frameIndex": 0,
+          "scaleX": 1.6,
+          "scaleY": 1.6,
+          "offsetX": -0.5,
+          "offsetY": 0.9,
+          "centerX": 0.498046875,
+          "centerY": 0.5448717948717948
+        },
+        "wipers": {
+          "artRef": "windshieldwiper",
+          "frameIndex": 0,
+          "pivotX": 0,
+          "pivotY": 0.5,
+          "width": 0.34,
+          "parkAngle": -5,
+          "sweepAngle": -80,
+          "cycleSeconds": 1.6,
+          "mounts": [
+            {
+              "x": 0.16,
+              "y": 0.75
+            },
+            {
+              "x": 0.56,
+              "y": 0.75
+            }
+          ]
+        }
+      },
+      "addOns": [],
+      "tireSurfaces": {
+        "tread": {
+          "artRef": "8296 tires 3",
+          "frameIndex": 0,
+          "region": {
+            "x": 121,
+            "y": 30,
+            "width": 138,
+            "height": 332
+          },
+          "bounds": {
+            "x": 121.5,
+            "y": 30.5,
+            "width": 137,
+            "height": 331
+          }
+        },
+        "wheel": {
+          "artRef": "8296 tires 3",
+          "frameIndex": 2,
+          "region": {
+            "x": 191,
+            "y": 192.5,
+            "radius": 177.45210621460654
+          },
+          "bounds": {
+            "x": 13.547993785393459,
+            "y": 15.047993785393459,
+            "width": 354.9040124292131,
+            "height": 354.9040124292131
+          }
+        }
+      },
+      "angleLayers": {
+        "front": {
+          "tires": {
+            "cylinder": true,
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 121,
+              "y": 30,
+              "width": 138,
+              "height": 332
+            },
+            "bounds": {
+              "x": 121.5,
+              "y": 30.5,
+              "width": 137,
+              "height": 331
+            }
+          }
+        },
+        "frontRight": {
+          "tires": {
+            "cylinder": true,
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 121,
+              "y": 30,
+              "width": 138,
+              "height": 332
+            },
+            "bounds": {
+              "x": 121.5,
+              "y": 30.5,
+              "width": 137,
+              "height": 331
+            }
+          }
+        },
+        "right": {
+          "tires": {
+            "cylinder": true,
+            "artRef": "8296 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 191,
+              "y": 192.5,
+              "radius": 177.45210621460654
+            },
+            "bounds": {
+              "x": 13.547993785393459,
+              "y": 15.047993785393459,
+              "width": 354.9040124292131,
+              "height": 354.9040124292131
+            }
+          }
+        },
+        "rearRight": {
+          "tires": {
+            "cylinder": true,
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 121,
+              "y": 30,
+              "width": 138,
+              "height": 332
+            },
+            "bounds": {
+              "x": 121.5,
+              "y": 30.5,
+              "width": 137,
+              "height": 331
+            }
+          }
+        },
+        "rear": {
+          "tires": {
+            "cylinder": true,
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 121,
+              "y": 30,
+              "width": 138,
+              "height": 332
+            },
+            "bounds": {
+              "x": 121.5,
+              "y": 30.5,
+              "width": 137,
+              "height": 331
+            }
+          }
+        },
+        "rearLeft": {
+          "tires": {
+            "cylinder": true,
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 121,
+              "y": 30,
+              "width": 138,
+              "height": 332
+            },
+            "bounds": {
+              "x": 121.5,
+              "y": 30.5,
+              "width": 137,
+              "height": 331
+            }
+          }
+        },
+        "left": {
+          "tires": {
+            "cylinder": true,
+            "artRef": "8296 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 191,
+              "y": 192.5,
+              "radius": 177.45210621460654
+            },
+            "bounds": {
+              "x": 13.547993785393459,
+              "y": 15.047993785393459,
+              "width": 354.9040124292131,
+              "height": 354.9040124292131
+            }
+          }
+        },
+        "frontLeft": {
+          "tires": {
+            "cylinder": true,
+            "artRef": "8296 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 121,
+              "y": 30,
+              "width": 138,
+              "height": 332
+            },
+            "bounds": {
+              "x": 121.5,
+              "y": 30.5,
+              "width": 137,
+              "height": 331
+            }
+          }
+        }
+      }
+    },
+    "camera": {
+      "trackingMode": "dynamic"
+    },
+    "dimensions": {
+      "lengthM": 4.8006,
+      "widthM": 2.057,
+      "wheelbaseM": 2.921,
+      "trackFrontM": 1.7653,
+      "trackRearM": 1.7653
+    },
+    "audio": {
+      "engineSoundId": null
+    },
+    "setup": {
+      "defaultTireCompound": "offroad",
+      "tireCompoundByWheel": {
+        "fl": "offroad",
+        "fr": "offroad",
+        "rl": "offroad",
+        "rr": "offroad"
+      },
+      "tirePressurePsi": {
+        "fl": 28,
+        "fr": 28,
+        "rl": 28,
+        "rr": 28
+      },
+      "tireSize": {
+        "widthMm": 275,
+        "aspectRatio": 70,
+        "wheelDiameterIn": 17
+      }
+    },
+    "defaultTransmissionType": "automatic",
+    "transmissions": {
+      "automatic": {
+        "type": "automatic",
+        "label": "Representative 4L85E 4AT",
+        "shiftMode": "automatic",
+        "shiftTimeMs": 310,
+        "clutchDelayMs": 0,
+        "launchRpm": 2200,
+        "autoUpshiftRpm": 5900,
+        "autoDownshiftRpm": 1800,
+        "torqueConverterSlip": 0.12,
+        "torqueConverterMultiplication": 1.8,
+        "gearRatios": [
+          2.48,
+          1.48,
+          1,
+          0.75
+        ],
+        "reverseRatio": 2.08,
+        "gearFinalDrive": 4.11,
+        "drivetrainEfficiency": 0.83,
+        "engineProfile": null
+      }
+    },
+    "tuning": {
+      "drivetrain": "rwd",
+      "powerHp": 430,
+      "torqueLbFt": 424,
+      "weightKg": 1769.0102430000002,
+      "frontWeightDistribution": 0.5,
+      "engineDisplacementL": 6.2,
+      "aspiration": "Naturally Aspirated",
+      "tireGrip": 0.92,
+      "brakeBalance": 0.56,
+      "brakePressure": 1,
+      "redlineRpm": 6200,
+      "revLimitRpm": 6500,
+      "revLimiterDropRpm": 400,
+      "idleRpm": 750,
+      "torquePeakStartRpm": 4600,
+      "torquePeakEndRpm": 4600,
+      "torqueFalloffRpm": 6500,
+      "wheelRadiusM": 0.4084,
+      "topSpeedMph": 125,
+      "zeroToSixtySec": 6.1,
+      "dragCoefficient": 0.48,
+      "accelerationCalibration": 1,
+      "drivetrainEfficiency": 0.83,
+      "differentialAccel": 0.58,
+      "differentialDecel": 0.28,
+      "frontDifferentialAccel": 0,
+      "frontDifferentialDecel": 0,
+      "rearDifferentialAccel": 0.58,
+      "rearDifferentialDecel": 0.28,
+      "gearFinalDrive": 4.11,
+      "camberFront": -0.5,
+      "camberRear": 0,
+      "toeFront": 0.05,
+      "toeRear": 0,
+      "casterFront": 5.5,
+      "aeroFront": 0.06,
+      "aeroRear": 0.08,
+      "springFront": 0.32,
+      "springRear": 0.36,
+      "rideHeightFront": 0.8,
+      "rideHeightRear": 0.82,
+      "suspensionTravelFront": 0.9,
+      "suspensionTravelRear": 1,
+      "dampingFront": 0.43,
+      "dampingRear": 0.46,
+      "bumpFront": 0.36,
+      "bumpRear": 0.4,
+      "reboundFront": 0.54,
+      "reboundRear": 0.57,
+      "antiRollFront": 0.25,
+      "antiRollRear": 0.2,
+      "gearRatios": [
+        2.48,
+        1.48,
+        1,
+        0.75
+      ],
+      "reverseRatio": 2.08,
+      "steeringRatio": 16,
+      "engineCurve": {
+        "rpmMin": 750,
+        "rpmMax": 6500,
+        "torquePoints": [
+          {
+            "rpm": 750,
+            "torqueLbFt": 150
+          },
+          {
+            "rpm": 2000,
+            "torqueLbFt": 340
+          },
+          {
+            "rpm": 3500,
+            "torqueLbFt": 400
+          },
+          {
+            "rpm": 4600,
+            "torqueLbFt": 424
+          },
+          {
+            "rpm": 5900,
+            "torqueLbFt": 382.7728813559322
+          },
+          {
+            "rpm": 6500,
+            "torqueLbFt": 315
+          }
+        ]
+      },
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 4.8006,
+          "overallWidthM": 2.057,
+          "overallHeightM": 1.75895,
+          "groundClearanceM": 0.36,
+          "frontOverhangM": 0.96,
+          "rearOverhangM": 0.9196000000000004,
+          "lowerBodyHeightM": 0.5,
+          "hood": {
+            "lengthM": 1.6,
+            "widthM": 1.9,
+            "heightM": 0.45
+          },
+          "cabin": {
+            "centerZM": -0.1,
+            "lengthM": 2,
+            "widthM": 1.7,
+            "heightM": 0.89895
+          },
+          "bed": {
+            "centerZM": -1.35,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.78,
+            "z": 0
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": false,
+          "wheelWellClearanceMarginM": 0.09,
+          "maximumTireDeflectionM": 0.06,
+          "wheelRadiusM": 0.4084,
+          "trackWidthM": 1.7653,
+          "frontAxleDistanceFromCgM": 1.4605,
+          "rearAxleDistanceFromCgM": 1.4605,
+          "customColliders": []
+        }
+      }
+    },
+    "description": "Original fictional desert coupe with representative LS3 Rally Fighter build references. Mass, body geometry and selected 4L85E installation are explicitly approximate; not a universal factory trim.",
+    "category": "offroad"
+  },
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "provenance": {
+    "referenceVehicle": "Representative Local Motors Rally Fighter LS3 high-ride 4L85E build; no exact factory year/trim asserted",
+    "sources": [
+      {
+        "url": "https://www.scribd.com/document/894192482/RFBROCHURE2013-NEWLOGO",
+        "fields": [
+          "powerHp430@5900",
+          "torqueLbFt424@4600",
+          "wheelbase115in",
+          "track69.5in",
+          "massRange3800-4000lb",
+          "highRideHeight69.25in",
+          "highRideTire275/70R17"
+        ]
+      },
+      {
+        "url": "https://bringatrailer.com/listing/2011-local-motors-rally-fighter-2/",
+        "fields": [
+          "specificBuild4L85E",
+          "specificBuildFinalDrive4.11"
+        ]
+      },
+      {
+        "url": "https://www.chevrolet.com/performance-parts/transmissions",
+        "fields": [
+          "4L85EForwardRatios"
+        ]
+      },
+      {
+        "url": "https://rf0143.com/rally-fighter-specifications/",
+        "fields": [
+          "secondaryLength189in",
+          "buildVariationTH400versus4L85E"
+        ]
+      },
+      {
+        "url": "https://real4wd.com/wp-content/uploads/2021/12/Humvee-4L80-4L85-Transmission-Parts-Overhaul-Repair-nmwr-9-2520-582.pdf",
+        "fields": [
+          "generic4L85EReverseRatio2.08"
+        ]
+      }
+    ],
+    "verifiedFacts": {
+      "engine": {
+        "value": "naturally aspirated6.2L GM LS3 E-Rod V8",
+        "unit": "description",
+        "source": "brochure2013"
+      },
+      "power": {
+        "value": 430,
+        "unit": "hp",
+        "source": "brochure2013",
+        "rpm": 5900
+      },
+      "torque": {
+        "value": 424,
+        "unit": "lbft",
+        "source": "brochure2013",
+        "rpm": 4600
+      },
+      "drive": {
+        "value": "RWD",
+        "unit": "layout",
+        "source": "brochure2013"
+      },
+      "curbMassRange": {
+        "value": [
+          3800,
+          4000
+        ],
+        "unit": "lb",
+        "source": "brochure2013",
+        "corroboratingSource": "roadtest"
+      },
+      "wheelbase": {
+        "value": 115,
+        "unit": "in",
+        "source": "brochure2013"
+      },
+      "trackWidth": {
+        "value": 69.5,
+        "unit": "in",
+        "source": "brochure2013"
+      },
+      "heightHighLow": {
+        "value": [
+          69.25,
+          61.25
+        ],
+        "unit": "in",
+        "source": "brochure2013"
+      },
+      "widthPublishedInches": {
+        "value": 80,
+        "unit": "in",
+        "source": "brochure2013"
+      },
+      "widthPublishedMillimeters": {
+        "value": 2057,
+        "unit": "mm",
+        "source": "brochure2013"
+      },
+      "highRideTire": {
+        "value": "275/70R17",
+        "unit": "designation",
+        "source": "brochure2013"
+      },
+      "lowRideTire": {
+        "value": "265/50R20",
+        "unit": "designation",
+        "source": "brochure2013"
+      },
+      "suspensionTravelFrontRear": {
+        "value": [
+          18,
+          20
+        ],
+        "unit": "in",
+        "source": "brochure2013"
+      },
+      "suspension": {
+        "value": "independent doubleA-arm front; four-link solidaxle rear",
+        "unit": "layout",
+        "source": "brochure2013"
+      },
+      "2011ExampleGearbox": {
+        "value": "GM4L85E4AT",
+        "unit": "type",
+        "source": "example2011"
+      },
+      "2011ExampleFinalDrive": {
+        "value": 4.11,
+        "unit": "ratio",
+        "source": "example2011"
+      },
+      "componentForwardRatios": {
+        "value": [
+          2.48,
+          1.48,
+          1,
+          0.75
+        ],
+        "unit": "ratio",
+        "source": "chevroletGearbox",
+        "qualification": "valid for4L85E component; fitment depends selectedbuild"
+      },
+      "lengthSecondary": {
+        "value": 189,
+        "unit": "in",
+        "source": "owner143"
+      }
+    },
+    "estimates": [
+      "No single invariant factory specification: actual cars used TH4003AT,4L85E4AT and custom4L60E builds.",
+      "2011auction example proves concrete4L85E+4.11 installation; does not establish original manufacture unchanged.",
+      "3800–4000lb range is better supported than falsely exact3792lb; prototype3200lb/diesel3000lb must not be mixed with2013LS3production brochure.",
+      "Exact build year/VIN, factory scale mass, finaldrive and gearbox remain needed for strictly factoryverified status.",
+      "Redline, fulltorquecurve, aeroCd/frontalarea,CG,inertia,grip and dampercoefficients remain simulationparameters.",
+      "Do not mix lowride20in tires with highride17in visual/physicaldimensions.",
+      "Mass1769.010243kg is3900lb midpoint of published range, NOT measured exact curb mass.",
+      "Width2.057m selects brochure metric reading;80in textual value would equal2.032m. Length4.8006m comes from owner specification not manufacturer drawing.",
+      "4L85E ratios are manufacturer component facts; fitment and4.11final are representative of a documented2011-built auction car, not every Rally Fighter. Reverse2.08 is generic4L85E component ratio, not individually measured.",
+      "50/50mass distribution,.78mCG,.36mclearance,overhang split,collider sections,steering16:1,performance targets,aeroCd.48,tiregrip and pressure28psi are simulation estimates.",
+      "Torque samples other than424lbft@4600 and power-derived382.77lbft@5900, idle/redline/revlimit, transmissionconverter/shiftlogic/differentials are estimates.",
+      "Normalized spring/damper/travel controls are estimated high-travel offroad tuning; they are NOT literal18in/20in physical travel measurements.",
+      "Nominal unloaded tire radius calculated from275/70R17. Loaded radius and actual compound coefficients unsourced. ExistingOffroad graphic reused; no new tireclaim.",
+      "Wheel wells manually measured from original sprite; currentplacementhelper fits rear-axle rig. In-browser exterior and cockpit QA still pending; wheel position preliminary.",
+      "Dashboard upper200rows contain57 faint alpha1 pixels (maximum1/255); visually clear but not mathematically all alphaZERO. Original PNG unchanged."
+    ],
+    "artwork": "Original fictional logo-free Dustjack V8; existing steeringwheel reused; no factory replica claim."
+  },
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 43,
+        "y": 346,
+        "radius": 30
+      },
+      {
+        "wheel": "fr",
+        "x": 320,
+        "y": 346,
+        "radius": 30
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1695,
+        "y": 724,
+        "radius": 45
+      },
+      {
+        "wheel": "rr",
+        "x": 1829,
+        "y": 697,
+        "radius": 34
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 997,
+        "y": 321,
+        "radius": 57
+      },
+      {
+        "wheel": "rr",
+        "x": 1357,
+        "y": 321,
+        "radius": 59
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1505,
+        "y": 308,
+        "radius": 31
+      },
+      {
+        "wheel": "rr",
+        "x": 1643,
+        "y": 319,
+        "radius": 42
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 44,
+        "y": 738,
+        "radius": 30
+      },
+      {
+        "wheel": "rl",
+        "x": 319,
+        "y": 738,
+        "radius": 30
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 601,
+        "y": 721,
+        "radius": 43
+      },
+      {
+        "wheel": "fl",
+        "x": 764,
+        "y": 696,
+        "radius": 31
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 914,
+        "y": 719,
+        "radius": 60
+      },
+      {
+        "wheel": "fl",
+        "x": 1281,
+        "y": 720,
+        "radius": 60
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 420,
+        "y": 276,
+        "radius": 40
+      },
+      {
+        "wheel": "fl",
+        "x": 600,
+        "y": 323,
+        "radius": 47
+      }
+    ]
+  }
+}

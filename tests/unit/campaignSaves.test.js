@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import {createAmericaWorldMap} from '../../src/menus/AmericaWorldMap.js';
+import {worldMapNodes,worldMapSelectableNodes} from '../../src/menus/MenuWorldMap.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {CampaignSaves,CAMPAIGN_SAVE_KEY} from '../../src/menus/CampaignSaves.js';
@@ -205,4 +208,55 @@ test('legacy saves derive their condition summary once during load',async()=>{
  const loaded=await fixture(store);assert.ok(loaded.saves.describeSlot(0).condition<25);
  Object.defineProperty(loaded.saves.slots[0],'items',{get(){throw Error('Migration must not repeat');}});
  assert.ok(loaded.saves.describeSlot(0).condition<25);
+});
+
+test('pre-slot HACKME and SKIPME survive new/continued slot selection and bypass the opening race',async()=>{
+ for(const code of ['HACKME','SKIPME'])for(const mode of ['new','continue']){
+  const {game,saves,store}=await fixture();
+  game.items.library={list:async()=>[],load:async()=>null};
+  game.resolveRaceTravelCarAsync=async()=>({car:{setup:{},tuning:{}}});
+  if(mode==='continue'){await saves.startNew(0);await commitMenuCar(game,'RTG-001');await saves.save();saves.activeSlot=null;game.menuProgress={};}
+  const player=new MenuPlayer(game);game.menuPlayer=player;
+  player.settings.load=async()=>{};player.resources.prepareGarage=async()=>{};player.resources.prepareScreen=async()=>{};
+  const document=createMenuDocument();document.parameters.campaignOpeningRace='Tower Hill Road';
+  const catalog=JSON.parse(fs.readFileSync(new URL('../../data/campaigns/america/catalog.json',import.meta.url)));
+  const map=document.screens.find(s=>s.id==='world-map').elements.find(e=>e.type==='world-map');
+  Object.assign(map,createAmericaWorldMap(catalog));
+  const launches=[];player.launchRace=async ref=>launches.push(ref);
+  await player.open(document);
+  await player.flow.adapter.cheatCode(code);
+  assert.match(player.message,/Choose a save slot/);
+  await player.selectSaveSlot(mode,0);
+  assert.equal(player.flow.pendingOpeningRace,'');
+  assert.equal(saves.slots[0].progress[raceCompletionKey('Tower Hill Road')],true);
+  const available=worldMapSelectableNodes(worldMapNodes(map,player.resources,document,player.flow.parameters));
+  assert.equal(available.length,code==='HACKME'?catalog.length:2);
+  if(mode==='new'){
+   player.resources.choices=()=>[{value:'RTG-001',label:'RTG-001'}];
+   await player.activate(player.flow.screen.elements.find(e=>e.type==='car-showroom'),1,{choose:true});
+   assert.equal(player.flow.screenId,'world-map');
+  }
+  assert.deepEqual(launches,[]);
+  assert.deepEqual(game.pendingMenuCheats,[]);
+  const reload=await fixture(store);await reload.saves.resume(0);
+  assert.equal(reload.game.items.progress.unlocks['cheat.skipme'],true);
+  if(code==='HACKME'){assert.equal(reload.game.items.progress.unlocks['cheat.travel'],true);assert.equal(reload.game.player.credits,1000000);}
+  await player.selectSaveSlot('new',1);
+  assert.equal(player.flow.pendingOpeningRace,'Tower Hill Road','queued cheats must not leak into another slot');
+ }
+});
+
+test('drift side-event results save a best score without completing the parent mission',async()=>{
+ const {game,saves}=await fixture();await saves.startNew(0);await commitMenuCar(game,'RTG-001');
+ game.raceTravelSession={carSelection:{documentName:'RTG-001'},garage:game.items.garage};
+ const editor=new RaceEditor(game);editor.mode='race';
+ editor.selectedRace.campaign={sideEventId:'H11-S08',scoring:'drift',hubBoss:'Angeles Crest Highway'};
+ const session={raceId:'side-h11-s08',raceDocumentName:'Willow Springs — Horse Thief Mile',damage:{},mechanical:{},driftScore:{points:620.9}};
+ editor.playtestSession=session;editor.showRaceResults();await session.campaignSaveTask;
+ assert.equal(editor.getRacePauseMenuRows().find(r=>r.id==='race-result-drift').value,'620');
+ assert.equal(saves.slots[0].progress['raceScore.H11-S08'],620);
+ assert.equal(saves.slots[0].progress[raceCompletionKey('Angeles Crest Highway')],undefined);
+ const replay={...session,campaignProgressSaved:false,campaignSaveTask:null,driftScore:{points:100}};
+ await editor.saveCampaignRaceResult(replay);
+ assert.equal(saves.slots[0].progress['raceScore.H11-S08'],620);
 });

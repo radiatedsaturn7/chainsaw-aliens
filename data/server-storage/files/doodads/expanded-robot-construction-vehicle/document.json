@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-robot-construction-vehicle",
+    "name": "expanded-robot-construction-vehicle",
+    "artRef": "expanded-robot-construction-vehicle",
+    "widthM": 5.255131964809384,
+    "heightM": 3.5,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 4.4668621700879765,
+    "hitboxHeightM": 3.15,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

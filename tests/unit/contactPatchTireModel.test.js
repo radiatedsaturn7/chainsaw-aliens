@@ -234,7 +234,10 @@ test('known surface geometry never gives airborne wheels fallback static load', 
   assert.deepEqual(result.suspensionForceWorldN, { x: 0, y: 0, z: 0 });
   assert.deepEqual(result.worldForceN, { x: 0, y: 0, z: 0 });
   assert.equal(result.worldMomentNm.y, 0);
-  assert.ok(Math.abs(result.worldMomentNm.x) > 1);
+  // Wheels begin stopped. Brakes can hold engine torque internally, but must
+  // not spin those wheels backwards and invent a chassis reaction impulse.
+  assert.equal(result.worldMomentNm.x, 0);
+  assert.ok(Object.values(result.wheelAngularVelocityRadps).every(v=>v===0));
 });
 
 test('airborne wheel acceleration and braking conserve wheel-plus-chassis angular momentum', () => {

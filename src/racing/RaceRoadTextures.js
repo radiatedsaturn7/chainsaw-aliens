@@ -16,11 +16,22 @@ export function roadTextureMipBias(source) {
 export function roadTextureSettings(race = {}) {
   const clean = source => ({
     ...roadTextureSampling(source),
+    enabled: source?.enabled !== false,
     artRef: String(source?.artRef || '').trim(),
+    roughArtRef: String(source?.roughArtRef || '').trim(),
     repeatM: Math.max(.1, Math.min(1000, Number(source?.repeatM) || 5)),
-    repeatWidthM: Math.max(0, Math.min(1000, Number(source?.repeatWidthM) || 0))
+    repeatWidthM: Math.max(0, Math.min(1000, Number(source?.repeatWidthM) || 0)),
+    laneWidthM: Math.max(0, Math.min(5, Number(source?.laneWidthM) || 0))
   });
-  return { road: clean(race.roadTextures?.road), margin: clean(race.roadTextures?.margin) };
+  const map = value => Object.fromEntries(Object.entries(value || {}).map(([key,entry]) => [key,clean(entry)]));
+  return { road: clean(race.roadTextures?.road), margin: clean(race.roadTextures?.margin),
+    shoulder: clean(race.roadTextures?.shoulder), surfaceRoads:map(race.roadTextures?.surfaceRoads), surfaceShoulders:map(race.roadTextures?.surfaceShoulders) };
+}
+
+// A section override wins over its surface mapping, then the race default.
+// An explicit disabled entry must not fall through to the default shoulder.
+export function shoulderTextureForSegment(settings = {}, segment = {}) {
+  return segment?.shoulderTexture || settings?.surfaceShoulders?.[segment?.surface] || settings?.shoulder || {};
 }
 
 // Custom road artwork supplies its own lane paint. Margin-only art does not.
@@ -28,21 +39,33 @@ export function showBuiltInRoadMarkings(race = {}) {
   return !roadTextureSettings(race).road.artRef && race.roadTextures?.builtInLines !== false;
 }
 
+// Lane artwork contains one stripe at U=.5. Place stripes between whole lanes,
+// rather than stretching that single stripe across a multi-lane carriageway.
+export function roadTextureCrossSection(left,right,settings={}) {
+  const width=Math.hypot(right.x-left.x,right.z-left.z);
+  if(settings.laneWidthM>0){
+    const lanes=Math.max(1,Math.round(width/settings.laneWidthM));
+    return {span:width/settings.laneWidthM,center:lanes%2?1:.5};
+  }
+  return {span:settings.repeatWidthM>0?width/settings.repeatWidthM:1,center:.5};
+}
+
 export function texturedRoadStrip(nearLeft, nearRight, farLeft, farRight, nearDistance, farDistance, settings, source) {
-  const width = (left,right) => settings.repeatWidthM > 0 ? Math.hypot(right.x-left.x,right.z-left.z) / settings.repeatWidthM : 1;
-  const nearWidth=width(nearLeft,nearRight),farWidth=width(farLeft,farRight);
-  const point = (p, u, distance) => ({ ...p, u, v: -distance / settings.repeatM });
+  const near=roadTextureCrossSection(nearLeft,nearRight,settings),far=roadTextureCrossSection(farLeft,farRight,settings);
+  const repeatM = Math.max(.1, Math.min(1000, Number(settings.repeatM) || 5));
+  const point = (p, u, distance) => ({ ...p, u, v: -distance / repeatM });
   return {
     source, textureOptions:roadTextureSampling(settings), artRef: settings.artRef, textured: true, color: '#ffffff',
-    points: [point(farLeft, .5-farWidth/2, farDistance), point(farRight, .5+farWidth/2, farDistance),
-      point(nearRight, .5+nearWidth/2, nearDistance), point(nearLeft, .5-nearWidth/2, nearDistance)],
+    points: [point(farLeft, far.center-far.span/2, farDistance), point(farRight, far.center+far.span/2, farDistance),
+      point(nearRight, near.center+near.span/2, nearDistance), point(nearLeft, near.center-near.span/2, nearDistance)],
+    depthOffset: source.includes('shoulder') ? -.091 : source.includes('boundary') ? -.09 : -.08,
     threeLiftM: source.includes('boundary') ? .035 : .012,
-    textureWorldM: settings.repeatM
+    textureWorldM: repeatM
   };
 }
 
-export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22, marginVisible = true, networkDefinition = null } = {}) {
-  const roadMeshes = [], boundaryMeshes = [], junctionMeshes = [];
+export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22, marginVisible = true, shoulderVisible = true, networkDefinition = null } = {}) {
+  const roadMeshes = [], boundaryMeshes = [], junctionMeshes = [], shoulderMeshes = [];
   const paths = worldBake.surfaceBake?.paths || [{ sections: worldBake.surfaceBake?.sections || [] }];
   const network = worldBake.terrainTopology === 'route-network';
   const edgeOffsets = new Map();
@@ -67,7 +90,15 @@ export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22,
       const offset = edgeOffsets.get(edgeId) || 0;
       const d0 = offset + Number(a.center.distance || 0);
       const d1 = offset + (i + 1 === sections.length ? Number(worldBake.routeLength) : Number(b.center.distance || 0));
-      if (settings.road.artRef) roadMeshes.push(texturedRoadStrip(a.left, a.right, b.left, b.right, d0, d1, settings.road, 'road-texture'));
+      const segment=a.center.segment || {};
+      const road=roadTextureForSegment(settings,segment);
+      if (road.artRef) roadMeshes.push(texturedRoadStrip(a.left, a.right, b.left, b.right, d0, d1, road, 'road-texture'));
+      const shoulder=shoulderTextureForSegment(settings,segment);
+      if(shoulderVisible && shoulder.enabled !== false && shoulder?.artRef && a.shoulderLeft && b.shoulderLeft){
+        // The texture's road-facing edge is U=0 on both sides.
+        shoulderMeshes.push(texturedRoadStrip(a.marginLeft||a.left,a.shoulderLeft,b.marginLeft||b.left,b.shoulderLeft,d0,d1,shoulder,'shoulder-texture-left'));
+        shoulderMeshes.push(texturedRoadStrip(a.marginRight||a.right,a.shoulderRight,b.marginRight||b.right,b.shoulderRight,d0,d1,shoulder,'shoulder-texture-right'));
+      }
       if (settings.margin.artRef && marginVisible) {
         const outer = (s, side, sign) => {
           if (!network) return s[side === 'left' ? 'marginLeft' : 'marginRight'] || s[side];
@@ -76,6 +107,44 @@ export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22,
         };
         boundaryMeshes.push(texturedRoadStrip(outer(a,'left',-1), a.left, outer(b,'left',-1), b.left, d0, d1, settings.margin, 'boundary-texture-left'));
         boundaryMeshes.push(texturedRoadStrip(a.right, outer(a,'right',1), b.right, outer(b,'right',1), d0, d1, settings.margin, 'boundary-texture-right'));
+      }
+    }
+  }
+  // Cross-fade across real surface changes without moving the drivable ribbon.
+  for (const layer of ['road', 'shoulder']) {
+    if (layer === 'shoulder' && !shoulderVisible) continue;
+    const textureFor = layer === 'road' ? roadTextureForSegment : shoulderTextureForSegment;
+    const output = layer === 'road' ? roadMeshes : shoulderMeshes;
+    const sides = layer === 'road' ? [['left', 'right']] : [['marginLeft', 'shoulderLeft'], ['marginRight', 'shoulderRight']];
+    for(const {sections,edgeId} of paths){
+      const offset=edgeOffsets.get(edgeId)||0;
+      for(let j=1;j<sections.length-1;j++){
+        const previous=textureFor(settings,sections[j-1].center.segment||{}),next=textureFor(settings,sections[j].center.segment||{});
+        if(previous.enabled===false||next.enabled===false||!previous.artRef||!next.artRef||previous.artRef===next.artRef)continue;
+        const boundary=offset+Number(sections[j].center.distance||0);
+        let before=j-1,after=j+1;
+        while(before>0&&textureFor(settings,sections[before-1].center.segment||{}).artRef===previous.artRef)before--;
+        while(after<sections.length-1&&textureFor(settings,sections[after].center.segment||{}).artRef===next.artRef)after++;
+        const band=Math.min(8,(boundary-offset-Number(sections[before].center.distance||0))/2,(offset+Number(sections[after].center.distance||0)-boundary)/2);
+        if(band<=0)continue;
+        for(let i=before;i<after;i++){
+          const a=sections[i],b=sections[i+1],d0=offset+Number(a.center.distance||0),d1=offset+Number(b.center.distance||0);
+          const lo=Math.max(d0,boundary-band),hi=Math.min(d1,boundary+band);if(hi<=lo||d1<=d0)continue;
+          const current=textureFor(settings,a.center.segment||{}),other=i<j?next:previous;
+          if(current.artRef!==(i<j?previous:next).artRef)continue;
+          const point=(side,d)=>{const t=(d-d0)/(d1-d0),p=a[side],q=b[side];return {...p,x:p.x+(q.x-p.x)*t,z:p.z+(q.z-p.z)*t,elevation:Number(p.elevation||0)+(Number(q.elevation||0)-Number(p.elevation||0))*t};};
+          const steps=Math.max(1,Math.ceil(hi-lo));
+          for(let step=0;step<steps;step++){
+            const start=lo+(hi-lo)*step/steps,end=lo+(hi-lo)*(step+1)/steps;
+            for (const [left, right] of sides) {
+              if (!a[left] || !b[left] || !a[right] || !b[right]) continue;
+              const mesh=texturedRoadStrip(point(left,start),point(right,start),point(left,end),point(right,end),start,end,other,layer+'-texture-blend');
+              const alpha=d=>{const t=Math.max(0,1-Math.abs(d-boundary)/band);return .5*t*t*(3-2*t);};
+              mesh.points.forEach((p,k)=>p.alpha=alpha(k<2?end:start));
+              Object.assign(mesh,{vertexAlpha:true,fallbackOpacity:(alpha(start)+alpha(end))/2,threeLiftM:.014,depthOffset:layer === 'road' ? -.080005 : -.091005});output.push(mesh);
+            }
+          }
+        }
       }
     }
   }
@@ -119,8 +188,8 @@ export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22,
       }).filter(Boolean);
       if(ends.length<2)continue;
       const mouthPoints=ends.flatMap(({section:s,distance})=>{
-        const span=settings.road.repeatWidthM>0?Math.hypot(s.right.x-s.left.x,s.right.z-s.left.z)/settings.road.repeatWidthM:1;
-        return [{...s.left,u:.5-span/2,v:-distance/settings.road.repeatM},{...s.right,u:.5+span/2,v:-distance/settings.road.repeatM}];
+        const {span,center}=roadTextureCrossSection(s.left,s.right,settings.road);
+        return [{...s.left,u:center-span/2,v:-distance/settings.road.repeatM},{...s.right,u:center+span/2,v:-distance/settings.road.repeatM}];
       });
       const {section:s,distance}=ends[0],dx=node.x-s.center.x,dz=node.z-s.center.z;
       const centerV=-(distance+dx*Math.sin(s.center.yaw)+dz*Math.cos(s.center.yaw))/settings.road.repeatM;
@@ -140,5 +209,11 @@ export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22,
         textureWorldM:settings.road.repeatM,threeLiftM:0});
     }
   }
-  return { roadMeshes, boundaryMeshes, junctionMeshes };
+  return { roadMeshes, boundaryMeshes, junctionMeshes, shoulderMeshes };
+}
+
+export function roadTextureForSegment(settings,segment={}) {
+ if(settings.overrideRoad)return settings.overrideRoad;
+ const base=settings.surfaceRoads?.[segment.surface] || settings.road;
+ return base.roughArtRef && Number(segment.bumpiness)>=.35 ? {...base,artRef:base.roughArtRef} : base;
 }

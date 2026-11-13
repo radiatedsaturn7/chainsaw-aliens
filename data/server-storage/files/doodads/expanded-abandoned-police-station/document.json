@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-abandoned-police-station",
+    "name": "expanded-abandoned-police-station",
+    "artRef": "expanded-abandoned-police-station",
+    "widthM": 13.513196480938417,
+    "heightM": 9,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 11.486217008797654,
+    "hitboxHeightM": 8.1,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

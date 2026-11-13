@@ -1,0 +1,177 @@
+{
+  "limitations": [
+    "Conditions use existing tire, suspension and wear physics. No equipment gates, artificial grip bonuses, or new damage multipliers.",
+    "Recommendations are shop-available parts; this tool does not grant inventory or change purchase prices.",
+    "Cooling, brake fade and skid-plate-only boss checks are not implemented. These stages use tire/suspension challenges that the current simulation supports.",
+    "Geometry-based duration estimates predate these conditions. Full player laps are needed for final difficulty and timing balance."
+  ],
+  "stages": [
+    {
+      "stage": 2,
+      "name": "Mount Washington Auto Road",
+      "weather": "snow",
+      "recommendedParts": [
+        "snow-tires"
+      ],
+      "briefing": "One inch of fresh snow covers the climb. Stock tires can make it with gentle throttle and slower corners; snow tires give more climbing, braking and cornering margin.",
+      "surfaceMeters": {
+        "snow": 12117.068425088579
+      },
+      "roughnessRange": [
+        0.035,
+        0.085
+      ]
+    },
+    {
+      "stage": 3,
+      "name": "Laurel Highlands Scenic Byway",
+      "weather": "clear",
+      "recommendedParts": [
+        "rally-suspension"
+      ],
+      "briefing": "Rally suspension recommended. Long frost-damaged sections interrupt the pavement. Stock suspension can get through at a slower pace.",
+      "surfaceMeters": {
+        "asphalt": 14461.633379705727
+      },
+      "roughnessRange": [
+        0.025,
+        0.3798
+      ]
+    },
+    {
+      "stage": 4,
+      "name": "Ohio River Crossing",
+      "weather": "storm",
+      "recommendedParts": [
+        "rain-tires"
+      ],
+      "briefing": "Rain tires recommended. A winter thaw has soaked the valley road. Leave braking room and ease off through wet corners.",
+      "surfaceMeters": {
+        "wet-asphalt": 13252.96932531348
+      },
+      "roughnessRange": [
+        0.025,
+        0.05
+      ]
+    },
+    {
+      "stage": 5,
+      "name": "Ozark Backroads",
+      "weather": "clear",
+      "recommendedParts": [
+        "rally-tires"
+      ],
+      "briefing": "Rally tires recommended. Exposed dirt dominates this abandoned highway, with loose gravel sections between the wooded bends. Reuse your rally setup and keep the throttle measured.",
+      "surfaceMeters": {
+        "dirt": 10312.685299784796,
+        "gravel": 3616.6323828731693
+      },
+      "roughnessRange": [
+        0.1,
+        0.18
+      ]
+    },
+    {
+      "stage": 6,
+      "name": "Data Center City",
+      "weather": "clear",
+      "recommendedParts": [
+        "street-tires"
+      ],
+      "briefing": "A balanced road setup works here. Industrial straights and bends are interrupted by short rubble crossings. Brake before the rubble; a rally build trades asphalt grip for easier crossings.",
+      "surfaceMeters": {
+        "asphalt": 9741.570036719511,
+        "gravel": 903.2321537111654
+      },
+      "roughnessRange": [
+        0.018,
+        0.2726
+      ]
+    },
+    {
+      "stage": 7,
+      "name": "Historic Route 66",
+      "weather": "clear",
+      "recommendedParts": [
+        "race-tires"
+      ],
+      "briefing": "Tarmac tires recommended. Exposed dry pavement rewards road grip at speed. Cooling and gearing can help a powerful build, but are not entry requirements.",
+      "surfaceMeters": {
+        "asphalt": 15654.453297306549
+      },
+      "roughnessRange": [
+        0.015,
+        0.035
+      ]
+    },
+    {
+      "stage": 8,
+      "name": "Pikes Peak Highway",
+      "weather": "clear",
+      "recommendedParts": [
+        "race-tires"
+      ],
+      "briefing": "Road tires recommended for this mostly dry climb. Use the gearbox through the uphill hairpins, then slow well down for the short snow-covered summit approach. Snow tires sacrifice grip over most of the route.",
+      "surfaceMeters": {
+        "asphalt": 10022.271598753505,
+        "snow": 401.88630901385346
+      },
+      "roughnessRange": [
+        0.02,
+        0.0583
+      ]
+    },
+    {
+      "stage": 9,
+      "name": "Moki Dugway",
+      "weather": "clear",
+      "recommendedParts": [
+        "offroad-suspension",
+        "rally-tires"
+      ],
+      "briefing": "Off-road suspension and rally tires recommended. Long eroded stretches demand suspension travel. A road setup must crawl through the roughest sections.",
+      "surfaceMeters": {
+        "gravel": 10394.002109706795,
+        "dirt": 1971.712349592877
+      },
+      "roughnessRange": [
+        0.14,
+        0.4799
+      ]
+    },
+    {
+      "stage": 10,
+      "name": "Oak Creek Canyon",
+      "weather": "clear",
+      "recommendedParts": [
+        "street-tires"
+      ],
+      "briefing": "A balanced road setup works here. Dry canyon bends alternate with shaded wet stretches left by the thaw. Adjust braking at each surface change; rain tires trade some dry grip for wet confidence.",
+      "surfaceMeters": {
+        "asphalt": 8398.852194490493,
+        "wet-asphalt": 4463.0093892165
+      },
+      "roughnessRange": [
+        0.02,
+        0.045
+      ]
+    },
+    {
+      "stage": 11,
+      "name": "Angeles Crest Highway",
+      "weather": "clear",
+      "recommendedParts": [
+        "race-tires",
+        "race-suspension"
+      ],
+      "briefing": "Tarmac tires and road suspension recommended. Dry technical corners reward a road setup; snow and off-road tires give up substantial asphalt grip.",
+      "surfaceMeters": {
+        "asphalt": 12144.404910206744
+      },
+      "roughnessRange": [
+        0.015,
+        0.035
+      ]
+    }
+  ]
+}

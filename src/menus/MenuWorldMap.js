@@ -2,7 +2,8 @@ export const raceCompletionKey=ref=>'raceCompleted.'+String(ref).replace(/[^a-zA
 export function worldMapNodes(element,resources,document,parameters){
  const nodes=(element.mapManual||element.nodes?.length)?element.nodes:(resources?.choices('races',document,parameters)||[]).map((race,i,races)=>({id:race.value,label:race.label,raceRef:race.value,x:.14+(i%4)*.24,y:.22+Math.floor(i/4)*.28,unlockParameter:i?raceCompletionKey(races[i-1].value):'',unlockValue:true,completedParameter:raceCompletionKey(race.value)}));
  const rows=Math.max(1,Math.ceil(nodes.length/4));
- return nodes.map((node,i)=>({...node,x:node.x??(.14+i%4*.24),y:(element.mapManual||element.nodes?.length)?node.y:(Math.floor(i/4)+.5)/rows,locked:node.disabled===true||(!!node.unlockParameter&&JSON.stringify(parameters[node.unlockParameter])!==JSON.stringify(node.unlockValue??true)),completed:!!parameters[node.completedParameter||raceCompletionKey(node.raceRef)]}));
+ const travel=!!resources?.garage?.items?.progress?.unlocks?.['cheat.travel'];
+ return nodes.map((node,i)=>({...node,x:node.x??(.14+i%4*.24),y:(element.mapManual||element.nodes?.length)?node.y:(Math.floor(i/4)+.5)/rows,locked:node.disabled===true||(!travel&&!!node.unlockParameter&&JSON.stringify(parameters[node.unlockParameter])!==JSON.stringify(node.unlockValue??true)),completed:!!parameters[node.completedParameter||raceCompletionKey(node.raceRef)]}));
 }
 export const worldMapNodeRadius=(b,element=null)=>Math.max(8,Math.min(b.w,b.h)*.035)*(element?.mapStyle?.nodeScale||1);
 export function worldMapNodePoint(node,b,element=null){
@@ -15,7 +16,7 @@ const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 const num=(v,f,min,max)=>Number.isFinite(Number(v))?clamp(Number(v),min,max):f;
 const color=(v,f)=>/^#[0-9a-f]{6}$/i.test(v||'')?v:f;
 export function normalizeWorldMapStyle(s={}){
- return {lineColor:color(s.lineColor,'#7893a1'),lineWidth:num(s.lineWidth,2,0,20),linePattern:['solid','dashed','dotted'].includes(s.linePattern)?s.linePattern:'solid',
+ return {labels:s.labels==='selected'?'selected':'auto',lineColor:color(s.lineColor,'#7893a1'),lineWidth:num(s.lineWidth,2,0,20),linePattern:['solid','dashed','dotted'].includes(s.linePattern)?s.linePattern:'solid',
   selectedColor:color(s.selectedColor,'#e2b454'),unselectedColor:color(s.unselectedColor,'#e2b454'),disabledColor:color(s.disabledColor,'#52616b'),
   unselectedOpacity:num(s.unselectedOpacity,.55,0,1),disabledOpacity:num(s.disabledOpacity,.5,0,1),nodeScale:num(s.nodeScale,1,.25,4),
   cursor:['ring','text','image','none'].includes(s.cursor)?s.cursor:'ring',cursorColor:color(s.cursorColor,'#ffffff')};

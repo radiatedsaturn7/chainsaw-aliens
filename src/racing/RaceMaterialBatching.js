@@ -92,7 +92,7 @@ export function drawRaceWebGLWorldMeshBatch({
   const grouped = new Map();
   meshes.forEach((mesh) => {
     if (!mesh?.points?.length) return;
-    const color = mesh.color || '#ffffff';
+    const color = mesh.fallbackOpacity!=null?`rgba(255,255,255,${mesh.fallbackOpacity})`:mesh.color || '#ffffff';
     const artRef = String(mesh.artRef || '').trim();
     const textured = Boolean(mesh.textured);
     const depthOffset = Number(mesh.depthOffset || 0);
@@ -184,8 +184,8 @@ export function addRaceThreeMeshGroups({
     const textured = Boolean(mesh.textured && artRef);
     const color = mesh.color || '#ffffff';
     const opacity = Math.max(0, Math.min(1, Number(mesh.opacity ?? 1)));
-    const key = `${opacity}|${textured ? 1 : 0}|${artRef}|${Number(mesh.textureWorldM || textureWorldM)}|${adapter.getMeshLiftM?.(mesh) || 0}|${JSON.stringify(mesh.textureOptions||{})}`;
-    if (!grouped.has(key)) grouped.set(key, { textured, artRef, textureOptions:mesh.textureOptions, color, opacity, meshes: [] });
+    const key = `${Boolean(mesh.vertexAlpha)}|${opacity}|${textured ? 1 : 0}|${artRef}|${Number(mesh.textureWorldM || textureWorldM)}|${adapter.getMeshLiftM?.(mesh) || 0}|${JSON.stringify(mesh.textureOptions||{})}`;
+    if (!grouped.has(key)) grouped.set(key, { vertexAlpha:Boolean(mesh.vertexAlpha), textured, artRef, textureOptions:mesh.textureOptions, color, opacity, meshes: [] });
     grouped.get(key).meshes.push(mesh);
   });
   let polygons = 0;
@@ -198,7 +198,8 @@ export function addRaceThreeMeshGroups({
       texture,
       textureOptions: group.textureOptions,
       opacity: group.opacity,
-      depthWrite: group.opacity < 1 ? false : defaultDepthWrite,
+      vertexAlpha:group.vertexAlpha,
+      depthWrite: group.vertexAlpha || group.opacity < 1 ? false : defaultDepthWrite,
       polygonOffset: defaultPolygonOffset
     });
     if (!material) return;

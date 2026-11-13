@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-abandoned-electrical-substation",
+    "name": "expanded-abandoned-electrical-substation",
+    "artRef": "expanded-abandoned-electrical-substation",
+    "widthM": 10.510263929618768,
+    "heightM": 7,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 8.933724340175953,
+    "hitboxHeightM": 6.3,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

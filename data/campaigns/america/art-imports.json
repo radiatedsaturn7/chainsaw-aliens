@@ -1,0 +1,1514 @@
+{
+  "road-asphalt-patched": {
+    "source": "assets/campaign-art/roads/road-asphalt-patched.png",
+    "sourceSha256": "971a18047a821bd1defe8c01386d9979dfaae7f81b4207c2023d9bc6bfe228ae",
+    "documentSha256": "79fcecdf5a24ebd7e1fc50433ccb4c22501bef8bbb5e021e8b5f74070de395a3",
+    "width": 512,
+    "height": 512
+  },
+  "ground-frozen-forest": {
+    "source": "assets/campaign-art/ground/ground-frozen-forest.png",
+    "sourceSha256": "09e17a7a2ebe33c3562122e6ee779a60e4781a15c17c5d09b0fa4c0adf493656",
+    "documentSha256": "6894f772ccdb11fac311b5e447d63700ee03c2a43018f4b8d9ba8660ab87e166",
+    "width": 512,
+    "height": 512
+  },
+  "ground-snow-dead-grass": {
+    "source": "assets/campaign-art/ground/ground-snow-dead-grass.png",
+    "sourceSha256": "8d22a3c53d1a66e2e5398a81f4a58c3d0df80e0a5a20b68f898bd312b5171eaf",
+    "documentSha256": "e938c146114b9e736dd210bb86dbf7122783ad7a7a022b2289e43f1de3e8cbe0",
+    "width": 512,
+    "height": 512
+  },
+  "leafless-tree-01": {
+    "source": "assets/campaign-art/vegetation/leafless-tree-01.png",
+    "sourceSha256": "fde8ce2d040c2dd192fb41700c009c5da4b67c76a4a43a51c3ebe17d3221787e",
+    "documentSha256": "e1e1d0b20e58d9796e61359fbb0aeaf41a9c8d34bf91cfb797b910d028899b5f",
+    "width": 453,
+    "height": 512
+  },
+  "leafless-tree-02": {
+    "source": "assets/campaign-art/vegetation/leafless-tree-02.png",
+    "sourceSha256": "4dfcb0ac4b510249065d3fa3fbddf11ef6faebc8f336f092a003a674533ec0ec",
+    "documentSha256": "cf24c258fadc53e4399b0769e87c87bae12e571f477d21ed8b886d4033ce3551",
+    "width": 512,
+    "height": 341
+  },
+  "leafless-tree-03": {
+    "source": "assets/campaign-art/vegetation/leafless-tree-03.png",
+    "sourceSha256": "59e10b87c58b2bb25c126572dbadab4447694698bf25a861804ed4a8bf695de8",
+    "documentSha256": "ef92ee417903b56801d7d9258b47392ecef03744e092298299a759b50887bf0d",
+    "width": 512,
+    "height": 473
+  },
+  "laurel-forest-cabin": {
+    "source": "assets/campaign-art/regions/laurel-highlands/forest-cabin.png",
+    "sourceSha256": "023137b41fead2bf501ebec2501444c5d87040aa335d8ce4c965bb65d8582e24",
+    "documentSha256": "bc555e94fa951f066e0f3bdfe856bdc5622a722cc4ceec5c28cbe02838882d07",
+    "width": 512,
+    "height": 341
+  },
+  "laurel-park-sign": {
+    "source": "assets/campaign-art/regions/laurel-highlands/park-sign.png",
+    "sourceSha256": "c0cb2b4e6846262fda45f2329d7574a8bd907bb25e5134fbe710ae7fd0788447",
+    "documentSha256": "360166a2ededf27d313b3a2f3b55718b00116bf3f30b6bdb615918b4f07ed7b6",
+    "width": 512,
+    "height": 256
+  },
+  "laurel-stone-retaining-wall": {
+    "source": "assets/campaign-art/regions/laurel-highlands/stone-retaining-wall.png",
+    "sourceSha256": "924e9292fd14aaf0ebaa72543e0b44b2fbca55604b47cda01f454d9fb213599b",
+    "documentSha256": "52e7fb41dcb5872ac306da905e27fa2d38acb2c6a147604ce11f1f58f7358965",
+    "width": 512,
+    "height": 205
+  },
+  "frozen-bush-01": {
+    "source": "assets/campaign-art/vegetation/frozen-bush-01.png",
+    "sourceSha256": "3c698637cd3f16068f868206785e84a268a06e3e794d2e71d35591a6667d1d5e",
+    "documentSha256": "1cff6518a18b9b4c8ae8f06d947d685e98cf213d4d8d52ef4fae6e084580d036",
+    "width": 512,
+    "height": 224
+  },
+  "frozen-bush-02": {
+    "source": "assets/campaign-art/vegetation/frozen-bush-02.png",
+    "sourceSha256": "fcbf79ae72e6818233f9b5c5ef246cf7eb87a31e4b1506fb1fbd21b92e33f8d5",
+    "documentSha256": "31af8a0f105a1fd447d02bc43bb02c3c6b75b50b291828fc8c36191fc7eb638c",
+    "width": 512,
+    "height": 464
+  },
+  "frozen-bush-03": {
+    "source": "assets/campaign-art/vegetation/frozen-bush-03.png",
+    "sourceSha256": "e42a19ab823b02cc0a650591ea4f40ffe77d000c50018c2d658923ebb4bc236b",
+    "documentSha256": "e116fa6b0a8cb7e8b417cfebaaf07a886f5874d9be4a7b6b24d06d1a8f57ad91",
+    "width": 512,
+    "height": 341
+  },
+  "gray-rock-01": {
+    "source": "assets/campaign-art/rocks/gray-rock-01.png",
+    "sourceSha256": "431305afc96594739a44a519788ee88bf03ed5dcfbad83d78fe917f55a67cc6f",
+    "documentSha256": "99b0768f1060844387d973db7166015aa137f3368f7f437f6b34e49a5295efbf",
+    "width": 512,
+    "height": 341
+  },
+  "gray-rock-02": {
+    "source": "assets/campaign-art/rocks/gray-rock-02.png",
+    "sourceSha256": "5f4b87e25e4ee23000bb586a9b1d3e703f6316d59da54580e06664873bb7eb0e",
+    "documentSha256": "8a262a3daad18e6d5e10d138845b49dea4def71d8cffb136e098474487c4c169",
+    "width": 512,
+    "height": 384
+  },
+  "gray-rock-03": {
+    "source": "assets/campaign-art/rocks/gray-rock-03.png",
+    "sourceSha256": "ea13e7179e38cd850ca88b7a465ba5010abb88170bf7f599675ef266a2a9cf03",
+    "documentSha256": "c4f21d639473688e67d7bc10c514cebe78a7c53147a34b7d3704d88a244ac914",
+    "width": 512,
+    "height": 341
+  },
+  "road-asphalt-industrial": {
+    "source": "assets/campaign-art/roads/road-asphalt-industrial.png",
+    "sourceSha256": "43f02da355c9ea66957e1c566cf2bd8517ffac3dcb89af0b411ea7cfd9e70507",
+    "documentSha256": "e55e9dc58a942e42a83746298b0d6e49e823e3fc3f4769bc6dd80582b0fafd30",
+    "width": 512,
+    "height": 512
+  },
+  "road-asphalt-wet": {
+    "source": "assets/campaign-art/roads/road-asphalt-wet.png",
+    "sourceSha256": "6b06736040d3ccce3dd84c9c576efb8e598a54d55359367264058d005b383079",
+    "documentSha256": "5d72484e36420aa1b051b45520abb7dde6387c43af776d358fa74a3436c38dd3",
+    "width": 512,
+    "height": 512
+  },
+  "road-asphalt-worn": {
+    "source": "assets/campaign-art/roads/road-asphalt-worn.png",
+    "sourceSha256": "a7aa0590c38be587ef714ab50c6baaffd46ae80d3ab32bf6ff8f89ad60b04293",
+    "documentSha256": "c0ffae40356d6b2fefea9274fba81190999e7eee5000a3f580611f071779f4fa",
+    "width": 512,
+    "height": 512
+  },
+  "road-dirt-loose": {
+    "source": "assets/campaign-art/roads/road-dirt-loose.png",
+    "sourceSha256": "1a9d03ee4ee35d51186066c5a5ccb7dab6e50a81a41c784f56d09b7a82ae225f",
+    "documentSha256": "2637b441c987e83853d5c0d310c8c3b5ce374d47956fc437aa0f9d57124ad640",
+    "width": 512,
+    "height": 512
+  },
+  "road-dirt-packed": {
+    "source": "assets/campaign-art/roads/road-dirt-packed.png",
+    "sourceSha256": "b95643a2dd7d201729db334f4bb786fd8be6a823d2e707e4d8254e5a2d88ead6",
+    "documentSha256": "84fac72bea8454ea1d59784dc116565b5279d14496bb89f65f0920fa485a0006",
+    "width": 512,
+    "height": 512
+  },
+  "road-gravel-gray": {
+    "source": "assets/campaign-art/roads/road-gravel-gray.png",
+    "sourceSha256": "e16917735c8855bb030902ced493c70e3266ee2d374786ed076646fccf3fd3dc",
+    "documentSha256": "ec9d5910e8b3f20739c67981975143d9f51e4fef4013480e4740b16e9d424b63",
+    "width": 512,
+    "height": 512
+  },
+  "road-gravel-red": {
+    "source": "assets/campaign-art/roads/road-gravel-red.png",
+    "sourceSha256": "ed5b4b8b7fae567ad55e0dd451c594b4997fedcfdc906098e9db9d26e1c8a2df",
+    "documentSha256": "58879852c2ac0247f7e2fc70abef767f83439c249714a158f3c806761cfded72",
+    "width": 512,
+    "height": 512
+  },
+  "road-gravel-rutted": {
+    "source": "assets/campaign-art/roads/road-gravel-rutted.png",
+    "sourceSha256": "1af5380ef1987acf00e6b8ddc3d18123643e77253fa035a24f2f4beebec4cfe5",
+    "documentSha256": "4d76da4d66d08eed3b08c16d5b61e6d92d6a4319c7e2c7fd16fbf4947463ea3c",
+    "width": 512,
+    "height": 512
+  },
+  "road-asphalt-faded66": {
+    "source": "assets/campaign-art/roads/road-asphalt-faded66.png",
+    "sourceSha256": "33ea681084f4ad8042b0e1ff87929be87a7a84b5d075d230eb813d1c547d3db9",
+    "documentSha256": "a469020796c27ee0e7997a2cf4bbd1c0d2f8e91912efc35ee3382fb5e291f8f4",
+    "width": 512,
+    "height": 512
+  },
+  "road-slush": {
+    "source": "assets/campaign-art/roads/road-slush.png",
+    "sourceSha256": "e554d647573622f9e85884eb9a961398424877c45ed8a35aa03f69ef0b4749d1",
+    "documentSha256": "9659d2e936e6f3421602690d4cd8ac1657be256a639da6ba31caf0224bd3394b",
+    "width": 512,
+    "height": 512
+  },
+  "road-snow-packed": {
+    "source": "assets/campaign-art/roads/road-snow-packed.png",
+    "sourceSha256": "bea4179c7aebadab3f40a1fdc0952eecaafa6ff3a38821452131133dc466e94d",
+    "documentSha256": "f7556d878b77edf08d96858341053c07a641a728e61eb91ffd35e7af05c027c5",
+    "width": 512,
+    "height": 512
+  },
+  "road-snow-patchy": {
+    "source": "assets/campaign-art/roads/road-snow-patchy.png",
+    "sourceSha256": "9135ff692caf6eaf66d1ebb9de3c9da43c729069c2abccdc1d6c05582591e1a2",
+    "documentSha256": "ebbc94c0985121da07cea2c39ad4a88e8ea9cb7568269942d5b713e9e5c75637",
+    "width": 512,
+    "height": 512
+  },
+  "tower-hill-small-shed": {
+    "source": "assets/campaign-art/regions/tower-hill/small-shed.png",
+    "sourceSha256": "bbb949f5dba6b3ec8f7e256610a3b42463f8665c5c343cc77e1a6d612c41e3bc",
+    "documentSha256": "1803b09eb52db3d616ea017c5edc5e219bd2697aa40905d6a5bab8b50fca2eb3",
+    "width": 512,
+    "height": 341
+  },
+  "tower-hill-mailbox": {
+    "source": "assets/campaign-art/regions/tower-hill/mailbox.png",
+    "sourceSha256": "dfb23ff6a1f3324d37c55030f2f68914384d09eaeca7218d0b652cc6841d11f1",
+    "documentSha256": "f77bbdbd3ff67db7a96223e00e569a204d15c947798d4b3d11cd63f66fdef026",
+    "width": 341,
+    "height": 512
+  },
+  "tower-hill-short-stone-wall": {
+    "source": "assets/campaign-art/regions/tower-hill/short-stone-wall.png",
+    "sourceSha256": "412930bc328ff412d990bc4969d19a8b93de797b6ce58de8760671e9ee007a9d",
+    "documentSha256": "27428b6027d6909b25dceaf263f9d1b2978ced4a3cf22df9b3f7822f4590fff3",
+    "width": 512,
+    "height": 171
+  },
+  "mount-washington-summit-building-silhouette": {
+    "source": "assets/campaign-art/regions/mount-washington/summit-building-silhouette.png",
+    "sourceSha256": "7e25cde6eb2c559de3824e043375b1f44f847e1840a14940a1546fb55a32e806",
+    "documentSha256": "74dc3fdfcc2f3000c63ff3bca9b9c3604d9666b1729616d196f0470033a7f186",
+    "width": 512,
+    "height": 262
+  },
+  "mount-washington-weather-instruments": {
+    "source": "assets/campaign-art/regions/mount-washington/weather-instruments.png",
+    "sourceSha256": "867bdea6fbb876021c13b089a0c2f18b59c3ee703f4ed2a0c424a2c7d93357d8",
+    "documentSha256": "c59406eb20472511d6f4eef10d95a0d8585f61d69f3e98b45eb5d62e709d74bc",
+    "width": 468,
+    "height": 512
+  },
+  "ohio-river-crossing-distant-bridge-silhouette": {
+    "source": "assets/campaign-art/regions/ohio-river-crossing/distant-bridge-silhouette.png",
+    "sourceSha256": "5b6f281363fd44cf218b191cec533aaa92c3ca29d9b4e6370394c2eb1e804685",
+    "documentSha256": "2e201822c10cd0c16757cacedcddc3fe30871c7c7e9357d1469e031030b55b08",
+    "width": 512,
+    "height": 171
+  },
+  "ohio-river-crossing-flood-marker": {
+    "source": "assets/campaign-art/regions/ohio-river-crossing/flood-marker.png",
+    "sourceSha256": "fc269058fd48d4170360a7063f56a34216d3f02cecdfe1ec16018c8774491772",
+    "documentSha256": "c44935b91a9d61828a118c3308ff4cdc8fc37c8524be8972fb0a841f7487921b",
+    "width": 341,
+    "height": 512
+  },
+  "ohio-river-crossing-riverbank-vegetation": {
+    "source": "assets/campaign-art/regions/ohio-river-crossing/riverbank-vegetation.png",
+    "sourceSha256": "44f6e152c6ed2ac95033fb19304f76f0eb8bf71b2c12ce5e1519a7da2f125665",
+    "documentSha256": "948289267ff81e1add1ba1e08486779946522fe8dfe7c2a8a8275fd065b9929a",
+    "width": 512,
+    "height": 262
+  },
+  "ohio-river-crossing-riverside-building": {
+    "source": "assets/campaign-art/regions/ohio-river-crossing/riverside-building.png",
+    "sourceSha256": "f76c7b009b7326af6dec4b72864e413aa89f415dc1ba9fa97e59e8480ac8867b",
+    "documentSha256": "71edad54872fd3fc09382f91be0becb1e252e9269c7c585435c3d21be2f9ed87",
+    "width": 512,
+    "height": 341
+  },
+  "data-center-city-cooling-units": {
+    "source": "assets/campaign-art/regions/data-center-city/cooling-units.png",
+    "sourceSha256": "90b57b1375f90604e2450b8752513f57e461649878900d13c5affcf2346b4734",
+    "documentSha256": "a341eadcd74bca3bcb98adc98fccb6201e15c491c1d5f9ac9a89accd74fed306",
+    "width": 512,
+    "height": 288
+  },
+  "data-center-city-loading-dock": {
+    "source": "assets/campaign-art/regions/data-center-city/loading-dock.png",
+    "sourceSha256": "6d96c04b770881cf3e3bb120095b260a6e670a2c5ccd24bc54d1b455d5089d5c",
+    "documentSha256": "a685fa1ca7463e07d9556c89bfecdfb0c9f491e4bedd70c9900bfbfca543f6da",
+    "width": 512,
+    "height": 341
+  },
+  "data-center-city-security-fencing": {
+    "source": "assets/campaign-art/regions/data-center-city/security-fencing.png",
+    "sourceSha256": "62212537b8c04a5848e8d876c63afd9f95c26eb2768ced06dbf89788a988fc2c",
+    "documentSha256": "17f60b454314d75a0dcba2d3c58b836cf87fc814d9c4f14c784e6fa45bf57009",
+    "width": 512,
+    "height": 288
+  },
+  "data-center-city-server-building": {
+    "source": "assets/campaign-art/regions/data-center-city/server-building.png",
+    "sourceSha256": "59f66614923d78fe229cb7617e000b2103c11ead70d2c12d82a0d48848232717",
+    "documentSha256": "7dc37a73ca9cf6cc6d3d6d0f3fb25722916963ecd03075b1b0ad638ca7a7efcb",
+    "width": 512,
+    "height": 256
+  },
+  "data-center-city-shipping-container": {
+    "source": "assets/campaign-art/regions/data-center-city/shipping-container.png",
+    "sourceSha256": "964084dc580ba4f8aebb87a084d62a5f04fc384afb5f8414ed5edc02871954fa",
+    "documentSha256": "71c8f9fe167f3a3229898f2b8dc613423ad0ef232bdba43c11b16d13f0431b69",
+    "width": 512,
+    "height": 341
+  },
+  "data-center-city-transformer": {
+    "source": "assets/campaign-art/regions/data-center-city/transformer.png",
+    "sourceSha256": "1858adfcd168bb51a4090473418fa5b3d420073c5f3b1c178769488c7bf65408",
+    "documentSha256": "d0e90fcebefeca4693034715704871d51e61be486365419bf39295c6ca2e6bcf",
+    "width": 512,
+    "height": 512
+  },
+  "ozarks-barn": {
+    "source": "assets/campaign-art/regions/ozarks/barn.png",
+    "sourceSha256": "16a42b0f2f8ecbd2754c718911756713d7af02ef2cbe46c87883bfa03d58762b",
+    "documentSha256": "110d047ea1f85f821992197bf583c93e412eb57368b09f8b991f7cdc363570f0",
+    "width": 512,
+    "height": 341
+  },
+  "ozarks-creekside-brush": {
+    "source": "assets/campaign-art/regions/ozarks/creekside-brush.png",
+    "sourceSha256": "e1b275aa58922335223e5892d25675903a9ab8187003288279f9ce395132cc7f",
+    "documentSha256": "1dc830209b1b1d3d287e2b342c5aabe4f87be0908acab91ec8af6f98552f5bae",
+    "width": 512,
+    "height": 341
+  },
+  "ozarks-exposed-limestone": {
+    "source": "assets/campaign-art/regions/ozarks/exposed-limestone.png",
+    "sourceSha256": "007ea79435b999059e96053278d1221ad5c680a54e4ad9a45f14090b53a1d0c4",
+    "documentSha256": "70229a1c6b05b3e18cc326ea96a99e930f2e5c033fc86a49544fc65056bc71e2",
+    "width": 512,
+    "height": 256
+  },
+  "ozarks-farm-gate": {
+    "source": "assets/campaign-art/regions/ozarks/farm-gate.png",
+    "sourceSha256": "04489188ac3fc4c2add491d5b2d151b525a5fc3f84a4a26068c3f2b1919f30b8",
+    "documentSha256": "17c9b9db081e4fe2bf8f8a129569aeb32f74bd8c98363771d1ef849f46be74e0",
+    "width": 512,
+    "height": 256
+  },
+  "ozarks-timber-shed": {
+    "source": "assets/campaign-art/regions/ozarks/timber-shed.png",
+    "sourceSha256": "7321e7079f823ca04501270da75651b43f6fe2eb27a63fc1c61f117c2d7d4664",
+    "documentSha256": "f79457f0d24e00dac90b852d28d8a10c6141d1458e45a09698905a369c3823fe",
+    "width": 512,
+    "height": 341
+  },
+  "route-66-abandoned-gas-station": {
+    "source": "assets/campaign-art/regions/route-66/abandoned-gas-station.png",
+    "sourceSha256": "eb2e9e76c4f3bb39a9690833e1b7c91af4047ba5ace4ec8fcb4ef0a0371443cb",
+    "documentSha256": "892f89afc806d3ad711e087b2e199bba43e5f3da7af9952fa3ab98f10788ab21",
+    "width": 512,
+    "height": 256
+  },
+  "route-66-billboard": {
+    "source": "assets/campaign-art/regions/route-66/billboard.png",
+    "sourceSha256": "91b1d28edf6f5edb93f10d2f4d623f80a48ea2aa98d455731dba8866e58c7007",
+    "documentSha256": "4494918f65acc8aa46ca4595a0f58f51524b581697bbcee8aa36195ebe78e060",
+    "width": 512,
+    "height": 341
+  },
+  "route-66-diner": {
+    "source": "assets/campaign-art/regions/route-66/diner.png",
+    "sourceSha256": "274e36eebfd5cf699402ab18733e20b647c7c8d4a40f10b714721f5678f745ca",
+    "documentSha256": "55a012a8121956c75d325212923b413fc95a24901257eb7183716e30f202bbec",
+    "width": 512,
+    "height": 256
+  },
+  "route-66-motel-sign": {
+    "source": "assets/campaign-art/regions/route-66/motel-sign.png",
+    "sourceSha256": "1608d636d0ca24821ba6156426e61ad50b01d65e3374abc550f19bac2269f552",
+    "documentSha256": "031dc001562118662cf606d32e5a1ce871fb8956681894d7fa81d0ade7501c2e",
+    "width": 341,
+    "height": 512
+  },
+  "route-66-rusted-pickup": {
+    "source": "assets/campaign-art/regions/route-66/rusted-pickup.png",
+    "sourceSha256": "cc24e3d4db389827d68ff3c2696ed14fa4f278e2916ef92d1e1e67f5a05e43a4",
+    "documentSha256": "9db90ab983aeed25a31a52b7e2d02f82e9f47c1f0ac70d7326a9944877eeb418",
+    "width": 512,
+    "height": 288
+  },
+  "route-66-water-tower": {
+    "source": "assets/campaign-art/regions/route-66/water-tower.png",
+    "sourceSha256": "e7014a4f3de68ac772aadbcc09ebce77f40e36d24bba2c86ea2844240bd67c22",
+    "documentSha256": "9269e3900ef5670daca35b89542e250747982fe99b2427727b3a4580686887b4",
+    "width": 341,
+    "height": 512
+  },
+  "ground-alpine-rock-v2": {
+    "source": "assets/campaign-art/ground/ground-alpine-rock-v2.png",
+    "sourceSha256": "e8f75539e654ca2a0dd7dc96f209b7e2f8b5e7aa47a4eaa1890030cc09a5f799",
+    "documentSha256": "80aa863b999202eec3747c8ab1d2cdc65a0938e0aed4abfd9e2b2446595e0615",
+    "width": 512,
+    "height": 512
+  },
+  "ground-brown-dirt-v2": {
+    "source": "assets/campaign-art/ground/ground-brown-dirt-v2.png",
+    "sourceSha256": "0fb689e2553f05e2c60876474e5c8f1a9a6b9dde9d5d55077a8b357b56eaabe4",
+    "documentSha256": "8447cf0c429999cc9640963c78f6ee166651c296399ca9ef7f2815dade8d4950",
+    "width": 512,
+    "height": 512
+  },
+  "ground-canyon-rock-v2": {
+    "source": "assets/campaign-art/ground/ground-canyon-rock-v2.png",
+    "sourceSha256": "9c347e2e4dca72e6b9dada955b14a85031fd991104969cd1651f164536673820",
+    "documentSha256": "5758f941048dca565292fd0926e5055652c92e034487d2f3a911dd8f7261fbf2",
+    "width": 512,
+    "height": 512
+  },
+  "ground-clean-snow-v2": {
+    "source": "assets/campaign-art/ground/ground-clean-snow-v2.png",
+    "sourceSha256": "46d51e6b75c9d69015b746d47c44d9c20bec9a96228cc9ca21008f502a9ad3ce",
+    "documentSha256": "fb94316526ffbc96a3b1587a8de3cf00d15cf4b78e74f1b8b1ee12fe8190061e",
+    "width": 512,
+    "height": 512
+  },
+  "ground-desert-scrub-v2": {
+    "source": "assets/campaign-art/ground/ground-desert-scrub-v2.png",
+    "sourceSha256": "808df75a9051094b74197e6cdbc417bfed591a301fe701ef970f68b06e501f47",
+    "documentSha256": "9efa8415791cadc2b5fa2a409187781b4a497cd2195a4ff418c8326f1551ee66",
+    "width": 512,
+    "height": 512
+  },
+  "ground-dirty-snow-v2": {
+    "source": "assets/campaign-art/ground/ground-dirty-snow-v2.png",
+    "sourceSha256": "cac68dd18583d8720dc05ec5dd0a90de5b6e7d71d35797c9a2a766de93848dc8",
+    "documentSha256": "db56aff6d89c6ea5d795d3254f31d70f72014bd27b954d21400f6eeb8241b7d9",
+    "width": 512,
+    "height": 512
+  },
+  "roadside-abandoned-car-01": {
+    "source": "assets/campaign-art/roadside/abandoned-car-01.png",
+    "sourceSha256": "bd9e6077d725901d3af1c4487c5c84e6837cc68c7ddbaff0024fb27a288b4215",
+    "documentSha256": "77f41f47ef35ad338f361aab1647c1dae26ec9865c6bcd76f9b15ff2918302c1",
+    "width": 512,
+    "height": 273
+  },
+  "roadside-abandoned-car-02": {
+    "source": "assets/campaign-art/roadside/abandoned-car-02.png",
+    "sourceSha256": "e6b42f4f8b156d1d48635cf27c5def7fbf884c51929a0795cf2bedaf8b97f59e",
+    "documentSha256": "918e1f5b4a35051db97ce6915ecde51cb5333506d2c1888a1384b09cd8f4905c",
+    "width": 512,
+    "height": 256
+  },
+  "roadside-abandoned-car-03": {
+    "source": "assets/campaign-art/roadside/abandoned-car-03.png",
+    "sourceSha256": "0320d3a32519b3b28e78930aafdc75fd0fd2d45737ca9200f8d42092cfcf7559",
+    "documentSha256": "dd4fa95590e86b3931bab7adad45d9ca2f5b2d1ecfa1024c8c714e1245d4f0b3",
+    "width": 512,
+    "height": 256
+  },
+  "roadside-chevron-left": {
+    "source": "assets/campaign-art/roadside/chevron-left.png",
+    "sourceSha256": "4c4b35190dacdca7850af8b1b09ba463a04d7561b570894a35ae61919670c565",
+    "documentSha256": "419c84d278263279c11a8f01fde5b8176cb94a27e4f4c79f0dedf4d52b5f9b0c",
+    "width": 341,
+    "height": 512
+  },
+  "roadside-chevron-right": {
+    "source": "assets/campaign-art/roadside/chevron-right.png",
+    "sourceSha256": "8ded187c160380a6836dd35209c56ce9d42f34e439c5403b83763b90bf206c29",
+    "documentSha256": "fe93cbbda98729450716cc82119ef28b698f706356e5fe3fe7ff4a3b7ca243ba",
+    "width": 512,
+    "height": 466
+  },
+  "roadside-concrete-barrier-clean": {
+    "source": "assets/campaign-art/roadside/concrete-barrier-clean.png",
+    "sourceSha256": "4c87e0e483750ca41eca235a30dba20fb0b2210293b6438f0e2bd94bc9d5498c",
+    "documentSha256": "7c6fa1ada261ef849aa2abce650897099d57def46513513281e4123a02f5dea2",
+    "width": 512,
+    "height": 256
+  },
+  "roadside-concrete-barrier-damaged": {
+    "source": "assets/campaign-art/roadside/concrete-barrier-damaged.png",
+    "sourceSha256": "ffb7d11a3a8b2de48a2f2834359f6c7b544e5e598560db69327bb0c5ba59efc7",
+    "documentSha256": "64387f8dbcd72e6a6212cc45df04f3b07df3e3b2e94a3dbbf8a83c74a6fe69ed",
+    "width": 512,
+    "height": 262
+  },
+  "roadside-drainage-culvert-entrance": {
+    "source": "assets/campaign-art/roadside/drainage-culvert-entrance.png",
+    "sourceSha256": "99deba5b084f5879301f14b15dc2de95e752b16db30e1a2482cdd1c185e25011",
+    "documentSha256": "ace4c41065b8aa545e83c4814fb6e7088892dff05724dc6094c462c4ccd5615c",
+    "width": 512,
+    "height": 341
+  },
+  "roadside-hairpin-warning-sign": {
+    "source": "assets/campaign-art/roadside/hairpin-warning-sign.png",
+    "sourceSha256": "fad2a464088b723a228d85b13028cd500b6656793100e9ae20d0c4b61e28172c",
+    "documentSha256": "80088e9b83dadbd78d4c6fd32e252f2cc19014f6d05e6e6c58d8de8b38b68dbd",
+    "width": 512,
+    "height": 505
+  },
+  "roadside-metal-guardrail-damaged": {
+    "source": "assets/campaign-art/roadside/metal-guardrail-damaged.png",
+    "sourceSha256": "14eb848f07770b9b15718b5c44fe17864cb1fc62a85c6b9b2f6726c650e43774",
+    "documentSha256": "2bf0e2f102b5316e8d7362e1467e4e15237e94df50cdb741403ce76e35464eaa",
+    "width": 512,
+    "height": 171
+  },
+  "roadside-metal-guardrail-intact": {
+    "source": "assets/campaign-art/roadside/metal-guardrail-intact.png",
+    "sourceSha256": "e79285672c8078f4b8fd188751aaf9f7783e97790bc89f77a010da49dee7720f",
+    "documentSha256": "3c82ced0a021c8cf294cf4d0fe048d4cd88a6954b8ee9b6fb6c4864f9c69ec9e",
+    "width": 512,
+    "height": 171
+  },
+  "roadside-reflector-post": {
+    "source": "assets/campaign-art/roadside/reflector-post.png",
+    "sourceSha256": "668e4981702dc3347cf5135e503c66bad7d6d424bd364649fe458ac6512307af",
+    "documentSha256": "4aed4ec1f57c1b88582acb63dcc5d436c287c186d24618f693eddbca0681603f",
+    "width": 341,
+    "height": 512
+  },
+  "roadside-road-closed-barricade": {
+    "source": "assets/campaign-art/roadside/road-closed-barricade.png",
+    "sourceSha256": "3541bc10a37aba863f924304aee1d532728c04f95acaca60d67f871d21753ba5",
+    "documentSha256": "43572821b82bcbea31a15ddeb2f3217269d133dd306b65ca7cdc6e5fff6751eb",
+    "width": 512,
+    "height": 341
+  },
+  "roadside-rockfall-warning-sign": {
+    "source": "assets/campaign-art/roadside/rockfall-warning-sign.png",
+    "sourceSha256": "9ed743d9491202c5db594ab727137ae14166adf9479c36f69ab86cbe0d49a188",
+    "documentSha256": "9c7d76364a499ee530b442c7dcb72c5833b09878f0e44fac9aba79dd034d3525",
+    "width": 410,
+    "height": 512
+  },
+  "roadside-rubble-pile": {
+    "source": "assets/campaign-art/roadside/rubble-pile.png",
+    "sourceSha256": "fefad7a6dad97d921eb0c0ab9ce80ab8b0c1a3e3b616c51da4b1e012d8020d6a",
+    "documentSha256": "1a434ff4176d06b724c79e262d818e715bb26ea2bd968b86bc6d432cd1cde728",
+    "width": 512,
+    "height": 256
+  },
+  "roadside-snow-depth-marker-pole": {
+    "source": "assets/campaign-art/roadside/snow-depth-marker-pole.png",
+    "sourceSha256": "601051515bc84fc5a199d380568069b168229010c5f6a9aa79a055a7a05a3a8f",
+    "documentSha256": "b385abbc1e18b6f817fb4096e6b4d429368e6e3bff59123ea1b36cd8a3fd5e72",
+    "width": 342,
+    "height": 512
+  },
+  "roadside-snowbank-mound": {
+    "source": "assets/campaign-art/roadside/snowbank-mound.png",
+    "sourceSha256": "a1a58d2dfc569e326ad5856458085055e44fc45b2543edebf897b081a69b15c4",
+    "documentSha256": "2a85778b1be3e727d93faf0dd29fa8ae340292cb06cfbe4ed4fb5e72dd5740eb",
+    "width": 512,
+    "height": 171
+  },
+  "roadside-steep-grade-warning-sign": {
+    "source": "assets/campaign-art/roadside/steep-grade-warning-sign.png",
+    "sourceSha256": "e5381a3a73448ba2bb5802f4cd0d43e7c1c0f37dd9d5731c478d027b79b3a266",
+    "documentSha256": "9d38f4abf76a518dbac7e1e00ef1d01db8bdbfeaa64f062b42e179a9335d806a",
+    "width": 415,
+    "height": 512
+  },
+  "roadside-streetlight": {
+    "source": "assets/campaign-art/roadside/streetlight.png",
+    "sourceSha256": "f1a061f30c1c01b8d5281d9d878f1085d10d103952a67aff1f8061d788e06398",
+    "documentSha256": "0b8aa1bd0fabbe800946a1924b042b74acbeb96f8e6e8ec7b3bcf23b5eebca3c",
+    "width": 341,
+    "height": 512
+  },
+  "roadside-traffic-cone": {
+    "source": "assets/campaign-art/roadside/traffic-cone.png",
+    "sourceSha256": "b9717859ddd7735102d598a2606b49f461c94c6223b670615b284b1c0a1fc740",
+    "documentSha256": "7f2d39030bdc37d66b817b56081f181cd1eae9fd3787f90c2db36390df748b0e",
+    "width": 512,
+    "height": 500
+  },
+  "roadside-wooden-fence-broken": {
+    "source": "assets/campaign-art/roadside/wooden-fence-broken.png",
+    "sourceSha256": "be077b9846ec81c023a261bc159cd7890dcab3f6a89834ddd17b285e62ea71fc",
+    "documentSha256": "36ee3c908633901c3884afd04988af85b44c3500621b7cd4f3641c2169b82e5f",
+    "width": 512,
+    "height": 256
+  },
+  "roadside-wooden-fence-intact": {
+    "source": "assets/campaign-art/roadside/wooden-fence-intact.png",
+    "sourceSha256": "2e5c8539df9cc9a7ccbabd645baa5112bca236bb55617a91fad0db81ac03fd99",
+    "documentSha256": "4547d3b3602a97f3ca1dc2d553e8862282b9b7b7d1a8d628da81d05b38bacc73",
+    "width": 512,
+    "height": 256
+  },
+  "roadside-wooden-utility-pole": {
+    "source": "assets/campaign-art/roadside/wooden-utility-pole.png",
+    "sourceSha256": "c47def3ec8844279b44d1da33ae878491d1ad5777a5ccf1336c0cd55bae974df",
+    "documentSha256": "073e896112d373f10740c7e5c37e578df494f013d4ab33e351402d5eeedbd98e",
+    "width": 341,
+    "height": 512
+  },
+  "shoulder-asphalt-gravel": {
+    "source": "assets/campaign-art/ground/shoulder-asphalt-gravel.png",
+    "sourceSha256": "1943891581b64c7c6d1585f2dfab442f83ed8a3f46d8763c82b616d9d993f988",
+    "documentSha256": "f6ebb674cf67e973c3612e177f073c707bb775eab4a4441354e4aa865cb1b917",
+    "width": 512,
+    "height": 512
+  },
+  "shoulder-dirt-grass": {
+    "source": "assets/campaign-art/ground/shoulder-dirt-grass.png",
+    "sourceSha256": "46bb8eaad24a8a67f413929d96599b830486d63040156d59283ed4bc20337940",
+    "documentSha256": "0630e62d09027d7d46a7a0c4e549bc1fadfd527ab95294b84045a0ada43c8a53",
+    "width": 512,
+    "height": 512
+  },
+  "shoulder-snowbank-edge": {
+    "source": "assets/campaign-art/ground/shoulder-snowbank-edge.png",
+    "sourceSha256": "0329b7a7dce6378933667c912c9687508d5baba52493b506057322e09626ae59",
+    "documentSha256": "b655fec2aa71445c27939490746d8ef0fb0331da2b4cbc136205d16dfa35d65b",
+    "width": 512,
+    "height": 512
+  },
+  "snow-covered-pine-01": {
+    "source": "assets/campaign-art/vegetation/snow-covered-pine-01.png",
+    "sourceSha256": "61fbebac50d18e5dd8bf4c475cb0bfa3a5542b867885566b165834b6e6a36be7",
+    "documentSha256": "d0fc877b4009da0755d97a85690f1def7faf2ddb657d71048ed7c0d0c0134857",
+    "width": 512,
+    "height": 506
+  },
+  "snow-covered-pine-02": {
+    "source": "assets/campaign-art/vegetation/snow-covered-pine-02.png",
+    "sourceSha256": "de1aff9b303ecf7cf6cca8e171bf5a2b72a697d6e471089446707ee7c46e8a36",
+    "documentSha256": "e72133857aebac93b21d4c975146f70522af032b5e6e09d1cab51d6756b3d202",
+    "width": 512,
+    "height": 341
+  },
+  "snow-covered-pine-03": {
+    "source": "assets/campaign-art/vegetation/snow-covered-pine-03.png",
+    "sourceSha256": "9265e4028ed8fc5c0454d76509bb69da908dd5f04e7ebc196a5e360b856092cc",
+    "documentSha256": "cd29d009e430f14429ec8d2e5dad19661758739cc92ea47a5a816e6eb699ceff",
+    "width": 512,
+    "height": 341
+  },
+  "ground-gray-gravel-v2": {
+    "source": "assets/campaign-art/ground/ground-gray-gravel-v2.png",
+    "sourceSha256": "c92e2c1c12752f0cd8a200bbfd18a51ff775369a122027f6a4a53bf8885dc37e",
+    "documentSha256": "27caa6e606e89406715538c6d481868ad6b7655b1644d3d6bec033fcdd039737",
+    "width": 512,
+    "height": 512
+  },
+  "ground-industrial-concrete-v2": {
+    "source": "assets/campaign-art/ground/ground-industrial-concrete-v2.png",
+    "sourceSha256": "d5cece12980028e30be8a33a32095afade7bbdd404a5e600906e3b7358e0a9b6",
+    "documentSha256": "0f58d4ba1be5750dcaa3e0dcf97c0e843ec60bfe295a07c1167f9d198692407e",
+    "width": 512,
+    "height": 512
+  },
+  "ground-industrial-rubble-v2": {
+    "source": "assets/campaign-art/ground/ground-industrial-rubble-v2.png",
+    "sourceSha256": "63f8b26905cfc6142082f545642a73df98aec10413e10d274f7af37ad531307b",
+    "documentSha256": "bfaae3e24e3a9c3c0a0d612bd7ccfa599822af76050eb0bb14ecfb9e828df9b5",
+    "width": 512,
+    "height": 512
+  },
+  "ground-red-gravel-v2": {
+    "source": "assets/campaign-art/ground/ground-red-gravel-v2.png",
+    "sourceSha256": "10be64999e6822efc48e668da24c8fda3b31d9bb2e0fd482384c5f6ab0d70b2c",
+    "documentSha256": "9f85a1c57970ffbeb0068f921cd2c75f326eb1c028d9021118bd56b93ba30a00",
+    "width": 512,
+    "height": 512
+  },
+  "pikes-peak-alpine-vegetation": {
+    "source": "assets/campaign-art/regions/pikes-peak/alpine-vegetation.png",
+    "sourceSha256": "349c4ec57771a6ed68fd558e551136accffdedc2b0d83c849c5e026b29cb966f",
+    "documentSha256": "e96aebb0322156418c121ea8e2d8be086786e274def0de4f94dac4f3aca5d782",
+    "width": 512,
+    "height": 341
+  },
+  "pikes-peak-granite-outcrop": {
+    "source": "assets/campaign-art/regions/pikes-peak/granite-outcrop.png",
+    "sourceSha256": "c691bada2129b4dbe81394e1687263c61ec82fa00a4724b814a6d18bd63bfde8",
+    "documentSha256": "36e74151dd7d4fcaf33dbda76212c47becf640970e1d3443d96f5f8065c1d37a",
+    "width": 512,
+    "height": 341
+  },
+  "pikes-peak-snow-fence": {
+    "source": "assets/campaign-art/regions/pikes-peak/snow-fence.png",
+    "sourceSha256": "0e524b9fe0a585395fd0e39c64a28a1005033321dca0f1c03039fbdbb31148a1",
+    "documentSha256": "531f7bc1ce690f562f9e4fb5fa41ab4af4540cee67bc56587d70f3d71f785ffe",
+    "width": 512,
+    "height": 341
+  },
+  "pikes-peak-summit-sign": {
+    "source": "assets/campaign-art/regions/pikes-peak/summit-sign.png",
+    "sourceSha256": "26b9ecd567e34bdf79edd65873835ce82fbe31ad744ad888164c07d568628ace",
+    "documentSha256": "7e4a2f657cf20062f4211693f6a1317de350979338076f81ad75374f5732666b",
+    "width": 512,
+    "height": 341
+  },
+  "moki-dugway-desert-scrub": {
+    "source": "assets/campaign-art/regions/moki-dugway/desert-scrub.png",
+    "sourceSha256": "8963cc28b7b8b34fe2738bcecc3b7d6b5aeadf7204f0e3e4b744ef390525e460",
+    "documentSha256": "a6df4216e0a59ea69f5e9a640793815865f444fae4ff96ff34906106a923a9b2",
+    "width": 512,
+    "height": 341
+  },
+  "moki-dugway-mesa-silhouette": {
+    "source": "assets/campaign-art/regions/moki-dugway/mesa-silhouette.png",
+    "sourceSha256": "eadc88f48d5d7bf5b21760521ef4d218a28ac0334ab1a0091c3c22a2546858a5",
+    "documentSha256": "3308a66ff9fccf15cdf080695e3ed248cf221ba2bc04d31bfa1c0fb8751951de",
+    "width": 512,
+    "height": 171
+  },
+  "moki-dugway-sandstone-outcrop": {
+    "source": "assets/campaign-art/regions/moki-dugway/sandstone-outcrop.png",
+    "sourceSha256": "18ee6bf131f9c6d680dd683a6b5cfa36833d89da7a27b446d58e907b95b5bf84",
+    "documentSha256": "7368d84a81f1e2fe152121b3528df1e18499414863fe546558a42199983a8cc6",
+    "width": 512,
+    "height": 341
+  },
+  "moki-dugway-warning-sign": {
+    "source": "assets/campaign-art/regions/moki-dugway/warning-sign.png",
+    "sourceSha256": "660044a2bec4de38b5113e4187b502021547baefddcbfaaa21c1b71d0bf929bf",
+    "documentSha256": "db9a982a2200c9ffeda452f4ff4c0d3cab73453d75353ef7b1645968a959c947",
+    "width": 437,
+    "height": 512
+  },
+  "oak-creek-canyon-cabin": {
+    "source": "assets/campaign-art/regions/oak-creek/canyon-cabin.png",
+    "sourceSha256": "8a005a66e378c2b941cfd9beb281ea0ad0fbf9fbb40af036a3a4a6e42c98b128",
+    "documentSha256": "6dc027cf6012bab4e032680158461707b31b587b21869083c05cc1188fac8d66",
+    "width": 512,
+    "height": 341
+  },
+  "oak-creek-creekside-tree": {
+    "source": "assets/campaign-art/regions/oak-creek/creekside-tree.png",
+    "sourceSha256": "f940bc5bb05246004d66ebff245f0601d2523c966aee674d183040358fa48d61",
+    "documentSha256": "d1060cb5c3bef30579542b29b4a3e29c548f96c866733fdedab8e5d7765a4444",
+    "width": 512,
+    "height": 512
+  },
+  "oak-creek-red-rock-formation": {
+    "source": "assets/campaign-art/regions/oak-creek/red-rock-formation.png",
+    "sourceSha256": "06bca32bde9049a9bb6bf2fe5a8b07ae8655f2fde8d85dcfb91d5b20beb5dfb9",
+    "documentSha256": "9df63b01989599d36022b0ae93fe1462c2dcc79703359e392442c291ebf78ccf",
+    "width": 512,
+    "height": 341
+  },
+  "oak-creek-stone-wall": {
+    "source": "assets/campaign-art/regions/oak-creek/stone-wall.png",
+    "sourceSha256": "6389fec31b290718273f23a868a9396ba695aa0f79edcef9cd00f176297c5ca4",
+    "documentSha256": "c526869f51d199c6331901bf6881ce947539d23aeacdffd49858b99247bf425c",
+    "width": 512,
+    "height": 256
+  },
+  "angeles-crest-chaparral": {
+    "source": "assets/campaign-art/regions/angeles-crest/chaparral.png",
+    "sourceSha256": "f9cda2d50a3dff7573ed7f514387c9800e1e3bd13686dbbdd17ad6b5c51e7a74",
+    "documentSha256": "9672a18d4531d66d337340a8a11cf434eb2c281e56f0d20cfa065a92a0813eb0",
+    "width": 512,
+    "height": 512
+  },
+  "angeles-crest-dry-mountain-pine": {
+    "source": "assets/campaign-art/regions/angeles-crest/dry-mountain-pine.png",
+    "sourceSha256": "8d99246e92196637925152e292091e2220e2d2e3f83b9a56b9d9ef67c1a398b9",
+    "documentSha256": "c8e954654380ed6241a3a8a19024951984b420b8102c9e9887315a6f94ace304",
+    "width": 512,
+    "height": 512
+  },
+  "angeles-crest-mountain-silhouette": {
+    "source": "assets/campaign-art/regions/angeles-crest/mountain-silhouette.png",
+    "sourceSha256": "262f46e1d5ee3b6e48c0500505244d50ce876108a8106d055ae8b6051c85407c",
+    "documentSha256": "f41ecb113147ad168c155976c39920e42282e65d0be92f1e38d63eb6e2fabe11",
+    "width": 512,
+    "height": 171
+  },
+  "angeles-crest-pale-rock-cut": {
+    "source": "assets/campaign-art/regions/angeles-crest/pale-rock-cut.png",
+    "sourceSha256": "961bee498ade49a36f396848deefcc8f1ff647a70be1eb61ffdc23db1a40d5cf",
+    "documentSha256": "e10f1d90f4478d12d71be843b87d16980de1840793c070d63b740b4f5beabe36",
+    "width": 512,
+    "height": 341
+  },
+  "angeles-crest-turnout-sign": {
+    "source": "assets/campaign-art/regions/angeles-crest/turnout-sign.png",
+    "sourceSha256": "320d1ceefe5fe2f1382c765b18b9f96f20a3c4d2e553e95b44064e409879e8d7",
+    "documentSha256": "c0a46a6542df13407d03e3bdb7772f4518cfa0d19abe1afc53063b75542d2335",
+    "width": 403,
+    "height": 512
+  },
+  "decal-cracks-repair-patches": {
+    "source": "assets/campaign-art/decals/cracks-repair-patches.png",
+    "sourceSha256": "3a11e3a3a246ebaa8d96ba2e842177d4a976b7d68bb7f71c3f48224e57b4d003",
+    "documentSha256": "fd0550f4652d46e80827c5d66b3f5140e1b751ab11048772abee3d269bc2626c",
+    "width": 512,
+    "height": 256
+  },
+  "decal-dirt-drag": {
+    "source": "assets/campaign-art/decals/dirt-drag.png",
+    "sourceSha256": "b83a266ecea480926db87ff901f12f5b477ec83b4abbd47717a8ba4150154074",
+    "documentSha256": "f3460afcddf6d354267c8b78c1f3dea1eabdc383dd9d54f7390d7034bf1b5f15",
+    "width": 512,
+    "height": 512
+  },
+  "decal-fallen-leaves-needles": {
+    "source": "assets/campaign-art/decals/fallen-leaves-needles.png",
+    "sourceSha256": "e13c9adfee8495b7fb29e59a974fe97ba4753a9df8884e85a279c0bea1abe728",
+    "documentSha256": "54e08545704c4f97e50b7d008e25ca7d2e9d90f7f6c1026a71547de314e1de93",
+    "width": 512,
+    "height": 512
+  },
+  "decal-gravel-spill": {
+    "source": "assets/campaign-art/decals/gravel-spill.png",
+    "sourceSha256": "b688936e535fca102229fac1d7ef2e7e67a1563cec1e1d4850bfcdabb4016c0f",
+    "documentSha256": "ede84964f963c520ae7b98ed4cf0f2c5b51317b560dece47bff7d39f563978fc",
+    "width": 512,
+    "height": 512
+  },
+  "decal-puddle": {
+    "source": "assets/campaign-art/decals/puddle.png",
+    "sourceSha256": "e454fd31a037d408f9bc326d2d36bd3a7b9be57fdebf9ddfd495500786907d47",
+    "documentSha256": "75909494030bdc27838195c9c09ed85606d1ba7003120b772cf9ec647ee6eb3a",
+    "width": 512,
+    "height": 493
+  },
+  "decal-road-edge-debris": {
+    "source": "assets/campaign-art/decals/road-edge-debris.png",
+    "sourceSha256": "0a32b7c9fdf39900154bd67471c6584cd3179bb8a85f74f5e93491436d542020",
+    "documentSha256": "37a0609f8d6f39f7f610ccc0eeb1d00c51062e3548b634fa213bb3b3e2462828",
+    "width": 512,
+    "height": 512
+  },
+  "decal-snow-patch": {
+    "source": "assets/campaign-art/decals/snow-patch.png",
+    "sourceSha256": "bca8bcbf2080bc950fe97753d9243138d97361c087a8c72fc95ce28521ae6a9d",
+    "documentSha256": "751976ca05b4e1bdd08a3fbeeaad58b5dc9890ddeeb45c4cf25e9966d21d240f",
+    "width": 512,
+    "height": 341
+  },
+  "decal-tire-skid-marks": {
+    "source": "assets/campaign-art/decals/tire-skid-marks.png",
+    "sourceSha256": "997a78581ff7f6778991f9e44d557fd4b449ebc1a07a520e1d41aba027ccf60a",
+    "documentSha256": "c9d7e1b0a5fcdfe3c9d62402f461c208d89a065fb584a004abe71c43886d6eba",
+    "width": 341,
+    "height": 512
+  },
+  "alpine-rock-outcrop-01": {
+    "source": "assets/campaign-art/rocks/alpine-rock-outcrop-01.png",
+    "sourceSha256": "3f212cb4d3af2a7749de595f78cf655482514a7fe5f02224a2e2fde192f2c310",
+    "documentSha256": "56f44f46edf0516311924edd6fd4a231ed43ed60412ea550905faaa840807175",
+    "width": 512,
+    "height": 399
+  },
+  "alpine-rock-outcrop-02": {
+    "source": "assets/campaign-art/rocks/alpine-rock-outcrop-02.png",
+    "sourceSha256": "72057239b932722db3e64f437faa9b41c7cd0c3e3e99af15df2afecde73e64c2",
+    "documentSha256": "5b9811a76d53b6989eacf6152840f1a71f489875d64cc0f9b59c88806fb7d495",
+    "width": 512,
+    "height": 399
+  },
+  "gray-boulder-01": {
+    "source": "assets/campaign-art/rocks/gray-boulder-01.png",
+    "sourceSha256": "7da9f851eaf41a9e26ba4d32882a959fdf516587a8c6ff50359daf1537e30704",
+    "documentSha256": "366f8c04d7f638c9ccd0f00dd67fbfb0eedd67ec5c5fd300a67bb612c2527ae2",
+    "width": 512,
+    "height": 399
+  },
+  "gray-boulder-02": {
+    "source": "assets/campaign-art/rocks/gray-boulder-02.png",
+    "sourceSha256": "8e452ccc383b495faca0b00cc7d782866bc59d8fad0f32ab85407e00ffaefcda",
+    "documentSha256": "f1c7fc4baf6f6f60a3a0b7bda8fd9e30a4266656878310d0c1fb5cb61686a38e",
+    "width": 512,
+    "height": 400
+  },
+  "gray-boulder-03": {
+    "source": "assets/campaign-art/rocks/gray-boulder-03.png",
+    "sourceSha256": "31df2bed6625b6c8311fb06e19d3f4ffc724fc0b29d6212627321da051921387",
+    "documentSha256": "91143340662051123921df80d959ec4576423a3b560d5b3747d5830f129665c5",
+    "width": 512,
+    "height": 399
+  },
+  "red-sandstone-boulder-01": {
+    "source": "assets/campaign-art/rocks/red-sandstone-boulder-01.png",
+    "sourceSha256": "91ff896ef48a7132eae1b5e54b70a9b467cb93c9033b015a3ca051602605f3ed",
+    "documentSha256": "568df5ca38abafd131640756b3cb36b118dfa76229eabc3a2d3344aeb6299125",
+    "width": 512,
+    "height": 399
+  },
+  "red-sandstone-boulder-02": {
+    "source": "assets/campaign-art/rocks/red-sandstone-boulder-02.png",
+    "sourceSha256": "d66cbe49de4f3ca3c4fe64b11c88cd523eccb5bc5ae03cc0d3b6d296fef06614",
+    "documentSha256": "b17148a29ce9cb66309af5554827af0fe5fc8eae5b654514d95309343cffb029",
+    "width": 512,
+    "height": 399
+  },
+  "red-sandstone-boulder-03": {
+    "source": "assets/campaign-art/rocks/red-sandstone-boulder-03.png",
+    "sourceSha256": "3bc2620faf434fa3bd62a490fa90717e0ac609ee857c97ef0bf98dadab4b3c60",
+    "documentSha256": "e0c23a9294b68c12f56d2494608dc3d76b6af247ec075aceb6d9cffb3472c6e9",
+    "width": 512,
+    "height": 400
+  },
+  "dead-broken-tree-01": {
+    "source": "assets/campaign-art/vegetation/dead-broken-tree-01.png",
+    "sourceSha256": "4bbb13b6d4154346c2e18e393706adb9b0a9909d65859baee8db0a4d42a54612",
+    "documentSha256": "93e7e2517e3691b67ff94c78b50cc001111a2d13433572dca667a86d08a19536",
+    "width": 512,
+    "height": 341
+  },
+  "dead-broken-tree-02": {
+    "source": "assets/campaign-art/vegetation/dead-broken-tree-02.png",
+    "sourceSha256": "c9730baa11e0731ec04e3edf857607d30eb9a1b1beaed46a68df04960b32c33f",
+    "documentSha256": "47319273bf9e93fe0d62b333b2535dab444a8b45b09711d90dd16109acdda371",
+    "width": 512,
+    "height": 341
+  },
+  "dry-scrub-bush-01": {
+    "source": "assets/campaign-art/vegetation/dry-scrub-bush-01.png",
+    "sourceSha256": "c101b9447dd76a2980340ac21d5cfe81464ddd3b645d00bf4f996b21541bdda7",
+    "documentSha256": "8f6fde0ca5a96c545fe69a3eafe3c34d518a7ecb6d699debcc8891164364e3ce",
+    "width": 512,
+    "height": 399
+  },
+  "dry-scrub-bush-02": {
+    "source": "assets/campaign-art/vegetation/dry-scrub-bush-02.png",
+    "sourceSha256": "77d2302dab52a9350af9bb193c47dffcfe315b07e22aa92e78681e211195d970",
+    "documentSha256": "7cec7dca9c16341cd2ca703eaca28fda5dbd45e755027b5419edbaee5aa27c13",
+    "width": 512,
+    "height": 399
+  },
+  "dry-scrub-bush-03": {
+    "source": "assets/campaign-art/vegetation/dry-scrub-bush-03.png",
+    "sourceSha256": "4ff3344812c674e4e82caa246f273def6edb93e02096d51e77856bcad5edc60b",
+    "documentSha256": "3d4451dd0abc27c4c7d8cc383a24d1a12e795e86d6f254399248da648127962a",
+    "width": 512,
+    "height": 399
+  },
+  "fallen-log-01": {
+    "source": "assets/campaign-art/vegetation/fallen-log-01.png",
+    "sourceSha256": "4f2f08c11289f53b85ef7ae0d8b75ed749076b1e76d5ca8fc9e54f0f3beb5c74",
+    "documentSha256": "83d6031187bacc2c785c9cb8c36ea947a6eeb8e2aff78e17deeb903addcf5ae4",
+    "width": 512,
+    "height": 341
+  },
+  "mostly-bare-pine-01": {
+    "source": "assets/campaign-art/vegetation/mostly-bare-pine-01.png",
+    "sourceSha256": "8341d352381472cb967095689f2f986ac7c0a0e692f9b84ab1708301a9c43431",
+    "documentSha256": "d31f5f705d756680f217bb825910d3089a7cf0b8ba3c12c7b20e24901fe78fca",
+    "width": 341,
+    "height": 512
+  },
+  "mostly-bare-pine-02": {
+    "source": "assets/campaign-art/vegetation/mostly-bare-pine-02.png",
+    "sourceSha256": "bbb46c7eacd00b8901481141616b6df53c6ddf7d31cfee07c3a0491adf7ae9f5",
+    "documentSha256": "ba21b9afc69a61dd64572768574f7254585ba3b2ff6e29c5612f83f2389aeb5f",
+    "width": 341,
+    "height": 512
+  },
+  "stump-01": {
+    "source": "assets/campaign-art/vegetation/stump-01.png",
+    "sourceSha256": "033edb7f8db1157d107fa1610068909bdf2679735ef41867e3880c33bc68fd2f",
+    "documentSha256": "43ddb4471387cabd03960619a256528a76c26071028f4e2b1901e7edeed10236",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-abandoned-business-building": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/abandoned-business-building.png",
+    "sourceSha256": "8451f6469af49c680cd7ed241095de14af0b5091a4aa5183d4d2e3fd37c8d950",
+    "documentSha256": "e3d69f345fa1d519adc79ca4d44acccf10f8a533d9807fa8a58ccf85f3e5fe14",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-abandoned-church": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/abandoned-church.png",
+    "sourceSha256": "da5b94bf1de9ca3f2cd12c9817a557d25cc382de1db25edc53105eaac5f89e77",
+    "documentSha256": "bf749cfdf8c356ce533f665c683e4a98dad742caa6a1ef80e17bd72b2cec5be6",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-abandoned-civic-center": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/abandoned-civic-center.png",
+    "sourceSha256": "252ba898336538da377c011b1e15ebc9721f5a7199bade02f6cbee7916c26ed1",
+    "documentSha256": "9d0906bea8ed4d0c90904b43f6307f98d2e61986845396183634fa319c3d73b8",
+    "width": 512,
+    "height": 256
+  },
+  "expanded-abandoned-fire-station": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/abandoned-fire-station.png",
+    "sourceSha256": "ca378176ace2a72b14b8311763c6b8ca884513d938847dea1639df49b6a5de65",
+    "documentSha256": "5d35ab7b17c4bf8fe7ccc6ff7dd0b42b5325269e1d4b20280212d92742ffaade",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-abandoned-hospital": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/abandoned-hospital.png",
+    "sourceSha256": "0459607e8efde2d178205f197d43e8dd49d1b05144713995178d8b5112483519",
+    "documentSha256": "a438574edbe01f2e02326d7efd9ad20bc860f469baf1d1c64697fc68f7537d2c",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-abandoned-mall": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/abandoned-mall.png",
+    "sourceSha256": "706ce7f0a9c45e76d29272ea244df84433bd0fc9b963cc68a3763fe3e4403533",
+    "documentSha256": "298277c16cdf573a46c6489423c09858c1411b43e168247a91094d3f90355451",
+    "width": 512,
+    "height": 205
+  },
+  "expanded-abandoned-police-station": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/abandoned-police-station.png",
+    "sourceSha256": "bb35a984430dea4096cbebcf341048f8b53ff22134b11aefd941ace2377ccd84",
+    "documentSha256": "84af39846e9f2a2e4624c75b1f1f39dcb4439c955e008b05fb8bf1c9b127732b",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-abandoned-school": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/abandoned-school.png",
+    "sourceSha256": "335c8407b9c150556867c0581afaf1d4976dd8da0c98010e59a0d706830bfecc",
+    "documentSha256": "21e50ca70e04e03f3df1c2e72045947d044fad90ca97a891cfa47af50750edcf",
+    "width": 512,
+    "height": 256
+  },
+  "expanded-abandoned-solar-facility": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/abandoned-solar-facility.png",
+    "sourceSha256": "5b408536d689eeca6f5425351ef444d1735cd1ba42814bbab5be9a67d15331f0",
+    "documentSha256": "24ce69b96529e264135ef5c853fd099df43d2aa609e04761bff0c4cd3c4ac8ca",
+    "width": 512,
+    "height": 256
+  },
+  "expanded-abandoned-waste-management-facility": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/abandoned-waste-management-facility.png",
+    "sourceSha256": "f68bcf662a0d4a629fb1c294b415d44fecab7caf193be8ec661ff9d32e669fa9",
+    "documentSha256": "74417184890d04acfee435bb14f20583e2c4c3ec706dc074f86eb9eebf7297d0",
+    "width": 512,
+    "height": 256
+  },
+  "expanded-collapsed-barn": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/collapsed-barn.png",
+    "sourceSha256": "17dfa94b7b61b44d99ff0031869f5f86e4af74be0d047a74da4ea50a381bec61",
+    "documentSha256": "efcdde7b900dabca28ef946f98597bdb890e8e0a5be94bb89ad42376b59c54a3",
+    "width": 512,
+    "height": 256
+  },
+  "expanded-graveyard": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/graveyard.png",
+    "sourceSha256": "3919cb94866d2c59a197a85b4123d1dca279795b606e16df37edbd3c4f0bbfc0",
+    "documentSha256": "1d472ca048ec3d7a93039adebe48a6a71a45b383fdd90e742e071cc1854a078c",
+    "width": 512,
+    "height": 256
+  },
+  "expanded-unfinished-human-building": {
+    "source": "assets/campaign-art/expanded/abandoned-buildings/unfinished-human-building.png",
+    "sourceSha256": "0412224c27fadd6f7d6c59ac2ce2f971efbf708879186d68ce45f61e43b7d2db",
+    "documentSha256": "ec517cc0a2f76f6b8e727444a1ca30a39ca39b627f6792b548873d715762137c",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-abandoned-electrical-substation": {
+    "source": "assets/campaign-art/expanded/infrastructure/abandoned-electrical-substation.png",
+    "sourceSha256": "58ef07d026460762dc0a7723e50fd2b74721e520b3cb60bbbece03c8d01ce13e",
+    "documentSha256": "95fdb93a064c1ca081fb170c7ad3c5fa50c05fe82beae19f3de76f47be2ded7a",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-farm-fence-loop": {
+    "source": "assets/campaign-art/expanded/infrastructure/farm-fence-loop.png",
+    "sourceSha256": "78f034f042f2bf88b3864003e3ed9e98613c07e0a8d5f3a9192b47c80afbb348",
+    "documentSha256": "8db0ef39c051232470ed9ae1aba7f6708dffa4403670a571ce5438f5dc35d26f",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-high-tension-power-pylon": {
+    "source": "assets/campaign-art/expanded/infrastructure/high-tension-power-pylon.png",
+    "sourceSha256": "8f4f05bb47e62cc374abb856a136cf8367fa52da391a98cbd4bf93c8f6905971",
+    "documentSha256": "d8d71cea08bcc15b068564750b1e3fe7d00135479308619393425318bdfc3b66",
+    "width": 341,
+    "height": 512
+  },
+  "expanded-highway-sign-gantry": {
+    "source": "assets/campaign-art/expanded/infrastructure/highway-sign-gantry.png",
+    "sourceSha256": "9e01859ce8ec1355acc2e3baa7c312115034974c0d36a4aa24ae28a32fad22bd",
+    "documentSha256": "5c659f3112640e019cbbc173bb4d07e12299a72c1564964fcea461d871d0a266",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-oil-pipeline-loop": {
+    "source": "assets/campaign-art/expanded/infrastructure/oil-pipeline-loop.png",
+    "sourceSha256": "a8e6098c67a90905077d67c0700ad193da5ca274a68eb12b20723b46173eabba",
+    "documentSha256": "2dc741a91cb6e3663909819140bbcfc1c7bcb843e6151470e9564d3117903aab",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-robot-construction-vehicle": {
+    "source": "assets/campaign-art/expanded/infrastructure/robot-construction-vehicle.png",
+    "sourceSha256": "2e95f1a8f8bdc566f8ae08b82caba5d3d4267409601ea0decb8585e69594ed68",
+    "documentSha256": "b158612cf0921a72a554ed363cf12e31c93fdaf278981f0fe907fd59cd87f97d",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-stacked-new-england-stone-wall-loop": {
+    "source": "assets/campaign-art/expanded/infrastructure/stacked-new-england-stone-wall-loop.png",
+    "sourceSha256": "3e2dde1790535714797b483a0abd080737e8852c8444321afbd48ab96ff820f1",
+    "documentSha256": "14388567e0e6eaddec7d59ffa8746351f3798d3d98b7243755ed8f5bf03889f0",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-texas-oil-pumpjack": {
+    "source": "assets/campaign-art/expanded/infrastructure/texas-oil-pumpjack.png",
+    "sourceSha256": "1e5aa908a66e6ca834cce1c47061f8de65fedf725c9b4089d232690cf5d9f575",
+    "documentSha256": "f48e059eb0376dfa5c69dd539432a381ee87c71dbd8f992eeb61c0c65bcd0b5e",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-dead-farm-crop-patch": {
+    "source": "assets/campaign-art/expanded/landscape/dead-farm-crop-patch.png",
+    "sourceSha256": "0533275137005ac57d07f632899d380e7156d53e57493797f337e00287831a12",
+    "documentSha256": "1a734c96cca96f943a6c847e1fe70792b855947af0638ebbba76494db26198f8",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-grass-clump": {
+    "source": "assets/campaign-art/expanded/landscape/grass-clump.png",
+    "sourceSha256": "1d9f005d474f81b7ebae58c5113453c3a953b602e013a38b7d16aaed41e3df5f",
+    "documentSha256": "74879b6489f18f9e2395436d6fe506b39bb8a9e8469cb22681582fdb254506ed",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-red-rock-arch-background": {
+    "source": "assets/campaign-art/expanded/landscape/red-rock-arch-background.png",
+    "sourceSha256": "d292898a3970c9d5612f2d58edb86a5b428faeae99f5da1fd9869009c76a74c6",
+    "documentSha256": "4bb05e7f6dc203acfdf269f41f4f296e9e255668213a6aab85cceb5ec706fd6a",
+    "width": 512,
+    "height": 256
+  },
+  "expanded-rolling-hills-background": {
+    "source": "assets/campaign-art/expanded/landscape/rolling-hills-background.png",
+    "sourceSha256": "ddd8ab7d20af41f104e022ac28801106f1f0ed827186326c0361add0b1002531",
+    "documentSha256": "015c3846b1e75b922d9bbc6559311cdfbc4d6a2545dd87f2d76c3e7e30f43204",
+    "width": 512,
+    "height": 171
+  },
+  "expanded-small-pond": {
+    "source": "assets/campaign-art/expanded/landscape/small-pond.png",
+    "sourceSha256": "aa53f5c31fcb306028c8f5157e7ddd1c8fcb00d0208bbe9374b6e1d8d6937a10",
+    "documentSha256": "ac3d9266c1ffcf907a8b28e072b4b7f19439c9a6519ce85074c24cef1dd49879",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-swamp-reeds": {
+    "source": "assets/campaign-art/expanded/landscape/swamp-reeds.png",
+    "sourceSha256": "253f0a38dc3106d8e6257e57058a9997087b16b070f6b3e382284aa6a4c6ad74",
+    "documentSha256": "393adeb7b76d729ac4bc529eed06dc44cae66ac596a082e610dfa71d144bf216",
+    "width": 512,
+    "height": 468
+  },
+  "expanded-waterfall": {
+    "source": "assets/campaign-art/expanded/landscape/waterfall.png",
+    "sourceSha256": "c4cf7fcc78d19f12fbde6c2dfd50a47534d1d093b346523be21d35ecb196a181",
+    "documentSha256": "7594a8a8468d85a7f7d5f2cd7a68b294996eeca6d71f33f455bed43a708467f4",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-network-node": {
+    "source": "assets/campaign-art/expanded/robots/network-node.png",
+    "sourceSha256": "30334b81c145529e687036b4bc8c97567207d8492c90d1bbc6ab1ce7a7e54c83",
+    "documentSha256": "d1e4bb03416296c648778adaf28b04584f0d477da6249ace4116308350a73395",
+    "width": 512,
+    "height": 468
+  },
+  "expanded-robot-building": {
+    "source": "assets/campaign-art/expanded/robots/robot-building.png",
+    "sourceSha256": "c49dbc5e2f8b1d37d6a70cc855ef90546f31df5eddafc003d0138dff4e3526df",
+    "documentSha256": "e70a8b1152da5fa8c86a746343b9d6e80b51515f36699b3658258bb69119022a",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-robot-hub": {
+    "source": "assets/campaign-art/expanded/robots/robot-hub.png",
+    "sourceSha256": "6541ac139f6acaadb87b296b3297a7a7d0034bc9a2421be6b5b13a5ac21d016c",
+    "documentSha256": "c1749ff5bd78f8366228a4c95a7e8c37bc4ef2d7d225ec3325722647f3bde6e4",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-abandoned-farm-tractor": {
+    "source": "assets/campaign-art/expanded/vehicles/abandoned-farm-tractor.png",
+    "sourceSha256": "8389b278a279b8d1c1c87d8aa43a03c6e5e670badbb6d724fb6c3f3cd9c6d263",
+    "documentSha256": "3f2e7003cca0bd215cc0583300caff6f40a6af365a41933a86e531ae673e21c1",
+    "width": 512,
+    "height": 341
+  },
+  "expanded-broken-old-pickup": {
+    "source": "assets/campaign-art/expanded/vehicles/broken-old-pickup.png",
+    "sourceSha256": "cc3abe54a7a05077ad8086c82badfc3d15f6ca3ea145b598c483f71706984caf",
+    "documentSha256": "895f54a72ddfa02539b3b971159b49ea0817878d3efaecf093ddad56d82d079a",
+    "width": 512,
+    "height": 256
+  },
+  "skybox-angeles-crest": {
+    "source": "assets/campaign-art/skyboxes/angeles-crest.png",
+    "sourceSha256": "0f29c57c66940350d35fa9394731e9668c22921dc9d082cabd24f967aac4cf43",
+    "documentSha256": "dd8eb2b6282966247a4a0f13932e5e318f42c8a3a8efd4669d376d0607ee805a",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-badlands": {
+    "source": "assets/campaign-art/skyboxes/badlands.png",
+    "sourceSha256": "51e7ca6b4048f4cf639811a49b6820dea99cace182e59e5011263380522a06e7",
+    "documentSha256": "81207b6ae492c9844aeef335bcb5ed2fb9081e11a8a7a1c497a13d8c9e1cfb2d",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-big-bend": {
+    "source": "assets/campaign-art/skyboxes/big-bend.png",
+    "sourceSha256": "ec95102a4c4453b4e7139a7a5c721ffca8a6da00da793dae8e6e701eb05dad86",
+    "documentSha256": "49013c3bb823b97deb1bfd24cb13a38e113931d9c631caa4df4038f98f63a9a6",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-col-de-turini": {
+    "source": "assets/campaign-art/skyboxes/col-de-turini.png",
+    "sourceSha256": "e71d3f7da4f85070b346e4473876232e7aec0a7ed2dd89bc73a8df0f884be6b4",
+    "documentSha256": "0022940e564bfd9b7489772d2b42d17877a9d1dc462ccc6bbbe74d29acb635d2",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-data-center-city": {
+    "source": "assets/campaign-art/skyboxes/data-center-city.png",
+    "sourceSha256": "34e1381acddcd84074e876872257c487bb4886aa486994aa2841e5430b263e13",
+    "documentSha256": "05ebd453201b44f437c5eddf189cba1aa43da557c813dfb17a1a371101047837",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-daytona": {
+    "source": "assets/campaign-art/skyboxes/daytona.png",
+    "sourceSha256": "52a770f42ad67d0876d2db4b6422f33d0b2433313db0d3c6b13e0a546bde9b47",
+    "documentSha256": "b3006d379b6d2d5882883b860558a58e0c7e794fbfd9227cbf364dd938481c22",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-death-valley": {
+    "source": "assets/campaign-art/skyboxes/death-valley.png",
+    "sourceSha256": "d5c39ed6be14c9f7dca7d1efaa56d592e819e3e5cb00deceb1163900b19dec6d",
+    "documentSha256": "baf11570935925162f6be272994b3e0eca74c3629d935a35e60fc5556c973856",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-eifel-circuit": {
+    "source": "assets/campaign-art/skyboxes/eifel-circuit.png",
+    "sourceSha256": "91d054c28c96b5700243bbdb6f06319e4405d2a12b6464c718c1af88e7d89216",
+    "documentSha256": "cb38c1f30f3411272477ec23c6117444db60c360a937d3e881fa61040938f9d6",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-finnish-lakes": {
+    "source": "assets/campaign-art/skyboxes/finnish-lakes.png",
+    "sourceSha256": "2ed3dd5848a142be53cfdb48a224652b55c77b2dd1f734154bbb5a882636e451",
+    "documentSha256": "9b429c5c462287647082be3ba3f4291a56d0cc99b52e533265924f786c0e23b1",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-la-basin": {
+    "source": "assets/campaign-art/skyboxes/la-basin.png",
+    "sourceSha256": "7da208a50bb9894ef0df20b216fc2ce1f5969e556178dc1c50d435aa88365cf4",
+    "documentSha256": "b131fa1134ef7e0188db7c7aaa7bdc82ad4fc2168d40136bf1aade8df12e5459",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-la-sunset-coast": {
+    "source": "assets/campaign-art/skyboxes/la-sunset-coast.png",
+    "sourceSha256": "df2803ab7ab2c8fe3acf09125f6cff055b024a440d9f7551d2022532d31bda31",
+    "documentSha256": "eea37da20f4451ac3095577ad1fafbf9c75a0544e0c94789f589a29ce6e1b006",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-laguna-seca": {
+    "source": "assets/campaign-art/skyboxes/laguna-seca.png",
+    "sourceSha256": "c28acbecd172e5d489a9edf4863106d35e443929e73ed2d37044937f108c4106",
+    "documentSha256": "0238fbc9a9ac2e62926e756e1b53d3260b4ddc0548d233741c68fe9e71e08d3b",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-lake-michigan-woods": {
+    "source": "assets/campaign-art/skyboxes/lake-michigan-woods.png",
+    "sourceSha256": "a25be0606ef434643613e98faa5059765e928cf8f97073de6aaef275a6082bb8",
+    "documentSha256": "dab7e00920d57bd5b18a39f4d1b62520f29e73312395ced10b9032844505da18",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-laurel-highlands": {
+    "source": "assets/campaign-art/skyboxes/laurel-highlands.png",
+    "sourceSha256": "6ceee956472bfce8cf2f2dda211be409863c119db1bd2c84a2ceb9fcd2e3bd32",
+    "documentSha256": "f566042f9794f8b55e75f24ef2d95c95b36ef223322f917e65e5856b72eb99d9",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-moki-dugway": {
+    "source": "assets/campaign-art/skyboxes/moki-dugway.png",
+    "sourceSha256": "095d51c90f0f89b1f8d62f56d86f62dca7d8f0b3074a2ed31d14fafb6cc4678a",
+    "documentSha256": "cbc86d997b2cf7acfbc4076af99b3a32fa5006ec9bc57be50d45b92b8b9229c0",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-mount-washington": {
+    "source": "assets/campaign-art/skyboxes/mount-washington.png",
+    "sourceSha256": "76f60cd41dbe3fdf40b2935b1a799cb2dd7d9e5d9866143f9bc5855647771378",
+    "documentSha256": "1a149eab1593846ca00457b796dadaa5dc81bdbfd34ffe5c6ed41763eff86c8e",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-natchez": {
+    "source": "assets/campaign-art/skyboxes/natchez.png",
+    "sourceSha256": "1d2bd0ef4f935d10bcda34d0f15523b6c7a9c4fb3043f60a46b92fe65efb56bf",
+    "documentSha256": "974e7b1371c4c0e6b46a30df53afe793f79fc9e7d0f1f20eb37f6e158416a928",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-oak-creek": {
+    "source": "assets/campaign-art/skyboxes/oak-creek.png",
+    "sourceSha256": "d2b0b00583ec4ac0ac055ca79bd4482d5f684954f2ff9686c5504b8d020920f5",
+    "documentSha256": "21b0f6fd917701e16b79c3a1c00c6ce224a3d2df0e5a7ea32ce2da25379835af",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-ohio-river-crossing": {
+    "source": "assets/campaign-art/skyboxes/ohio-river-crossing.png",
+    "sourceSha256": "20f4085b5f9699414ca98425edc0086e7da4875b1e9834dde7285703a2e26a32",
+    "documentSha256": "6094269d1968edf089880eed04738e819246e1caec72c6e7ebab31a9bdcbc1b4",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-ozarks": {
+    "source": "assets/campaign-art/skyboxes/ozarks.png",
+    "sourceSha256": "b268e98638d8eb88633770b01ecfd17a9cf653095c9abe05576623dfde80f473",
+    "documentSha256": "51a660a2ff129a04dd47a98643426039c613fbe29c140c7a8ce98db63b60c0ee",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-palms-to-pines": {
+    "source": "assets/campaign-art/skyboxes/palms-to-pines.png",
+    "sourceSha256": "361a8a4594f63536cd45323ccf1fe6ee3792c05e3ffe2307a0830485c6621547",
+    "documentSha256": "40f3a120ea300fc9455ad13527e4610cbc9e96e0065196ffd1dd11b61a6980d8",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-pikes-peak": {
+    "source": "assets/campaign-art/skyboxes/pikes-peak.png",
+    "sourceSha256": "950e1b1259d564aed24ac5b1fe74b73a07432744365b94890fa9c8b4ca5e60cd",
+    "documentSha256": "03dd1ba23cb440002de8263caed116c8e85082f95e3ce0c084085c74fe9d58ff",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-providence-harbor": {
+    "source": "assets/campaign-art/skyboxes/providence-harbor.png",
+    "sourceSha256": "72d238d2d317e5228b5babd6beebe88b7a22749fb23c29249347329183f72773",
+    "documentSha256": "51ea6fceb50e3616942a3549d812a143f159eec60d8c8faa71195e575c67cf20",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-route-66": {
+    "source": "assets/campaign-art/skyboxes/route-66.png",
+    "sourceSha256": "7b4c49d6b06830cfb7e53437153fc5ae716b6b59107267404630051b739f5707",
+    "documentSha256": "52d3b022faf77551e16d300316358ef48610f29f873885758762c69314b468f5",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-sawtooth": {
+    "source": "assets/campaign-art/skyboxes/sawtooth.png",
+    "sourceSha256": "0d8f3fa19b5edd7ea1f78d9067b02eeb80c23db41f60fdcc14c74f8037271cca",
+    "documentSha256": "25bb5c8685f1ace05b13a8401325a8c2411fbf3c8f5605c43e4b7b36d88456c4",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-tioga-pass": {
+    "source": "assets/campaign-art/skyboxes/tioga-pass.png",
+    "sourceSha256": "d0c4a1e7089f3f8819ca4257a205eb31a3ece84859dec02b09f9f4ebae21d05a",
+    "documentSha256": "325c7bc37801dc65473cc51c2244e7e3844d1fd46198dfe00c85985edbafbb0e",
+    "width": 1024,
+    "height": 341
+  },
+  "skybox-tower-hill": {
+    "source": "assets/campaign-art/skyboxes/tower-hill.png",
+    "sourceSha256": "14ba11d41687683d20974b7a78eac1b5ef66bd9f8d376975cba4791b32a05bc2",
+    "documentSha256": "f58d4409a8bff659660a958e1d047f6490d213f09f9d0949c56570bb844372ac",
+    "width": 1024,
+    "height": 341
+  },
+  "expanded-bush-blackberry-bramble-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-blackberry-bramble-01.png",
+    "sourceSha256": "0e9efc102752bd99a493e20990ff6bd8be6546ef88f8b2e2eeb37a4c47d34931",
+    "documentSha256": "f8ef21b879daa3fcaba439beac909542df95df8a063051fd7ed8e352237f77b0",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-bush-blueberry-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-blueberry-01.png",
+    "sourceSha256": "0b182c4b5d4227dadec1717b0d2bc7483f7f619eb967865ddf153822be5834b3",
+    "documentSha256": "3180d51c6f594ebd0a3b9feade29d65e76e3c3a335b7785217baa4af57af9655",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-bush-dogwood-sapling-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-dogwood-sapling-01.png",
+    "sourceSha256": "101514fbe803077db1c54fa153cf03a4b657c6ef96efe797bbdb6f2983cd4aab",
+    "documentSha256": "c6e795a2c8458579952687a465c546889b1e149254fe8826a3891476c5e4d889",
+    "width": 512,
+    "height": 512
+  },
+  "expanded-bush-mountain-laurel-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-mountain-laurel-01.png",
+    "sourceSha256": "07f526aa2ab429d6445fc744d070cef4785f9aa95ca8b6b3fe3f18f91cf9914c",
+    "documentSha256": "16e3f7673eae13cec0312eed1db5edaa0aa3478a978622bc5c501358fcc5429c",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-bush-willow-river-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-willow-river-01.png",
+    "sourceSha256": "3a153dc9e3b6b1bd5124950c71d1df667176c2aea1470798275f3ed34ac6d458",
+    "documentSha256": "e1b8d219fa0e025aa9d3073bd9a361b6f69e1ca53179b4fe8b49ed7035a9c9f1",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-bush-winterberry-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/bush-winterberry-01.png",
+    "sourceSha256": "0eaee4a6a8ed0faa08ae61b437e0d5ebc4b1c843dee45a37ab8f907395bdaa76",
+    "documentSha256": "78c9be4f0033f9df6d607bd2687be8cf0e785fee56165afe4b36ad06fd88f417",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-fern-bracken-dry-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/fern-bracken-dry-01.png",
+    "sourceSha256": "390fbcb950a456df257ae1050205836f3c66fe78c164e59c2781a3a28f36599a",
+    "documentSha256": "dbf4c7debefbe5e0a785d098a39d4de0690255f8346ed694ccf8871559aae6ec",
+    "width": 256,
+    "height": 128
+  },
+  "expanded-fern-christmas-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/fern-christmas-01.png",
+    "sourceSha256": "ee796fc3b439e19ac172f0a4d06343f2302fb57884b24cedf8f1845d3244cc73",
+    "documentSha256": "83a573be1d3db3209fb0cd1cd03e14b48e86dea69546f9b280eebaab493b782e",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-grass-little-bluestem-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/grass-little-bluestem-01.png",
+    "sourceSha256": "ff44a7c5a4a0ac0909400355a7731a0d66cb2562a4904876bbe219bd77eff82d",
+    "documentSha256": "ca2a8c112e6b290b01edbae9cc2feec9b6b6e7ed23886bd39a2824a9b43fe950",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-grass-little-bluestem-02": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/grass-little-bluestem-02.png",
+    "sourceSha256": "43fbd77fc653c35d8f2730d175da73d3f7eb5792aefeb8fd17536e0c6b08b16b",
+    "documentSha256": "c6d43ac0a008f10a6c7ea6a1bf69cfd292b67ba50ffbadf548c15e628058c7c8",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-grass-roadside-weeds-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/grass-roadside-weeds-01.png",
+    "sourceSha256": "9a6c2ced42cb92ed5229c604a3c57dfa85bbb57ec37309d4e3b5a27f10ef20fb",
+    "documentSha256": "a784e0a8c85988a0cb1b499630571f32c5592fea9dd0a956a709d1c69f798c8d",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-grass-sedge-wetland-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/grass-sedge-wetland-01.png",
+    "sourceSha256": "e7c7836c128bcbdf496df4e8bb907b3e307c6fcd70e1b63439d9fa82886a115a",
+    "documentSha256": "9e6390e8e8cac09a1587138608bd3ef21a0fe17a4469f74cd7355c094fc0b584",
+    "width": 256,
+    "height": 128
+  },
+  "expanded-grass-woodoats-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/grass-woodoats-01.png",
+    "sourceSha256": "bc51fe80cd1288f7929af08b3b19794de6d5c44ad7b214adc72c8051a3362493",
+    "documentSha256": "d988e98a4b1331f47686e725996000d0ae133f83064ade14e822702d0377c09b",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-log-rotten-moss-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/log-rotten-moss-01.png",
+    "sourceSha256": "d8e550700d8f2608a8ef5849c663d86f24934ded60ec7850706b5c5792355c26",
+    "documentSha256": "b99ed01070eb25b1c70482562f567e5042650f8d82546c99ca30dd35f8741ace",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-rock-chert-cluster-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/rock-chert-cluster-01.png",
+    "sourceSha256": "42b2a40e9315e6d8d15df745b75a468ba22ecc3e80820cfac8b98d490a35488c",
+    "documentSha256": "1b458147854a5c04c9f42efeaf49d507aa43473099327b0e748cb18fc5bfad00",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-rock-granite-moss-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/rock-granite-moss-01.png",
+    "sourceSha256": "1249d0397764e0f8f17d0816e6b9a520e78ee87af2023ccf64d3a69e7e10bbad",
+    "documentSha256": "3f8ca4d65a3e74c7109d5b3a5edc98fcd9028e2b4b58153457461c51f6984cdc",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-rock-limestone-flat-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/rock-limestone-flat-01.png",
+    "sourceSha256": "d91bf1f0cb58087d27e1338fe31e197c2554a5c167f72046d6289e4c3556e75a",
+    "documentSha256": "35d49c8d4f32f471d8b0ef70c2db65d7cd789c6affebd5a1fd92ae8708ffc263",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-stump-oak-decayed-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/stump-oak-decayed-01.png",
+    "sourceSha256": "89f7ebb9067b924076d0fa3be21ee5dc833b41d763d5d195b2d1094f3261d64f",
+    "documentSha256": "4c3a4066d2c094f20fd488140bfa5d088f69aca28ff29cf78ca5818aed13d68b",
+    "width": 256,
+    "height": 256
+  },
+  "expanded-tree-hickory-young-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/tree-hickory-young-01.png",
+    "sourceSha256": "27d3b28261e81a8428cfba9b54cf2e687d30005243cebd7f3f5acba933252319",
+    "documentSha256": "20cad1a1f9d06279430c0c7bcb8e668bacd12b42ced40d7a79a1ef6e728373fc",
+    "width": 512,
+    "height": 512
+  },
+  "expanded-tree-river-birch-young-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/tree-river-birch-young-01.png",
+    "sourceSha256": "55806b2cf14b66e85b727248d3b7bb995641f6bd8119e44727e898774633157b",
+    "documentSha256": "fc015579908047f7f1046433321489a8de7084b63cc3fb8c7b4b47c08126dc26",
+    "width": 512,
+    "height": 512
+  },
+  "expanded-tree-shortleaf-pine-young-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/tree-shortleaf-pine-young-01.png",
+    "sourceSha256": "2ab61962baa807c676e7a090765e2fb4c1fccc42566f14dace49af6d602fb184",
+    "documentSha256": "2e5f6edf48e14e7b295e5267578871fdf69c293635a53a852f0ae69bd0825ae0",
+    "width": 468,
+    "height": 512
+  },
+  "expanded-tree-white-oak-young-01": {
+    "source": "assets/campaign-art/foliage-expansion/eastern/tree-white-oak-young-01.png",
+    "sourceSha256": "1103dc202b241f4173fadf871278b430f41059e97985af75032e6e07e7e5b43a",
+    "documentSha256": "93a763c5d3cf1ca08e6f65d5dedadc769fa94c6c1c6993c931025efacae7b172",
+    "width": 512,
+    "height": 512
+  }
+}

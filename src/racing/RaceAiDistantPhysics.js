@@ -30,6 +30,8 @@ export function canUseRaceAiDistantPhysics(editor, ai, contactState, dt) {
   const session = editor.playtestSession;
   const reject = reason => { ai.distantPhysicsReason = reason; return false; };
   if (!state) return reject('uninitialized');
+  if (runner.config.powertrainTuning?.powertrainType === 'electric') return reject('electric-authoritative');
+  if (runner.config.powertrainTuning?.cvt) return reject('cvt-authoritative');
   if (editor.vehicleDynamicsAuthority?.workerBridge) return reject('worker');
   if (!(dt > 0 && dt <= 0.05)) return reject('time-step');
   if (ai.physicsBudgetDetail === 'full') return reject('nearest-four');

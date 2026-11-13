@@ -49,8 +49,8 @@ export async function editRaceVisualFx(e,{skybox=null,deferApply=false,showForm=
  {id:'clear-streak-art',label:'Use built-in streak lines',type:'button',section:speed,onClick:()=>({speedLineArtRef:''})},
  {id:'speedLineArtMode',label:'Streak artwork layout',value:fx.speedLineArtMode,options:[{value:'overlay',label:'Full-screen overlay'},{value:'streak',label:'Single horizontal streak'}],section:speed},
  {id:'timeOfDay',label:'Day / night triggers',value:environment.timeOfDay,options:['day','night'],section:grade},
- {id:'brightness',type:'range',step:.01,label:'World brightness (night default 0.05)',value:environment.brightness,min:0,max:1,section:grade},
- {id:'skyBrightness',type:'range',step:.01,label:'Sky brightness',value:fx.skyBrightness,min:0,max:1,section:grade},
+ {id:'brightness',type:'range',step:.01,label:'World brightness',format:v=>`${Math.round(v*100)}%`,value:environment.brightness,min:0,max:1,section:grade},
+ {id:'skyBrightness',type:'range',step:.01,label:'Skybox brightness',format:v=>`${Math.round(v*100)}%`,value:fx.skyBrightness,min:0,max:1,section:grade},
  {id:'tintColor',label:'Scene tint',type:'color',value:fx.tintColor,section:grade},
  {id:'tintAmount',type:'range',step:.01,label:'Tint strength',value:fx.tintAmount,min:0,max:.3,section:grade}];
  const result=await showForm('Skybox lighting & FX',fields,{description:'Drag sliders to test changes live. Face sun pauses the view toward your sun; uncheck Rotate preview to scrub direction. Preview speed and roadside trees test blur/streaks without driving. Glare washes out the road; cockpit and gauges stay clear. Apply Skybox to keep changes, then save the race.'});

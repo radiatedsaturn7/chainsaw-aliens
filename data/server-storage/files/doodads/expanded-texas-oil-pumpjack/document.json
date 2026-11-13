@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-expanded-texas-oil-pumpjack",
+    "name": "expanded-texas-oil-pumpjack",
+    "artRef": "expanded-texas-oil-pumpjack",
+    "widthM": 12.011730205278592,
+    "heightM": 8,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 10.209970674486803,
+    "hitboxHeightM": 7.2,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

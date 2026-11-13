@@ -1,3 +1,4 @@
+import {applyMissionConditions} from './mission_conditions.mjs';
 import {authorRaceContinuations} from './author_continuations.mjs';
 import {applyAmericaRoughness} from './america_roughness.mjs';
 import RaceEditor from '../../src/ui/RaceEditor.js';
@@ -12,6 +13,7 @@ export function prepareAmericaRace(race, stage) {
   Object.assign(race.source, {elevationSmoothingRadiusM:45,
     shoulderFlatJoinM:8, shoulderBlendWidthM:32, shoulderMaxSlope:.22});
   applyAmericaRoughness(race,stage);
+  applyMissionConditions(race);
   authorRaceContinuations(race);
   race.drivingGuide = {...race.drivingGuide, line:true};
   race.codriver = {...race.codriver, enabled:false, spoken:false};

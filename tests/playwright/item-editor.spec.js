@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 import {seedRaceRuntimeFixtures} from './helpers/race-runtime-fixtures.js';
 const dialog=(page,name)=>page.getByRole('dialog',{name,exact:true});
 const apply=(page,name)=>dialog(page,name).getByRole('button',{name:'Apply',exact:true}).click();
-async function ready(page){await page.goto('/index.html');await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');}
+async function ready(page){await page.goto('/index.html?hideFullscreenForTesting');await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');}
 async function action(page,id){await expect.poll(()=>page.evaluate(()=>!window.__game.itemEditor.busy)).toBe(true);await page.evaluate(id=>{void window.__game.itemEditor.getDesktopActionHandlers()[id]();},id);}
 async function clickItem(page,id){await expect.poll(()=>page.evaluate(()=>!window.__game.itemEditor.busy)).toBe(true);await expect.poll(()=>page.evaluate(id=>window.__game.itemEditor.buttons.some(b=>b.id===id&&!b.disabled),id)).toBe(true);const p=await page.evaluate(id=>{const g=window.__game,b=g.itemEditor.buttons.find(b=>b.id===id).bounds,r=g.canvas.getBoundingClientRect();return{x:r.x+(b.x+b.w/2)*r.width/g.viewport.width,y:r.y+(b.y+b.h/2)*r.height/g.viewport.height};},id);await page.mouse.click(p.x,p.y);}
 test.beforeEach(async({page})=>{
@@ -178,7 +178,7 @@ test('race inventory boosts the player and fires a slowing projectile at an oppo
   }
   throw error;
  }
- await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier),{timeout:8000}).toBe(1);
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier),{timeout:30000}).toBe(1);
  expect(await page.evaluate(()=>window.__game.items.progress.bags.items['nitro-ci'])).toBe(0);
  await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime.length)).toBe(1);
  await page.evaluate(()=>{
@@ -201,6 +201,8 @@ test('race inventory boosts the player and fires a slowing projectile at an oppo
  expect(await page.evaluate(()=>window.__game.raceEditor.playtestSession.itemSpeedMultiplier)).toBe(1);
  expect(await page.evaluate(()=>window.__game.items.progress.bags.items['slow-ci'])).toBe(0);
  await page.screenshot({path:'test-results/item-race-hit.png'});
- await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime[0].itemSpeedMultiplier),{timeout:8000}).toBe(1);
+ // Four admitted simulation seconds can exceed eight wall-clock seconds on
+ // software WebGL. Still require the real frame loop to expire the effect.
+ await expect.poll(()=>page.evaluate(()=>window.__game.raceEditor.playtestSession.aiRuntime[0].itemSpeedMultiplier),{timeout:30000}).toBe(1);
  expect(errors).toEqual([]);
 });

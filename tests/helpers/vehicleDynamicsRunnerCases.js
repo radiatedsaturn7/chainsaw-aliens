@@ -92,7 +92,7 @@ themedTest('wrx', 'WRX legacy brakeBalance maps unchanged into authoritative con
     ...WRX_2022_SHARED_TUNING,
     ...WRX_2022_TRANSMISSIONS.automatic
   });
-  assert.equal(config.frontBrakeBias, 0.56);
+  assert.equal(config.frontBrakeBias, WRX_2022_SHARED_TUNING.brakeBalance);
 });
 
 themedTest('state', 'authoritative velocity state separates ground, body, lateral, and signed travel speed', () => {
@@ -442,7 +442,7 @@ export function compactScenarioOutcome(runner, telemetryChecksum) {
   };
 }
 
-themedTest('controls', 'airborne controls cannot redirect translation, but wheel torque reacts before landing', () => {
+themedTest('controls', 'airborne controls cannot redirect translation in vacuum, but wheel torque reacts before landing', () => {
   const heights = { fl: 0, fr: 0, rl: 0, rr: 0 };
   const initialState = {
     position: { x: 0, y: 4.55, z: 0 },
@@ -459,6 +459,9 @@ themedTest('controls', 'airborne controls cannot redirect translation, but wheel
     initialState,
     inputTimeline: [{ timeSeconds: 0, input }],
     environmentProvider: () => ({
+      // Isolate internal wheel torque: attitude-dependent aerodynamic drag is an
+      // external force and legitimately changes translation in atmosphere.
+      airDensityKgM3: 0,
       surfaceHeightByWheel: heights,
       sampleTerrainAtWorldPoint: () => ({
         heightM: 0,
