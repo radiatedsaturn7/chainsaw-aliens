@@ -1,0 +1,122 @@
+{
+  "fictionalName": "Buckwheat 2.4 1997",
+  "reference": "US 1997 Toyota Tacoma 4x2 Regular Cab Value Edition, 2.4 inline-four, five-speed manual, RWD LHD, standard 195/75R14 tires and bench seat",
+  "duplicateCheck": "No Tacoma/pickup reference found in shared car-next research packets or Tacoma reference in current copperwing-work catalog research.",
+  "status": "Source-ready with explicit adjacent-year physical-gearing inference; no exact1997 primary individual-ratio table found in bounded pass",
+  "sources": [
+    {
+      "url": "https://xr793.com/wp-content/uploads/2025/12/1997-Toyota-Tacoma-Product-Source.pdf",
+      "type": "Exact1997 OEM US Toyota Product Source, independent archive",
+      "local": "oem-product-source.pdf",
+      "verification": "Actual PDF page13 / printed11 technical table rendered and visually inspected, first column 4x2 Regular Cab Value Edition. Copyright1996, publication00623-97001-K."
+    },
+    {
+      "url": "https://memecity.co/resources/carmanuals/1MZ-FE/New%20Car%20Features/1998%20Camry.pdf",
+      "type": "OEM New Car Features appendix, adjacent1998-year source; filename Camry but contains Tacoma appendix",
+      "local": "1998-ncf.pdf",
+      "verification": "Actual PDF page37 / printed159 rendered and visually inspected, USA/Canada Regular Cab2WD W59 column. Individual gearing and engine internals corroboration only; do not silently substitute later mass/body dimensions."
+    },
+    {
+      "url": "https://charm.li/Toyota/1997/Tacoma%20Regular%20Cab%202WD%20L4-2438cc%202.4L%20DOHC%20MFI/Repair%20and%20Diagnosis/Transmission%20and%20Drivetrain/Manual%20Transmission%2FTransaxle/Specifications/Mechanical%20Specifications/Manual%20Transmission%2FTransaxle/",
+      "type": "Exact-year service index mirrored",
+      "verification": "Opened but offered R150 clearances, NOT a W59 individual-ratio proof."
+    }
+  ],
+  "engine": {
+    "layout": "Naturally aspirated gasoline DOHC16-valve inline-four",
+    "code": "2RZ-FE",
+    "displacementCc": 2438,
+    "boreMm": 95,
+    "strokeMm": 86,
+    "compressionRatio": 9.5,
+    "internalProvenance": "Adjacent1998 OEM NCF; exact1997 brochure confirms2.4L only",
+    "powerHp": 142,
+    "powerRpm": 5000,
+    "torqueLbFt": 160,
+    "torqueNmDerived": 216.930871733024,
+    "torqueRpm": 4000,
+    "outputProvenance": "Exact1997 OEM table",
+    "redlineRpm": null,
+    "fuelCutRpm": null,
+    "idleRpm": null
+  },
+  "drivetrain": {
+    "drive": "RWD",
+    "transmission": "W59 5MT",
+    "forwardRatios": [
+      3.954,
+      2.141,
+      1.384,
+      1,
+      0.81
+    ],
+    "reverseRatio": 4.091,
+    "finalDrive": 3.416,
+    "finalDriveProvenance": "Exact1997 OEM first-column 4-cylinder5M",
+    "gearProvenance": "Adjacent1998 OEM USA/Canada2WD W59 technical table. Carryover inference, NOT exact1997 primary verification.",
+    "conflict": "Some secondary generic W59 tables list1.275 third/.850 fifth; do not mix those with OEM Tacoma-specific1.384/.810. Retain explicit carryover qualification.",
+    "transferCase": null,
+    "differential": "No LSD or lock verified; do not equip4WD modes"
+  },
+  "mass": {
+    "curbLb": 2560,
+    "curbKgDerived": 1161.1964672000001,
+    "grossVehicleWeightLb": 4244,
+    "payloadLb": 1684,
+    "convention": "OEM curb weight; detailed driver/fluid convention not explicitly stated. Payload includes occupants/equipment/cargo. No loaded payload added to curb weight.",
+    "excluded": "2580 lb automatic;2745 lb Xtracab;3190 lb4x4; adjacent1998NCF2580 lb manual not substituted"
+  },
+  "dimensionsInches": {
+    "wheelbase": 103.3,
+    "length": 180.5,
+    "width": 66.5,
+    "height": 61.8,
+    "trackFront": 54.9,
+    "trackRear": 55.7,
+    "groundClearance": 6.3,
+    "bedLength": 74.5,
+    "bedWidth": 57.9,
+    "bedHeight": 15.9,
+    "bedWidthBetweenWells": 40.9,
+    "source": "Exact1997 OEM table; OCR superscripts are footnotes, NOT extra decimal digits. Height61.8 footnote4; ground6.3 footnote8; bed57.9 footnote7."
+  },
+  "wheels": {
+    "front": "P195/75R14",
+    "rear": "P195/75R14",
+    "wheel": "5.0x14 steel",
+    "nominalRadiusM": 0.32404999999999995,
+    "note": "Standard low2WD package. OptionalP215/70R14 changes height/clearance; not selected. Nominal geometric unloaded radius, not measured rolling radius."
+  },
+  "fuelTankUSGallons": 15.1,
+  "fuelTankLitresDerived": 57.1597179384,
+  "chassis": {
+    "frontSuspension": "Independent double wishbone, coil spring, stabilizer bar",
+    "rearSuspension": "Solid axle, leaf springs",
+    "frontBrakes": "Ventilated disc",
+    "rearBrakes": "Drum with load-sensing proportioning valve",
+    "ABS": "Optional, not standard",
+    "steering": "Manual rack-and-pinion standard; power optional",
+    "steeringRatio": 22.3,
+    "lockToLockTurns": 3.7,
+    "turningCircleFeet": 35.4
+  },
+  "unknownSimulationFields": [
+    "Redline/cutoff/idle",
+    "Full torque curve",
+    "Exact1997 individual gearbox primary proof",
+    "Weight distribution",
+    "CG/inertia",
+    "Aerodynamic drag and frontal area",
+    "Overhang split",
+    "Spring/damper rates",
+    "Differential locking behavior",
+    "Loaded tire radius",
+    "Full fluid/driver mass convention"
+  ],
+  "implementationNotes": [
+    "Ordinary low regular-cab truck with open bed and bench-seat cockpit, not extendedcab or raised4x4.",
+    "No payload/trailer load in standard curb config. Trailer3500lb rating requires equipment and is not dynamic towing implementation.",
+    "Original fictional art without Toyota badges; fixed rear camera, shared wheel, aligned cockpit gauges when implemented.",
+    "Source-only; no art/code/maps changed."
+  ]
+}
