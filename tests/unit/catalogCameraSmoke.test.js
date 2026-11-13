@@ -2,8 +2,8 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 import {DEFAULT_CAR_SMOKE,normalizeCarSmoke,carSmokeArtRef} from '../../src/racing/CarSmoke.js';import RaceEditor from '../../src/ui/RaceEditor.js';
 const root=new URL('../../',import.meta.url);const read=p=>{const d=JSON.parse(fs.readFileSync(new URL(p,root)));return d.__chainsawStorage==='compact-v1'?JSON.parse(gunzipSync(Buffer.from(d.data,'base64'))):d;};
 const configs=fs.readdirSync(new URL('assets/car-catalog/',root)).filter(n=>fs.existsSync(new URL(`assets/car-catalog/${n}/import.json`,root))).map(n=>read(`assets/car-catalog/${n}/import.json`));
-test('all nineteen sourced cars use actual fixed-rear editor mode and existing surface FX',()=>{
- assert.equal(configs.length,19);
+test('all twenty sourced cars use actual fixed-rear editor mode and existing surface FX',()=>{
+ assert.equal(configs.length,20);
  for(const {car} of configs){assert.equal(car.camera.trackingMode,'fixed-rear',car.id);assert.deepEqual(car.art.smoke,DEFAULT_CAR_SMOKE);assert.deepEqual(normalizeCarSmoke(car.art.smoke),DEFAULT_CAR_SMOKE);
  for(const ref of new Set(Object.values(car.art.smoke)))assert.ok(fs.existsSync(new URL(`data/server-storage/files/art/${ref}/document.json`,root)),ref);
  const editor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});assert.equal(editor.getCarCameraTrackingMode(car),'fixed-rear');
