@@ -1,0 +1,26 @@
+{
+  "inspiration": "2014 Toyota iQ 130G MT Japan DBA-NGJ10, April 2014 release",
+  "sources": [
+    {
+      "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-IQ/201404/10088806/",
+      "kind": "Toyota Japan",
+      "fields": [
+        "{\"massKg\": 950, \"engineCc\": 1329, \"powerKW\": 69, \"powerRpm\": 6000, \"torqueNm\": 118, \"torqueRpm\": 4400, \"fuelL\": 32, \"transmission\": \"6MT\", \"drive\": \"FWD\", \"reverseRatio\": 3.333, \"finalDrive\": 3.736, \"tires\": \"175/65R15\", \"lengthMm\": 3000, \"widthMm\": 1680, \"heightMm\": 1500, \"wheelbaseMm\": 2000, \"tracksMm\": [1475, 1460], \"brakes\": [\"ventilated disc\", \"solid disc\"], \"suspension\": [\"MacPherson coil\", \"torsion beam coil\"], \"gearRatios\": [3.538, 1.913, 1.31, 1.029, 0.875, 0.743], \"clearanceMm\": 135}"
+      ]
+    },
+    {
+      "url": "https://toyota.jp/pages/contents/iq/001_p_013/pdf/spec/iq_spec_201505.pdf",
+      "kind": "Toyota Japan",
+      "fields": [
+        "{\"massKg\": 950, \"engineCc\": 1329, \"powerKW\": 69, \"powerRpm\": 6000, \"torqueNm\": 118, \"torqueRpm\": 4400, \"fuelL\": 32, \"transmission\": \"6MT\", \"drive\": \"FWD\", \"reverseRatio\": 3.333, \"finalDrive\": 3.736, \"tires\": \"175/65R15\", \"lengthMm\": 3000, \"widthMm\": 1680, \"heightMm\": 1500, \"wheelbaseMm\": 2000, \"tracksMm\": [1475, 1460], \"brakes\": [\"ventilated disc\", \"solid disc\"], \"suspension\": [\"MacPherson coil\", \"torsion beam coil\"], \"gearRatios\": [3.538, 1.913, 1.31, 1.029, 0.875, 0.743], \"clearanceMm\": 135}"
+      ]
+    }
+  ],
+  "estimates": [
+    "Do not mix UK 2009 98bhp/125Nm/16inch iQ3 with this Japanese 69kW/118Nm/15inch trim.",
+    "Do not claim European 11.8s or 106mph as measured Japanese performance.",
+    "May2015 official PDF corroborates same NGJ10 manual variant in2014-2016 catalog range; do not use 100X 890kg or CVT5.403 final.",
+    "61 percent front weight, .48m CG, .31 Cd,32psi,15:1 steering, brake balance, suspension and alignment are provisional game estimates.",
+    "6500 redline/6700 limiter,750rpm idle,torque interpolation outside anchors and103mph/12s0-60 displays are unverified estimates, not measured performance."
+  ]
+}
