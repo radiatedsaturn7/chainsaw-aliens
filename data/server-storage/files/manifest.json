@@ -524,7 +524,11 @@
       "landmark-city-wy-big-boy-steam-engine": "art/landmark-city-wy-big-boy-steam-engine/document.json",
       "landmark-city-wy-wyoming-state-capitol": "art/landmark-city-wy-wyoming-state-capitol/document.json",
       "landmark-city-wy-cheyenne-depot-museum": "art/landmark-city-wy-cheyenne-depot-museum/document.json",
-      "landmark-city-wy-historic-governors-mansion": "art/landmark-city-wy-historic-governors-mansion/document.json"
+      "landmark-city-wy-historic-governors-mansion": "art/landmark-city-wy-historic-governors-mansion/document.json",
+      "landmark-city-ma-old-north-church": "art/landmark-city-ma-old-north-church/document.json",
+      "landmark-city-ma-old-state-house": "art/landmark-city-ma-old-state-house/document.json",
+      "landmark-city-ma-massachusetts-state-house": "art/landmark-city-ma-massachusetts-state-house/document.json",
+      "landmark-city-ma-boston-public-library": "art/landmark-city-ma-boston-public-library/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -784,7 +788,11 @@
       "landmark-city-wy-big-boy-steam-engine": "doodads/landmark-city-wy-big-boy-steam-engine/document.json",
       "landmark-city-wy-wyoming-state-capitol": "doodads/landmark-city-wy-wyoming-state-capitol/document.json",
       "landmark-city-wy-cheyenne-depot-museum": "doodads/landmark-city-wy-cheyenne-depot-museum/document.json",
-      "landmark-city-wy-historic-governors-mansion": "doodads/landmark-city-wy-historic-governors-mansion/document.json"
+      "landmark-city-wy-historic-governors-mansion": "doodads/landmark-city-wy-historic-governors-mansion/document.json",
+      "landmark-city-ma-old-north-church": "doodads/landmark-city-ma-old-north-church/document.json",
+      "landmark-city-ma-old-state-house": "doodads/landmark-city-ma-old-state-house/document.json",
+      "landmark-city-ma-massachusetts-state-house": "doodads/landmark-city-ma-massachusetts-state-house/document.json",
+      "landmark-city-ma-boston-public-library": "doodads/landmark-city-ma-boston-public-library/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

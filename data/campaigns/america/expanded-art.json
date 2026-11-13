@@ -2176,6 +2176,34 @@
       "heightM": 12,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ma-old-north-church",
+      "source": "landmarks/MA/landmark-city-ma-old-north-church.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ma-old-state-house",
+      "source": "landmarks/MA/landmark-city-ma-old-state-house.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ma-massachusetts-state-house",
+      "source": "landmarks/MA/landmark-city-ma-massachusetts-state-house.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ma-boston-public-library",
+      "source": "landmarks/MA/landmark-city-ma-boston-public-library.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

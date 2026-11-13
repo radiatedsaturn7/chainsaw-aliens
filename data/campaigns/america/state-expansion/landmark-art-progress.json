@@ -765,35 +765,385 @@
     },
     "landmark-city-ma-old-north-church": {
       "raceRef": "Boston, MA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 538.3952991120173,
+        "worldZ": -1147.0884476886802,
+        "routeDistanceM": 3867,
+        "offsetFromRoadM": 26,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.16222707009347,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 0.45525432956309303,
+            "angularWidthDegrees": 11.261761237337488,
+            "rangeM": 101.32593648696988,
+            "occluderIds": [],
+            "score": 0.9817898268174763
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.35125673219396214,
+            "angularWidthDegrees": 8.700504514798588,
+            "rangeM": 131.3252405515273,
+            "occluderIds": [],
+            "score": 0.9859497307122416
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 0.2616125585754726,
+            "angularWidthDegrees": 6.485615106090661,
+            "rangeM": 176.32466283395115,
+            "occluderIds": [],
+            "score": 0.9895354976569811
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 19.44522236871111,
+            "angularWidthDegrees": 4.972499459877806,
+            "rangeM": 230.08105089427738,
+            "occluderIds": [],
+            "score": 0.18414085847550218
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 14.87346790937616,
+            "angularWidthDegrees": 4.0501471947203775,
+            "rangeM": 282.53782869148176,
+            "occluderIds": [
+              "city-ma-prop-200"
+            ],
+            "score": 0.03281115643126882
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 68.82973914901214,
+            "angularWidthDegrees": 3.6807401851405874,
+            "rangeM": 310.9164845504096,
+            "occluderIds": [
+              "city-ma-prop-197",
+              "city-ma-prop-199",
+              "city-ma-prop-201"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "7abd12dca1a73981877ffb6b73e45282db537180fe301682195d30cc7d7300d6",
+      "sourceSha256": "630a092c5cd7a06e8892a8f8cb9bf16468ac990d382d63ae57715c2d782e3cee",
+      "roadSha256": "324d1309fe1634a8e6797a9c9d19d0cf12dea6520050dba7dc919f0ac8e4f3e9",
+      "placementDetails": {
+        "x": 541.4924144652546,
+        "z": -1144.1701832126103,
+        "yaw": 1.096567688608286,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3866.9564057911903,
+        "trackLateral": 29.992589746040984,
+        "minimumRoadClearanceM": 9.887148705071592,
+        "checkedSegments": 6996,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ma-old-state-house": {
       "raceRef": "Boston, MA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 290.21677557770386,
+        "worldZ": -303.6292860856386,
+        "routeDistanceM": 5727,
+        "offsetFromRoadM": 12,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 3.1130123163364787,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 13.671625469925301,
+            "angularWidthDegrees": 14.140593042238025,
+            "rangeM": 97.02631060990258,
+            "occluderIds": [],
+            "score": 0.453134981202988
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 10.45516394775212,
+            "angularWidthDegrees": 10.879257120617265,
+            "rangeM": 126.3754141458765,
+            "occluderIds": [],
+            "score": 0.5817934420899152
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 7.7151763655161085,
+            "angularWidthDegrees": 8.059434132241318,
+            "rangeM": 170.8236331473437,
+            "occluderIds": [],
+            "score": 0.6913929453793557
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 5.838326719900292,
+            "angularWidthDegrees": 6.111016253661764,
+            "rangeM": 225.44676365045774,
+            "occluderIds": [],
+            "score": 0.7664669312039883
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 6.811537515157278,
+            "angularWidthDegrees": 4.918437659211333,
+            "rangeM": 280.2047170127632,
+            "occluderIds": [],
+            "score": 0.5963921256573531
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 9.130356488874195,
+            "angularWidthDegrees": 4.003862056450779,
+            "rangeM": 344.28137750742786,
+            "occluderIds": [
+              "city-ma-prop-295",
+              "city-ma-prop-297",
+              "city-ma-prop-301",
+              "city-ma-prop-303",
+              "city-ma-prop-306"
+            ],
+            "score": 0.05083189080287753
+          }
+        ],
+        "sourceDistanceShiftM": -30
+      },
+      "signature": "472c57689a1dad17e59dd3d2678fe1a95e953a231f687ae5f1cda148a9fa2256",
+      "sourceSha256": "0b049f766890497da657c3e15f16cbcede61f1a556393c9b9db1be16409bae3f",
+      "roadSha256": "324d1309fe1634a8e6797a9c9d19d0cf12dea6520050dba7dc919f0ac8e4f3e9",
+      "placementDetails": {
+        "x": 323.05110821483294,
+        "z": -273.4486930603456,
+        "yaw": 0.02631617164737566,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5697.017251238893,
+        "trackLateral": -44.999999999999964,
+        "minimumRoadClearanceM": 20.28392485941777,
+        "checkedSegments": 6996,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ma-massachusetts-state-house": {
       "raceRef": "Boston, MA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -236.24741681802263,
+        "worldZ": -289.3295987672074,
+        "routeDistanceM": 6691,
+        "offsetFromRoadM": 42,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.4571654119113594,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 51.18260421197531,
+            "angularWidthDegrees": 28.72818192377719,
+            "rangeM": 117.14703836772094,
+            "occluderIds": [
+              "city-ma-prop-359"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 122.55620017334414,
+            "angularWidthDegrees": 30.1699522919575,
+            "rangeM": 111.30097332135772,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 99.11516901535198,
+            "angularWidthDegrees": 35.07929597008634,
+            "rangeM": 94.91876569249308,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 29.83578889609151,
+            "angularWidthDegrees": 31.815048461477037,
+            "rangeM": 105.26335095911585,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 14.432452088245157,
+            "angularWidthDegrees": 21.46833448386077,
+            "rangeM": 158.25317792935957,
+            "occluderIds": [],
+            "score": 0.42270191647019373
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 10.320105116423816,
+            "angularWidthDegrees": 15.407363694585909,
+            "rangeM": 221.7774511842141,
+            "occluderIds": [
+              "city-ma-prop-349",
+              "city-ma-prop-352"
+            ],
+            "score": 0.07046349544116567
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "ded1e286e2881384f95e7ae961e2ddd7f35104b52153f0b1df3410d59acd6edc",
+      "sourceSha256": "41425abd7400f9b529481f6b433593e7459b653399938455952103481626234c",
+      "roadSha256": "324d1309fe1634a8e6797a9c9d19d0cf12dea6520050dba7dc919f0ac8e4f3e9",
+      "placementDetails": {
+        "x": -188.65714499159662,
+        "z": -289.4698078145902,
+        "yaw": 0.6517408912194181,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6691.010563576808,
+        "trackLateral": -90.00000000000001,
+        "minimumRoadClearanceM": 45.53755415948607,
+        "checkedSegments": 6996,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ma-boston-public-library": {
       "raceRef": "Boston, MA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -1450.6894611317675,
+        "worldZ": 741.6934241739413,
+        "routeDistanceM": 8752,
+        "offsetFromRoadM": 43,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.1485557037677054,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 10.683291662868074,
+            "angularWidthDegrees": 18.268264821236887,
+            "rangeM": 149.26754990062759,
+            "occluderIds": [],
+            "score": 0.5726683334852771
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.901211899715001,
+            "angularWidthDegrees": 15.287146649118391,
+            "rangeM": 178.83408663543904,
+            "occluderIds": [],
+            "score": 0.6439515240114
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 7.115137497024209,
+            "angularWidthDegrees": 12.263567569700767,
+            "rangeM": 223.4007206635253,
+            "occluderIds": [],
+            "score": 0.7153945001190316
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 5.711246090500067,
+            "angularWidthDegrees": 9.866184779375107,
+            "rangeM": 278.06070850457166,
+            "occluderIds": [
+              "city-ma-prop-462"
+            ],
+            "score": 0.09258601876559967
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 4.768991773992169,
+            "angularWidthDegrees": 8.248723989517032,
+            "rangeM": 332.83276167819224,
+            "occluderIds": [
+              "city-ma-prop-462",
+              "city-ma-prop-466"
+            ],
+            "score": 0.09710883948483759
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 3.9903150205084885,
+            "angularWidthDegrees": 6.90784116731415,
+            "rangeM": 397.64452874317936,
+            "occluderIds": [
+              "city-ma-prop-462",
+              "city-ma-prop-464",
+              "city-ma-prop-466"
+            ],
+            "score": 0.10084648790155924
+          }
+        ],
+        "sourceDistanceShiftM": -120
+      },
+      "signature": "5dc1f0e738cb2b027568091c0ea55b6cdd988006be2fd5fb3d6e9b738ae98d5e",
+      "sourceSha256": "c35b90a0f13176101cd67b7b6e1e8d4dba455a2374c550980bf562e23ee4acc0",
+      "roadSha256": "324d1309fe1634a8e6797a9c9d19d0cf12dea6520050dba7dc919f0ac8e4f3e9",
+      "placementDetails": {
+        "x": -1632.2494994904744,
+        "z": 691.1952332650724,
+        "yaw": -1.0645085329354589,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 8631.861897757142,
+        "trackLateral": 95.00000000000023,
+        "minimumRoadClearanceM": 55.600043327589034,
+        "checkedSegments": 6996,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-md-oriole-park-at-camden-yards": {
       "raceRef": "Baltimore, MD — Landmark Run",

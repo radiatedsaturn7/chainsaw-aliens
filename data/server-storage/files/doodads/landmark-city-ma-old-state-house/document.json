@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794606943563,
+  "doodad": {
+    "id": "campaign-landmark-city-ma-old-state-house",
+    "name": "landmark-city-ma-old-state-house",
+    "artRef": "landmark-city-ma-old-state-house",
+    "widthM": 24.068376068376068,
+    "heightM": 22,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 20.458119658119656,
+    "hitboxHeightM": 19.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

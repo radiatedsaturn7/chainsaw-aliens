@@ -154,5 +154,81 @@
     "maximumSetbackM": 90,
     "allowOppositeSide": false,
     "facingApproachBeforeM": 105
+  },
+  "landmark-city-ma-old-north-church": {
+    "reason": "Initial conservative Boston approach shortlist; actual renderer approval pending. Heights are compact game-scale silhouette estimates, not surveyed dimensions.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-ma-old-state-house": {
+    "reason": "Initial conservative Boston approach shortlist; actual renderer approval pending. Heights are compact game-scale silhouette estimates, not surveyed dimensions.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-ma-massachusetts-state-house": {
+    "reason": "Initial conservative Boston approach shortlist; actual renderer approval pending. Heights are compact game-scale silhouette estimates, not surveyed dimensions.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-ma-boston-public-library": {
+    "reason": "Initial conservative Boston approach shortlist; actual renderer approval pending. Heights are compact game-scale silhouette estimates, not surveyed dimensions.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
   }
 }

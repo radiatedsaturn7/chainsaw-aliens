@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794606943563,
+  "doodad": {
+    "id": "campaign-landmark-city-ma-boston-public-library",
+    "name": "landmark-city-ma-boston-public-library",
+    "artRef": "landmark-city-ma-boston-public-library",
+    "widthM": 48,
+    "heightM": 24,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 40.8,
+    "hitboxHeightM": 21.6,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

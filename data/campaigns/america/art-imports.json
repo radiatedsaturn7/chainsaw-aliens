@@ -1594,5 +1594,33 @@
     "documentSha256": "bbf535c7d68fc848cbc005cfa7e5715884f29d6ffbf87c7554ca4a116dc15ab5",
     "width": 512,
     "height": 341
+  },
+  "landmark-city-ma-old-north-church": {
+    "source": "assets/campaign-art/landmarks/MA/landmark-city-ma-old-north-church.png",
+    "sourceSha256": "630a092c5cd7a06e8892a8f8cb9bf16468ac990d382d63ae57715c2d782e3cee",
+    "documentSha256": "10a0bcff8dd3b56ebe159da6ac077eecd0fbdaa5ed4b41f3cfa987b088b2f81b",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-ma-old-state-house": {
+    "source": "assets/campaign-art/landmarks/MA/landmark-city-ma-old-state-house.png",
+    "sourceSha256": "0b049f766890497da657c3e15f16cbcede61f1a556393c9b9db1be16409bae3f",
+    "documentSha256": "a06cbf945ed65891406d48d72d00a52f8be4d1783a1f773ef37236e40fade8db",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-ma-massachusetts-state-house": {
+    "source": "assets/campaign-art/landmarks/MA/landmark-city-ma-massachusetts-state-house.png",
+    "sourceSha256": "41425abd7400f9b529481f6b433593e7459b653399938455952103481626234c",
+    "documentSha256": "90470e2ad9dc96dc26301beef359c4e5c2654bd2a4e8941c5f1091ffb726ab01",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ma-boston-public-library": {
+    "source": "assets/campaign-art/landmarks/MA/landmark-city-ma-boston-public-library.png",
+    "sourceSha256": "c35b90a0f13176101cd67b7b6e1e8d4dba455a2374c550980bf562e23ee4acc0",
+    "documentSha256": "18529234e32114c15e2ab71b47f84776b6f6020c684115d14b7e1367c533fbdb",
+    "width": 512,
+    "height": 256
   }
 }
