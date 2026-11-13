@@ -4,6 +4,14 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import race_route_import as route
 from import_state_expansion import right_angle_turns,mapped_road_width
 
+def portable_geometry_hash(points):
+ # libm cos() differs by one ULP between Android ARM64 and Linux x86_64.
+ # Quantize projected metres to micrometres and GPS to ~0.1 mm; preserve
+ # point ordering and every road tag. This remains much finer than OSM data.
+ canonical=[{**p,'x':round(p['x'],6),'y':round(p['y'],6),
+             'lat':round(p['lat'],9),'lon':round(p['lon'],9)} for p in points]
+ return hashlib.sha256(json.dumps(canonical,sort_keys=True).encode()).hexdigest()
+
 class StateExpansion(unittest.TestCase):
  def test_landmark_lookup_rejects_a_different_nearby_museum(self):
   from unittest.mock import patch
@@ -32,6 +40,7 @@ class StateExpansion(unittest.TestCase):
   report=json.loads(Path('data/campaigns/america/state-expansion/report.json').read_text())
   cities=[r for r in report if r.get('city')];self.assertTrue(cities)
   installed={r['id']:r for r in json.loads(Path('data/campaigns/america/raceways/catalog.json').read_text())}
+  fingerprints=json.loads(Path('data/campaigns/america/state-expansion/city-geometry-fingerprints.json').read_text())
   for r in cities:
    with self.subTest(city=r['id']):
     stored=json.loads((Path('data/server-storage/files')/installed[r['id']]['documentPath']).read_text())
@@ -42,7 +51,9 @@ class StateExpansion(unittest.TestCase):
      tags=w.setdefault('tags',{});tags['width']=str(mapped_road_width(tags,7))
      if tags.get('surface') in ('fine_gravel','pebblestone','rock'):tags['surface']='gravel'
     points=route.trace(ways,(origin['lat'],origin['lon']),source['routeReference']['waypoints'],max_snap=500,avoid_repeated_edges=True)
-    self.assertEqual(hashlib.sha256(json.dumps(points,sort_keys=True).encode()).hexdigest(),source['layoutGeometrySha256'],'Saved geometry must reproduce from its committed street snapshot')
+    expected=fingerprints[r['id']]
+    self.assertEqual(expected['originalGeometrySha256'],source['layoutGeometrySha256'])
+    self.assertEqual(portable_geometry_hash(points),expected['portableGeometrySha256'],'Saved geometry must reproduce from its committed street snapshot')
     self.assertGreaterEqual(right_angle_turns(points),4)
     self.assertTrue(all(p['tags']['highway'] in ('primary','secondary','tertiary','residential','unclassified','primary_link','secondary_link','tertiary_link') for p in points))
     edges=[frozenset(((round(a['x'],4),round(a['y'],4)),(round(b['x'],4),round(b['y'],4)))) for a,b in zip(points,points[1:])]
