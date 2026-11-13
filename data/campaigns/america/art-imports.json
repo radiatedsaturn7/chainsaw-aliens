@@ -1566,5 +1566,33 @@
     "documentSha256": "6d0d6237a4bc01df07374665817bda3c5b9256bbb7b302a98403a3ca85ef7f98",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-wy-big-boy-steam-engine": {
+    "source": "assets/campaign-art/landmarks/WY/landmark-city-wy-big-boy-steam-engine.png",
+    "sourceSha256": "7c7a9c075c3ee3bdc363d9998151952b150427fda88c82061980cb0ad64a29cc",
+    "documentSha256": "74a30461bbbbe9b4ad478fd241e7280eee862476a377105dd68975bf1736b2c3",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-wy-wyoming-state-capitol": {
+    "source": "assets/campaign-art/landmarks/WY/landmark-city-wy-wyoming-state-capitol.png",
+    "sourceSha256": "fe154c8592ea76791c99efb3ba632537ea8537616efde165bc022867aa26468d",
+    "documentSha256": "913c0a7d00d60c7bc99b3162b4924a668f7bb047099b1efd7858873cacbb4b2c",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wy-cheyenne-depot-museum": {
+    "source": "assets/campaign-art/landmarks/WY/landmark-city-wy-cheyenne-depot-museum.png",
+    "sourceSha256": "01192c2bed0fdcc24cbd1b4c1990c11f9f01d41d5a7118ee42ecfe57a40fd84b",
+    "documentSha256": "36d4d644ef0583409ea7ce345ba9e34a87300ed5d5245b8f0546c9acd5c8109b",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wy-historic-governors-mansion": {
+    "source": "assets/campaign-art/landmarks/WY/landmark-city-wy-historic-governors-mansion.png",
+    "sourceSha256": "ab335f918e9a97dc2455b2d47b15e97321340e51a1d8c760fbbb1c591ed0a9b3",
+    "documentSha256": "bbf535c7d68fc848cbc005cfa7e5715884f29d6ffbf87c7554ca4a116dc15ab5",
+    "width": 512,
+    "height": 341
   }
 }

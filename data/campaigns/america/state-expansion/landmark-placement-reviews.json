@@ -85,5 +85,74 @@
     "maximumSetbackM": 75,
     "allowOppositeSide": true,
     "facingApproachBeforeM": 105
+  },
+  "landmark-city-wy-big-boy-steam-engine": {
+    "reason": "Initial real approach obstructed by two existing sheds. Search opposite side and first straight, preserving all old scenery.",
+    "distanceOffsets": [
+      0,
+      30,
+      60,
+      90,
+      120
+    ],
+    "minimumSetbackM": 25,
+    "maximumSetbackM": 40,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 85,
+    "occlusionWidthFactor": 0.75
+  },
+  "landmark-city-wy-wyoming-state-capitol": {
+    "reason": "Large GPS offsets are only references; safe readable roadside shortlist pending actual desktop/mobile visual QA.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 90,
+    "allowOppositeSide": false,
+    "facingApproachBeforeM": 105
+  },
+  "landmark-city-wy-cheyenne-depot-museum": {
+    "reason": "Large GPS offsets are only references; safe readable roadside shortlist pending actual desktop/mobile visual QA.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 90,
+    "allowOppositeSide": false,
+    "facingApproachBeforeM": 105
+  },
+  "landmark-city-wy-historic-governors-mansion": {
+    "reason": "Large GPS offsets are only references; safe readable roadside shortlist pending actual desktop/mobile visual QA.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 90,
+    "allowOppositeSide": false,
+    "facingApproachBeforeM": 105
   }
 }

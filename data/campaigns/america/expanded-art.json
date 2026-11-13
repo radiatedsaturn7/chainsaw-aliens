@@ -2148,6 +2148,34 @@
       "heightM": 24,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-wy-big-boy-steam-engine",
+      "source": "landmarks/WY/landmark-city-wy-big-boy-steam-engine.png",
+      "heightM": 7,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wy-wyoming-state-capitol",
+      "source": "landmarks/WY/landmark-city-wy-wyoming-state-capitol.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wy-cheyenne-depot-museum",
+      "source": "landmarks/WY/landmark-city-wy-cheyenne-depot-museum.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wy-historic-governors-mansion",
+      "source": "landmarks/WY/landmark-city-wy-historic-governors-mansion.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

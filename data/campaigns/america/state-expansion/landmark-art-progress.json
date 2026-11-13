@@ -2131,35 +2131,385 @@
     },
     "landmark-city-wy-big-boy-steam-engine": {
       "raceRef": "Cheyenne, WY — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1178.495666329629,
+        "worldZ": 361.0215147975963,
+        "routeDistanceM": 104,
+        "offsetFromRoadM": 646,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.6358681096609659,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 16.907522757228495,
+            "angularWidthDegrees": 12.530072865147044,
+            "rangeM": 95.4564346462147,
+            "occluderIds": [],
+            "score": 0.32369908971086014
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 12.887894773541511,
+            "angularWidthDegrees": 9.625452279357301,
+            "rangeM": 124.46587108481741,
+            "occluderIds": [
+              "city-wy-prop-2",
+              "city-wy-prop-4"
+            ],
+            "score": 0.05813810508700074
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 10.46713985087994,
+            "angularWidthDegrees": 7.846227921637334,
+            "rangeM": 152.81083793061575,
+            "occluderIds": [
+              "city-wy-prop-2",
+              "city-wy-prop-4"
+            ],
+            "score": 0.06975772871577628
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 10.46713985087994,
+            "angularWidthDegrees": 7.846227921637334,
+            "rangeM": 152.81083793061575,
+            "occluderIds": [
+              "city-wy-prop-2",
+              "city-wy-prop-4"
+            ],
+            "score": 0.06975772871577628
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 10.46713985087994,
+            "angularWidthDegrees": 7.846227921637334,
+            "rangeM": 152.81083793061575,
+            "occluderIds": [
+              "city-wy-prop-2",
+              "city-wy-prop-4"
+            ],
+            "score": 0.06975772871577628
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 10.46713985087994,
+            "angularWidthDegrees": 7.846227921637334,
+            "rangeM": 152.81083793061575,
+            "occluderIds": [
+              "city-wy-prop-2",
+              "city-wy-prop-4"
+            ],
+            "score": 0.06975772871577628
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "cbfb55afdc86c25947d863e20be3075cbf71895d40e76f983dc7f7999d62932d",
+      "sourceSha256": "7c7a9c075c3ee3bdc363d9998151952b150427fda88c82061980cb0ad64a29cc",
+      "roadSha256": "52ec7af35143a15ae0624e62484f7a01073adcc65e9ad9c0aa7c9eba3279378a",
+      "placementDetails": {
+        "x": 538.9610724661636,
+        "z": 531.2222921098056,
+        "yaw": 0.19169849643726078,
+        "facingApproachBeforeM": 85,
+        "trackDistance": 133.9375835269212,
+        "trackLateral": -40.00000000000004,
+        "minimumRoadClearanceM": 18.70274796370351,
+        "checkedSegments": 2663,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-wy-wyoming-state-capitol": {
       "raceRef": "Cheyenne, WY — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -521.6173682707538,
+        "worldZ": -29.833640026866647,
+        "routeDistanceM": 1278,
+        "offsetFromRoadM": 494,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 5.801084369262023,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 1.0630123417957509,
+            "angularWidthDegrees": 21.097631714091722,
+            "rangeM": 161.0993865927325,
+            "occluderIds": [],
+            "score": 0.9574795063281699
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.8960662536997042,
+            "angularWidthDegrees": 17.844080221839658,
+            "rangeM": 191.09503469412894,
+            "occluderIds": [],
+            "score": 0.9641573498520118
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 0.7252784259071469,
+            "angularWidthDegrees": 14.483513757324104,
+            "rangeM": 236.09058043692426,
+            "occluderIds": [],
+            "score": 0.9709888629637141
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 0.5882428137055875,
+            "angularWidthDegrees": 11.76848169048752,
+            "rangeM": 291.0870065210783,
+            "occluderIds": [],
+            "score": 0.9764702874517766
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 0.4947604580089195,
+            "angularWidthDegrees": 9.908488128444976,
+            "rangeM": 346.08456850856686,
+            "occluderIds": [],
+            "score": 0.9802095816796432
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 0.30553047533233524,
+            "angularWidthDegrees": 8.347869468058525,
+            "rangeM": 411.0825282862131,
+            "occluderIds": [],
+            "score": 0.9877787809867066
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "fd1a0186646ad5da95e4235b411d4d7b8975a7f012ea26cda4cb48f725d64874",
+      "sourceSha256": "fe154c8592ea76791c99efb3ba632537ea8537616efde165bc022867aa26468d",
+      "roadSha256": "52ec7af35143a15ae0624e62484f7a01073adcc65e9ad9c0aa7c9eba3279378a",
+      "placementDetails": {
+        "x": -346.38017003777713,
+        "z": 334.35139708925925,
+        "yaw": -2.669217563962713,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1276.9401122716945,
+        "trackLateral": 89.83086983085501,
+        "minimumRoadClearanceM": 46.848164830206294,
+        "checkedSegments": 2663,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-wy-cheyenne-depot-museum": {
       "raceRef": "Cheyenne, WY — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -25.959861961262487,
+        "worldZ": 909.8871025349705,
+        "routeDistanceM": 2221,
+        "offsetFromRoadM": 41,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.418618776849142,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 6.703406957224455,
+            "angularWidthDegrees": 18.59722529028404,
+            "rangeM": 146.5815201898253,
+            "occluderIds": [],
+            "score": 0.7318637217110218
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 6.081123621546989,
+            "angularWidthDegrees": 15.494572887025686,
+            "rangeM": 176.41119252410084,
+            "occluderIds": [],
+            "score": 0.7567550551381205
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 84.83881926354995,
+            "angularWidthDegrees": 14.38845487767337,
+            "rangeM": 190.13361547461446,
+            "occluderIds": [
+              "city-wy-prop-114",
+              "city-wy-prop-118"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 69.24927699712296,
+            "angularWidthDegrees": 13.509844226201153,
+            "rangeM": 202.62584343154947,
+            "occluderIds": [
+              "city-wy-prop-107"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 148.9310413613216,
+            "angularWidthDegrees": 15.64586750487545,
+            "rangeM": 174.68423221173592,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 133.3573911891608,
+            "angularWidthDegrees": 21.969346644847803,
+            "rangeM": 123.6458745596233,
+            "occluderIds": [
+              "city-wy-prop-102"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "2dc6f3f591d6d39c055e8d7a899a3c73776508f24b7bc49e5e0b8be28a29b808",
+      "sourceSha256": "01192c2bed0fdcc24cbd1b4c1990c11f9f01d41d5a7118ee42ecfe57a40fd84b",
+      "roadSha256": "52ec7af35143a15ae0624e62484f7a01073adcc65e9ad9c0aa7c9eba3279378a",
+      "placementDetails": {
+        "x": -241.47743563666552,
+        "z": 970.977020831482,
+        "yaw": -1.2253296328226109,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2340.0724058101173,
+        "trackLateral": -84.99947612095461,
+        "minimumRoadClearanceM": 50.64951944854349,
+        "checkedSegments": 2663,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-wy-historic-governors-mansion": {
       "raceRef": "Cheyenne, WY — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -58.61904313660717,
+        "worldZ": 162.0112319004843,
+        "routeDistanceM": 3054,
+        "offsetFromRoadM": 336,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 2.349147512253476,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 11.229057141858224,
+            "angularWidthDegrees": 8.110228274686486,
+            "rangeM": 127.07507946132691,
+            "occluderIds": [],
+            "score": 0.5508377143256711
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 9.098704075072385,
+            "angularWidthDegrees": 6.584491772396676,
+            "rangeM": 156.60977322227703,
+            "occluderIds": [],
+            "score": 0.6360518369971047
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 7.77258823358512,
+            "angularWidthDegrees": 5.1293914775489196,
+            "rangeM": 201.1237777041658,
+            "occluderIds": [],
+            "score": 0.5891075939658298
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 6.105798899845904,
+            "angularWidthDegrees": 4.035188879467053,
+            "rangeM": 255.7266749059243,
+            "occluderIds": [],
+            "score": 0.5082778011050397
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 4.3766921345447205,
+            "angularWidthDegrees": 3.3238015371135923,
+            "rangeM": 310.5006814203159,
+            "occluderIds": [
+              "city-wy-prop-147"
+            ],
+            "score": 0.05483822590685367
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 3.6194754367556405,
+            "angularWidthDegrees": 2.7498354760805674,
+            "rangeM": 375.34391198291985,
+            "occluderIds": [
+              "city-wy-prop-147"
+            ],
+            "score": 0.04703433995297705
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "71d8147104c1f39be93387ae2c106c4f3b4712b4c4769d6eb64b6ca9b79a0ca5",
+      "sourceSha256": "ab335f918e9a97dc2455b2d47b15e97321340e51a1d8c760fbbb1c591ed0a9b3",
+      "roadSha256": "52ec7af35143a15ae0624e62484f7a01073adcc65e9ad9c0aa7c9eba3279378a",
+      "placementDetails": {
+        "x": 147.873398359368,
+        "z": 462.2407301696021,
+        "yaw": 1.868392459189596,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3083.5513936224047,
+        "trackLateral": -70.00000000000001,
+        "minimumRoadClearanceM": 53.67069075053189,
+        "checkedSegments": 2663,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     }
   }
 }

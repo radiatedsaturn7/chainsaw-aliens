@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794606549861,
+  "doodad": {
+    "id": "campaign-landmark-city-wy-big-boy-steam-engine",
+    "name": "landmark-city-wy-big-boy-steam-engine",
+    "artRef": "landmark-city-wy-big-boy-steam-engine",
+    "widthM": 20.95906432748538,
+    "heightM": 7,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 17.815204678362573,
+    "hitboxHeightM": 6.3,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

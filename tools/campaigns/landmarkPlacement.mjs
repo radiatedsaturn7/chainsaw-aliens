@@ -60,7 +60,7 @@ export function rankLandmarkPositions(mark,def,{poseAt,project,segments,scenery=
     const half=Math.atan(def.widthM/(2*range))*180/Math.PI;
     const obstacles=scenery.filter(s=>{
      const d=Math.hypot(s.x-camera.x,s.z-camera.z);
-     return d>3 && d<range-landmarkRadius(def) && Number(s.heightM||0)>2.5 && pointSegmentDistance(s,camera,p)<Math.max(.5,Number(s.widthM)||1)*.35;
+     return d>3 && d<range-landmarkRadius(def) && Number(s.heightM||0)>2.5 && pointSegmentDistance(s,camera,p)<Math.max(.5,Number(s.widthM)||1)*(options.occlusionWidthFactor??.35);
     });
     // Narrow cone favors the portrait view as well as landscape. Give readable
     // full silhouettes and clear base rays more weight than near edge glimpses.

@@ -520,7 +520,11 @@
       "landmark-city-id-idaho-state-capitol": "art/landmark-city-id-idaho-state-capitol/document.json",
       "landmark-city-id-basque-block": "art/landmark-city-id-basque-block/document.json",
       "landmark-city-id-egyptian-theatre": "art/landmark-city-id-egyptian-theatre/document.json",
-      "landmark-city-id-boise-depot": "art/landmark-city-id-boise-depot/document.json"
+      "landmark-city-id-boise-depot": "art/landmark-city-id-boise-depot/document.json",
+      "landmark-city-wy-big-boy-steam-engine": "art/landmark-city-wy-big-boy-steam-engine/document.json",
+      "landmark-city-wy-wyoming-state-capitol": "art/landmark-city-wy-wyoming-state-capitol/document.json",
+      "landmark-city-wy-cheyenne-depot-museum": "art/landmark-city-wy-cheyenne-depot-museum/document.json",
+      "landmark-city-wy-historic-governors-mansion": "art/landmark-city-wy-historic-governors-mansion/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -776,7 +780,11 @@
       "landmark-city-id-idaho-state-capitol": "doodads/landmark-city-id-idaho-state-capitol/document.json",
       "landmark-city-id-basque-block": "doodads/landmark-city-id-basque-block/document.json",
       "landmark-city-id-egyptian-theatre": "doodads/landmark-city-id-egyptian-theatre/document.json",
-      "landmark-city-id-boise-depot": "doodads/landmark-city-id-boise-depot/document.json"
+      "landmark-city-id-boise-depot": "doodads/landmark-city-id-boise-depot/document.json",
+      "landmark-city-wy-big-boy-steam-engine": "doodads/landmark-city-wy-big-boy-steam-engine/document.json",
+      "landmark-city-wy-wyoming-state-capitol": "doodads/landmark-city-wy-wyoming-state-capitol/document.json",
+      "landmark-city-wy-cheyenne-depot-museum": "doodads/landmark-city-wy-cheyenne-depot-museum/document.json",
+      "landmark-city-wy-historic-governors-mansion": "doodads/landmark-city-wy-historic-governors-mansion/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",
