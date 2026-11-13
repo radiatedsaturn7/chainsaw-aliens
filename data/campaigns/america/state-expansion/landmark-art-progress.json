@@ -9768,35 +9768,465 @@
     },
     "landmark-city-wi-pabst-theater": {
       "raceRef": "Milwaukee, WI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 56.06998058146804,
+        "worldZ": -338.8892460281071,
+        "routeDistanceM": 995,
+        "offsetFromRoadM": 41,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.3338472829198264,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 15.963302002162537,
+            "angularWidthDegrees": 18.103105132802586,
+            "rangeM": 141.37487708658077,
+            "occluderIds": [],
+            "score": 0.36146791991349847
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 27.16596219340957,
+            "angularWidthDegrees": 16.089558793518645,
+            "rangeM": 159.34857515454715,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 25.079313023075546,
+            "angularWidthDegrees": 14.476323119311928,
+            "rangeM": 177.33000533687502,
+            "occluderIds": [
+              "city-wi-prop-52"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 22.743385558518824,
+            "angularWidthDegrees": 13.135697984799435,
+            "rangeM": 195.61323067690253,
+            "occluderIds": [
+              "city-wi-prop-52"
+            ],
+            "score": 0.01083174931910964
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 19.88591381516285,
+            "angularWidthDegrees": 11.504917198571704,
+            "rangeM": 223.5698813522906,
+            "occluderIds": [
+              "city-wi-prop-51",
+              "city-wi-prop-52"
+            ],
+            "score": 0.024547613687218316
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 27.128525227816276,
+            "angularWidthDegrees": 9.83790786641855,
+            "rangeM": 261.6904548311463,
+            "occluderIds": [
+              "city-wi-prop-49",
+              "city-wi-prop-51",
+              "city-wi-prop-52"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 65.63405340400772,
+            "angularWidthDegrees": 9.265969183059546,
+            "rangeM": 277.9205302632506,
+            "occluderIds": [
+              "city-wi-prop-46",
+              "city-wi-prop-48",
+              "city-wi-prop-52"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 46.379483267342614,
+            "angularWidthDegrees": 8.516168234586514,
+            "rangeM": 302.4925295959452,
+            "occluderIds": [
+              "city-wi-prop-41",
+              "city-wi-prop-50",
+              "city-wi-prop-199"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "ffe3a5a4a9fca6544c02f7e5034cd6a95e20af4fbf4c863b24c0292747001150",
+      "sourceSha256": "bef5aa6be7f0a282f892963f6c2e25227c0ff322edbe8e24682ad4aa20593bd8",
+      "roadSha256": "872c89e8f3836cd2589ce3a0c6881e9e87e18532f33f4a09b6136050ebb1aae6",
+      "placementDetails": {
+        "x": -14.554317090937346,
+        "z": -255.17843720295636,
+        "yaw": -1.1021549348100144,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1036.4050359889393,
+        "trackLateral": 134.87610681047727,
+        "minimumRoadClearanceM": 101.51422789386194,
+        "checkedSegments": 4356,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/WI/pabst-theater-desktop.png",
+        "docs/art/landmark-previews/WI/pabst-theater-mobile.png"
+      ]
     },
     "landmark-city-wi-milwaukee-art-museum": {
       "raceRef": "Milwaukee, WI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 1133.078487136694,
+        "worldZ": -201.24085620706455,
+        "routeDistanceM": 2518,
+        "offsetFromRoadM": 47,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.2304491471018024,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 97.86687541085055,
+            "angularWidthDegrees": 39.982182523728916,
+            "rangeM": 87.96182998739974,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 85.52344534773864,
+            "angularWidthDegrees": 40.31687532170777,
+            "rangeM": 87.16852555392437,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 4.956724002732753,
+            "angularWidthDegrees": 36.645195571324386,
+            "rangeM": 96.6312005297104,
+            "occluderIds": [
+              "city-wi-prop-119"
+            ],
+            "score": 0.09620772478688278
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 12.876317892614777,
+            "angularWidthDegrees": 30.825838067610153,
+            "rangeM": 116.07303471402243,
+            "occluderIds": [],
+            "score": 0.4849472842954089
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 9.89970236001365,
+            "angularWidthDegrees": 24.81189060528433,
+            "rangeM": 145.47237042287455,
+            "occluderIds": [],
+            "score": 0.604011905599454
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 3.0586752932456562,
+            "angularWidthDegrees": 19.60317937594926,
+            "rangeM": 185.22959957695463,
+            "occluderIds": [],
+            "score": 0.8776529882701738
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 10.934412715736757,
+            "angularWidthDegrees": 16.21614392922144,
+            "rangeM": 224.61686486732202,
+            "occluderIds": [],
+            "score": 0.5626234913705297
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 8.949856180516166,
+            "angularWidthDegrees": 13.32870451511973,
+            "rangeM": 273.8734384173614,
+            "occluderIds": [],
+            "score": 0.6420057527793533
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "48c2411dda7fc542619154b5c31d5a7ddc71a91321949b87e3a6d89882ffa67f",
+      "sourceSha256": "0890c9d5efaee0d1712f808935bb1a099a1ee7e7800125e04033e13248d0b287",
+      "roadSha256": "872c89e8f3836cd2589ce3a0c6881e9e87e18532f33f4a09b6136050ebb1aae6",
+      "placementDetails": {
+        "x": 1058.759173166342,
+        "z": -281.5204884618963,
+        "yaw": 2.992822208405402,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2549.0643763589633,
+        "trackLateral": 69.99998850993128,
+        "minimumRoadClearanceM": 27.63337961338312,
+        "checkedSegments": 4356,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/WI/milwaukee-art-museum-desktop.png",
+        "docs/art/landmark-previews/WI/milwaukee-art-museum-mobile.png"
+      ]
     },
     "landmark-city-wi-milwaukee-city-hall": {
       "raceRef": "Milwaukee, WI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 101.4607388865561,
+        "worldZ": -412.00001128194873,
+        "routeDistanceM": 4322,
+        "offsetFromRoadM": 24,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.884261752570282,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 0.833979885226617,
+            "angularWidthDegrees": 25.51432067557127,
+            "rangeM": 88.4869598564301,
+            "occluderIds": [],
+            "score": 0.9666408045909354
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 2.2223689099495076,
+            "angularWidthDegrees": 20.927076689761382,
+            "rangeM": 108.47998430782829,
+            "occluderIds": [],
+            "score": 0.9111052436020197
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 2.6721337970479175,
+            "angularWidthDegrees": 17.728229680157348,
+            "rangeM": 128.46193479686917,
+            "occluderIds": [],
+            "score": 0.8931146481180833
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 5.094340270401548,
+            "angularWidthDegrees": 15.373986905421404,
+            "rangeM": 148.42974721538243,
+            "occluderIds": [],
+            "score": 0.7962263891839381
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.115849702356625,
+            "angularWidthDegrees": 12.83330873152247,
+            "rangeM": 178.1412747837778,
+            "occluderIds": [
+              "city-wi-prop-201"
+            ],
+            "score": 0.0810439214286882
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.663542522000715,
+            "angularWidthDegrees": 10.510282485247533,
+            "rangeM": 217.81589956907501,
+            "occluderIds": [
+              "city-wi-prop-201"
+            ],
+            "score": 0.09281499589439657
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 1.572267567251379,
+            "angularWidthDegrees": 8.887816894697135,
+            "rangeM": 257.78462438164615,
+            "occluderIds": [
+              "city-wi-prop-201"
+            ],
+            "score": 0.11245311567719338
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 8.778617901035917,
+            "angularWidthDegrees": 7.45034315946223,
+            "rangeM": 307.7055784279597,
+            "occluderIds": [
+              "city-wi-prop-201"
+            ],
+            "score": 0.0778626340750276
+          }
+        ],
+        "sourceDistanceShiftM": 90
+      },
+      "signature": "0220627a3ae5b58453691cb3bfe43dc4f22ff9efbc56e605399f307c1ef1bede",
+      "sourceSha256": "682e07f4d08caf47e03203e88abc5dab7a19fca72d42156dbd5d91bb44e7f944",
+      "roadSha256": "872c89e8f3836cd2589ce3a0c6881e9e87e18532f33f4a09b6136050ebb1aae6",
+      "placementDetails": {
+        "x": 40.96556117363953,
+        "z": -532.3701283539222,
+        "yaw": -2.8496539791729174,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4411.678733979727,
+        "trackLateral": 49.99377580425379,
+        "minimumRoadClearanceM": 17.211058472934003,
+        "checkedSegments": 4356,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/WI/milwaukee-city-hall-desktop.png",
+        "docs/art/landmark-previews/WI/milwaukee-city-hall-mobile.png"
+      ]
     },
     "landmark-city-wi-harley-davidson-museum": {
       "raceRef": "Milwaukee, WI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -437.7830952324586,
+        "worldZ": 685.9068524198835,
+        "routeDistanceM": 6213,
+        "offsetFromRoadM": 175,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.83682483197978,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 71.63091136380845,
+            "angularWidthDegrees": 17.583347074129122,
+            "rangeM": 142.24808505662335,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 64.3494515062823,
+            "angularWidthDegrees": 16.714307415861665,
+            "rangeM": 149.75856038503264,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 57.85666590858129,
+            "angularWidthDegrees": 15.712578440446128,
+            "rangeM": 159.4388187457395,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 52.170604674235825,
+            "angularWidthDegrees": 14.668968423722216,
+            "rangeM": 170.92059339235368,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 45.03657674205752,
+            "angularWidthDegrees": 13.15497124677128,
+            "rangeM": 190.79706790108713,
+            "occluderIds": [
+              "city-wi-prop-288"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 37.652301764740834,
+            "angularWidthDegrees": 11.37577609361483,
+            "rangeM": 220.88403431093897,
+            "occluderIds": [
+              "city-wi-prop-288"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 1.1543792005054985,
+            "angularWidthDegrees": 9.832755578979535,
+            "rangeM": 255.7598392526762,
+            "occluderIds": [],
+            "score": 0.9538248319797801
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 25.64783932904767,
+            "angularWidthDegrees": 8.28407546924502,
+            "rangeM": 303.7902098178254,
+            "occluderIds": [
+              "city-wi-prop-282",
+              "city-wi-prop-284"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "bfe1aa71f26b9cae80734222d19841d75b145f0cad52544ed3f7010e272b8263",
+      "sourceSha256": "dcd8d68a3b477913c00c7a24a76b47484b4ddf86863fb71d7f86cfe117fd6a4d",
+      "roadSha256": "872c89e8f3836cd2589ce3a0c6881e9e87e18532f33f4a09b6136050ebb1aae6",
+      "placementDetails": {
+        "x": -487.9036803673778,
+        "z": 477.7696619697256,
+        "yaw": 0.9599017694557359,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6003.172406260432,
+        "trackLateral": -134.99999999999997,
+        "minimumRoadClearanceM": 99.85420638362316,
+        "checkedSegments": 4356,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-wv-west-virginia-state-capitol": {
       "raceRef": "Charleston, WV — Landmark Run",

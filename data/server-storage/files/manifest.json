@@ -596,7 +596,11 @@
       "landmark-city-vt-waterman-building": "art/landmark-city-vt-waterman-building/document.json",
       "landmark-city-vt-burlington-city-hall": "art/landmark-city-vt-burlington-city-hall/document.json",
       "landmark-city-vt-flynn-center": "art/landmark-city-vt-flynn-center/document.json",
-      "landmark-city-vt-echo-leahy-center": "art/landmark-city-vt-echo-leahy-center/document.json"
+      "landmark-city-vt-echo-leahy-center": "art/landmark-city-vt-echo-leahy-center/document.json",
+      "landmark-city-wi-pabst-theater": "art/landmark-city-wi-pabst-theater/document.json",
+      "landmark-city-wi-milwaukee-art-museum": "art/landmark-city-wi-milwaukee-art-museum/document.json",
+      "landmark-city-wi-milwaukee-city-hall": "art/landmark-city-wi-milwaukee-city-hall/document.json",
+      "landmark-city-wi-harley-davidson-museum": "art/landmark-city-wi-harley-davidson-museum/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -928,7 +932,11 @@
       "landmark-city-vt-waterman-building": "doodads/landmark-city-vt-waterman-building/document.json",
       "landmark-city-vt-burlington-city-hall": "doodads/landmark-city-vt-burlington-city-hall/document.json",
       "landmark-city-vt-flynn-center": "doodads/landmark-city-vt-flynn-center/document.json",
-      "landmark-city-vt-echo-leahy-center": "doodads/landmark-city-vt-echo-leahy-center/document.json"
+      "landmark-city-vt-echo-leahy-center": "doodads/landmark-city-vt-echo-leahy-center/document.json",
+      "landmark-city-wi-pabst-theater": "doodads/landmark-city-wi-pabst-theater/document.json",
+      "landmark-city-wi-milwaukee-art-museum": "doodads/landmark-city-wi-milwaukee-art-museum/document.json",
+      "landmark-city-wi-milwaukee-city-hall": "doodads/landmark-city-wi-milwaukee-city-hall/document.json",
+      "landmark-city-wi-harley-davidson-museum": "doodads/landmark-city-wi-harley-davidson-museum/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

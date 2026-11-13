@@ -2098,5 +2098,33 @@
     "documentSha256": "ed077f496cef8d36b3ba5be364cfc97a8d6b8cbb348956282c8bbfb175942885",
     "width": 512,
     "height": 262
+  },
+  "landmark-city-wi-pabst-theater": {
+    "source": "assets/campaign-art/landmarks/WI/landmark-city-wi-pabst-theater.png",
+    "sourceSha256": "bef5aa6be7f0a282f892963f6c2e25227c0ff322edbe8e24682ad4aa20593bd8",
+    "documentSha256": "e4512034b046aad653df81784865e13592a5231bf16b815087e51f676c3d39e6",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-wi-milwaukee-art-museum": {
+    "source": "assets/campaign-art/landmarks/WI/landmark-city-wi-milwaukee-art-museum.png",
+    "sourceSha256": "0890c9d5efaee0d1712f808935bb1a099a1ee7e7800125e04033e13248d0b287",
+    "documentSha256": "92db2a79670ef868f892a2af7e76405594c6b7f622477a80613d268f3faeb3a3",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wi-milwaukee-city-hall": {
+    "source": "assets/campaign-art/landmarks/WI/landmark-city-wi-milwaukee-city-hall.png",
+    "sourceSha256": "682e07f4d08caf47e03203e88abc5dab7a19fca72d42156dbd5d91bb44e7f944",
+    "documentSha256": "02b6b5a96f675fdd450f84362d3f3b7d00b23da8c071167e53f1c1bb6de5b750",
+    "width": 373,
+    "height": 512
+  },
+  "landmark-city-wi-harley-davidson-museum": {
+    "source": "assets/campaign-art/landmarks/WI/landmark-city-wi-harley-davidson-museum.png",
+    "sourceSha256": "dcd8d68a3b477913c00c7a24a76b47484b4ddf86863fb71d7f86cfe117fd6a4d",
+    "documentSha256": "ccf4e634d846d9cba311c3cf84005a830d32a417e1cd5aafed5b805fb4fcdb7f",
+    "width": 512,
+    "height": 256
   }
 }

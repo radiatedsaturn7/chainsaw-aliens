@@ -2680,6 +2680,34 @@
       "heightM": 20,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-wi-pabst-theater",
+      "source": "landmarks/WI/landmark-city-wi-pabst-theater.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wi-milwaukee-art-museum",
+      "source": "landmarks/WI/landmark-city-wi-milwaukee-art-museum.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wi-milwaukee-city-hall",
+      "source": "landmarks/WI/landmark-city-wi-milwaukee-city-hall.png",
+      "heightM": 55,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wi-harley-davidson-museum",
+      "source": "landmarks/WI/landmark-city-wi-harley-davidson-museum.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
