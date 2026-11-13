@@ -784,7 +784,7 @@
               "source": "fuel",
               "format": "bar",
               "textAlign": "center",
-              "name": "Fuel reserve (0–100%)",
+              "name": "Fuel reserve (0\u2013100%)",
               "enabled": true,
               "x": 0,
               "y": 0.92,
@@ -1103,14 +1103,14 @@
       {
         "wheel": "fr",
         "x": 690,
-        "y": 280,
-        "radius": 60
+        "y": 269,
+        "radius": 42
       },
       {
         "wheel": "rr",
         "x": 915,
-        "y": 275,
-        "radius": 70
+        "y": 253,
+        "radius": 45
       }
     ],
     "right": [
@@ -1131,14 +1131,14 @@
       {
         "wheel": "rl",
         "x": 1985,
-        "y": 280,
-        "radius": 70
+        "y": 256,
+        "radius": 42
       },
       {
         "wheel": "fl",
         "x": 2140,
-        "y": 280,
-        "radius": 60
+        "y": 262,
+        "radius": 38
       }
     ],
     "rear": [
@@ -1159,14 +1159,14 @@
       {
         "wheel": "fr",
         "x": 450,
-        "y": 650,
-        "radius": 65
+        "y": 627,
+        "radius": 38
       },
       {
         "wheel": "rr",
         "x": 620,
-        "y": 640,
-        "radius": 65
+        "y": 621,
+        "radius": 43
       }
     ],
     "left": [
@@ -1187,14 +1187,14 @@
       {
         "wheel": "rl",
         "x": 1705,
-        "y": 640,
-        "radius": 70
+        "y": 620,
+        "radius": 45
       },
       {
         "wheel": "fl",
         "x": 1880,
-        "y": 640,
-        "radius": 60
+        "y": 629,
+        "radius": 40
       }
     ]
   },
