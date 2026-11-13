@@ -5706,7 +5706,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": 225.95734557948833,
         "worldZ": 93.03692363147367,
@@ -5715,101 +5715,131 @@
         "side": "left"
       },
       "candidateReview": {
-        "score": 6.201206073858932,
+        "score": 0.0023204487756377998,
         "views": [
           {
             "beforeM": 45,
-            "angleDegrees": 3.0843053187170986,
-            "angularWidthDegrees": 10.898217569835287,
-            "rangeM": 160.55991817546584,
-            "occluderIds": [],
-            "score": 0.8766277872513161
+            "angleDegrees": 22.059807127671004,
+            "angularWidthDegrees": 22.530743631251376,
+            "rangeM": 76.89211514855069,
+            "occluderIds": [
+              "city-ne-prop-267"
+            ],
+            "score": 0.014112925787179174
           },
           {
             "beforeM": 65,
-            "angleDegrees": 2.742781606803689,
-            "angularWidthDegrees": 9.698546838348168,
-            "rangeM": 180.5341583356388,
-            "occluderIds": [],
-            "score": 0.8902887357278524
+            "angleDegrees": 32.487844323049345,
+            "angularWidthDegrees": 18.405930349760975,
+            "rangeM": 94.5343185782766,
+            "occluderIds": [
+              "city-ne-prop-267"
+            ],
+            "score": 0
           },
           {
             "beforeM": 85,
-            "angleDegrees": 2.4693092809919195,
-            "angularWidthDegrees": 8.736119182916164,
-            "rangeM": 200.5135348334721,
-            "occluderIds": [],
-            "score": 0.9012276287603233
+            "angleDegrees": 27.05813791760315,
+            "angularWidthDegrees": 15.5868986623413,
+            "rangeM": 111.90642589703273,
+            "occluderIds": [
+              "city-ne-prop-266",
+              "city-ne-prop-267"
+            ],
+            "score": 0
           },
           {
             "beforeM": 105,
-            "angleDegrees": 2.2454009628754417,
-            "angularWidthDegrees": 7.9470461350410675,
-            "rangeM": 220.49665145049835,
-            "occluderIds": [],
-            "score": 0.9101839614849824
+            "angleDegrees": 23.0461958646744,
+            "angularWidthDegrees": 13.435220993453473,
+            "rangeM": 130.03599212929083,
+            "occluderIds": [
+              "city-ne-prop-264",
+              "city-ne-prop-266"
+            ],
+            "score": 0.009378259849562887
           },
           {
             "beforeM": 135,
-            "angleDegrees": 1.9765331038491536,
-            "angularWidthDegrees": 6.998380841015045,
-            "rangeM": 250.47638088771365,
-            "occluderIds": [],
-            "score": 0.9209386758460338
+            "angleDegrees": 18.78557017939672,
+            "angularWidthDegrees": 11.068233977075641,
+            "rangeM": 158.0785453329193,
+            "occluderIds": [
+              "city-ne-prop-264",
+              "city-ne-prop-266",
+              "city-ne-prop-269"
+            ],
+            "score": 0.029829263138895737
           },
           {
             "beforeM": 175,
-            "angleDegrees": 1.7043886363124365,
-            "angularWidthDegrees": 6.0370193033402595,
-            "rangeM": 290.45586691546373,
-            "occluderIds": [],
-            "score": 0.9318244545475025
+            "angleDegrees": 99.6528445198939,
+            "angularWidthDegrees": 9.766135315613992,
+            "rangeM": 179.27872837586816,
+            "occluderIds": [
+              "city-ne-prop-260",
+              "city-ne-prop-264",
+              "city-ne-prop-269"
+            ],
+            "score": 0
           },
           {
             "beforeM": 215,
-            "angleDegrees": 1.370398101033589,
-            "angularWidthDegrees": 5.307631718570094,
-            "rangeM": 330.44049602578457,
-            "occluderIds": [],
-            "score": 0.8361148302409216
+            "angleDegrees": 86.99339304793132,
+            "angularWidthDegrees": 9.898476210111843,
+            "rangeM": 176.87007807184338,
+            "occluderIds": [
+              "city-ne-prop-256",
+              "city-ne-prop-268",
+              "city-ne-prop-269"
+            ],
+            "score": 0
           },
           {
             "beforeM": 265,
-            "angleDegrees": 81.00949092786915,
-            "angularWidthDegrees": 5.082025249901639,
-            "rangeM": 345.1303036832228,
+            "angleDegrees": 71.44791204600021,
+            "angularWidthDegrees": 9.399340595944386,
+            "rangeM": 186.3081558226718,
             "occluderIds": [
-              "city-ne-prop-248",
-              "city-ne-prop-250",
-              "city-ne-prop-252",
-              "city-ne-prop-255",
-              "city-ne-prop-278"
+              "city-ne-prop-269",
+              "city-ne-prop-270",
+              "city-ne-prop-273",
+              "city-ne-prop-275"
             ],
             "score": 0
           }
         ],
-        "sourceDistanceShiftM": -60
+        "sourceDistanceShiftM": 90
       },
-      "signature": "47e079f181ea79308fb5ce9f01b5953297c02c69ae46bb07e4924e061de648b5",
+      "signature": "a50881cea728028f88552c83a9919b033e50f6abb09202c993fd67665f123f41",
       "sourceSha256": "8d02c9b130b22fb6b38fc71e14f6cc47a0adb1c8a51a1ee9eac8cfb394f0bfb7",
       "roadSha256": "6595bfba42786467c1d944ed146a433cf8eb1d606ed711ac5dbc2fb3fa626724",
       "placementDetails": {
-        "x": 142.33190356843093,
-        "z": 157.54149732622918,
-        "yaw": -1.621013140836164,
+        "x": 312.8419594287582,
+        "z": -8.576038973385124,
+        "yaw": 2.7415867038516892,
         "facingApproachBeforeM": 105,
-        "trackDistance": 5029.190708716233,
-        "trackLateral": -119.97381579054037,
-        "minimumRoadClearanceM": 96.06244742979935,
+        "trackDistance": 5181.57309953006,
+        "trackLateral": -60,
+        "minimumRoadClearanceM": 34.48863163925898,
         "checkedSegments": 4120,
         "samplingStepM": 2,
         "samplingPaddingM": 2,
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NE/orpheum-theater-desktop.png",
+        "docs/art/landmark-previews/NE/orpheum-theater-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 105,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Upper theater facade and distinctive tall vertical blade readable right of handheld pause and below timer at105m. Existing foreground house hides lower entrance/base; not a full unobscured facade. Original sourceGPS preserved."
+      }
     },
     "landmark-city-nh-currier-museum-of-art": {
       "raceRef": "Manchester, NH — Landmark Run",
