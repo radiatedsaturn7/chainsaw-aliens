@@ -1,0 +1,98 @@
+{
+  "reference": "2011 United States Mazda RX-8 Sport 6-speed manual RWD LHD; not R3 or automatic",
+  "duplicateCheck": "All origin/staging assets/car-catalog/*/research.json searched for RX.?8 and Peugeot; no matches. Rotorveil1993 is RX7, not RX8. Volvo850 rejected as existing LarchTurbo1995.",
+  "status": "research_ready; fictional ID assigned by parent; not implemented or tested",
+  "sources": [
+    {
+      "url": "https://portal.mazdausa.com/m176/MusaWeb/musa2/pdf/specs/specs_RX8.pdf",
+      "type": "Official MazdaUSA 2011 specification PDF",
+      "verification": "Downloaded mazda2011.pdf; personally viewed pages1,2,4 rendered PNGs. Text inspected all8pages. Engine/manual column and Sport tire/body column used."
+    }
+  ],
+  "engine": {
+    "code": "RENESIS",
+    "layout": "naturally aspirated 2-rotor rotary, front-midship",
+    "displacementCc": 1308,
+    "powerHp": 232,
+    "powerRpm": 8500,
+    "torqueLbFt": 159,
+    "torqueNmDerived": 215.57505378469259,
+    "torqueRpm": 5500,
+    "redlineRpm": 9000,
+    "compression": 10,
+    "fuelCutRpm": null,
+    "idleRpm": null
+  },
+  "drivetrain": {
+    "drive": "RWD",
+    "transmission": "6MT",
+    "forwardRatios": [
+      3.82,
+      2.26,
+      1.54,
+      1.18,
+      1,
+      0.79
+    ],
+    "reverseRatio": 3.6,
+    "finalDrive": 4.78,
+    "differential": "torque-sensing conical limited-slip"
+  },
+  "mass": {
+    "curbLb": 3065,
+    "curbKgDerived": 1390.26061405,
+    "frontPercent": 52,
+    "rearPercent": 48,
+    "note": "OEM manual-transmission weight common table, not a measured individual Sport."
+  },
+  "dimensions": {
+    "originalUnit": "inches",
+    "length": 175.6,
+    "width": 69.7,
+    "height": 52.8,
+    "wheelbase": 106.4,
+    "frontTrack": 59.1,
+    "rearTrack": 59.3,
+    "minimumLadenGroundClearance": 4.7,
+    "m": {
+      "length": 4.46024,
+      "width": 1.77038,
+      "height": 1.3411199999999999,
+      "wheelbase": 2.70256,
+      "frontTrack": 1.50114,
+      "rearTrack": 1.50622,
+      "minimumLadenGroundClearance": 0.11938
+    }
+  },
+  "wheels": {
+    "rim": "18x8.0",
+    "tires": "225/45R18",
+    "nominalUnloadedRadiusM": 0.32985,
+    "pressurePsi": null
+  },
+  "chassis": {
+    "steeringRatio": 16.4,
+    "turnsLockToLock": 3,
+    "turningCircleFt": 34.8,
+    "frontBrakesIn": 12.7,
+    "rearBrakesIn": 11.9,
+    "frontSuspension": "double wishbone",
+    "rearSuspension": "multilink",
+    "frontAntirollMm": 26.5,
+    "rearAntirollMm": 16,
+    "Cd": 0.3,
+    "fuelCapacityUSGallons": 16.9
+  },
+  "artGuidance": [
+    "Original fictional no-logo body inspired by four-seat rear-hinged-small-rear-door rotary coupe; keep different lights/grille/body detailing. Sport has small rear lip not large R3 wing.",
+    "LHD, deep instrument binnacle, analog tachometer with digital speed; use existing separate steering wheel and place RPM/gear visibly through upper arch. Fixed rear camera, correct exhaust smoke and eight directions."
+  ],
+  "estimatesRequired": [
+    "Full torque curve outside two measured anchors, fuel cut, idle, CG height, spring/damper/brake coefficients, alignment, tire pressure, efficiency, shift/launch behavior and economy simulation are not OEM-proven here.",
+    "52/48 mass, 9000 redline and16.4 steering ARE published; do not replace with defaults.",
+    "Rotary is supported by existing Rotorveil packet; do not claim simulation models physical Wankel combustion/rotor dynamics."
+  ],
+  "unitCautions": [
+    "232 hp is mechanical horsepower, not PS. Keep source ratio precision. Ground clearance is laden, not unloaded."
+  ]
+}
