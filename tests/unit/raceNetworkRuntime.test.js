@@ -305,7 +305,9 @@ test('rolling countdown preserves the start crossing and requires a correct-leve
   const session = editor.playtestSession;
   let finishes = 0;
   editor.showRaceResults = () => { finishes++; };
-  for (let i = 0; i < 3; i++) editor.updatePlaytest(1);
+  // Advance through the authored countdown to GO; the co-driver now starts at five.
+  const formationSeconds = Math.ceil(session.countdownRemainingMs / 1000) - 1;
+  for (let i = 0; i < formationSeconds; i++) editor.updatePlaytest(1);
   assert.ok(session.worldZ > 1, 'rolling formation crossed the start');
   assert.equal(session.elapsedMs, 0);
   assert.equal(finishes, 0);
