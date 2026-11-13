@@ -783,7 +783,7 @@
               "source": "fuel",
               "format": "bar",
               "textAlign": "center",
-              "name": "Fuel reserve (0–100%)",
+              "name": "Fuel reserve (0\u2013100%)",
               "enabled": true,
               "x": 0.6253151790216843,
               "y": 0.8795712484237075,
@@ -1031,7 +1031,7 @@
       "frontDifferentialDecel": 0,
       "steeringRatio": 18
     },
-    "description": "Original logo-free 2994 mid-engine two-seat salvage hatch. Japan1991 three-speed automatic reference with explicitly documented game estimates.",
+    "description": "Original logo-free 2994 front-engine, front-wheel-drive retro four-seat coupe. Japan 1991 three-speed automatic reference with explicitly documented game estimates.",
     "category": "muscle",
     "mechanics": {
       "fuelLiters": 40,
