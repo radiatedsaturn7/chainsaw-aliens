@@ -1,0 +1,94 @@
+{
+  "fictionalIdentity": "Starwort 2005",
+  "reference": "2005 mainland-US Toyota MR2 Spyder standard 5-speed conventional manual, LHD; no optional LSD selected",
+  "scope": "Research only; no art/code/maps edited",
+  "duplicateCheck": "No MR2 Spyder/MR-S matches in inspected copperwing-work research ledger/importer; earlier Glimmer1986 is different generation. Live roster recheck before import.",
+  "primarySource": {
+    "url": "https://www.auto-brochures.com/makes/Toyota/MR2/Toyota_US%20MR2_2005.pdf",
+    "kind": "Toyota US 2005 eBrochure hosted by third-party archive; copyright2004 Toyota Motor Sales USA, mainlandUS applicability stated",
+    "verification": "Full text read; actual specification page3 screenshot visually inspected"
+  },
+  "oemBrochureFacts": {
+    "layout": "mid-engine rear-wheel drive",
+    "transmission": "5MT, NOT optional6SMT",
+    "engine": "1.8L NA gasoline I4 DOHC16V VVT-i",
+    "boreMm": 79,
+    "strokeMm": 91.5,
+    "compression": 10,
+    "powerHp": 138,
+    "powerRpm": 6400,
+    "torqueLbFt": 125,
+    "torqueRpm": 4400,
+    "curbMassLb": 2195,
+    "massConvention": "OEM curb; fuel/driver inclusion unspecified; SMT2215lb excluded",
+    "tireFront": "P185/55R15",
+    "tireRear": "P215/45R16",
+    "tireType": "Performance",
+    "wheelDiameterFrontInches": 15,
+    "wheelDiameterRearInches": 16,
+    "wheelbaseInches": 96.5,
+    "lengthInches": 153,
+    "widthInches": 66.7,
+    "heightInches": 48.8,
+    "trackFrontInches": 58.1,
+    "trackRearInches": 57.5,
+    "groundClearanceInches": 4.9,
+    "groundClearanceLoadCondition": "unstated",
+    "Cd": 0.35,
+    "fuelUSGallons": 12.7,
+    "turningCircleFeet": 34.8,
+    "suspensionFront": "independent MacPherson strut with stabilizer",
+    "suspensionRear": "independent dual-link MacPherson strut with stabilizer",
+    "steering": "rack/pinion electrohydraulic assist",
+    "brakes": "power-assisted front ventilated discs and rear discs withABS",
+    "LSD": "optional; standard non-option reference chosen",
+    "roof": "manual folding black-cloth with glass rear window"
+  },
+  "gearEvidence": {
+    "status": "corroborated secondary and prior-model-year transcription, NOT exact2005 OEM verified",
+    "forward": [
+      3.166,
+      1.904,
+      1.392,
+      1.031,
+      0.815
+    ],
+    "reverse": 3.25,
+    "final": 4.312,
+    "sources": [
+      {
+        "url": "https://www.new-cars.com/2004/toyota/toyota-mr2-spyder-specs.html",
+        "evidence": "2004 specifications transcription: exact5MT ratios, same mass/output/tirestagger; prior year not exactOEM proof"
+      },
+      {
+        "url": "https://midshiprunabout.org/mk3/gear-ratios/",
+        "evidence": "Community archive May7,2007 explicitly lists US00-05 MR2Spyder C56 five-speed ratios rounded3.17/1.90/1.39/1.03/.82 withfinal4.312; no authenticated factorymanual provenance"
+      }
+    ],
+    "policy": "If accepted for simulation, label source-supported secondary provisional ratios. Do not call exact OEM verified. Never borrow European6MT or AustralianSMT ratios. Exact2005 factory technical sheet remains research gap."
+  },
+  "derived": {
+    "curbMassKg": 995.63525215,
+    "torqueNm": 169.477243541425,
+    "nominalFrontRadiusM": 0.29225,
+    "nominalRearRadiusM": 0.29995,
+    "wheelbaseM": 2.4511,
+    "lengthM": 3.8861999999999997,
+    "widthM": 1.69418,
+    "heightM": 1.23952,
+    "fuelLiters": 48.074729656799995
+  },
+  "unknowns": [
+    "exact2005 OEM gearbox tooth ratios",
+    "redline/fuelcut",
+    "idle",
+    "full torque curve",
+    "front/rear mass fraction",
+    "CG height",
+    "frontal area",
+    "spring/damper rates",
+    "loaded rolling radius",
+    "LSD torque-bias/preload if optional model later chosen"
+  ],
+  "artPlan": "Original logo-free2994 small mid-engine roadster, distinct body creases/headlamps/rear lamps and side intakes; blackcloth roof optionally closed for consistency, fixed rear camera. LHD driver gauges, clear shared wheel opening, individually placed runtime gauges. Rear exhaust smoke; wheels separate; retain correct front/rear tire stagger rather than one-size visual assumption."
+}
