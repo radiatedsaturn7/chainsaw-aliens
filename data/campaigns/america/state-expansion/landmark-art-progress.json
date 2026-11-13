@@ -3349,7 +3349,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": 484.10562750960827,
         "worldZ": -188.4089439482767,
@@ -3455,12 +3455,18 @@
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Grand Central facade is legible in native desktop at 85m, but foreground scenery, crop, or HUD blocks the handheld approaches tried. Find a safer readable approach, keeping old props and road unchanged."
-      ],
+      "remaining": [],
       "visualEvidence": [
-        "docs/art/landmark-previews/NY/grand-central-terminal-desktop.png"
-      ]
+        "docs/art/landmark-previews/NY/grand-central-terminal-desktop.png",
+        "docs/art/landmark-previews/NY/grand-central-terminal-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 75,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged native authored conditions",
+        "notes": "Existing exact candidate, no placement edit: full arched facade and pediment recognizable in narrow75m bend approach. Actual handheld sits below gear and right of minimap; adjacent generic building does not hide landmark facade."
+      }
     },
     "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building": {
       "raceRef": "New York, NY — Landmark Run",

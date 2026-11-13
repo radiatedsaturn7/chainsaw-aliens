@@ -12,8 +12,8 @@ placeholder car; desktop is 960×540 and handheld is 390×844.
   smaller but unoccluded. Retains the exact 70-character saved art reference.
 - **Rockefeller Center:** 195 m desktop / 175 m handheld. The tower crown and
   grounded base remain inside frame and clear of the handheld overlay.
-- **Grand Central Terminal:** clear clock and façade at 85 m desktop; handheld
-  visibility is pending. The saved desktop frame is diagnostic, not a pass.
+- **Grand Central Terminal:** clear clock, entrance arches and pediment at
+  75 m in both modes. The sharp bend creates a narrower visibility window.
 
 All four collision volumes were checked against the original road and
 continuation segments; no roads, lighting, or existing props were edited.
