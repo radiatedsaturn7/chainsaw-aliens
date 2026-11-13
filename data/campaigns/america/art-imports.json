@@ -2294,5 +2294,33 @@
     "documentSha256": "9bf3f6831f93449d88d0884c04bb422cf512aeccb327c706aa5253811fd340b1",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-ar-clinton-presidential-library": {
+    "source": "assets/campaign-art/landmarks/AR/landmark-city-ar-clinton-presidential-library.png",
+    "sourceSha256": "ca945170c7b694c3d7b93228c307dc4866b3077b31865b9feb293d3e4dffad46",
+    "documentSha256": "dbd53364755055178347bfefdeb19ce55629b4e8f2eef7f73b7d5b9cec2fb208",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ar-old-state-house-museum": {
+    "source": "assets/campaign-art/landmarks/AR/landmark-city-ar-old-state-house-museum.png",
+    "sourceSha256": "8cc7cf42916cd952f1ec55921aff6b2efa09f07afe6d9da791a79fcc5eaad3ad",
+    "documentSha256": "3eb429523c63dce67b64bda20aa111b41e9a3a2729fb61e2730b8ca615427e57",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ar-arkansas-state-capitol": {
+    "source": "assets/campaign-art/landmarks/AR/landmark-city-ar-arkansas-state-capitol.png",
+    "sourceSha256": "9f554d834f50c348430a71ebc9d86b70b0a71c0ac304bf3441285c3b32db30f1",
+    "documentSha256": "e7aee4912ef6fb872c4440b9f85e296cf23e938e69c3d4707e73b4614c35cd85",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ar-little-rock-central-high-school": {
+    "source": "assets/campaign-art/landmarks/AR/landmark-city-ar-little-rock-central-high-school.png",
+    "sourceSha256": "257b53db7ec72b46a21cfbb42c03892c7501bcdb2bb04d2d3d7ccfb2963c99c6",
+    "documentSha256": "5d63c59a65b525033178e712b2152cd41caaf1fe38b38a5a8d91ec27a177d98a",
+    "width": 512,
+    "height": 171
   }
 }

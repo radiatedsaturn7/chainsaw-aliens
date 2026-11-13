@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613960425,
+  "doodad": {
+    "id": "campaign-landmark-city-ar-arkansas-state-capitol",
+    "name": "landmark-city-ar-arkansas-state-capitol",
+    "artRef": "landmark-city-ar-arkansas-state-capitol",
+    "widthM": 119.76608187134502,
+    "heightM": 40,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 101.80116959064327,
+    "hitboxHeightM": 36,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

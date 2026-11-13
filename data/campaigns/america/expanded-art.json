@@ -2876,6 +2876,34 @@
       "heightM": 22,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ar-clinton-presidential-library",
+      "source": "landmarks/AR/landmark-city-ar-clinton-presidential-library.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ar-old-state-house-museum",
+      "source": "landmarks/AR/landmark-city-ar-old-state-house-museum.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ar-arkansas-state-capitol",
+      "source": "landmarks/AR/landmark-city-ar-arkansas-state-capitol.png",
+      "heightM": 40,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ar-little-rock-central-high-school",
+      "source": "landmarks/AR/landmark-city-ar-little-rock-central-high-school.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

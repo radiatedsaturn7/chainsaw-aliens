@@ -68,35 +68,472 @@
     },
     "landmark-city-ar-clinton-presidential-library": {
       "raceRef": "Little Rock, AR — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 2250.948379135143,
+        "worldZ": -139.3496745487448,
+        "routeDistanceM": 2422,
+        "offsetFromRoadM": 149,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.2405071509201107,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 50.380230181034364,
+            "angularWidthDegrees": 27.253140898302156,
+            "rangeM": 148.21532123654106,
+            "occluderIds": [
+              "city-ar-prop-124"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 36.73421633728745,
+            "angularWidthDegrees": 24.82553312253103,
+            "rangeM": 163.2447697543717,
+            "occluderIds": [
+              "city-ar-prop-124"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 12.69424857406235,
+            "angularWidthDegrees": 22.38411500878136,
+            "rangeM": 181.59098561906393,
+            "occluderIds": [
+              "city-ar-prop-122"
+            ],
+            "score": 0.059067606844500714
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 6.061319640822804,
+            "angularWidthDegrees": 20.233783921117762,
+            "rangeM": 201.3650091063613,
+            "occluderIds": [],
+            "score": 0.7575472143670878
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 5.21023079811104,
+            "angularWidthDegrees": 17.66517373732279,
+            "rangeM": 231.22262532799303,
+            "occluderIds": [],
+            "score": 0.7915907680755584
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 4.442460959175916,
+            "angularWidthDegrees": 15.100229130369891,
+            "rangeM": 271.0816910547848,
+            "occluderIds": [],
+            "score": 0.8223015616329634
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 91.30148538043179,
+            "angularWidthDegrees": 13.608024713940006,
+            "rangeM": 301.13719286442506,
+            "occluderIds": [
+              "city-ar-prop-116",
+              "city-ar-prop-118",
+              "city-ar-prop-120"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 82.7885398656501,
+            "angularWidthDegrees": 13.511880120121255,
+            "rangeM": 303.3001590881452,
+            "occluderIds": [
+              "city-ar-prop-111",
+              "city-ar-prop-120"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -120
+      },
+      "signature": "8ab15c65c41bed9d441da0970433d5487c2c0dc58a28271bcc4dec39a7c3e693",
+      "sourceSha256": "ca945170c7b694c3d7b93228c307dc4866b3077b31865b9feb293d3e4dffad46",
+      "roadSha256": "46969bf0991b817234dfe20a91009ebeeae43fefc85364392ecae92ce9e26ac5",
+      "placementDetails": {
+        "x": 2115.5301835817454,
+        "z": 190.56187586427473,
+        "yaw": -1.464511886434974,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2303.5159083179633,
+        "trackLateral": -134.97486046505477,
+        "minimumRoadClearanceM": 86.28610931763117,
+        "checkedSegments": 5996,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/AR/clinton-presidential-library-desktop.png",
+        "docs/art/landmark-previews/AR/clinton-presidential-library-mobile.png"
+      ]
     },
     "landmark-city-ar-old-state-house-museum": {
       "raceRef": "Little Rock, AR — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 951.3118795689475,
+        "worldZ": -448.7388657906337,
+        "routeDistanceM": 3901,
+        "offsetFromRoadM": 70,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.284418454070855,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 57.16993969237696,
+            "angularWidthDegrees": 32.14304174528873,
+            "rangeM": 83.30533878424838,
+            "occluderIds": [
+              "city-ar-prop-223"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 47.049133795218644,
+            "angularWidthDegrees": 28.174951099750817,
+            "rangeM": 95.63647934484594,
+            "occluderIds": [
+              "city-ar-prop-221"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 39.418301412491864,
+            "angularWidthDegrees": 24.564034638037718,
+            "rangeM": 110.24016007334124,
+            "occluderIds": [
+              "city-ar-prop-221"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 33.648829476128654,
+            "angularWidthDegrees": 21.51345142647973,
+            "rangeM": 126.33071520621841,
+            "occluderIds": [
+              "city-ar-prop-221"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 27.37917339410959,
+            "angularWidthDegrees": 17.920363768036182,
+            "rangeM": 152.21460071817282,
+            "occluderIds": [
+              "city-ar-prop-217",
+              "city-ar-prop-219"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 21.78291841330321,
+            "angularWidthDegrees": 14.50170675270718,
+            "rangeM": 188.6329719185653,
+            "occluderIds": [
+              "city-ar-prop-217",
+              "city-ar-prop-219"
+            ],
+            "score": 0.015441991616144594
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 18.021435240787618,
+            "angularWidthDegrees": 12.109523822446699,
+            "rangeM": 226.26425152433563,
+            "occluderIds": [
+              "city-ar-prop-217",
+              "city-ar-prop-219"
+            ],
+            "score": 0.033497110844219434
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 14.788016209737725,
+            "angularWidthDegrees": 10.002661701809952,
+            "rangeM": 274.2478865855939,
+            "occluderIds": [],
+            "score": 0.408479351610491
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "e9550b78195787c185d5a5dcd26ed1a56d6c8885b962af795a3d2fdd9b48301d",
+      "sourceSha256": "8cc7cf42916cd952f1ec55921aff6b2efa09f07afe6d9da791a79fcc5eaad3ad",
+      "roadSha256": "46969bf0991b817234dfe20a91009ebeeae43fefc85364392ecae92ce9e26ac5",
+      "placementDetails": {
+        "x": 780.3083267407553,
+        "z": -335.53416530974124,
+        "yaw": -1.1473923209427945,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4050.836082212032,
+        "trackLateral": -69.99999999999997,
+        "minimumRoadClearanceM": 35.65004332758886,
+        "checkedSegments": 5996,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ar-arkansas-state-capitol": {
       "raceRef": "Little Rock, AR — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -551.8756491459251,
+        "worldZ": -180.13602997861457,
+        "routeDistanceM": 5838,
+        "offsetFromRoadM": 24,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.7492232360648639,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 71.39938420615157,
+            "angularWidthDegrees": 44.23860391958727,
+            "rangeM": 147.3317398590389,
+            "occluderIds": [
+              "city-ar-prop-322"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 65.24033490507185,
+            "angularWidthDegrees": 42.311569767892955,
+            "rangeM": 154.74177622466414,
+            "occluderIds": [
+              "city-ar-prop-322"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 73.95418084028054,
+            "angularWidthDegrees": 40.650409575196676,
+            "rangeM": 161.66629477089378,
+            "occluderIds": [
+              "city-ar-prop-320"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 63.69591514801453,
+            "angularWidthDegrees": 39.17662352879193,
+            "rangeM": 168.2797388778685,
+            "occluderIds": [
+              "city-ar-prop-320"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 45.4557380144286,
+            "angularWidthDegrees": 35.5411956392332,
+            "rangeM": 186.84319950300366,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 4.237122943452532,
+            "angularWidthDegrees": 29.975860507927003,
+            "rangeM": 223.67501530774203,
+            "occluderIds": [],
+            "score": 0.8305150822618987
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 6.1024679577155965,
+            "angularWidthDegrees": 26.383182763356974,
+            "rangeM": 255.48129244695312,
+            "occluderIds": [
+              "city-ar-prop-315",
+              "city-ar-prop-318"
+            ],
+            "score": 0.09070815380296514
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 40.66385093097517,
+            "angularWidthDegrees": 23.13774084094048,
+            "rangeM": 292.5342482343274,
+            "occluderIds": [
+              "city-ar-prop-311",
+              "city-ar-prop-314",
+              "city-ar-prop-316"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "6e3d9ef67d6c1c2bde7b1629be50d755685f21fc351fbe01a80f25dd1a9d51df",
+      "sourceSha256": "9f554d834f50c348430a71ebc9d86b70b0a71c0ac304bf3441285c3b32db30f1",
+      "roadSha256": "46969bf0991b817234dfe20a91009ebeeae43fefc85364392ecae92ce9e26ac5",
+      "placementDetails": {
+        "x": -388.7024891145063,
+        "z": -117.79022548769876,
+        "yaw": 0.8880955254333307,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5897.592924179763,
+        "trackLateral": -134.9999243194235,
+        "minimumRoadClearanceM": 57.51562696915791,
+        "checkedSegments": 5996,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ar-little-rock-central-high-school": {
       "raceRef": "Little Rock, AR — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -1459.7782936188964,
+        "worldZ": 906.9181938928041,
+        "routeDistanceM": 7708,
+        "offsetFromRoadM": 105,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 7.827055630605874,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 0.014301869732184638,
+            "angularWidthDegrees": 34.726397539717674,
+            "rangeM": 124.48670814942706,
+            "occluderIds": [],
+            "score": 0.9994279252107127
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 0.012322190102984883,
+            "angularWidthDegrees": 30.15450833884622,
+            "rangeM": 144.48670761259837,
+            "occluderIds": [],
+            "score": 0.9995071123958806
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.010823930430488422,
+            "angularWidthDegrees": 26.627027993304868,
+            "rangeM": 164.486707206317,
+            "occluderIds": [],
+            "score": 0.9995670427827804
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.009650520101244935,
+            "angularWidthDegrees": 23.827671034541602,
+            "rangeM": 184.48670688812516,
+            "occluderIds": [],
+            "score": 0.9996139791959502
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.008300713363377338,
+            "angularWidthDegrees": 20.57162412122736,
+            "rangeM": 214.48670652209972,
+            "occluderIds": [],
+            "score": 0.9996679714654649
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.00699601443273468,
+            "angularWidthDegrees": 17.392097099412734,
+            "rangeM": 254.48670616830663,
+            "occluderIds": [],
+            "score": 0.9997201594226907
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.0060457488654487015,
+            "angularWidthDegrees": 15.058925352714096,
+            "rangeM": 294.48670591062563,
+            "occluderIds": [],
+            "score": 0.999758170045382
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.005168247824733786,
+            "angularWidthDegrees": 12.893157712819578,
+            "rangeM": 344.48670567267527,
+            "occluderIds": [],
+            "score": 0.9997932700870107
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "9209d5bcdb3ee49c9a94b584d570f72f3e0bddf22dd87922a434d17787ab0933",
+      "sourceSha256": "257b53db7ec72b46a21cfbb42c03892c7501bcdb2bb04d2d3d7ccfb2963c99c6",
+      "roadSha256": "46969bf0991b817234dfe20a91009ebeeae43fefc85364392ecae92ce9e26ac5",
+      "placementDetails": {
+        "x": -1362.7009927003292,
+        "z": 1110.8233879706447,
+        "yaw": -0.041561080560320686,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 7827.635883435822,
+        "trackLateral": -84.83373965886067,
+        "minimumRoadClearanceM": 32.574249442871746,
+        "checkedSegments": 5996,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/AR/little-rock-central-high-school-desktop.png",
+        "docs/art/landmark-previews/AR/little-rock-central-high-school-mobile.png"
+      ]
     },
     "landmark-city-az-chase-field": {
       "raceRef": "Phoenix, AZ — Landmark Run",
