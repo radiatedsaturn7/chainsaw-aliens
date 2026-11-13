@@ -56,7 +56,7 @@ test.beforeAll(async()=>{
 });
 test.afterAll(async()=>{server?.closeAllConnections();await new Promise(resolve=>server.close(resolve));});
 
-test('optimized deployment restores real cutscene media from the shared asset pool',async({page})=>{
+test('deployment restores real cutscene media from bundled or pinned remote assets',async({page})=>{
  test.skip(!process.env.STATIC_PROJECT_ROOT,'Requires the generated deployment artifact');
  await page.goto(origin.replace('/published','/artifact')+'/test.html');
  const result=await page.evaluate(async()=>{
@@ -70,10 +70,13 @@ test('optimized deployment restores real cutscene media from the shared asset po
   }
   if(!imageUrl)throw Error('Optimized opening scene lost its image');
   const image=new Image();image.src=imageUrl;await image.decode();
-  return {width:image.naturalWidth,height:image.naturalHeight,optimization:report.optimization};
+  return {width:image.naturalWidth,height:image.naturalHeight,optimization:report.optimization,documentRoot:report.documentRoot};
  });
  expect(result.width).toBeGreaterThan(0);expect(result.height).toBeGreaterThan(0);
- expect(result.optimization.sharedMediaFiles).toBeGreaterThan(0);
+ if(result.documentRoot){
+  expect(result.documentRoot).toMatch(/^https:\/\/raw\.githubusercontent\.com\/[^/]+\/[^/]+\/[a-f0-9]{40}\/data\/server-storage\/files$/);
+  expect(result.optimization.sharedMediaFiles).toBe(0);
+ }else expect(result.optimization.sharedMediaFiles).toBeGreaterThan(0);
  expect(result.optimization.savedBytes).toBeGreaterThan(0);
 });
 
