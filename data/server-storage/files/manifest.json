@@ -410,7 +410,9 @@
       "catalog-cinder-si-1991-body": "art/catalog-cinder-si-1991-body/document.json",
       "catalog-cinder-si-1991-dashboard": "art/catalog-cinder-si-1991-dashboard/document.json",
       "catalog-rotorveil-1993-body": "art/catalog-rotorveil-1993-body/document.json",
-      "catalog-rotorveil-1993-dashboard": "art/catalog-rotorveil-1993-dashboard/document.json"
+      "catalog-rotorveil-1993-dashboard": "art/catalog-rotorveil-1993-dashboard/document.json",
+      "catalog-stormline-2002-body": "art/catalog-stormline-2002-body/document.json",
+      "catalog-stormline-2002-dashboard": "art/catalog-stormline-2002-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -435,7 +437,8 @@
       "Sunstriker GT 1994": "cars/Sunstriker GT 1994/document.json",
       "Lark 1600 1990": "cars/Lark 1600 1990/document.json",
       "Cinder Si 1991": "cars/Cinder Si 1991/document.json",
-      "Rotorveil 1993": "cars/Rotorveil 1993/document.json"
+      "Rotorveil 1993": "cars/Rotorveil 1993/document.json",
+      "Stormline 2002": "cars/Stormline 2002/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
