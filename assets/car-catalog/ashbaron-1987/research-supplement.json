@@ -1,0 +1,16 @@
+{
+  "status": "Not yet implemented; GNX production specs still need dimension/weight resolution",
+  "source": "https://over-drive-magazine.com/wp-content/uploads/2022/12/1987-Buick-Regal-Grand-National-MVMA-1-43.pdf",
+  "scope": "Factory Buick MVMA October1986 Regal/GrandNational, NOT GNX supplement",
+  "read": "2026-11-13",
+  "pages": {
+    "physical16_printed9": "THM200-4R shared transmission ratios2.74,1.57,1,.67; reverse2.07. Standard LC2 torqueconverter stallratio1.8, NOT evidence for GNX recalibrated converter.",
+    "physical10_printed6": "69L refill fuel capacity shared GN/Regal, not GNX-specific verification"
+  },
+  "extra": "April1987 HotRod article https://www.hotrod.com/features/the-final-option-april-1987-982-1324-52-1 explicitly prototype300hp, so do not use for production276hp.",
+  "secondaryDimensions": {
+    "source": "https://www.ultimatecarpage.com/spec/2302/Buick-Grand-National-GNX.html",
+    "read": "2026-11-13 via direct HTML after web403",
+    "facts": "GNX production rating276bhp4400rpm360lbft3000rpm;3791cc;1575kg;5095x1918x1387mm;2746wheelbase1509/1506tracks. Secondary source; weight differs from C&D prototype3545lb. Do not claim OEM verified dimensions."
+  }
+}
