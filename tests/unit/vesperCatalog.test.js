@@ -21,3 +21,5 @@ test('Vesper production editor preview launches on tire support, not an occludin
  for(const patch of Object.values(patches))assert.notEqual(patch.invalidContactReason,'body-occluded');
  e.disposeRacePlaytestSession(s,'test-complete');
 });
+
+test('Naturally aspirated source label is corrected without physics or artwork changes',async()=>{const{createHash}=await import('node:crypto');for(const [car,expected]of[[c.car,'b5e5c6ae3407b0af73b44b34aa9530a0aed8fae7dc7437067acc8642e123115f'],[d.car,'3a81422cc9da5c3099fc07fee8bc02595c6bd89616e62c37ef84bd97d55394e3']]){assert.equal(car.tuning.aspiration,'Naturally Aspirated');assert.equal(car.mechanics.boostBar,0);const rest=structuredClone(car);delete rest.tuning.aspiration;assert.equal(createHash('sha256').update(JSON.stringify(rest)).digest('hex'),expected);}});
