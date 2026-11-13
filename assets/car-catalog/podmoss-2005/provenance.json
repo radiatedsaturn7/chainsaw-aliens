@@ -1,0 +1,22 @@
+{
+  "inspiration": "2005 Germany Fiat Multipla 1.6 16V Active 5MT",
+  "sources": [
+    {
+      "url": "https://www.fiat-forum.de/attachment/34-multipla-1-6-16v-1005-pdf/",
+      "kind": "Mirrored OEM Presse-Information/Technische Daten, dated10.2005; full2page text read and page2 visually inspected",
+      "fields": [
+        "{\"engineCc\": 1596, \"engineCode\": \"182 B 6000\", \"aspiration\": \"Naturally Aspirated\", \"powerKw\": 76, \"powerRpm\": 5750, \"torqueNm\": 145, \"torqueRpm\": 4000, \"gearRatios\": [3.909, 2.238, 1.52, 1.156, 0.946], \"reverse\": 3.909, \"finalDrive\": 3.933, \"drivetrain\": \"fwd\", \"dragCoefficient\": 0.32, \"fuelLiters\": 63, \"massWithDriverKg\": 1375, \"grossKg\": 1990, \"lengthMm\": 4089, \"widthMm\": 1871, \"heightMm\": 1695, \"wheelbaseMm\": 2666, \"trackFrontMm\": 1515, \"trackRearMm\": 1520, \"tires\": \"185/65R15 88H\", \"pressureBarLightLoad\": 2.3, \"pressureBarRangeLightLoad\": [2.3, 2.5], \"pressureBarRangeMaxLoad\": [2.5, 3.0], \"frontBrakeVentilatedDiscMm\": 284, \"rearBrakeDrumMm\": 228, \"maxSpeedKmh\": 170, \"zeroTo100KmhSeconds\": 12.6, \"frontSuspension\": \"MacPherson\", \"rearSuspension\": \"independent trailing arms\", \"abs\": true}"
+      ]
+    }
+  ],
+  "estimates": [
+    "1375kg explicitly includes driver; do not silently call it DIN curb weight. UK2004 OEM press release says1300kg DIN but different market/year. Need either retain documented with-driver mass or explicitly derive/verify75kg adjustment.",
+    "UK2004 prose erroneously calls rear brakes discs; chosen2005DE sheet explicitly rear drums228mm.",
+    "0\u2013100 is not0\u201360mph; label any0\u201360 value estimate.",
+    "CG,weightdistribution,steeringratio,groundclearance,redline,idle,torque interpolation and suspension sliders remain game estimates.",
+    "Art original fictional2994MPV,no manufacturer logos,shared wheels and runtime steering overlay.",
+    "Game uses documented1375kg with-driver mass, not claimed1300kg DIN.",
+    "60percent front weight,.60mCG,.16mclearance,15:1steering,6500redline6700limit750idle,12.2s0-60 and torque interpolation away from source anchors are estimates.",
+    "Fictional cockpit moves instruments to driver-left for game readability; not replica central instrument placement."
+  ]
+}
