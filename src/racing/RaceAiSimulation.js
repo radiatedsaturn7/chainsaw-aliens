@@ -1,3 +1,4 @@
+import { tireSizeForWheel } from './TireSizes.js';
 import {getRaceAiRoadPlan} from './RaceAiDirector.js';
 import {raceAiRoadPlanIndex} from './RaceAiRoadPlan.js';
 import {recordRaceRecoveryPosition, getRaceRecoveryHistoryCandidates} from './RaceRecoveryHistory.js';
@@ -363,9 +364,7 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
       wheelId,
       {
         compound: editor.getRaceTireCompound(tireSetup.tireCompoundByWheel[wheelId], car),
-        widthMm: tireSetup.tireSize?.widthMm,
-        aspectRatio: tireSetup.tireSize?.aspectRatio,
-        wheelDiameterIn: tireSetup.tireSize?.wheelDiameterIn,
+        ...tireSizeForWheel(tireSetup, wheelId),
         coldPressurePsi: tireSetup.tirePressurePsi[wheelId]
       }
     ]));
@@ -433,9 +432,9 @@ export function updateRaceAiVehiclePhysics(editor, ai = {}, {
     const footprintOffsets = [[-0.7, -0.42], [-0.7, 0.42], [0.7, -0.42], [0.7, 0.42],
       [-0.15, 0], [0.15, 0], [0, -0.48], [0, 0.48]]
       .slice(0, runner.config.contactFootprintSamples);
-    const tireWidthM = Math.max(0.12, Number(tireSetup.tireSize?.widthMm || 245) / 1000);
     const sampleFootprint = ([longitudinal, lateral]) => {
       const samplePositions = Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => {
+        const tireWidthM = Math.max(.12, Number(tireSizeForWheel(tireSetup, wheelId).widthMm || 245) / 1000);
         const patch = preliminaryPatches[wheelId];
         return [wheelId, {
           x: patch.contactPointWorld.x + patch.wheelForwardWorld.x * longitudinal * 0.16
@@ -1010,7 +1009,7 @@ export function getRaceAiLongitudinalPhysicsStep(editor, ai = {}, {
       pressurePsi: setup.tirePressurePsi[wheelId],
       compoundId: compound.id,
       surfaceId,
-      tireSize: setup.tireSize,
+      tireSize: tireSizeForWheel(setup, wheelId),
       temperatureF: ai.tireTemperature[wheelId]
     })];
   }));
@@ -1220,8 +1219,8 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
           ?? contactState.pose?.yaw
           ?? 0
       );
-      if ((ai.physicsBudgetDetail !== 'cheap' || (tuning.powertrainType === 'electric' || tuning.cvt))) restoreRaceAiDetailedPhysics(editor,ai);
-      if ((ai.physicsBudgetDetail !== 'cheap' || (tuning.powertrainType === 'electric' || tuning.cvt)) || !ai.vehicleDynamicsRunner) editor.updateRaceAiVehiclePhysics(ai, {
+      if ((ai.physicsBudgetDetail !== 'cheap' || (tuning.powertrainType === 'electric' || tuning.cvt || tuning.wheelRadiusByWheelM))) restoreRaceAiDetailedPhysics(editor,ai);
+      if ((ai.physicsBudgetDetail !== 'cheap' || (tuning.powertrainType === 'electric' || tuning.cvt || tuning.wheelRadiusByWheelM)) || !ai.vehicleDynamicsRunner) editor.updateRaceAiVehiclePhysics(ai, {
         car,
         tuning,
         seconds: ai.physicsBudgetDetail === 'cheap' ? 0 : dt,
@@ -1269,7 +1268,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     }
     if(ai.physicsBudgetDetail==='cheap' && ai.cheapPhysicsHeld)
       tryRecoverRaceAiCheap(editor,ai,{car,tuning});
-    if ((ai.physicsBudgetDetail !== 'cheap' || (tuning.powertrainType === 'electric' || tuning.cvt)) && waitForRaceAiRecovery(editor, ai, dt, car, tuning)) return;
+    if ((ai.physicsBudgetDetail !== 'cheap' || (tuning.powertrainType === 'electric' || tuning.cvt || tuning.wheelRadiusByWheelM)) && waitForRaceAiRecovery(editor, ai, dt, car, tuning)) return;
     const profile = editor.getRaceAiDifficultyProfile(ai.difficulty);
     const roadSafety = getRaceAiRoadSafety(editor, ai, tuning);
     const wakeState = ai.vehicleRenderState?.aeroState?.wake
@@ -1356,7 +1355,7 @@ export function updateRaceAiDrivers(editor, seconds = 0, {
     const targetMps = ai.drivingPlan.targetSpeedMps;
     const previousSpeedMps = Number(ai.speedMps || 0);
     const previousProjectedDistance = Number(ai.projectedDistance ?? ai.distance ?? 0);
-    const detailedControlsOnly = (tuning.powertrainType === 'electric' || tuning.cvt) || (!editor.vehicleDynamicsAuthority?.workerBridge
+    const detailedControlsOnly = (tuning.powertrainType === 'electric' || tuning.cvt || tuning.wheelRadiusByWheelM) || (!editor.vehicleDynamicsAuthority?.workerBridge
       && ai.physicsBudgetDetail !== 'cheap'
       && (ai.physicsBudgetDetail === 'full' || !canUseRaceAiDistantPhysics(editor,ai,contactState,dt)));
     let aiPhysics;

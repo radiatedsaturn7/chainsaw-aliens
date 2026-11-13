@@ -1,3 +1,4 @@
+import { wheelRadiusFor } from '../TireSizes.js';
 import { RACE_WHEEL_IDS } from './SimulationMath.js';
 import {
   eulerFromQuaternion,
@@ -231,7 +232,7 @@ export function createVehicleRenderStateFromRunner(runner, {
     );
     const staticHubBody = {
       x: left ? -halfTrack : halfTrack,
-      y: -finite(config.cgHeightM, 0.55) + finite(config.wheelRadiusM, 0.337),
+      y: -finite(config.cgHeightM, 0.55) + finite(wheelRadiusFor(config, wheelId), 0.337),
       z: front ? frontZ : rearZ
     };
     // Render geometry is reconstructed from the current body pose and current
@@ -263,6 +264,8 @@ export function createVehicleRenderStateFromRunner(runner, {
         ? VEHICLE_RENDER_WHEEL_FLAGS.terrainDataAvailable : 0)
     );
     wheels[wheelId] = {
+      radiusM: wheelRadiusFor(config, wheelId),
+      widthM: config.wheelWidthByWheelM?.[wheelId],
       hubPositionBody,
       suspensionMountBody,
       suspensionAxisBody,
@@ -344,8 +347,9 @@ export function createVehicleRenderProfileFromRunner(runner) {
     // centres are already expressed relative to that origin.
     cgPositionBody: { x: 0, y: 0, z: 0 },
     wheelRadiusM: finite(config.wheelRadiusM, 0.337),
+    wheelRadiusMByWheel: Object.fromEntries(RACE_WHEEL_IDS.map(id => [id, wheelRadiusFor(config, id)])),
     tireWidthMByWheel: Object.fromEntries(RACE_WHEEL_IDS.map((wheelId) => [
-      wheelId, finite(config.tireByWheel?.[wheelId]?.widthMm, 225) / 1000
+      wheelId, finite(config.wheelWidthByWheelM?.[wheelId], finite(config.tireByWheel?.[wheelId]?.widthMm, 225) / 1000)
     ]))
   };
 }

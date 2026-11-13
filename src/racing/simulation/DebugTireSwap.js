@@ -5,6 +5,8 @@ export function applyDebugTirePhysics(runner,update={}){
  runner.config={...runner.config};
  const radius=Number(update.wheelRadiusM);
  if(Number.isFinite(radius)&&radius>=.1&&radius<=1)runner.config.wheelRadiusM=radius;
+ delete runner.config.wheelRadiusByWheelM;
+ delete runner.config.wheelWidthByWheelM;
  runner.config.tireByWheel=structuredClone(update.tireByWheel||{});
  for(const id of wheels){
   const pressure=Number(update.tireByWheel?.[id]?.coldPressurePsi);

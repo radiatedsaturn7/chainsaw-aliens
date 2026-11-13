@@ -1,3 +1,4 @@
+import { tireSizeForWheel } from '../TireSizes.js';
 import {surfaceWearProfile} from './SurfaceWearModel.js';
 import { getRaceTireLoadSensitivityMultiplierForLoose } from '../RaceVehiclePhysics.js';
 import { RACE_WHEEL_IDS, clamp, normalizeAngle } from './SimulationMath.js';
@@ -109,7 +110,7 @@ export class TireModel {
         pressurePsi: setup.tirePressurePsi?.[wheelId],
         compoundId: compound.id,
         surfaceId: surface,
-        tireSize: setup.tireSize
+        tireSize: tireSizeForWheel(setup, wheelId)
       });
       return (compound.surfaceGrip?.[surface] || 0.7)
         * pressureDynamics.gripMultiplier;
@@ -139,7 +140,7 @@ export class TireModel {
       pressurePsi: setup.tirePressurePsi?.[wheelId],
       compoundId: compound.id,
       surfaceId: surface,
-      tireSize: setup.tireSize,
+      tireSize: tireSizeForWheel(setup, wheelId),
       temperatureF: tireTemperatureF
     });
     const temperatureGrip = hasTemperature
