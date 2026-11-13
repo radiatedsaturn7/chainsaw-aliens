@@ -19,15 +19,17 @@ test('all 200 landmarks retain individually resumable progress; imported does no
   if(row.visualQA==='passed')assert.ok(row.visualEvidence?.length,'Visual pass needs screenshot evidence');
  }
 });
-test('registered Providence sprites resolve, retain source alpha, and keep every road corridor clear',()=>{
+for(const city of read('AI/last-on-the-grid/state-expansion-landmark-artwork.json').cities){
+ const registered=city.landmarks.filter(m=>read('data/campaigns/america/state-expansion/landmark-art-progress.json').assets[m.suggestedArtRef].placement==='clearance-checked');
+ if(!registered.length)continue;
+ test(`registered ${city.city} sprites resolve, retain source alpha, and keep every road corridor clear`,()=>{
  const ledger=read('data/campaigns/america/state-expansion/landmark-art-progress.json');
  const manifest=read(root+'manifest.json');
- const city=read('data/campaigns/america/state-expansion/landmarks/RI.json');
  const {race}=read(root+manifest.folders.races[city.raceRef]);
  const editor=new RaceEditor({deviceIsMobile:true,isMobile:true,exitRaceEditor(){}});editor.applyLoadedRaceDocument(race);
  const samples=roadContinuationSamples(race.road,editor.getRacePathSamplesCached({step:2}),editor.getRaceRouteLength());
  const segments=samples.slice(1).map((b,i)=>({a:samples[i],b,halfWidth:Math.max(editor.getRaceRoadWidthMForSegment(samples[i].segment),editor.getRaceRoadWidthMForSegment(b.segment))/2,samplingPaddingM:2}));
- for(const mark of city.landmarks){
+ for(const mark of registered){
   const name=mark.suggestedArtRef,row=ledger.assets[name];
   const art=read(root+manifest.folders.art[name]);
   assert.ok(art.frames[0].some(p=>p===null),'True transparent saved sprite required');
@@ -39,3 +41,4 @@ test('registered Providence sprites resolve, retain source alpha, and keep every
   assert.equal(row.roadSha256,hash(race.road));assert.ok(Math.abs(clearance-row.placementDetails.minimumRoadClearanceM)<1e-6);
  }
 });
+}

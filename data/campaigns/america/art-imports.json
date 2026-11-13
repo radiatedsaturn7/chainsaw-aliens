@@ -1538,5 +1538,33 @@
     "documentSha256": "c4dbde7ac2e353096beaea2408d72dc22d38e16c5c3a6fdc1455a69314e71061",
     "width": 512,
     "height": 341
+  },
+  "landmark-city-id-idaho-state-capitol": {
+    "source": "assets/campaign-art/landmarks/ID/landmark-city-id-idaho-state-capitol.png",
+    "sourceSha256": "8856e22577ecfc9bf6473324da1272b20300d2c213c373d7ff79de2327bec73e",
+    "documentSha256": "4ec24dab50aae46bbcf6a2674fbf4532285055a4f36810d0fe2a10e11e350e1d",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-id-basque-block": {
+    "source": "assets/campaign-art/landmarks/ID/landmark-city-id-basque-block.png",
+    "sourceSha256": "3d056ca380a61d1daae01efabc960c73d3bbdd1e86eccd5ee5fcf40f078aff9b",
+    "documentSha256": "8f469ef2d6a721159b8364a01f54dcbe17bb869327fc03107aa38d1ec9acaae7",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-id-egyptian-theatre": {
+    "source": "assets/campaign-art/landmarks/ID/landmark-city-id-egyptian-theatre.png",
+    "sourceSha256": "a7b593cedf93917af945eacef2826118c6b60e7563b0fe9ef7409f0708f94f3f",
+    "documentSha256": "821e88291a6c04d6fbf0329725a128f1cb9fb05e8c38035d70d345e51a6cdf2b",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-id-boise-depot": {
+    "source": "assets/campaign-art/landmarks/ID/landmark-city-id-boise-depot.png",
+    "sourceSha256": "303b0cc3e46fcd8a354f39a2200ff52f286c263a23ce9f032fc3a6371efa34df",
+    "documentSha256": "6d0d6237a4bc01df07374665817bda3c5b9256bbb7b302a98403a3ca85ef7f98",
+    "width": 512,
+    "height": 256
   }
 }

@@ -388,35 +388,139 @@
     },
     "landmark-city-id-idaho-state-capitol": {
       "raceRef": "Boise, ID — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 266.43693231300824,
+        "worldZ": -307.9658942148588,
+        "routeDistanceM": 2022,
+        "offsetFromRoadM": 70,
+        "side": "left"
+      },
+      "signature": "549236971f02302be3e5798b62dbf76dc160be953f3c75ac3e59f21f7a3fe2f3",
+      "sourceSha256": "8856e22577ecfc9bf6473324da1272b20300d2c213c373d7ff79de2327bec73e",
+      "roadSha256": "2bf92c66cff7addb95b53d14cbcca3f07ca6e5f7b2f9d9993f79434a049415ec",
+      "placementDetails": {
+        "x": 269.02471036809766,
+        "z": -306.9988387620221,
+        "yaw": 1.4606915944804217,
+        "trackDistance": 2021.5320236722484,
+        "trackLateral": -69.31723143701761,
+        "minimumRoadClearanceM": 23.583442716205404,
+        "checkedSegments": 4330,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-id-basque-block": {
       "raceRef": "Boise, ID — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 90.92957307469396,
+        "worldZ": 145.8434672344217,
+        "routeDistanceM": 2513,
+        "offsetFromRoadM": 0,
+        "side": "left"
+      },
+      "signature": "16f2d675d30199cde5360d6c69317a28aa45b812976d259acb501a53ac903849",
+      "sourceSha256": "3d056ca380a61d1daae01efabc960c73d3bbdd1e86eccd5ee5fcf40f078aff9b",
+      "roadSha256": "2bf92c66cff7addb95b53d14cbcca3f07ca6e5f7b2f9d9993f79434a049415ec",
+      "placementDetails": {
+        "x": 91.57273408266128,
+        "z": 170.11277311335348,
+        "yaw": -1.5132062380782865,
+        "trackDistance": 2513.605829304508,
+        "trackLateral": -24.526591029128628,
+        "minimumRoadClearanceM": 9.448326728310976,
+        "checkedSegments": 4330,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-id-egyptian-theatre": {
       "raceRef": "Boise, ID — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 49.68723550435981,
+        "worldZ": -43.032496049972764,
+        "routeDistanceM": 2755,
+        "offsetFromRoadM": 25,
+        "side": "left"
+      },
+      "signature": "01dcc4274df5237a158122244a33bf36b4b186820c38888cdf91a272e6e17a61",
+      "sourceSha256": "a7b593cedf93917af945eacef2826118c6b60e7563b0fe9ef7409f0708f94f3f",
+      "roadSha256": "2bf92c66cff7addb95b53d14cbcca3f07ca6e5f7b2f9d9993f79434a049415ec",
+      "placementDetails": {
+        "x": 25.624215670960908,
+        "z": -60.359408841271204,
+        "yaw": 2.534029775262621,
+        "trackDistance": 2755.8859253496034,
+        "trackLateral": -54.999999999999986,
+        "minimumRoadClearanceM": 38.87557562544323,
+        "checkedSegments": 4330,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-id-boise-depot": {
       "raceRef": "Boise, ID — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -942.6164481364121,
+        "worldZ": 1441.911083420409,
+        "routeDistanceM": 4864,
+        "offsetFromRoadM": 103,
+        "side": "right"
+      },
+      "signature": "1c1327d5239c6d8e9e7de76ef9e6b9bab58599a37de1992c029246c90a56654d",
+      "sourceSha256": "303b0cc3e46fcd8a354f39a2200ff52f286c263a23ce9f032fc3a6371efa34df",
+      "roadSha256": "2bf92c66cff7addb95b53d14cbcca3f07ca6e5f7b2f9d9993f79434a049415ec",
+      "placementDetails": {
+        "x": -940.5625056458498,
+        "z": 1439.6352589515725,
+        "yaw": 1.2055129714904536,
+        "trackDistance": 4864.280648199745,
+        "trackLateral": 99.86469274527659,
+        "minimumRoadClearanceM": 65.64693618544527,
+        "checkedSegments": 4330,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-il-navy-pier": {
       "raceRef": "Chicago, IL — Landmark Run",

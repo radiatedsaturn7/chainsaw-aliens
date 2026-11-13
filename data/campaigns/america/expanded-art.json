@@ -2120,6 +2120,34 @@
       "heightM": 16,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-id-idaho-state-capitol",
+      "source": "landmarks/ID/landmark-city-id-idaho-state-capitol.png",
+      "heightM": 35,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-id-basque-block",
+      "source": "landmarks/ID/landmark-city-id-basque-block.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-id-egyptian-theatre",
+      "source": "landmarks/ID/landmark-city-id-egyptian-theatre.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-id-boise-depot",
+      "source": "landmarks/ID/landmark-city-id-boise-depot.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
