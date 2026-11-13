@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794605333691,
+  "doodad": {
+    "id": "campaign-landmark-city-ri-rhode-island-state-house",
+    "name": "landmark-city-ri-rhode-island-state-house",
+    "artRef": "landmark-city-ri-rhode-island-state-house",
+    "widthM": 62.22222222222222,
+    "heightM": 35,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 52.888888888888886,
+    "hitboxHeightM": 31.5,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

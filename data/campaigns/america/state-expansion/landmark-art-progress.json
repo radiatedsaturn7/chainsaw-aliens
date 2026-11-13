@@ -1,0 +1,1980 @@
+{
+  "schemaVersion": 1,
+  "description": "Stage statuses are distinct. Imported is not visually verified. GPS references are not final placements.",
+  "assets": {
+    "landmark-city-ak-anchorage-museum": {
+      "raceRef": "Anchorage, AK — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ak-town-square-park": {
+      "raceRef": "Anchorage, AK — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ak-oscar-anderson-house": {
+      "raceRef": "Anchorage, AK — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ak-alaska-railroad-depot": {
+      "raceRef": "Anchorage, AK — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-al-birmingham-civil-rights-institute": {
+      "raceRef": "Birmingham, AL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-al-alabama-theatre": {
+      "raceRef": "Birmingham, AL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-al-sloss-furnaces": {
+      "raceRef": "Birmingham, AL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-al-vulcan-park": {
+      "raceRef": "Birmingham, AL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ar-clinton-presidential-library": {
+      "raceRef": "Little Rock, AR — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ar-old-state-house-museum": {
+      "raceRef": "Little Rock, AR — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ar-arkansas-state-capitol": {
+      "raceRef": "Little Rock, AR — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ar-little-rock-central-high-school": {
+      "raceRef": "Little Rock, AR — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-az-chase-field": {
+      "raceRef": "Phoenix, AZ — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-az-heritage-square": {
+      "raceRef": "Phoenix, AZ — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-az-orpheum-theatre": {
+      "raceRef": "Phoenix, AZ — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-az-arizona-state-capitol": {
+      "raceRef": "Phoenix, AZ — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ca-crypto-com-arena": {
+      "raceRef": "Los Angeles, CA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ca-walt-disney-concert-hall": {
+      "raceRef": "Los Angeles, CA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ca-los-angeles-city-hall": {
+      "raceRef": "Los Angeles, CA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ca-union-station": {
+      "raceRef": "Los Angeles, CA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-co-coors-field": {
+      "raceRef": "Denver, CO — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-co-union-station": {
+      "raceRef": "Denver, CO — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-co-colorado-state-capitol": {
+      "raceRef": "Denver, CO — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-co-denver-art-museum": {
+      "raceRef": "Denver, CO — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ct-mark-twain-house": {
+      "raceRef": "Hartford, CT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ct-connecticut-state-capitol": {
+      "raceRef": "Hartford, CT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ct-wadsworth-atheneum": {
+      "raceRef": "Hartford, CT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ct-bushnell-park": {
+      "raceRef": "Hartford, CT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-de-chase-center-on-the-riverfront": {
+      "raceRef": "Wilmington, DE — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-de-grand-opera-house": {
+      "raceRef": "Wilmington, DE — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-de-delaware-history-museum": {
+      "raceRef": "Wilmington, DE — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-de-rodney-square": {
+      "raceRef": "Wilmington, DE — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-fl-historymiami-museum": {
+      "raceRef": "Miami, FL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-fl-olympia-theater": {
+      "raceRef": "Miami, FL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-fl-adrienne-arsht-center": {
+      "raceRef": "Miami, FL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-fl-freedom-tower": {
+      "raceRef": "Miami, FL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ga-fox-theatre": {
+      "raceRef": "Atlanta, GA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ga-centennial-olympic-park": {
+      "raceRef": "Atlanta, GA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ga-georgia-state-capitol": {
+      "raceRef": "Atlanta, GA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ga-ebenezer-baptist-church": {
+      "raceRef": "Atlanta, GA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-hi-hawaii-state-capitol": {
+      "raceRef": "Honolulu, HI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-hi-iolani-palace": {
+      "raceRef": "Honolulu, HI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-hi-aloha-tower": {
+      "raceRef": "Honolulu, HI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-hi-honolulu-museum-of-art": {
+      "raceRef": "Honolulu, HI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ia-pappajohn-sculpture-park": {
+      "raceRef": "Des Moines, IA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ia-principal-park": {
+      "raceRef": "Des Moines, IA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ia-state-historical-museum": {
+      "raceRef": "Des Moines, IA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ia-iowa-state-capitol": {
+      "raceRef": "Des Moines, IA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-id-idaho-state-capitol": {
+      "raceRef": "Boise, ID — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-id-basque-block": {
+      "raceRef": "Boise, ID — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-id-egyptian-theatre": {
+      "raceRef": "Boise, ID — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-id-boise-depot": {
+      "raceRef": "Boise, ID — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-il-navy-pier": {
+      "raceRef": "Chicago, IL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-il-wrigley-building": {
+      "raceRef": "Chicago, IL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-il-art-institute-of-chicago": {
+      "raceRef": "Chicago, IL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-il-union-station": {
+      "raceRef": "Chicago, IL — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-in-soldiers-and-sailors-monument": {
+      "raceRef": "Indianapolis, IN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-in-indiana-statehouse": {
+      "raceRef": "Indianapolis, IN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-in-lucas-oil-stadium": {
+      "raceRef": "Indianapolis, IN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-in-scottish-rite-cathedral": {
+      "raceRef": "Indianapolis, IN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ks-old-cowtown-museum": {
+      "raceRef": "Wichita, KS — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ks-exploration-place": {
+      "raceRef": "Wichita, KS — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ks-orpheum-theatre": {
+      "raceRef": "Wichita, KS — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ks-union-station": {
+      "raceRef": "Wichita, KS — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ky-louisville-slugger-field": {
+      "raceRef": "Louisville, KY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ky-louisville-palace": {
+      "raceRef": "Louisville, KY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ky-muhammad-ali-center": {
+      "raceRef": "Louisville, KY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ky-louisville-slugger-museum": {
+      "raceRef": "Louisville, KY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-la-jackson-square": {
+      "raceRef": "New Orleans, LA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-la-new-orleans-jazz-museum": {
+      "raceRef": "New Orleans, LA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-la-saint-louis-cemetery-no-1": {
+      "raceRef": "New Orleans, LA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-la-saenger-theatre": {
+      "raceRef": "New Orleans, LA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ma-old-north-church": {
+      "raceRef": "Boston, MA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ma-old-state-house": {
+      "raceRef": "Boston, MA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ma-massachusetts-state-house": {
+      "raceRef": "Boston, MA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ma-boston-public-library": {
+      "raceRef": "Boston, MA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-md-oriole-park-at-camden-yards": {
+      "raceRef": "Baltimore, MD — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-md-lexington-market": {
+      "raceRef": "Baltimore, MD — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-md-washington-monument": {
+      "raceRef": "Baltimore, MD — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-md-national-aquarium": {
+      "raceRef": "Baltimore, MD — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-me-portland-museum-of-art": {
+      "raceRef": "Portland, ME — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-me-portland-city-hall": {
+      "raceRef": "Portland, ME — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-me-victoria-mansion": {
+      "raceRef": "Portland, ME — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-me-portland-observatory": {
+      "raceRef": "Portland, ME — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mi-eastern-market": {
+      "raceRef": "Detroit, MI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mi-fox-theatre": {
+      "raceRef": "Detroit, MI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mi-guardian-building": {
+      "raceRef": "Detroit, MI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mi-michigan-central-station": {
+      "raceRef": "Detroit, MI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mn-minneapolis-institute-of-art": {
+      "raceRef": "Minneapolis, MN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mn-walker-art-center": {
+      "raceRef": "Minneapolis, MN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mn-basilica-of-saint-mary": {
+      "raceRef": "Minneapolis, MN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mn-guthrie-theater": {
+      "raceRef": "Minneapolis, MN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mo-old-courthouse": {
+      "raceRef": "St. Louis, MO — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mo-union-station": {
+      "raceRef": "St. Louis, MO — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mo-city-museum": {
+      "raceRef": "St. Louis, MO — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mo-fabulous-fox-theatre": {
+      "raceRef": "St. Louis, MO — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ms-mississippi-state-capitol": {
+      "raceRef": "Jackson, MS — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ms-old-capitol-museum": {
+      "raceRef": "Jackson, MS — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ms-smith-robertson-museum": {
+      "raceRef": "Jackson, MS — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ms-mississippi-museum-of-art": {
+      "raceRef": "Jackson, MS — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mt-moss-mansion": {
+      "raceRef": "Billings, MT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mt-alberta-bair-theater": {
+      "raceRef": "Billings, MT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mt-yellowstone-art-museum": {
+      "raceRef": "Billings, MT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-mt-billings-depot": {
+      "raceRef": "Billings, MT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nc-nascar-hall-of-fame": {
+      "raceRef": "Charlotte, NC — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nc-bank-of-america-stadium": {
+      "raceRef": "Charlotte, NC — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nc-mint-museum-uptown": {
+      "raceRef": "Charlotte, NC — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nc-discovery-place-science": {
+      "raceRef": "Charlotte, NC — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nd-fargo-theatre": {
+      "raceRef": "Fargo, ND — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nd-plains-art-museum": {
+      "raceRef": "Fargo, ND — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nd-island-park": {
+      "raceRef": "Fargo, ND — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nd-fargo-civic-center": {
+      "raceRef": "Fargo, ND — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ne-joslyn-art-museum": {
+      "raceRef": "Omaha, NE — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ne-lewis-and-clark-landing": {
+      "raceRef": "Omaha, NE — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ne-durham-museum": {
+      "raceRef": "Omaha, NE — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ne-orpheum-theater": {
+      "raceRef": "Omaha, NE — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nh-currier-museum-of-art": {
+      "raceRef": "Manchester, NH — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nh-palace-theatre": {
+      "raceRef": "Manchester, NH — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nh-snhu-arena": {
+      "raceRef": "Manchester, NH — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nh-millyard-museum": {
+      "raceRef": "Manchester, NH — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nj-cathedral-basilica-of-the-sacred-heart": {
+      "raceRef": "Newark, NJ — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nj-newark-museum-of-art": {
+      "raceRef": "Newark, NJ — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nj-new-jersey-performing-arts-center": {
+      "raceRef": "Newark, NJ — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nj-newark-penn-station": {
+      "raceRef": "Newark, NJ — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nm-new-mexico-museum-of-natural-history": {
+      "raceRef": "Albuquerque, NM — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nm-san-felipe-de-neri-church": {
+      "raceRef": "Albuquerque, NM — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nm-kimo-theatre": {
+      "raceRef": "Albuquerque, NM — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nm-albuquerque-rail-yards": {
+      "raceRef": "Albuquerque, NM — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nv-mob-museum": {
+      "raceRef": "Las Vegas, NV — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nv-neon-museum": {
+      "raceRef": "Las Vegas, NV — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nv-downtown-container-park": {
+      "raceRef": "Las Vegas, NV — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-nv-old-las-vegas-mormon-fort": {
+      "raceRef": "Las Vegas, NV — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ny-flatiron-building": {
+      "raceRef": "New York, NY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ny-grand-central-terminal": {
+      "raceRef": "New York, NY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building": {
+      "raceRef": "New York, NY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ny-rockefeller-center": {
+      "raceRef": "New York, NY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-oh-rock-and-roll-hall-of-fame": {
+      "raceRef": "Cleveland, OH — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-oh-playhouse-square": {
+      "raceRef": "Cleveland, OH — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-oh-terminal-tower": {
+      "raceRef": "Cleveland, OH — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-oh-west-side-market": {
+      "raceRef": "Cleveland, OH — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ok-oklahoma-state-capitol": {
+      "raceRef": "Oklahoma City, OK — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ok-oklahoma-city-national-memorial": {
+      "raceRef": "Oklahoma City, OK — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ok-chickasaw-bricktown-ballpark": {
+      "raceRef": "Oklahoma City, OK — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ok-myriad-botanical-gardens": {
+      "raceRef": "Oklahoma City, OK — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-or-pioneer-courthouse-square": {
+      "raceRef": "Portland, OR — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-or-union-station": {
+      "raceRef": "Portland, OR — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-or-powells-city-of-books": {
+      "raceRef": "Portland, OR — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-or-portland-art-museum": {
+      "raceRef": "Portland, OR — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-pa-philadelphia-museum-of-art": {
+      "raceRef": "Philadelphia, PA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-pa-philadelphia-city-hall": {
+      "raceRef": "Philadelphia, PA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-pa-reading-terminal-market": {
+      "raceRef": "Philadelphia, PA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-pa-independence-hall": {
+      "raceRef": "Philadelphia, PA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ri-rhode-island-state-house": {
+      "raceRef": "Providence, RI — Landmark Run",
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "signature": "43f0d0c042e8899e46e5cdd0828bb26eff7f3ac2e8926247cd59073398641aef",
+      "sourceSha256": "0b2152921c949a16619df3ad4be56fea82a469c05b164d873a4936138f9648fb",
+      "roadSha256": "5e70049085ca93b505b095045fbaac49cbd1070d1f590a61acdd5cdc6b401327",
+      "placementDetails": {
+        "x": -518.3690226112783,
+        "z": -804.7250000676763,
+        "yaw": -1.8250314601172783,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 2220.002030893784,
+        "trackLateral": 94.96752902332324,
+        "minimumRoadClearanceM": 48.89628420611019,
+        "checkedSegments": 4211,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "sourceReference": {
+        "worldX": -328.02151165399346,
+        "worldZ": -655.5617150242858,
+        "routeDistanceM": 2099,
+        "offsetFromRoadM": 93,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 3.54620325631957,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 12.745043612644015,
+            "angularWidthDegrees": 21.730613598201206,
+            "rangeM": 162.08620682837596,
+            "occluderIds": [
+              "city-ri-prop-121"
+            ],
+            "score": 0.05882379065930873
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 10.764058154677468,
+            "angularWidthDegrees": 18.458960687480822,
+            "rangeM": 191.46155874201244,
+            "occluderIds": [],
+            "score": 0.5694376738129012
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 8.721643275749145,
+            "angularWidthDegrees": 15.030978363438487,
+            "rangeM": 235.81970394208923,
+            "occluderIds": [],
+            "score": 0.6511342689700342
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 6.374681268428711,
+            "angularWidthDegrees": 12.233794938390105,
+            "rangeM": 290.3036962198708,
+            "occluderIds": [],
+            "score": 0.7450127492628515
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 4.1296699338935605,
+            "angularWidthDegrees": 10.302494212245803,
+            "rangeM": 345.10671200179297,
+            "occluderIds": [],
+            "score": 0.8348132026442576
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 3.47546072574459,
+            "angularWidthDegrees": 8.679404146551834,
+            "rangeM": 409.96485636747616,
+            "occluderIds": [],
+            "score": 0.8609815709702164
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "visualEvidence": [
+        "docs/art/landmark-previews/RI/state-house-desktop.png",
+        "docs/art/landmark-previews/RI/state-house-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 105,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "notes": "After rotating the sprite toward the approach, the marble dome and front portico read together."
+      }
+    },
+    "landmark-city-ri-john-brown-house": {
+      "raceRef": "Providence, RI — Landmark Run",
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "signature": "47b97c91cb02aea87a6227f139a3c3cd6e2f28f67e7c5f163f909a279a1a114f",
+      "sourceSha256": "9202d8400ca3b5cb2b16f44f5cfec87e5e773cb764832bf506944465fae667b7",
+      "roadSha256": "5e70049085ca93b505b095045fbaac49cbd1070d1f590a61acdd5cdc6b401327",
+      "placementDetails": {
+        "x": 608.7123413127795,
+        "z": 215.94006437957768,
+        "yaw": 0.552807556001051,
+        "trackDistance": 4082.9762058150827,
+        "trackLateral": -29.99666926198123,
+        "minimumRoadClearanceM": 12.764917575057463,
+        "checkedSegments": 4211,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "sourceReference": {
+        "worldX": 636.8027184084392,
+        "worldZ": 196.64849939347891,
+        "routeDistanceM": 4082,
+        "offsetFromRoadM": 64,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.294751838355202,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 21.094838725443182,
+            "angularWidthDegrees": 13.468017109703101,
+            "rangeM": 82.65549584785558,
+            "occluderIds": [],
+            "score": 0.1562064509822727
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 15.521222860969583,
+            "angularWidthDegrees": 10.034115180276162,
+            "rangeM": 111.17074410590921,
+            "occluderIds": [],
+            "score": 0.3791510855612167
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 11.065420653118265,
+            "angularWidthDegrees": 7.205793370678655,
+            "rangeM": 154.99825358829148,
+            "occluderIds": [
+              "city-ri-prop-218"
+            ],
+            "score": 0.06688598086503234
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 8.311079363417178,
+            "angularWidthDegrees": 5.34093605772835,
+            "rangeM": 209.24233073731145,
+            "occluderIds": [],
+            "score": 0.5942297199499464
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 10.466135210439287,
+            "angularWidthDegrees": 4.245733479793125,
+            "rangeM": 263.28738111756786,
+            "occluderIds": [
+              "city-ri-prop-210",
+              "city-ri-prop-214"
+            ],
+            "score": 0.0493655330622595
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 2.695831664079304,
+            "angularWidthDegrees": 3.4137715323582696,
+            "rangeM": 327.5055094019653,
+            "occluderIds": [
+              "city-ri-prop-214",
+              "city-ri-prop-216"
+            ],
+            "score": 0.06091306793447423
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "visualEvidence": [
+        "docs/art/landmark-previews/RI/john-brown-house-desktop.png",
+        "docs/art/landmark-previews/RI/john-brown-house-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 105,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "notes": "Red-brick Georgian facade reads on the left before the road crest."
+      }
+    },
+    "landmark-city-ri-providence-city-hall": {
+      "raceRef": "Providence, RI — Landmark Run",
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "signature": "bf18e3ff8a1bf349046871ec1da5a6ac363b807e56d9532d9d02cc9af13af0fa",
+      "sourceSha256": "c682241401b42dbea51080d4f81a2d4191394d5d78d44901fa9d81f4469b8d4b",
+      "roadSha256": "5e70049085ca93b505b095045fbaac49cbd1070d1f590a61acdd5cdc6b401327",
+      "placementDetails": {
+        "x": -203.18201849389217,
+        "z": 228.41484549129342,
+        "yaw": 0.7178034866239127,
+        "trackDistance": 5622.138585092487,
+        "trackLateral": 85,
+        "minimumRoadClearanceM": 55.992627896553884,
+        "checkedSegments": 4211,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "sourceReference": {
+        "worldX": -157.82518838171887,
+        "worldZ": 107.35884996542137,
+        "routeDistanceM": 5562,
+        "offsetFromRoadM": 30,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.5704967782529918,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 50.83115019077921,
+            "angularWidthDegrees": 19.87143375133477,
+            "rangeM": 111.63734544255028,
+            "occluderIds": [
+              "city-ri-prop-296"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 40.73205965473527,
+            "angularWidthDegrees": 16.773678782724353,
+            "rangeM": 132.64077728782286,
+            "occluderIds": [
+              "city-ri-prop-294"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 30.744474497174362,
+            "angularWidthDegrees": 13.177392545129067,
+            "rangeM": 169.30627098886313,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 6.937580543675202,
+            "angularWidthDegrees": 10.17940509986778,
+            "rangeM": 219.56136470153544,
+            "occluderIds": [],
+            "score": 0.7224967782529919
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 88.22813864729112,
+            "angularWidthDegrees": 8.719272931513482,
+            "rangeM": 256.5093715760914,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 74.9981064620324,
+            "angularWidthDegrees": 8.416284603023046,
+            "rangeM": 265.7788899602756,
+            "occluderIds": [
+              "city-ri-prop-294"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "visualEvidence": [
+        "docs/art/landmark-previews/RI/city-hall-desktop.png",
+        "docs/art/landmark-previews/RI/city-hall-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 195,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "notes": "Mansard and upper facade read on the turn; two existing props partially obscure the lower facade. Alternative southwest position obscured more of the building."
+      }
+    },
+    "landmark-city-ri-providence-performing-arts-center": {
+      "raceRef": "Providence, RI — Landmark Run",
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "signature": "6dbcd062cad9664ca924536021524e58b58459c1beb838217550d451a270d5ff",
+      "sourceSha256": "6a8a6646d2035a49c761d5aff29a7ce34becf18206b118d6ad43a5af531002cd",
+      "roadSha256": "5e70049085ca93b505b095045fbaac49cbd1070d1f590a61acdd5cdc6b401327",
+      "placementDetails": {
+        "x": -142.26755027652314,
+        "z": 402.64440798360306,
+        "yaw": -1.8173318391084712,
+        "trackDistance": 6160.581097063851,
+        "trackLateral": 24.993668410020835,
+        "minimumRoadClearanceM": 5.055630759300815,
+        "checkedSegments": 4211,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "sourceReference": {
+        "worldX": -80.38337546589314,
+        "worldZ": 437.51928219511177,
+        "routeDistanceM": 6100,
+        "offsetFromRoadM": 32,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.3518437437930735,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 14.738914348524041,
+            "angularWidthDegrees": 15.724552502212621,
+            "rangeM": 86.9845124241445,
+            "occluderIds": [],
+            "score": 0.4104434260590384
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 90.82090523563333,
+            "angularWidthDegrees": 12.371215358012542,
+            "rangeM": 110.82914023474287,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 76.02374451452177,
+            "angularWidthDegrees": 12.137451478987689,
+            "rangeM": 112.98019635011406,
+            "occluderIds": [
+              "city-ri-prop-317",
+              "city-ri-prop-325"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 153.0231868779675,
+            "angularWidthDegrees": 16.231531384902347,
+            "rangeM": 84.23265505335165,
+            "occluderIds": [
+              "city-ri-prop-315"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 117.17565327782133,
+            "angularWidthDegrees": 31.104962268159237,
+            "rangeM": 43.15934747485167,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 0.7649920566491237,
+            "angularWidthDegrees": 14.597458944419149,
+            "rangeM": 93.7827234336691,
+            "occluderIds": [],
+            "score": 0.969400317734035
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "visualEvidence": [
+        "docs/art/landmark-previews/RI/ppac-desktop.png",
+        "docs/art/landmark-previews/RI/ppac-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 75,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "notes": "Terra-cotta facade and unlettered blade marquee read together on the right."
+      }
+    },
+    "landmark-city-sc-charleston-museum": {
+      "raceRef": "Charleston, SC — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-sc-old-exchange-and-provost-dungeon": {
+      "raceRef": "Charleston, SC — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-sc-rainbow-row": {
+      "raceRef": "Charleston, SC — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-sc-emanuel-african-methodist-episcopal-church": {
+      "raceRef": "Charleston, SC — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-sd-falls-park": {
+      "raceRef": "Sioux Falls, SD — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-sd-old-courthouse-museum": {
+      "raceRef": "Sioux Falls, SD — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-sd-pettigrew-home-and-museum": {
+      "raceRef": "Sioux Falls, SD — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-sd-washington-pavilion": {
+      "raceRef": "Sioux Falls, SD — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-tn-tennessee-state-capitol": {
+      "raceRef": "Nashville, TN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-tn-ryman-auditorium": {
+      "raceRef": "Nashville, TN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-tn-union-station-hotel": {
+      "raceRef": "Nashville, TN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-tn-country-music-hall-of-fame": {
+      "raceRef": "Nashville, TN — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-tx-the-alamo": {
+      "raceRef": "San Antonio, TX — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-tx-tower-of-the-americas": {
+      "raceRef": "San Antonio, TX — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-tx-san-fernando-cathedral": {
+      "raceRef": "San Antonio, TX — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-tx-spanish-governors-palace": {
+      "raceRef": "San Antonio, TX — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ut-union-pacific-depot": {
+      "raceRef": "Salt Lake City, UT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ut-utah-state-capitol": {
+      "raceRef": "Salt Lake City, UT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ut-temple-square": {
+      "raceRef": "Salt Lake City, UT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-ut-salt-lake-city-and-county-building": {
+      "raceRef": "Salt Lake City, UT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-va-virginia-museum-of-fine-arts": {
+      "raceRef": "Richmond, VA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-va-virginia-state-capitol": {
+      "raceRef": "Richmond, VA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-va-main-street-station": {
+      "raceRef": "Richmond, VA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-va-poe-museum": {
+      "raceRef": "Richmond, VA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-vt-waterman-building": {
+      "raceRef": "Burlington, VT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-vt-burlington-city-hall": {
+      "raceRef": "Burlington, VT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-vt-flynn-center": {
+      "raceRef": "Burlington, VT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-vt-echo-leahy-center": {
+      "raceRef": "Burlington, VT — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wa-space-needle": {
+      "raceRef": "Seattle, WA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wa-smith-tower": {
+      "raceRef": "Seattle, WA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wa-pike-place-market": {
+      "raceRef": "Seattle, WA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wa-king-street-station": {
+      "raceRef": "Seattle, WA — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wi-pabst-theater": {
+      "raceRef": "Milwaukee, WI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wi-milwaukee-art-museum": {
+      "raceRef": "Milwaukee, WI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wi-milwaukee-city-hall": {
+      "raceRef": "Milwaukee, WI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wi-harley-davidson-museum": {
+      "raceRef": "Milwaukee, WI — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wv-west-virginia-state-capitol": {
+      "raceRef": "Charleston, WV — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wv-clay-center": {
+      "raceRef": "Charleston, WV — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wv-haddad-riverfront-park": {
+      "raceRef": "Charleston, WV — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wv-capitol-market": {
+      "raceRef": "Charleston, WV — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wy-big-boy-steam-engine": {
+      "raceRef": "Cheyenne, WY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wy-wyoming-state-capitol": {
+      "raceRef": "Cheyenne, WY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wy-cheyenne-depot-museum": {
+      "raceRef": "Cheyenne, WY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    },
+    "landmark-city-wy-historic-governors-mansion": {
+      "raceRef": "Cheyenne, WY — Landmark Run",
+      "source": "pending",
+      "savedArtwork": "pending",
+      "definition": "pending",
+      "placement": "pending",
+      "visualQA": "pending"
+    }
+  }
+}

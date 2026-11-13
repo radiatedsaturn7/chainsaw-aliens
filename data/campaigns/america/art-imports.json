@@ -1510,5 +1510,33 @@
     "documentSha256": "93a763c5d3cf1ca08e6f65d5dedadc769fa94c6c1c6993c931025efacae7b172",
     "width": 512,
     "height": 512
+  },
+  "landmark-city-ri-rhode-island-state-house": {
+    "source": "assets/campaign-art/landmarks/RI/landmark-city-ri-rhode-island-state-house.png",
+    "sourceSha256": "0b2152921c949a16619df3ad4be56fea82a469c05b164d873a4936138f9648fb",
+    "documentSha256": "3ff9c98409d62c329cd94db34fafffeee9bea06a82bd95f959d332fd5c584975",
+    "width": 512,
+    "height": 288
+  },
+  "landmark-city-ri-john-brown-house": {
+    "source": "assets/campaign-art/landmarks/RI/landmark-city-ri-john-brown-house.png",
+    "sourceSha256": "9202d8400ca3b5cb2b16f44f5cfec87e5e773cb764832bf506944465fae667b7",
+    "documentSha256": "9e40c3ec517c715c860cff135c38bba950ac2616ca03096483b6f4fc168fdd1e",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ri-providence-city-hall": {
+    "source": "assets/campaign-art/landmarks/RI/landmark-city-ri-providence-city-hall.png",
+    "sourceSha256": "c682241401b42dbea51080d4f81a2d4191394d5d78d44901fa9d81f4469b8d4b",
+    "documentSha256": "b8a1d3c7f2caeff42317c5714a4459413bad398ce4c1f1f2a402cfab30208fcb",
+    "width": 512,
+    "height": 288
+  },
+  "landmark-city-ri-providence-performing-arts-center": {
+    "source": "assets/campaign-art/landmarks/RI/landmark-city-ri-providence-performing-arts-center.png",
+    "sourceSha256": "6a8a6646d2035a49c761d5aff29a7ce34becf18206b118d6ad43a5af531002cd",
+    "documentSha256": "c4dbde7ac2e353096beaea2408d72dc22d38e16c5c3a6fdc1455a69314e71061",
+    "width": 512,
+    "height": 341
   }
 }

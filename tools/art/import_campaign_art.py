@@ -4,7 +4,7 @@ Source PNGs are untouched. Runtime copies use nearest-neighbor sampling to a
 512-pixel maximum edge (1024 for reviewed skyboxes), preserving alpha.
 Only reviewed paths below are eligible; unknown incoming art is never auto-wired.
 """
-import hashlib,json,gzip,base64,time,os
+import hashlib,json,gzip,base64,time,os,argparse
 from pathlib import Path
 import png
 ROOT=Path('data/server-storage/files')
@@ -47,30 +47,36 @@ def save(path,value):
  path.parent.mkdir(parents=True,exist_ok=True)
  temp=path.with_suffix('.tmp');temp.write_text(json.dumps(value,indent=2)+'\n');os.replace(temp,path)
 def encode(doc):return {'__chainsawStorage':'compact-v1','encoding':'json-gzip-base64','data':base64.b64encode(gzip.compress(json.dumps(doc,separators=(',',':')).encode(),mtime=0)).decode()}
-def main():
+def main(argv=()):
+ parser=argparse.ArgumentParser(description=__doc__)
+ parser.add_argument("--only",action="append",default=[],help="Exact reviewed asset name; repeat to import a narrow batch")
+ args=parser.parse_args(argv)
+ unknown=set(args.only)-set(REVIEWED.values())
+ if unknown:parser.error(f"Unknown reviewed asset names: {sorted(unknown)}")
+ reviewed={p:n for p,n in REVIEWED.items() if not args.only or n in args.only}
  index=Path('data/campaigns/america/art-imports.json')
  previous=json.loads(index.read_text()) if index.exists() else {}
  invalid={};decoded={}
  manifest=json.loads((ROOT/'manifest.json').read_text())
  # Check every existing target before writing any output. An edited saved
  # sprite must never be silently replaced by a later generator commit.
- for relative,name in REVIEWED.items():
+ for relative,name in reviewed.items():
   target=ROOT/'art'/name/'document.json'
   if (SOURCES/relative).exists() and target.exists() and digest(target.read_bytes())!=previous.get(name,{}).get('documentSha256'):
    raise RuntimeError(f'Preserve local artwork edits: {target}')
  # Decode changed sources before publishing anything; retain known-good runtime
  # art for malformed generator uploads and report their exact source hashes.
- for relative,name in REVIEWED.items():
+ for relative,name in reviewed.items():
   source=SOURCES/relative
   if not source.exists():continue
   raw=source.read_bytes()
-  if digest(raw)==previous.get(name,{}).get('sourceSha256'):continue
+  if digest(raw)==previous.get(name,{}).get('sourceSha256') and (ROOT/'art'/name/'document.json').exists():continue
   try:
    w,h,rows,info=png.Reader(bytes=raw).asRGBA8();decoded[name]=(w,h,list(rows))
   except Exception as error:
    invalid[name]={'source':source.as_posix(),'sourceSha256':digest(raw),'error':str(error)}
    print(f'Skipped invalid PNG {name}: {error}')
- for relative,name in REVIEWED.items():
+ for relative,name in reviewed.items():
   source=SOURCES/relative
   if not source.exists():continue
   raw=source.read_bytes();sha=digest(raw);target=ROOT/'art'/name/'document.json';old=previous.get(name,{})
@@ -95,5 +101,11 @@ def main():
   previous[name]={'source':source.as_posix(),'sourceSha256':sha,'documentSha256':digest(target.read_bytes()),'width':width,'height':height}
   print(f'Imported {name}: {width}x{height}')
  save(ROOT/'manifest.json',manifest);save(index,previous)
- save(Path('data/campaigns/america/art-import-pending.json'),{'invalidSources':invalid})
-if __name__=='__main__':main()
+ pending=Path('data/campaigns/america/art-import-pending.json')
+ if args.only:
+  old=json.loads(pending.read_text()) if pending.exists() else {'invalidSources':{}}
+  old['invalidSources']={k:v for k,v in old.get('invalidSources',{}).items() if k not in args.only}
+  old['invalidSources'].update(invalid)
+  if not pending.exists() or json.loads(pending.read_text())!=old:save(pending,old)
+ else:save(pending,{'invalidSources':invalid})
+if __name__=='__main__':main(None)

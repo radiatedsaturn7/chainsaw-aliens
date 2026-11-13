@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794605333691,
+  "doodad": {
+    "id": "campaign-landmark-city-ri-john-brown-house",
+    "name": "landmark-city-ri-john-brown-house",
+    "artRef": "landmark-city-ri-john-brown-house",
+    "widthM": 19.519061583577713,
+    "heightM": 13,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 16.591202346041054,
+    "hitboxHeightM": 11.700000000000001,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -2092,6 +2092,34 @@
         }
       ],
       "groundOffsetM": 0.2549
+    },
+    {
+      "name": "landmark-city-ri-rhode-island-state-house",
+      "source": "landmarks/RI/landmark-city-ri-rhode-island-state-house.png",
+      "heightM": 35,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ri-john-brown-house",
+      "source": "landmarks/RI/landmark-city-ri-john-brown-house.png",
+      "heightM": 13,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ri-providence-city-hall",
+      "source": "landmarks/RI/landmark-city-ri-providence-city-hall.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ri-providence-performing-arts-center",
+      "source": "landmarks/RI/landmark-city-ri-providence-performing-arts-center.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

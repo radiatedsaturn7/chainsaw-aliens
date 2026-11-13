@@ -1,0 +1,71 @@
+{
+  "landmark-city-ri-rhode-island-state-house": {
+    "reason": "Rendered review found edge-on dome: face the 150m on-road approach sample, preserving center and conservative square collider clearance.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 150
+  },
+  "landmark-city-ri-john-brown-house": {
+    "reason": "Rendered original approach obscured or off-axis. Geometric shortlist requires re-rendered visual QA.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true
+  },
+  "landmark-city-ri-providence-city-hall": {
+    "reason": "Rendered original approach obscured or off-axis. Geometric shortlist requires re-rendered visual QA.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true
+  },
+  "landmark-city-ri-providence-performing-arts-center": {
+    "reason": "Rendered original approach obscured or off-axis. Geometric shortlist requires re-rendered visual QA.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true
+  }
+}

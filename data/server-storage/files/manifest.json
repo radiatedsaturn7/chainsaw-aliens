@@ -512,7 +512,11 @@
       "catalog-hemlock-rt-2005-body": "art/catalog-hemlock-rt-2005-body/document.json",
       "catalog-hemlock-rt-2005-dashboard": "art/catalog-hemlock-rt-2005-dashboard/document.json",
       "catalog-hawthorn-v-2005-body": "art/catalog-hawthorn-v-2005-body/document.json",
-      "catalog-hawthorn-v-2005-dashboard": "art/catalog-hawthorn-v-2005-dashboard/document.json"
+      "catalog-hawthorn-v-2005-dashboard": "art/catalog-hawthorn-v-2005-dashboard/document.json",
+      "landmark-city-ri-rhode-island-state-house": "art/landmark-city-ri-rhode-island-state-house/document.json",
+      "landmark-city-ri-john-brown-house": "art/landmark-city-ri-john-brown-house/document.json",
+      "landmark-city-ri-providence-city-hall": "art/landmark-city-ri-providence-city-hall/document.json",
+      "landmark-city-ri-providence-performing-arts-center": "art/landmark-city-ri-providence-performing-arts-center/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -760,7 +764,11 @@
       "expanded-tree-hickory-young-01": "doodads/expanded-tree-hickory-young-01/document.json",
       "expanded-tree-river-birch-young-01": "doodads/expanded-tree-river-birch-young-01/document.json",
       "expanded-tree-shortleaf-pine-young-01": "doodads/expanded-tree-shortleaf-pine-young-01/document.json",
-      "expanded-tree-white-oak-young-01": "doodads/expanded-tree-white-oak-young-01/document.json"
+      "expanded-tree-white-oak-young-01": "doodads/expanded-tree-white-oak-young-01/document.json",
+      "landmark-city-ri-rhode-island-state-house": "doodads/landmark-city-ri-rhode-island-state-house/document.json",
+      "landmark-city-ri-john-brown-house": "doodads/landmark-city-ri-john-brown-house/document.json",
+      "landmark-city-ri-providence-city-hall": "doodads/landmark-city-ri-providence-city-hall/document.json",
+      "landmark-city-ri-providence-performing-arts-center": "doodads/landmark-city-ri-providence-performing-arts-center/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",
