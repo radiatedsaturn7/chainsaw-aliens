@@ -1,0 +1,9 @@
+{
+  "method": "Built-in image generation; Ashbaron used only as style and technical layout reference",
+  "originalArtwork": true,
+  "logos": false,
+  "sha256": {
+    "body.png": "6610050829c2c190d14bd22e29457d2b09ac2a353a9927207ca653fd6ea49039",
+    "dashboard.png": "bc2f686ddd8ed17d2ab7b2055224160aa98199ace73f7b2b65a32b5f2c9b368c"
+  }
+}

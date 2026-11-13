@@ -1,0 +1,41 @@
+{
+  "vehicle": "1991 Japan Suzuki Cappuccino E-EA11R CAXF 5MT",
+  "status": "Source facts implemented in Sundew 660 1991 draft; performance and handling estimates are distinguished in import provenance.",
+  "source": "https://www.suzuki.co.jp/suzuki_digital_library/pdf/1_auto/cappuccino/60.pdf",
+  "corroboratingOEM": "https://www.suzuki.co.jp/suzuki_digital_library/1_auto/cappuccino.html",
+  "facts": {
+    "lengthMm": 3295,
+    "widthMm": 1395,
+    "heightMm": 1185,
+    "wheelbaseMm": 2060,
+    "frontTrackMm": 1210,
+    "rearTrackMm": 1210,
+    "groundClearanceMm": 135,
+    "massKg": 700,
+    "displacementCc": 657,
+    "powerPS": 64,
+    "powerRpm": 6500,
+    "torqueKgfM": 8.7,
+    "torqueRpm": 4000,
+    "gears": [
+      3.478,
+      2.021,
+      1.352,
+      1,
+      0.79
+    ],
+    "reverse": 3.26,
+    "final": 5.125,
+    "tires": "165/65R14 78H",
+    "tankL": 30,
+    "drivetrain": "FR/RWD",
+    "suspension": "Double wishbone front and rear"
+  },
+  "cautions": [
+    "OEM PS is metric horsepower; convert64PS to63.125hp, not64bhp.",
+    "8.7kgf m converts85.317855Nm, not87Nm.",
+    "Do not mix1995K6A engine or3AT690kg/700kg variants or UK725kg mass with1991 Japan F6A700kg.",
+    "Redline/limiter/performance/weight split/aero/handling curves not verified.",
+    "Use original logo-free nonexact2994 exterior and cockpit if implemented."
+  ]
+}

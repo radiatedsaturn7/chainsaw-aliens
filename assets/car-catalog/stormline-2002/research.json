@@ -1,0 +1,48 @@
+{
+  "status": "Draft sourced configuration; primary source is related2000model and exact2002 supported secondary",
+  "checkedAt": "2026-11-13",
+  "inspiration": "2002 Japan Nissan Skyline GT-R V-spec II Nur (BNR34) 6MT",
+  "sources": [
+    {
+      "url": "https://www.nissan-global.com/EN/HERITAGE_COLLECTION/280_skyline_gt-r_v-spec_ii.html",
+      "locator": "OEM Heritage no280 is 2000 V-spec II, NOT exact2002 Nur; related-model corroboration only",
+      "fields": [
+        "206kW6800rpm;392Nm4400rpm;2568cc",
+        "1560kg;2665mm wheelbase;1480/1490tracks;245/40ZR18",
+        "4600/1780/1360mm; width differs from exact-year secondary1785mm"
+      ]
+    },
+    {
+      "url": "https://aaajapan.com/auctions/catalog?mdl=330&mnf=2&rec=1507028",
+      "locator": "Exact2002.2Nur secondary catalog read; malformed torque row ignored",
+      "fields": [
+        "1560kg;4600/1785/1360mm;2665mm wheelbase;1480/1490mm tracks",
+        "6MT;ratios3.827/2.360/1.685/1.312/1/.793;reverse3.280",
+        "245/40ZR18;2568cc;280PS206kW6800rpm"
+      ]
+    },
+    {
+      "url": "https://ontecojp.com/catalog/nissan/skyline/1507028",
+      "locator": "Exact2002.2Nur secondary read; shared catalog lineage possible, not independent OEM proof",
+      "fields": [
+        "392Nm4400rpm;206kW6800rpm;1560kg;1785mmwidth"
+      ]
+    },
+    {
+      "url": "https://carimports.auction/ke/specifications/nissan/skyline/gt-r-v-spec-ii-nur/1507028/",
+      "locator": "Exact2002.2Nur secondary mechanical table read; unrelated marketing FAQ excluded",
+      "fields": [
+        "finaldrive3.545; six forward ratios corroborated"
+      ]
+    }
+  ],
+  "estimates": [
+    "Use published206kW (276.25055 mechanical hp), not 280mechanicalhp or unverified higher dyno power;392Nm converted to289.12436lbft.",
+    "Width1785mm chosen exact-year secondary versus1780mm related2000OEM; discrepancy retained, not silently declared resolved. Gearbox/finaldrive are secondary-supported, not directly verified factory manual.",
+    "AWD limited-slip controls are a game approximation; no claim of ATTESA E-TS Pro active torque transfer or HICAS rear steering fidelity.",
+    "8000redline8200limiter850idle, torque interpolation except two published anchors,84%efficiency,shift/launch behavior are provisional.",
+    "57%frontmass,CG.50m,15steering,overhangs,collider subshapes,12cmclearance,suspension/aero/brake/alignment/friction and32psi are development assumptions.",
+    "112mph display represents approximate JDM limiter target; no additional actual governor is implemented here.5.2s0-60 is an unvalidated display estimate, not measured simulation.",
+    "Nominal tire radius.3266m derives from245/40R18. Sprite openings and RHD cockpit placements are artistic calibration."
+  ]
+}

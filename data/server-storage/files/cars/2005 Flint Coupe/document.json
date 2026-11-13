@@ -3515,7 +3515,7 @@
     },
     "tuning": {
       "drivetrain": "fwd",
-      "powerHp": 175,
+      "powerHp": 174,
       "torqueLbFt": 149,
       "weightKg": 1337,
       "frontWeightDistribution": 0.62,
@@ -3724,7 +3724,7 @@
           },
           {
             "rpm": 4750,
-            "torqueLbFt": 149
+            "torqueLbFt": 148.98755409799998
           },
           {
             "rpm": 6000,
@@ -3732,7 +3732,7 @@
           },
           {
             "rpm": 7000,
-            "torqueLbFt": 131
+            "torqueLbFt": 130.79946316691428
           },
           {
             "rpm": 7500,

@@ -1,0 +1,31 @@
+{
+  "inspiration": "2003 German Clio V6 Phase II LHD six-speed RWD",
+  "sources": [
+    {
+      "url": "https://presse.renault.de/82/?lang=deu",
+      "kind": "OEM German April 2003 technical table",
+      "fields": [
+        "{\"kw\": 187, \"powerRpm\": 7150, \"torqueNm\": 300, \"torqueRpm\": 4650, \"cc\": 2946, \"gears\": [3.077, 1.905, 1.387, 1.103, 0.897, 0.756], \"reverse\": 1.741, \"finalDrive\": 4.188, \"topKmh\": 250, \"zeroTo100\": 5.8, \"frontTire\": \"205/40R18\", \"rearTire\": \"245/40R18\", \"lengthM\": 3.841, \"widthM\": 1.83, \"heightM\": 1.356, \"wheelbaseM\": 2.532, \"clearanceM\": 0.12, \"frontTrackM\": 1.518, \"rearTrackM\": 1.476, \"massIncluding75KgDriver\": 1475, \"derivedMassWithoutDriver\": 1400}"
+      ]
+    },
+    {
+      "url": "https://www.cliov6passion.fr/doctechnique/MRphaseII.pdf",
+      "kind": "Archived OEM May 2003 Phase II service supplement NT3681A",
+      "fields": [
+        "Page04A-1 fuel tank approximately61L; model CB1U L7X762.",
+        "Page21A-1 visibly inspected: final16/67; gears13/40,21/40,31/43,39/43,39/35,41/31; reverse27/47. Inverted tooth fractions encode game reduction ratios exactly."
+      ]
+    }
+  ],
+  "estimates": [
+    "Use German187kW rating, not assume254PS or French255PS equals mechanicalhp.",
+    "German1475kg table includes75kgdriver per explicitfootnote;1400kg withoutdriver is subtraction derived, not separately printed.",
+    "Do not mix Phase I205/50R17 tires or1350kg intoPhaseII.",
+    "German187kW converted to mechanical hp, not254/255bhp.1475kg includes75kgdriver, so1400kg is derived withoutdriver.",
+    "0–100km/h5.8s is source target;0–60mph5.6s is a separate game estimate, not measured simulation.",
+    "40percent front mass,.48mCG,.36Cd,15steering,850idle7200redline7500cutoff,32/34psi,alignment,suspension,braking,economy and torque curve away from published anchors are game estimates. Caster6 is not claimed OEM absolute measurement.",
+    "Frontoverhang.8m and rear.509m derived to sum to source length and wheelbase; body collision partitions approximated. Open differential approximation.",
+    "Tank61L confirmed Phase II service supplement; original logo-free eight-angle art and LHD dashboard, shared runtime wheel, fixedrear camera and existing smoke.",
+    "Gear reductions use exact OEM May2003 service tooth counts; German launch decimals are rounded. Final67/16=4.1875 resolves conflicting English press prose4.07."
+  ]
+}

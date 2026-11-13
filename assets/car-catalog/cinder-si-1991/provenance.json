@@ -1,0 +1,54 @@
+{
+  "name": "Cinder Si 1991",
+  "status": "Imported runtime draft; exact-head visual QA and release approval pending",
+  "settingYear": 2994,
+  "realWorldInspiration": "1991 US Honda CRX Si 1.6 SOHC non-VTEC 5MT, not JDM SiR",
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-11-13",
+    "calls": 2,
+    "corrections": 0,
+    "prompts": {
+      "body": "Use case: stylized-concept. Create original game sprite artwork for Cinder Si 1991, a fictional tiny early-1990s Japanese two-seat wedge hatchback, short 2.30m wheelbase, 3.77m length, 1.67m width, low 1.27m roof, inspired by the general proportions of US CRX Si but NOT a replica. Year2994 salvage world: faded burnt-orange paint, black lower bumpers, repaired grey driver door, subtle rust and scrapes, functional intact headlights and dark glass. Distinct original rectangular lamps and hatch design. Body atlas exactly eight complete views in four columns and two rows, landscape3:1. Order top: straightfront, frontthreequarter facingleft, left-facing sideprofile, rearthreequarter facingright. Bottom: straightrear, rearthreequarter facingleft, right-facing sideprofile, frontthreequarter facingright. Each view must have very generous fully transparent gutters, each sprite fully inside its own quarterwidth cell, never cropped. Match consistent body proportions and damage across views, slightly elevated game-view camera, crisp realistic painted sprite shading. Crucially body shells ONLY: REMOVE ALL wheels tires rims hubs axles brakes, show clean empty transparent semicircular wheel wells open downwards, no ground shadows, no floor. All backgrounds true alpha transparent including wheel openings; body opaque. No badges, logos, writing, license lettering, watermark, weapons, snow. No steering wheel imagery. Eight angles exactly.",
+      "dashboard": "Use case: stylized-concept. Original game cockpit overlay for Cinder Si1991 fictional small early1990s two-seat wedge hatchback surviving year2994. Wide2.5:1 PNG with true transparent upper windshield occupying upper55percent, opaque dashboard lower45percent and slim A-pillars on left/right edges. Driver-eye straight ahead left-hand-drive, no road or background scenery. Weathered charcoal textured dashboard with small faded burnt-orange painted trim, screws and subtle repaired seams. Period rectangular vents and angular simple dashboard. Large plain EMPTY matte black instrument binnacle on LEFT in dashboard lower area, wide enough for future separate speed RPM gear overlays; no markings, no gauges, no needles, no instruments baked in. Center simple unmarked radio and heater knobs, right glovebox. NO steeringwheel, NO steeringcolumn, NO wipers, NO rearviewmirror, no logos no badges no manufacturer text no digits no watermark. Not photoreal scene: crisp realistic painterly game-sprite material with consistent natural top lighting, all dashboard opaque and windshield true alpha transparent. Entire dashboard width visible, no intentional ground shadows. Original design not a traced manufacturer dashboard."
+    }
+  },
+  "files": {
+    "body.png": {
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "sha256": "d008b0fdd54edae2e5f1e4dadb23204d724acc1e22abc485fa1987db383f7fa5",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "transparentPixels": 928245,
+      "opaquePixels": 1810
+    },
+    "dashboard.png": {
+      "width": 1983,
+      "height": 793,
+      "mode": "RGBA",
+      "sha256": "0ae4649e89c539714ee5b309c0c2600f7bad08505358b1ce916815381547e377",
+      "alphaExtrema": [
+        0,
+        255
+      ],
+      "transparentPixels": 745441,
+      "opaquePixels": 508
+    }
+  },
+  "review": "Both native generated outputs visually inspected: eight wheel-less burnt-orange wedge hatch views and empty black left dashboard binnacle, no visible logos or license writing, no wheel or wipers baked into dashboard. Originals copied unchanged. Unequal sprite widths require measured atlas boundaries; not blind equal-cell crops. Alpha cleanup and wheel opening tests deferred to runtime importer.",
+  "actualAtlasOrder": [
+    "front",
+    "front threequarter nose left",
+    "profile nose left",
+    "rear threequarter nose right",
+    "rear",
+    "rear threequarter nose left",
+    "profile nose right",
+    "front threequarter nose right"
+  ],
+  "sourceGaps": "Mass choice2174lb corroborated by exact1991 Edmunds,2167lb alternate preserved. Torque/gears secondary-supported rather than OEM-certified; other tuning explicitly estimated in import.json."
+}

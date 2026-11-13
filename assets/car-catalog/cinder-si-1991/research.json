@@ -1,0 +1,89 @@
+{
+  "identity": "1991 US Honda CRX Si 5MT, SOHC non-VTEC",
+  "status": "Runtime draft uses transparent secondary-supported choices. Mass alternate remains documented.",
+  "candidateCheck": {
+    "existing": "honda-cr-x-sir-1991-roster-candidate",
+    "distinction": "Existing unimplemented candidate is JDM SiR, not US Si. No USSi implemented folder found; do not conflate B16 VTEC with D16 SOHC."
+  },
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Honda/Honda_US%20Model%20Range_1991.pdf",
+      "publisher": "American Honda Motor Co",
+      "page": 19,
+      "access": "Downloaded full20page PDF; actual PDFpage19 rendered and visually inspected. PDF text unavailable (scanned).",
+      "sha256": "7ed730bdb9a8d3f5030ed11bbcc2fdba77a060c9fed8f785f975b00d5dd5f9e0",
+      "local": "/tmp/honda91.pdf"
+    },
+    {
+      "url": "https://importarchive.com/brochure/hondacrx1991_01",
+      "title": "1991CRX brochure ZO1049/90",
+      "access": "Viewed scan24 at original400px width; insufficient resolution to certify small numeric cells."
+    },
+    {
+      "url": "https://quickhonda.net/factorySpecs.htm",
+      "kind": "secondary enthusiast transcription",
+      "access": "Actual HTML retrieved and 1991 US CRX table read. 1991 Si:100lb-ft@5000, final4.25, curb2167lb. 1990 table:2174lb. Some transcribed1991 dimension labels plainly incorrect; retain OEM full-line dimensions instead."
+    },
+    {
+      "url": "https://solblu.teamsolmokan.com/gearratiosdseries.htm",
+      "kind": "secondary specialist table",
+      "access": "Actual HTML read. 88-91 Civic Si/CRX Si USDM cableL3:3.250,1.894,1.259,.937,.771;reverse3.153;final4.250. Distinguishes DX3.888/HF2.95."
+    },
+    {
+      "url": "https://japanesecars.cz/media/documents/2026/02/honda_crx_ef_1988-1991.pdf",
+      "kind": "OEM workshop scan, market/year applicability unconfirmed",
+      "access": "681page PDF retrieved; sampled original pages show SOHC/DOHC and KY/KQ market specifications. Not accepted as exact US1991Si evidence."
+    },
+    {
+      "url": "https://www.edmunds.com/honda/civic-crx/1991/st-3861/features-specs/",
+      "kind": "independent secondary automotive reference",
+      "access": "Full exact1991Si page read:2174lb,108hp6000,100lb-ft5000,dimensions matching OEM,4.7in clearance."
+    }
+  ],
+  "verified": {
+    "powerHp": 108,
+    "powerRpm": 6000,
+    "displacementCc": 1590,
+    "engine": "4cylinder SOHC16valve multipoint PGM-FI",
+    "transmission": "5speedmanual with starterinterlock",
+    "suspension": "4wheel doublewishbone with front/rear stabilizerbars",
+    "dimensionsIn": {
+      "wheelbase": 90.6,
+      "length": 148.5,
+      "width": 65.9,
+      "height": 50.1
+    },
+    "tankUsGallons": 11.9,
+    "tires": "185/60R14 82H",
+    "wheels": "14inchalloy",
+    "steering": "rackandpinion",
+    "brakes": "powerassisted4wheeldisc",
+    "equipment": [
+      "powersunroof",
+      "tachometer",
+      "rearwiperwasher",
+      "rearwindowdefroster"
+    ]
+  },
+  "nextSteps": [
+    "Exact-head editor and visual QA; secondary gearbox classification retained."
+  ],
+  "secondarySupported": {
+    "torqueLbFt": 100,
+    "torqueRpm": 5000,
+    "gears": [
+      3.25,
+      1.894,
+      1.259,
+      0.937,
+      0.771
+    ],
+    "reverse": 3.153,
+    "finalDrive": 4.25,
+    "massConflictLb": [
+      2167,
+      2174
+    ],
+    "massDecision": "Choose2174lb per exact-year Edmunds; Automobile-Catalog independently indexed same.2167lb QuickHonda alternate preserved, not declared disproven."
+  }
+}

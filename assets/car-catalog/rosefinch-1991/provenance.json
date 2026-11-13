@@ -1,0 +1,24 @@
+{
+  "inspiration": "1991 JDM Honda Beat E-PP1 E07A 5MT",
+  "sources": [
+    {
+      "url": "https://www.honda.co.jp/factbook/auto/BEAT/19910515/be91-019.html",
+      "fields": [
+        "{\"weightKg\":760,\"cc\":656,\"powerPS\":64,\"powerRpm\":8100,\"torqueKgfM\":6.1,\"torqueRpm\":7000,\"lengthM\":3.295,\"widthM\":1.395,\"heightM\":1.175,\"wheelbaseM\":2.28,\"tracksM\":[1.21,1.21],\"clearanceM\":0.135,\"ratios\":[3.428,2.166,1.576,1.172,0.941],\"reverse\":4.3,\"final\":5.714,\"frontTire\":\"155/65R13\",\"rearTire\":\"165/60R14\",\"tankL\":24,\"layout\":\"mid-engine rear-wheel drive\"}"
+      ]
+    },
+    {
+      "url": "https://www.honda.co.jp/factbook/auto/BEAT/19910515/be91-012.html",
+      "fields": [
+        "{\"cgHeightMUnladen\":0.44,\"weightDistributionWithOneOccupant\":[43,57]}"
+      ]
+    }
+  ],
+  "estimates": [
+    "64 metric PS converted to63.12448 mechanical hp;6.1kgf m converts59.820565Nm then44.132lbft. OEM power anchor8100rpm and torque anchor7000rpm.",
+    "OEM mass760kg. OEM .440m CG is unladen while43/57 distribution is with one occupant; game static parameters approximate the different load conditions.",
+    "8500redline9000limiter950idle, torque interpolation apart from verified anchors,87%efficiency,manual shift and launch behavior,17.5steeringratio,.38Cd,28psi,collider subshapes,suspension/brakes/alignment are modeling estimates.",
+    "87mph nominal kei speed-limit display and13.5sec0\u201360 are unvalidated estimates, not implemented governor or measured game results.",
+    "155/65R13 front and165/60R14 rear give nominal radii.26585/.2768m. Driven rear nominal radius sets legacy scalar; per-axle tire configuration retained. Original wheel/cockpit coordinates are artistic calibration."
+  ]
+}
