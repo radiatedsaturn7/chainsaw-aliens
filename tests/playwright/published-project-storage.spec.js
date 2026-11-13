@@ -235,7 +235,8 @@ test('live Pages application opens the project browser with published levels',as
 
 
 test('generated car dashboard and light artwork packs from the static snapshot',async({page})=>{
- await page.goto(origin+'/test.html');
+ // Use the real manifest, including its pinned remote documentRoot on Pages.
+ await page.goto(origin.replace('/published','/artifact')+'/test.html');
  const result=await page.evaluate(async refs=>{
   const {packRaceArtRefsForRuntime}=await import('./src/ui/raceWorldBakeWorker.js');
   const packed=await packRaceArtRefsForRuntime(refs);
