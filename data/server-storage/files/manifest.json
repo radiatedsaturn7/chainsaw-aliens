@@ -402,7 +402,9 @@
       "catalog-nightcoil-gt-1995-body": "art/catalog-nightcoil-gt-1995-body/document.json",
       "catalog-nightcoil-gt-1995-dashboard": "art/catalog-nightcoil-gt-1995-dashboard/document.json",
       "catalog-briar-xt-2004-body": "art/catalog-briar-xt-2004-body/document.json",
-      "catalog-briar-xt-2004-dashboard": "art/catalog-briar-xt-2004-dashboard/document.json"
+      "catalog-briar-xt-2004-dashboard": "art/catalog-briar-xt-2004-dashboard/document.json",
+      "catalog-sunstriker-gt-1994-body": "art/catalog-sunstriker-gt-1994-body/document.json",
+      "catalog-sunstriker-gt-1994-dashboard": "art/catalog-sunstriker-gt-1994-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -423,7 +425,8 @@
       "2024 Sentinel Sedan": "cars/2024 Sentinel Sedan/document.json",
       "Ember Pod Prototype": "cars/Ember Pod Prototype/document.json",
       "Nightcoil GT 1995": "cars/Nightcoil GT 1995/document.json",
-      "Briar XT 2004": "cars/Briar XT 2004/document.json"
+      "Briar XT 2004": "cars/Briar XT 2004/document.json",
+      "Sunstriker GT 1994": "cars/Sunstriker GT 1994/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
