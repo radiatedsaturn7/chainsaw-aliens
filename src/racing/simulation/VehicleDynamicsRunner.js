@@ -1,3 +1,4 @@
+import { wheelRadiusFor } from '../TireSizes.js';
 import { normalizeCvtTuning } from './CvtTransmissionModel.js';
 import { normalizeElectricTuning } from './ElectricPowertrainModel.js';
 import {contactTireWear,applySuspensionContactDamage,applySuspensionLandingDamage} from './SurfaceWearModel.js';
@@ -985,6 +986,8 @@ export function createVehicleDynamicsConfig(config = {}) {
     frontTrackWidthM: Math.max(0.5, Number(config.frontTrackWidthM || config.trackWidthM) || 1.58),
     rearTrackWidthM: Math.max(0.5, Number(config.rearTrackWidthM || config.trackWidthM) || 1.58),
     wheelRadiusM: Math.max(0.1, Number(config.wheelRadiusM) || 0.337),
+    ...(config.wheelRadiusByWheelM ? {wheelRadiusByWheelM: Object.freeze(Object.fromEntries(RACE_WHEEL_IDS.map(id => [id, Math.max(.1, Math.min(.7, wheelRadiusFor(config, id)))])))} : {}),
+    ...(config.wheelWidthByWheelM ? {wheelWidthByWheelM: Object.freeze({...config.wheelWidthByWheelM})} : {}),
     cgHeightM: Math.max(0.15, Number(config.cgHeightM) || 0.55),
     cgLocationBodyM: Object.freeze({
       x: Number(config.cgLocationBodyM?.x || 0),
@@ -1267,6 +1270,8 @@ export function createVehicleDynamicsConfigFromTuning(tuning = {}, {
     frontTrackWidthM: tuning.trackFrontM || tuning.trackWidthM,
     rearTrackWidthM: tuning.trackRearM || tuning.trackWidthM,
     wheelRadiusM: tuning.wheelRadiusM,
+    wheelRadiusByWheelM: tuning.wheelRadiusByWheelM,
+    wheelWidthByWheelM: tuning.wheelWidthByWheelM,
     cgHeightM: physical?.cgLocationBodyM?.y ?? tuning.cgHeightM,
     bodyLengthM: tuning.lengthM,
     bodyWidthM: tuning.widthM,
@@ -2249,7 +2254,7 @@ export class VehicleDynamicsRunner {
     this.state = createVehicleDynamicsState(initialState);
     if (!initialState.wheelAngularVelocityRadps) {
       RACE_WHEEL_IDS.forEach((wheelId) => {
-        const rollingAngularVelocity = this.state.speedMps / this.config.wheelRadiusM;
+        const rollingAngularVelocity = this.state.speedMps / wheelRadiusFor(this.config, wheelId);
         this.initialState.wheelAngularVelocityRadps[wheelId] = quantize(rollingAngularVelocity);
         this.state.wheelAngularVelocityRadps[wheelId] = quantize(rollingAngularVelocity);
       });
@@ -2483,7 +2488,7 @@ export class VehicleDynamicsRunner {
     if (!nextState.wheelAngularVelocityRadps) {
       RACE_WHEEL_IDS.forEach((wheelId) => {
         this.state.wheelAngularVelocityRadps[wheelId] = quantize(
-          this.state.speedMps / this.config.wheelRadiusM
+          this.state.speedMps / wheelRadiusFor(this.config, wheelId)
         );
       });
     }

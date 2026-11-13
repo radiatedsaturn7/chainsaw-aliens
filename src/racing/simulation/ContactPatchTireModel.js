@@ -1,3 +1,4 @@
+import { wheelRadiusFor } from '../TireSizes.js';
 import { getGamepadSpeedSteeringScale } from './RaceSimulationConfig.js';
 import { RACE_WHEEL_IDS, clamp } from './SimulationMath.js';
 import { PowertrainModel } from './PowertrainModel.js';
@@ -805,7 +806,7 @@ export function calculateWheelContactKinematics({
     : (value) => rotateVectorByQuaternion(value, orientation);
   const staticHubOffset = computationScratch?.staticHubOffset || {};
   staticHubOffset.x = (left ? -0.5 : 0.5) * track;
-  staticHubOffset.y = -config.cgHeightM + config.wheelRadiusM;
+  staticHubOffset.y = -config.cgHeightM + wheelRadiusFor(config, wheelId);
   staticHubOffset.z = front
     ? config.frontAxleDistanceFromCgM : -config.rearAxleDistanceFromCgM;
   const localOffset = computationScratch
@@ -938,7 +939,7 @@ export function calculateWheelContactKinematics({
     contactPoint = addInto(
       computationScratch.contactPoint,
       center,
-      scaleInto(computationScratch.vectorA, normal, -config.wheelRadiusM)
+      scaleInto(computationScratch.vectorA, normal, -wheelRadiusFor(config, wheelId))
     );
     radius = addInto(
       computationScratch.radius,
@@ -989,7 +990,7 @@ export function calculateWheelContactKinematics({
     );
     wheelForward = normalize(projectOnPlane(rawForward, normal), chassisForward);
     wheelLateral = normalize(cross(normal, wheelForward), chassisRight);
-    contactPoint = add(center, scale(normal, -config.wheelRadiusM));
+    contactPoint = add(center, scale(normal, -wheelRadiusFor(config, wheelId)));
     radius = add(contactPoint, scale(vector(state.position), -1));
     angularVelocity = vector(state.angularVelocityWorld, {
       x: 0,
@@ -1009,7 +1010,7 @@ export function calculateWheelContactKinematics({
   }
   const longitudinalVelocityMps = dot(contactVelocity, wheelForward);
   const lateralVelocityMps = dot(contactVelocity, wheelLateral);
-  const effectiveRollingRadiusM = config.wheelRadiusM * clamp(Number(environment.effectiveRadiusScaleByWheel?.[wheelId] ?? 1), 0.82, 1.05);
+  const effectiveRollingRadiusM = wheelRadiusFor(config, wheelId) * clamp(Number(environment.effectiveRadiusScaleByWheel?.[wheelId] ?? 1), 0.82, 1.05);
   const wheelAngularVelocityRadps = Number(state.wheelAngularVelocityRadps?.[wheelId] ?? longitudinalVelocityMps / effectiveRollingRadiusM);
   const rollingSpeedMps = wheelAngularVelocityRadps * effectiveRollingRadiusM;
   const slipRatio = (rollingSpeedMps - longitudinalVelocityMps)
