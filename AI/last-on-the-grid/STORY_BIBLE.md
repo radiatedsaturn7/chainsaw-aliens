@@ -47,6 +47,11 @@ The Pacific coast is the story destination, not necessarily the final listed rac
 - Conflict: Cait presses westward, Rob resists or withdraws. His maintenance of the car can become a loaded argument, not an ownership claim.
 - Ending concept: Rob dies near the destination or before Cait can return; Cait initially leaves, returns too late, and eventually tries to reconstruct him from surviving cells. A possible 10,000-year aftermath has been discussed. **This is a concept, not locked staging.**
 
+## The Other Scientist — Cait's choice [ESTABLISHED CORE / PLACEMENT PROPOSED]
+Rob and Cait find a dead scientist whose android continues its programmed sexual routine without awareness or freedom to choose. The scientist designed the machine to serve his desires; unlike him, Rob wanted genuine companionship and allowed Cait independent judgment. Hostile husks/robots attack. Rob orders Cait to shut a door; she recognizes it will not hold, disobeys, and uses a maintenance lift to block the attackers. **Her disobedience saves Rob's life.** This is the dramatic payoff, not merely the discovery of the other android.
+
+The encounter can take place at a roadside shelter or barn after a race (Laurel Highlands is a possible setting), but the emotional story is independent of the race location. Exact dialogue and action are preserved as review drafts in [The Other Scientist](CAMPAIGN/the-other-scientist.md).
+
 ## Key mysteries [UNRESOLVED]
 - When does the player learn Rob is the last human alive?
 - When does the player learn Rob built Cait to ease his loneliness?
