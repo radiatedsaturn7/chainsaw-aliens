@@ -31,7 +31,7 @@ export class MenuFlow {
         if(this.adapter.newGame){await this.adapter.newGame(target);return;}
         if(!this.document.screens.some(s=>s.id===target))throw Error(`Menu screen not found: ${target}`);
         this.lockedCarRef='';this.newGameSelection=true;this.history=[];delete this.parameters.selectedGameCar;this.goTo(target);break;
-      case 'screen':this.goTo(target);break;
+      case 'screen':this.goTo(target,{remember:!action.replace});break;
       case 'back':{const id=this.history.pop();if(id)this.goTo(id,{remember:false});else this.stop();break;}
       case 'set-param':this.setParameter(action.parameter,resolveMenuValue(action.value,this.parameters));break;
       case 'movie':if(!target)throw Error('Choose a movie first');await this.adapter.playMovie(target,configuration);break;

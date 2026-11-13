@@ -1,0 +1,22 @@
+{
+  "method": "Complete mapped ways from cached OSM extracts; sufficient connected street district for four landmarks. Not a complete city map.",
+  "mapRequests": [
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.19152,39.94089,-75.18508,39.94497",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.18508,39.94089,-75.17865,39.94497",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.19152,39.94497,-75.18508,39.94906",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.18508,39.94497,-75.17865,39.94906",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.17865,39.94089,-75.16577,39.94906",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.19152,39.94906,-75.17865,39.95723",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.17865,39.94906,-75.16577,39.95723",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.16577,39.94089,-75.15290,39.94906",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.15290,39.94089,-75.14003,39.94906",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.16577,39.94906,-75.15290,39.95723",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.15290,39.94906,-75.14003,39.95723",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.19152,39.95723,-75.17865,39.96540",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.17865,39.95723,-75.16577,39.96540",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.19152,39.96540,-75.18508,39.96948",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.18508,39.96540,-75.17865,39.96948",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.19152,39.96948,-75.18508,39.97357",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-75.18508,39.96948,-75.17865,39.97357"
+  ]
+}

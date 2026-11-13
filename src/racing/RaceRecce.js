@@ -3,9 +3,18 @@
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const angle=v=>Math.atan2(Math.sin(v),Math.cos(v));
 const DEG=180/Math.PI;
-export const RECCE_VERSION='steering-recce-v3';
+export const RECCE_VERSION='steering-recce-v5';
 export function steeringSeverity(steerDegrees) {
   return steerDegrees < .65 ? 6 : steerDegrees < 1.25 ? 5 : steerDegrees < 2.3 ? 4 : steerDegrees < 4 ? 3 : steerDegrees < 7 ? 2 : 1;
+}
+
+// A hairpin is a compact reversal, not merely a bend whose accumulated angle
+// reaches 180 degrees. Radius/span keep motorway loops and long sweepers out.
+export function recceTurnShape(turnDegrees,spanM,steeringDeg) {
+  const radiusM=spanM/Math.max(.001,turnDegrees/DEG);
+  if(turnDegrees>=150&&turnDegrees<=220&&spanM<=90&&radiusM<=22&&steeringDeg>=6)
+    return turnDegrees>=165&&radiusM<=10?'Acute':'Hairpin';
+  return turnDegrees>=75&&turnDegrees<=110&&spanM<65&&steeringDeg>=4?'Square':null;
 }
 
 export function analyzeRaceRecce(editor) {
@@ -87,7 +96,7 @@ function buildRecce(editor) {
     const apexCandidates=samples.filter(s=>Math.abs(s.steeringDeg)>=demand*.9);
     const apex=apexCandidates[Math.floor(apexCandidates.length/2)];
     const span=(g.end-g.start)*step;
-    const shape=totalAngle>=150&&demand>=2.3?'Hairpin':totalAngle>=75&&totalAngle<=110&&span<65&&demand>=4?'Square':null;
+    const shape=recceTurnShape(totalAngle,span,demand);
     // With Three's +Y up and forward +Z, increasing yaw bends screen-left.
     const direction=g.sign>0?'Left':'Right';
     const modifiers=[];
@@ -100,7 +109,7 @@ function buildRecce(editor) {
     // Inspect only the inside cutting corridor near the apex, accounting for
     // object width; an outside tree, distant building or harmless grass is not
     // evidence for "don't cut". Do not invent a safe "cut" from missing data.
-    const hazardIds=[];
+    const hazardIds=[],hazardKinds=new Set();let obstructsRoad=false;
     for(const {sprite:s,definition:def} of hazards) {
       const rule=def.defaultRule||{};
       if(rule.behavior==='flatten'&&Number(rule.speedDrainPercent||0)<=0&&!Object.values(rule.damage||{}).some(v=>v>0))continue;
@@ -110,13 +119,27 @@ function buildRecce(editor) {
       const half=Math.max(.1,Number(def.hitboxWidthM||def.widthM||s.widthM)||1.5)/2;
       const roadHalf=editor.getRaceRoadHalfWidthWorld(p.segment);
       if(Math.abs(along)<=Math.min(20,Math.max(8,span*.25))+half&&lateral>0&&lateral+half>=roadHalf-1.5&&lateral-half<=roadHalf+4)
+      {
         hazardIds.push(String(s.id||s.doodadRef||'apex obstacle'));
+        const label=String(def.name||s.doodadRef||s.id||'').toLowerCase();
+        if(/tree|pine|spruce|oak|birch/.test(label))hazardKinds.add('tree in');
+        else if(/rock|boulder/.test(label))hazardKinds.add('rock in');
+        if(lateral-half<roadHalf-.5)obstructsRoad=true;
+      }
     }
-    if(hazardIds.length)modifiers.push("don't cut");
+    if(hazardIds.length){
+      modifiers.push(...hazardKinds,obstructsRoad?"definitely don't cut":"don't cut");
+      if(obstructsRoad)modifiers.push('caution');
+    }
+    // Negative authored banking is adverse camber in RaceSurfaceModel.
+    if(samples.some(s=>Number(s.pose.segment?.banking??s.pose.segment?.bankingDegrees)<-3))modifiers.push('off camber');
+    const widths=samples.map(s=>editor.getRaceRoadHalfWidthWorld(s.pose.segment)*2);
+    if(widths.at(-1)<widths[0]-1.5)modifiers.push('narrows');
+    else if(widths.at(-1)>widths[0]+1.5)modifiers.push('widens');
     const start=samples[0].at,approach=observations[Math.max(0,g.start-Math.ceil(80/step))];
     const minSpeed=samples.reduce((v,s)=>Math.min(v,s.speedMps),Infinity);
     const braking=samples[0].speedMps>minSpeed+4||approach.speedMps>minSpeed+6;
-    const body=`${shape?`${shape} ${direction.toLowerCase()}`:`${direction} ${severity}`}${modifiers.length?' '+modifiers.join(', '):''}`;
+    const body=`${shape?`${shape} ${direction.toLowerCase()}`:`${demand<.3?'Flat '+direction.toLowerCase():direction+' '+severity}`}${modifiers.length?' '+modifiers.join(', '):''}`;
     calls.push({at:Math.round(start),endAt:Math.round(circuit?(g.end*step)%length:g.end*step),apexAt:Math.round(apex.at),direction,severity,shape,
       modifiers,hazardIds,body,text:body,generated:RECCE_VERSION,
       recce:{steeringDeg:Number(demand.toFixed(2)),turnDegrees:Math.round(totalAngle),entrySpeedMps:Number(samples[0].speedMps.toFixed(1)),
@@ -133,6 +156,28 @@ function buildRecce(editor) {
     const turn=calls.find(c=>i*step>=c.at-15&&i*step<=c.at+c.spanM+15);
     if(turn){turn.modifiers.push(`over ${feature.toLowerCase()}`);turn.body+=`, over ${feature.toLowerCase()}`;turn.text+=`, over ${feature.toLowerCase()}`;}
     else calls.push({at:Math.round(i*step),endAt:Math.round(i*step),spanM:0,body:feature,text:feature,kind:feature.toLowerCase(),generated:RECCE_VERSION});
+  }
+  const surfaceNames={asphalt:'tarmac',tarmac:'tarmac',gravel:'gravel',dirt:'dirt',snow:'snow',ice:'ice',mud:'mud',sand:'sand',grass:'grass',concrete:'concrete'};
+  const features=pose=>{
+    const s=pose.segment||{};
+    return {surface:surfaceNames[s.surface]||null,structure:['bridge','tunnel'].includes(s.structure)?s.structure:null,
+      bumps:Number(s.bumpiness)>=.3, junction:s.junction===true||s.junction==='junction'};
+  };
+  let previous=features(poses[0]);
+  for(let i=1;i<count-6;i++){
+    const f=features(poses[i]),stable=features(poses[i+6]);
+    const words=[];
+    if(f.surface&&f.surface!==previous.surface&&f.surface===stable.surface)words.push(`onto ${f.surface}`);
+    if(f.structure&&f.structure!==previous.structure&&f.structure===stable.structure)words.push(f.structure==='bridge'?'over bridge':'through tunnel');
+    if(f.bumps&&!previous.bumps&&stable.bumps)words.push('caution bumps');
+    if(f.junction&&!previous.junction)words.push('at junction');
+    if(words.length){
+      const position=i*step,turn=calls.find(c=>Math.abs(c.at-position)<20);
+      if(turn){(turn.modifiers ||= []).push(...words);turn.body+=', '+words.join(', ');turn.text=turn.body;}
+      else calls.push({at:Math.round(position),endAt:Math.round(position),spanM:0,kind:'caution',body:words.join(', '),text:words.join(', '),generated:RECCE_VERSION});
+    }
+    // Keep the old value until the new section is long enough to call.
+    for(const k of Object.keys(previous))if(f[k]===stable[k]||k==='junction')previous[k]=f[k];
   }
   calls.sort((a,b)=>a.at-b.at);
   for(let i=0;i<calls.length;i++) {
