@@ -550,3 +550,28 @@ test('repeated race error prompts retain the editor or menu instead of entering 
     assert.equal(game.state, origin);
   }
 });
+
+for(const opponents of [false,true])test(`race travel ${opponents?'hydrates opponents':'avoids the full catalog for a solo stage'}`,async()=>{
+ clearCachedProjectFilesForTests();
+ const race={id:'solo-fixture',name:'Solo fixture',competition:{mode:'solo',trafficEnabled:false,aiDrivers:opponents?[{enabled:true}]:[]}};
+ upsertCachedProjectFile('races','Solo fixture',JSON.stringify({version:1,folder:'races',name:'Solo fixture',savedAt:1,data:{race}}));
+ const game=Object.create(Game.prototype);game.state='menu-player';game.showSystemToast=()=>{};
+ game.resolveRaceTravelCarAsync=async()=>({id:'player',name:'Player'});
+ game.captureRaceTravelPlayerState=()=>({});game.transitionTo=state=>{game.state=state;};
+ game.setRevAudio=()=>{};game.prepareRacePlaytestAudio=async()=>true;
+ let catalogLoads=0;
+ game.raceEditor={
+  hydrateSavedRaceCarsForTravel:async()=>{catalogLoads++;return [{id:'opponent'}];},
+  collectRaceCarArtRefs:car=>[car.id+'-art'],
+  loadRaceTravelDocument:async(name,options)=>{
+   assert.deepEqual(options.artRefs,opponents?['player-art','opponent-art']:['player-art']);
+   return {race};
+  },
+  applyLoadedRaceDocument:()=>true,
+  startPlaytest(){this.playtestSession={running:true};}
+ };
+ try{
+  assert.equal(await game.startRaceTravel({raceName:'Solo fixture',carSelection:'specific',carRef:'Player'}),true);
+  assert.equal(catalogLoads,opponents?1:0);
+ }finally{clearCachedProjectFilesForTests();}
+});
