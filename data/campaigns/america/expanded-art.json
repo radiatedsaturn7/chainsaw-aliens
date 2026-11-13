@@ -2820,6 +2820,34 @@
       "heightM": 14,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-mo-old-courthouse",
+      "source": "landmarks/MO/landmark-city-mo-old-courthouse.png",
+      "heightM": 40,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mo-union-station",
+      "source": "landmarks/MO/landmark-city-mo-union-station.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mo-city-museum",
+      "source": "landmarks/MO/landmark-city-mo-city-museum.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mo-fabulous-fox-theatre",
+      "source": "landmarks/MO/landmark-city-mo-fabulous-fox-theatre.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

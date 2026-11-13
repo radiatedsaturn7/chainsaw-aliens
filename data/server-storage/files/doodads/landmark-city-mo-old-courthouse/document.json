@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613708992,
+  "doodad": {
+    "id": "campaign-landmark-city-mo-old-courthouse",
+    "name": "landmark-city-mo-old-courthouse",
+    "artRef": "landmark-city-mo-old-courthouse",
+    "widthM": 60.058651026392965,
+    "heightM": 40,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 51.04985337243402,
+    "hitboxHeightM": 36,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

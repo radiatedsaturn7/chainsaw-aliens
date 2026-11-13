@@ -2238,5 +2238,33 @@
     "documentSha256": "323be512a985a7ba3352e2c57565ae02169b4418b9e67d26d260d1887100cb2c",
     "width": 512,
     "height": 171
+  },
+  "landmark-city-mo-old-courthouse": {
+    "source": "assets/campaign-art/landmarks/MO/landmark-city-mo-old-courthouse.png",
+    "sourceSha256": "b996b4d0d088dcec02d293ecf0a0a3ed03a90b6cec80c95d6d0bee43debd6663",
+    "documentSha256": "3d631f0c5def7ce3e0b1cce9b38fa4dd6b49fc252e393f37a5d7b4e37b631454",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-mo-union-station": {
+    "source": "assets/campaign-art/landmarks/MO/landmark-city-mo-union-station.png",
+    "sourceSha256": "efca31a22d0e249930908be4fe5bec537d6639f0b1b51c6ccff561a1b44834b2",
+    "documentSha256": "8a0d4633d2b0247e031383652c74b201cb6775a399f517837f77bc7b3322110c",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-mo-city-museum": {
+    "source": "assets/campaign-art/landmarks/MO/landmark-city-mo-city-museum.png",
+    "sourceSha256": "1048e817e4a2bfb4e055cda68ce9bb6326d0ddde24a0dd0dd40efae10af27b7c",
+    "documentSha256": "32e67a77822db51217f76cd20fc191ad11da969e532d04728a2d6020df8403dd",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-mo-fabulous-fox-theatre": {
+    "source": "assets/campaign-art/landmarks/MO/landmark-city-mo-fabulous-fox-theatre.png",
+    "sourceSha256": "7def86a2cc0a31894819cfd553d7f8863603e7066a9a8b528477169010f70c2b",
+    "documentSha256": "0654e4603b4a8044a6c33f840da2d665e2903fe2cd7462f311fdefb2fdf8d33b",
+    "width": 512,
+    "height": 341
   }
 }

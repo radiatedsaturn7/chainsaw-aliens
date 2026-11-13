@@ -616,7 +616,11 @@
       "landmark-city-de-chase-center-on-the-riverfront": "art/landmark-city-de-chase-center-on-the-riverfront/document.json",
       "landmark-city-de-grand-opera-house": "art/landmark-city-de-grand-opera-house/document.json",
       "landmark-city-de-delaware-history-museum": "art/landmark-city-de-delaware-history-museum/document.json",
-      "landmark-city-de-rodney-square": "art/landmark-city-de-rodney-square/document.json"
+      "landmark-city-de-rodney-square": "art/landmark-city-de-rodney-square/document.json",
+      "landmark-city-mo-old-courthouse": "art/landmark-city-mo-old-courthouse/document.json",
+      "landmark-city-mo-union-station": "art/landmark-city-mo-union-station/document.json",
+      "landmark-city-mo-city-museum": "art/landmark-city-mo-city-museum/document.json",
+      "landmark-city-mo-fabulous-fox-theatre": "art/landmark-city-mo-fabulous-fox-theatre/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -968,7 +972,11 @@
       "landmark-city-de-chase-center-on-the-riverfront": "doodads/landmark-city-de-chase-center-on-the-riverfront/document.json",
       "landmark-city-de-grand-opera-house": "doodads/landmark-city-de-grand-opera-house/document.json",
       "landmark-city-de-delaware-history-museum": "doodads/landmark-city-de-delaware-history-museum/document.json",
-      "landmark-city-de-rodney-square": "doodads/landmark-city-de-rodney-square/document.json"
+      "landmark-city-de-rodney-square": "doodads/landmark-city-de-rodney-square/document.json",
+      "landmark-city-mo-old-courthouse": "doodads/landmark-city-mo-old-courthouse/document.json",
+      "landmark-city-mo-union-station": "doodads/landmark-city-mo-union-station/document.json",
+      "landmark-city-mo-city-museum": "doodads/landmark-city-mo-city-museum/document.json",
+      "landmark-city-mo-fabulous-fox-theatre": "doodads/landmark-city-mo-fabulous-fox-theatre/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

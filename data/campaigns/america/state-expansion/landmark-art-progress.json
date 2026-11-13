@@ -6059,35 +6059,472 @@
     },
     "landmark-city-mo-old-courthouse": {
       "raceRef": "St. Louis, MO — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 2228.128976990252,
+        "worldZ": 1031.0675009729719,
+        "routeDistanceM": 1293,
+        "offsetFromRoadM": 44,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 5.258705875220886,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 3.6302779959977634,
+            "angularWidthDegrees": 19.68879380322427,
+            "rangeM": 173.05166788304848,
+            "occluderIds": [],
+            "score": 0.8547888801600895
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 3.2543628696808384,
+            "angularWidthDegrees": 17.68633164732114,
+            "rangeM": 193.0156924212511,
+            "occluderIds": [],
+            "score": 0.8698254852127665
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 2.948932286876597,
+            "angularWidthDegrees": 16.05066220145162,
+            "rangeM": 212.9864677721798,
+            "occluderIds": [],
+            "score": 0.8820427085249362
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 2.695874952868251,
+            "angularWidthDegrees": 14.690088331133534,
+            "rangeM": 232.96225779458197,
+            "occluderIds": [],
+            "score": 0.8921650018852699
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.3883941329738443,
+            "angularWidthDegrees": 13.030938092375145,
+            "rangeM": 262.93284509264834,
+            "occluderIds": [],
+            "score": 0.9044642346810462
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 1.8145108810805506,
+            "angularWidthDegrees": 11.323437538021105,
+            "rangeM": 302.9026877574072,
+            "occluderIds": [],
+            "score": 0.927419564756778
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 83.03696234473668,
+            "angularWidthDegrees": 10.67273830563699,
+            "rangeM": 321.48745357020545,
+            "occluderIds": [
+              "city-mo-prop-61",
+              "city-mo-prop-63",
+              "city-mo-prop-67"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 74.42086759237431,
+            "angularWidthDegrees": 10.358757266969139,
+            "rangeM": 331.2877063582058,
+            "occluderIds": [
+              "city-mo-prop-56",
+              "city-mo-prop-68"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "1cb3568d443d32a77fd175789aa89cc22888d6527bb0907d5977e2ad9701800f",
+      "sourceSha256": "b996b4d0d088dcec02d293ecf0a0a3ed03a90b6cec80c95d6d0bee43debd6663",
+      "roadSha256": "14f4e4577f41587577f255c621845d6870440225c9140a85fbc6414f2dade33e",
+      "placementDetails": {
+        "x": 2120.6279028914955,
+        "z": 1192.8005360447014,
+        "yaw": -0.3473216812124687,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1351.5355829141697,
+        "trackLateral": -134.9211630943861,
+        "minimumRoadClearanceM": 90.18386978934933,
+        "checkedSegments": 4652,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-mo-union-station": {
       "raceRef": "St. Louis, MO — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 679.4185188427203,
+        "worldZ": 917.0814242256141,
+        "routeDistanceM": 3047,
+        "offsetFromRoadM": 31,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 2.3173817704474007,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 46.79998247131038,
+            "angularWidthDegrees": 30.697118412304512,
+            "rangeM": 138.44350114082997,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 9.251421136666963,
+            "angularWidthDegrees": 27.09755537152169,
+            "rangeM": 157.68986443356192,
+            "occluderIds": [],
+            "score": 0.6299431545333215
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.284814054232806,
+            "angularWidthDegrees": 24.17344221479767,
+            "rangeM": 177.45481058330606,
+            "occluderIds": [],
+            "score": 0.6686074378306878
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.447749324707344,
+            "angularWidthDegrees": 21.80690932879033,
+            "rangeM": 197.26714481307724,
+            "occluderIds": [],
+            "score": 0.7020900270117063
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.466391439426881,
+            "angularWidthDegrees": 19.00260358866416,
+            "rangeM": 227.04735557977708,
+            "occluderIds": [
+              "city-mo-prop-161"
+            ],
+            "score": 0.08896132109075096
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.499040253704638,
+            "angularWidthDegrees": 16.21024419310348,
+            "rangeM": 266.83091263879294,
+            "occluderIds": [
+              "city-mo-prop-161",
+              "city-mo-prop-165"
+            ],
+            "score": 0.09360460678221774
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.782865699321204,
+            "angularWidthDegrees": 14.127188699933892,
+            "rangeM": 306.6707858296764,
+            "occluderIds": [
+              "city-mo-prop-161",
+              "city-mo-prop-165"
+            ],
+            "score": 0.09704224464325822
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 4.13896280094634,
+            "angularWidthDegrees": 12.167882893133886,
+            "rangeM": 356.520610125201,
+            "occluderIds": [
+              "city-mo-prop-155",
+              "city-mo-prop-159",
+              "city-mo-prop-161",
+              "city-mo-prop-165"
+            ],
+            "score": 0.10013297855545757
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "e1581f84370ec2fb07c612b37c1b9e671319b2a0ab75f4127613651e3e59b1d4",
+      "sourceSha256": "efca31a22d0e249930908be4fe5bec537d6639f0b1b51c6ccff561a1b44834b2",
+      "roadSha256": "14f4e4577f41587577f255c621845d6870440225c9140a85fbc6414f2dade33e",
+      "placementDetails": {
+        "x": 570.3069774077111,
+        "z": 832.3311128162819,
+        "yaw": -1.962119260778042,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3095.9770413013907,
+        "trackLateral": -134.85649731507837,
+        "minimumRoadClearanceM": 80.47739925042744,
+        "checkedSegments": 4652,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MO/union-station-desktop.png",
+        "docs/art/landmark-previews/MO/union-station-mobile.png"
+      ]
     },
     "landmark-city-mo-city-museum": {
       "raceRef": "St. Louis, MO — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1266.9056432597624,
+        "worldZ": 144.48688725552122,
+        "routeDistanceM": 4415,
+        "offsetFromRoadM": 40,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.2021013643728287,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 10.400467987159523,
+            "angularWidthDegrees": 16.249993200710634,
+            "rangeM": 157.7543708187673,
+            "occluderIds": [],
+            "score": 0.5839812805136191
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 9.287376894089668,
+            "angularWidthDegrees": 14.465897672365958,
+            "rangeM": 177.45917495959918,
+            "occluderIds": [],
+            "score": 0.6285049242364134
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.349641057200506,
+            "angularWidthDegrees": 13.029380200768694,
+            "rangeM": 197.22341699636695,
+            "occluderIds": [],
+            "score": 0.6660143577119797
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.582895875168353,
+            "angularWidthDegrees": 11.849124184149446,
+            "rangeM": 217.03085913198797,
+            "occluderIds": [],
+            "score": 0.6966841649932659
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.663799959765786,
+            "angularWidthDegrees": 10.428278618593703,
+            "rangeM": 246.80026446315495,
+            "occluderIds": [],
+            "score": 0.7334480016093685
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.735700977462015,
+            "angularWidthDegrees": 8.987533993950272,
+            "rangeM": 286.5676303485136,
+            "occluderIds": [
+              "city-mo-prop-242"
+            ],
+            "score": 0.09246863530818232
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 91.56522957005028,
+            "angularWidthDegrees": 8.278100352595319,
+            "rangeM": 311.2235036457493,
+            "occluderIds": [
+              "city-mo-prop-233",
+              "city-mo-prop-236",
+              "city-mo-prop-238",
+              "city-mo-prop-240",
+              "city-mo-prop-242",
+              "city-mo-prop-244"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 82.59927101216914,
+            "angularWidthDegrees": 8.21326684610716,
+            "rangeM": 313.68875976754606,
+            "occluderIds": [
+              "city-mo-prop-231",
+              "city-mo-prop-246"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "668bdadce9a94e9680b574a2de36a38c0eff43bcb34cab0a49e6aa3aab813f2b",
+      "sourceSha256": "1048e817e4a2bfb4e055cda68ce9bb6326d0ddde24a0dd0dd40efae10af27b7c",
+      "roadSha256": "14f4e4577f41587577f255c621845d6870440225c9140a85fbc6414f2dade33e",
+      "placementDetails": {
+        "x": 1210.5735855975659,
+        "z": 399.00052211313016,
+        "yaw": -0.3928642566581064,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4565.33885609718,
+        "trackLateral": -134.99999999999997,
+        "minimumRoadClearanceM": 102.42672687632967,
+        "checkedSegments": 4652,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-mo-fabulous-fox-theatre": {
       "raceRef": "St. Louis, MO — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -1509.9801021620851,
+        "worldZ": -458.3905987547128,
+        "routeDistanceM": 7419,
+        "offsetFromRoadM": 61,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.161726218217391,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 63.47166934726817,
+            "angularWidthDegrees": 23.606555030462033,
+            "rangeM": 100.59084561093523,
+            "occluderIds": [
+              "city-mo-prop-411"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 54.192513912125065,
+            "angularWidthDegrees": 21.451267283434483,
+            "rangeM": 110.97583248638291,
+            "occluderIds": [
+              "city-mo-prop-411"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 46.66083824998,
+            "angularWidthDegrees": 19.281624738144043,
+            "rangeM": 123.74470793061474,
+            "occluderIds": [
+              "city-mo-prop-411"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 40.62073467559174,
+            "angularWidthDegrees": 17.29231600727111,
+            "rangeM": 138.23845432832795,
+            "occluderIds": [
+              "city-mo-prop-409",
+              "city-mo-prop-411"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 33.70418963391395,
+            "angularWidthDegrees": 14.769249850817722,
+            "rangeM": 162.18984815397516,
+            "occluderIds": [
+              "city-mo-prop-407"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 18.647079864026495,
+            "angularWidthDegrees": 12.178431869745458,
+            "rangeM": 197.0450213260561,
+            "occluderIds": [
+              "city-mo-prop-405"
+            ],
+            "score": 0.030494016652672824
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 9.271634794950211,
+            "angularWidthDegrees": 10.170254798109132,
+            "rangeM": 236.22290473270795,
+            "occluderIds": [],
+            "score": 0.6291346082019915
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 8.147560165931825,
+            "angularWidthDegrees": 8.41646034764043,
+            "rangeM": 285.68329167505004,
+            "occluderIds": [],
+            "score": 0.674097593362727
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "b38b95bf9f6d447ebc5df976c1ed617959596734ca8971008b2673948c149f06",
+      "sourceSha256": "7def86a2cc0a31894819cfd553d7f8863603e7066a9a8b528477169010f70c2b",
+      "roadSha256": "14f4e4577f41587577f255c621845d6870440225c9140a85fbc6414f2dade33e",
+      "placementDetails": {
+        "x": -1540.6742392936262,
+        "z": -649.4962252146344,
+        "yaw": -2.7925918231860813,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 7539.07208225236,
+        "trackLateral": 90.00000000000009,
+        "minimumRoadClearanceM": 59.23161175124103,
+        "checkedSegments": 4652,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MO/fabulous-fox-theatre-desktop.png",
+        "docs/art/landmark-previews/MO/fabulous-fox-theatre-mobile.png"
+      ]
     },
     "landmark-city-ms-mississippi-state-capitol": {
       "raceRef": "Jackson, MS — Landmark Run",
