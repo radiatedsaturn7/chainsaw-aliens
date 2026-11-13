@@ -1,0 +1,78 @@
+{
+  "fictionalName": "Boxelder 2005",
+  "inspiration": "2005 US Scion xB standard production 5MT LHD, not Release Series/AT/Japanese bB",
+  "status": "Brochure primary anchors verified; individual gears secondary corroborated only.",
+  "sources": {
+    "brochure": "https://xr793.com/wp-content/uploads/2022/01/2005-Scion-xB.pdf",
+    "epa": "https://www.epa.gov/sites/default/files/2016-09/documents/05major_mfr_ld_testresults_condensed.pdf",
+    "secondaryGears": "https://www.scionlife.com/forums/scion-xb-1st-gen-owners-lounge-1602/tech-specs-xb-transmissions-9634/",
+    "secondaryCorroboration": "https://ecomodder.com/forum/showthread.php/scion-xb-gen-i-gearing-conversion-corolla-3-a-31908.html",
+    "laterOemFinalOnly": "https://pressroom.toyota.com/2010-sema-show-yaris-gt-s-club-racer/"
+  },
+  "sourceInspection": "OEM brochure fullPDF and page10 screenshot visually inspected. EPA2005 index identifies1497cc M5 axle4.31. Later OEMcustomYaris index says xB final4.312 but exactdonoryear unspecified/directopen403. Gear sources are secondary transcriptions/owner swap, NOT independently verified OEM tables.",
+  "verifiedBrochure": {
+    "engine": "NA gasoline DOHC16valve VVT-i I4",
+    "cc": 1497,
+    "compression": 10.5,
+    "powerHp": 108,
+    "powerRpm": 6000,
+    "torqueLbFt": 105,
+    "torqueRpm": 4200,
+    "drive": "FWD",
+    "speeds": 5,
+    "curbMassLb": 2395,
+    "massConvention": "OEMcurb; driver/fuel accounting unspecified. AT2450lb excluded. EPA2750lbETW is NOTcurb.",
+    "tires": "P185/60R15 all-season steel wheels",
+    "wheelbaseIn": 98.4,
+    "lengthIn": 155.3,
+    "widthIn": 66.5,
+    "heightIn": 64.6,
+    "frontTrackIn": 57.3,
+    "rearTrackIn": 56.3,
+    "clearanceIn": 6.1,
+    "clearanceLoad": "unknown",
+    "fuelUSgal": 11.9,
+    "turningCircleFt": 36.1,
+    "suspension": "frontMacPherson/reartorsionbeam, bothstabilizerbars",
+    "brakes": "ventilatedfrontdisc/reardrum ABS",
+    "gauges": "center-mounted speedometer and tachometer"
+  },
+  "derived": {
+    "massKg": 1086.35372615,
+    "torqueNm": 142.36088457479698,
+    "wheelbaseM": 2.4993600000000002,
+    "lengthM": 3.94462,
+    "widthM": 1.6890999999999998,
+    "heightM": 1.6408399999999999,
+    "frontTrackM": 1.45542,
+    "rearTrackM": 1.4300199999999998,
+    "nominalUnloadedTireRadiusM": 0.3015,
+    "fuelL": 45.0464002296
+  },
+  "provisionalGearing": {
+    "forward": [
+      3.545,
+      1.904,
+      1.31,
+      0.969,
+      0.815
+    ],
+    "reverse": 3.25,
+    "final": 4.312,
+    "classification": "Corroborated secondary evidence, NOT exact2005 primary verified. EPA roundsfinal4.31.",
+    "gearboxCode": "C50 secondary; some early dealer transcriptions sayC150; not settled by inspectedprimary."
+  },
+  "unknown": [
+    "redline/fuelcut",
+    "idle exactyear",
+    "frontweightfraction",
+    "CGheight",
+    "Cd/frontalarea",
+    "torquecurve",
+    "absolute springs/dampers",
+    "primary individualgear table"
+  ],
+  "duplicateCheck": "No Scion/xB match in inspectedcopperwing-work research.json/sharedcar-next. Recheck staging beforeimport.",
+  "artNotes": "Original logo-free2994; 8directions/sharedwheels. OEM centerpod must remain documented; parent authorizes original fictional driver binnacle for legibility with centerdisplay, not replica.",
+  "implementationNotes": "Nohybrid mechanism. Labelgearingprovisional ifused; neverinventOEMstatus. Noart/code/map edits."
+}
