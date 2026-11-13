@@ -1,0 +1,57 @@
+{
+  "status": "Implemented on isolated draft branch; exact-head runtime QA pending.",
+  "variant": "1991 May JDM Honda Beat E-PP1 E07A 5MT",
+  "sources": [
+    {
+      "url": "https://www.honda.co.jp/factbook/auto/BEAT/19910515/be91-019.html",
+      "read": true,
+      "facts": {
+        "weightKg": 760,
+        "cc": 656,
+        "powerPS": 64,
+        "powerRpm": 8100,
+        "torqueKgfM": 6.1,
+        "torqueRpm": 7000,
+        "lengthM": 3.295,
+        "widthM": 1.395,
+        "heightM": 1.175,
+        "wheelbaseM": 2.28,
+        "tracksM": [
+          1.21,
+          1.21
+        ],
+        "clearanceM": 0.135,
+        "ratios": [
+          3.428,
+          2.166,
+          1.576,
+          1.172,
+          0.941
+        ],
+        "reverse": 4.3,
+        "final": 5.714,
+        "frontTire": "155/65R13",
+        "rearTire": "165/60R14",
+        "tankL": 24,
+        "layout": "mid-engine rear-wheel drive"
+      }
+    },
+    {
+      "url": "https://www.honda.co.jp/factbook/auto/BEAT/19910515/be91-012.html",
+      "read": true,
+      "facts": {
+        "cgHeightMUnladen": 0.44,
+        "weightDistributionWithOneOccupant": [
+          43,
+          57
+        ]
+      }
+    }
+  ],
+  "cautions": [
+    "64 PS is metric horsepower; convert to mechanical hp, do not label as64bhp.",
+    "6.1 kgf m converts59.820565Nm, not61Nm.",
+    "OEM .440m CG is unladen while43/57 weight distribution includes one occupant. Record those conditions; game static values approximate loaded/unloaded differences.",
+    "Front/rear staggered wheel diameter and tire radius need actual per-axle configuration, not cosmetic only."
+  ]
+}
