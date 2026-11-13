@@ -1,0 +1,1333 @@
+{
+  "car": {
+    "id": "nightcoil-gt-1995",
+    "name": "Nightcoil GT 1995",
+    "class": "road",
+    "art": {
+      "body": null,
+      "artRef": null,
+      "shell": null,
+      "tires": [],
+      "spoilers": [],
+      "turnFrames": {
+        "left": null,
+        "center": null,
+        "right": null
+      },
+      "shellFrames": {
+        "mode": "8-way",
+        "artRef": null,
+        "slots": {
+          "front": null,
+          "frontRight": null,
+          "right": null,
+          "rearRight": null,
+          "rear": null,
+          "rearLeft": null,
+          "left": null,
+          "frontLeft": null
+        },
+        "reverseFrameIndex": null
+      },
+      "tireTreads": {
+        "tarmac": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "rain": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "dirt": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "offroad": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "drift": {
+          "artRef": null,
+          "frameIndex": 0
+        },
+        "snow": {
+          "artRef": null,
+          "frameIndex": 0
+        }
+      },
+      "interior": {
+        "dashboard": {
+          "artRef": null,
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0
+        },
+        "steeringWheel": {
+          "artRef": "steeringwheel",
+          "frameIndex": 0,
+          "scaleX": 1,
+          "scaleY": 1,
+          "offsetX": 0,
+          "offsetY": 0,
+          "centerX": 0.498046875,
+          "centerY": 0.5448717948717948,
+          "coordinateSpace": "dashboard",
+          "anchorX": 0.2395360564800807,
+          "anchorY": 1,
+          "width": 0.11901159858799798
+        },
+        "wipers": {
+          "artRef": "windshieldwiper",
+          "frameIndex": 0,
+          "pivotX": 0,
+          "pivotY": 0.5,
+          "width": 0.35640000000000005,
+          "parkAngle": -5,
+          "sweepAngle": -80,
+          "cycleSeconds": 1.6,
+          "mounts": [
+            {
+              "x": 0.16,
+              "y": 0.755
+            },
+            {
+              "x": 0.56,
+              "y": 0.755
+            }
+          ]
+        }
+      },
+      "addOns": [],
+      "tireSurfaces": {
+        "tread": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 0,
+          "region": {
+            "x": 138,
+            "y": 27,
+            "width": 158,
+            "height": 379
+          },
+          "bounds": {
+            "x": 138.5,
+            "y": 27.5,
+            "width": 157,
+            "height": 378
+          }
+        },
+        "wheel": {
+          "artRef": "8582 tires 3",
+          "frameIndex": 2,
+          "region": {
+            "x": 218,
+            "y": 213,
+            "radius": 204.24005483743878
+          },
+          "bounds": {
+            "x": 13.760045162561227,
+            "y": 8.760045162561227,
+            "width": 408.47990967487755,
+            "height": 408.47990967487755
+          }
+        }
+      },
+      "angleLayers": {
+        "front": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "frontRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "right": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "rearRight": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rear": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "rearLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        },
+        "left": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 2,
+            "region": {
+              "x": 218,
+              "y": 213,
+              "radius": 204.24005483743878
+            },
+            "bounds": {
+              "x": 13.760045162561227,
+              "y": 8.760045162561227,
+              "width": 408.47990967487755,
+              "height": 408.47990967487755
+            }
+          }
+        },
+        "frontLeft": {
+          "tires": {
+            "tireMode": "auto",
+            "cylinder": true,
+            "artRef": "8582 tires 3",
+            "frameIndex": 0,
+            "region": {
+              "x": 138,
+              "y": 27,
+              "width": 158,
+              "height": 379
+            },
+            "bounds": {
+              "x": 138.5,
+              "y": 27.5,
+              "width": 157,
+              "height": 378
+            }
+          }
+        }
+      },
+      "smoke": {
+        "asphalt": "burnoutsmoke",
+        "wet-asphalt": "waterspray",
+        "water": "waterspray",
+        "dirt": "dirtsmoke",
+        "mud": "dirtsmoke",
+        "gravel": "gravelsmoke",
+        "wet-gravel": "gravelsmoke",
+        "grass": "dirtsmoke",
+        "sand": "dirtsmoke",
+        "rock-solid": "gravelsmoke",
+        "snow": "snowsmoke",
+        "slush": "snowsmoke",
+        "ice": "snowsmoke",
+        "skidSmoke": "burnoutsmoke",
+        "dirtDust": "dirtsmoke",
+        "gravelDust": "gravelsmoke",
+        "grassDust": "dirtsmoke",
+        "snowDust": "snowsmoke",
+        "wetSpray": "waterspray"
+      },
+      "gauges": {
+        "interior": {
+          "coordinateSpace": "dashboard",
+          "enabled": true,
+          "widgets": [
+            {
+              "opacity": 1,
+              "damageArtTint": false,
+              "artCrop": null,
+              "mapScreenX": 0,
+              "mapScreenY": 0,
+              "mapScreenWidth": 1,
+              "mapScreenHeight": 1,
+              "mapOpacity": 1,
+              "mapOrientation": "north",
+              "mapProjection": "flat",
+              "mapPitch": 45,
+              "mapPlayerY": 0.75,
+              "mapMode": "whole",
+              "mapRangeM": 300,
+              "mapLineColor": "#d9e6d2",
+              "mapLineWidth": 2,
+              "mapLineBorderColor": "#101916",
+              "mapLineBorderWidth": 1,
+              "mapBorderColor": "#101916",
+              "mapBorderWidth": 0,
+              "playerMarkerShape": "circle",
+              "playerMarkerColor": "#58d6ff",
+              "playerMarkerSize": 10,
+              "carMarkerShape": "circle",
+              "carMarkerColor": "#f2d45c",
+              "carMarkerSize": 6,
+              "startMarkerShape": "square",
+              "startMarkerColor": "#61e79a",
+              "startMarkerSize": 6,
+              "finishMarkerShape": "square",
+              "finishMarkerColor": "#ff4f4f",
+              "finishMarkerSize": 6,
+              "circuitMarkerShape": "line",
+              "circuitMarkerColor": "#ffd34d",
+              "circuitMarkerSize": 10,
+              "carMarkerArtRef": "",
+              "startMarkerArtRef": "",
+              "finishMarkerArtRef": "",
+              "circuitMarkerArtRef": "",
+              "tachometer": {
+                "displayMode": "needle",
+                "darkColor": "#252525",
+                "darkOpacity": 1,
+                "majorCutout": false,
+                "minorCutout": false,
+                "autoScale": true,
+                "autoRedline": true,
+                "redline": 6500,
+                "showFace": true,
+                "safeColor": "#ffffff",
+                "dangerColor": "#ff3030",
+                "arcWidth": 8,
+                "radius": 0.9,
+                "majorInterval": 1000,
+                "minorInterval": 100,
+                "majorLength": 0.16,
+                "minorLength": 0.08,
+                "majorWidth": 2,
+                "minorWidth": 1,
+                "majorColor": "#ffffff",
+                "minorColor": "#bbbbbb",
+                "showLabels": true,
+                "labelRadius": 0.65,
+                "labelDivisor": 1000,
+                "font": {
+                  "fontFamily": "monospace",
+                  "fontData": "",
+                  "fontFileName": "",
+                  "fontSize": 10,
+                  "fontWeight": 400,
+                  "fontItalic": false,
+                  "fontUnderline": false,
+                  "textColor": "#ffffff",
+                  "outline": 1
+                }
+              },
+              "fuelIconArtRef": "",
+              "fuelShowIcon": true,
+              "fuelIconOffsetX": 0,
+              "fuelIconOffsetY": 0,
+              "fuelIconScale": 1,
+              "fuelIconAngle": null,
+              "safeArcArtRef": "",
+              "dangerArcArtRef": "",
+              "id": "cockpit-speed",
+              "source": "speed",
+              "format": "number",
+              "textAlign": "center",
+              "name": "Speed (MPH)",
+              "enabled": true,
+              "x": 0.11497730711043873,
+              "y": 0.7061790668348046,
+              "width": 0.08184568835098337,
+              "height": 0.11122320302648171,
+              "min": 0,
+              "max": 200,
+              "units": "MPH",
+              "color": "#ffcc79",
+              "background": "rgba(0,0,0,0)",
+              "fontFamily": "monospace",
+              "fontData": "",
+              "fontFileName": "",
+              "fontSize": 20,
+              "fontWeight": 700,
+              "fontItalic": false,
+              "fontUnderline": false,
+              "textColor": "#ffcc79",
+              "outline": 0,
+              "highBeamArtRef": "",
+              "markerArtRef": "",
+              "artRef": "",
+              "needleArtRef": "",
+              "overlayArtRef": "",
+              "frameIndex": 0,
+              "startAngle": 135,
+              "sweepAngle": 270,
+              "needlePivotX": 0.5,
+              "needlePivotY": 0.85,
+              "lapTextTemplate": "",
+              "progressTextTemplate": "",
+              "textTemplate": "",
+              "showValue": true,
+              "vertical": false
+            },
+            {
+              "opacity": 1,
+              "damageArtTint": false,
+              "artCrop": null,
+              "mapScreenX": 0,
+              "mapScreenY": 0,
+              "mapScreenWidth": 1,
+              "mapScreenHeight": 1,
+              "mapOpacity": 1,
+              "mapOrientation": "north",
+              "mapProjection": "flat",
+              "mapPitch": 45,
+              "mapPlayerY": 0.75,
+              "mapMode": "whole",
+              "mapRangeM": 300,
+              "mapLineColor": "#d9e6d2",
+              "mapLineWidth": 2,
+              "mapLineBorderColor": "#101916",
+              "mapLineBorderWidth": 1,
+              "mapBorderColor": "#101916",
+              "mapBorderWidth": 0,
+              "playerMarkerShape": "circle",
+              "playerMarkerColor": "#58d6ff",
+              "playerMarkerSize": 10,
+              "carMarkerShape": "circle",
+              "carMarkerColor": "#f2d45c",
+              "carMarkerSize": 6,
+              "startMarkerShape": "square",
+              "startMarkerColor": "#61e79a",
+              "startMarkerSize": 6,
+              "finishMarkerShape": "square",
+              "finishMarkerColor": "#ff4f4f",
+              "finishMarkerSize": 6,
+              "circuitMarkerShape": "line",
+              "circuitMarkerColor": "#ffd34d",
+              "circuitMarkerSize": 10,
+              "carMarkerArtRef": "",
+              "startMarkerArtRef": "",
+              "finishMarkerArtRef": "",
+              "circuitMarkerArtRef": "",
+              "tachometer": {
+                "displayMode": "needle",
+                "darkColor": "#252525",
+                "darkOpacity": 1,
+                "majorCutout": false,
+                "minorCutout": false,
+                "autoScale": true,
+                "autoRedline": true,
+                "redline": 6500,
+                "showFace": true,
+                "safeColor": "#ffffff",
+                "dangerColor": "#ff3030",
+                "arcWidth": 8,
+                "radius": 0.9,
+                "majorInterval": 1000,
+                "minorInterval": 100,
+                "majorLength": 0.16,
+                "minorLength": 0.08,
+                "majorWidth": 2,
+                "minorWidth": 1,
+                "majorColor": "#ffffff",
+                "minorColor": "#bbbbbb",
+                "showLabels": true,
+                "labelRadius": 0.65,
+                "labelDivisor": 1000,
+                "font": {
+                  "fontFamily": "monospace",
+                  "fontData": "",
+                  "fontFileName": "",
+                  "fontSize": 10,
+                  "fontWeight": 400,
+                  "fontItalic": false,
+                  "fontUnderline": false,
+                  "textColor": "#ffffff",
+                  "outline": 1
+                }
+              },
+              "fuelIconArtRef": "",
+              "fuelShowIcon": true,
+              "fuelIconOffsetX": 0,
+              "fuelIconOffsetY": 0,
+              "fuelIconScale": 1,
+              "fuelIconAngle": null,
+              "safeArcArtRef": "",
+              "dangerArcArtRef": "",
+              "id": "cockpit-rpm",
+              "source": "rpm",
+              "format": "number",
+              "textAlign": "center",
+              "name": "Engine RPM",
+              "enabled": true,
+              "x": 0.19984871406959154,
+              "y": 0.7061790668348046,
+              "width": 0.11928895612708017,
+              "height": 0.11122320302648171,
+              "min": 0,
+              "max": 8000,
+              "units": "",
+              "color": "#ffcc79",
+              "background": "rgba(0,0,0,0)",
+              "fontFamily": "monospace",
+              "fontData": "",
+              "fontFileName": "",
+              "fontSize": 20,
+              "fontWeight": 700,
+              "fontItalic": false,
+              "fontUnderline": false,
+              "textColor": "#ffcc79",
+              "outline": 0,
+              "highBeamArtRef": "",
+              "markerArtRef": "",
+              "artRef": "",
+              "needleArtRef": "",
+              "overlayArtRef": "",
+              "frameIndex": 0,
+              "startAngle": 135,
+              "sweepAngle": 270,
+              "needlePivotX": 0.5,
+              "needlePivotY": 0.85,
+              "lapTextTemplate": "",
+              "progressTextTemplate": "",
+              "textTemplate": "",
+              "showValue": true,
+              "vertical": false
+            },
+            {
+              "opacity": 1,
+              "damageArtTint": false,
+              "artCrop": null,
+              "mapScreenX": 0,
+              "mapScreenY": 0,
+              "mapScreenWidth": 1,
+              "mapScreenHeight": 1,
+              "mapOpacity": 1,
+              "mapOrientation": "north",
+              "mapProjection": "flat",
+              "mapPitch": 45,
+              "mapPlayerY": 0.75,
+              "mapMode": "whole",
+              "mapRangeM": 300,
+              "mapLineColor": "#d9e6d2",
+              "mapLineWidth": 2,
+              "mapLineBorderColor": "#101916",
+              "mapLineBorderWidth": 1,
+              "mapBorderColor": "#101916",
+              "mapBorderWidth": 0,
+              "playerMarkerShape": "circle",
+              "playerMarkerColor": "#58d6ff",
+              "playerMarkerSize": 10,
+              "carMarkerShape": "circle",
+              "carMarkerColor": "#f2d45c",
+              "carMarkerSize": 6,
+              "startMarkerShape": "square",
+              "startMarkerColor": "#61e79a",
+              "startMarkerSize": 6,
+              "finishMarkerShape": "square",
+              "finishMarkerColor": "#ff4f4f",
+              "finishMarkerSize": 6,
+              "circuitMarkerShape": "line",
+              "circuitMarkerColor": "#ffd34d",
+              "circuitMarkerSize": 10,
+              "carMarkerArtRef": "",
+              "startMarkerArtRef": "",
+              "finishMarkerArtRef": "",
+              "circuitMarkerArtRef": "",
+              "tachometer": {
+                "displayMode": "needle",
+                "darkColor": "#252525",
+                "darkOpacity": 1,
+                "majorCutout": false,
+                "minorCutout": false,
+                "autoScale": true,
+                "autoRedline": true,
+                "redline": 6500,
+                "showFace": true,
+                "safeColor": "#ffffff",
+                "dangerColor": "#ff3030",
+                "arcWidth": 8,
+                "radius": 0.9,
+                "majorInterval": 1000,
+                "minorInterval": 100,
+                "majorLength": 0.16,
+                "minorLength": 0.08,
+                "majorWidth": 2,
+                "minorWidth": 1,
+                "majorColor": "#ffffff",
+                "minorColor": "#bbbbbb",
+                "showLabels": true,
+                "labelRadius": 0.65,
+                "labelDivisor": 1000,
+                "font": {
+                  "fontFamily": "monospace",
+                  "fontData": "",
+                  "fontFileName": "",
+                  "fontSize": 10,
+                  "fontWeight": 400,
+                  "fontItalic": false,
+                  "fontUnderline": false,
+                  "textColor": "#ffffff",
+                  "outline": 1
+                }
+              },
+              "fuelIconArtRef": "",
+              "fuelShowIcon": true,
+              "fuelIconOffsetX": 0,
+              "fuelIconOffsetY": 0,
+              "fuelIconScale": 1,
+              "fuelIconAngle": null,
+              "safeArcArtRef": "",
+              "dangerArcArtRef": "",
+              "id": "cockpit-gear",
+              "source": "gear",
+              "format": "number",
+              "textAlign": "center",
+              "name": "Gear",
+              "enabled": true,
+              "x": 0.3221633888048412,
+              "y": 0.7061790668348046,
+              "width": 0.03940998487140696,
+              "height": 0.11122320302648171,
+              "min": 0,
+              "max": 200,
+              "units": "",
+              "color": "#ffcc79",
+              "background": "rgba(0,0,0,0)",
+              "fontFamily": "monospace",
+              "fontData": "",
+              "fontFileName": "",
+              "fontSize": 20,
+              "fontWeight": 700,
+              "fontItalic": false,
+              "fontUnderline": false,
+              "textColor": "#ffcc79",
+              "outline": 0,
+              "highBeamArtRef": "",
+              "markerArtRef": "",
+              "artRef": "",
+              "needleArtRef": "",
+              "overlayArtRef": "",
+              "frameIndex": 0,
+              "startAngle": 135,
+              "sweepAngle": 270,
+              "needlePivotX": 0.5,
+              "needlePivotY": 0.85,
+              "lapTextTemplate": "",
+              "progressTextTemplate": "",
+              "textTemplate": "",
+              "showValue": true,
+              "vertical": false
+            },
+            {
+              "opacity": 1,
+              "damageArtTint": false,
+              "artCrop": null,
+              "mapScreenX": 0,
+              "mapScreenY": 0,
+              "mapScreenWidth": 1,
+              "mapScreenHeight": 1,
+              "mapOpacity": 1,
+              "mapOrientation": "north",
+              "mapProjection": "flat",
+              "mapPitch": 45,
+              "mapPlayerY": 0.75,
+              "mapMode": "whole",
+              "mapRangeM": 300,
+              "mapLineColor": "#d9e6d2",
+              "mapLineWidth": 2,
+              "mapLineBorderColor": "#101916",
+              "mapLineBorderWidth": 1,
+              "mapBorderColor": "#101916",
+              "mapBorderWidth": 0,
+              "playerMarkerShape": "circle",
+              "playerMarkerColor": "#58d6ff",
+              "playerMarkerSize": 10,
+              "carMarkerShape": "circle",
+              "carMarkerColor": "#f2d45c",
+              "carMarkerSize": 6,
+              "startMarkerShape": "square",
+              "startMarkerColor": "#61e79a",
+              "startMarkerSize": 6,
+              "finishMarkerShape": "square",
+              "finishMarkerColor": "#ff4f4f",
+              "finishMarkerSize": 6,
+              "circuitMarkerShape": "line",
+              "circuitMarkerColor": "#ffd34d",
+              "circuitMarkerSize": 10,
+              "carMarkerArtRef": "",
+              "startMarkerArtRef": "",
+              "finishMarkerArtRef": "",
+              "circuitMarkerArtRef": "",
+              "tachometer": {
+                "displayMode": "needle",
+                "darkColor": "#252525",
+                "darkOpacity": 1,
+                "majorCutout": false,
+                "minorCutout": false,
+                "autoScale": false,
+                "autoRedline": false,
+                "redline": 15,
+                "showFace": true,
+                "safeColor": "#ffffff",
+                "dangerColor": "#ff3030",
+                "arcWidth": 8,
+                "radius": 0.9,
+                "majorInterval": 25,
+                "minorInterval": 5,
+                "majorLength": 0.16,
+                "minorLength": 0.08,
+                "majorWidth": 2,
+                "minorWidth": 1,
+                "majorColor": "#ffffff",
+                "minorColor": "#bbbbbb",
+                "showLabels": true,
+                "labelRadius": 0.65,
+                "labelDivisor": 1000,
+                "font": {
+                  "fontFamily": "monospace",
+                  "fontData": "",
+                  "fontFileName": "",
+                  "fontSize": 10,
+                  "fontWeight": 400,
+                  "fontItalic": false,
+                  "fontUnderline": false,
+                  "textColor": "#ffffff",
+                  "outline": 1
+                }
+              },
+              "fuelIconArtRef": "",
+              "fuelShowIcon": true,
+              "fuelIconOffsetX": 0,
+              "fuelIconOffsetY": 0,
+              "fuelIconScale": 1,
+              "fuelIconAngle": null,
+              "safeArcArtRef": "",
+              "dangerArcArtRef": "",
+              "id": "cockpit-reserve",
+              "source": "fuel",
+              "format": "bar",
+              "textAlign": "center",
+              "name": "Fuel reserve (0–100%)",
+              "enabled": true,
+              "x": 0.11346444780635401,
+              "y": 0.8253467843631778,
+              "width": 0.24962178517397882,
+              "height": 0.013240857503152586,
+              "min": 0,
+              "max": 100,
+              "units": "",
+              "color": "#ffcc79",
+              "background": "#35302a",
+              "fontFamily": "monospace",
+              "fontData": "",
+              "fontFileName": "",
+              "fontSize": 18,
+              "fontWeight": 400,
+              "fontItalic": false,
+              "fontUnderline": false,
+              "textColor": "#ffcc79",
+              "outline": 0,
+              "highBeamArtRef": "",
+              "markerArtRef": "",
+              "artRef": "",
+              "needleArtRef": "",
+              "overlayArtRef": "",
+              "frameIndex": 0,
+              "startAngle": 135,
+              "sweepAngle": 270,
+              "needlePivotX": 0.5,
+              "needlePivotY": 0.85,
+              "lapTextTemplate": "",
+              "progressTextTemplate": "",
+              "textTemplate": "",
+              "showValue": false,
+              "vertical": false
+            }
+          ]
+        }
+      }
+    },
+    "camera": {
+      "trackingMode": "fixed-rear"
+    },
+    "dimensions": {
+      "lengthM": 4.375,
+      "widthM": 1.745,
+      "wheelbaseM": 2.51,
+      "trackFrontM": 1.515,
+      "trackRearM": 1.51
+    },
+    "audio": {
+      "engineSoundId": null
+    },
+    "setup": {
+      "defaultTireCompound": "tarmac",
+      "tireCompoundByWheel": {
+        "fl": "tarmac",
+        "fr": "tarmac",
+        "rl": "tarmac",
+        "rr": "tarmac"
+      },
+      "tirePressurePsi": {
+        "fl": 32,
+        "fr": 32,
+        "rl": 32,
+        "rr": 32
+      },
+      "tireSize": {
+        "widthMm": 215,
+        "aspectRatio": 55,
+        "wheelDiameterIn": 16
+      }
+    },
+    "defaultTransmissionType": "manual",
+    "transmissions": {
+      "manual": {
+        "type": "manual",
+        "label": "5-speed AWD manual",
+        "shiftMode": "manual",
+        "shiftTimeMs": 260,
+        "clutchDelayMs": 110,
+        "launchRpm": 3500,
+        "autoUpshiftRpm": 6800,
+        "autoDownshiftRpm": 2200,
+        "torqueConverterSlip": 0,
+        "torqueConverterMultiplication": 1,
+        "gearRatios": [
+          3.083,
+          1.684,
+          1.115,
+          0.833,
+          0.666
+        ],
+        "reverseRatio": 3.166,
+        "gearFinalDrive": 4.933333333333334,
+        "drivetrainEfficiency": 0.82,
+        "engineProfile": null
+      }
+    },
+    "tuning": {
+      "drivetrain": "awd",
+      "powerHp": 210,
+      "torqueLbFt": 214,
+      "weightKg": 1415,
+      "frontWeightDistribution": 0.59,
+      "engineDisplacementL": 1.997,
+      "aspiration": "Turbocharged",
+      "tireGrip": 1,
+      "brakeBalance": 0.62,
+      "brakePressure": 1,
+      "redlineRpm": 7000,
+      "revLimitRpm": 7200,
+      "revLimiterDropRpm": 350,
+      "idleRpm": 850,
+      "torquePeakStartRpm": 3000,
+      "torquePeakEndRpm": 3000,
+      "torqueFalloffRpm": 7200,
+      "wheelRadiusM": 0.32145,
+      "topSpeedMph": 140,
+      "zeroToSixtySec": 6.6,
+      "dragCoefficient": 0.3,
+      "accelerationCalibration": 1,
+      "drivetrainEfficiency": 0.82,
+      "differentialAccel": 0.35,
+      "differentialDecel": 0.15,
+      "rearDifferentialAccel": 0.4,
+      "rearDifferentialDecel": 0.2,
+      "gearFinalDrive": 4.933333333333334,
+      "camberFront": -0.6,
+      "camberRear": -1,
+      "toeFront": 0.03,
+      "toeRear": 0.1,
+      "casterFront": 6,
+      "aeroFront": 0.08,
+      "aeroRear": 0.1,
+      "springFront": 0.57,
+      "springRear": 0.53,
+      "rideHeightFront": 0.38,
+      "rideHeightRear": 0.39,
+      "suspensionTravelFront": 0.37,
+      "suspensionTravelRear": 0.37,
+      "dampingFront": 0.57,
+      "dampingRear": 0.54,
+      "bumpFront": 0.45,
+      "bumpRear": 0.44,
+      "reboundFront": 0.54,
+      "reboundRear": 0.52,
+      "antiRollFront": 0.6,
+      "antiRollRear": 0.53,
+      "gearRatios": [
+        3.083,
+        1.684,
+        1.115,
+        0.833,
+        0.666
+      ],
+      "physics": {
+        "bodyShapePreset": "car",
+        "bodyProfile": {
+          "preset": "car",
+          "overallLengthM": 4.375,
+          "overallWidthM": 1.745,
+          "overallHeightM": 1.31,
+          "groundClearanceM": 0.145,
+          "frontOverhangM": 0.93,
+          "rearOverhangM": 0.935,
+          "lowerBodyHeightM": 0.42,
+          "hood": {
+            "lengthM": 1.12,
+            "widthM": 1.65,
+            "heightM": 0.28
+          },
+          "cabin": {
+            "centerZM": -0.12,
+            "lengthM": 2.22,
+            "widthM": 1.59,
+            "heightM": 0.745
+          },
+          "bed": {
+            "centerZM": -1.2,
+            "lengthM": 0,
+            "widthM": 0,
+            "heightM": 0
+          },
+          "cgPositionM": {
+            "x": 0,
+            "y": 0.48,
+            "z": 0
+          },
+          "collisionFriction": 0.62,
+          "collisionRestitution": 0.08,
+          "wheelWellAware": false,
+          "wheelWellClearanceMarginM": 0.06,
+          "maximumTireDeflectionM": 0.04,
+          "wheelRadiusM": 0.32145,
+          "trackWidthM": 1.5125,
+          "frontAxleDistanceFromCgM": 1.0291,
+          "rearAxleDistanceFromCgM": 1.4808999999999999,
+          "customColliders": []
+        }
+      },
+      "reverseRatio": 3.166,
+      "engineCurve": {
+        "rpmMin": 850,
+        "rpmMax": 7200,
+        "torquePoints": [
+          {
+            "rpm": 850,
+            "torqueLbFt": 70
+          },
+          {
+            "rpm": 2000,
+            "torqueLbFt": 140
+          },
+          {
+            "rpm": 3000,
+            "torqueLbFt": 214
+          },
+          {
+            "rpm": 4500,
+            "torqueLbFt": 210
+          },
+          {
+            "rpm": 6000,
+            "torqueLbFt": 183.82
+          },
+          {
+            "rpm": 7000,
+            "torqueLbFt": 138
+          },
+          {
+            "rpm": 7200,
+            "torqueLbFt": 120
+          }
+        ]
+      },
+      "frontDifferentialAccel": 0.2,
+      "frontDifferentialDecel": 0.1,
+      "steeringRatio": 16
+    },
+    "description": "Original fictional AWD turbo coupe referencing 1995 US Eclipse GSX five-speed manual. Manufacturer scan supports mass, geometry and gearing; engine output and tires remain secondary-sourced. Handling and full torque curve are simulation estimates, not a measured factory recreation. Not a movie-car replica.",
+    "category": "coupe"
+  },
+  "bodyPng": "body.png",
+  "dashboardPng": "dashboard.png",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "provenance": {
+    "referenceVehicle": "1995 US Mitsubishi Eclipse GSX AWD 5MT, D33A",
+    "status": "research-backed, secondary engine/tire anchors, modeled handling; visual driving QA pending",
+    "sources": [
+      {
+        "url": "https://pt.scribd.com/document/375386100/Eclipse-1995-Technical-Information-Manual-pdf",
+        "type": "Manufacturer1994copyright technical manual scan hosted thirdparty",
+        "sections": [
+          "0-18 AWD general specifications",
+          "2-5 Manual transaxle W5M33-2-NPZT"
+        ],
+        "fields": [
+          "curb mass manual AWD",
+          "dimensions and tracks",
+          "W5M33 forward/reverse ratios",
+          "primary/secondary/transfer reduction tooth counts"
+        ]
+      },
+      {
+        "url": "https://www.automobile-catalog.com/curve/1995/2006165/mitsubishi_eclipse_gsx.html",
+        "fields": [
+          "power",
+          "torque"
+        ]
+      },
+      {
+        "url": "https://www.autoevolution.com/cars/mitsubishi-eclipse-1995.html",
+        "fields": [
+          "manual210hp",
+          "torque214lbft3000"
+        ]
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Mitsubishi_Eclipse",
+        "fields": [
+          "1995-96GSXmanual215/55R16",
+          "automatic205/55R16",
+          "1997-99GSX17inchExcluded"
+        ]
+      }
+    ],
+    "verifiedFacts": {
+      "curbKg": 1415,
+      "curbLb": 3120,
+      "automaticCurbKgExcluded": 1450,
+      "lengthMm": 4375,
+      "widthMm": 1745,
+      "heightMm": 1310,
+      "wheelbaseMm": 2510,
+      "trackFrontMm": 1515,
+      "trackRearMm": 1510,
+      "frontOverhangMm": 930,
+      "rearOverhangMm": 935,
+      "clearanceMm": 145,
+      "engineCc": 1997,
+      "engine": "4G63 DOHC turbo",
+      "gearRatios": [
+        3.083,
+        1.684,
+        1.115,
+        0.833,
+        0.666
+      ],
+      "gearToothCounts": [
+        [
+          37,
+          12
+        ],
+        [
+          32,
+          19
+        ],
+        [
+          29,
+          26
+        ],
+        [
+          25,
+          30
+        ],
+        [
+          22,
+          33
+        ]
+      ],
+      "reverse": 3.166,
+      "reverseTeeth": [
+        38,
+        12
+      ],
+      "primaryReduction": 1.275,
+      "primaryReductionTeeth": [
+        37,
+        29
+      ],
+      "secondaryReduction": 3.866,
+      "secondaryReductionTeeth": [
+        58,
+        15
+      ],
+      "transfer": 1.09,
+      "transferTeeth": [
+        24,
+        22
+      ]
+    },
+    "secondaryFacts": {
+      "powerHp": 210,
+      "powerRpm": 6000,
+      "torqueLbFt": 214,
+      "torqueRpm": 3000,
+      "tire": "215/55R16",
+      "sources": [
+        {
+          "url": "https://www.automobile-catalog.com/curve/1995/2006165/mitsubishi_eclipse_gsx.html",
+          "fields": [
+            "power",
+            "torque"
+          ]
+        },
+        {
+          "url": "https://www.autoevolution.com/cars/mitsubishi-eclipse-1995.html",
+          "fields": [
+            "manual210hp",
+            "torque214lbft3000"
+          ]
+        },
+        {
+          "url": "https://en.wikipedia.org/wiki/Mitsubishi_Eclipse",
+          "fields": [
+            "1995-96GSXmanual215/55R16",
+            "automatic205/55R16",
+            "1997-99GSX17inchExcluded"
+          ]
+        }
+      ]
+    },
+    "derived": {
+      "effectiveFinalDrive": 4.933333333333334,
+      "note": "Front wheel reduction primary*secondary; do NOT additionally multiply rear-branch transfer ratio into all-wheel effective ratio."
+    },
+    "conflicts": [
+      "Edmunds engine torque205lbft@6000 inconsistent with214@3000; do not use",
+      "195hp refers earlier generation,205hp to secondgeneration automatic; selected1995manual210hp",
+      "Some1995-labeled Laser/Talon service uploads contain1Ggeometry2470mmWB and are wrong generation",
+      "No moviecar claims: GSX is not Brian movie420A RS/GS hero specification"
+    ],
+    "estimates": [
+      "Engine rated output and tire size are secondary-source claims pending primary corroboration.",
+      "Effective final reduction uses manual tooth counts37/29*58/15=4.933333; rounded published1.275*3.866=4.92915. Transfer1.09 belongs rear branch and is not multiplied globally.",
+      "Tire radius .32145m is nominal geometry, not loaded radius.",
+      "Full torque curve except rated torque/power anchor points, redline, rev limit, top speed and acceleration are estimates.",
+      "Mass distribution .59 front, CG .48m, steering ratio, Cd, tire pressures, friction, brake, differential, drivetrain efficiency, suspension and shift timing are simulator estimates.",
+      "Body sub-collider geometry and shared steering wheel cockpit alignment approximate original fictional artwork.",
+      "AWD center/front/rear differential behavior is simplified, not a measured factory calibration.",
+      "Visual wheel calibration: oblique hub centers remeasured within source transparent openings, then vertical upper opening extent plus2px used for cover radius. Only sprite transforms change; physical tires and drivetrain unchanged."
+    ]
+  },
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 60,
+        "y": 287,
+        "radius": 30
+      },
+      {
+        "wheel": "fr",
+        "x": 325,
+        "y": 287,
+        "radius": 30
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1900,
+        "y": 650,
+        "radius": 52
+      },
+      {
+        "wheel": "rr",
+        "x": 2092,
+        "y": 620,
+        "radius": 42
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1119,
+        "y": 282,
+        "radius": 57
+      },
+      {
+        "wheel": "rr",
+        "x": 1489,
+        "y": 282,
+        "radius": 61
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1678,
+        "y": 260,
+        "radius": 32
+      },
+      {
+        "wheel": "rr",
+        "x": 1863,
+        "y": 270,
+        "radius": 44
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 60,
+        "y": 650,
+        "radius": 30
+      },
+      {
+        "wheel": "rl",
+        "x": 325,
+        "y": 650,
+        "radius": 30
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 649,
+        "y": 640,
+        "radius": 49
+      },
+      {
+        "wheel": "fl",
+        "x": 847,
+        "y": 625,
+        "radius": 32
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 1051,
+        "y": 650,
+        "radius": 64
+      },
+      {
+        "wheel": "fl",
+        "x": 1435,
+        "y": 650,
+        "radius": 61
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 449,
+        "y": 256,
+        "radius": 37
+      },
+      {
+        "wheel": "fl",
+        "x": 667,
+        "y": 281,
+        "radius": 44
+      }
+    ]
+  },
+  "wheelFit": "cover",
+  "cockpitCalibration": {
+    "coordinateSpace": "dashboard",
+    "sourceImageSize": [
+      1983,
+      793
+    ],
+    "clusterPixels": [
+      225,
+      560,
+      495,
+      105
+    ],
+    "wheelPivotAndWidthPixels": [
+      475,
+      793,
+      236
+    ],
+    "method": "Visual inspection of original dashboard PNG. Shared steering wheel pivot retained. Numeric instruments occupy the authored dark cluster; browser QA required."
+  }
+}

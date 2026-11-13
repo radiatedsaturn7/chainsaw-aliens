@@ -1,3 +1,4 @@
+import {cockpitGaugeBounds} from '../racing/CarCockpitLayout.js';
 import {fuelGaugeFields,fuelTachometerFromFields} from './FuelGaugeEditor.js';
 import {normalizeIndicators,indicatorGauge} from '../racing/IndicatorArt.js';
 import {MECHANICAL_LAMPS,CONTROL_LAMPS} from '../racing/MechanicalInstruments.js';
@@ -100,7 +101,7 @@ export async function editGauge(e,showForm=openEditorForm,picker=openProjectBrow
  if(!g.fontData&&!choices.some(c=>c.font.fontFamily===g.fontFamily))choices.push({value:'current',label:'Current system font — '+g.fontFamily,font:{fontFamily:g.fontFamily,fontData:'',fontFileName:''}});
  const selectedFont=choices.find(c=>g.fontData?c.font.fontData===g.fontData:!c.font.fontData&&c.font.fontFamily===g.fontFamily)?.value||'system:monospace';
  let fields=[{id:'name',label:'Name',type:'text',value:g.name},{id:'enabled',label:'Visible',type:'checkbox',value:g.enabled},{id:'source',label:'Instrument',value:g.source,options:GAUGE_SOURCES.map(value=>({value,label:({'fuel':'Fuel level — E/F dial or percent','fuel.gallons':'Fuel remaining — US gallons','fuel.capacity':'Fuel capacity — US gallons','fuel.mpg':'Reference fuel economy — US MPG','rpm':'RPM — live engine speed','rpm.max':'RPM maximum — tachometer scale','rpm.limit':'RPM limiter — engine cutoff','rpm.redline':'RPM redline — car engine redline',completion:'Completion %',raceProgress:'Race progress (automatic: laps or %)'}[value]||MECHANICAL_LAMPS[value]||CONTROL_LAMPS[value]||value)}))},{id:'format',label:'Display format',value:g.format,options:GAUGE_FORMATS},
- ...['x','y','width','height'].map(k=>({id:k,label:k+' (% of viewport)',type:'range',step:.1,format:v=>v+'%',value:g[k]*100,min:k==='width'||k==='height'?.5:-400,max:400})),
+ ...['x','y','width','height'].map(k=>({id:k,label:k+' (% of '+(gaugeLayout(e).coordinateSpace==='dashboard'?'dashboard':'viewport')+')',type:'range',step:.1,format:v=>v+'%',value:g[k]*100,min:k==='width'||k==='height'?.5:-400,max:400})),
  ...['min','max','startAngle','sweepAngle','needlePivotX','needlePivotY','frameIndex','fontSize','outline'].map(k=>({id:k,label:{min:'Minimum value',max:'Maximum value',startAngle:'Dial start (degrees, 0 = right)',sweepAngle:'Dial sweep (degrees)',needlePivotX:'Needle pivot X (0–1)',needlePivotY:'Needle pivot Y (0–1)',frameIndex:'Artwork frame (0 = first)',fontSize:'Font size (at 300px viewport height)',outline:'Black text outline width'}[k],value:g[k]})),
  {id:'fontChoice',label:'Font',value:selectedFont,options:choices.map(({value,label})=>({value,label}))},
  {id:'fontWeight',label:'Font weight',value:String(g.fontWeight||400),options:[100,200,300,400,500,600,700,800,900].map(value=>({value:String(value),label:value+(value===400?' — Normal':value===700?' — Bold':'')}))},
@@ -120,7 +121,7 @@ export async function editGauge(e,showForm=openEditorForm,picker=openProjectBrow
  fields.splice(4,0,...gaugeMapFields(g,picker));
  for(const f of fields){if(['min','max'].includes(f.id)){f.visibleWhen=state=>state.source!=='fuel'&&(state.source!=='rpm'||state.format!=='dial'||!state.tach_autoScale);}}
  if(g.format==='map')fields=groupMapPropertyFields(fields,ref=>e.getRaceArtSpriteCanvas(ref,{frameIndex:g.frameIndex}),e.carGaugeViewport?e.carGaugeViewport.w/e.carGaugeViewport.h:1);
- const result=await showForm(g.format==='map'?'Map properties':'Gauge properties',fields,{description:g.format==='map'?'Open a section to edit it. Background / bezel is the picture. Map screen is the smaller opening where roads and icons can draw. Apply saves your changes; Cancel discards them.':'For a decoration label, enter words such as Gear in Text template; the Name only identifies it in the editor. Decoration text appears automatically. Visible hides the whole decoration. Coordinates are relative to the race viewport. Negative X/Y and sizes above 100% let transparent artwork extend offscreen. Artwork fills the gauge rectangle. Set the needle pivot at its center of rotation. Damage values range from 0 to 100. ABS Off and Traction Control Off illuminate when the assist is disabled; Handbrake illuminates while the simulation applies the E-brake. These status indicators are separate from faults. Engine light and other warning lights are off, steady for warnings, and flashing for critical faults. Use Icon format and Background / icon artwork for a lamp, or Number for status text. An off lamp is faint while selected for placement. Mechanical readings use actual simulation values; component damage is 0–100 and failed is 0 or 1.'});
+ const result=await showForm(g.format==='map'?'Map properties':'Gauge properties',fields,{description:g.format==='map'?'Open a section to edit it. Background / bezel is the picture. Map screen is the smaller opening where roads and icons can draw. Apply saves your changes; Cancel discards them.':'For a decoration label, enter words such as Gear in Text template; the Name only identifies it in the editor. Decoration text appears automatically. Visible hides the whole decoration. Coordinates are relative to the layout coordinate space (dashboard for authored cockpit layouts, otherwise race viewport). Negative X/Y and sizes above 100% let transparent artwork extend offscreen. Artwork fills the gauge rectangle. Set the needle pivot at its center of rotation. Damage values range from 0 to 100. ABS Off and Traction Control Off illuminate when the assist is disabled; Handbrake illuminates while the simulation applies the E-brake. These status indicators are separate from faults. Engine light and other warning lights are off, steady for warnings, and flashing for critical faults. Use Icon format and Background / icon artwork for a lamp, or Number for status text. An off lamp is faint while selected for placement. Mechanical readings use actual simulation values; component damage is 0–100 and failed is 0 or 1.'});
  if(!result||e.selectedCar!==car)return;
  const {fontChoice,...properties}=result,font=choices.find(c=>c.value===fontChoice)?.font;
  const tachometer=result.source==='fuel'?fuelTachometerFromFields(g,result):tachometerFromFields(g,result,choices);
@@ -154,7 +155,7 @@ export async function editGaugeOrder(e,showForm=openEditorForm){
 export async function editGaugeGeometry(e,key,showForm=openEditorForm){
  const car=e.selectedCar,side=gaugeSide(e),g=selected(e);if(!g||!['x','y','width','height'].includes(key))return;
  const label={x:'X position',y:'Y position',width:'Width',height:'Height'}[key];
- const result=await showForm(label,[{id:'value',label:label+' (% of viewport)',type:'range',value:g[key]*100,min:['x','y'].includes(key)?-400:.5,max:400,step:.1,format:v=>v+'%'}]);
+ const result=await showForm(label,[{id:'value',label:label+' (% of '+(gaugeLayout(e).coordinateSpace==='dashboard'?'dashboard':'viewport')+')',type:'range',value:g[key]*100,min:['x','y'].includes(key)?-400:.5,max:400,step:.1,format:v=>v+'%'}]);
  if(!result||e.selectedCar!==car||gaugeSide(e)!==side)return;
  const l=gaugeLayout(e),target=l.widgets.find(w=>w.id===g.id);if(!target)return;
  change(e,'Adjust gauge '+key,()=>{target[key]=result.value/100;l.enabled=true;});
@@ -167,14 +168,16 @@ export function drawCarGaugePanel(e,ctx,bounds){const l=gaugeLayout(e),g=selecte
  button('indicator','+ Indicator',1,1,()=>addGaugeIndicator(e),true,3);
  button('remove','Remove',2,1,()=>change(e,'Remove gauge',()=>{l.widgets=l.widgets.filter(v=>v!==g);l.enabled=true;}),!!g,3);
  button('properties',g?.format==='map'?'Map Properties':g?.source==='rpm'?'RPM settings':g?.source==='fuel'?'Fuel settings':'Properties',0,2,()=>editGauge(e),!!g);button('art','Artwork',1,2,()=>artwork(e),!!g);
- button('font','Font',0,3,()=>chooseGaugeFont(e),!!g,3);button('reset','Reset',1,3,async()=>{const r=await openEditorForm('Reset this gauge layout',[{id:'reset',label:'Restore default instruments',type:'checkbox',value:false}]);if(r?.reset)change(e,'Reset gauges',()=>{l.widgets=defaultGauges();l.enabled=true;});},true,3);
+ button('font','Font',0,3,()=>chooseGaugeFont(e),!!g,3);button('reset','Reset',1,3,async()=>{const r=await openEditorForm('Reset this gauge layout',[{id:'reset',label:'Restore default instruments',type:'checkbox',value:false}]);if(r?.reset)change(e,'Reset gauges',()=>{l.widgets=defaultGauges();delete l.coordinateSpace;l.enabled=true;});},true,3);
  [['left','←',-.01,0],['right','→',.01,0],['up','↑',0,-.01],['down','↓',0,.01]].forEach(([id,label,dx,dy],i)=>button(id,label,i,5,()=>change(e,'Move gauge',()=>{g.x=Math.max(-4,Math.min(4,g.x+dx));g.y=Math.max(-4,Math.min(4,g.y+dy));l.enabled=true;}),!!g,4));
  button('order','Send',2,3,()=>editGaugeOrder(e),!!g,3);
  ['x','y','width','height'].forEach((key,i)=>button(key,{x:'X',y:'Y',width:'Width',height:'Height'}[key],i,4,()=>editGaugeGeometry(e,key),!!g,4));
 }
 export function gaugePointer(e,p,phase){
  if(e.mode!=='car'||e.activeRootId!=='art'||!e.activeAction?.startsWith('car-gauges-')||e.isLivePlaytestSession())return false;
- const b=e.carGaugeViewport;if(!b)return false;
+ const viewport=e.carGaugeViewport;if(!viewport)return false;
+ const dash=e.selectedCar?.art?.interior?.dashboard;
+ const b=cockpitGaugeBounds(viewport,e.selectedCar,dash?.artRef?e.getRaceArtSpriteCanvas(dash.artRef,{frameIndex:dash.frameIndex||0}):null,gaugeSide(e));
  const l=gaugeLayout(e),id=p.id??'pointer';
  if(phase==='down'){
   if(p.x<b.x||p.y<b.y||p.x>b.x+b.w||p.y>b.y+b.h)return false;

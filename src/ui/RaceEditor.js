@@ -1,3 +1,4 @@
+import {cockpitDashboardRect,cockpitWheelLayout,cockpitGaugeBounds} from '../racing/CarCockpitLayout.js';
 import { normalizeCvtTuning, validateCvt } from '../racing/simulation/CvtTransmissionModel.js';
 import {raceDriftScoreVariables} from '../racing/RaceDriftScore.js';
 import {advanceDigitalThrottle, observeDrivingIntent, DIGITAL_THROTTLE_MODES, DRIVING_INTENT_STYLES} from '../racing/DigitalThrottle.js';
@@ -9098,6 +9099,7 @@ export default class RaceEditor {
     clone.art.brakeLightOffsetY = clamp(Number(clone.art.brakeLightOffsetY || 0), -16, 16);
     const interior = clone.art.interior && typeof clone.art.interior === 'object' ? clone.art.interior : {};
     const normalizeInteriorLayer = (layer = {}) => ({
+      ...(layer.coordinateSpace==='dashboard'?{coordinateSpace:'dashboard',anchorX:clamp(Number(layer.anchorX)||0,-4,4),anchorY:clamp(Number(layer.anchorY)||0,-4,4),width:clamp(Number(layer.width)||.24,.01,2)}:{}),
       artRef: String(layer?.artRef || '').trim() || null,
       frameIndex: Number.isFinite(Number(layer?.frameIndex)) ? Math.max(0, Math.round(Number(layer.frameIndex))) : 0,
       scaleX: clamp(Number(layer?.scaleX ?? 1) || 1, 0.05, 12),
@@ -24300,15 +24302,8 @@ export default class RaceEditor {
     const steeringCanvas = steeringWheel.artRef
       ? this.getRaceArtSpriteCanvas(steeringWheel.artRef, { frameIndex: Number(steeringWheel.frameIndex) || 0 })
       : null;
-    const dashboardScaleX = clamp(Number(dashboard.scaleX ?? 1) || 1, 0.05, 12);
-    const dashboardScaleY = clamp(Number(dashboard.scaleY ?? 1) || 1, 0.05, 12);
-    const dashboardW = bounds.w * dashboardScaleX;
-    // Keep authored transparent windshield space and the image aspect ratio.
-    const dashboardH = (dashboardCanvas
-      ? bounds.w * dashboardCanvas.height / Math.max(1, dashboardCanvas.width)
-      : bounds.h * 0.22) * dashboardScaleY;
-    const dashboardX = bounds.x + (bounds.w - dashboardW) * 0.5 + clamp(Number(dashboard.offsetX || 0), -4, 4) * bounds.w * 0.2;
-    const dashboardY = bounds.y + bounds.h - dashboardH + clamp(Number(dashboard.offsetY || 0), -4, 4) * bounds.h * 0.2;
+    const dashboardRect = cockpitDashboardRect(bounds,dashboard,dashboardCanvas);
+    const {x:dashboardX,y:dashboardY,w:dashboardW,h:dashboardH}=dashboardRect;
     if(layer!=='wheel'){
     if (dashboardCanvas && typeof ctx.drawImage === 'function') {
       const previousSmoothing = ctx.imageSmoothingEnabled;
@@ -24322,10 +24317,9 @@ export default class RaceEditor {
     }
     if(layer==='dashboard')return;
     ctx.save();
-    const steeringScaleX = clamp(Number(steeringWheel.scaleX ?? 1) || 1, 0.05, 12);
-    const steeringScaleY = clamp(Number(steeringWheel.scaleY ?? 1) || 1, 0.05, 12);
-    const steeringX = wheelX + clamp(Number(steeringWheel.offsetX || 0), -4, 4) * bounds.w * 0.2;
-    const steeringY = wheelY + clamp(Number(steeringWheel.offsetY || 0), -4, 4) * bounds.h * 0.2;
+    const placement=cockpitWheelLayout(bounds,steeringWheel,dashboardRect);
+    const steeringScaleX=placement.width/(wheelR*2),steeringScaleY=placement.heightScale/(wheelR*2);
+    const steeringX=placement.x,steeringY=placement.y;
     ctx.translate(steeringX, steeringY);
     ctx.rotate(rotation);
     if (steeringCanvas && typeof ctx.drawImage === 'function') {
@@ -24382,7 +24376,9 @@ export default class RaceEditor {
     const editing=session.carEditorPreview&&this.activeAction?.startsWith('car-gauges-');
     if(layout&&(layout.enabled||editing)){
       const weather=createRaceTrackStateWeatherForcing({race:this.selectedRace});
-      drawCarGauges(ctx,bounds,layout,{testIndicators:this.raceInput.testIndicators===true,session,car,gear:this.raceInput.gear,race:this.selectedRace,temperatureC:weather.ambientTemperatureC},{getArt:(ref,options)=>this.getRaceArtSpriteCanvas(ref,options),drawMap:(r,gauge)=>this.drawRaceTrackMinimap(ctx,r,{gauge}),selectedId:editing?this.carGaugeId:null});
+      const dash=car?.art?.interior?.dashboard;
+      const gaugeBounds=cockpitGaugeBounds(bounds,car,dash?.artRef?this.getRaceArtSpriteCanvas(dash.artRef,{frameIndex:dash.frameIndex||0}):null,side);
+      drawCarGauges(ctx,gaugeBounds,layout,{testIndicators:this.raceInput.testIndicators===true,session,car,gear:this.raceInput.gear,race:this.selectedRace,temperatureC:weather.ambientTemperatureC},{getArt:(ref,options)=>this.getRaceArtSpriteCanvas(ref,options),drawMap:(r,gauge)=>this.drawRaceTrackMinimap(ctx,r,{gauge}),selectedId:editing?this.carGaugeId:null});
       if(side==='interior')this.drawRaceSteeringWheel(ctx,bounds,{layer:'wheel'});
     }else{
     this.drawRaceTrackMinimap(ctx, {
