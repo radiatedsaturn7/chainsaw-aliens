@@ -494,7 +494,9 @@
       "catalog-primrose-st-2005-body": "art/catalog-primrose-st-2005-body/document.json",
       "catalog-primrose-st-2005-dashboard": "art/catalog-primrose-st-2005-dashboard/document.json",
       "catalog-hazel-2011-body": "art/catalog-hazel-2011-body/document.json",
-      "catalog-hazel-2011-dashboard": "art/catalog-hazel-2011-dashboard/document.json"
+      "catalog-hazel-2011-dashboard": "art/catalog-hazel-2011-dashboard/document.json",
+      "catalog-foxmint-2000-body": "art/catalog-foxmint-2000-body/document.json",
+      "catalog-foxmint-2000-dashboard": "art/catalog-foxmint-2000-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -560,7 +562,8 @@
       "Chicory GT 2008": "cars/Chicory GT 2008/document.json",
       "Bluebell GT 2006": "cars/Bluebell GT 2006/document.json",
       "Primrose ST 2005": "cars/Primrose ST 2005/document.json",
-      "Hazel S 2011": "cars/Hazel S 2011/document.json"
+      "Hazel S 2011": "cars/Hazel S 2011/document.json",
+      "Foxmint 1.7 2000": "cars/Foxmint 1.7 2000/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
