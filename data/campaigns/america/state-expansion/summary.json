@@ -1,0 +1,1987 @@
+{
+  "addedEvents": 79,
+  "stateGapEvents": 29,
+  "cityRuns": 50,
+  "landmarks": 200,
+  "coveredStates": [
+    "AK",
+    "AL",
+    "AR",
+    "AZ",
+    "CA",
+    "CO",
+    "CT",
+    "DE",
+    "FL",
+    "GA",
+    "HI",
+    "IA",
+    "ID",
+    "IL",
+    "IN",
+    "KS",
+    "KY",
+    "LA",
+    "MA",
+    "MD",
+    "ME",
+    "MI",
+    "MN",
+    "MO",
+    "MS",
+    "MT",
+    "NC",
+    "ND",
+    "NE",
+    "NH",
+    "NJ",
+    "NM",
+    "NV",
+    "NY",
+    "OH",
+    "OK",
+    "OR",
+    "PA",
+    "RI",
+    "SC",
+    "SD",
+    "TN",
+    "TX",
+    "UT",
+    "VA",
+    "VT",
+    "WA",
+    "WI",
+    "WV",
+    "WY"
+  ],
+  "navigation": "Choose a campaign location, then City Runs, Road Runs, Detours, or Raceways. Each optional event is assigned to its nearest main campaign location. Existing main progression is unchanged.",
+  "durationModel": "Curvature-limited winter planning pace, not a measured AI lap; car, conditions and driver change the result. Circuit estimates include all three laps.",
+  "limitations": [
+    "Road centerlines and tagged lane widths come from OpenStreetMap; missing widths use the existing importer defaults. These are not surveyed racing surfaces.",
+    "DEM ground elevations are approximate; mapped bridge decks interpolate between approaches. Coastal terrain-only DEM no-data uses sea level and is listed in each affected source document.",
+    "City races are fictional closed-road events following mapped local streets and one-way directions; turn-restriction relations and temporary construction are not modeled.",
+    "Landmark distances are nearest-road projections on the native timed route. Existing generic buildings dress cities; the 200 landmark-specific graphics have not been created.",
+    "Untimed approaches/runouts are explicitly authored fictional service roads, not additional surveyed GPS geometry."
+  ],
+  "events": [
+    {
+      "id": "city-ak",
+      "name": "Anchorage, AK",
+      "state": "Alaska",
+      "stateCode": "AK",
+      "city": "Anchorage",
+      "location": {
+        "lat": 61.218,
+        "lon": -149.896
+      },
+      "category": "City Runs",
+      "hubStage": 11,
+      "hubRaceRef": "Angeles Crest Highway",
+      "raceRef": "Anchorage, AK \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Anchorage%2C AK %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.63,
+      "laps": 1,
+      "estimatedMinutes": 8.0,
+      "references": [
+        "https://www.anchorage.net/meetings/why-anchorage/walkable-downtown/",
+        "https://www.anchorage.net/plan-your-trip/itineraries/to-the-north/",
+        "https://www.anchorage.net/plan-your-trip/about-anchorage/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/AK.json"
+    },
+    {
+      "id": "state-ak",
+      "name": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+      "state": "Alaska",
+      "stateCode": "AK",
+      "city": null,
+      "location": {
+        "lat": 61.738,
+        "lon": -149.24
+      },
+      "category": "Road Runs",
+      "hubStage": 11,
+      "hubRaceRef": "Angeles Crest Highway",
+      "raceRef": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+      "documentPath": "data/server-storage/files/races/Hatcher Pass %E2%80%94 Palmer-Fishhook Climb/document.json",
+      "mappedLengthMiles": 4.71,
+      "laps": 1,
+      "estimatedMinutes": 6.5,
+      "references": [
+        "https://dnr.alaska.gov/parks/aspunits/matsu/hatcherpassema.htm"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-al",
+      "name": "Birmingham, AL",
+      "state": "Alabama",
+      "stateCode": "AL",
+      "city": "Birmingham",
+      "location": {
+        "lat": 33.518,
+        "lon": -86.807
+      },
+      "category": "City Runs",
+      "hubStage": 5,
+      "hubRaceRef": "Ozark Backroads",
+      "raceRef": "Birmingham, AL \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Birmingham%2C AL %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 7.8,
+      "laps": 1,
+      "estimatedMinutes": 10.5,
+      "references": [
+        "https://www.birminghamal.org/wp-content/uploads/2024/01/HistoryItinerary.pdf",
+        "https://birminghamal.org/INguide/data/document.pdf",
+        "https://www.birminghamal.org/wp-content/uploads/2021/06/EVENT-SERVICES-profile-2021_HL.pdf"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/AL.json"
+    },
+    {
+      "id": "state-al",
+      "name": "Barber Motorsports Park",
+      "state": "Alabama",
+      "stateCode": "AL",
+      "city": null,
+      "location": {
+        "lat": 33.5332,
+        "lon": -86.6188
+      },
+      "category": "Raceways",
+      "hubStage": 5,
+      "hubRaceRef": "Ozark Backroads",
+      "raceRef": "Barber Motorsports Park",
+      "documentPath": "data/server-storage/files/races/Barber Motorsports Park/document.json",
+      "mappedLengthMiles": 2.31,
+      "laps": 3,
+      "estimatedMinutes": 13.0,
+      "references": [
+        "https://www.imsa.com/nascar-tracks/barber-motorsports-park/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-ar",
+      "name": "Little Rock, AR",
+      "state": "Arkansas",
+      "stateCode": "AR",
+      "city": "Little Rock",
+      "location": {
+        "lat": 34.745,
+        "lon": -92.283
+      },
+      "category": "City Runs",
+      "hubStage": 5,
+      "hubRaceRef": "Ozark Backroads",
+      "raceRef": "Little Rock, AR \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Little Rock%2C AR %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 6.65,
+      "laps": 1,
+      "estimatedMinutes": 10.4,
+      "references": [
+        "https://www.littlerock.com/things-to-do/black-culture/attractions/",
+        "https://www.littlerock.com/directory/visitor-center-at-historic-curran-hall/",
+        "https://www.littlerock.com/things-to-do/museums-attractions/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/AR.json"
+    },
+    {
+      "id": "state-ar",
+      "name": "Pig Trail \u2014 Arkansas 23",
+      "state": "Arkansas",
+      "stateCode": "AR",
+      "city": null,
+      "location": {
+        "lat": 35.672,
+        "lon": -93.816
+      },
+      "category": "Road Runs",
+      "hubStage": 5,
+      "hubRaceRef": "Ozark Backroads",
+      "raceRef": "Pig Trail \u2014 Arkansas 23",
+      "documentPath": "data/server-storage/files/races/Pig Trail %E2%80%94 Arkansas 23/document.json",
+      "mappedLengthMiles": 7.95,
+      "laps": 1,
+      "estimatedMinutes": 10.4,
+      "references": [
+        "https://www.arkansas.com/experiences/discover/all-experiences/road-trips"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-az",
+      "name": "Phoenix, AZ",
+      "state": "Arizona",
+      "stateCode": "AZ",
+      "city": "Phoenix",
+      "location": {
+        "lat": 33.45,
+        "lon": -112.078
+      },
+      "category": "City Runs",
+      "hubStage": 10,
+      "hubRaceRef": "Oak Creek Canyon",
+      "raceRef": "Phoenix, AZ \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Phoenix%2C AZ %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.65,
+      "laps": 1,
+      "estimatedMinutes": 6.9,
+      "references": [
+        "https://www.visitphoenix.com/greater-phoenix/phoenix/downtown-phoenix/heritage-square/",
+        "https://www.visitphoenix.com/things-to-do/attractions/",
+        "https://www.visitphoenix.com/greater-phoenix/phoenix/downtown-phoenix/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/AZ.json"
+    },
+    {
+      "id": "city-ca",
+      "name": "Los Angeles, CA",
+      "state": "California",
+      "stateCode": "CA",
+      "city": "Los Angeles",
+      "location": {
+        "lat": 34.052,
+        "lon": -118.248
+      },
+      "category": "City Runs",
+      "hubStage": 11,
+      "hubRaceRef": "Angeles Crest Highway",
+      "raceRef": "Los Angeles, CA \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Los Angeles%2C CA %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.37,
+      "laps": 1,
+      "estimatedMinutes": 7.1,
+      "references": [
+        "https://www.discoverlosangeles.com/sites/default/files/2022-03/2022%20MPG_AtlasObscura_MAP.pdf",
+        "https://www.discoverlosangeles.com/sites/default/files/2026-02/lat_regional-factsheet_8.5x11in_dtla_2026.pdf",
+        "https://www.discoverlosangeles.com/travel/go-metro-and-go-everywhere-in-la"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/CA.json"
+    },
+    {
+      "id": "city-co",
+      "name": "Denver, CO",
+      "state": "Colorado",
+      "stateCode": "CO",
+      "city": "Denver",
+      "location": {
+        "lat": 39.748,
+        "lon": -104.994
+      },
+      "category": "City Runs",
+      "hubStage": 8,
+      "hubRaceRef": "Pikes Peak Highway",
+      "raceRef": "Denver, CO \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Denver%2C CO %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.74,
+      "laps": 1,
+      "estimatedMinutes": 7.9,
+      "references": [
+        "https://www.denver.org/about-denver/denver-neighborhoods/capitol-hill-congress-park/",
+        "https://www.denver.org/about-denver/transportation/airport-rail/",
+        "https://www.denver.org/travel-trade/itineraries/downtown-denver/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/CO.json"
+    },
+    {
+      "id": "city-ct",
+      "name": "Hartford, CT",
+      "state": "Connecticut",
+      "stateCode": "CT",
+      "city": "Hartford",
+      "location": {
+        "lat": 41.763,
+        "lon": -72.687
+      },
+      "category": "City Runs",
+      "hubStage": 1,
+      "hubRaceRef": "Tower Hill Road",
+      "raceRef": "Hartford, CT \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Hartford%2C CT %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.57,
+      "laps": 1,
+      "estimatedMinutes": 8.6,
+      "references": [
+        "https://ctvisit.com/articles/step-back-time-these-connecticut-towns-and-cities",
+        "https://ctvisit.com/articles/top-things-to-do-without-a-car-in-connecticut",
+        "https://ctvisit.com/listings/mark-twain-house-museum"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/CT.json"
+    },
+    {
+      "id": "city-de",
+      "name": "Wilmington, DE",
+      "state": "Delaware",
+      "stateCode": "DE",
+      "city": "Wilmington",
+      "location": {
+        "lat": 39.743,
+        "lon": -75.552
+      },
+      "category": "City Runs",
+      "hubStage": 3,
+      "hubRaceRef": "Laurel Highlands Scenic Byway",
+      "raceRef": "Wilmington, DE \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Wilmington%2C DE %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.73,
+      "laps": 1,
+      "estimatedMinutes": 7.6,
+      "references": [
+        "https://www.visitwilmingtonde.com/things-to-do/attractions/",
+        "https://www.visitwilmingtonde.com/things-to-do/attractions/?bounds=false&skip=60&sort=qualityScore&view=list",
+        "https://www.visitwilmingtonde.com/wilmington-arts-blog/stories/post/grand-opera-at-wilmingtons-the-grand/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/DE.json"
+    },
+    {
+      "id": "state-de",
+      "name": "Brandywine Valley \u2014 Montchanin Road",
+      "state": "Delaware",
+      "stateCode": "DE",
+      "city": null,
+      "location": {
+        "lat": 39.805,
+        "lon": -75.591
+      },
+      "category": "Road Runs",
+      "hubStage": 3,
+      "hubRaceRef": "Laurel Highlands Scenic Byway",
+      "raceRef": "Brandywine Valley \u2014 Montchanin Road",
+      "documentPath": "data/server-storage/files/races/Brandywine Valley %E2%80%94 Montchanin Road/document.json",
+      "mappedLengthMiles": 5.35,
+      "laps": 1,
+      "estimatedMinutes": 5.7,
+      "references": [
+        "https://deldot.gov/Programs/byways/index.shtml?dc=brandywine"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-fl",
+      "name": "Miami, FL",
+      "state": "Florida",
+      "stateCode": "FL",
+      "city": "Miami",
+      "location": {
+        "lat": 25.778,
+        "lon": -80.193
+      },
+      "category": "City Runs",
+      "hubStage": 4,
+      "hubRaceRef": "Ohio River Crossing",
+      "raceRef": "Miami, FL \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Miami%2C FL %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.66,
+      "laps": 1,
+      "estimatedMinutes": 7.7,
+      "references": [
+        "https://www.miamiandbeaches.com/things-to-do/history-and-heritage/downtown-miami-architecture",
+        "https://www.miamiandbeaches.com/neighborhoods/downtown-miami-brickell-area",
+        "https://www.miamiandbeaches.com/getmedia/a4dd7c64-7059-4511-86b4-9bb46e0e517d/Miami-sports-entertainment-venues-guide-2020.pdf.aspx"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/FL.json"
+    },
+    {
+      "id": "city-ga",
+      "name": "Atlanta, GA",
+      "state": "Georgia",
+      "stateCode": "GA",
+      "city": "Atlanta",
+      "location": {
+        "lat": 33.756,
+        "lon": -84.388
+      },
+      "category": "City Runs",
+      "hubStage": 4,
+      "hubRaceRef": "Ohio River Crossing",
+      "raceRef": "Atlanta, GA \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Atlanta%2C GA %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 5.52,
+      "laps": 1,
+      "estimatedMinutes": 9.0,
+      "references": [
+        "https://discoveratlanta.com/things-to-do/arts-culture/fox-theatre/",
+        "https://discoveratlanta.com/things-to-do/history/ebenezer-baptist-church/",
+        "https://discoveratlanta.com/partner/fox-theatre/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/GA.json"
+    },
+    {
+      "id": "city-hi",
+      "name": "Honolulu, HI",
+      "state": "Hawaii",
+      "stateCode": "HI",
+      "city": "Honolulu",
+      "location": {
+        "lat": 21.307,
+        "lon": -157.859
+      },
+      "category": "City Runs",
+      "hubStage": 11,
+      "hubRaceRef": "Angeles Crest Highway",
+      "raceRef": "Honolulu, HI \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Honolulu%2C HI %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.65,
+      "laps": 1,
+      "estimatedMinutes": 7.5,
+      "references": [
+        "https://www.gohawaii.com/islands/oahu/regions/honolulu/iolani-palace",
+        "https://www.gohawaii.com/islands/oahu/regions/honolulu/downtown-honolulu",
+        "https://www.gohawaii.com/honolulu"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/HI.json"
+    },
+    {
+      "id": "state-hi",
+      "name": "Hana Highway \u2014 Rainforest Bends",
+      "state": "Hawaii",
+      "stateCode": "HI",
+      "city": null,
+      "location": {
+        "lat": 20.855,
+        "lon": -156.145
+      },
+      "category": "Road Runs",
+      "hubStage": 11,
+      "hubRaceRef": "Angeles Crest Highway",
+      "raceRef": "Hana Highway \u2014 Rainforest Bends",
+      "documentPath": "data/server-storage/files/races/Hana Highway %E2%80%94 Rainforest Bends/document.json",
+      "mappedLengthMiles": 4.7,
+      "laps": 1,
+      "estimatedMinutes": 11.3,
+      "references": [
+        "https://www.gohawaii.com/islands/maui/regions/east-maui/Hana"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-ia",
+      "name": "Des Moines, IA",
+      "state": "Iowa",
+      "stateCode": "IA",
+      "city": "Des Moines",
+      "location": {
+        "lat": 41.587,
+        "lon": -93.617
+      },
+      "category": "City Runs",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Des Moines, IA \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Des Moines%2C IA %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.69,
+      "laps": 1,
+      "estimatedMinutes": 6.2,
+      "references": [
+        "https://www.catchdesmoines.com/things-to-do/arts-culture/public-art/",
+        "https://www.catchdesmoines.com/civil-rights-tour/",
+        "https://www.catchdesmoines.com/discover-downtown-des-moines/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/IA.json"
+    },
+    {
+      "id": "state-ia",
+      "name": "Raceway Park of the Midlands",
+      "state": "Iowa",
+      "stateCode": "IA",
+      "city": null,
+      "location": {
+        "lat": 41.024,
+        "lon": -95.823
+      },
+      "category": "Raceways",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Raceway Park of the Midlands",
+      "documentPath": "data/server-storage/files/races/Raceway Park of the Midlands/document.json",
+      "mappedLengthMiles": 2.22,
+      "laps": 3,
+      "estimatedMinutes": 10.4,
+      "references": [
+        "https://www.midiv.org/midwest-division-track-records/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-id",
+      "name": "Boise, ID",
+      "state": "Idaho",
+      "stateCode": "ID",
+      "city": "Boise",
+      "location": {
+        "lat": 43.615,
+        "lon": -116.203
+      },
+      "category": "City Runs",
+      "hubStage": 9,
+      "hubRaceRef": "Moki Dugway",
+      "raceRef": "Boise, ID \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Boise%2C ID %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.76,
+      "laps": 1,
+      "estimatedMinutes": 6.9,
+      "references": [
+        "https://visitboise.com/meeting-place/egyptian-theatre/",
+        "https://visitboise.com/events/candlelight-tribute-to-the-beatles-2/",
+        "https://visitboise.com/events/candlelight-the-soundtrack-of-the-60s-2/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/ID.json"
+    },
+    {
+      "id": "state-id",
+      "name": "Ponderosa Pine \u2014 Idaho 21",
+      "state": "Idaho",
+      "stateCode": "ID",
+      "city": null,
+      "location": {
+        "lat": 43.822,
+        "lon": -115.846
+      },
+      "category": "Road Runs",
+      "hubStage": 9,
+      "hubRaceRef": "Moki Dugway",
+      "raceRef": "Ponderosa Pine \u2014 Idaho 21",
+      "documentPath": "data/server-storage/files/races/Ponderosa Pine %E2%80%94 Idaho 21/document.json",
+      "mappedLengthMiles": 4.66,
+      "laps": 1,
+      "estimatedMinutes": 5.3,
+      "references": [
+        "https://visitidaho.org/things-to-do/road-trips/ponderosa-pine-scenic-byway/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-il",
+      "name": "Chicago, IL",
+      "state": "Illinois",
+      "stateCode": "IL",
+      "city": "Chicago",
+      "location": {
+        "lat": 41.885,
+        "lon": -87.628
+      },
+      "category": "City Runs",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Chicago, IL \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Chicago%2C IL %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.26,
+      "laps": 1,
+      "estimatedMinutes": 6.6,
+      "references": [
+        "https://www.choosechicago.com/listing/chicago-union-station/",
+        "https://www.choosechicago.com/blog/architecture-history/10-iconic-buildings-in-downtown-chicago/",
+        "https://cdn.choosechicago.com/uploads/2025/05/Map_Digital-Brochure_Neighborhoods-Near-the-Center-copy.pdf"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/IL.json"
+    },
+    {
+      "id": "city-in",
+      "name": "Indianapolis, IN",
+      "state": "Indiana",
+      "stateCode": "IN",
+      "city": "Indianapolis",
+      "location": {
+        "lat": 39.769,
+        "lon": -86.159
+      },
+      "category": "City Runs",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Indianapolis, IN \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Indianapolis%2C IN %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.77,
+      "laps": 1,
+      "estimatedMinutes": 7.9,
+      "references": [
+        "https://www.visitindy.com/directory/soldiers-sailors-monument-monument-circle/",
+        "https://www.visitindy.com/blog/post/see-indy-one-mile-at-a-time-during-the-monumental-marathon/",
+        "https://www.visitindy.com/things-to-do/museums-attractions/monuments-memorials/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/IN.json"
+    },
+    {
+      "id": "city-ks",
+      "name": "Wichita, KS",
+      "state": "Kansas",
+      "stateCode": "KS",
+      "city": "Wichita",
+      "location": {
+        "lat": 37.689,
+        "lon": -97.34
+      },
+      "category": "City Runs",
+      "hubStage": 7,
+      "hubRaceRef": "Historic Route 66",
+      "raceRef": "Wichita, KS \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Wichita%2C KS %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 5.36,
+      "laps": 1,
+      "estimatedMinutes": 8.8,
+      "references": [
+        "https://www.visitwichita.com/things-to-do/uniquely-wichita/experiences/historical-experiences/",
+        "https://www.visitwichita.com/listing/old-cowtown-museum/25660/",
+        "https://www.visitwichita.com/listing/exploration-place/25530/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/KS.json"
+    },
+    {
+      "id": "state-ks",
+      "name": "Heartland Motorsports Park",
+      "state": "Kansas",
+      "stateCode": "KS",
+      "city": null,
+      "location": {
+        "lat": 38.924,
+        "lon": -95.672
+      },
+      "category": "Raceways",
+      "hubStage": 5,
+      "hubRaceRef": "Ozark Backroads",
+      "raceRef": "Heartland Motorsports Park",
+      "documentPath": "data/server-storage/files/races/Heartland Motorsports Park/document.json",
+      "mappedLengthMiles": 2.47,
+      "laps": 3,
+      "estimatedMinutes": 12.5,
+      "references": [
+        "https://heartlandmotorsports.us/tracks/track-roadcourse/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-ky",
+      "name": "Louisville, KY",
+      "state": "Kentucky",
+      "stateCode": "KY",
+      "city": "Louisville",
+      "location": {
+        "lat": 38.255,
+        "lon": -85.759
+      },
+      "category": "City Runs",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Louisville, KY \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Louisville%2C KY %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.7,
+      "laps": 1,
+      "estimatedMinutes": 7.5,
+      "references": [
+        "https://reservations.gotolouisville.com/package/ticket/23323/7321",
+        "https://reservations.gotolouisville.com/attraction/single/6880/1630",
+        "https://reservations.gotolouisville.com/attraction/single/7142/1630"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/KY.json"
+    },
+    {
+      "id": "state-ky",
+      "name": "NCM Motorsports Park",
+      "state": "Kentucky",
+      "stateCode": "KY",
+      "city": null,
+      "location": {
+        "lat": 37.004,
+        "lon": -86.367
+      },
+      "category": "Raceways",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "NCM Motorsports Park",
+      "documentPath": "data/server-storage/files/races/NCM Motorsports Park/document.json",
+      "mappedLengthMiles": 3.14,
+      "laps": 3,
+      "estimatedMinutes": 18.0,
+      "references": [
+        "https://motorsportspark.org/wp-content/uploads/2017/12/facility-overview.compressed.pdf"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-la",
+      "name": "New Orleans, LA",
+      "state": "Louisiana",
+      "stateCode": "LA",
+      "city": "New Orleans",
+      "location": {
+        "lat": 29.958,
+        "lon": -90.066
+      },
+      "category": "City Runs",
+      "hubStage": 5,
+      "hubRaceRef": "Ozark Backroads",
+      "raceRef": "New Orleans, LA \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/New Orleans%2C LA %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.8,
+      "laps": 1,
+      "estimatedMinutes": 7.6,
+      "references": [
+        "https://www.neworleans.com/plan/neighborhoods/french-quarter/history/the-most-popular-historic-attractions-in-the-french-quarter/",
+        "https://www.neworleans.com/things-to-do/attractions/cemeteries/",
+        "https://www.neworleans.com/plan/neighborhoods/treme/attractions/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/LA.json"
+    },
+    {
+      "id": "state-la",
+      "name": "NOLA Motorsports Park",
+      "state": "Louisiana",
+      "stateCode": "LA",
+      "city": null,
+      "location": {
+        "lat": 29.886,
+        "lon": -90.194
+      },
+      "category": "Raceways",
+      "hubStage": 5,
+      "hubRaceRef": "Ozark Backroads",
+      "raceRef": "NOLA Motorsports Park",
+      "documentPath": "data/server-storage/files/races/NOLA Motorsports Park/document.json",
+      "mappedLengthMiles": 2.75,
+      "laps": 3,
+      "estimatedMinutes": 12.5,
+      "references": [
+        "https://nolamotor.com/track-events/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-ma",
+      "name": "Boston, MA",
+      "state": "Massachusetts",
+      "stateCode": "MA",
+      "city": "Boston",
+      "location": {
+        "lat": 42.356,
+        "lon": -71.061
+      },
+      "category": "City Runs",
+      "hubStage": 1,
+      "hubRaceRef": "Tower Hill Road",
+      "raceRef": "Boston, MA \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Boston%2C MA %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 7.9,
+      "laps": 1,
+      "estimatedMinutes": 15.3,
+      "references": [
+        "https://www.meetboston.com/coupon/boston-250-pass/10147/print/",
+        "https://www.meetboston.com/things-to-do/sightseeing-and-tours/walking-tours/the-freedom-trail/",
+        "https://www.meetboston.com/blog/post/bostons-famous-landmarks/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/MA.json"
+    },
+    {
+      "id": "city-md",
+      "name": "Baltimore, MD",
+      "state": "Maryland",
+      "stateCode": "MD",
+      "city": "Baltimore",
+      "location": {
+        "lat": 39.291,
+        "lon": -76.614
+      },
+      "category": "City Runs",
+      "hubStage": 3,
+      "hubRaceRef": "Laurel Highlands Scenic Byway",
+      "raceRef": "Baltimore, MD \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Baltimore%2C MD %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.63,
+      "laps": 1,
+      "estimatedMinutes": 8.4,
+      "references": [
+        "https://baltimore.org/listings/lexington-market/",
+        "https://baltimore.org/plan/transportation/find-a-place-to-park-in-baltimore/",
+        "https://baltimore.org/listings/washington-monument-and-mount-vernon-place/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/MD.json"
+    },
+    {
+      "id": "state-md",
+      "name": "National Road \u2014 Sideling Hill",
+      "state": "Maryland",
+      "stateCode": "MD",
+      "city": null,
+      "location": {
+        "lat": 39.694,
+        "lon": -78.359
+      },
+      "category": "Road Runs",
+      "hubStage": 3,
+      "hubRaceRef": "Laurel Highlands Scenic Byway",
+      "raceRef": "National Road \u2014 Sideling Hill",
+      "documentPath": "data/server-storage/files/races/National Road %E2%80%94 Sideling Hill/document.json",
+      "mappedLengthMiles": 5.36,
+      "laps": 1,
+      "estimatedMinutes": 3.4,
+      "references": [
+        "https://www.visitmaryland.org/scenic-byways/historic-national-road"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-me",
+      "name": "Portland, ME",
+      "state": "Maine",
+      "stateCode": "ME",
+      "city": "Portland",
+      "location": {
+        "lat": 43.659,
+        "lon": -70.254
+      },
+      "category": "City Runs",
+      "hubStage": 2,
+      "hubRaceRef": "Mount Washington Auto Road \u2014 point-to-point",
+      "raceRef": "Portland, ME \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Portland%2C ME %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.51,
+      "laps": 1,
+      "estimatedMinutes": 8.1,
+      "references": [
+        "https://www.visitportland.com/listing/victoria-mansion/",
+        "https://www.visitportland.com/event/portland-city-and-lighthouse-tour/",
+        "https://www.visitportland.com/listing/portland-museum-of-art/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/ME.json"
+    },
+    {
+      "id": "state-me",
+      "name": "Grafton Notch \u2014 Maine 26",
+      "state": "Maine",
+      "stateCode": "ME",
+      "city": null,
+      "location": {
+        "lat": 44.589,
+        "lon": -70.94
+      },
+      "category": "Road Runs",
+      "hubStage": 2,
+      "hubRaceRef": "Mount Washington Auto Road \u2014 point-to-point",
+      "raceRef": "Grafton Notch \u2014 Maine 26",
+      "documentPath": "data/server-storage/files/races/Grafton Notch %E2%80%94 Maine 26/document.json",
+      "mappedLengthMiles": 8.69,
+      "laps": 1,
+      "estimatedMinutes": 6.5,
+      "references": [
+        "https://www.exploremaine.org/byways/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-mi",
+      "name": "Detroit, MI",
+      "state": "Michigan",
+      "stateCode": "MI",
+      "city": "Detroit",
+      "location": {
+        "lat": 42.335,
+        "lon": -83.052
+      },
+      "category": "City Runs",
+      "hubStage": 4,
+      "hubRaceRef": "Ohio River Crossing",
+      "raceRef": "Detroit, MI \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Detroit%2C MI %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 5.38,
+      "laps": 1,
+      "estimatedMinutes": 8.6,
+      "references": [
+        "https://visitdetroit.com/directory/eastern-market/",
+        "https://visitdetroit.com/directory/fox-theatre/",
+        "https://visitdetroit.com/directory/fox-theatre-performance-venue/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/MI.json"
+    },
+    {
+      "id": "state-mi",
+      "name": "GingerMan Raceway",
+      "state": "Michigan",
+      "stateCode": "MI",
+      "city": null,
+      "location": {
+        "lat": 42.409,
+        "lon": -86.147
+      },
+      "category": "Raceways",
+      "hubStage": 4,
+      "hubRaceRef": "Ohio River Crossing",
+      "raceRef": "GingerMan Raceway",
+      "documentPath": "data/server-storage/files/races/GingerMan Raceway/document.json",
+      "mappedLengthMiles": 2.14,
+      "laps": 3,
+      "estimatedMinutes": 11.7,
+      "references": [
+        "https://www.gingermanraceway.com/about-track-maps.html"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-mn",
+      "name": "Minneapolis, MN",
+      "state": "Minnesota",
+      "stateCode": "MN",
+      "city": "Minneapolis",
+      "location": {
+        "lat": 44.974,
+        "lon": -93.27
+      },
+      "category": "City Runs",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Minneapolis, MN \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Minneapolis%2C MN %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 6.31,
+      "laps": 1,
+      "estimatedMinutes": 9.7,
+      "references": [
+        "https://www.minneapolis.org/calendar/downtown-events/",
+        "https://www.minneapolis.org/minneapolis-convention-center/attendees/convention-center-guide/",
+        "https://www.minneapolis.org/directory/walker-art-center/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/MN.json"
+    },
+    {
+      "id": "state-mn",
+      "name": "Brainerd \u2014 Competition Course",
+      "state": "Minnesota",
+      "stateCode": "MN",
+      "city": null,
+      "location": {
+        "lat": 46.418,
+        "lon": -94.274
+      },
+      "category": "Raceways",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Brainerd \u2014 Competition Course",
+      "documentPath": "data/server-storage/files/races/Brainerd %E2%80%94 Competition Course/document.json",
+      "mappedLengthMiles": 2.42,
+      "laps": 3,
+      "estimatedMinutes": 10.6,
+      "references": [
+        "https://www.birmn.com/apex-hpde"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-mo",
+      "name": "St. Louis, MO",
+      "state": "Missouri",
+      "stateCode": "MO",
+      "city": "St. Louis",
+      "location": {
+        "lat": 38.635,
+        "lon": -90.215
+      },
+      "category": "City Runs",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "St. Louis, MO \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/St. Louis%2C MO %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 5.17,
+      "laps": 1,
+      "estimatedMinutes": 7.2,
+      "references": [
+        "https://explorestlouis.com/partner/landmarks-association-of-st-louis-inc/",
+        "https://explorestlouis.com/partner/old-courthouse/",
+        "https://explorestlouis.com/wp-content/uploads/2025/01/LTS-Domestic-Profile-Sheet-Jan-2025.pdf"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/MO.json"
+    },
+    {
+      "id": "city-ms",
+      "name": "Jackson, MS",
+      "state": "Mississippi",
+      "stateCode": "MS",
+      "city": "Jackson",
+      "location": {
+        "lat": 32.302,
+        "lon": -90.183
+      },
+      "category": "City Runs",
+      "hubStage": 5,
+      "hubRaceRef": "Ozark Backroads",
+      "raceRef": "Jackson, MS \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Jackson%2C MS %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.63,
+      "laps": 1,
+      "estimatedMinutes": 7.1,
+      "references": [
+        "https://www.visitjackson.com/plan-your-trip/neighborhoods/downtown/",
+        "https://www.visitjackson.com/directory/mississippi-state-capitol/",
+        "https://www.visitjackson.com/directory/the-old-capitol-museum/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/MS.json"
+    },
+    {
+      "id": "state-ms",
+      "name": "Natchez Trace \u2014 Tishomingo",
+      "state": "Mississippi",
+      "stateCode": "MS",
+      "city": null,
+      "location": {
+        "lat": 34.602,
+        "lon": -88.215
+      },
+      "category": "Road Runs",
+      "hubStage": 5,
+      "hubRaceRef": "Ozark Backroads",
+      "raceRef": "Natchez Trace \u2014 Tishomingo",
+      "documentPath": "data/server-storage/files/races/Natchez Trace %E2%80%94 Tishomingo/document.json",
+      "mappedLengthMiles": 8.46,
+      "laps": 1,
+      "estimatedMinutes": 5.0,
+      "references": [
+        "https://www.nps.gov/natr/planyourvisit/tishomingo-state-park.htm"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-mt",
+      "name": "Billings, MT",
+      "state": "Montana",
+      "stateCode": "MT",
+      "city": "Billings",
+      "location": {
+        "lat": 45.783,
+        "lon": -108.506
+      },
+      "category": "City Runs",
+      "hubStage": 8,
+      "hubRaceRef": "Pikes Peak Highway",
+      "raceRef": "Billings, MT \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Billings%2C MT %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.58,
+      "laps": 1,
+      "estimatedMinutes": 7.3,
+      "references": [
+        "https://www.visitbillings.com/sites/default/files/BMT_2024_Visitor_Guide.pdf",
+        "https://www.visitbillings.com/arts-culture-nightlife/museums/",
+        "https://www.visitbillings.com/sites/default/files/BMT-ADV-10940_VisitBillingsVisitorGuide_FINAL-2020edits-V11_web.pdf"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/MT.json"
+    },
+    {
+      "id": "state-mt",
+      "name": "Beartooth Highway \u2014 Rock Creek Climb",
+      "state": "Montana",
+      "stateCode": "MT",
+      "city": null,
+      "location": {
+        "lat": 45.068,
+        "lon": -109.411
+      },
+      "category": "Road Runs",
+      "hubStage": 8,
+      "hubRaceRef": "Pikes Peak Highway",
+      "raceRef": "Beartooth Highway \u2014 Rock Creek Climb",
+      "documentPath": "data/server-storage/files/races/Beartooth Highway %E2%80%94 Rock Creek Climb/document.json",
+      "mappedLengthMiles": 7.32,
+      "laps": 1,
+      "estimatedMinutes": 8.0,
+      "references": [
+        "https://www.fs.usda.gov/sites/nfs/files/r01/custergallatin/publication/Beartooth%20Sign%20Map%20Brochure_FINAL5_PRINT.pdf"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-nc",
+      "name": "Charlotte, NC",
+      "state": "North Carolina",
+      "stateCode": "NC",
+      "city": "Charlotte",
+      "location": {
+        "lat": 35.227,
+        "lon": -80.845
+      },
+      "category": "City Runs",
+      "hubStage": 4,
+      "hubRaceRef": "Ohio River Crossing",
+      "raceRef": "Charlotte, NC \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Charlotte%2C NC %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.55,
+      "laps": 1,
+      "estimatedMinutes": 7.7,
+      "references": [
+        "https://www.charlottesgotalot.com/things-to-do/attractions/nascar-hall-of-fame",
+        "https://www.charlottesgotalot.com/neighborhoods/uptown",
+        "https://www.charlottesgotalot.com/articles/arts-culture/charlotte-museum-guide"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/NC.json"
+    },
+    {
+      "id": "state-nc",
+      "name": "NCCAR \u2014 Road Course",
+      "state": "North Carolina",
+      "stateCode": "NC",
+      "city": null,
+      "location": {
+        "lat": 36.468,
+        "lon": -77.569
+      },
+      "category": "Raceways",
+      "hubStage": 3,
+      "hubRaceRef": "Laurel Highlands Scenic Byway",
+      "raceRef": "NCCAR \u2014 Road Course",
+      "documentPath": "data/server-storage/files/races/NCCAR %E2%80%94 Road Course/document.json",
+      "mappedLengthMiles": 2.03,
+      "laps": 3,
+      "estimatedMinutes": 10.6,
+      "references": [
+        "https://nccar.us/contact-us/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-nd",
+      "name": "Fargo, ND",
+      "state": "North Dakota",
+      "stateCode": "ND",
+      "city": "Fargo",
+      "location": {
+        "lat": 46.876,
+        "lon": -96.787
+      },
+      "category": "City Runs",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Fargo, ND \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Fargo%2C ND %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.55,
+      "laps": 1,
+      "estimatedMinutes": 8.1,
+      "references": [
+        "https://www.fargomoorhead.org/listing/plains-art-museum/13383/",
+        "https://www.fargomoorhead.org/things-to-do/downtown-fargo/",
+        "https://www.fargomoorhead.org/things-to-do/downtown-fargo/?adgroup=null&campaign=null&device=c&gadid=122&keyword=walnut+crossings&network=g"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/ND.json"
+    },
+    {
+      "id": "state-nd",
+      "name": "Theodore Roosevelt \u2014 North Unit Drive",
+      "state": "North Dakota",
+      "stateCode": "ND",
+      "city": null,
+      "location": {
+        "lat": 47.588,
+        "lon": -103.327
+      },
+      "category": "Road Runs",
+      "hubStage": 8,
+      "hubRaceRef": "Pikes Peak Highway",
+      "raceRef": "Theodore Roosevelt \u2014 North Unit Drive",
+      "documentPath": "data/server-storage/files/races/Theodore Roosevelt %E2%80%94 North Unit Drive/document.json",
+      "mappedLengthMiles": 5.01,
+      "laps": 1,
+      "estimatedMinutes": 6.6,
+      "references": [
+        "https://www.nps.gov/thingstodo/drive-the-north-unit-scenic-drive.htm"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-ne",
+      "name": "Omaha, NE",
+      "state": "Nebraska",
+      "stateCode": "NE",
+      "city": "Omaha",
+      "location": {
+        "lat": 41.257,
+        "lon": -95.939
+      },
+      "category": "City Runs",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Omaha, NE \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Omaha%2C NE %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.68,
+      "laps": 1,
+      "estimatedMinutes": 8.8,
+      "references": [
+        "https://www.visitomaha.com/listings/durham-museum/62308/",
+        "https://www.visitomaha.com/things-to-do/arts-and-culture/historic-sites/",
+        "https://www.visitomaha.com/things-to-do/arts-and-culture/museums/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/NE.json"
+    },
+    {
+      "id": "state-ne",
+      "name": "Motorsport Park Hastings",
+      "state": "Nebraska",
+      "stateCode": "NE",
+      "city": null,
+      "location": {
+        "lat": 40.57976,
+        "lon": -98.3496
+      },
+      "category": "Raceways",
+      "hubStage": 8,
+      "hubRaceRef": "Pikes Peak Highway",
+      "raceRef": "Motorsport Park Hastings",
+      "documentPath": "data/server-storage/files/races/Motorsport Park Hastings/document.json",
+      "mappedLengthMiles": 2.09,
+      "laps": 3,
+      "estimatedMinutes": 11.6,
+      "references": [
+        "https://racemph.com/track-rental/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-nh",
+      "name": "Manchester, NH",
+      "state": "New Hampshire",
+      "stateCode": "NH",
+      "city": "Manchester",
+      "location": {
+        "lat": 42.992,
+        "lon": -71.462
+      },
+      "category": "City Runs",
+      "hubStage": 1,
+      "hubRaceRef": "Tower Hill Road",
+      "raceRef": "Manchester, NH \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Manchester%2C NH %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.77,
+      "laps": 1,
+      "estimatedMinutes": 8.3,
+      "references": [
+        "https://www.visitnh.gov/business/detail/567",
+        "https://www.visitnh.gov/business/detail/391",
+        "https://www.visitnh.gov/blog/exploring-the-summertime-charms-of-new-hampshire"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/NH.json"
+    },
+    {
+      "id": "city-nj",
+      "name": "Newark, NJ",
+      "state": "New Jersey",
+      "stateCode": "NJ",
+      "city": "Newark",
+      "location": {
+        "lat": 40.744,
+        "lon": -74.171
+      },
+      "category": "City Runs",
+      "hubStage": 1,
+      "hubRaceRef": "Tower Hill Road",
+      "raceRef": "Newark, NJ \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Newark%2C NJ %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.63,
+      "laps": 1,
+      "estimatedMinutes": 7.6,
+      "references": [
+        "https://www.newarkhappening.com/plan/transportation/",
+        "https://www.newarkhappening.com/plan/accessibility/",
+        "https://www.newarkhappening.com/listing/trinity-and-st-philips-cathedral/394/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/NJ.json"
+    },
+    {
+      "id": "state-nj",
+      "name": "NJMP \u2014 Thunderbolt",
+      "state": "New Jersey",
+      "stateCode": "NJ",
+      "city": null,
+      "location": {
+        "lat": 39.355,
+        "lon": -75.061
+      },
+      "category": "Raceways",
+      "hubStage": 3,
+      "hubRaceRef": "Laurel Highlands Scenic Byway",
+      "raceRef": "NJMP \u2014 Thunderbolt",
+      "documentPath": "data/server-storage/files/races/NJMP %E2%80%94 Thunderbolt/document.json",
+      "mappedLengthMiles": 2.18,
+      "laps": 3,
+      "estimatedMinutes": 11.8,
+      "references": [
+        "https://njmp.com/track-map/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-nm",
+      "name": "Albuquerque, NM",
+      "state": "New Mexico",
+      "stateCode": "NM",
+      "city": "Albuquerque",
+      "location": {
+        "lat": 35.09,
+        "lon": -106.658
+      },
+      "category": "City Runs",
+      "hubStage": 9,
+      "hubRaceRef": "Moki Dugway",
+      "raceRef": "Albuquerque, NM \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Albuquerque%2C NM %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.64,
+      "laps": 1,
+      "estimatedMinutes": 7.8,
+      "references": [
+        "https://www.visitalbuquerque.org/things-to-do/tours-sightseeing/walking/plaza-to-plaza/",
+        "https://www.visitalbuquerque.org/route-66-centennial/explore/neighborhood-guide/old-town/",
+        "https://www.visitalbuquerque.org/about-abq/neighborhoods/historic-old-town/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/NM.json"
+    },
+    {
+      "id": "state-nm",
+      "name": "Sandia Speedway \u2014 Road Course",
+      "state": "New Mexico",
+      "stateCode": "NM",
+      "city": null,
+      "location": {
+        "lat": 35.028,
+        "lon": -106.858
+      },
+      "category": "Raceways",
+      "hubStage": 9,
+      "hubRaceRef": "Moki Dugway",
+      "raceRef": "Sandia Speedway \u2014 Road Course",
+      "documentPath": "data/server-storage/files/races/Sandia Speedway %E2%80%94 Road Course/document.json",
+      "mappedLengthMiles": 1.64,
+      "laps": 3,
+      "estimatedMinutes": 10.0,
+      "references": [
+        "https://www.smri-racing.org/Directions",
+        "https://static1.squarespace.com/static/5dfaaf2503a8984f92e8f45e/t/604841e1cd6aa951fd199432/1615348194341/Sandia.pdf"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-nv",
+      "name": "Las Vegas, NV",
+      "state": "Nevada",
+      "stateCode": "NV",
+      "city": "Las Vegas",
+      "location": {
+        "lat": 36.176,
+        "lon": -115.136
+      },
+      "category": "City Runs",
+      "hubStage": 10,
+      "hubRaceRef": "Oak Creek Canyon",
+      "raceRef": "Las Vegas, NV \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Las Vegas%2C NV %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.59,
+      "laps": 1,
+      "estimatedMinutes": 7.6,
+      "references": [
+        "https://www.visitlasvegas.com/experience/post/national-plan-for-vacation-day/",
+        "https://www.visitlasvegas.com/experience/post/things-to-do-downtown/",
+        "https://www.visitlasvegas.com/experience/post/budget-briendly-vegas-incredible-attractions-that-wont-break-the-bank/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/NV.json"
+    },
+    {
+      "id": "state-nv",
+      "name": "Spring Mountain \u2014 North South",
+      "state": "Nevada",
+      "stateCode": "NV",
+      "city": null,
+      "location": {
+        "lat": 36.17,
+        "lon": -115.912
+      },
+      "category": "Raceways",
+      "hubStage": 11,
+      "hubRaceRef": "Angeles Crest Highway",
+      "raceRef": "Spring Mountain \u2014 North South",
+      "documentPath": "data/server-storage/files/races/Spring Mountain %E2%80%94 North South/document.json",
+      "mappedLengthMiles": 2.18,
+      "laps": 3,
+      "estimatedMinutes": 11.5,
+      "references": [
+        "https://www.springmountainmotorsports.com/track-rentals-group-events/track-rentals/north-south/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-ny",
+      "name": "New York, NY",
+      "state": "New York",
+      "stateCode": "NY",
+      "city": "New York",
+      "location": {
+        "lat": 40.751,
+        "lon": -73.983
+      },
+      "category": "City Runs",
+      "hubStage": 1,
+      "hubRaceRef": "Tower Hill Road",
+      "raceRef": "New York, NY \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/New York%2C NY %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.66,
+      "laps": 1,
+      "estimatedMinutes": 7.2,
+      "references": [
+        "https://business.nyctourism.com/press-media/press-releases/nyc-company-invites-visitors-to-see-manhattan-like-a-new-yorker",
+        "https://www.nyctourism.com/NYCTourismOVM-090924.pdf",
+        "https://www.business.nyctourism.com/press-media/press-releases/nyc-company-invites-visitors-to-see-manhattan-like-a-new-yorker"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/NY.json"
+    },
+    {
+      "id": "city-oh",
+      "name": "Cleveland, OH",
+      "state": "Ohio",
+      "stateCode": "OH",
+      "city": "Cleveland",
+      "location": {
+        "lat": 41.499,
+        "lon": -81.693
+      },
+      "category": "City Runs",
+      "hubStage": 4,
+      "hubRaceRef": "Ohio River Crossing",
+      "raceRef": "Cleveland, OH \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Cleveland%2C OH %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 5.34,
+      "laps": 1,
+      "estimatedMinutes": 7.8,
+      "references": [
+        "https://www.thisiscleveland.com/locations/west-side-market",
+        "https://www.thisiscleveland.com/Locations/Terminal-Tower",
+        "https://www.thisiscleveland.com/Neighborhoods/downtown-cleveland"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/OH.json"
+    },
+    {
+      "id": "city-ok",
+      "name": "Oklahoma City, OK",
+      "state": "Oklahoma",
+      "stateCode": "OK",
+      "city": "Oklahoma City",
+      "location": {
+        "lat": 35.476,
+        "lon": -97.51
+      },
+      "category": "City Runs",
+      "hubStage": 7,
+      "hubRaceRef": "Historic Route 66",
+      "raceRef": "Oklahoma City, OK \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Oklahoma City%2C OK %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 5.11,
+      "laps": 1,
+      "estimatedMinutes": 8.0,
+      "references": [
+        "https://www.visitokc.com/faq/html/attractions/oklahoma-city-convention-center.html",
+        "https://www.visitokc.com/districts/city-center-downtown/",
+        "https://www.visitokc.com/listing/myriad-botanical-gardens-%26-crystal-bridge-conservatory/848/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/OK.json"
+    },
+    {
+      "id": "city-or",
+      "name": "Portland, OR",
+      "state": "Oregon",
+      "stateCode": "OR",
+      "city": "Portland",
+      "location": {
+        "lat": 45.523,
+        "lon": -122.678
+      },
+      "category": "City Runs",
+      "hubStage": 11,
+      "hubRaceRef": "Angeles Crest Highway",
+      "raceRef": "Portland, OR \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Portland%2C OR %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.58,
+      "laps": 1,
+      "estimatedMinutes": 8.7,
+      "references": [
+        "https://www.travelportland.com/attractions/powells/",
+        "https://www.travelportland.com/attractions/pioneer-courthouse-square/",
+        "https://www.travelportland.com/wp-content/uploads/2023/04/Walkable-Portland.pdf"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/OR.json"
+    },
+    {
+      "id": "state-or",
+      "name": "Portland International Raceway",
+      "state": "Oregon",
+      "stateCode": "OR",
+      "city": null,
+      "location": {
+        "lat": 45.596,
+        "lon": -122.696
+      },
+      "category": "Raceways",
+      "hubStage": 11,
+      "hubRaceRef": "Angeles Crest Highway",
+      "raceRef": "Portland International Raceway",
+      "documentPath": "data/server-storage/files/races/Portland International Raceway/document.json",
+      "mappedLengthMiles": 1.96,
+      "laps": 3,
+      "estimatedMinutes": 8.6,
+      "references": [
+        "https://portlandraceway.com/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-pa",
+      "name": "Philadelphia, PA",
+      "state": "Pennsylvania",
+      "stateCode": "PA",
+      "city": "Philadelphia",
+      "location": {
+        "lat": 39.955,
+        "lon": -75.164
+      },
+      "category": "City Runs",
+      "hubStage": 3,
+      "hubRaceRef": "Laurel Highlands Scenic Byway",
+      "raceRef": "Philadelphia, PA \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Philadelphia%2C PA %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.05,
+      "laps": 1,
+      "estimatedMinutes": 6.6,
+      "references": [
+        "https://www.visitphilly.com/things-to-do/attractions/independence-hall/",
+        "https://www.visitphilly.com/wp-content/uploads/2025/04/PHLASH-PAD-MAP-2025-1.pdf",
+        "https://www.visitphilly.com/features/philly-phlash-downtown-loop/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/PA.json"
+    },
+    {
+      "id": "city-ri",
+      "name": "Providence, RI",
+      "state": "Rhode Island",
+      "stateCode": "RI",
+      "city": "Providence",
+      "location": {
+        "lat": 41.825,
+        "lon": -71.411
+      },
+      "category": "City Runs",
+      "hubStage": 1,
+      "hubRaceRef": "Tower Hill Road",
+      "raceRef": "Providence, RI \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Providence%2C RI %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.75,
+      "laps": 1,
+      "estimatedMinutes": 9.1,
+      "references": [
+        "https://www.goprovidence.com/listing/john-brown-house-museum/",
+        "https://www.goprovidence.com/articles/post/living-history-historic-sites-and-attraction/",
+        "https://www.goprovidence.com/experiences/the-museum-at-the-john-brown-house/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/RI.json"
+    },
+    {
+      "id": "city-sc",
+      "name": "Charleston, SC",
+      "state": "South Carolina",
+      "stateCode": "SC",
+      "city": "Charleston",
+      "location": {
+        "lat": 32.785,
+        "lon": -79.933
+      },
+      "category": "City Runs",
+      "hubStage": 4,
+      "hubRaceRef": "Ohio River Crossing",
+      "raceRef": "Charleston, SC \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Charleston%2C SC %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.67,
+      "laps": 1,
+      "estimatedMinutes": 8.1,
+      "references": [
+        "https://www.charlestoncvb.com/plan-your-trip/tours-attractions~204att..?location=charleston-downtown~445",
+        "https://www.charlestoncvb.com/lgbtq/",
+        "https://www.charlestoncvb.com/plan-your-trip/tours-attractions~204Travel/?location=charleston-downtown~445"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/SC.json"
+    },
+    {
+      "id": "state-sc",
+      "name": "Carolina Motorsports Park",
+      "state": "South Carolina",
+      "stateCode": "SC",
+      "city": null,
+      "location": {
+        "lat": 34.488,
+        "lon": -80.595
+      },
+      "category": "Raceways",
+      "hubStage": 4,
+      "hubRaceRef": "Ohio River Crossing",
+      "raceRef": "Carolina Motorsports Park",
+      "documentPath": "data/server-storage/files/races/Carolina Motorsports Park/document.json",
+      "mappedLengthMiles": 2.28,
+      "laps": 3,
+      "estimatedMinutes": 12.9,
+      "references": [
+        "https://carolinamotorsportspark.com/the-road-course/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-sd",
+      "name": "Sioux Falls, SD",
+      "state": "South Dakota",
+      "stateCode": "SD",
+      "city": "Sioux Falls",
+      "location": {
+        "lat": 43.551,
+        "lon": -96.728
+      },
+      "category": "City Runs",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Sioux Falls, SD \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Sioux Falls%2C SD %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.68,
+      "laps": 1,
+      "estimatedMinutes": 7.5,
+      "references": [
+        "https://www.experiencesiouxfalls.com/general-uploads/ESF.TearoffMap.10.2023.pdf",
+        "https://www.experiencesiouxfalls.com/general-uploads/2025-Sioux-Falls-Visitor-Guide.pdf",
+        "https://www.experiencesiouxfalls.com/general-uploads/ESF.TearoffMap.6.2024.pdf"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/SD.json"
+    },
+    {
+      "id": "state-sd",
+      "name": "Needles Highway \u2014 Granite Gates",
+      "state": "South Dakota",
+      "stateCode": "SD",
+      "city": null,
+      "location": {
+        "lat": 43.85,
+        "lon": -103.531
+      },
+      "category": "Road Runs",
+      "hubStage": 8,
+      "hubRaceRef": "Pikes Peak Highway",
+      "raceRef": "Needles Highway \u2014 Granite Gates",
+      "documentPath": "data/server-storage/files/races/Needles Highway %E2%80%94 Granite Gates/document.json",
+      "mappedLengthMiles": 6.86,
+      "laps": 1,
+      "estimatedMinutes": 12.5,
+      "references": [
+        "https://gfp.sd.gov/userdocs/docs/tatanka_2022.pdf"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-tn",
+      "name": "Nashville, TN",
+      "state": "Tennessee",
+      "stateCode": "TN",
+      "city": "Nashville",
+      "location": {
+        "lat": 36.162,
+        "lon": -86.783
+      },
+      "category": "City Runs",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Nashville, TN \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Nashville%2C TN %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.73,
+      "laps": 1,
+      "estimatedMinutes": 7.7,
+      "references": [
+        "https://www.visitmusiccity.com/nashville-businesses/ajs-good-time-bar/6387",
+        "https://www.visitmusiccity.com/sites/default/files/2025-06/2025-July4_Map_General-FA.pdf",
+        "https://www.visitmusiccity.com/nashville-businesses/ryman-auditorium/7672"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/TN.json"
+    },
+    {
+      "id": "state-tn",
+      "name": "Flatrock Motorclub \u2014 Club Course",
+      "state": "Tennessee",
+      "stateCode": "TN",
+      "city": null,
+      "location": {
+        "lat": 35.8793707,
+        "lon": -84.7538283
+      },
+      "category": "Raceways",
+      "hubStage": 4,
+      "hubRaceRef": "Ohio River Crossing",
+      "raceRef": "Flatrock Motorclub \u2014 Club Course",
+      "documentPath": "data/server-storage/files/races/Flatrock Motorclub %E2%80%94 Club Course/document.json",
+      "mappedLengthMiles": 3.5,
+      "laps": 3,
+      "estimatedMinutes": 16.0,
+      "references": [
+        "https://www.flatrockmotorclub.com/drive"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-tx",
+      "name": "San Antonio, TX",
+      "state": "Texas",
+      "stateCode": "TX",
+      "city": "San Antonio",
+      "location": {
+        "lat": 29.424,
+        "lon": -98.492
+      },
+      "category": "City Runs",
+      "hubStage": 7,
+      "hubRaceRef": "Historic Route 66",
+      "raceRef": "San Antonio, TX \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/San Antonio%2C TX %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.52,
+      "laps": 1,
+      "estimatedMinutes": 6.6,
+      "references": [
+        "https://www.visitsanantonio.com/plan-your-trip/neighborhood-guide/downtown/",
+        "https://www.visitsanantonio.com/media/media-kit/san-antonios-legendary-attractions/",
+        "https://www.visitsanantonio.com/welcome-international-travelers/bienvenido/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/TX.json"
+    },
+    {
+      "id": "city-ut",
+      "name": "Salt Lake City, UT",
+      "state": "Utah",
+      "stateCode": "UT",
+      "city": "Salt Lake City",
+      "location": {
+        "lat": 40.764,
+        "lon": -111.89
+      },
+      "category": "City Runs",
+      "hubStage": 9,
+      "hubRaceRef": "Moki Dugway",
+      "raceRef": "Salt Lake City, UT \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Salt Lake City%2C UT %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.8,
+      "laps": 1,
+      "estimatedMinutes": 7.8,
+      "references": [
+        "https://www.visitsaltlake.com/plan-your-visit/trip-ideas-itineraries/salt-lake-and-beyond/",
+        "https://www.visitsaltlake.com/blog/stories/post/temple-square-renovation-update/",
+        "https://www.visitsaltlake.com/plan-your-visit/trip-ideas-itineraries/a-quick-guide-to-fun-in-salt-lake/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/UT.json"
+    },
+    {
+      "id": "city-va",
+      "name": "Richmond, VA",
+      "state": "Virginia",
+      "stateCode": "VA",
+      "city": "Richmond",
+      "location": {
+        "lat": 37.542,
+        "lon": -77.436
+      },
+      "category": "City Runs",
+      "hubStage": 3,
+      "hubRaceRef": "Laurel Highlands Scenic Byway",
+      "raceRef": "Richmond, VA \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Richmond%2C VA %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 5.36,
+      "laps": 1,
+      "estimatedMinutes": 8.0,
+      "references": [
+        "https://www.visitrichmondva.com/listing/main-street-station/1097/",
+        "https://www.visitrichmondva.com/listing/main-street-station/40/",
+        "https://www.visitrichmondva.com/listing/main-street-station/4535/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/VA.json"
+    },
+    {
+      "id": "city-vt",
+      "name": "Burlington, VT",
+      "state": "Vermont",
+      "stateCode": "VT",
+      "city": "Burlington",
+      "location": {
+        "lat": 44.477,
+        "lon": -73.211
+      },
+      "category": "City Runs",
+      "hubStage": 2,
+      "hubRaceRef": "Mount Washington Auto Road \u2014 point-to-point",
+      "raceRef": "Burlington, VT \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Burlington%2C VT %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.61,
+      "laps": 1,
+      "estimatedMinutes": 6.9,
+      "references": [
+        "https://www.helloburlingtonvt.com/things-to-do/arts-culture/",
+        "https://www.helloburlingtonvt.com/listing/flynn-theater/467/",
+        "https://www.helloburlingtonvt.com/things-to-do/outdoors-recreation/parks-gardens/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/VT.json"
+    },
+    {
+      "id": "state-vt",
+      "name": "Smugglers Notch \u2014 Vermont 108",
+      "state": "Vermont",
+      "stateCode": "VT",
+      "city": null,
+      "location": {
+        "lat": 44.556,
+        "lon": -72.792
+      },
+      "category": "Road Runs",
+      "hubStage": 2,
+      "hubRaceRef": "Mount Washington Auto Road \u2014 point-to-point",
+      "raceRef": "Smugglers Notch \u2014 Vermont 108",
+      "documentPath": "data/server-storage/files/races/Smugglers Notch %E2%80%94 Vermont 108/document.json",
+      "mappedLengthMiles": 7.93,
+      "laps": 1,
+      "estimatedMinutes": 9.1,
+      "references": [
+        "https://www.vtstateparks.com/parks/smugglers-notch"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-wa",
+      "name": "Seattle, WA",
+      "state": "Washington",
+      "stateCode": "WA",
+      "city": "Seattle",
+      "location": {
+        "lat": 47.608,
+        "lon": -122.337
+      },
+      "category": "City Runs",
+      "hubStage": 11,
+      "hubRaceRef": "Angeles Crest Highway",
+      "raceRef": "Seattle, WA \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Seattle%2C WA %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.76,
+      "laps": 1,
+      "estimatedMinutes": 7.3,
+      "references": [
+        "https://visitseattle.org/things-to-do/sightseeing/pike-place-market/",
+        "https://visitseattle.org/things-to-do/sightseeing/sights-in-the-city/",
+        "https://visitseattle.org/things-to-do/cruises/pre-post-cruise-activities/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/WA.json"
+    },
+    {
+      "id": "state-wa",
+      "name": "Pacific Raceways",
+      "state": "Washington",
+      "stateCode": "WA",
+      "city": null,
+      "location": {
+        "lat": 47.32,
+        "lon": -122.141
+      },
+      "category": "Raceways",
+      "hubStage": 11,
+      "hubRaceRef": "Angeles Crest Highway",
+      "raceRef": "Pacific Raceways",
+      "documentPath": "data/server-storage/files/races/Pacific Raceways/document.json",
+      "mappedLengthMiles": 2.25,
+      "laps": 3,
+      "estimatedMinutes": 9.7,
+      "references": [
+        "https://pacificraceways.com/road-course-track-map/"
+      ],
+      "landmarkNotes": null
+    },
+    {
+      "id": "city-wi",
+      "name": "Milwaukee, WI",
+      "state": "Wisconsin",
+      "stateCode": "WI",
+      "city": "Milwaukee",
+      "location": {
+        "lat": 43.038,
+        "lon": -87.911
+      },
+      "category": "City Runs",
+      "hubStage": 6,
+      "hubRaceRef": "Data Center City",
+      "raceRef": "Milwaukee, WI \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Milwaukee%2C WI %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.67,
+      "laps": 1,
+      "estimatedMinutes": 8.7,
+      "references": [
+        "https://www.visitmilwaukee.org/listing/pabst-mansion/517/",
+        "https://www.visitmilwaukee.org/things-to-do/museums/",
+        "https://www.visitmilwaukee.org/things-to-do/attractions/milwaukee-art-museum/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/WI.json"
+    },
+    {
+      "id": "city-wv",
+      "name": "Charleston, WV",
+      "state": "West Virginia",
+      "stateCode": "WV",
+      "city": "Charleston",
+      "location": {
+        "lat": 38.347,
+        "lon": -81.626
+      },
+      "category": "City Runs",
+      "hubStage": 4,
+      "hubRaceRef": "Ohio River Crossing",
+      "raceRef": "Charleston, WV \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Charleston%2C WV %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 4.65,
+      "laps": 1,
+      "estimatedMinutes": 8.0,
+      "references": [
+        "https://events.charlestonwv.com/",
+        "https://events.charlestonwv.com/calendar/upcoming",
+        "https://events.charlestonwv.com/capitol_market_228"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/WV.json"
+    },
+    {
+      "id": "city-wy",
+      "name": "Cheyenne, WY",
+      "state": "Wyoming",
+      "stateCode": "WY",
+      "city": "Cheyenne",
+      "location": {
+        "lat": 41.14,
+        "lon": -104.814
+      },
+      "category": "City Runs",
+      "hubStage": 8,
+      "hubRaceRef": "Pikes Peak Highway",
+      "raceRef": "Cheyenne, WY \u2014 Landmark Run",
+      "documentPath": "data/server-storage/files/races/Cheyenne%2C WY %E2%80%94 Landmark Run/document.json",
+      "mappedLengthMiles": 2.88,
+      "laps": 1,
+      "estimatedMinutes": 4.6,
+      "references": [
+        "https://www.cheyenne.org/articles/post/the-western-experience/",
+        "https://www.cheyenne.org/plan-your-visit/about-cheyenne/visitor-resources/",
+        "https://www.cheyenne.org/groups/history-trivia/"
+      ],
+      "landmarkNotes": "data/campaigns/america/state-expansion/landmarks/WY.json"
+    },
+    {
+      "id": "state-wy",
+      "name": "Wind River Canyon \u2014 Canyon Walls",
+      "state": "Wyoming",
+      "stateCode": "WY",
+      "city": null,
+      "location": {
+        "lat": 43.658,
+        "lon": -108.204
+      },
+      "category": "Road Runs",
+      "hubStage": 8,
+      "hubRaceRef": "Pikes Peak Highway",
+      "raceRef": "Wind River Canyon \u2014 Canyon Walls",
+      "documentPath": "data/server-storage/files/races/Wind River Canyon %E2%80%94 Canyon Walls/document.json",
+      "mappedLengthMiles": 6.83,
+      "laps": 1,
+      "estimatedMinutes": 5.4,
+      "references": [
+        "https://travelwyoming.com/wp-content/uploads/2023/04/Wind-River-Scenic-Byway.pdf"
+      ],
+      "landmarkNotes": null
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import {paceNoteLookahead, callSeconds, codriverBody, codriverChain, codriverPhrase, speakCodriver, updateCodriverEvents} from './RaceCodriver.js';
 import {getRaceAiPlannedSpeed} from './RaceAiRoadPlan.js';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -19,12 +20,12 @@ export function racePaceNotes(race, generated = []) {
 }
 
 export function nextRacePaceNote(calls, distance, speed, length, circuit = false, {preview = false} = {}) {
-  const ahead = 100;
+
   let result = null;
   for (const call of calls || []) {
     let remaining = call.at - distance;
     if (circuit) remaining = ((remaining % length) + length) % length;
-    if (remaining >= 0 && (preview || remaining <= ahead) && (!result || remaining < result.remaining)) result = {...call, remaining};
+    if (remaining >= 0 && (preview || remaining <= paceNoteLookahead(call, speed)) && (!result || remaining < result.remaining)) result = {...call, remaining};
   }
   if(result)result.text=result.text.replace(/^Brake,\s*/i,'');
   return result;
@@ -81,36 +82,43 @@ export function updateRaceDrivingAssists(editor, dt) {
   const brakes = session.vehicleDynamicsRunner?.state?.mechanical?.effects?.brakes || {};
   state.brakeCondition = Math.min(1, ...Object.values(brakes).map(v => clamp(Number(v) || 0, 0, 1)));
   const settings = drivingGuideSettings(editor.selectedRace);
-  state.notes = active && settings.notes && !state.wrongWay
-    ? (session.codriverCalls||[]).map(call=>nextRacePaceNote([call],distance,session.speedMps,session.routeLength,session.routeRuntimeType==='circuit')).filter(Boolean).sort((a,b)=>a.remaining-b.remaining) : [];
-  state.note=state.notes[0]||null;
-  state.upcomingTurn = active && (settings.line || settings.notes) && !state.wrongWay
-    ? nextRacePaceNote(session.codriverCalls,distance,session.speedMps,session.routeLength,session.routeRuntimeType==='circuit',{preview:true}) : null;
-  // Capture the distance once on entering call range. Speed changes must not
-  // turn a single corner into a countdown or cause another spoken call.
-  const lap=Number(session.lap||1);
+  const circuit=session.routeRuntimeType==='circuit',lap=Number(session.lap||1);
   state.noteAnnouncements ||= new Map();state.spokenNotes ||= new Set();
   if(state.noteLap!==lap){
     state.noteLap=lap;
     for(const key of state.noteAnnouncements.keys())if(Number(key.split(':')[0])<lap-1){state.noteAnnouncements.delete(key);state.spokenNotes.delete(key);}
   }
-  const toSpeak=[];
-  state.notes=state.notes.map(note=>{
-    const callLap=lap+(session.routeRuntimeType==='circuit'&&note.at<distance?1:0);
-    const key=`${callLap}:${note.id||''}:${note.at}`;
-    if(!state.noteAnnouncements.has(key)){
-      const metres=Math.round(note.remaining/10)*10;
-      const text=(note.body||(Number.isFinite(note.linkedAt)?note.text.replace(/,\s*(?:into|and)\s+.*$/i,''):note.text)).replace(/^Brake,\s*/i,'').replace(/\b(?:meters|metres)\b/gi,'').replace(/\s+/g,' ').trim();
-      state.noteAnnouncements.set(key,{distance:metres,text});
-    }
-    const announcement=state.noteAnnouncements.get(key);
-    const visible={...note,announcedDistance:announcement.distance,displayText:announcement.distance>0?`${announcement.distance} m · ${announcement.text}`:announcement.text};
-    if(!state.spokenNotes.has(key))toSpeak.push({key,text:announcement.distance>0?`${announcement.distance} ${announcement.text}`:announcement.text});
-    return visible;
-  });
-  state.note=state.notes[0]||null;
-  if(settings.voice&&active&&toSpeak.length&&globalThis.speechSynthesis&&globalThis.SpeechSynthesisUtterance&&!globalThis.speechSynthesis.speaking){
-    const utterance=new SpeechSynthesisUtterance(toSpeak.map(call=>call.text).join(', '));utterance.rate=1.15;
-    try{globalThis.speechSynthesis.speak(utterance);for(const call of toSpeak)state.spokenNotes.add(call.key);}catch{/* Retry while the call is still ahead. */}
+  const calls=[...(session.codriverCalls||[])];
+  if(session.routeLength>0&&(!circuit||lap>=Number(editor.selectedRace.laps||1)))
+    calls.push({id:'stage-finish',at:session.routeLength,text:'Over finish',kind:'finish'});
+  const ahead=calls.map((call,index)=>{
+    const note=nextRacePaceNote([call],distance,session.speedMps,session.routeLength,circuit&&call.kind!=='finish',{preview:true});
+    if(!note)return null;
+    const callLap=lap+(circuit&&note.at<distance?1:0);
+    if(circuit&&callLap>Number(editor.selectedRace.laps||1))return null;
+    return {...note,key:`${callLap}:${call.id||index}:${call.at}`};
+  }).filter(Boolean).sort((a,b)=>a.remaining-b.remaining);
+  state.upcomingTurn=active&&(settings.line||settings.notes)&&!state.wrongWay?ahead[0]||null:null;
+  const available=active&&settings.notes&&!state.wrongWay;
+  const pending=available?ahead.filter(n=>!state.spokenNotes.has(n.key)):[];
+  const first=pending[0];
+  const candidates=codriverChain(pending,Math.max(0,session.speedMps||0));
+  const readingLead=Math.min(450,Math.max(0,session.speedMps||0)*(1.5+candidates.reduce((sum,n)=>sum+callSeconds(codriverBody(n)),0)));
+  const due=first&&first.remaining<=Math.max(readingLead,paceNoteLookahead(first,session.speedMps,state.grip,state.brakeCondition));
+  const chain=due?candidates:[];
+  for(const note of chain){
+    if(!state.noteAnnouncements.has(note.key))state.noteAnnouncements.set(note.key,{distance:Math.round(note.remaining/10)*10,text:codriverBody(note)});
+    note.announcedDistance=state.noteAnnouncements.get(note.key).distance;
   }
+  // Once announced, an icon remains until passing its marker, even after slowing.
+  state.notes=available?ahead.filter(n=>state.noteAnnouncements.has(n.key)).map(note=>{
+    const announcement=state.noteAnnouncements.get(note.key);
+    return {...note,announcedDistance:announcement.distance,displayText:announcement.distance>0?`${announcement.distance} m · ${announcement.text}`:announcement.text};
+  }):[];
+  state.note=state.notes[0]||null;
+  updateCodriverEvents(state,session,dt,{enabled:settings.notes&&settings.voice,
+    paused:editor.raceInput.paused||session.carEditorPreview,intro:session.raceIntro?.active,
+    active:active&&!state.wrongWay,roadDue:!!due,nextRemaining:ahead[0]?.remaining??Infinity});
+  if(available&&settings.voice&&chain.length&&speakCodriver(state,codriverPhrase(chain.map(n=>({...n,announcedDistance:Math.round(n.remaining/10)*10})))))
+    {for(const note of chain)state.spokenNotes.add(note.key);state.speechKeys=chain.map(n=>n.key);}
 }
