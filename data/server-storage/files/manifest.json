@@ -604,7 +604,11 @@
       "landmark-city-in-soldiers-and-sailors-monument": "art/landmark-city-in-soldiers-and-sailors-monument/document.json",
       "landmark-city-in-indiana-statehouse": "art/landmark-city-in-indiana-statehouse/document.json",
       "landmark-city-in-lucas-oil-stadium": "art/landmark-city-in-lucas-oil-stadium/document.json",
-      "landmark-city-in-scottish-rite-cathedral": "art/landmark-city-in-scottish-rite-cathedral/document.json"
+      "landmark-city-in-scottish-rite-cathedral": "art/landmark-city-in-scottish-rite-cathedral/document.json",
+      "landmark-city-ms-mississippi-state-capitol": "art/landmark-city-ms-mississippi-state-capitol/document.json",
+      "landmark-city-ms-old-capitol-museum": "art/landmark-city-ms-old-capitol-museum/document.json",
+      "landmark-city-ms-smith-robertson-museum": "art/landmark-city-ms-smith-robertson-museum/document.json",
+      "landmark-city-ms-mississippi-museum-of-art": "art/landmark-city-ms-mississippi-museum-of-art/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -944,7 +948,11 @@
       "landmark-city-in-soldiers-and-sailors-monument": "doodads/landmark-city-in-soldiers-and-sailors-monument/document.json",
       "landmark-city-in-indiana-statehouse": "doodads/landmark-city-in-indiana-statehouse/document.json",
       "landmark-city-in-lucas-oil-stadium": "doodads/landmark-city-in-lucas-oil-stadium/document.json",
-      "landmark-city-in-scottish-rite-cathedral": "doodads/landmark-city-in-scottish-rite-cathedral/document.json"
+      "landmark-city-in-scottish-rite-cathedral": "doodads/landmark-city-in-scottish-rite-cathedral/document.json",
+      "landmark-city-ms-mississippi-state-capitol": "doodads/landmark-city-ms-mississippi-state-capitol/document.json",
+      "landmark-city-ms-old-capitol-museum": "doodads/landmark-city-ms-old-capitol-museum/document.json",
+      "landmark-city-ms-smith-robertson-museum": "doodads/landmark-city-ms-smith-robertson-museum/document.json",
+      "landmark-city-ms-mississippi-museum-of-art": "doodads/landmark-city-ms-mississippi-museum-of-art/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

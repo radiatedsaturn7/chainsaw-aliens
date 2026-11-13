@@ -5625,35 +5625,472 @@
     },
     "landmark-city-ms-mississippi-state-capitol": {
       "raceRef": "Jackson, MS — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 86.77808930511911,
+        "worldZ": -202.21937291270334,
+        "routeDistanceM": 2013,
+        "offsetFromRoadM": 117,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.002217061701945,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 10.92759387608144,
+            "angularWidthDegrees": 34.4731982485168,
+            "rangeM": 144.90195674480952,
+            "occluderIds": [
+              "city-ms-prop-117"
+            ],
+            "score": 0.06754754939480909
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 9.607599998212631,
+            "angularWidthDegrees": 30.5554857361898,
+            "rangeM": 164.5829824775009,
+            "occluderIds": [],
+            "score": 0.6156960000714948
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.570001975748292,
+            "angularWidthDegrees": 27.412106488885808,
+            "rangeM": 184.33268612458306,
+            "occluderIds": [],
+            "score": 0.6571999209700683
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.733443110964531,
+            "angularWidthDegrees": 24.84013455824694,
+            "rangeM": 204.13113487809434,
+            "occluderIds": [],
+            "score": 0.6906622755614187
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 51.92747619795795,
+            "angularWidthDegrees": 21.84969847630155,
+            "rangeM": 232.90965318474872,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 74.66296504064928,
+            "angularWidthDegrees": 20.414367768448578,
+            "rangeM": 249.67586312301168,
+            "occluderIds": [
+              "city-ms-prop-111",
+              "city-ms-prop-116",
+              "city-ms-prop-117"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 66.23188945357198,
+            "angularWidthDegrees": 19.393125043516935,
+            "rangeM": 263.0990447115337,
+            "occluderIds": [
+              "city-ms-prop-109",
+              "city-ms-prop-117"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 20.89721710739615,
+            "angularWidthDegrees": 17.716938882628728,
+            "rangeM": 288.45139493582064,
+            "occluderIds": [],
+            "score": 0.16411131570415405
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "0f60c4def90044c8def0a5e271f477d61d788dadecd66586725f730c073ef25d",
+      "sourceSha256": "9a737d40520a761760bb840bf889b2fbdfb92d66a0f176210c50e987770d9aee",
+      "roadSha256": "214a354d168ce2360a5d147bad6a49c83ea66a06b772f50963b40858089ad867",
+      "placementDetails": {
+        "x": 434.66721465817,
+        "z": -110.64649781261687,
+        "yaw": 1.267083668159592,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2162.2707872456995,
+        "trackLateral": -119.99999999999999,
+        "minimumRoadClearanceM": 55.659105550215195,
+        "checkedSegments": 4030,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MS/mississippi-state-capitol-desktop.png",
+        "docs/art/landmark-previews/MS/mississippi-state-capitol-mobile.png"
+      ]
     },
     "landmark-city-ms-old-capitol-museum": {
       "raceRef": "Jackson, MS — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 288.0416010951538,
+        "worldZ": 316.8726201413579,
+        "routeDistanceM": 2609,
+        "offsetFromRoadM": 46,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 2.999969669692774,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 13.574243260404586,
+            "angularWidthDegrees": 23.051813266257422,
+            "rangeM": 137.30658385972293,
+            "occluderIds": [],
+            "score": 0.45703026958381654
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 12.115123548185117,
+            "angularWidthDegrees": 20.249727033698846,
+            "rangeM": 156.79696594468757,
+            "occluderIds": [],
+            "score": 0.5153950580725952
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 10.751622315025543,
+            "angularWidthDegrees": 18.038496879119325,
+            "rangeM": 176.4014713308596,
+            "occluderIds": [],
+            "score": 0.5699351073989782
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 9.661357240690743,
+            "angularWidthDegrees": 16.25317891264297,
+            "rangeM": 196.0858731421633,
+            "occluderIds": [],
+            "score": 0.6135457103723703
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.3931476734847,
+            "angularWidthDegrees": 14.142764752137564,
+            "rangeM": 225.71653790379042,
+            "occluderIds": [],
+            "score": 0.664274093060612
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 7.181254425972214,
+            "angularWidthDegrees": 12.047268533634421,
+            "rangeM": 265.349255770467,
+            "occluderIds": [
+              "city-ms-prop-148"
+            ],
+            "score": 0.08552997875533337
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 6.242107849881871,
+            "angularWidthDegrees": 10.487861430847309,
+            "rangeM": 305.0764636679952,
+            "occluderIds": [
+              "city-ms-prop-146",
+              "city-ms-prop-148"
+            ],
+            "score": 0.090037882320567
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 5.162172889895627,
+            "angularWidthDegrees": 9.02404907413183,
+            "rangeM": 354.82168073125905,
+            "occluderIds": [
+              "city-ms-prop-146",
+              "city-ms-prop-148"
+            ],
+            "score": 0.09522157012850098
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "67372b5f0953691a73d85c50348da7fe6f2c93fc69dd00ceda597f622ca871d3",
+      "sourceSha256": "b7f5b55429f50564cc5b5c137ef7fe47d52b7cb7eaf0235c812496041e9a1cf2",
+      "roadSha256": "214a354d168ce2360a5d147bad6a49c83ea66a06b772f50963b40858089ad867",
+      "placementDetails": {
+        "x": 173.1010255848571,
+        "z": 538.1546890816957,
+        "yaw": -0.3260359361771804,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2757.9418544698738,
+        "trackLateral": -115,
+        "minimumRoadClearanceM": 73.04616234873491,
+        "checkedSegments": 4030,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MS/old-capitol-museum-desktop.png",
+        "docs/art/landmark-previews/MS/old-capitol-museum-mobile.png"
+      ]
     },
     "landmark-city-ms-smith-robertson-museum": {
       "raceRef": "Jackson, MS — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -354.6689026285342,
+        "worldZ": -378.8527578633239,
+        "routeDistanceM": 4174,
+        "offsetFromRoadM": 63,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.5366002544841214,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 60.24007413175492,
+            "angularWidthDegrees": 32.59952763095886,
+            "rangeM": 92.15422342300631,
+            "occluderIds": [
+              "city-ms-prop-227"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 50.58745134670559,
+            "angularWidthDegrees": 29.17435362779773,
+            "rangeM": 103.54754053515633,
+            "occluderIds": [
+              "city-ms-prop-227"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 43.015819084455295,
+            "angularWidthDegrees": 25.883000572340464,
+            "rangeM": 117.26800674976232,
+            "occluderIds": [
+              "city-ms-prop-225",
+              "city-ms-prop-227"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 37.10964527031884,
+            "angularWidthDegrees": 22.975581909442827,
+            "rangeM": 132.5951645545371,
+            "occluderIds": [
+              "city-ms-prop-225"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 30.51313919972893,
+            "angularWidthDegrees": 19.410370744220387,
+            "rangeM": 157.56273686223676,
+            "occluderIds": [
+              "city-ms-prop-223",
+              "city-ms-prop-225"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 8.059993637896964,
+            "angularWidthDegrees": 15.873142281353383,
+            "rangeM": 193.29289313205976,
+            "occluderIds": [],
+            "score": 0.6776002544841214
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 57.078100753938784,
+            "angularWidthDegrees": 14.141488592534314,
+            "rangeM": 217.25075766401858,
+            "occluderIds": [
+              "city-ms-prop-217",
+              "city-ms-prop-223",
+              "city-ms-prop-225"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 47.33478961299805,
+            "angularWidthDegrees": 12.402578827676312,
+            "rangeM": 248.00275968861496,
+            "occluderIds": [
+              "city-ms-prop-215",
+              "city-ms-prop-220",
+              "city-ms-prop-222",
+              "city-ms-prop-225",
+              "city-ms-prop-227"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "c681899a24451015ae32a362f9daf29f7afb8d27d93e677215d92553aa3660da",
+      "sourceSha256": "b5eefe804bdec9038a0a45c8aca0ff9b0ab098fd1c8e893a935d4076da3532d8",
+      "roadSha256": "214a354d168ce2360a5d147bad6a49c83ea66a06b772f50963b40858089ad867",
+      "placementDetails": {
+        "x": -491.60879319171397,
+        "z": -428.5569831350687,
+        "yaw": -2.645777037781638,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4202.670030864572,
+        "trackLateral": -80.00026437136661,
+        "minimumRoadClearanceM": 42.10733056374706,
+        "checkedSegments": 4030,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ms-mississippi-museum-of-art": {
       "raceRef": "Jackson, MS — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -246.6967711521128,
+        "worldZ": 632.9446357051595,
+        "routeDistanceM": 6249,
+        "offsetFromRoadM": 94,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 5.0883895299652355,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 5.429736478304324,
+            "angularWidthDegrees": 23.543290262793207,
+            "rangeM": 129.30943221888407,
+            "occluderIds": [],
+            "score": 0.782810540867827
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 4.703113575169976,
+            "angularWidthDegrees": 20.471655930471403,
+            "rangeM": 149.23169245311777,
+            "occluderIds": [],
+            "score": 0.811875456993201
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 4.147714444406619,
+            "angularWidthDegrees": 18.101158339626966,
+            "rangeM": 169.17229916293564,
+            "occluderIds": [],
+            "score": 0.8340914222237352
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 3.7094727232806757,
+            "angularWidthDegrees": 16.218309310703095,
+            "rangeM": 189.1254493074006,
+            "occluderIds": [],
+            "score": 0.8516210910687729
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 3.2018390765375027,
+            "angularWidthDegrees": 14.025150514335937,
+            "rangeM": 219.07119558080646,
+            "occluderIds": [],
+            "score": 0.8719264369384999
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 2.7076328491284687,
+            "angularWidthDegrees": 11.87897076724292,
+            "rangeM": 259.0183898423214,
+            "occluderIds": [],
+            "score": 0.8916946860348612
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 3.014851452261924,
+            "angularWidthDegrees": 10.300430714723104,
+            "rangeM": 298.9797046955086,
+            "occluderIds": [
+              "city-ms-prop-330"
+            ],
+            "score": 0.10552871302914275
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 2.9497535814176574,
+            "angularWidthDegrees": 8.832863512938928,
+            "rangeM": 348.904162274048,
+            "occluderIds": [
+              "city-ms-prop-330",
+              "city-ms-prop-334",
+              "city-ms-prop-339"
+            ],
+            "score": 0.10584118280919524
+          }
+        ],
+        "sourceDistanceShiftM": -90
+      },
+      "signature": "571039f9234b9c4525235752f231ff2aee3ddb48f374931d2e18d3c7cce64212",
+      "sourceSha256": "26676887f4a3c6bd0eac2c4cd962d6d1e7c4f08d1cd8b665800d57f4258edf0b",
+      "roadSha256": "214a354d168ce2360a5d147bad6a49c83ea66a06b772f50963b40858089ad867",
+      "placementDetails": {
+        "x": -45.9326330883206,
+        "z": 517.3333696579801,
+        "yaw": 1.3217800061973934,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6158.405972873365,
+        "trackLateral": -99.99999998108922,
+        "minimumRoadClearanceM": 62.10706617346972,
+        "checkedSegments": 4030,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-mt-moss-mansion": {
       "raceRef": "Billings, MT — Landmark Run",

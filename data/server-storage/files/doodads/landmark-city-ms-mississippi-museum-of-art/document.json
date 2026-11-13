@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613413063,
+  "doodad": {
+    "id": "campaign-landmark-city-ms-mississippi-museum-of-art",
+    "name": "landmark-city-ms-mississippi-museum-of-art",
+    "artRef": "landmark-city-ms-mississippi-museum-of-art",
+    "widthM": 53.89473684210526,
+    "heightM": 18,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 45.81052631578947,
+    "hitboxHeightM": 16.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

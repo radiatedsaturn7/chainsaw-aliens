@@ -2736,6 +2736,34 @@
       "heightM": 42,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ms-mississippi-state-capitol",
+      "source": "landmarks/MS/landmark-city-ms-mississippi-state-capitol.png",
+      "heightM": 36,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ms-old-capitol-museum",
+      "source": "landmarks/MS/landmark-city-ms-old-capitol-museum.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ms-smith-robertson-museum",
+      "source": "landmarks/MS/landmark-city-ms-smith-robertson-museum.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ms-mississippi-museum-of-art",
+      "source": "landmarks/MS/landmark-city-ms-mississippi-museum-of-art.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
