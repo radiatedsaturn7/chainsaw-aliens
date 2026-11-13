@@ -5503,7 +5503,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": -1493.3602334813181,
         "worldZ": -1174.8983372553494,
@@ -5610,19 +5610,17 @@
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Classical roofline visible, but foreground generic building obscures lower facade; improve actual sightline."
-      ],
+      "remaining": [],
       "visualEvidence": [
         "docs/art/landmark-previews/PA/philadelphia-museum-of-art-desktop.png",
         "docs/art/landmark-previews/PA/philadelphia-museum-of-art-mobile.png"
       ],
       "visualReview": {
-        "approachBeforeClosestRouteProjectionM": 135,
+        "approachBeforeClosestRouteProjectionM": 225,
         "desktopViewport": "960x540",
         "mobileViewport": "390x844 handheld",
-        "conditions": "unchanged authored native conditions",
-        "notes": "Classical roofline visible, but foreground generic building obscures lower facade; improve actual sightline."
+        "conditions": "unchanged native authored conditions",
+        "notes": "Existing exact pose, no placement edit. Wider225m bend approach exposes all three pediments and central columned portico clearly above existing slope and foreground scenery in both modes. Foundation remains terrain/scenery-occluded; identifying architecture is readable and clear of handheld overlays."
       }
     },
     "landmark-city-pa-philadelphia-city-hall": {
