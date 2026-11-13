@@ -2182,5 +2182,33 @@
     "documentSha256": "aff4c1b9636b4076391ed017fcef03aa097f8f05ad4f56b0d7ab9d6928aa7d02",
     "width": 512,
     "height": 171
+  },
+  "landmark-city-nd-fargo-theatre": {
+    "source": "assets/campaign-art/landmarks/ND/landmark-city-nd-fargo-theatre.png",
+    "sourceSha256": "43440fbe982aa89c7ff1ded218bec2f01fd472619e9557ca5d5438a1fbccb5f5",
+    "documentSha256": "d259f96be6a0e06c4fa3d6e3df7770a257b9825dbbd2be8a5250df82d3e8d546",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-nd-plains-art-museum": {
+    "source": "assets/campaign-art/landmarks/ND/landmark-city-nd-plains-art-museum.png",
+    "sourceSha256": "eaaaed49369983a1589bf692f89d6fe38899680939858be8148f6bc7e245de24",
+    "documentSha256": "66e9ca7f3f5eccc1a68a983f4b0b7bac023cc66d86db3c92cfee62aa9e7d391a",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nd-island-park": {
+    "source": "assets/campaign-art/landmarks/ND/landmark-city-nd-island-park.png",
+    "sourceSha256": "c86f5bc0a86230547e748bad458d813d570441b2487dc5d3304e5495bb10867c",
+    "documentSha256": "25329c549c5533f915b9081e01b801e65bc2ce674aa5548f7020c06b6a4cbb64",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-nd-fargo-civic-center": {
+    "source": "assets/campaign-art/landmarks/ND/landmark-city-nd-fargo-civic-center.png",
+    "sourceSha256": "d2533c4d3e95a2aea5274e633dd9bc3b0206bd9bcfa3869ec884f602b34c6377",
+    "documentSha256": "ee9a8d9ba2e86ddb79e5cca607a55c6fe2eb13b111abe4c724d50493776597e0",
+    "width": 512,
+    "height": 256
   }
 }

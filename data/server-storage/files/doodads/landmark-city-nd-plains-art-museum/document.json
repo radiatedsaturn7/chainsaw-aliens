@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613509555,
+  "doodad": {
+    "id": "campaign-landmark-city-nd-plains-art-museum",
+    "name": "landmark-city-nd-plains-art-museum",
+    "artRef": "landmark-city-nd-plains-art-museum",
+    "widthM": 36,
+    "heightM": 18,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 30.599999999999998,
+    "hitboxHeightM": 16.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

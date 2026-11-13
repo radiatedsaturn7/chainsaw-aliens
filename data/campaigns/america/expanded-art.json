@@ -2764,6 +2764,34 @@
       "heightM": 18,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-nd-fargo-theatre",
+      "source": "landmarks/ND/landmark-city-nd-fargo-theatre.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nd-plains-art-museum",
+      "source": "landmarks/ND/landmark-city-nd-plains-art-museum.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nd-island-park",
+      "source": "landmarks/ND/landmark-city-nd-island-park.png",
+      "heightM": 9,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nd-fargo-civic-center",
+      "source": "landmarks/ND/landmark-city-nd-fargo-civic-center.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

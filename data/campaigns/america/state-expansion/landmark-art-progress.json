@@ -6158,35 +6158,465 @@
     },
     "landmark-city-nd-fargo-theatre": {
       "raceRef": "Fargo, ND — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -87.06263790809022,
+        "worldZ": -402.4483538896692,
+        "routeDistanceM": 1516,
+        "offsetFromRoadM": 50,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 3.8024068022242914,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 58.93415159077232,
+            "angularWidthDegrees": 16.150199095005036,
+            "rangeM": 137.57666528617338,
+            "occluderIds": [
+              "city-nd-prop-69"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 25.020984346704275,
+            "angularWidthDegrees": 14.332093746382103,
+            "rangeM": 155.24910147905635,
+            "occluderIds": [
+              "city-nd-prop-69"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 18.10411145971099,
+            "angularWidthDegrees": 12.82856692736443,
+            "rangeM": 173.6256052966035,
+            "occluderIds": [
+              "city-nd-prop-69"
+            ],
+            "score": 0.03310026499338725
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 3.943677327064129,
+            "angularWidthDegrees": 11.53170859282495,
+            "rangeM": 193.30736076598853,
+            "occluderIds": [
+              "city-nd-prop-69"
+            ],
+            "score": 0.10107034883009218
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.1808423288363783,
+            "angularWidthDegrees": 9.992160105454023,
+            "rangeM": 223.27983466906846,
+            "occluderIds": [],
+            "score": 0.9127663068465448
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 1.849554770640554,
+            "angularWidthDegrees": 8.480871434104289,
+            "rangeM": 263.2553044074577,
+            "occluderIds": [],
+            "score": 0.9260178091743778
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.7369125714799359,
+            "angularWidthDegrees": 7.365868863435264,
+            "rangeM": 303.24165504128,
+            "occluderIds": [],
+            "score": 0.9705234971408025
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.6517856190228286,
+            "angularWidthDegrees": 6.32561536456898,
+            "rangeM": 353.23793810026564,
+            "occluderIds": [],
+            "score": 0.9739285752390868
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "a5b469e5902e8d2b67371e1f51a21373eed66686408bfde1008f5653e1955865",
+      "sourceSha256": "43440fbe982aa89c7ff1ded218bec2f01fd472619e9557ca5d5438a1fbccb5f5",
+      "roadSha256": "e1700483caccad2308018c389281ef36059f2a1da0e87f6e4a8c11e93c4e4e05",
+      "placementDetails": {
+        "x": 73.88243914658057,
+        "z": -633.6592715011401,
+        "yaw": 1.3295306966266125,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1306.8024204745163,
+        "trackLateral": -130,
+        "minimumRoadClearanceM": 101.03649662615246,
+        "checkedSegments": 4189,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/ND/fargo-theatre-desktop.png",
+        "docs/art/landmark-previews/ND/fargo-theatre-mobile.png"
+      ]
     },
     "landmark-city-nd-plains-art-museum": {
       "raceRef": "Fargo, ND — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -367.184813115997,
+        "worldZ": -105.924433431028,
+        "routeDistanceM": 2059,
+        "offsetFromRoadM": 30,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.791317837271228,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 8.673526057878085,
+            "angularWidthDegrees": 13.05806726429117,
+            "rangeM": 157.2753636745944,
+            "occluderIds": [],
+            "score": 0.6530589576848767
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 7.835710754677083,
+            "angularWidthDegrees": 11.609219166343603,
+            "rangeM": 177.06500766521518,
+            "occluderIds": [],
+            "score": 0.6865715698129167
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 7.042244183509774,
+            "angularWidthDegrees": 10.446725305552981,
+            "rangeM": 196.89716989690237,
+            "occluderIds": [],
+            "score": 0.718310232659609
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 6.354697910467107,
+            "angularWidthDegrees": 9.494024055697285,
+            "rangeM": 216.76018024710328,
+            "occluderIds": [],
+            "score": 0.7458120835813158
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 23.960875161687262,
+            "angularWidthDegrees": 8.35057556856721,
+            "rangeM": 246.56930380860592,
+            "occluderIds": [],
+            "score": 0.04156499353250953
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 75.50768481192655,
+            "angularWidthDegrees": 8.008673075551608,
+            "rangeM": 257.1323172927139,
+            "occluderIds": [
+              "city-nd-prop-108",
+              "city-nd-prop-110"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 67.25905154875187,
+            "angularWidthDegrees": 7.629985006191798,
+            "rangeM": 269.93486116962015,
+            "occluderIds": [
+              "city-nd-prop-101"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 57.953496001726016,
+            "angularWidthDegrees": 7.03293743343861,
+            "rangeM": 292.9156694734461,
+            "occluderIds": [
+              "city-nd-prop-99"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "844a6f34bd97cdd73e851e948923e514a0ea786b374d7a0e471e7f9e353faafd",
+      "sourceSha256": "eaaaed49369983a1589bf692f89d6fe38899680939858be8148f6bc7e245de24",
+      "roadSha256": "e1700483caccad2308018c389281ef36059f2a1da0e87f6e4a8c11e93c4e4e05",
+      "placementDetails": {
+        "x": -470.08606555714243,
+        "z": -127.85013580332138,
+        "yaw": -1.6601142612258393,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2060.8662099647763,
+        "trackLateral": 135.00000000000003,
+        "minimumRoadClearanceM": 107.86253249569168,
+        "checkedSegments": 4189,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-nd-island-park": {
       "raceRef": "Fargo, ND — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -66.13689649374705,
+        "worldZ": 651.1917483713959,
+        "routeDistanceM": 3190,
+        "offsetFromRoadM": 169,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.855756879806776,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 5.15956245018947,
+            "angularWidthDegrees": 5.546267535328572,
+            "rangeM": 139.48920491914802,
+            "occluderIds": [],
+            "score": 0.733602497794854
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 5.718227729216322,
+            "angularWidthDegrees": 4.853792670561484,
+            "rangeM": 159.41884732009655,
+            "occluderIds": [],
+            "score": 0.6239314994891032
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 6.477709995533378,
+            "angularWidthDegrees": 4.31609807754379,
+            "rangeM": 179.3015233394123,
+            "occluderIds": [],
+            "score": 0.5329601351999129
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 5.853802765588667,
+            "angularWidthDegrees": 3.8855830081184872,
+            "rangeM": 199.18564812879745,
+            "occluderIds": [],
+            "score": 0.49596092429409233
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 5.088404969849766,
+            "angularWidthDegrees": 3.379287320984675,
+            "rangeM": 229.049677458045,
+            "occluderIds": [],
+            "score": 0.44858000417312105
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 4.332498850992405,
+            "angularWidthDegrees": 2.8785485153512766,
+            "rangeM": 268.91548293370136,
+            "occluderIds": [
+              "city-nd-prop-163"
+            ],
+            "score": 0.04759392379879729
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 3.7718485301977944,
+            "angularWidthDegrees": 2.5067535463670456,
+            "rangeM": 308.81600637430955,
+            "occluderIds": [
+              "city-nd-prop-161",
+              "city-nd-prop-163"
+            ],
+            "score": 0.04257099518379479
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 3.2464872887844707,
+            "angularWidthDegrees": 2.158093980710107,
+            "rangeM": 358.722833302895,
+            "occluderIds": [
+              "city-nd-prop-157",
+              "city-nd-prop-159",
+              "city-nd-prop-161",
+              "city-nd-prop-163"
+            ],
+            "score": 0.03755689987310002
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "e86bb70ccc2498d46cad47e811d8ac078ccbf4fede805644c70092500b680dee",
+      "sourceSha256": "c86f5bc0a86230547e748bad458d813d570441b2487dc5d3304e5495bb10867c",
+      "roadSha256": "e1700483caccad2308018c389281ef36059f2a1da0e87f6e4a8c11e93c4e4e05",
+      "placementDetails": {
+        "x": -351.17386760701277,
+        "z": 852.2801486024332,
+        "yaw": 0.0008347402901110793,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2981.613057262694,
+        "trackLateral": 109.99970155622455,
+        "minimumRoadClearanceM": 96.37771961912343,
+        "checkedSegments": 4189,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-nd-fargo-civic-center": {
       "raceRef": "Fargo, ND — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 228.11566494394307,
+        "worldZ": -277.58739829559136,
+        "routeDistanceM": 4453,
+        "offsetFromRoadM": 49,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.8596761273705784,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 9.999104839808856,
+            "angularWidthDegrees": 13.372709719033818,
+            "rangeM": 136.48200848918728,
+            "occluderIds": [],
+            "score": 0.6000358064076458
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 8.725329760554969,
+            "angularWidthDegrees": 11.695882717278911,
+            "rangeM": 156.2168410844526,
+            "occluderIds": [],
+            "score": 0.6509868095778013
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 7.737657814590372,
+            "angularWidthDegrees": 10.388179794461664,
+            "rangeM": 176.01155044197534,
+            "occluderIds": [],
+            "score": 0.6904936874163852
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 6.949862045010652,
+            "angularWidthDegrees": 9.340929580775882,
+            "rangeM": 195.84798184559136,
+            "occluderIds": [],
+            "score": 0.7220055181995739
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.025469835185166,
+            "angularWidthDegrees": 8.111440864732428,
+            "rangeM": 225.6567841859801,
+            "occluderIds": [
+              "city-nd-prop-234"
+            ],
+            "score": 0.0910777447911112
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.117366603145801,
+            "angularWidthDegrees": 6.898163770286521,
+            "rangeM": 265.46915663059605,
+            "occluderIds": [
+              "city-nd-prop-232",
+              "city-nd-prop-234",
+              "city-nd-prop-235"
+            ],
+            "score": 0.09543664030490015
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.447838279172808,
+            "angularWidthDegrees": 5.9993640822951155,
+            "rangeM": 305.3306070725453,
+            "occluderIds": [
+              "city-nd-prop-232",
+              "city-nd-prop-234",
+              "city-nd-prop-235"
+            ],
+            "score": 0.09863992067316099
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 82.69831182375418,
+            "angularWidthDegrees": 5.320522256113169,
+            "rangeM": 344.35477471709,
+            "occluderIds": [
+              "city-nd-prop-221",
+              "city-nd-prop-223"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -150
+      },
+      "signature": "35557aa05527faf0996037721b433f62891bc70c61abbcbf9940017e2b430b20",
+      "sourceSha256": "d2533c4d3e95a2aea5274e633dd9bc3b0206bd9bcfa3869ec884f602b34c6377",
+      "roadSha256": "e1700483caccad2308018c389281ef36059f2a1da0e87f6e4a8c11e93c4e4e05",
+      "placementDetails": {
+        "x": 289.6650783088782,
+        "z": -129.08312403977152,
+        "yaw": 1.6958890633410815,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4304.111299848896,
+        "trackLateral": 109.9999806095502,
+        "minimumRoadClearanceM": 85.2666761612761,
+        "checkedSegments": 4189,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/ND/fargo-civic-center-desktop.png",
+        "docs/art/landmark-previews/ND/fargo-civic-center-mobile.png"
+      ]
     },
     "landmark-city-ne-joslyn-art-museum": {
       "raceRef": "Omaha, NE — Landmark Run",
