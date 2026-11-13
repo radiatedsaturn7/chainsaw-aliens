@@ -426,7 +426,9 @@
       "catalog-sundew-660-1991-body": "art/catalog-sundew-660-1991-body/document.json",
       "catalog-sundew-660-1991-dashboard": "art/catalog-sundew-660-1991-dashboard/document.json",
       "catalog-bramble-2021-body": "art/catalog-bramble-2021-body/document.json",
-      "catalog-bramble-2021-dashboard": "art/catalog-bramble-2021-dashboard/document.json"
+      "catalog-bramble-2021-dashboard": "art/catalog-bramble-2021-dashboard/document.json",
+      "catalog-vesper-v6-2003-body": "art/catalog-vesper-v6-2003-body/document.json",
+      "catalog-vesper-v6-2003-dashboard": "art/catalog-vesper-v6-2003-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -458,7 +460,8 @@
       "Cairn 1974": "cars/Cairn 1974/document.json",
       "Pipit 100 2007": "cars/Pipit 100 2007/document.json",
       "Sundew 660 1991": "cars/Sundew 660 1991/document.json",
-      "Bramble 2021": "cars/Bramble 2021/document.json"
+      "Bramble 2021": "cars/Bramble 2021/document.json",
+      "Vesper V6 2003": "cars/Vesper V6 2003/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
