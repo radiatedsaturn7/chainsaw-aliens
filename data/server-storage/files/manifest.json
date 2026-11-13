@@ -584,7 +584,11 @@
       "landmark-city-ga-fox-theatre": "art/landmark-city-ga-fox-theatre/document.json",
       "landmark-city-ga-centennial-olympic-park": "art/landmark-city-ga-centennial-olympic-park/document.json",
       "landmark-city-ga-georgia-state-capitol": "art/landmark-city-ga-georgia-state-capitol/document.json",
-      "landmark-city-ga-ebenezer-baptist-church": "art/landmark-city-ga-ebenezer-baptist-church/document.json"
+      "landmark-city-ga-ebenezer-baptist-church": "art/landmark-city-ga-ebenezer-baptist-church/document.json",
+      "landmark-city-nv-mob-museum": "art/landmark-city-nv-mob-museum/document.json",
+      "landmark-city-nv-neon-museum": "art/landmark-city-nv-neon-museum/document.json",
+      "landmark-city-nv-downtown-container-park": "art/landmark-city-nv-downtown-container-park/document.json",
+      "landmark-city-nv-old-las-vegas-mormon-fort": "art/landmark-city-nv-old-las-vegas-mormon-fort/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -904,7 +908,11 @@
       "landmark-city-ga-fox-theatre": "doodads/landmark-city-ga-fox-theatre/document.json",
       "landmark-city-ga-centennial-olympic-park": "doodads/landmark-city-ga-centennial-olympic-park/document.json",
       "landmark-city-ga-georgia-state-capitol": "doodads/landmark-city-ga-georgia-state-capitol/document.json",
-      "landmark-city-ga-ebenezer-baptist-church": "doodads/landmark-city-ga-ebenezer-baptist-church/document.json"
+      "landmark-city-ga-ebenezer-baptist-church": "doodads/landmark-city-ga-ebenezer-baptist-church/document.json",
+      "landmark-city-nv-mob-museum": "doodads/landmark-city-nv-mob-museum/document.json",
+      "landmark-city-nv-neon-museum": "doodads/landmark-city-nv-neon-museum/document.json",
+      "landmark-city-nv-downtown-container-park": "doodads/landmark-city-nv-downtown-container-park/document.json",
+      "landmark-city-nv-old-las-vegas-mormon-fort": "doodads/landmark-city-nv-old-las-vegas-mormon-fort/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

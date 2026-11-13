@@ -5453,35 +5453,502 @@
     },
     "landmark-city-nv-mob-museum": {
       "raceRef": "Las Vegas, NV — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -500.57767560282264,
+        "worldZ": 390.9507825934752,
+        "routeDistanceM": 1459,
+        "offsetFromRoadM": 13,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 6.690996333634743,
+        "views": [
+          {
+            "beforeM": 55,
+            "angleDegrees": 2.6017689077276187,
+            "angularWidthDegrees": 22.62500635504204,
+            "rangeM": 109.97434169468565,
+            "occluderIds": [],
+            "score": 0.8959292436908952
+          },
+          {
+            "beforeM": 75,
+            "angleDegrees": 2.2148890017753944,
+            "angularWidthDegrees": 19.21665035272619,
+            "rangeM": 129.95697098826062,
+            "occluderIds": [],
+            "score": 0.9114044399289842
+          },
+          {
+            "beforeM": 95,
+            "angleDegrees": 7.438531966909669,
+            "angularWidthDegrees": 16.69609188920696,
+            "rangeM": 149.92428710715967,
+            "occluderIds": [],
+            "score": 0.7024587213236133
+          },
+          {
+            "beforeM": 125,
+            "angleDegrees": 0.1709406821832341,
+            "angularWidthDegrees": 13.983584894142707,
+            "rangeM": 179.38805920513613,
+            "occluderIds": [
+              "city-nv-prop-239"
+            ],
+            "score": 0.11917948472552047
+          },
+          {
+            "beforeM": 155,
+            "angleDegrees": 0.41116332270912154,
+            "angularWidthDegrees": 11.995944939841067,
+            "rangeM": 209.3872941815312,
+            "occluderIds": [],
+            "score": 0.9835534670916352
+          },
+          {
+            "beforeM": 185,
+            "angleDegrees": 18.648457757800703,
+            "angularWidthDegrees": 10.508661338433482,
+            "rangeM": 239.22582657125986,
+            "occluderIds": [],
+            "score": 0.25406168968797194
+          },
+          {
+            "beforeM": 225,
+            "angleDegrees": 0.7250770778939264,
+            "angularWidthDegrees": 9.02709973230711,
+            "rangeM": 278.69385770676087,
+            "occluderIds": [],
+            "score": 0.9709969168842429
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.6340722776920089,
+            "angularWidthDegrees": 7.897993605841276,
+            "rangeM": 318.69120622118845,
+            "occluderIds": [],
+            "score": 0.9746371088923197
+          },
+          {
+            "beforeM": 310,
+            "angleDegrees": 0.5556184647610001,
+            "angularWidthDegrees": 6.9233503156340355,
+            "rangeM": 363.68895973167145,
+            "occluderIds": [],
+            "score": 0.97777526140956
+          },
+          {
+            "beforeM": 355,
+            "angleDegrees": 76.08331787197542,
+            "angularWidthDegrees": 6.206704678073999,
+            "rangeM": 405.7786925873165,
+            "occluderIds": [],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 250
+      },
+      "signature": "d1cc7ce07c303cb844e12213feb241c266144387603bf7ab5943ab6a76ab8a38",
+      "sourceSha256": "e93ffde79ccdac2adeadda6a97c40b87c3789fdbdb44dc29ed9482c2d15428d1",
+      "roadSha256": "153169d871f44da32b51420fe9c1dad891a60c66bc5e285e8287f2bfaa23ed0c",
+      "placementDetails": {
+        "x": -227.5681660638457,
+        "z": 526.454835449462,
+        "yaw": 1.0580620258719855,
+        "facingApproachBeforeM": 95,
+        "trackDistance": 1709.4945273512926,
+        "trackLateral": 59.99281661875932,
+        "minimumRoadClearanceM": 23.250046450274677,
+        "checkedSegments": 4068,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NV/mob-museum-desktop.png",
+        "docs/art/landmark-previews/NV/mob-museum-mobile.png"
+      ]
     },
     "landmark-city-nv-neon-museum": {
       "raceRef": "Las Vegas, NV — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 64.92161247236079,
+        "worldZ": -57.00971763590878,
+        "routeDistanceM": 2385,
+        "offsetFromRoadM": 47,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 3.562072619820093,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 2.8098500579774877,
+            "angularWidthDegrees": 8.165001720229492,
+            "rangeM": 168.1286595124018,
+            "occluderIds": [],
+            "score": 0.8876059976809005
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 2.51121752764794,
+            "angularWidthDegrees": 7.300292411368628,
+            "rangeM": 188.1072437160964,
+            "occluderIds": [],
+            "score": 0.8995512988940824
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 2.2699343400163,
+            "angularWidthDegrees": 6.600882884725735,
+            "rangeM": 208.08995676345566,
+            "occluderIds": [],
+            "score": 0.909202626399348
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 2.494148546698318,
+            "angularWidthDegrees": 6.023535138558328,
+            "rangeM": 228.0773546725388,
+            "occluderIds": [],
+            "score": 0.9002340581320672
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 61.34309287726699,
+            "angularWidthDegrees": 5.432198620491312,
+            "rangeM": 252.94887009058507,
+            "occluderIds": [
+              "city-nv-prop-129"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 54.57475082583736,
+            "angularWidthDegrees": 5.016351285726345,
+            "rangeM": 273.94816195418207,
+            "occluderIds": [
+              "city-nv-prop-125",
+              "city-nv-prop-127",
+              "city-nv-prop-131",
+              "city-nv-prop-134",
+              "city-nv-prop-135"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 35.261462348844525,
+            "angularWidthDegrees": 4.508154424910402,
+            "rangeM": 304.86737655954647,
+            "occluderIds": [
+              "city-nv-prop-124",
+              "city-nv-prop-125",
+              "city-nv-prop-127",
+              "city-nv-prop-131",
+              "city-nv-prop-134",
+              "city-nv-prop-135"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 8.113752685667393,
+            "angularWidthDegrees": 3.9587421140859305,
+            "rangeM": 347.2192887960974,
+            "occluderIds": [
+              "city-nv-prop-122",
+              "city-nv-prop-125",
+              "city-nv-prop-126",
+              "city-nv-prop-127",
+              "city-nv-prop-129",
+              "city-nv-prop-131",
+              "city-nv-prop-134",
+              "city-nv-prop-135"
+            ],
+            "score": 0.05347863871369515
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "0f47003c3fc5e55f3e8221b6d927e8f7f224d2c723d31e1869f63f2c12760def",
+      "sourceSha256": "59fd0b91e8b5832231158460cdbd8706e9c93da6b35e79015259865a1efdeff8",
+      "roadSha256": "153169d871f44da32b51420fe9c1dad891a60c66bc5e285e8287f2bfaa23ed0c",
+      "placementDetails": {
+        "x": 315.76549512225245,
+        "z": 1.7531282860835762,
+        "yaw": 1.530538327593583,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2505.5888016588096,
+        "trackLateral": -129.98172985299755,
+        "minimumRoadClearanceM": 110.06734411004983,
+        "checkedSegments": 4068,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-nv-downtown-container-park": {
       "raceRef": "Las Vegas, NV — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -230.47935366982364,
+        "worldZ": 957.5786724474486,
+        "routeDistanceM": 3614,
+        "offsetFromRoadM": 30,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.7716680531234649,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 4.162308577503186,
+            "angularWidthDegrees": 14.035546137711055,
+            "rangeM": 142.8746151092501,
+            "occluderIds": [
+              "city-nv-prop-200"
+            ],
+            "score": 0.1000209188279847
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 3.651498562008649,
+            "angularWidthDegrees": 12.329717410465909,
+            "rangeM": 162.82840944082193,
+            "occluderIds": [
+              "city-nv-prop-200"
+            ],
+            "score": 0.10247280690235848
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 3.2522399482886852,
+            "angularWidthDegrees": 10.991855466228836,
+            "rangeM": 182.79231979971183,
+            "occluderIds": [
+              "city-nv-prop-197",
+              "city-nv-prop-200"
+            ],
+            "score": 0.10438924824821431
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 2.9316176288713196,
+            "angularWidthDegrees": 9.914907562546615,
+            "rangeM": 202.76335816121346,
+            "occluderIds": [
+              "city-nv-prop-195",
+              "city-nv-prop-197",
+              "city-nv-prop-200"
+            ],
+            "score": 0.10592823538141767
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.585093345634951,
+            "angularWidthDegrees": 8.643468983645135,
+            "rangeM": 232.72926647661262,
+            "occluderIds": [
+              "city-nv-prop-195",
+              "city-nv-prop-197",
+              "city-nv-prop-200"
+            ],
+            "score": 0.10759155194095223
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 3.226988616716752,
+            "angularWidthDegrees": 7.380967945048931,
+            "rangeM": 272.67750219638975,
+            "occluderIds": [
+              "city-nv-prop-195",
+              "city-nv-prop-197",
+              "city-nv-prop-200"
+            ],
+            "score": 0.10451045463975958
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 2.8191291847283875,
+            "angularWidthDegrees": 6.440009457223736,
+            "rangeM": 312.6221452201549,
+            "occluderIds": [
+              "city-nv-prop-193",
+              "city-nv-prop-195",
+              "city-nv-prop-197",
+              "city-nv-prop-200"
+            ],
+            "score": 0.10646817991330375
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 2.430511439147733,
+            "angularWidthDegrees": 5.554327084056392,
+            "rangeM": 362.5701603243026,
+            "occluderIds": [
+              "city-nv-prop-193",
+              "city-nv-prop-195",
+              "city-nv-prop-197",
+              "city-nv-prop-200"
+            ],
+            "score": 0.10028665726947412
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "951f21ee5ea65c00e20ff5d4eda539173cdb76e14f4486f58ff22c8b2c40029b",
+      "sourceSha256": "ce53e1783c595f9611364a7743342f6fd18eb60367c9763ab6d8a9449b7f4177",
+      "roadSha256": "153169d871f44da32b51420fe9c1dad891a60c66bc5e285e8287f2bfaa23ed0c",
+      "placementDetails": {
+        "x": -339.748284632585,
+        "z": 1078.7606677965107,
+        "yaw": -0.5342658553661922,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3673.7709457872324,
+        "trackLateral": -104.97275423395513,
+        "minimumRoadClearanceM": 78.3463829557325,
+        "checkedSegments": 4068,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-nv-old-las-vegas-mormon-fort": {
       "raceRef": "Las Vegas, NV — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 230.21008111645625,
+        "worldZ": -506.7048611158747,
+        "routeDistanceM": 5874,
+        "offsetFromRoadM": 90,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.833630472849594,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 7.455684795915951,
+            "angularWidthDegrees": 10.514926644723417,
+            "rangeM": 162.69302309109455,
+            "occluderIds": [],
+            "score": 0.701772608163362
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 6.641086371339823,
+            "angularWidthDegrees": 9.376952668349169,
+            "rangeM": 182.54245639795957,
+            "occluderIds": [],
+            "score": 0.7343565451464071
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 5.9863739600286685,
+            "angularWidthDegrees": 8.459598911525381,
+            "rangeM": 202.42154774480574,
+            "occluderIds": [],
+            "score": 0.7605450415988533
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 5.448812312223987,
+            "angularWidthDegrees": 7.704744422380118,
+            "rangeM": 222.3223415973423,
+            "occluderIds": [],
+            "score": 0.7820475075110405
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 4.801626604346811,
+            "angularWidthDegrees": 6.794178357271289,
+            "rangeM": 252.20298502507853,
+            "occluderIds": [],
+            "score": 0.8079349358261275
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 4.144806666516295,
+            "angularWidthDegrees": 5.8682943533029555,
+            "rangeM": 292.0819451615034,
+            "occluderIds": [
+              "city-nv-prop-304"
+            ],
+            "score": 0.09790753062073909
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 3.6772320740385256,
+            "angularWidthDegrees": 5.163426982388843,
+            "rangeM": 332.02010344992715,
+            "occluderIds": [
+              "city-nv-prop-304"
+            ],
+            "score": 0.08807884419849989
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 3.286017525959295,
+            "angularWidthDegrees": 4.489472387078201,
+            "rangeM": 381.92571154833513,
+            "occluderIds": [
+              "city-nv-prop-304"
+            ],
+            "score": 0.07798745978456459
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "5c20aa6d82542608acd7f2e45e134fe409eb7ad7ccf122365c726433c28ccf60",
+      "sourceSha256": "6d2f45f599c4bda4e35fb4147f47b9f2510f90364f6e54b589032dd194db6163",
+      "roadSha256": "153169d871f44da32b51420fe9c1dad891a60c66bc5e285e8287f2bfaa23ed0c",
+      "placementDetails": {
+        "x": -40.39452391364661,
+        "z": -711.2723719030616,
+        "yaw": 3.0337574079455596,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5664.537208591997,
+        "trackLateral": -134.9998793782285,
+        "minimumRoadClearanceM": 106.70380504066212,
+        "checkedSegments": 4068,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ny-flatiron-building": {
       "raceRef": "New York, NY — Landmark Run",

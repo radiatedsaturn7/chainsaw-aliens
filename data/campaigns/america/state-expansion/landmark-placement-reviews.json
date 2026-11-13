@@ -1985,5 +1985,127 @@
       240
     ],
     "occlusionWidthFactor": 1
+  },
+  "landmark-city-nv-mob-museum": {
+    "reason": "Mob Museum normal search was occluded. At source +250m on original side, preflight identifies clear approaching lanes while preserving GPS reference and final collision margin.",
+    "distanceOffsets": [
+      250
+    ],
+    "minimumSetbackM": 60,
+    "maximumSetbackM": 60,
+    "allowOppositeSide": false,
+    "facingApproachBeforeM": 95,
+    "approachOffsetsM": [
+      55,
+      75,
+      95,
+      125,
+      155,
+      185,
+      225,
+      265,
+      310,
+      355
+    ],
+    "occlusionWidthFactor": 0.72
+  },
+  "landmark-city-nv-neon-museum": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-nv-downtown-container-park": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-nv-old-las-vegas-mormon-fort": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
   }
 }

@@ -2014,5 +2014,33 @@
     "documentSha256": "675318bb3abc6ea7c372ee57d35376cd328739c1f2711a0d4a65e5fa856ed2df",
     "width": 512,
     "height": 468
+  },
+  "landmark-city-nv-mob-museum": {
+    "source": "assets/campaign-art/landmarks/NV/landmark-city-nv-mob-museum.png",
+    "sourceSha256": "e93ffde79ccdac2adeadda6a97c40b87c3789fdbdb44dc29ed9482c2d15428d1",
+    "documentSha256": "cbdfafaa602bf1206023d1e6d3c3f89588338bede785d2426e9b8e7781917383",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nv-neon-museum": {
+    "source": "assets/campaign-art/landmarks/NV/landmark-city-nv-neon-museum.png",
+    "sourceSha256": "59fd0b91e8b5832231158460cdbd8706e9c93da6b35e79015259865a1efdeff8",
+    "documentSha256": "01e5e2d95dd2e0ad86c45b31f253c5f9be0e374862a3aabeb9a33d30bc7e1d10",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nv-downtown-container-park": {
+    "source": "assets/campaign-art/landmarks/NV/landmark-city-nv-downtown-container-park.png",
+    "sourceSha256": "ce53e1783c595f9611364a7743342f6fd18eb60367c9763ab6d8a9449b7f4177",
+    "documentSha256": "a319a5af21851164ba60001701806a5711d633513b59f51a1b7cb65c709db526",
+    "width": 512,
+    "height": 262
+  },
+  "landmark-city-nv-old-las-vegas-mormon-fort": {
+    "source": "assets/campaign-art/landmarks/NV/landmark-city-nv-old-las-vegas-mormon-fort.png",
+    "sourceSha256": "6d2f45f599c4bda4e35fb4147f47b9f2510f90364f6e54b589032dd194db6163",
+    "documentSha256": "b91614983ef247ce963af34a5cb3759bb15e0bbbabc9c99bf8f82509eef1d016",
+    "width": 512,
+    "height": 171
   }
 }

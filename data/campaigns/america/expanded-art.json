@@ -2596,6 +2596,34 @@
       "heightM": 22,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-nv-mob-museum",
+      "source": "landmarks/NV/landmark-city-nv-mob-museum.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nv-neon-museum",
+      "source": "landmarks/NV/landmark-city-nv-neon-museum.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nv-downtown-container-park",
+      "source": "landmarks/NV/landmark-city-nv-downtown-container-park.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nv-old-las-vegas-mormon-fort",
+      "source": "landmarks/NV/landmark-city-nv-old-las-vegas-mormon-fort.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

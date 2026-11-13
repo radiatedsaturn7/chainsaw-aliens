@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794612625423,
+  "doodad": {
+    "id": "campaign-landmark-city-nv-neon-museum",
+    "name": "landmark-city-nv-neon-museum",
+    "artRef": "landmark-city-nv-neon-museum",
+    "widthM": 24,
+    "heightM": 12,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 20.4,
+    "hitboxHeightM": 10.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}
