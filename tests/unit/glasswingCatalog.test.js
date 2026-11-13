@@ -21,3 +21,5 @@ test('Glasswing production editor preview launches on tire support, not an occlu
  for(const patch of Object.values(patches))assert.notEqual(patch.invalidContactReason,'body-occluded');
  e.disposeRacePlaytestSession(s,'test-complete');
 });
+
+test("Naturally aspirated source engine is not mislabeled turbo",()=>{assert.equal(c.car.tuning.aspiration,"Naturally Aspirated");assert.equal(d.car.tuning.aspiration,"Naturally Aspirated");assert.equal(d.car.mechanics.boostBar,0);});
