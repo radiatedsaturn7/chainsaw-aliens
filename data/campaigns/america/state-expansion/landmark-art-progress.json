@@ -3,7 +3,7 @@
   "description": "Stage statuses are distinct. Imported is not visually verified. GPS references are not final placements.",
   "assets": {
     "landmark-city-ak-anchorage-museum": {
-      "raceRef": "Anchorage, AK \u2014 Landmark Run",
+      "raceRef": "Anchorage, AK — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -11,7 +11,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ak-town-square-park": {
-      "raceRef": "Anchorage, AK \u2014 Landmark Run",
+      "raceRef": "Anchorage, AK — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -19,7 +19,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ak-oscar-anderson-house": {
-      "raceRef": "Anchorage, AK \u2014 Landmark Run",
+      "raceRef": "Anchorage, AK — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -27,7 +27,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ak-alaska-railroad-depot": {
-      "raceRef": "Anchorage, AK \u2014 Landmark Run",
+      "raceRef": "Anchorage, AK — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -35,7 +35,7 @@
       "visualQA": "pending"
     },
     "landmark-city-al-birmingham-civil-rights-institute": {
-      "raceRef": "Birmingham, AL \u2014 Landmark Run",
+      "raceRef": "Birmingham, AL — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -43,7 +43,7 @@
       "visualQA": "pending"
     },
     "landmark-city-al-alabama-theatre": {
-      "raceRef": "Birmingham, AL \u2014 Landmark Run",
+      "raceRef": "Birmingham, AL — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -51,7 +51,7 @@
       "visualQA": "pending"
     },
     "landmark-city-al-sloss-furnaces": {
-      "raceRef": "Birmingham, AL \u2014 Landmark Run",
+      "raceRef": "Birmingham, AL — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -59,7 +59,7 @@
       "visualQA": "pending"
     },
     "landmark-city-al-vulcan-park": {
-      "raceRef": "Birmingham, AL \u2014 Landmark Run",
+      "raceRef": "Birmingham, AL — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -67,7 +67,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ar-clinton-presidential-library": {
-      "raceRef": "Little Rock, AR \u2014 Landmark Run",
+      "raceRef": "Little Rock, AR — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -75,7 +75,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ar-old-state-house-museum": {
-      "raceRef": "Little Rock, AR \u2014 Landmark Run",
+      "raceRef": "Little Rock, AR — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -83,7 +83,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ar-arkansas-state-capitol": {
-      "raceRef": "Little Rock, AR \u2014 Landmark Run",
+      "raceRef": "Little Rock, AR — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -91,7 +91,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ar-little-rock-central-high-school": {
-      "raceRef": "Little Rock, AR \u2014 Landmark Run",
+      "raceRef": "Little Rock, AR — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -99,7 +99,7 @@
       "visualQA": "pending"
     },
     "landmark-city-az-chase-field": {
-      "raceRef": "Phoenix, AZ \u2014 Landmark Run",
+      "raceRef": "Phoenix, AZ — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -107,7 +107,7 @@
       "visualQA": "pending"
     },
     "landmark-city-az-heritage-square": {
-      "raceRef": "Phoenix, AZ \u2014 Landmark Run",
+      "raceRef": "Phoenix, AZ — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -115,7 +115,7 @@
       "visualQA": "pending"
     },
     "landmark-city-az-orpheum-theatre": {
-      "raceRef": "Phoenix, AZ \u2014 Landmark Run",
+      "raceRef": "Phoenix, AZ — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -123,7 +123,7 @@
       "visualQA": "pending"
     },
     "landmark-city-az-arizona-state-capitol": {
-      "raceRef": "Phoenix, AZ \u2014 Landmark Run",
+      "raceRef": "Phoenix, AZ — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -131,7 +131,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ca-crypto-com-arena": {
-      "raceRef": "Los Angeles, CA \u2014 Landmark Run",
+      "raceRef": "Los Angeles, CA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -139,7 +139,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ca-walt-disney-concert-hall": {
-      "raceRef": "Los Angeles, CA \u2014 Landmark Run",
+      "raceRef": "Los Angeles, CA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -147,7 +147,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ca-los-angeles-city-hall": {
-      "raceRef": "Los Angeles, CA \u2014 Landmark Run",
+      "raceRef": "Los Angeles, CA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -155,7 +155,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ca-union-station": {
-      "raceRef": "Los Angeles, CA \u2014 Landmark Run",
+      "raceRef": "Los Angeles, CA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -163,7 +163,7 @@
       "visualQA": "pending"
     },
     "landmark-city-co-coors-field": {
-      "raceRef": "Denver, CO \u2014 Landmark Run",
+      "raceRef": "Denver, CO — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -171,7 +171,7 @@
       "visualQA": "pending"
     },
     "landmark-city-co-union-station": {
-      "raceRef": "Denver, CO \u2014 Landmark Run",
+      "raceRef": "Denver, CO — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -179,7 +179,7 @@
       "visualQA": "pending"
     },
     "landmark-city-co-colorado-state-capitol": {
-      "raceRef": "Denver, CO \u2014 Landmark Run",
+      "raceRef": "Denver, CO — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -187,7 +187,7 @@
       "visualQA": "pending"
     },
     "landmark-city-co-denver-art-museum": {
-      "raceRef": "Denver, CO \u2014 Landmark Run",
+      "raceRef": "Denver, CO — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -195,7 +195,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ct-mark-twain-house": {
-      "raceRef": "Hartford, CT \u2014 Landmark Run",
+      "raceRef": "Hartford, CT — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -298,7 +298,7 @@
       }
     },
     "landmark-city-ct-connecticut-state-capitol": {
-      "raceRef": "Hartford, CT \u2014 Landmark Run",
+      "raceRef": "Hartford, CT — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -394,7 +394,7 @@
       }
     },
     "landmark-city-ct-wadsworth-atheneum": {
-      "raceRef": "Hartford, CT \u2014 Landmark Run",
+      "raceRef": "Hartford, CT — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -498,7 +498,7 @@
       }
     },
     "landmark-city-ct-bushnell-park": {
-      "raceRef": "Hartford, CT \u2014 Landmark Run",
+      "raceRef": "Hartford, CT — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -603,7 +603,7 @@
       ]
     },
     "landmark-city-de-chase-center-on-the-riverfront": {
-      "raceRef": "Wilmington, DE \u2014 Landmark Run",
+      "raceRef": "Wilmington, DE — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -611,7 +611,7 @@
       "visualQA": "pending"
     },
     "landmark-city-de-grand-opera-house": {
-      "raceRef": "Wilmington, DE \u2014 Landmark Run",
+      "raceRef": "Wilmington, DE — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -619,7 +619,7 @@
       "visualQA": "pending"
     },
     "landmark-city-de-delaware-history-museum": {
-      "raceRef": "Wilmington, DE \u2014 Landmark Run",
+      "raceRef": "Wilmington, DE — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -627,7 +627,7 @@
       "visualQA": "pending"
     },
     "landmark-city-de-rodney-square": {
-      "raceRef": "Wilmington, DE \u2014 Landmark Run",
+      "raceRef": "Wilmington, DE — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -635,7 +635,7 @@
       "visualQA": "pending"
     },
     "landmark-city-fl-historymiami-museum": {
-      "raceRef": "Miami, FL \u2014 Landmark Run",
+      "raceRef": "Miami, FL — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -737,7 +737,7 @@
       }
     },
     "landmark-city-fl-olympia-theater": {
-      "raceRef": "Miami, FL \u2014 Landmark Run",
+      "raceRef": "Miami, FL — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -841,7 +841,7 @@
       }
     },
     "landmark-city-fl-adrienne-arsht-center": {
-      "raceRef": "Miami, FL \u2014 Landmark Run",
+      "raceRef": "Miami, FL — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -949,7 +949,7 @@
       }
     },
     "landmark-city-fl-freedom-tower": {
-      "raceRef": "Miami, FL \u2014 Landmark Run",
+      "raceRef": "Miami, FL — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -1055,7 +1055,7 @@
       }
     },
     "landmark-city-ga-fox-theatre": {
-      "raceRef": "Atlanta, GA \u2014 Landmark Run",
+      "raceRef": "Atlanta, GA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1063,7 +1063,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ga-centennial-olympic-park": {
-      "raceRef": "Atlanta, GA \u2014 Landmark Run",
+      "raceRef": "Atlanta, GA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1071,7 +1071,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ga-georgia-state-capitol": {
-      "raceRef": "Atlanta, GA \u2014 Landmark Run",
+      "raceRef": "Atlanta, GA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1079,7 +1079,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ga-ebenezer-baptist-church": {
-      "raceRef": "Atlanta, GA \u2014 Landmark Run",
+      "raceRef": "Atlanta, GA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1087,7 +1087,7 @@
       "visualQA": "pending"
     },
     "landmark-city-hi-hawaii-state-capitol": {
-      "raceRef": "Honolulu, HI \u2014 Landmark Run",
+      "raceRef": "Honolulu, HI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1095,7 +1095,7 @@
       "visualQA": "pending"
     },
     "landmark-city-hi-iolani-palace": {
-      "raceRef": "Honolulu, HI \u2014 Landmark Run",
+      "raceRef": "Honolulu, HI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1103,7 +1103,7 @@
       "visualQA": "pending"
     },
     "landmark-city-hi-aloha-tower": {
-      "raceRef": "Honolulu, HI \u2014 Landmark Run",
+      "raceRef": "Honolulu, HI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1111,7 +1111,7 @@
       "visualQA": "pending"
     },
     "landmark-city-hi-honolulu-museum-of-art": {
-      "raceRef": "Honolulu, HI \u2014 Landmark Run",
+      "raceRef": "Honolulu, HI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1119,7 +1119,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ia-pappajohn-sculpture-park": {
-      "raceRef": "Des Moines, IA \u2014 Landmark Run",
+      "raceRef": "Des Moines, IA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1127,7 +1127,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ia-principal-park": {
-      "raceRef": "Des Moines, IA \u2014 Landmark Run",
+      "raceRef": "Des Moines, IA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1135,7 +1135,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ia-state-historical-museum": {
-      "raceRef": "Des Moines, IA \u2014 Landmark Run",
+      "raceRef": "Des Moines, IA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1143,7 +1143,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ia-iowa-state-capitol": {
-      "raceRef": "Des Moines, IA \u2014 Landmark Run",
+      "raceRef": "Des Moines, IA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1151,7 +1151,7 @@
       "visualQA": "pending"
     },
     "landmark-city-id-idaho-state-capitol": {
-      "raceRef": "Boise, ID \u2014 Landmark Run",
+      "raceRef": "Boise, ID — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -1190,7 +1190,7 @@
       }
     },
     "landmark-city-id-basque-block": {
-      "raceRef": "Boise, ID \u2014 Landmark Run",
+      "raceRef": "Boise, ID — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -1225,11 +1225,11 @@
       "visualReview": {
         "desktopViewport": "960x540",
         "conditions": "existing clear night, default headlights",
-        "notes": "Roof silhouette and a strip of the base are visible at 32\u201360m; the facade is not recognizable at the existing night lighting."
+        "notes": "Roof silhouette and a strip of the base are visible at 32–60m; the facade is not recognizable at the existing night lighting."
       }
     },
     "landmark-city-id-egyptian-theatre": {
-      "raceRef": "Boise, ID \u2014 Landmark Run",
+      "raceRef": "Boise, ID — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -1325,11 +1325,11 @@
       "visualReview": {
         "desktopViewport": "960x540",
         "conditions": "existing clear night, default headlights",
-        "notes": "After relocating off-road toward a better approach, the broken upper silhouette enters frame at 75\u2013150m, but the facade remains in shadow."
+        "notes": "After relocating off-road toward a better approach, the broken upper silhouette enters frame at 75–150m, but the facade remains in shadow."
       }
     },
     "landmark-city-id-boise-depot": {
-      "raceRef": "Boise, ID \u2014 Landmark Run",
+      "raceRef": "Boise, ID — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -1368,7 +1368,7 @@
       }
     },
     "landmark-city-il-navy-pier": {
-      "raceRef": "Chicago, IL \u2014 Landmark Run",
+      "raceRef": "Chicago, IL — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1376,7 +1376,7 @@
       "visualQA": "pending"
     },
     "landmark-city-il-wrigley-building": {
-      "raceRef": "Chicago, IL \u2014 Landmark Run",
+      "raceRef": "Chicago, IL — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1384,7 +1384,7 @@
       "visualQA": "pending"
     },
     "landmark-city-il-art-institute-of-chicago": {
-      "raceRef": "Chicago, IL \u2014 Landmark Run",
+      "raceRef": "Chicago, IL — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1392,7 +1392,7 @@
       "visualQA": "pending"
     },
     "landmark-city-il-union-station": {
-      "raceRef": "Chicago, IL \u2014 Landmark Run",
+      "raceRef": "Chicago, IL — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1400,7 +1400,7 @@
       "visualQA": "pending"
     },
     "landmark-city-in-soldiers-and-sailors-monument": {
-      "raceRef": "Indianapolis, IN \u2014 Landmark Run",
+      "raceRef": "Indianapolis, IN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1408,7 +1408,7 @@
       "visualQA": "pending"
     },
     "landmark-city-in-indiana-statehouse": {
-      "raceRef": "Indianapolis, IN \u2014 Landmark Run",
+      "raceRef": "Indianapolis, IN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1416,7 +1416,7 @@
       "visualQA": "pending"
     },
     "landmark-city-in-lucas-oil-stadium": {
-      "raceRef": "Indianapolis, IN \u2014 Landmark Run",
+      "raceRef": "Indianapolis, IN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1424,7 +1424,7 @@
       "visualQA": "pending"
     },
     "landmark-city-in-scottish-rite-cathedral": {
-      "raceRef": "Indianapolis, IN \u2014 Landmark Run",
+      "raceRef": "Indianapolis, IN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1432,7 +1432,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ks-old-cowtown-museum": {
-      "raceRef": "Wichita, KS \u2014 Landmark Run",
+      "raceRef": "Wichita, KS — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1440,7 +1440,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ks-exploration-place": {
-      "raceRef": "Wichita, KS \u2014 Landmark Run",
+      "raceRef": "Wichita, KS — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1448,7 +1448,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ks-orpheum-theatre": {
-      "raceRef": "Wichita, KS \u2014 Landmark Run",
+      "raceRef": "Wichita, KS — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1456,7 +1456,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ks-union-station": {
-      "raceRef": "Wichita, KS \u2014 Landmark Run",
+      "raceRef": "Wichita, KS — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1464,7 +1464,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ky-louisville-slugger-field": {
-      "raceRef": "Louisville, KY \u2014 Landmark Run",
+      "raceRef": "Louisville, KY — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1472,7 +1472,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ky-louisville-palace": {
-      "raceRef": "Louisville, KY \u2014 Landmark Run",
+      "raceRef": "Louisville, KY — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1480,7 +1480,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ky-muhammad-ali-center": {
-      "raceRef": "Louisville, KY \u2014 Landmark Run",
+      "raceRef": "Louisville, KY — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1488,7 +1488,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ky-louisville-slugger-museum": {
-      "raceRef": "Louisville, KY \u2014 Landmark Run",
+      "raceRef": "Louisville, KY — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1496,7 +1496,7 @@
       "visualQA": "pending"
     },
     "landmark-city-la-jackson-square": {
-      "raceRef": "New Orleans, LA \u2014 Landmark Run",
+      "raceRef": "New Orleans, LA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1504,7 +1504,7 @@
       "visualQA": "pending"
     },
     "landmark-city-la-new-orleans-jazz-museum": {
-      "raceRef": "New Orleans, LA \u2014 Landmark Run",
+      "raceRef": "New Orleans, LA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1512,7 +1512,7 @@
       "visualQA": "pending"
     },
     "landmark-city-la-saint-louis-cemetery-no-1": {
-      "raceRef": "New Orleans, LA \u2014 Landmark Run",
+      "raceRef": "New Orleans, LA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1520,7 +1520,7 @@
       "visualQA": "pending"
     },
     "landmark-city-la-saenger-theatre": {
-      "raceRef": "New Orleans, LA \u2014 Landmark Run",
+      "raceRef": "New Orleans, LA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1528,7 +1528,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ma-old-north-church": {
-      "raceRef": "Boston, MA \u2014 Landmark Run",
+      "raceRef": "Boston, MA — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -1629,7 +1629,7 @@
       }
     },
     "landmark-city-ma-old-state-house": {
-      "raceRef": "Boston, MA \u2014 Landmark Run",
+      "raceRef": "Boston, MA — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -1730,7 +1730,7 @@
       }
     },
     "landmark-city-ma-massachusetts-state-house": {
-      "raceRef": "Boston, MA \u2014 Landmark Run",
+      "raceRef": "Boston, MA — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -1830,7 +1830,7 @@
       }
     },
     "landmark-city-ma-boston-public-library": {
-      "raceRef": "Boston, MA \u2014 Landmark Run",
+      "raceRef": "Boston, MA — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -1934,7 +1934,7 @@
       }
     },
     "landmark-city-md-oriole-park-at-camden-yards": {
-      "raceRef": "Baltimore, MD \u2014 Landmark Run",
+      "raceRef": "Baltimore, MD — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1942,7 +1942,7 @@
       "visualQA": "pending"
     },
     "landmark-city-md-lexington-market": {
-      "raceRef": "Baltimore, MD \u2014 Landmark Run",
+      "raceRef": "Baltimore, MD — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1950,7 +1950,7 @@
       "visualQA": "pending"
     },
     "landmark-city-md-washington-monument": {
-      "raceRef": "Baltimore, MD \u2014 Landmark Run",
+      "raceRef": "Baltimore, MD — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1958,7 +1958,7 @@
       "visualQA": "pending"
     },
     "landmark-city-md-national-aquarium": {
-      "raceRef": "Baltimore, MD \u2014 Landmark Run",
+      "raceRef": "Baltimore, MD — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1966,7 +1966,7 @@
       "visualQA": "pending"
     },
     "landmark-city-me-portland-museum-of-art": {
-      "raceRef": "Portland, ME \u2014 Landmark Run",
+      "raceRef": "Portland, ME — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1974,7 +1974,7 @@
       "visualQA": "pending"
     },
     "landmark-city-me-portland-city-hall": {
-      "raceRef": "Portland, ME \u2014 Landmark Run",
+      "raceRef": "Portland, ME — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1982,7 +1982,7 @@
       "visualQA": "pending"
     },
     "landmark-city-me-victoria-mansion": {
-      "raceRef": "Portland, ME \u2014 Landmark Run",
+      "raceRef": "Portland, ME — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1990,7 +1990,7 @@
       "visualQA": "pending"
     },
     "landmark-city-me-portland-observatory": {
-      "raceRef": "Portland, ME \u2014 Landmark Run",
+      "raceRef": "Portland, ME — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -1998,7 +1998,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mi-eastern-market": {
-      "raceRef": "Detroit, MI \u2014 Landmark Run",
+      "raceRef": "Detroit, MI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2006,7 +2006,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mi-fox-theatre": {
-      "raceRef": "Detroit, MI \u2014 Landmark Run",
+      "raceRef": "Detroit, MI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2014,7 +2014,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mi-guardian-building": {
-      "raceRef": "Detroit, MI \u2014 Landmark Run",
+      "raceRef": "Detroit, MI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2022,7 +2022,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mi-michigan-central-station": {
-      "raceRef": "Detroit, MI \u2014 Landmark Run",
+      "raceRef": "Detroit, MI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2030,7 +2030,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mn-minneapolis-institute-of-art": {
-      "raceRef": "Minneapolis, MN \u2014 Landmark Run",
+      "raceRef": "Minneapolis, MN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2038,7 +2038,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mn-walker-art-center": {
-      "raceRef": "Minneapolis, MN \u2014 Landmark Run",
+      "raceRef": "Minneapolis, MN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2046,7 +2046,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mn-basilica-of-saint-mary": {
-      "raceRef": "Minneapolis, MN \u2014 Landmark Run",
+      "raceRef": "Minneapolis, MN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2054,7 +2054,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mn-guthrie-theater": {
-      "raceRef": "Minneapolis, MN \u2014 Landmark Run",
+      "raceRef": "Minneapolis, MN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2062,7 +2062,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mo-old-courthouse": {
-      "raceRef": "St. Louis, MO \u2014 Landmark Run",
+      "raceRef": "St. Louis, MO — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2070,7 +2070,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mo-union-station": {
-      "raceRef": "St. Louis, MO \u2014 Landmark Run",
+      "raceRef": "St. Louis, MO — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2078,7 +2078,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mo-city-museum": {
-      "raceRef": "St. Louis, MO \u2014 Landmark Run",
+      "raceRef": "St. Louis, MO — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2086,7 +2086,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mo-fabulous-fox-theatre": {
-      "raceRef": "St. Louis, MO \u2014 Landmark Run",
+      "raceRef": "St. Louis, MO — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2094,7 +2094,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ms-mississippi-state-capitol": {
-      "raceRef": "Jackson, MS \u2014 Landmark Run",
+      "raceRef": "Jackson, MS — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2102,7 +2102,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ms-old-capitol-museum": {
-      "raceRef": "Jackson, MS \u2014 Landmark Run",
+      "raceRef": "Jackson, MS — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2110,7 +2110,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ms-smith-robertson-museum": {
-      "raceRef": "Jackson, MS \u2014 Landmark Run",
+      "raceRef": "Jackson, MS — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2118,7 +2118,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ms-mississippi-museum-of-art": {
-      "raceRef": "Jackson, MS \u2014 Landmark Run",
+      "raceRef": "Jackson, MS — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2126,7 +2126,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mt-moss-mansion": {
-      "raceRef": "Billings, MT \u2014 Landmark Run",
+      "raceRef": "Billings, MT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2134,7 +2134,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mt-alberta-bair-theater": {
-      "raceRef": "Billings, MT \u2014 Landmark Run",
+      "raceRef": "Billings, MT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2142,7 +2142,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mt-yellowstone-art-museum": {
-      "raceRef": "Billings, MT \u2014 Landmark Run",
+      "raceRef": "Billings, MT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2150,7 +2150,7 @@
       "visualQA": "pending"
     },
     "landmark-city-mt-billings-depot": {
-      "raceRef": "Billings, MT \u2014 Landmark Run",
+      "raceRef": "Billings, MT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2158,7 +2158,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nc-nascar-hall-of-fame": {
-      "raceRef": "Charlotte, NC \u2014 Landmark Run",
+      "raceRef": "Charlotte, NC — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2166,7 +2166,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nc-bank-of-america-stadium": {
-      "raceRef": "Charlotte, NC \u2014 Landmark Run",
+      "raceRef": "Charlotte, NC — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2174,7 +2174,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nc-mint-museum-uptown": {
-      "raceRef": "Charlotte, NC \u2014 Landmark Run",
+      "raceRef": "Charlotte, NC — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2182,7 +2182,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nc-discovery-place-science": {
-      "raceRef": "Charlotte, NC \u2014 Landmark Run",
+      "raceRef": "Charlotte, NC — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2190,7 +2190,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nd-fargo-theatre": {
-      "raceRef": "Fargo, ND \u2014 Landmark Run",
+      "raceRef": "Fargo, ND — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2198,7 +2198,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nd-plains-art-museum": {
-      "raceRef": "Fargo, ND \u2014 Landmark Run",
+      "raceRef": "Fargo, ND — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2206,7 +2206,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nd-island-park": {
-      "raceRef": "Fargo, ND \u2014 Landmark Run",
+      "raceRef": "Fargo, ND — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2214,7 +2214,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nd-fargo-civic-center": {
-      "raceRef": "Fargo, ND \u2014 Landmark Run",
+      "raceRef": "Fargo, ND — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2222,7 +2222,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ne-joslyn-art-museum": {
-      "raceRef": "Omaha, NE \u2014 Landmark Run",
+      "raceRef": "Omaha, NE — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2230,7 +2230,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ne-lewis-and-clark-landing": {
-      "raceRef": "Omaha, NE \u2014 Landmark Run",
+      "raceRef": "Omaha, NE — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2238,7 +2238,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ne-durham-museum": {
-      "raceRef": "Omaha, NE \u2014 Landmark Run",
+      "raceRef": "Omaha, NE — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2246,7 +2246,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ne-orpheum-theater": {
-      "raceRef": "Omaha, NE \u2014 Landmark Run",
+      "raceRef": "Omaha, NE — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2254,7 +2254,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nh-currier-museum-of-art": {
-      "raceRef": "Manchester, NH \u2014 Landmark Run",
+      "raceRef": "Manchester, NH — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2262,7 +2262,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nh-palace-theatre": {
-      "raceRef": "Manchester, NH \u2014 Landmark Run",
+      "raceRef": "Manchester, NH — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2270,7 +2270,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nh-snhu-arena": {
-      "raceRef": "Manchester, NH \u2014 Landmark Run",
+      "raceRef": "Manchester, NH — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2278,7 +2278,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nh-millyard-museum": {
-      "raceRef": "Manchester, NH \u2014 Landmark Run",
+      "raceRef": "Manchester, NH — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2286,7 +2286,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nj-cathedral-basilica-of-the-sacred-heart": {
-      "raceRef": "Newark, NJ \u2014 Landmark Run",
+      "raceRef": "Newark, NJ — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2294,7 +2294,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nj-newark-museum-of-art": {
-      "raceRef": "Newark, NJ \u2014 Landmark Run",
+      "raceRef": "Newark, NJ — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2302,7 +2302,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nj-new-jersey-performing-arts-center": {
-      "raceRef": "Newark, NJ \u2014 Landmark Run",
+      "raceRef": "Newark, NJ — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2310,7 +2310,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nj-newark-penn-station": {
-      "raceRef": "Newark, NJ \u2014 Landmark Run",
+      "raceRef": "Newark, NJ — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2318,7 +2318,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nm-new-mexico-museum-of-natural-history": {
-      "raceRef": "Albuquerque, NM \u2014 Landmark Run",
+      "raceRef": "Albuquerque, NM — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2326,7 +2326,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nm-san-felipe-de-neri-church": {
-      "raceRef": "Albuquerque, NM \u2014 Landmark Run",
+      "raceRef": "Albuquerque, NM — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2334,7 +2334,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nm-kimo-theatre": {
-      "raceRef": "Albuquerque, NM \u2014 Landmark Run",
+      "raceRef": "Albuquerque, NM — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2342,7 +2342,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nm-albuquerque-rail-yards": {
-      "raceRef": "Albuquerque, NM \u2014 Landmark Run",
+      "raceRef": "Albuquerque, NM — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2350,7 +2350,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nv-mob-museum": {
-      "raceRef": "Las Vegas, NV \u2014 Landmark Run",
+      "raceRef": "Las Vegas, NV — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2358,7 +2358,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nv-neon-museum": {
-      "raceRef": "Las Vegas, NV \u2014 Landmark Run",
+      "raceRef": "Las Vegas, NV — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2366,7 +2366,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nv-downtown-container-park": {
-      "raceRef": "Las Vegas, NV \u2014 Landmark Run",
+      "raceRef": "Las Vegas, NV — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2374,7 +2374,7 @@
       "visualQA": "pending"
     },
     "landmark-city-nv-old-las-vegas-mormon-fort": {
-      "raceRef": "Las Vegas, NV \u2014 Landmark Run",
+      "raceRef": "Las Vegas, NV — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2382,39 +2382,444 @@
       "visualQA": "pending"
     },
     "landmark-city-ny-flatiron-building": {
-      "raceRef": "New York, NY \u2014 Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "raceRef": "New York, NY — Landmark Run",
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -559.4633609997434,
+        "worldZ": 1105.3680535849946,
+        "routeDistanceM": 1459,
+        "offsetFromRoadM": 23,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 5.262048189574871,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 6.0613456610632195,
+            "angularWidthDegrees": 10.37188880870331,
+            "rangeM": 176.11737095270752,
+            "occluderIds": [],
+            "score": 0.7575461735574712
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 5.444035430737463,
+            "angularWidthDegrees": 9.323839886345768,
+            "rangeM": 196.0169359462309,
+            "occluderIds": [],
+            "score": 0.7822385827705015
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 4.940558363272808,
+            "angularWidthDegrees": 8.46708184266927,
+            "rangeM": 215.93505969203773,
+            "occluderIds": [],
+            "score": 0.8023776654690877
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 4.096310524656732,
+            "angularWidthDegrees": 7.014606723839137,
+            "rangeM": 260.79666286923265,
+            "occluderIds": [],
+            "score": 0.8361475790137307
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 3.9152299288577903,
+            "angularWidthDegrees": 5.986566483188488,
+            "rangeM": 305.6856981880616,
+            "occluderIds": [],
+            "score": 0.8415025187575713
+          },
+          {
+            "beforeM": 245,
+            "angleDegrees": 3.3648676597701694,
+            "angularWidthDegrees": 5.147686620033614,
+            "rangeM": 355.5853960378935,
+            "occluderIds": [],
+            "score": 0.7424725418030508
+          },
+          {
+            "beforeM": 300,
+            "angleDegrees": 2.8430286401695173,
+            "angularWidthDegrees": 4.459746218278938,
+            "rangeM": 410.5053248676633,
+            "occluderIds": [],
+            "score": 0.6587631282034582
+          }
+        ],
+        "sourceDistanceShiftM": -30
+      },
+      "signature": "87e35cdd2ed25c84b437093f020b56b54c7afdd4f7ea9596198ea9a77afcf9d5",
+      "sourceSha256": "7242bf26e744899817b8eb4583861f7d445e2fdde1c0d6ea1523570a426c0f28",
+      "roadSha256": "c888c281d18bbcc2ab7dbd799a4dbfa8546fe077b55c9516e08d1402d3812193",
+      "placementDetails": {
+        "x": -674.2946246423736,
+        "z": 1006.8844229945859,
+        "yaw": -2.001040605817198,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 1428.4234676105764,
+        "trackLateral": 124.99990861812213,
+        "minimumRoadClearanceM": 95.69354304207951,
+        "checkedSegments": 4071,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NY/flatiron-building-desktop.png",
+        "docs/art/landmark-previews/NY/flatiron-building-mobile.png"
+      ]
     },
     "landmark-city-ny-grand-central-terminal": {
-      "raceRef": "New York, NY \u2014 Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "raceRef": "New York, NY — Landmark Run",
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 484.10562750960827,
+        "worldZ": -188.4089439482767,
+        "routeDistanceM": 3431,
+        "offsetFromRoadM": 50,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.6252578713653623,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 5.268553215865944,
+            "angularWidthDegrees": 23.75315389188471,
+            "rangeM": 104.60941147295965,
+            "occluderIds": [],
+            "score": 0.7892578713653623
+          },
+          {
+            "beforeM": 95,
+            "angleDegrees": 39.38658378378169,
+            "angularWidthDegrees": 20.440445169320903,
+            "rangeM": 122.02373053952387,
+            "occluderIds": [
+              "city-ny-prop-191"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 115,
+            "angleDegrees": 33.35477548389864,
+            "angularWidthDegrees": 18.114651191040114,
+            "rangeM": 138.00871539912265,
+            "occluderIds": [
+              "city-ny-prop-188",
+              "city-ny-prop-190",
+              "city-ny-prop-191",
+              "city-ny-prop-193"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 42.76075876832842,
+            "angularWidthDegrees": 16.140149921506918,
+            "rangeM": 155.16095779721007,
+            "occluderIds": [
+              "city-ny-prop-190",
+              "city-ny-prop-191",
+              "city-ny-prop-193"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 155,
+            "angleDegrees": 46.75917601644078,
+            "angularWidthDegrees": 14.872830360682778,
+            "rangeM": 168.55181305237858,
+            "occluderIds": [
+              "city-ny-prop-186",
+              "city-ny-prop-191"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 42.21828675894482,
+            "angularWidthDegrees": 13.723088326724568,
+            "rangeM": 182.82699080580278,
+            "occluderIds": [
+              "city-ny-prop-186"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 36.60336880690756,
+            "angularWidthDegrees": 12.189770266132838,
+            "rangeM": 206.03325191069686,
+            "occluderIds": [
+              "city-ny-prop-184",
+              "city-ny-prop-189"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "cdd25574b8e8698d0aed806da2265d7a43a96399e26a0d088d455b76303104c4",
+      "sourceSha256": "e3da312ece229f2a80463d6a823431380f592e4361e8d42768bcb78bbbeafb6f",
+      "roadSha256": "c888c281d18bbcc2ab7dbd799a4dbfa8546fe077b55c9516e08d1402d3812193",
+      "placementDetails": {
+        "x": 607.2546400376123,
+        "z": -157.60596266696055,
+        "yaw": 1.8181415694335263,
+        "facingApproachBeforeM": 155,
+        "trackDistance": 3550.4855753572633,
+        "trackLateral": 70.00000000000004,
+        "minimumRoadClearanceM": 39.65420638362312,
+        "checkedSegments": 4071,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Grand Central facade is legible in native desktop at 85m, but foreground scenery, crop, or HUD blocks the handheld approaches tried. Find a safer readable approach, keeping old props and road unchanged."
+      ],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NY/grand-central-terminal-desktop.png"
+      ]
     },
     "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building": {
-      "raceRef": "New York, NY \u2014 Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "raceRef": "New York, NY — Landmark Run",
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 71.3986305685161,
+        "worldZ": -260.6968656074654,
+        "routeDistanceM": 5133,
+        "offsetFromRoadM": 65,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.5734079820262137,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 5.876691571130612,
+            "angularWidthDegrees": 11.893868534090496,
+            "rangeM": 172.79791582640237,
+            "occluderIds": [
+              "city-ny-prop-289"
+            ],
+            "score": 0.09179188045857306
+          },
+          {
+            "beforeM": 95,
+            "angleDegrees": 5.267389998961702,
+            "angularWidthDegrees": 10.672760195235979,
+            "rangeM": 192.70370306045305,
+            "occluderIds": [
+              "city-ny-prop-289"
+            ],
+            "score": 0.09471652800498383
+          },
+          {
+            "beforeM": 115,
+            "angleDegrees": 4.772623626964779,
+            "angularWidthDegrees": 9.677699173615936,
+            "rangeM": 212.62717284597875,
+            "occluderIds": [
+              "city-ny-prop-289"
+            ],
+            "score": 0.09709140659056906
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 4.362658926665812,
+            "angularWidthDegrees": 8.851524746591403,
+            "rangeM": 232.56378069625694,
+            "occluderIds": [
+              "city-ny-prop-289"
+            ],
+            "score": 0.0990592371520041
+          },
+          {
+            "beforeM": 155,
+            "angleDegrees": 4.017447744505269,
+            "angularWidthDegrees": 8.15477231030582,
+            "rangeM": 252.51041473768785,
+            "occluderIds": [
+              "city-ny-prop-285",
+              "city-ny-prop-289"
+            ],
+            "score": 0.1007162508263747
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 3.7227914648486924,
+            "angularWidthDegrees": 7.559342005878195,
+            "rangeM": 272.4648729841369,
+            "occluderIds": [
+              "city-ny-prop-285",
+              "city-ny-prop-289",
+              "city-ny-prop-291"
+            ],
+            "score": 0.10213060096872627
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 3.353733744795271,
+            "angularWidthDegrees": 6.812711244106745,
+            "rangeM": 302.4078424895027,
+            "occluderIds": [
+              "city-ny-prop-285",
+              "city-ny-prop-289",
+              "city-ny-prop-291"
+            ],
+            "score": 0.1039020780249827
+          }
+        ],
+        "sourceDistanceShiftM": 240
+      },
+      "signature": "4df45c440cea3a8fdb1a2c6e8024c13a885fabcae4eb3b771c2230bc7a412ced",
+      "sourceSha256": "a4dde17201f7d0d36fd46d1e6285afa650d984bf993c5e5f69ba159663dbdbd0",
+      "roadSha256": "c888c281d18bbcc2ab7dbd799a4dbfa8546fe077b55c9516e08d1402d3812193",
+      "placementDetails": {
+        "x": -181.74760262291332,
+        "z": -496.158978865387,
+        "yaw": -2.147768074455861,
+        "facingApproachBeforeM": 155,
+        "trackDistance": 5372.024958602802,
+        "trackLateral": -109.99935177543128,
+        "minimumRoadClearanceM": 78.16984308213878,
+        "checkedSegments": 4071,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NY/new-york-public-library-stephen-a-schwarzman-building-desktop.png",
+        "docs/art/landmark-previews/NY/new-york-public-library-stephen-a-schwarzman-building-mobile.png"
+      ]
     },
     "landmark-city-ny-rockefeller-center": {
-      "raceRef": "New York, NY \u2014 Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "raceRef": "New York, NY — Landmark Run",
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 256.3392787670571,
+        "worldZ": -918.2044945364557,
+        "routeDistanceM": 5913,
+        "offsetFromRoadM": 81,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 4.15935453443878,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 10.911948962746731,
+            "angularWidthDegrees": 17.29700877795149,
+            "rangeM": 153.25620347835098,
+            "occluderIds": [],
+            "score": 0.5635220414901307
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 9.657500117874916,
+            "angularWidthDegrees": 15.353585840749467,
+            "rangeM": 172.93603613704144,
+            "occluderIds": [],
+            "score": 0.6136999952850033
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.659759746527032,
+            "angularWidthDegrees": 13.796181537754915,
+            "rangeM": 192.6818135813199,
+            "occluderIds": [],
+            "score": 0.6536096101389187
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 7.0233655297724935,
+            "angularWidthDegrees": 11.222221852824248,
+            "rangeM": 237.26557027500718,
+            "occluderIds": [],
+            "score": 0.7190653788091003
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 5.905276419620922,
+            "angularWidthDegrees": 9.4514392531749,
+            "rangeM": 281.98159583714306,
+            "occluderIds": [],
+            "score": 0.7637889432151631
+          },
+          {
+            "beforeM": 245,
+            "angleDegrees": 5.016813125141303,
+            "angularWidthDegrees": 8.038461277371683,
+            "rangeM": 331.75614857354094,
+            "occluderIds": [],
+            "score": 0.7993274749943479
+          },
+          {
+            "beforeM": 300,
+            "angleDegrees": 4.303939477892554,
+            "angularWidthDegrees": 6.901529655150964,
+            "rangeM": 386.5753691253305,
+            "occluderIds": [
+              "city-ny-prop-317"
+            ],
+            "score": 0.09934109050611574
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "e8d5c16dfd1e67cbfe38ae3ce1a07db2d146aef4e1b2c761f6849e76d2a5951f",
+      "sourceSha256": "dafa543bb3e09d48c32ccfd21487cc0ca34ffc8ee6ad64a5b1056fec9b48c068",
+      "roadSha256": "c888c281d18bbcc2ab7dbd799a4dbfa8546fe077b55c9516e08d1402d3812193",
+      "placementDetails": {
+        "x": 206.2159370468167,
+        "z": -1030.4324495242988,
+        "yaw": 2.759078298304549,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 5942.427011343382,
+        "trackLateral": 109.99999999999993,
+        "minimumRoadClearanceM": 74.60207869928277,
+        "checkedSegments": 4071,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NY/rockefeller-center-desktop.png",
+        "docs/art/landmark-previews/NY/rockefeller-center-mobile.png"
+      ]
     },
     "landmark-city-oh-rock-and-roll-hall-of-fame": {
-      "raceRef": "Cleveland, OH \u2014 Landmark Run",
+      "raceRef": "Cleveland, OH — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -2514,7 +2919,7 @@
       }
     },
     "landmark-city-oh-playhouse-square": {
-      "raceRef": "Cleveland, OH \u2014 Landmark Run",
+      "raceRef": "Cleveland, OH — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -2608,7 +3013,7 @@
       }
     },
     "landmark-city-oh-terminal-tower": {
-      "raceRef": "Cleveland, OH \u2014 Landmark Run",
+      "raceRef": "Cleveland, OH — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -2710,7 +3115,7 @@
       }
     },
     "landmark-city-oh-west-side-market": {
-      "raceRef": "Cleveland, OH \u2014 Landmark Run",
+      "raceRef": "Cleveland, OH — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -2802,7 +3207,7 @@
       }
     },
     "landmark-city-ok-oklahoma-state-capitol": {
-      "raceRef": "Oklahoma City, OK \u2014 Landmark Run",
+      "raceRef": "Oklahoma City, OK — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2810,7 +3215,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ok-oklahoma-city-national-memorial": {
-      "raceRef": "Oklahoma City, OK \u2014 Landmark Run",
+      "raceRef": "Oklahoma City, OK — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2818,7 +3223,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ok-chickasaw-bricktown-ballpark": {
-      "raceRef": "Oklahoma City, OK \u2014 Landmark Run",
+      "raceRef": "Oklahoma City, OK — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2826,7 +3231,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ok-myriad-botanical-gardens": {
-      "raceRef": "Oklahoma City, OK \u2014 Landmark Run",
+      "raceRef": "Oklahoma City, OK — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2834,7 +3239,7 @@
       "visualQA": "pending"
     },
     "landmark-city-or-pioneer-courthouse-square": {
-      "raceRef": "Portland, OR \u2014 Landmark Run",
+      "raceRef": "Portland, OR — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2842,7 +3247,7 @@
       "visualQA": "pending"
     },
     "landmark-city-or-union-station": {
-      "raceRef": "Portland, OR \u2014 Landmark Run",
+      "raceRef": "Portland, OR — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2850,7 +3255,7 @@
       "visualQA": "pending"
     },
     "landmark-city-or-powells-city-of-books": {
-      "raceRef": "Portland, OR \u2014 Landmark Run",
+      "raceRef": "Portland, OR — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2858,7 +3263,7 @@
       "visualQA": "pending"
     },
     "landmark-city-or-portland-art-museum": {
-      "raceRef": "Portland, OR \u2014 Landmark Run",
+      "raceRef": "Portland, OR — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2866,7 +3271,7 @@
       "visualQA": "pending"
     },
     "landmark-city-pa-philadelphia-museum-of-art": {
-      "raceRef": "Philadelphia, PA \u2014 Landmark Run",
+      "raceRef": "Philadelphia, PA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2874,7 +3279,7 @@
       "visualQA": "pending"
     },
     "landmark-city-pa-philadelphia-city-hall": {
-      "raceRef": "Philadelphia, PA \u2014 Landmark Run",
+      "raceRef": "Philadelphia, PA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2882,7 +3287,7 @@
       "visualQA": "pending"
     },
     "landmark-city-pa-reading-terminal-market": {
-      "raceRef": "Philadelphia, PA \u2014 Landmark Run",
+      "raceRef": "Philadelphia, PA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2890,7 +3295,7 @@
       "visualQA": "pending"
     },
     "landmark-city-pa-independence-hall": {
-      "raceRef": "Philadelphia, PA \u2014 Landmark Run",
+      "raceRef": "Philadelphia, PA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -2898,7 +3303,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ri-rhode-island-state-house": {
-      "raceRef": "Providence, RI \u2014 Landmark Run",
+      "raceRef": "Providence, RI — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -2997,7 +3402,7 @@
       }
     },
     "landmark-city-ri-john-brown-house": {
-      "raceRef": "Providence, RI \u2014 Landmark Run",
+      "raceRef": "Providence, RI — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -3101,7 +3506,7 @@
       }
     },
     "landmark-city-ri-providence-city-hall": {
-      "raceRef": "Providence, RI \u2014 Landmark Run",
+      "raceRef": "Providence, RI — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -3203,7 +3608,7 @@
       }
     },
     "landmark-city-ri-providence-performing-arts-center": {
-      "raceRef": "Providence, RI \u2014 Landmark Run",
+      "raceRef": "Providence, RI — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -3304,7 +3709,7 @@
       }
     },
     "landmark-city-sc-charleston-museum": {
-      "raceRef": "Charleston, SC \u2014 Landmark Run",
+      "raceRef": "Charleston, SC — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3312,7 +3717,7 @@
       "visualQA": "pending"
     },
     "landmark-city-sc-old-exchange-and-provost-dungeon": {
-      "raceRef": "Charleston, SC \u2014 Landmark Run",
+      "raceRef": "Charleston, SC — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3320,7 +3725,7 @@
       "visualQA": "pending"
     },
     "landmark-city-sc-rainbow-row": {
-      "raceRef": "Charleston, SC \u2014 Landmark Run",
+      "raceRef": "Charleston, SC — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3328,7 +3733,7 @@
       "visualQA": "pending"
     },
     "landmark-city-sc-emanuel-african-methodist-episcopal-church": {
-      "raceRef": "Charleston, SC \u2014 Landmark Run",
+      "raceRef": "Charleston, SC — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3336,7 +3741,7 @@
       "visualQA": "pending"
     },
     "landmark-city-sd-falls-park": {
-      "raceRef": "Sioux Falls, SD \u2014 Landmark Run",
+      "raceRef": "Sioux Falls, SD — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3344,7 +3749,7 @@
       "visualQA": "pending"
     },
     "landmark-city-sd-old-courthouse-museum": {
-      "raceRef": "Sioux Falls, SD \u2014 Landmark Run",
+      "raceRef": "Sioux Falls, SD — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3352,7 +3757,7 @@
       "visualQA": "pending"
     },
     "landmark-city-sd-pettigrew-home-and-museum": {
-      "raceRef": "Sioux Falls, SD \u2014 Landmark Run",
+      "raceRef": "Sioux Falls, SD — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3360,7 +3765,7 @@
       "visualQA": "pending"
     },
     "landmark-city-sd-washington-pavilion": {
-      "raceRef": "Sioux Falls, SD \u2014 Landmark Run",
+      "raceRef": "Sioux Falls, SD — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3368,7 +3773,7 @@
       "visualQA": "pending"
     },
     "landmark-city-tn-tennessee-state-capitol": {
-      "raceRef": "Nashville, TN \u2014 Landmark Run",
+      "raceRef": "Nashville, TN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3376,7 +3781,7 @@
       "visualQA": "pending"
     },
     "landmark-city-tn-ryman-auditorium": {
-      "raceRef": "Nashville, TN \u2014 Landmark Run",
+      "raceRef": "Nashville, TN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3384,7 +3789,7 @@
       "visualQA": "pending"
     },
     "landmark-city-tn-union-station-hotel": {
-      "raceRef": "Nashville, TN \u2014 Landmark Run",
+      "raceRef": "Nashville, TN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3392,7 +3797,7 @@
       "visualQA": "pending"
     },
     "landmark-city-tn-country-music-hall-of-fame": {
-      "raceRef": "Nashville, TN \u2014 Landmark Run",
+      "raceRef": "Nashville, TN — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3400,7 +3805,7 @@
       "visualQA": "pending"
     },
     "landmark-city-tx-the-alamo": {
-      "raceRef": "San Antonio, TX \u2014 Landmark Run",
+      "raceRef": "San Antonio, TX — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3408,7 +3813,7 @@
       "visualQA": "pending"
     },
     "landmark-city-tx-tower-of-the-americas": {
-      "raceRef": "San Antonio, TX \u2014 Landmark Run",
+      "raceRef": "San Antonio, TX — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3416,7 +3821,7 @@
       "visualQA": "pending"
     },
     "landmark-city-tx-san-fernando-cathedral": {
-      "raceRef": "San Antonio, TX \u2014 Landmark Run",
+      "raceRef": "San Antonio, TX — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3424,7 +3829,7 @@
       "visualQA": "pending"
     },
     "landmark-city-tx-spanish-governors-palace": {
-      "raceRef": "San Antonio, TX \u2014 Landmark Run",
+      "raceRef": "San Antonio, TX — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3432,7 +3837,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ut-union-pacific-depot": {
-      "raceRef": "Salt Lake City, UT \u2014 Landmark Run",
+      "raceRef": "Salt Lake City, UT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3440,7 +3845,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ut-utah-state-capitol": {
-      "raceRef": "Salt Lake City, UT \u2014 Landmark Run",
+      "raceRef": "Salt Lake City, UT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3448,7 +3853,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ut-temple-square": {
-      "raceRef": "Salt Lake City, UT \u2014 Landmark Run",
+      "raceRef": "Salt Lake City, UT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3456,7 +3861,7 @@
       "visualQA": "pending"
     },
     "landmark-city-ut-salt-lake-city-and-county-building": {
-      "raceRef": "Salt Lake City, UT \u2014 Landmark Run",
+      "raceRef": "Salt Lake City, UT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3464,7 +3869,7 @@
       "visualQA": "pending"
     },
     "landmark-city-va-virginia-museum-of-fine-arts": {
-      "raceRef": "Richmond, VA \u2014 Landmark Run",
+      "raceRef": "Richmond, VA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3472,7 +3877,7 @@
       "visualQA": "pending"
     },
     "landmark-city-va-virginia-state-capitol": {
-      "raceRef": "Richmond, VA \u2014 Landmark Run",
+      "raceRef": "Richmond, VA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3480,7 +3885,7 @@
       "visualQA": "pending"
     },
     "landmark-city-va-main-street-station": {
-      "raceRef": "Richmond, VA \u2014 Landmark Run",
+      "raceRef": "Richmond, VA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3488,7 +3893,7 @@
       "visualQA": "pending"
     },
     "landmark-city-va-poe-museum": {
-      "raceRef": "Richmond, VA \u2014 Landmark Run",
+      "raceRef": "Richmond, VA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3496,7 +3901,7 @@
       "visualQA": "pending"
     },
     "landmark-city-vt-waterman-building": {
-      "raceRef": "Burlington, VT \u2014 Landmark Run",
+      "raceRef": "Burlington, VT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3504,7 +3909,7 @@
       "visualQA": "pending"
     },
     "landmark-city-vt-burlington-city-hall": {
-      "raceRef": "Burlington, VT \u2014 Landmark Run",
+      "raceRef": "Burlington, VT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3512,7 +3917,7 @@
       "visualQA": "pending"
     },
     "landmark-city-vt-flynn-center": {
-      "raceRef": "Burlington, VT \u2014 Landmark Run",
+      "raceRef": "Burlington, VT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3520,7 +3925,7 @@
       "visualQA": "pending"
     },
     "landmark-city-vt-echo-leahy-center": {
-      "raceRef": "Burlington, VT \u2014 Landmark Run",
+      "raceRef": "Burlington, VT — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3528,7 +3933,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wa-space-needle": {
-      "raceRef": "Seattle, WA \u2014 Landmark Run",
+      "raceRef": "Seattle, WA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3536,7 +3941,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wa-smith-tower": {
-      "raceRef": "Seattle, WA \u2014 Landmark Run",
+      "raceRef": "Seattle, WA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3544,7 +3949,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wa-pike-place-market": {
-      "raceRef": "Seattle, WA \u2014 Landmark Run",
+      "raceRef": "Seattle, WA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3552,7 +3957,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wa-king-street-station": {
-      "raceRef": "Seattle, WA \u2014 Landmark Run",
+      "raceRef": "Seattle, WA — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3560,7 +3965,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wi-pabst-theater": {
-      "raceRef": "Milwaukee, WI \u2014 Landmark Run",
+      "raceRef": "Milwaukee, WI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3568,7 +3973,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wi-milwaukee-art-museum": {
-      "raceRef": "Milwaukee, WI \u2014 Landmark Run",
+      "raceRef": "Milwaukee, WI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3576,7 +3981,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wi-milwaukee-city-hall": {
-      "raceRef": "Milwaukee, WI \u2014 Landmark Run",
+      "raceRef": "Milwaukee, WI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3584,7 +3989,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wi-harley-davidson-museum": {
-      "raceRef": "Milwaukee, WI \u2014 Landmark Run",
+      "raceRef": "Milwaukee, WI — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3592,7 +3997,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wv-west-virginia-state-capitol": {
-      "raceRef": "Charleston, WV \u2014 Landmark Run",
+      "raceRef": "Charleston, WV — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3600,7 +4005,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wv-clay-center": {
-      "raceRef": "Charleston, WV \u2014 Landmark Run",
+      "raceRef": "Charleston, WV — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3608,7 +4013,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wv-haddad-riverfront-park": {
-      "raceRef": "Charleston, WV \u2014 Landmark Run",
+      "raceRef": "Charleston, WV — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3616,7 +4021,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wv-capitol-market": {
-      "raceRef": "Charleston, WV \u2014 Landmark Run",
+      "raceRef": "Charleston, WV — Landmark Run",
       "source": "pending",
       "savedArtwork": "pending",
       "definition": "pending",
@@ -3624,7 +4029,7 @@
       "visualQA": "pending"
     },
     "landmark-city-wy-big-boy-steam-engine": {
-      "raceRef": "Cheyenne, WY \u2014 Landmark Run",
+      "raceRef": "Cheyenne, WY — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -3736,7 +4141,7 @@
       }
     },
     "landmark-city-wy-wyoming-state-capitol": {
-      "raceRef": "Cheyenne, WY \u2014 Landmark Run",
+      "raceRef": "Cheyenne, WY — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -3833,7 +4238,7 @@
       }
     },
     "landmark-city-wy-cheyenne-depot-museum": {
-      "raceRef": "Cheyenne, WY \u2014 Landmark Run",
+      "raceRef": "Cheyenne, WY — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",
@@ -3937,7 +4342,7 @@
       }
     },
     "landmark-city-wy-historic-governors-mansion": {
-      "raceRef": "Cheyenne, WY \u2014 Landmark Run",
+      "raceRef": "Cheyenne, WY — Landmark Run",
       "source": "saved",
       "savedArtwork": "imported",
       "definition": "registered",

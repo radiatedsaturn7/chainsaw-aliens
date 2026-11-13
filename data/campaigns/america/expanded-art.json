@@ -2288,6 +2288,34 @@
       "heightM": 24,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ny-flatiron-building",
+      "source": "landmarks/NY/landmark-city-ny-flatiron-building.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ny-grand-central-terminal",
+      "source": "landmarks/NY/landmark-city-ny-grand-central-terminal.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building",
+      "source": "landmarks/NY/landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ny-rockefeller-center",
+      "source": "landmarks/NY/landmark-city-ny-rockefeller-center.png",
+      "heightM": 70,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

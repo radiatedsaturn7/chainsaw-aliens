@@ -327,7 +327,7 @@
     "occlusionWidthFactor": 0.6
   },
   "landmark-city-fl-olympia-theater": {
-    "reason": "Actual85\u2013245m screenshots rejected original visibility. Search modest expanded route vicinity, preserving source GPS and all existing scenery.",
+    "reason": "Actual85–245m screenshots rejected original visibility. Search modest expanded route vicinity, preserving source GPS and all existing scenery.",
     "distanceOffsets": [
       0,
       -30,
@@ -365,7 +365,7 @@
     ]
   },
   "landmark-city-fl-adrienne-arsht-center": {
-    "reason": "Actual85\u2013245m screenshots rejected original visibility. Search modest expanded route vicinity, preserving source GPS and all existing scenery.",
+    "reason": "Actual85–245m screenshots rejected original visibility. Search modest expanded route vicinity, preserving source GPS and all existing scenery.",
     "distanceOffsets": [
       0,
       -30,
@@ -422,7 +422,7 @@
     "occlusionWidthFactor": 0.6
   },
   "landmark-city-oh-rock-and-roll-hall-of-fame": {
-    "reason": "Cleveland safe approach shortlist; GPS zero/large offsets are references only. Compact game-scale silhouettes, not surveyed dimensions. Preserve road geometry and daytime lighting. Initial actual desktop/handheld showed off-axis or occluded framing; broaden safe shortlist to \u00b1240m.",
+    "reason": "Cleveland safe approach shortlist; GPS zero/large offsets are references only. Compact game-scale silhouettes, not surveyed dimensions. Preserve road geometry and daytime lighting. Initial actual desktop/handheld showed off-axis or occluded framing; broaden safe shortlist to ±240m.",
     "distanceOffsets": [
       -240,
       -210,
@@ -482,7 +482,7 @@
     "occlusionWidthFactor": 0.75
   },
   "landmark-city-oh-terminal-tower": {
-    "reason": "Cleveland safe approach shortlist; GPS zero/large offsets are references only. Compact game-scale silhouettes, not surveyed dimensions. Preserve road geometry and daytime lighting. Initial actual desktop/handheld showed off-axis or occluded framing; broaden safe shortlist to \u00b1240m.",
+    "reason": "Cleveland safe approach shortlist; GPS zero/large offsets are references only. Compact game-scale silhouettes, not surveyed dimensions. Preserve road geometry and daytime lighting. Initial actual desktop/handheld showed off-axis or occluded framing; broaden safe shortlist to ±240m.",
     "distanceOffsets": [
       -240,
       -210,
@@ -540,5 +540,141 @@
       245
     ],
     "occlusionWidthFactor": 0.75
+  },
+  "landmark-city-ny-flatiron-building": {
+    "reason": "Road-safe recognizable 2994 approach; original GPS and route remain unchanged. Trial compact game dimensions and check native renderer in both views.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -180,
+      180,
+      -210,
+      210,
+      -240,
+      240
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 140,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 150,
+    "approachOffsetsM": [
+      65,
+      85,
+      105,
+      150,
+      195,
+      245,
+      300
+    ],
+    "occlusionWidthFactor": 0.65
+  },
+  "landmark-city-ny-grand-central-terminal": {
+    "reason": "Road-safe recognizable 2994 approach; original GPS and route remain unchanged. Trial compact game dimensions and check native renderer in both views.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -180,
+      180,
+      -210,
+      210,
+      -240,
+      240
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 110,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 155,
+    "approachOffsetsM": [
+      75,
+      95,
+      115,
+      135,
+      155,
+      175,
+      205
+    ],
+    "occlusionWidthFactor": 1.2
+  },
+  "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building": {
+    "reason": "Road-safe recognizable 2994 approach; original GPS and route remain unchanged. Trial compact game dimensions and check native renderer in both views.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -180,
+      180,
+      -210,
+      210,
+      -240,
+      240
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 110,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 155,
+    "approachOffsetsM": [
+      75,
+      95,
+      115,
+      135,
+      155,
+      175,
+      205
+    ],
+    "occlusionWidthFactor": 1.2
+  },
+  "landmark-city-ny-rockefeller-center": {
+    "reason": "Road-safe recognizable 2994 approach; original GPS and route remain unchanged. Trial compact game dimensions and check native renderer in both views.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 110,
+    "allowOppositeSide": false,
+    "facingApproachBeforeM": 150,
+    "approachOffsetsM": [
+      65,
+      85,
+      105,
+      150,
+      195,
+      245,
+      300
+    ],
+    "occlusionWidthFactor": 0.65
   }
 }

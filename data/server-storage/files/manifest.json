@@ -540,7 +540,11 @@
       "landmark-city-oh-rock-and-roll-hall-of-fame": "art/landmark-city-oh-rock-and-roll-hall-of-fame/document.json",
       "landmark-city-oh-playhouse-square": "art/landmark-city-oh-playhouse-square/document.json",
       "landmark-city-oh-terminal-tower": "art/landmark-city-oh-terminal-tower/document.json",
-      "landmark-city-oh-west-side-market": "art/landmark-city-oh-west-side-market/document.json"
+      "landmark-city-oh-west-side-market": "art/landmark-city-oh-west-side-market/document.json",
+      "landmark-city-ny-flatiron-building": "art/landmark-city-ny-flatiron-building/document.json",
+      "landmark-city-ny-grand-central-terminal": "art/landmark-city-ny-grand-central-terminal/document.json",
+      "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building": "art/landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building/document.json",
+      "landmark-city-ny-rockefeller-center": "art/landmark-city-ny-rockefeller-center/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -816,7 +820,11 @@
       "landmark-city-oh-rock-and-roll-hall-of-fame": "doodads/landmark-city-oh-rock-and-roll-hall-of-fame/document.json",
       "landmark-city-oh-playhouse-square": "doodads/landmark-city-oh-playhouse-square/document.json",
       "landmark-city-oh-terminal-tower": "doodads/landmark-city-oh-terminal-tower/document.json",
-      "landmark-city-oh-west-side-market": "doodads/landmark-city-oh-west-side-market/document.json"
+      "landmark-city-oh-west-side-market": "doodads/landmark-city-oh-west-side-market/document.json",
+      "landmark-city-ny-flatiron-building": "doodads/landmark-city-ny-flatiron-building/document.json",
+      "landmark-city-ny-grand-central-terminal": "doodads/landmark-city-ny-grand-central-terminal/document.json",
+      "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building": "doodads/landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building/document.json",
+      "landmark-city-ny-rockefeller-center": "doodads/landmark-city-ny-rockefeller-center/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

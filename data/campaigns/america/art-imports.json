@@ -1706,5 +1706,33 @@
     "documentSha256": "2bf861817a5fc4f8b1fe2ce4e1166e0b9913a1903c576e6545c44d88e1167a53",
     "width": 512,
     "height": 213
+  },
+  "landmark-city-ny-flatiron-building": {
+    "source": "assets/campaign-art/landmarks/NY/landmark-city-ny-flatiron-building.png",
+    "sourceSha256": "7242bf26e744899817b8eb4583861f7d445e2fdde1c0d6ea1523570a426c0f28",
+    "documentSha256": "5ce2804f24927b666a172807590ffc2cee9f2759cb7de0a2804224e702f84d66",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-ny-grand-central-terminal": {
+    "source": "assets/campaign-art/landmarks/NY/landmark-city-ny-grand-central-terminal.png",
+    "sourceSha256": "e3da312ece229f2a80463d6a823431380f592e4361e8d42768bcb78bbbeafb6f",
+    "documentSha256": "2b6e6a1987faa3fc58dc3dc31a0c5494c2d0d62dfd68961bbf8d6de3a8921292",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building": {
+    "source": "assets/campaign-art/landmarks/NY/landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building.png",
+    "sourceSha256": "a4dde17201f7d0d36fd46d1e6285afa650d984bf993c5e5f69ba159663dbdbd0",
+    "documentSha256": "78e145f7d167bc2ec16fef1ad04a6d32a7eecd1ac9a61928d9bb570324695b14",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ny-rockefeller-center": {
+    "source": "assets/campaign-art/landmarks/NY/landmark-city-ny-rockefeller-center.png",
+    "sourceSha256": "dafa543bb3e09d48c32ccfd21487cc0ca34ffc8ee6ad64a5b1056fec9b48c068",
+    "documentSha256": "077c392f25839666203cce2f0b2a2608723fc3eb82d1bf536b586a6ca77da354",
+    "width": 341,
+    "height": 512
   }
 }
