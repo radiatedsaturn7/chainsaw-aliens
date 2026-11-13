@@ -7,7 +7,7 @@ import {prepareCarSheet,carSheetDocument,assignCarSheet} from '../src/racing/Car
 import {calibrateCatalogPlacement} from './car-catalog-placement.mjs';
 const root='data/server-storage/files';
 const read=p=>{const d=JSON.parse(fs.readFileSync(p));return d.__chainsawStorage?JSON.parse(gunzipSync(Buffer.from(d.data,'base64'))):d;};
-export function unchangedProjection(doc){const d=structuredClone(doc);for(const layer of Object.values(d.car.art.angleLayers)){delete layer.body;delete layer.tires.transforms;}return d;}
+export function unchangedProjection(doc){const d=structuredClone(doc);for(const layer of Object.values(d.car.art.angleLayers)){delete layer.body;delete layer.tires.transforms;delete layer.tires.tireMode;}return d;}
 const hash=d=>createHash('sha256').update(JSON.stringify(d)).digest('hex');
 for(const id of ['sti-airslayer','rtg-s']){
  const config=JSON.parse(fs.readFileSync(`assets/car-catalog/${id}/redraw.json`));
@@ -17,6 +17,7 @@ for(const id of ['sti-airslayer','rtg-s']){
  const editor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});
  assignCarSheet(car,'body',ref,config.mapping,art);
  calibrateCatalogPlacement(editor,car,art,prepared,config.mapping,config.authoredWheelAnchors,'cover');
+ for(const layer of Object.values(car.art.angleLayers))layer.tires.tireMode='auto';
  doc.car=car;
  if(hash(unchangedProjection(doc))!==config.preservedDocumentSha256)throw Error('Redraw changed non-exterior fields');
  fs.writeFileSync(file,JSON.stringify(doc,null,2)+'\n');

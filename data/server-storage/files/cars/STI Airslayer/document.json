@@ -102,7 +102,7 @@
               "rearTireOffsetY": 0
             },
             "cylinder": true,
-            "tireMode": "front"
+            "tireMode": "auto"
           },
           "brakes": {
             "visible": false
@@ -134,7 +134,7 @@
               "rearTireOffsetY": 0.6589717736594554
             },
             "cylinder": true,
-            "tireMode": "right"
+            "tireMode": "auto"
           },
           "brakes": {
             "visible": false
@@ -166,7 +166,7 @@
               "rearTireOffsetY": -0.05651173435292008
             },
             "cylinder": true,
-            "tireMode": "right"
+            "tireMode": "auto"
           },
           "brakes": {
             "visible": false
@@ -198,7 +198,7 @@
               "rearTireOffsetY": -1.0957969706630468
             },
             "cylinder": true,
-            "tireMode": "left"
+            "tireMode": "auto"
           },
           "brakes": {
             "visible": false
@@ -230,7 +230,7 @@
               "rearTireOffsetY": -7.042195519646941e-17
             },
             "cylinder": true,
-            "tireMode": "rear"
+            "tireMode": "auto"
           },
           "brakes": {
             "visible": false
@@ -263,7 +263,7 @@
               "rearTireOffsetY": -1.0182060266858382
             },
             "cylinder": true,
-            "tireMode": "right"
+            "tireMode": "auto"
           },
           "brakes": {
             "visible": false
