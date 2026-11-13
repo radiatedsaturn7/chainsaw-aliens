@@ -2322,5 +2322,33 @@
     "documentSha256": "5d63c59a65b525033178e712b2152cd41caaf1fe38b38a5a8d91ec27a177d98a",
     "width": 512,
     "height": 171
+  },
+  "landmark-city-md-oriole-park-at-camden-yards": {
+    "source": "assets/campaign-art/landmarks/MD/landmark-city-md-oriole-park-at-camden-yards.png",
+    "sourceSha256": "f1dd8d5c8b85ec2379798304d207d05344f26e0b9a07eb8d51a0d84610fbb043",
+    "documentSha256": "26fa0f178101f8456bb8e597d3c2700a80d1dc7e6ba9bc64954c61f08dd52a1f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-md-lexington-market": {
+    "source": "assets/campaign-art/landmarks/MD/landmark-city-md-lexington-market.png",
+    "sourceSha256": "94d4a0bf568a44c60130792ecac372dc88f02a8f18394b65d88db965ba4c468e",
+    "documentSha256": "5ce9aff22dd71e0c88fab078716361dd03b328ee8f73af3a7ab556f6f23c2418",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-md-washington-monument": {
+    "source": "assets/campaign-art/landmarks/MD/landmark-city-md-washington-monument.png",
+    "sourceSha256": "affdfbc6c090cbf77cb0764198a8abc180c40ae89f64dedb64a638354a7b47cc",
+    "documentSha256": "0e0e789a1c9ef965f6bb09c1a13bb4222ef62880d180b7ec28c99170e03067af",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-md-national-aquarium": {
+    "source": "assets/campaign-art/landmarks/MD/landmark-city-md-national-aquarium.png",
+    "sourceSha256": "dc9f2fd004bb1047bdc3eadebde713ff17e576abb9bfd1f6fd5878a54228f3a6",
+    "documentSha256": "833e057dc785e084268d700f85672a8548279cdd925ec3e0682460405a1bf96e",
+    "width": 512,
+    "height": 341
   }
 }

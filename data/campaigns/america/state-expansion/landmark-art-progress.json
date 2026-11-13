@@ -5454,35 +5454,451 @@
     },
     "landmark-city-md-oriole-park-at-camden-yards": {
       "raceRef": "Baltimore, MD — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -654.5249006298019,
+        "worldZ": 807.4653141311463,
+        "routeDistanceM": 1057,
+        "offsetFromRoadM": 141,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 5.143350958609419,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 33.712110706189144,
+            "angularWidthDegrees": 35.62068774411237,
+            "rangeM": 87.1557262521769,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 17.328736184574048,
+            "angularWidthDegrees": 29.883163037490824,
+            "rangeM": 104.92523077950295,
+            "occluderIds": [],
+            "score": 0.3068505526170381
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 12.32194141039351,
+            "angularWidthDegrees": 25.38749437302856,
+            "rangeM": 124.30905192197773,
+            "occluderIds": [],
+            "score": 0.5071223435842596
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 3.6477711895689136,
+            "angularWidthDegrees": 21.986335638505665,
+            "rangeM": 144.13927459307965,
+            "occluderIds": [],
+            "score": 0.8540891524172435
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.8795307687715392,
+            "angularWidthDegrees": 18.273621933754427,
+            "rangeM": 174.09354672963866,
+            "occluderIds": [],
+            "score": 0.8848187692491385
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 2.34165081353695,
+            "angularWidthDegrees": 14.904981192101397,
+            "rangeM": 214.05251387450073,
+            "occluderIds": [],
+            "score": 0.906333967458522
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 1.9730220674144212,
+            "angularWidthDegrees": 12.580142262221688,
+            "rangeM": 254.02440989840562,
+            "occluderIds": [],
+            "score": 0.9210791173034232
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 1.6485736005051408,
+            "angularWidthDegrees": 10.524801413257606,
+            "rangeM": 303.9996916906782,
+            "occluderIds": [],
+            "score": 0.9340570559797944
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "a85581361f2cd042a2863c399320f65951d6668c25b073430ffd06bf41c1e3b9",
+      "sourceSha256": "f1dd8d5c8b85ec2379798304d207d05344f26e0b9a07eb8d51a0d84610fbb043",
+      "roadSha256": "feaed7b5328e524765facef92a6ab0a07455224795a3fb143637342926b3b08a",
+      "placementDetails": {
+        "x": -812.625538681244,
+        "z": 624.7762944786153,
+        "yaw": -3.0380006105701067,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1207.037461608499,
+        "trackLateral": -64.99957003324113,
+        "minimumRoadClearanceM": 22.64141866524524,
+        "checkedSegments": 4099,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MD/oriole-park-at-camden-yards-desktop.png",
+        "docs/art/landmark-previews/MD/oriole-park-at-camden-yards-mobile.png"
+      ]
     },
     "landmark-city-md-lexington-market": {
       "raceRef": "Baltimore, MD — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -484.9900770468798,
+        "worldZ": -137.81518244176183,
+        "routeDistanceM": 2260,
+        "offsetFromRoadM": 1,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 2.7633497178120106,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 16.63829388965401,
+            "angularWidthDegrees": 24.490318540135608,
+            "rangeM": 82.93676670938265,
+            "occluderIds": [
+              "city-md-prop-133"
+            ],
+            "score": 0.04013618932966077
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 13.42803500918563,
+            "angularWidthDegrees": 19.966115199325735,
+            "rangeM": 102.25988538509549,
+            "occluderIds": [],
+            "score": 0.4628785996325748
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 10.075833253467701,
+            "angularWidthDegrees": 16.81278372007905,
+            "rangeM": 121.80173503290877,
+            "occluderIds": [],
+            "score": 0.5969666698612919
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 6.040647451782903,
+            "angularWidthDegrees": 14.490621290938407,
+            "rangeM": 141.58412223353585,
+            "occluderIds": [],
+            "score": 0.7583741019286838
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 7.030427701507434,
+            "angularWidthDegrees": 11.986666666508535,
+            "rangeM": 171.4504582164711,
+            "occluderIds": [],
+            "score": 0.7187828919397026
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 7.276133883837187,
+            "angularWidthDegrees": 9.748286409040343,
+            "rangeM": 211.08016963109893,
+            "occluderIds": [
+              "city-md-prop-127",
+              "city-md-prop-131"
+            ],
+            "score": 0.08507455735758149
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 6.118745510743536,
+            "angularWidthDegrees": 8.209894594454992,
+            "rangeM": 250.8092705341412,
+            "occluderIds": [
+              "city-md-prop-127",
+              "city-md-prop-131"
+            ],
+            "score": 0.09063002154843101
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 5.102773705399142,
+            "angularWidthDegrees": 6.854229401495255,
+            "rangeM": 300.57172932152184,
+            "occluderIds": [
+              "city-md-prop-125",
+              "city-md-prop-127",
+              "city-md-prop-129",
+              "city-md-prop-131"
+            ],
+            "score": 0.09550668621408412
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "8e75da58e52b73f24b46e35fabdefd0f481ca8ac6b9424c22708318256d1b558",
+      "sourceSha256": "94d4a0bf568a44c60130792ecac372dc88f02a8f18394b65d88db965ba4c468e",
+      "roadSha256": "feaed7b5328e524765facef92a6ab0a07455224795a3fb143637342926b3b08a",
+      "placementDetails": {
+        "x": -468.7112200248576,
+        "z": -383.8919648657162,
+        "yaw": 3.0159812295150545,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2470.538870759953,
+        "trackLateral": -54.99999999999999,
+        "minimumRoadClearanceM": 26.26253249569161,
+        "checkedSegments": 4099,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MD/lexington-market-desktop.png",
+        "docs/art/landmark-previews/MD/lexington-market-mobile.png"
+      ]
     },
     "landmark-city-md-washington-monument": {
       "raceRef": "Baltimore, MD — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -142.3059818661269,
+        "worldZ": -721.756146288156,
+        "routeDistanceM": 3188,
+        "offsetFromRoadM": 21,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 2.813058783995742,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 1.5322520709201413,
+            "angularWidthDegrees": 13.005518043476332,
+            "rangeM": 122.7038931294863,
+            "occluderIds": [],
+            "score": 0.9387099171631943
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 1.3175220675492234,
+            "angularWidthDegrees": 11.195776487601657,
+            "rangeM": 142.6977640292103,
+            "occluderIds": [],
+            "score": 0.9472991172980311
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.973756261637092,
+            "angularWidthDegrees": 9.826992409597617,
+            "rangeM": 162.69314656748122,
+            "occluderIds": [],
+            "score": 0.9610497495345163
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 37.996714059529694,
+            "angularWidthDegrees": 8.796617423958706,
+            "rangeM": 181.83872710580553,
+            "occluderIds": [
+              "city-md-prop-172"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 88.60337562928179,
+            "angularWidthDegrees": 8.41811296726171,
+            "rangeM": 190.0462747193277,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 76.808179527034,
+            "angularWidthDegrees": 8.199064008471499,
+            "rangeM": 195.14168967415168,
+            "occluderIds": [
+              "city-md-prop-167",
+              "city-md-prop-170"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 66.02366559194415,
+            "angularWidthDegrees": 7.6956437313870145,
+            "rangeM": 207.9494602258516,
+            "occluderIds": [
+              "city-md-prop-170"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 55.00271433184105,
+            "angularWidthDegrees": 6.880470253732614,
+            "rangeM": 232.65686491839247,
+            "occluderIds": [
+              "city-md-prop-158"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "2760fb3de8af2d6268f849ee084394cbfea826f81dd5abc8f57d2ece573f23d8",
+      "sourceSha256": "affdfbc6c090cbf77cb0764198a8abc180c40ae89f64dedb64a638354a7b47cc",
+      "roadSha256": "feaed7b5328e524765facef92a6ab0a07455224795a3fb143637342926b3b08a",
+      "placementDetails": {
+        "x": -163.05891920366952,
+        "z": -782.5049417332049,
+        "yaw": -3.059344190334946,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3166.3043380355384,
+        "trackLateral": -79.59174766918963,
+        "minimumRoadClearanceM": 57.27917072304362,
+        "checkedSegments": 4099,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-md-national-aquarium": {
       "raceRef": "Baltimore, MD — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 486.1776813964699,
+        "worldZ": 485.17749358233993,
+        "routeDistanceM": 4923,
+        "offsetFromRoadM": 10,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 7.156508893499705,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 4.619853588178308,
+            "angularWidthDegrees": 29.545141631931006,
+            "rangeM": 85.40786050513897,
+            "occluderIds": [],
+            "score": 0.8152058564728677
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 3.492883170132678,
+            "angularWidthDegrees": 24.133224228655887,
+            "rangeM": 105.35521581848147,
+            "occluderIds": [],
+            "score": 0.8602846731946929
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 2.8073511867565477,
+            "angularWidthDegrees": 20.375436795668865,
+            "rangeM": 125.32611342705786,
+            "occluderIds": [],
+            "score": 0.887705952529738
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 2.4210955515122845,
+            "angularWidthDegrees": 17.62119803150107,
+            "rangeM": 145.30543260471504,
+            "occluderIds": [],
+            "score": 0.9031561779395086
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.0068406073402247,
+            "angularWidthDegrees": 14.64353584505585,
+            "rangeM": 175.28326452395726,
+            "occluderIds": [],
+            "score": 0.919726375706391
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 1.6340048829358271,
+            "angularWidthDegrees": 11.94571702466534,
+            "rangeM": 215.2633284266642,
+            "occluderIds": [],
+            "score": 0.9346398046825669
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 1.3779746837812883,
+            "angularWidthDegrees": 10.084887007135821,
+            "rangeM": 255.24965181881703,
+            "occluderIds": [],
+            "score": 0.9448810126487485
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 1.1522739918702112,
+            "angularWidthDegrees": 8.439858038234771,
+            "rangeM": 305.2376108091828,
+            "occluderIds": [],
+            "score": 0.9539090403251915
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "f155d952518edf7812f618b9261cfca214d9f20293df8a24bcd4381f990da97c",
+      "sourceSha256": "dc9f2fd004bb1047bdc3eadebde713ff17e576abb9bfd1f6fd5878a54228f3a6",
+      "roadSha256": "feaed7b5328e524765facef92a6ab0a07455224795a3fb143637342926b3b08a",
+      "placementDetails": {
+        "x": 677.2560430251185,
+        "z": 472.11118780259034,
+        "yaw": 1.5768473259154985,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5073.32968664674,
+        "trackLateral": 44.87701551723788,
+        "minimumRoadClearanceM": 6.019985719686286,
+        "checkedSegments": 4099,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MD/national-aquarium-desktop.png",
+        "docs/art/landmark-previews/MD/national-aquarium-mobile.png"
+      ]
     },
     "landmark-city-me-portland-museum-of-art": {
       "raceRef": "Portland, ME — Landmark Run",

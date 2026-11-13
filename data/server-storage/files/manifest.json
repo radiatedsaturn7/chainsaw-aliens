@@ -628,7 +628,11 @@
       "landmark-city-ar-clinton-presidential-library": "art/landmark-city-ar-clinton-presidential-library/document.json",
       "landmark-city-ar-old-state-house-museum": "art/landmark-city-ar-old-state-house-museum/document.json",
       "landmark-city-ar-arkansas-state-capitol": "art/landmark-city-ar-arkansas-state-capitol/document.json",
-      "landmark-city-ar-little-rock-central-high-school": "art/landmark-city-ar-little-rock-central-high-school/document.json"
+      "landmark-city-ar-little-rock-central-high-school": "art/landmark-city-ar-little-rock-central-high-school/document.json",
+      "landmark-city-md-oriole-park-at-camden-yards": "art/landmark-city-md-oriole-park-at-camden-yards/document.json",
+      "landmark-city-md-lexington-market": "art/landmark-city-md-lexington-market/document.json",
+      "landmark-city-md-washington-monument": "art/landmark-city-md-washington-monument/document.json",
+      "landmark-city-md-national-aquarium": "art/landmark-city-md-national-aquarium/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -992,7 +996,11 @@
       "landmark-city-ar-clinton-presidential-library": "doodads/landmark-city-ar-clinton-presidential-library/document.json",
       "landmark-city-ar-old-state-house-museum": "doodads/landmark-city-ar-old-state-house-museum/document.json",
       "landmark-city-ar-arkansas-state-capitol": "doodads/landmark-city-ar-arkansas-state-capitol/document.json",
-      "landmark-city-ar-little-rock-central-high-school": "doodads/landmark-city-ar-little-rock-central-high-school/document.json"
+      "landmark-city-ar-little-rock-central-high-school": "doodads/landmark-city-ar-little-rock-central-high-school/document.json",
+      "landmark-city-md-oriole-park-at-camden-yards": "doodads/landmark-city-md-oriole-park-at-camden-yards/document.json",
+      "landmark-city-md-lexington-market": "doodads/landmark-city-md-lexington-market/document.json",
+      "landmark-city-md-washington-monument": "doodads/landmark-city-md-washington-monument/document.json",
+      "landmark-city-md-national-aquarium": "doodads/landmark-city-md-national-aquarium/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

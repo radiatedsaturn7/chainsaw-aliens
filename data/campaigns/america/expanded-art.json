@@ -2904,6 +2904,34 @@
       "heightM": 26,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-md-oriole-park-at-camden-yards",
+      "source": "landmarks/MD/landmark-city-md-oriole-park-at-camden-yards.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-md-lexington-market",
+      "source": "landmarks/MD/landmark-city-md-lexington-market.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-md-washington-monument",
+      "source": "landmarks/MD/landmark-city-md-washington-monument.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-md-national-aquarium",
+      "source": "landmarks/MD/landmark-city-md-national-aquarium.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
