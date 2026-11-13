@@ -1,0 +1,21 @@
+{
+  "tool": "native image_gen",
+  "body": "Use case: stylized-concept. Original 2994 salvage racing-game car BODY SHELL sprite sheet. Reference is texture/style and exact eight-view layout ONLY; replace rounded coupe with Hawthorn V2005, a distinctly angular American muscular FOUR-DOOR performance sedan, long hood, short squared trunk, straight creases, pronounced angular fenders, 2.88m wheelbase and 4.864m body. Inspired by early2000s American sport sedans but SIMILAR NOT SAME, original narrow horizontal segmented headlights and small vertical rear lamp stacks, unique grille, NO logos/badges/text. Deep weathered aubergine/graphite paint, scratched brushed-steel repair plates, charcoal lower trim. Same worn handpainted realistic game illustration as reference. EXACT eight views,4columns x2rows, wide3:1 sheet: TOP: straight FRONT, front-quarter NOSE LEFT, SIDE NOSE LEFT, rear-quarter NOSE RIGHT. BOTTOM: straight REAR, rear-quarter NOSE LEFT, SIDE NOSE RIGHT, front-quarter NOSE RIGHT. Same consistent sedan all views. Complete unclipped shells and clear gaps. NO wheels, tires, rims, brake discs, suspension: wheel arches genuinely transparent empty cutouts open below for runtime wheels. Genuine transparent background, no shadows, ground or checkerboard. Opaque dark windows. No labels.",
+  "dashboard": "Use case: stylized-concept. Asset: transparent driver-eye cockpit DASHBOARD OVERLAY for fictional Hawthorn V2005, early2000s angular American performance sedan, LEFT HAND DRIVE. Attached dashboard is style and layout reference only: design a DIFFERENT square-cut early2000s dashboard, rectangular center stack and upright rectangular air vents, dark worn graphite leather/plastic, dull aubergine trim with brushed steel repair plates. Original 2994 salvage game illustration matching reference, no logos/lettering. Wide2.5:1 approximately1983x793 canvas. Complete dashboard spans full width in LOWER HALF, upper half genuine transparent windshield opening, no scene or windshield fill. Narrow pillars only at far edges. CRITICAL huge completely blank opaque BLACK instrument binnacle on LEFT at approximately x240..805 y550..730 in1983x793, broadly rectangular with soft edges; empty enough for runtime wheel and gauges. No baked steering wheel, steering column, gauges, dials, digits, needles or indicators. Use knobs and small unmarked buttons only in center. Continuous opaque bottom edge. Runtime inserts shared steering wheel and instruments. Genuine alpha above dashboard.",
+  "dashboardCleanup": "Remove only stray alpha speckles from transparent windshield opening; preserve dashboard.",
+  "references": [
+    "assets/car-catalog/rotarypetal-2011/body.png",
+    "assets/car-catalog/rotarypetal-2011/dashboard.png"
+  ],
+  "outputs": {
+    "body": [
+      2172,
+      724
+    ],
+    "dashboard": [
+      1983,
+      793
+    ]
+  },
+  "recovery": "Exact PNG bytes restored from cached native tool data URLs after workspace rollback; no regeneration."
+}

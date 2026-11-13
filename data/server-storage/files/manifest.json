@@ -508,7 +508,11 @@
       "catalog-rotarypetal-2011-body": "art/catalog-rotarypetal-2011-body/document.json",
       "catalog-rotarypetal-2011-dashboard": "art/catalog-rotarypetal-2011-dashboard/document.json",
       "catalog-thistle-190-1990-body": "art/catalog-thistle-190-1990-body/document.json",
-      "catalog-thistle-190-1990-dashboard": "art/catalog-thistle-190-1990-dashboard/document.json"
+      "catalog-thistle-190-1990-dashboard": "art/catalog-thistle-190-1990-dashboard/document.json",
+      "catalog-hemlock-rt-2005-body": "art/catalog-hemlock-rt-2005-body/document.json",
+      "catalog-hemlock-rt-2005-dashboard": "art/catalog-hemlock-rt-2005-dashboard/document.json",
+      "catalog-hawthorn-v-2005-body": "art/catalog-hawthorn-v-2005-body/document.json",
+      "catalog-hawthorn-v-2005-dashboard": "art/catalog-hawthorn-v-2005-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -581,7 +585,9 @@
       "Wispwing 660 1993": "cars/Wispwing 660 1993/document.json",
       "Glowmoth SC 1988": "cars/Glowmoth SC 1988/document.json",
       "Rotarypetal 2011": "cars/Rotarypetal 2011/document.json",
-      "Thistle 190 1990": "cars/Thistle 190 1990/document.json"
+      "Thistle 190 1990": "cars/Thistle 190 1990/document.json",
+      "Hemlock RT 2005": "cars/Hemlock RT 2005/document.json",
+      "Hawthorn V 2005": "cars/Hawthorn V 2005/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
