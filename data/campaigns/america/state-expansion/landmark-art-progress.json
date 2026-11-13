@@ -640,7 +640,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": -359.0346823422299,
         "worldZ": 393.3192378020793,
@@ -723,9 +723,18 @@
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/FL/museum-desktop.png",
+        "docs/art/landmark-previews/FL/museum-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 195,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing authored daylight",
+        "notes": "Large arched facade shows beyond the left-hand bend."
+      }
     },
     "landmark-city-fl-olympia-theater": {
       "raceRef": "Miami, FL — Landmark Run",
@@ -733,7 +742,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": 252.70706732068453,
         "worldZ": 433.22715209771474,
@@ -742,89 +751,94 @@
         "side": "right"
       },
       "candidateReview": {
-        "score": 0.3380060225285203,
+        "score": 0.3271976834591438,
         "views": [
           {
-            "beforeM": 75,
-            "angleDegrees": 38.56962656438479,
-            "angularWidthDegrees": 17.28220532177706,
-            "rangeM": 96.23632373651347,
+            "beforeM": 85,
+            "angleDegrees": 9.732979425003329,
+            "angularWidthDegrees": 11.33962698318477,
+            "rangeM": 147.30886413037166,
             "occluderIds": [
-              "city-fl-prop-89"
+              "city-fl-prop-103"
             ],
-            "score": 0
+            "score": 0.07328169875998401
           },
           {
             "beforeM": 105,
-            "angleDegrees": 29.687981218630377,
-            "angularWidthDegrees": 13.767285027575607,
-            "rangeM": 121.14446458870293,
-            "occluderIds": [],
-            "score": 0
+            "angleDegrees": 8.573254818980127,
+            "angularWidthDegrees": 10.006509284725535,
+            "rangeM": 167.05521934414526,
+            "occluderIds": [
+              "city-fl-prop-103"
+            ],
+            "score": 0.0788483768688954
           },
           {
             "beforeM": 150,
-            "angleDegrees": 21.76951212627905,
-            "angularWidthDegrees": 10.331049236333985,
-            "rangeM": 161.78013241648134,
+            "angleDegrees": 6.757015254818831,
+            "angularWidthDegrees": 7.9053762277071495,
+            "rangeM": 211.6587462044854,
             "occluderIds": [
-              "city-fl-prop-85"
+              "city-fl-prop-101",
+              "city-fl-prop-103"
             ],
-            "score": 0.015506341793860559
+            "score": 0.0875663267768696
           },
           {
-            "beforeM": 205,
-            "angleDegrees": 16.295598004713828,
-            "angularWidthDegrees": 7.82524997234208,
-            "rangeM": 213.8328720784945,
-            "occluderIds": [],
-            "score": 0.34817607981144694
+            "beforeM": 195,
+            "angleDegrees": 5.54130229824576,
+            "angularWidthDegrees": 6.529169940355038,
+            "rangeM": 256.40128658344327,
+            "occluderIds": [
+              "city-fl-prop-101",
+              "city-fl-prop-103"
+            ],
+            "score": 0.09340174896842035
           },
           {
-            "beforeM": 260,
-            "angleDegrees": 13.018738184590209,
-            "angularWidthDegrees": 6.268915705916683,
-            "rangeM": 267.06840686497367,
+            "beforeM": 245,
+            "angleDegrees": 4.6351854448936844,
+            "angularWidthDegrees": 5.468962892092322,
+            "rangeM": 306.20594183352176,
             "occluderIds": [
-              "city-fl-prop-81"
+              "city-fl-prop-95",
+              "city-fl-prop-101",
+              "city-fl-prop-103"
             ],
-            "score": 0.057510056713966994
-          },
-          {
-            "beforeM": 325,
-            "angleDegrees": 10.482752540943107,
-            "angularWidthDegrees": 5.064109464889797,
-            "rangeM": 330.7216030233018,
-            "occluderIds": [
-              "city-fl-prop-75",
-              "city-fl-prop-77",
-              "city-fl-prop-79"
-            ],
-            "score": 0.05881354420924589
+            "score": 0.08909953208497443
           }
         ],
-        "sourceDistanceShiftM": -60
+        "sourceDistanceShiftM": 210
       },
-      "signature": "de08d8dd87a5d847b00c79dc3960dfef2068fd4aba3a086f2030d1e847136b54",
+      "signature": "aebd5f6a146b817e022c93e651cd0e02d82aa2acf4949c048cde930f2f51eef7",
       "sourceSha256": "98dc36f62c65dd5433fbca781dd16341cb66d22691ab5bccf56ce37574b5e4f8",
       "roadSha256": "929d0580671ed059cfb1f3db62fd0a3447bd85f843c78a1a5eb66a7590939a84",
       "placementDetails": {
-        "x": 190.2068623470847,
-        "z": 358.742564744224,
-        "yaw": 2.1230236417416215,
+        "x": 521.0623176505819,
+        "z": 382.74019150341894,
+        "yaw": 1.7538633398494299,
         "facingApproachBeforeM": 105,
-        "trackDistance": 1673.7575587253498,
-        "trackLateral": -59.99999999999999,
-        "minimumRoadClearanceM": 36.91955765274941,
+        "trackDistance": 1943.6413708494058,
+        "trackLateral": 80.00000000000007,
+        "minimumRoadClearanceM": 57.68756150655376,
         "checkedSegments": 4070,
         "samplingStepM": 2,
         "samplingPaddingM": 2,
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/FL/olympia-desktop.png",
+        "docs/art/landmark-previews/FL/olympia-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 85,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing authored daylight",
+        "notes": "Ruined masonry hotel tower and unlettered streetside theatre facade read at the same approach. Relocated to avoid near-total foreground obstruction."
+      }
     },
     "landmark-city-fl-adrienne-arsht-center": {
       "raceRef": "Miami, FL — Landmark Run",
@@ -832,7 +846,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": 487.11044500512884,
         "worldZ": -1278.7100641617437,
@@ -841,47 +855,23 @@
         "side": "right"
       },
       "candidateReview": {
-        "score": -0.020124983672447305,
+        "score": -0.004716160321925615,
         "views": [
           {
-            "beforeM": 75,
-            "angleDegrees": 119.69950168226958,
-            "angularWidthDegrees": 33.48109313842215,
-            "rangeM": 79.79097175340951,
-            "occluderIds": [],
-            "score": 0
-          },
-          {
-            "beforeM": 105,
-            "angleDegrees": 98.50358712693932,
-            "angularWidthDegrees": 38.03551775610328,
-            "rangeM": 69.63094305890112,
-            "occluderIds": [],
-            "score": 0
-          },
-          {
-            "beforeM": 150,
-            "angleDegrees": 63.258315229772435,
-            "angularWidthDegrees": 34.57320668195141,
-            "rangeM": 77.11863291954619,
-            "occluderIds": [],
-            "score": 0
-          },
-          {
-            "beforeM": 205,
-            "angleDegrees": 40.65727055077973,
-            "angularWidthDegrees": 23.97968951569414,
-            "rangeM": 113.00961063894066,
+            "beforeM": 85,
+            "angleDegrees": 38.01187109328113,
+            "angularWidthDegrees": 25.78518413208477,
+            "rangeM": 104.85179701001019,
             "occluderIds": [
               "city-fl-prop-185"
             ],
             "score": 0
           },
           {
-            "beforeM": 260,
-            "angleDegrees": 28.349435308414538,
-            "angularWidthDegrees": 17.2361133029195,
-            "rangeM": 158.35505782637986,
+            "beforeM": 105,
+            "angleDegrees": 33.09191657962432,
+            "angularWidthDegrees": 22.430884565326803,
+            "rangeM": 121.03763603440596,
             "occluderIds": [
               "city-fl-prop-183",
               "city-fl-prop-185"
@@ -889,39 +879,74 @@
             "score": 0
           },
           {
-            "beforeM": 325,
-            "angleDegrees": 22.317704931759856,
-            "angularWidthDegrees": 12.584405399194372,
-            "rangeM": 217.66085164356298,
+            "beforeM": 150,
+            "angleDegrees": 24.295133336910656,
+            "angularWidthDegrees": 16.99577882204237,
+            "rangeM": 160.6282254934164,
+            "occluderIds": [
+              "city-fl-prop-181",
+              "city-fl-prop-183",
+              "city-fl-prop-185"
+            ],
+            "score": 0.0033833599828288464
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 20.262561240262052,
+            "angularWidthDegrees": 13.521083932175973,
+            "rangeM": 202.45583450700204,
             "occluderIds": [
               "city-fl-prop-179",
-              "city-fl-prop-183"
+              "city-fl-prop-183",
+              "city-fl-prop-185"
             ],
-            "score": 0.012875016327552696
+            "score": 0.022739706046742143
+          },
+          {
+            "beforeM": 245,
+            "angleDegrees": 17.04983882322846,
+            "angularWidthDegrees": 11.095159717680708,
+            "rangeM": 247.09854835297398,
+            "occluderIds": [
+              "city-fl-prop-177",
+              "city-fl-prop-179",
+              "city-fl-prop-183",
+              "city-fl-prop-185"
+            ],
+            "score": 0.0381607736485034
           }
         ],
-        "sourceDistanceShiftM": -30
+        "sourceDistanceShiftM": -150
       },
-      "signature": "1ce8e570c96081ca5d36e7c2bd116cfcc5583035a05001002582162f790f3d1a",
+      "signature": "95b07801c966830254a1d5f977f5138b9d0a28ac2bd9635107003159e86278e8",
       "sourceSha256": "391293111d4b65c908fedcd551a3e63da6998b1a9c1fa777349ed90be1295b43",
       "roadSha256": "929d0580671ed059cfb1f3db62fd0a3447bd85f843c78a1a5eb66a7590939a84",
       "placementDetails": {
-        "x": 457.5663548419903,
-        "z": -1225.846296400212,
-        "yaw": 1.3799353845545361,
+        "x": 448.5568222453595,
+        "z": -1222.6516970051503,
+        "yaw": 2.595660840357283,
         "facingApproachBeforeM": 105,
-        "trackDistance": 3810.863390158515,
-        "trackLateral": 59.999999999999936,
-        "minimumRoadClearanceM": 24.050043327588817,
+        "trackDistance": 3690.9161313471363,
+        "trackLateral": 59.99999998986882,
+        "minimumRoadClearanceM": 21.268417056395037,
         "checkedSegments": 4070,
         "samplingStepM": 2,
         "samplingPaddingM": 2,
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/FL/arsht-desktop.png",
+        "docs/art/landmark-previews/FL/arsht-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 150,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing authored daylight",
+        "notes": "Folded concrete roof and exposed diagonally rising stage volume visible off the right shoulder; existing robot props partially mask ground level."
+      }
     },
     "landmark-city-fl-freedom-tower": {
       "raceRef": "Miami, FL — Landmark Run",
@@ -929,7 +954,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": 237.72768017773473,
         "worldZ": -270.51539119226373,
@@ -1016,9 +1041,18 @@
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/FL/freedom-tower-desktop.png",
+        "docs/art/landmark-previews/FL/freedom-tower-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 105,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing authored daylight",
+        "notes": "Lantern, vertical shaft and arcaded base visible on approach."
+      }
     },
     "landmark-city-ga-fox-theatre": {
       "raceRef": "Atlanta, GA — Landmark Run",
