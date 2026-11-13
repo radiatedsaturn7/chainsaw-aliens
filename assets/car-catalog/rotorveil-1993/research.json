@@ -1,0 +1,32 @@
+{
+  "inspiration": "1993 United States Mazda RX-7 base manual, not R1/Touring/automatic/JDM",
+  "sources": [
+    {
+      "url": "https://xr793.com/wp-content/uploads/2026/02/1993-Mazda-RX-7-Sports-Car.pdf",
+      "locator": "OEM US brochure PDFpage22 printed40; rendered visually inspected",
+      "fields": [
+        "255hp@6500 manual;217lb-ft@5000;1308cc twinrotor sequential twin turbo",
+        "2789lb manual;225/50R16 base;20USgallon tank",
+        "95.5in wheelbase;168.5length;68.9width;48.4height;57.5tracks",
+        "Manual3.48/2.02/1.39/1/.72;4.10final;Torsen differential;16.6steering;8000rpm redline"
+      ]
+    },
+    {
+      "url": "https://www.rx7.net.nz/usspec.htm",
+      "locator": "Specialist secondary US specification table",
+      "fields": [
+        "reverse3.288",
+        "50/50 weight distribution;115mm laden ground clearance",
+        "158mph and4.9s0-60 secondary figures, not simulated proof"
+      ]
+    }
+  ],
+  "estimates": [
+    "Uses primary brochure rounded gearbox ratios as published rather than inventing extra precision. Secondary reverse ratio3.288. Inch/lb conversions do not imply finer measurement accuracy.",
+    "Displacement is1308cc physical rotary chamber sum, not a piston equivalence; existing torque-curve ICE model approximates a rotary and does not model rotor thermodynamics or sequential boost control.",
+    "Torque interpolation except217lb-ft5000/255hp6500,750idle,8200limiter,launch/shift controls,90%efficiency are assumptions.8000 redline is sourced instrument marking not ECU limiter.",
+    "32psi,CG.43m,overhangs/collider subshapes,alignment,suspension,brakes,Cd.31,tire grip and friction are estimates. Torsen approximated by existing35%accel/15%decel locking controls, not actual measured OEM lock constants.",
+    "158mph/4.9s0-60 secondary reference displays are not guaranteed simulated results. Body art original fiction with ducktail not a trim-equipment assertion.",
+    "Per-view wheel anchors and instrument placement are artistic calibration pending actual browser validation."
+  ]
+}
