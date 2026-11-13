@@ -872,7 +872,7 @@
     "transmissions": {
       "manual": {
         "type": "manual",
-        "label": "5MT",
+        "label": "6MT",
         "shiftMode": "manual",
         "shiftTimeMs": 390,
         "clutchDelayMs": 85,

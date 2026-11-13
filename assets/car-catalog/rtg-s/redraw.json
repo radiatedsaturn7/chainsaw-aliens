@@ -1,0 +1,129 @@
+{
+  "name": "RTG-S",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "wheelFit": "cover",
+  "preservedDocumentSha256": "8afcdb6abb8852058c85dffbc1ed6a72fdb175799b63baf6dc5c5fecc723e3f0",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 99,
+        "y": 306,
+        "radius": 31
+      },
+      {
+        "wheel": "fr",
+        "x": 391,
+        "y": 306,
+        "radius": 31
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 544,
+        "y": 278,
+        "radius": 47
+      },
+      {
+        "wheel": "fl",
+        "x": 730,
+        "y": 290,
+        "radius": 52
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1184,
+        "y": 294,
+        "radius": 57
+      },
+      {
+        "wheel": "rr",
+        "x": 1546,
+        "y": 293,
+        "radius": 57
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1721,
+        "y": 281,
+        "radius": 37
+      },
+      {
+        "wheel": "rr",
+        "x": 1878,
+        "y": 290,
+        "radius": 53
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 99,
+        "y": 632,
+        "radius": 31
+      },
+      {
+        "wheel": "rl",
+        "x": 386,
+        "y": 632,
+        "radius": 31
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 739,
+        "y": 618,
+        "radius": 55
+      },
+      {
+        "wheel": "fl",
+        "x": 932,
+        "y": 620,
+        "radius": 36
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 1135,
+        "y": 624,
+        "radius": 57
+      },
+      {
+        "wheel": "fl",
+        "x": 1515,
+        "y": 626,
+        "radius": 56
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1964,
+        "y": 621,
+        "radius": 51
+      },
+      {
+        "wheel": "rr",
+        "x": 2123,
+        "y": 618,
+        "radius": 37
+      }
+    ]
+  }
+}
