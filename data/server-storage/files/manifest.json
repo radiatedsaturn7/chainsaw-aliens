@@ -500,7 +500,9 @@
       "catalog-moonpetal-2000-body": "art/catalog-moonpetal-2000-body/document.json",
       "catalog-moonpetal-2000-dashboard": "art/catalog-moonpetal-2000-dashboard/document.json",
       "catalog-buckwheat-1997-body": "art/catalog-buckwheat-1997-body/document.json",
-      "catalog-buckwheat-1997-dashboard": "art/catalog-buckwheat-1997-dashboard/document.json"
+      "catalog-buckwheat-1997-dashboard": "art/catalog-buckwheat-1997-dashboard/document.json",
+      "catalog-wispwing-1993-body": "art/catalog-wispwing-1993-body/document.json",
+      "catalog-wispwing-1993-dashboard": "art/catalog-wispwing-1993-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -569,7 +571,8 @@
       "Hazel S 2011": "cars/Hazel S 2011/document.json",
       "Foxmint 1.7 2000": "cars/Foxmint 1.7 2000/document.json",
       "Moonpetal GT 2000": "cars/Moonpetal GT 2000/document.json",
-      "Buckwheat 2.4 1997": "cars/Buckwheat 2.4 1997/document.json"
+      "Buckwheat 2.4 1997": "cars/Buckwheat 2.4 1997/document.json",
+      "Wispwing 660 1993": "cars/Wispwing 660 1993/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

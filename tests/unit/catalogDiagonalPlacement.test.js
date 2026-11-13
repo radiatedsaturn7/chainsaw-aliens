@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {decodePng} from '../../scripts/car-catalog-import.mjs';
 import {prepareCarSheet} from '../../src/racing/CarGraphicImport.js';
 const slots=['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft'];
-for(const [slug,name] of [['primrose-st-2005','Primrose ST 2005'],['hazel-2011','Hazel S 2011'],['foxmint-2000','Foxmint 1.7 2000'],['moonpetal-2000','Moonpetal GT 2000'],['buckwheat-1997','Buckwheat 2.4 1997']]){
+for(const [slug,name] of [['wispwing-1993','Wispwing 660 1993'],['primrose-st-2005','Primrose ST 2005'],['hazel-2011','Hazel S 2011'],['foxmint-2000','Foxmint 1.7 2000'],['moonpetal-2000','Moonpetal GT 2000'],['buckwheat-1997','Buckwheat 2.4 1997']]){
  if(!fs.existsSync(new URL(`../../assets/car-catalog/${slug}/import.json`,import.meta.url))) continue;
  test(name+' diagonal source mapping keeps calibrated body with its tires',()=>{
   const root=new URL('../../',import.meta.url),read=p=>JSON.parse(fs.readFileSync(new URL(p,root)));
