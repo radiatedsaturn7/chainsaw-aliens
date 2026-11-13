@@ -1,0 +1,24 @@
+{
+  "reference": "1990 France Peugeot205 GTI130 1.9 three-door hatchback, non-catalyst, FWD5MT LHD; no optional PAS, ABS, AC or sunroof",
+  "status": "research_partial: exact1990 road gearbox and height not primary-verified; not import-ready under strict source gate",
+  "duplicateCheck": "No Peugeot match across origin/staging assets/car-catalog/*/research.json. Volvo850 rejected as LarchTurbo1995; Crossfire rejected as Copperwing2004.",
+  "sources": [
+    {"url":"https://gtipowers.com/wp-content/uploads/2019/05/GTI_2090.pdf","kind":"original French Peugeot1990 brochure archived by marque club","inspection":"Downloaded peugeot1990.pdf; personally viewed rendered pages7and8. Page8 GTI130 column is primary numeric source."},
+    {"url":"https://www.205gti.com/techgearboxUK.htm","kind":"secondary specialist road gearing table","inspection":"Read exact205/3091.9GTI row; no model-year precision. Not OEM."},
+    {"url":"https://taylor-eng.com/gearing/be_ratios.htm","kind":"transmission engineering specialist","inspection":"Read standard ratios and1.9forward cluster; trackday4.43final explicitly NOT selected."},
+    {"url":"https://classicregister.com/guides/info-guide-1987-1990-peugeot-205-gti-phase-15-19l","kind":"secondary model identification","inspection":"BE3 fromJuly1989; BE3 final explicitlyTBC. Do not treat earlierBE1final as exact1990proof."},
+    {"url":"https://historicdb.fia.com/sites/default/files/car_attachment/1600902901/homologation_form_number_5325_group_a.pdf","kind":"1987 FIAhomologation not selected for road gearbox","inspection":"Downloaded/read text. Reports1.882second and3.588final; not substituted for1990road facts."}
+  ],
+  "enginePrimary": {"displacementCc":1905,"cylinders":4,"boreMm":83,"strokeMm":88,"compression":9.6,"powerKW_CEE":93.5,"powerCh_DIN":130,"powerRpm":6000,"torqueMdaN_CEE":16.1,"torqueNm_CEEDerived":161,"torqueMkg_DIN":16.8,"torqueNm_DINDerived":164.752,"torqueRpm":4750},
+  "engineNotes":["130DINch and93.5kWCEE are different test standards, not direct unit equivalents. Keep paired CEE93.5kW/161Nm for simulation or label DIN pair separately. Do not turn16.8mkg into168Nm.","Redline,cutoff,idle and torque curve outside published anchors unverified."],
+  "massPrimary":{"runningOrderKg":880,"grossKg":1300,"convention":"en ordre de marche; brochure does not explicitly define driver/fuel inclusion here"},
+  "dimensionsPrimaryM":{"length":3.705,"width":1.589,"wheelbase":2.420,"frontTrack":1.383,"rearTrack":1.344,"height":null},
+  "tiresPrimary":"185/55VR15",
+  "fuelTankLitersPrimary":50,
+  "dragCoefficientPrimary":0.34,
+  "steeringPrimary":{"unassistedTurnsLockToLock":3.7,"optionalAssistedTurns":3,"turningRadiusOverallM":5.85,"overallRatio":null},
+  "drivetrain":{"drive":"FWD","transmission":"5MT BE3 expected","forwardRatiosSecondaryOnly":[2.923,1.850,1.360,1.069,0.865],"finalDriveSecondaryOnly":3.688,"reverseRatioExact1990":null,"reverseCandidateUnverified":3.333,"differential":"open assumption; OEM source silent"},
+  "chassisPrimary":{"front":"independent coil springs,hydraulic telescopic shocks,antiroll","rear":"independent torsion bars,hydraulic telescopic shocks,antiroll","frontBrakes":"ventilated discs","rearBrakes":"discs"},
+  "artGuidance":["No logos/badges. Fictional squared1980sFrench3doorhatch, broadblackwheelarches andbumpertrim, thinredaccent,15inwheels, LHD.1990brochure shows rectangular headlights andamber indicators, shortuprighttail.","Interior rectangular hooded instrumentcluster, restrainedred upholstery accents. Separate existing steeringwheel; RPM/gear throughupperarch; fixedrear camera andall8views."],
+  "unresolved":["Need exact road manual or datedOEMgear table before asserting1990BE3ratios as facts.","Height absent in primarybrochure;1.355m appears secondarycatalogue but cannot call primaryverified.","Frontweightfraction,CG,clearance,steeringratio,tirepressure,suspension/alignment/braking/efficiency and torque shape are simulationestimates."]
+}

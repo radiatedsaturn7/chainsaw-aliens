@@ -504,7 +504,11 @@
       "catalog-wispwing-1993-body": "art/catalog-wispwing-1993-body/document.json",
       "catalog-wispwing-1993-dashboard": "art/catalog-wispwing-1993-dashboard/document.json",
       "catalog-glowmoth-sc-1988-body": "art/catalog-glowmoth-sc-1988-body/document.json",
-      "catalog-glowmoth-sc-1988-dashboard": "art/catalog-glowmoth-sc-1988-dashboard/document.json"
+      "catalog-glowmoth-sc-1988-dashboard": "art/catalog-glowmoth-sc-1988-dashboard/document.json",
+      "catalog-rotarypetal-2011-body": "art/catalog-rotarypetal-2011-body/document.json",
+      "catalog-rotarypetal-2011-dashboard": "art/catalog-rotarypetal-2011-dashboard/document.json",
+      "catalog-thistle-190-1990-body": "art/catalog-thistle-190-1990-body/document.json",
+      "catalog-thistle-190-1990-dashboard": "art/catalog-thistle-190-1990-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -575,7 +579,9 @@
       "Moonpetal GT 2000": "cars/Moonpetal GT 2000/document.json",
       "Buckwheat 2.4 1997": "cars/Buckwheat 2.4 1997/document.json",
       "Wispwing 660 1993": "cars/Wispwing 660 1993/document.json",
-      "Glowmoth SC 1988": "cars/Glowmoth SC 1988/document.json"
+      "Glowmoth SC 1988": "cars/Glowmoth SC 1988/document.json",
+      "Rotarypetal 2011": "cars/Rotarypetal 2011/document.json",
+      "Thistle 190 1990": "cars/Thistle 190 1990/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

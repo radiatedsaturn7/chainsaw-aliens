@@ -1646,6 +1646,7 @@ export const LATEST_MAJOR_WORK = {
 };
 
 export const LATEST_CHANGES = [
+  {"date": "2026-11-13", "time": "18:20 UTC", "title": "Rotarypetal and Thistle 190", "details": ["Add two distinct source-backed car-editor vehicles with original eight-view artwork and individually fitted shared-wheel cockpits.", "Keep rotary and differential abstractions, secondary Peugeot gearing and simulation estimates explicit."]},
   {date:'2026-11-13',time:'15:34 UTC',title:'Expanded campaign menu loading',details:['Preserve every campaign menu page beyond the former 100-screen cutoff.','Validate the browser build using the same pinned GitHub assets as Pages.']},
   {date:'2026-11-13',time:'15:54 UTC',title:'Solo race loading',details:['Solo races prepare the selected car without downloading and packing the entire opponent catalog.','Races with opponents or traffic retain full catalog preparation.']},
   {date:'2026-11-13',time:'16:14 UTC',title:'Prepare only visible race and showroom cars',details:['Pack opponent artwork for the exact chosen grid rather than every saved car.','Prepare showroom artwork for the visible page while preserving the full selectable catalog.']},
