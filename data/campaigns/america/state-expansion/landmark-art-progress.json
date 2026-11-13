@@ -417,8 +417,13 @@
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
       "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+        "Find a readable view under the existing night settings or validate an explicitly approved lighting change, then review desktop and handheld screenshots."
+      ],
+      "visualReview": {
+        "desktopViewport": "960x540",
+        "conditions": "existing clear night, default headlights",
+        "notes": "Dome silhouette is visible at 85m before closest route projection; exterior details merge into shadow."
+      }
     },
     "landmark-city-id-basque-block": {
       "raceRef": "Boise, ID — Landmark Run",
@@ -451,8 +456,13 @@
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
       "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+        "Find a readable view under the existing night settings or validate an explicitly approved lighting change, then review desktop and handheld screenshots."
+      ],
+      "visualReview": {
+        "desktopViewport": "960x540",
+        "conditions": "existing clear night, default headlights",
+        "notes": "Roof silhouette and a strip of the base are visible at 32–60m; the facade is not recognizable at the existing night lighting."
+      }
     },
     "landmark-city-id-egyptian-theatre": {
       "raceRef": "Boise, ID — Landmark Run",
@@ -468,16 +478,17 @@
         "offsetFromRoadM": 25,
         "side": "left"
       },
-      "signature": "01dcc4274df5237a158122244a33bf36b4b186820c38888cdf91a272e6e17a61",
+      "signature": "36c79090cb4abea6578072d06181f9842020885a03af8ddf467a204025b7ac5a",
       "sourceSha256": "a7b593cedf93917af945eacef2826118c6b60e7563b0fe9ef7409f0708f94f3f",
       "roadSha256": "2bf92c66cff7addb95b53d14cbcca3f07ca6e5f7b2f9d9993f79434a049415ec",
       "placementDetails": {
-        "x": 25.624215670960908,
-        "z": -60.359408841271204,
-        "yaw": 2.534029775262621,
-        "trackDistance": 2755.8859253496034,
-        "trackLateral": -54.999999999999986,
-        "minimumRoadClearanceM": 38.87557562544323,
+        "x": 106.77433062501406,
+        "z": -117.07060571116502,
+        "yaw": 2.726233193598487,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2846.2780219936017,
+        "trackLateral": 19.999988250334503,
+        "minimumRoadClearanceM": 5.475563875777743,
         "checkedSegments": 4330,
         "samplingStepM": 2,
         "samplingPaddingM": 2,
@@ -485,8 +496,73 @@
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
       "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+        "Find a readable view under the existing night settings or validate an explicitly approved lighting change, then review desktop and handheld screenshots."
+      ],
+      "candidateReview": {
+        "score": 2.019909638582208,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 15.152960354913185,
+            "angularWidthDegrees": 10.806705168366227,
+            "rangeM": 79.3697004460321,
+            "occluderIds": [],
+            "score": 0.39388158580347254
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 11.010270397371684,
+            "angularWidthDegrees": 7.908184541173531,
+            "rangeM": 108.61034376036774,
+            "occluderIds": [],
+            "score": 0.5595891841051326
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 7.742213265533287,
+            "angularWidthDegrees": 5.617192463519208,
+            "rangeM": 153.02798553115787,
+            "occluderIds": [],
+            "score": 0.6462687305457879
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 4.889653025404518,
+            "angularWidthDegrees": 4.140929086125197,
+            "rangeM": 207.6592703415752,
+            "occluderIds": [],
+            "score": 0.5551701381278152
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 74.70893214828057,
+            "angularWidthDegrees": 3.6495775846685246,
+            "rangeM": 235.63985105128663,
+            "occluderIds": [
+              "city-id-prop-144",
+              "city-id-prop-150"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 62.0469482914544,
+            "angularWidthDegrees": 3.3022297141321246,
+            "rangeM": 260.4418018636849,
+            "occluderIds": [
+              "city-id-prop-139",
+              "city-id-prop-154"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 90
+      },
+      "visualReview": {
+        "desktopViewport": "960x540",
+        "conditions": "existing clear night, default headlights",
+        "notes": "After relocating off-road toward a better approach, the broken upper silhouette enters frame at 75–150m, but the facade remains in shadow."
+      }
     },
     "landmark-city-id-boise-depot": {
       "raceRef": "Boise, ID — Landmark Run",
@@ -519,8 +595,13 @@
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
       "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+        "Find a readable view under the existing night settings or validate an explicitly approved lighting change, then review desktop and handheld screenshots."
+      ],
+      "visualReview": {
+        "desktopViewport": "960x540",
+        "conditions": "existing clear night, default headlights",
+        "notes": "Only the silhouette of the tall tower breaks the dark horizon at 85m; building facade is not readable."
+      }
     },
     "landmark-city-il-navy-pier": {
       "raceRef": "Chicago, IL — Landmark Run",

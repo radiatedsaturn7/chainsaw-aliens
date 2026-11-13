@@ -67,5 +67,23 @@
     "minimumSetbackM": 20,
     "maximumSetbackM": 100,
     "allowOppositeSide": true
+  },
+  "landmark-city-id-egyptian-theatre": {
+    "reason": "Initial real desktop approach frames never showed facade; safe candidate ranking pending renderer.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 75,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105
   }
 }
