@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 import {existsSync} from 'node:fs';
-const catalogCases=[['Cinder Si 1991','cinder-si-1991'],['Lark 1600 1990','lark-1600-1990'],['Sunstriker GT 1994','sunstriker-gt-1994'],['Briar XT 2004','briar-xt-2004'],['Nightcoil GT 1995','nightcoil-gt-1995'],['Ember Pod Prototype','ember-pod'],['2024 Sentinel Sedan','sentinel-sedan-2024'],['Trailglass 2024','trailglass-2024'],['2018 Kestrel 660','kestrel-660-2018'],['2005 Flint Coupe','flint-coupe-2005'],['2024 Caravan-9','caravan-9-2024'],['2023 Volt-Hound GT','volt-hound-gt-2023'],['Dustjack V8','dustjack-v8']].filter(([name])=>existsSync(`data/server-storage/files/cars/${name}/document.json`));
+const catalogCases=[['Stormline 2002','stormline-2002'],['Cinder Si 1991','cinder-si-1991'],['Lark 1600 1990','lark-1600-1990'],['Sunstriker GT 1994','sunstriker-gt-1994'],['Briar XT 2004','briar-xt-2004'],['Nightcoil GT 1995','nightcoil-gt-1995'],['Ember Pod Prototype','ember-pod'],['2024 Sentinel Sedan','sentinel-sedan-2024'],['Trailglass 2024','trailglass-2024'],['2018 Kestrel 660','kestrel-660-2018'],['2005 Flint Coupe','flint-coupe-2005'],['2024 Caravan-9','caravan-9-2024'],['2023 Volt-Hound GT','volt-hound-gt-2023'],['Dustjack V8','dustjack-v8']].filter(([name])=>existsSync(`data/server-storage/files/cars/${name}/document.json`));
 for(const [carName,carId] of catalogCases){
 
 test(`${carName} actual editor preview composites exterior/cockpit and advances production physics`,async({page},testInfo)=>{

@@ -1,0 +1,28 @@
+{
+  "name": "Stormline 2002",
+  "status": "Original generated PNGs imported; exact-head browser visual gate pending",
+  "settingYear": 2994,
+  "realWorldInspiration": "2002 Japan Skyline GT-R V-spec II Nur 6MT",
+  "generation": {
+    "method": "OpenAI built-in image_gen",
+    "date": "2026-11-13",
+    "styleReferences": [
+      "assets/car-catalog/briar-xt-2004/body.png",
+      "assets/car-catalog/briar-xt-2004/dashboard.png"
+    ],
+    "prompts": {
+      "body": "Original fictional slate-blue salvage sports coupe, charcoal hood, narrow rectangular headlamps, horizontal segmented rear lamps, no logos. Detailed painted 2994 sprite; eight consistent views4x2, front/frontthreequarter nose-right/leftprofile/rearthreequarter nose-left then rear/rearthreequarter nose-right/rightprofile/frontthreequarter nose-left. Transparent wheel openings, no wheels axles or ground shadows. Reference style and layout only.",
+      "dashboard": "Original Stormline salvage coupe RIGHT-HAND-DRIVE dashboard, broad empty cluster on right, blank center screen, charcoal/slate-blue materials, transparent windshield, no wheel/wipers/text/logos. Wide2.5:1, reference style/composition only."
+    }
+  },
+  "constraints": {
+    "noLogos": true,
+    "noSnow": true,
+    "noBakedWheels": true,
+    "reuseSharedSteeringWheel": true
+  },
+  "sourceHashes": {
+    "body.png": "93b59e94b4a52d4f773226b66fea7179551df837bd81ac85d86bdf0efa490324",
+    "dashboard.png": "d2ff72ea5947feeea597661c071adddd583b9820f22b123f7f68cc49e6796c93"
+  }
+}

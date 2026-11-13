@@ -408,7 +408,9 @@
       "catalog-lark-1600-1990-body": "art/catalog-lark-1600-1990-body/document.json",
       "catalog-lark-1600-1990-dashboard": "art/catalog-lark-1600-1990-dashboard/document.json",
       "catalog-cinder-si-1991-body": "art/catalog-cinder-si-1991-body/document.json",
-      "catalog-cinder-si-1991-dashboard": "art/catalog-cinder-si-1991-dashboard/document.json"
+      "catalog-cinder-si-1991-dashboard": "art/catalog-cinder-si-1991-dashboard/document.json",
+      "catalog-stormline-2002-body": "art/catalog-stormline-2002-body/document.json",
+      "catalog-stormline-2002-dashboard": "art/catalog-stormline-2002-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -432,7 +434,8 @@
       "Briar XT 2004": "cars/Briar XT 2004/document.json",
       "Sunstriker GT 1994": "cars/Sunstriker GT 1994/document.json",
       "Lark 1600 1990": "cars/Lark 1600 1990/document.json",
-      "Cinder Si 1991": "cars/Cinder Si 1991/document.json"
+      "Cinder Si 1991": "cars/Cinder Si 1991/document.json",
+      "Stormline 2002": "cars/Stormline 2002/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
