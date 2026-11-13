@@ -20,13 +20,13 @@
       7,
       13.4
     ],
-    "lengthM": 9374.02258029123,
+    "lengthM": 9233.032415135447,
     "laps": 1,
-    "estimatedDrivingSeconds": 225,
+    "estimatedDrivingSeconds": 222,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 41.898449,
-      "lon": -71.54377
+      "lat": 41.897285,
+      "lon": -71.544281
     },
     "finishGps": {
       "lat": 41.834351,
@@ -53,7 +53,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        26.92,
+        9.07
+      ],
+      "lengthBeforeM": 9373.98,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 140.95,
+      "trimFinishM": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H01-S05",
@@ -76,17 +91,17 @@
       10,
       10
     ],
-    "lengthM": 2416.5217192632003,
+    "lengthM": 2415.511040189398,
     "laps": 3,
     "estimatedDrivingSeconds": 315,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 41.9810955,
-      "lon": -71.8256118
+      "lat": 41.98091374,
+      "lon": -71.83054752
     },
     "finishGps": {
-      "lat": 41.9810955,
-      "lon": -71.8256118
+      "lat": 41.98091374,
+      "lon": -71.83054752
     },
     "surface": [
       "asphalt"
@@ -109,7 +124,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        48.72,
+        45.15
+      ],
+      "lengthBeforeM": 2415.51,
+      "gridWindowM": 80,
+      "rotatedM": 1442.19,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H01-S01",
@@ -130,19 +157,19 @@
     "durationLimitedBySource": false,
     "roadWidthRangeM": [
       11.572799999999999,
-      15.2304
+      18.888
     ],
-    "lengthM": 13019.62131457946,
+    "lengthM": 17968.68710665636,
     "laps": 1,
-    "estimatedDrivingSeconds": 223,
+    "estimatedDrivingSeconds": 325,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 41.870576,
-      "lon": -71.3997193
+      "lat": 41.9040701,
+      "lon": -71.350996
     },
     "finishGps": {
-      "lat": 41.9520034,
-      "lon": -71.306101
+      "lat": 41.7830262,
+      "lon": -71.4238989
     },
     "surface": [
       "asphalt"
@@ -158,7 +185,7 @@
     "generatedPath": "artifacts/campaign-import/side-races/H01-S01.json",
     "lightingPreset": "noon",
     "raceRef": "I-95 — Attleboro to Warwick curves",
-    "displayName": "I-95 — Attleboro to Warwick curves",
+    "displayName": "Pawtucket S-curves — I-95 south through Thurbers Avenue",
     "documentPath": "races/I-95 %E2%80%94 Attleboro to Warwick curves/document.json",
     "hubRaceRef": "Tower Hill Road",
     "sceneryCount": 576,
@@ -244,17 +271,17 @@
       4.5,
       4.5
     ],
-    "lengthM": 4947.419379204108,
+    "lengthM": 4754.475416707557,
     "laps": 1,
-    "estimatedDrivingSeconds": 224,
+    "estimatedDrivingSeconds": 215,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 41.5427355,
       "lon": -71.8229626
     },
     "finishGps": {
-      "lat": 41.557972500000005,
-      "lon": -71.7998796
+      "lat": 41.5563945,
+      "lon": -71.7993029
     },
     "surface": [
       "dirt"
@@ -277,7 +304,22 @@
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        6.43,
+        41.55
+      ],
+      "lengthBeforeM": 4947.42,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 192.94,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H01-S06",
@@ -300,17 +342,17 @@
       10,
       10
     ],
-    "lengthM": 449.4570884194403,
+    "lengthM": 448.7599424315917,
     "laps": 9,
     "estimatedDrivingSeconds": 213,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 41.7848295,
-      "lon": -71.3013111
+      "lat": 41.7849818,
+      "lon": -71.30176655
     },
     "finishGps": {
-      "lat": 41.7848295,
-      "lon": -71.3013111
+      "lat": 41.7849818,
+      "lon": -71.30176655
     },
     "surface": [
       "asphalt"
@@ -333,7 +375,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        56.44,
+        81.28
+      ],
+      "lengthBeforeM": 448.76,
+      "gridWindowM": 40,
+      "rotatedM": 41.7,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H01-S07",
@@ -394,9 +448,9 @@
   {
     "id": "H01-S08",
     "name": "Lime Rock Park — Connecticut",
-    "event_type": "Circuit detour",
+    "event_type": "Circuit race",
     "selection_guidance": "1.5-mile road course; geographically off-route",
-    "import_kind": "track_trace",
+    "import_kind": "circuit",
     "priority": "wildcard_detour",
     "duration_target_seconds": [
       120,
@@ -412,17 +466,17 @@
       10,
       10
     ],
-    "lengthM": 2411.371845944385,
+    "lengthM": 2371.7268920976235,
     "laps": 3,
     "estimatedDrivingSeconds": 253,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 41.9251135,
-      "lon": -73.3861351
+      "lat": 41.9269401,
+      "lon": -73.38809596666667
     },
     "finishGps": {
-      "lat": 41.9251135,
-      "lon": -73.3861351
+      "lat": 41.9269401,
+      "lon": -73.38809596666667
     },
     "surface": [
       "asphalt"
@@ -435,8 +489,8 @@
     ],
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
-    "generatedPath": "artifacts/campaign-import/side-races/H01-S08.json",
-    "lightingPreset": "noon",
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-lime-full.json",
+    "lightingPreset": "evening",
     "raceRef": "Lime Rock Park — Connecticut",
     "displayName": "Lime Rock Park — Connecticut",
     "documentPath": "races/Lime Rock Park %E2%80%94 Connecticut/document.json",
@@ -445,7 +499,24 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        48.64,
+        0.49
+      ],
+      "lengthBeforeM": 2410.23,
+      "gridWindowM": 80,
+      "rotatedM": 277.6,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    },
+    "venueKey": "lime",
+    "venueName": "Lime Rock Park",
+    "layoutLabel": "Full Circuit",
+    "replaceRaceRef": "Lime Rock Park — Connecticut",
+    "existingSideId": "H01-S08"
   },
   {
     "id": "H01-S09",
@@ -468,17 +539,17 @@
       10,
       10
     ],
-    "lengthM": 3666.5319140640927,
+    "lengthM": 3659.849180458951,
     "laps": 2,
-    "estimatedDrivingSeconds": 277,
+    "estimatedDrivingSeconds": 276,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 42.2319505,
-      "lon": -72.2458325
+      "lat": 42.233093966666665,
+      "lon": -72.24454033333333
     },
     "finishGps": {
-      "lat": 42.2319505,
-      "lon": -72.2458325
+      "lat": 42.233093966666665,
+      "lon": -72.24454033333333
     },
     "surface": [
       "asphalt"
@@ -501,7 +572,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        47.15,
+        22.85
+      ],
+      "lengthBeforeM": 3659.85,
+      "gridWindowM": 80,
+      "rotatedM": 172.07,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H02-S01",
@@ -636,17 +719,17 @@
       3.8000000000000003,
       3.8000000000000003
     ],
-    "lengthM": 6832.130956944514,
+    "lengthM": 6673.352920057144,
     "laps": 1,
-    "estimatedDrivingSeconds": 227,
+    "estimatedDrivingSeconds": 222,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 44.0753172,
       "lon": -71.10430286666667
     },
     "finishGps": {
-      "lat": 44.078697,
-      "lon": -71.0315438
+      "lat": 44.0783031,
+      "lon": -71.0333977
     },
     "surface": [
       "asphalt"
@@ -669,7 +752,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        7.06,
+        27.44
+      ],
+      "lengthBeforeM": 6832.08,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 158.73,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H02-S04",
@@ -804,17 +902,17 @@
       10,
       10
     ],
-    "lengthM": 3601.6736983335845,
+    "lengthM": 3601.5246206331008,
     "laps": 2,
     "estimatedDrivingSeconds": 273,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 43.822534,
-      "lon": -71.2498848
+      "lat": 43.823238849999996,
+      "lon": -71.24845094999999
     },
     "finishGps": {
-      "lat": 43.822534,
-      "lon": -71.2498848
+      "lat": 43.823238849999996,
+      "lon": -71.24845094999999
     },
     "surface": [
       "asphalt"
@@ -837,7 +935,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        87.46,
+        33.45
+      ],
+      "lengthBeforeM": 3601.52,
+      "gridWindowM": 80,
+      "rotatedM": 201.48,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H02-S07",
@@ -916,17 +1026,17 @@
       7,
       16.6
     ],
-    "lengthM": 2575.824781930943,
+    "lengthM": 2571.6638017085943,
     "laps": 3,
     "estimatedDrivingSeconds": 302,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 43.3608635,
-      "lon": -71.4629464
+      "lat": 43.364164466666665,
+      "lon": -71.46152086666666
     },
     "finishGps": {
-      "lat": 43.3608635,
-      "lon": -71.4629464
+      "lat": 43.364164466666665,
+      "lon": -71.46152086666666
     },
     "surface": [
       "asphalt"
@@ -949,7 +1059,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        30.88,
+        9.89
+      ],
+      "lengthBeforeM": 2571.66,
+      "gridWindowM": 80,
+      "rotatedM": 2186.29,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H02-S09",
@@ -1028,13 +1150,13 @@
       7,
       7
     ],
-    "lengthM": 11193.066841868125,
+    "lengthM": 11133.257124526128,
     "laps": 1,
-    "estimatedDrivingSeconds": 231,
+    "estimatedDrivingSeconds": 230,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.8720616,
-      "lon": -79.492984
+      "lat": 39.8725899,
+      "lon": -79.4928614
     },
     "finishGps": {
       "lat": 39.94806705,
@@ -1061,7 +1183,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        14.56,
+        5.43
+      ],
+      "lengthBeforeM": 11193.04,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 59.78,
+      "trimFinishM": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H03-S02",
@@ -1364,17 +1501,17 @@
       10,
       10
     ],
-    "lengthM": 825.0366800509637,
+    "lengthM": 825.0347530485349,
     "laps": 7,
     "estimatedDrivingSeconds": 229,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 40.1599272,
-      "lon": -79.0722703
+      "lat": 40.1585436,
+      "lon": -79.073103975
     },
     "finishGps": {
-      "lat": 40.1599272,
-      "lon": -79.0722703
+      "lat": 40.1585436,
+      "lon": -79.073103975
     },
     "surface": [
       "asphalt"
@@ -1397,7 +1534,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        40,
+        11.46
+      ],
+      "lengthBeforeM": 825.03,
+      "gridWindowM": 80,
+      "rotatedM": 260.13,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H03-S08",
@@ -1476,17 +1625,17 @@
       10,
       10
     ],
-    "lengthM": 4473.999960115731,
+    "lengthM": 4471.4281817465435,
     "laps": 2,
     "estimatedDrivingSeconds": 339,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 40.8488373,
-      "lon": -80.3511296
+      "lat": 40.85049141666667,
+      "lon": -80.34813285
     },
     "finishGps": {
-      "lat": 40.8488373,
-      "lon": -80.3511296
+      "lat": 40.85049141666667,
+      "lon": -80.34813285
     },
     "surface": [
       "asphalt"
@@ -1509,7 +1658,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        169.86,
+        93.76
+      ],
+      "lengthBeforeM": 4471.43,
+      "gridWindowM": 80,
+      "rotatedM": 4132.24,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H04-S01",
@@ -1588,17 +1749,17 @@
       7,
       7
     ],
-    "lengthM": 7030.4670482045085,
+    "lengthM": 6891.009258628019,
     "laps": 1,
-    "estimatedDrivingSeconds": 216,
+    "estimatedDrivingSeconds": 212,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.3479572,
-      "lon": -81.7888898
+      "lat": 39.348481,
+      "lon": -81.789267
     },
     "finishGps": {
-      "lat": 39.3899763,
-      "lon": -81.8182309
+      "lat": 39.389414,
+      "lon": -81.818013
     },
     "surface": [
       "asphalt"
@@ -1621,7 +1782,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        72.3,
+        47.36
+      ],
+      "lengthBeforeM": 7030.47,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 71.89,
+      "trimFinishM": 67.57,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H04-S03",
@@ -1644,17 +1820,17 @@
       7,
       7
     ],
-    "lengthM": 11544.129984479536,
+    "lengthM": 11425.586528285716,
     "laps": 1,
-    "estimatedDrivingSeconds": 232,
+    "estimatedDrivingSeconds": 230,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.394587,
-      "lon": -81.59566
+      "lat": 39.394084,
+      "lon": -81.596554
     },
     "finishGps": {
-      "lat": 39.403235,
-      "lon": -81.72326
+      "lat": 39.403153,
+      "lon": -81.72302
     },
     "surface": [
       "asphalt"
@@ -1677,7 +1853,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        15.95,
+        17.17
+      ],
+      "lengthBeforeM": 11544.04,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 95.91,
+      "trimFinishM": 22.55,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H04-S04",
@@ -1700,17 +1891,17 @@
       7,
       7
     ],
-    "lengthM": 5379.29275708755,
+    "lengthM": 5167.624562583952,
     "laps": 1,
-    "estimatedDrivingSeconds": 215,
+    "estimatedDrivingSeconds": 207,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.7373047,
-      "lon": -80.9765005
+      "lat": 39.7364719,
+      "lon": -80.9755243
     },
     "finishGps": {
-      "lat": 39.7106161,
-      "lon": -80.9548263
+      "lat": 39.7112444,
+      "lon": -80.9548563
     },
     "surface": [
       "asphalt"
@@ -1733,7 +1924,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        29.15,
+        79.66
+      ],
+      "lengthBeforeM": 5379.13,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "trimStartM": 131.9,
+      "trimFinishM": 79.61,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H04-S05",
@@ -1756,17 +1962,17 @@
       7,
       7
     ],
-    "lengthM": 5919.9822948411365,
+    "lengthM": 5486.11123755757,
     "laps": 1,
-    "estimatedDrivingSeconds": 214,
+    "estimatedDrivingSeconds": 198,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.463841,
-      "lon": -81.819881
+      "lat": 39.4664439,
+      "lon": -81.8193973
     },
     "finishGps": {
-      "lat": 39.4875,
-      "lon": -81.778067
+      "lat": 39.487326,
+      "lon": -81.77873
     },
     "surface": [
       "asphalt"
@@ -1789,7 +1995,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        63.08,
+        46.51
+      ],
+      "lengthBeforeM": 5919.88,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 372.25,
+      "trimFinishM": 61.52,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H04-S06",
@@ -1868,17 +2089,17 @@
       4.5,
       4.5
     ],
-    "lengthM": 5515.915823177931,
+    "lengthM": 5479.662949696622,
     "laps": 1,
-    "estimatedDrivingSeconds": 215,
+    "estimatedDrivingSeconds": 214,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 39.457907,
       "lon": -81.772998
     },
     "finishGps": {
-      "lat": 39.478165,
-      "lon": -81.734879
+      "lat": 39.478024,
+      "lon": -81.735258
     },
     "surface": [
       "dirt"
@@ -1901,7 +2122,22 @@
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        9.07,
+        21.62
+      ],
+      "lengthBeforeM": 5515.78,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 36.12,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H04-S08",
@@ -1924,17 +2160,17 @@
       10,
       10
     ],
-    "lengthM": 452.52462094450675,
+    "lengthM": 452.4191439578179,
     "laps": 8,
     "estimatedDrivingSeconds": 230,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 39.1976582,
-      "lon": -81.651774
+      "lat": 39.1980391,
+      "lon": -81.65146695
     },
     "finishGps": {
-      "lat": 39.1976582,
-      "lon": -81.651774
+      "lat": 39.1980391,
+      "lon": -81.65146695
     },
     "surface": [
       "dirt"
@@ -1957,14 +2193,26 @@
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        125.07,
+        0
+      ],
+      "lengthBeforeM": 452.42,
+      "gridWindowM": 80,
+      "rotatedM": 402.48,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H04-S09",
     "name": "Mid-Ohio Sports Car Course — Lexington",
-    "event_type": "Circuit detour",
+    "event_type": "Circuit race",
     "selection_guidance": "2.258/2.4-mile circuit far north of Marietta",
-    "import_kind": "track_trace",
+    "import_kind": "circuit",
     "priority": "wildcard_detour",
     "duration_target_seconds": [
       120,
@@ -1980,17 +2228,17 @@
       10,
       10
     ],
-    "lengthM": 3646.183002485484,
-    "laps": 2,
+    "lengthM": 3616.1760963168667,
+    "laps": 3,
     "estimatedDrivingSeconds": 265,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 40.6861723,
-      "lon": -82.6391477
+      "lat": 40.68481455714286,
+      "lon": -82.64018035714287
     },
     "finishGps": {
-      "lat": 40.6861723,
-      "lon": -82.6391477
+      "lat": 40.68481455714286,
+      "lon": -82.64018035714287
     },
     "surface": [
       "asphalt"
@@ -2003,17 +2251,34 @@
     ],
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
-    "generatedPath": "artifacts/campaign-import/side-races/H04-S09.json",
-    "lightingPreset": "evening",
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-mid-ohio-sports-car.json",
+    "lightingPreset": "morning",
     "raceRef": "Mid-Ohio Sports Car Course — Lexington",
     "displayName": "Mid-Ohio Sports Car Course — Lexington",
     "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Lexington/document.json",
     "hubRaceRef": "Ohio River Crossing",
-    "sceneryCount": 148,
+    "sceneryCount": 150,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        18.1,
+        0
+      ],
+      "lengthBeforeM": 3642.68,
+      "gridWindowM": 80,
+      "rotatedM": 441.85,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    },
+    "venueKey": "mid-ohio",
+    "venueName": "Mid-Ohio Sports Car Course",
+    "layoutLabel": "Sports Car Course",
+    "replaceRaceRef": "Mid-Ohio Sports Car Course — Lexington",
+    "existingSideId": "H04-S09"
   },
   {
     "id": "H05-S01",
@@ -2036,17 +2301,17 @@
       7,
       7
     ],
-    "lengthM": 9558.614614216907,
+    "lengthM": 9507.167774127924,
     "laps": 1,
-    "estimatedDrivingSeconds": 230,
+    "estimatedDrivingSeconds": 229,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 37.3636128,
       "lon": -91.4273456
     },
     "finishGps": {
-      "lat": 37.424185,
-      "lon": -91.468361
+      "lat": 37.4237231,
+      "lon": -91.4683861
     },
     "surface": [
       "asphalt"
@@ -2069,7 +2334,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        8.68,
+        11.46
+      ],
+      "lengthBeforeM": 9558.58,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 51.41,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H05-S02",
@@ -2148,17 +2428,17 @@
       7,
       7
     ],
-    "lengthM": 9507.723590916647,
+    "lengthM": 9428.383142676841,
     "laps": 1,
-    "estimatedDrivingSeconds": 233,
+    "estimatedDrivingSeconds": 231,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 37.1592787,
       "lon": -91.2038291
     },
     "finishGps": {
-      "lat": 37.15154053333333,
-      "lon": -91.28671023333334
+      "lat": 37.1515284,
+      "lon": -91.2858161
     },
     "surface": [
       "asphalt"
@@ -2181,7 +2461,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        0,
+        13.39
+      ],
+      "lengthBeforeM": 9507.72,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 79.34,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H05-S04",
@@ -2204,17 +2499,17 @@
       7,
       7
     ],
-    "lengthM": 4723.025029549931,
+    "lengthM": 4697.513012760586,
     "laps": 1,
-    "estimatedDrivingSeconds": 135,
+    "estimatedDrivingSeconds": 134,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 37.1556212,
       "lon": -91.2755124
     },
     "finishGps": {
-      "lat": 37.1894258,
-      "lon": -91.2765166
+      "lat": 37.1892078,
+      "lon": -91.2766064
     },
     "surface": [
       "asphalt"
@@ -2237,7 +2532,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        5.1,
+        14.6
+      ],
+      "lengthBeforeM": 4723.03,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 25.51,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H05-S05",
@@ -2317,17 +2627,17 @@
       4.5,
       4.5
     ],
-    "lengthM": 4168.244959771862,
+    "lengthM": 3882.8786499340954,
     "laps": 1,
-    "estimatedDrivingSeconds": 187,
+    "estimatedDrivingSeconds": 174,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.2506187,
-      "lon": -91.3998178
+      "lat": 37.2510085,
+      "lon": -91.3983798
     },
     "finishGps": {
-      "lat": 37.2576837,
-      "lon": -91.3591299
+      "lat": 37.2574799,
+      "lon": -91.3607274
     },
     "surface": [
       "gravel"
@@ -2350,7 +2660,22 @@
     "installedSurfaces": [
       "gravel"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        44.09,
+        50.61
+      ],
+      "lengthBeforeM": 4168.24,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 139.21,
+      "trimFinishM": 146.15,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H05-S07",
@@ -2487,17 +2812,17 @@
       10,
       10
     ],
-    "lengthM": 6408.47998240462,
+    "lengthM": 6399.969606604987,
     "laps": 1,
     "estimatedDrivingSeconds": 218,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.2785903,
-      "lon": -92.8871805
+      "lat": 38.2762144,
+      "lon": -92.88511310000001
     },
     "finishGps": {
-      "lat": 38.2785903,
-      "lon": -92.8871805
+      "lat": 38.2762144,
+      "lon": -92.88511310000001
     },
     "surface": [
       "asphalt"
@@ -2520,7 +2845,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        68.41,
+        71
+      ],
+      "lengthBeforeM": 6399.97,
+      "gridWindowM": 80,
+      "rotatedM": 6019.66,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H06-S01",
@@ -2543,17 +2880,17 @@
       10,
       10
     ],
-    "lengthM": 2809.102998820318,
+    "lengthM": 2807.4454800876474,
     "laps": 2,
     "estimatedDrivingSeconds": 216,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.6520702,
-      "lon": -90.1341055
+      "lat": 38.653464775,
+      "lon": -90.135446425
     },
     "finishGps": {
-      "lat": 38.6520702,
-      "lon": -90.1341055
+      "lat": 38.653464775,
+      "lon": -90.135446425
     },
     "surface": [
       "asphalt"
@@ -2576,7 +2913,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        0,
+        52.56
+      ],
+      "lengthBeforeM": 2807.45,
+      "gridWindowM": 80,
+      "rotatedM": 2535.38,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H06-S02",
@@ -2879,17 +3228,17 @@
       7,
       7
     ],
-    "lengthM": 10322.463179225579,
+    "lengthM": 10144.323041616895,
     "laps": 1,
-    "estimatedDrivingSeconds": 227,
+    "estimatedDrivingSeconds": 223,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 38.64465333333333,
       "lon": -90.77510913333333
     },
     "finishGps": {
-      "lat": 38.5827725,
-      "lon": -90.8426723
+      "lat": 38.5821482,
+      "lon": -90.8410428
     },
     "surface": [
       "asphalt"
@@ -2912,7 +3261,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        5.49,
+        55.9
+      ],
+      "lengthBeforeM": 10322.46,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 178.14,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H06-S08",
@@ -2935,17 +3299,17 @@
       10,
       10
     ],
-    "lengthM": 1242.782987969157,
+    "lengthM": 1241.942169212089,
     "laps": 4,
     "estimatedDrivingSeconds": 269,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.6487593,
-      "lon": -90.1347779
+      "lat": 38.647676700000005,
+      "lon": -90.1339654
     },
     "finishGps": {
-      "lat": 38.6487593,
-      "lon": -90.1347779
+      "lat": 38.647676700000005,
+      "lon": -90.1339654
     },
     "surface": [
       "asphalt"
@@ -2968,7 +3332,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        25.56,
+        47.82
+      ],
+      "lengthBeforeM": 1241.94,
+      "gridWindowM": 80,
+      "rotatedM": 698.97,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H06-S09",
@@ -2991,17 +3367,17 @@
       10,
       10
     ],
-    "lengthM": 528.2522965377102,
+    "lengthM": 525.4917587449474,
     "laps": 6,
-    "estimatedDrivingSeconds": 224,
+    "estimatedDrivingSeconds": 223,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.2713224,
-      "lon": -90.3993536
+      "lat": 38.270890439999995,
+      "lon": -90.39979493999999
     },
     "finishGps": {
-      "lat": 38.2713224,
-      "lon": -90.3993536
+      "lat": 38.270890439999995,
+      "lon": -90.39979493999999
     },
     "surface": [
       "asphalt"
@@ -3024,7 +3400,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        314.08,
+        33.73
+      ],
+      "lengthBeforeM": 525.49,
+      "gridWindowM": 80,
+      "rotatedM": 336.23,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H07-S01",
@@ -3047,17 +3435,17 @@
       7,
       7
     ],
-    "lengthM": 9613.434262249604,
+    "lengthM": 9521.399087513551,
     "laps": 1,
-    "estimatedDrivingSeconds": 181,
+    "estimatedDrivingSeconds": 179,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 35.2264851,
       "lon": -100.4343334
     },
     "finishGps": {
-      "lat": 35.2245041,
-      "lon": -100.5386189
+      "lat": 35.2247277,
+      "lon": -100.5376566
     },
     "surface": [
       "asphalt"
@@ -3080,7 +3468,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        0,
+        23.13
+      ],
+      "lengthBeforeM": 9613.43,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 92.04,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H07-S02",
@@ -3329,17 +3732,17 @@
       3.8000000000000003,
       7
     ],
-    "lengthM": 6711.6275515428115,
+    "lengthM": 6244.146888168428,
     "laps": 1,
-    "estimatedDrivingSeconds": 220,
+    "estimatedDrivingSeconds": 205,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.9656516,
-      "lon": -101.6714274
+      "lat": 34.965929,
+      "lon": -101.6734057
     },
     "finishGps": {
-      "lat": 34.985053,
-      "lon": -101.702211
+      "lat": 34.9852914,
+      "lon": -101.7019932
     },
     "surface": [
       "asphalt"
@@ -3362,7 +3765,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        55.67,
+        23.22
+      ],
+      "lengthBeforeM": 6711.63,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 204.96,
+      "trimFinishM": 262.52,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H07-S07",
@@ -3497,17 +3915,17 @@
       10,
       10
     ],
-    "lengthM": 2832.8746607882563,
+    "lengthM": 2830.227134039735,
     "laps": 2,
     "estimatedDrivingSeconds": 218,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 36.2186724,
-      "lon": -96.5903689
+      "lat": 36.2194827375,
+      "lon": -96.5902491
     },
     "finishGps": {
-      "lat": 36.2186724,
-      "lon": -96.5903689
+      "lat": 36.2194827375,
+      "lon": -96.5902491
     },
     "surface": [
       "asphalt"
@@ -3530,7 +3948,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        76.77,
+        36.23
+      ],
+      "lengthBeforeM": 2830.23,
+      "gridWindowM": 80,
+      "rotatedM": 2736.33,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H08-S01",
@@ -3553,13 +3983,13 @@
       3,
       7
     ],
-    "lengthM": 5350.622257292952,
+    "lengthM": 5293.559504583447,
     "laps": 1,
-    "estimatedDrivingSeconds": 217,
+    "estimatedDrivingSeconds": 215,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.7912025,
-      "lon": -104.904879
+      "lat": 38.790958,
+      "lon": -104.9043095
     },
     "finishGps": {
       "lat": 38.8076836,
@@ -3588,7 +4018,22 @@
       "dirt",
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        35.07,
+        9.65
+      ],
+      "lengthBeforeM": 5350.62,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 57.06,
+      "trimFinishM": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H08-S02",
@@ -3611,17 +4056,17 @@
       4.5,
       4.5
     ],
-    "lengthM": 3562.521631719897,
+    "lengthM": 3002.150111733814,
     "laps": 1,
-    "estimatedDrivingSeconds": 214,
+    "estimatedDrivingSeconds": 180,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.6302753,
-      "lon": -105.1188835
+      "lat": 38.6286718,
+      "lon": -105.1207909
     },
     "finishGps": {
-      "lat": 38.6093401,
-      "lon": -105.1314698
+      "lat": 38.6111384,
+      "lon": -105.1318424
     },
     "surface": [
       "dirt"
@@ -3644,7 +4089,29 @@
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        70.65,
+        8.07
+      ],
+      "lengthBeforeM": 3320.54,
+      "lineWindowsM": [
+        40,
+        80
+      ],
+      "trimStartM": 318.39,
+      "trimFinishM": 0,
+      "status": "adjusted",
+      "afterDegrees": [
+        0,
+        8.07
+      ],
+      "lengthAfterM": 3002.15,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false,
+      "geometrySignature": "a76bf363e3d74b6982cb63108af3127d884d89fda54864eb85159c9d704bb7d6"
+    }
   },
   {
     "id": "H08-S03",
@@ -3667,17 +4134,17 @@
       4.5,
       4.5
     ],
-    "lengthM": 3665.5617567542326,
+    "lengthM": 3578.5765074018723,
     "laps": 1,
-    "estimatedDrivingSeconds": 220,
+    "estimatedDrivingSeconds": 215,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.6769628,
-      "lon": -105.2135941
+      "lat": 38.6771577,
+      "lon": -105.2129348
     },
     "finishGps": {
-      "lat": 38.6978049,
-      "lon": -105.2014051
+      "lat": 38.6976961,
+      "lon": -105.2015879
     },
     "surface": [
       "gravel"
@@ -3700,7 +4167,22 @@
     "installedSurfaces": [
       "gravel"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        92.05,
+        19.37
+      ],
+      "lengthBeforeM": 3665.56,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "trimStartM": 67.03,
+      "trimFinishM": 19.96,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H08-S04",
@@ -3723,17 +4205,17 @@
       3.8000000000000003,
       7
     ],
-    "lengthM": 4136.5831542047035,
+    "lengthM": 4026.1250686216476,
     "laps": 1,
-    "estimatedDrivingSeconds": 124,
+    "estimatedDrivingSeconds": 121,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 38.4724789,
       "lon": -105.2584117
     },
     "finishGps": {
-      "lat": 38.448543,
-      "lon": -105.2462087
+      "lat": 38.4485541,
+      "lon": -105.2473878
     },
     "surface": [
       "asphalt"
@@ -3756,7 +4238,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        2.13,
+        11.32
+      ],
+      "lengthBeforeM": 4136.58,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 110.46,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H08-S05",
@@ -3835,17 +4332,17 @@
       7,
       7
     ],
-    "lengthM": 7249.3324880833225,
+    "lengthM": 7076.785824399308,
     "laps": 1,
-    "estimatedDrivingSeconds": 224,
+    "estimatedDrivingSeconds": 219,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.8577747,
-      "lon": -105.154269
+      "lat": 38.8573319,
+      "lon": -105.1532578
     },
     "finishGps": {
-      "lat": 38.8160278,
-      "lon": -105.1305734
+      "lat": 38.8166065,
+      "lon": -105.1309179
     },
     "surface": [
       "asphalt"
@@ -3868,7 +4365,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        20.99,
+        12.95
+      ],
+      "lengthBeforeM": 7249.33,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 101.62,
+      "trimFinishM": 70.93,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H08-S07",
@@ -3891,17 +4403,17 @@
       3.8000000000000003,
       7
     ],
-    "lengthM": 4558.904448227839,
+    "lengthM": 4433.208794125238,
     "laps": 1,
-    "estimatedDrivingSeconds": 163,
+    "estimatedDrivingSeconds": 159,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 38.8678581,
       "lon": -104.8880079
     },
     "finishGps": {
-      "lat": 38.8797917,
-      "lon": -104.8837848
+      "lat": 38.8804331,
+      "lon": -104.8829179
     },
     "surface": [
       "asphalt"
@@ -3924,7 +4436,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        9.68,
+        126.92
+      ],
+      "lengthBeforeM": 4558.9,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 125.7,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H08-S08",
@@ -3947,17 +4474,17 @@
       10,
       10
     ],
-    "lengthM": 2115.777658134792,
+    "lengthM": 2113.1512825909062,
     "laps": 3,
     "estimatedDrivingSeconds": 249,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.5932377,
-      "lon": -104.6791754
+      "lat": 38.5911673,
+      "lon": -104.67781535
     },
     "finishGps": {
-      "lat": 38.5932377,
-      "lon": -104.6791754
+      "lat": 38.5911673,
+      "lon": -104.67781535
     },
     "surface": [
       "asphalt"
@@ -3980,7 +4507,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        33.75,
+        32.6
+      ],
+      "lengthBeforeM": 2113.15,
+      "gridWindowM": 80,
+      "rotatedM": 261.59,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H08-S09",
@@ -4003,17 +4542,17 @@
       10,
       10
     ],
-    "lengthM": 3513.511978620278,
+    "lengthM": 3509.563998552981,
     "laps": 2,
     "estimatedDrivingSeconds": 251,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.3020531,
-      "lon": -104.6742564
+      "lat": 38.30489791666667,
+      "lon": -104.67321410000001
     },
     "finishGps": {
-      "lat": 38.3020531,
-      "lon": -104.6742564
+      "lat": 38.30489791666667,
+      "lon": -104.67321410000001
     },
     "surface": [
       "asphalt"
@@ -4036,7 +4575,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        59.88,
+        15.26
+      ],
+      "lengthBeforeM": 3509.56,
+      "gridWindowM": 80,
+      "rotatedM": 796.17,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H09-S01",
@@ -4059,17 +4610,17 @@
       7,
       7
     ],
-    "lengthM": 4253.534521032385,
+    "lengthM": 4093.561841608812,
     "laps": 1,
-    "estimatedDrivingSeconds": 214,
+    "estimatedDrivingSeconds": 206,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.2846865,
-      "lon": -109.8541331
+      "lat": 37.2856426,
+      "lon": -109.8544067
     },
     "finishGps": {
-      "lat": 37.3160144,
-      "lon": -109.8553468
+      "lat": 37.3158011,
+      "lon": -109.8556525
     },
     "surface": [
       "dirt"
@@ -4092,7 +4643,22 @@
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        23.05,
+        48.16
+      ],
+      "lengthBeforeM": 4253.53,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "trimStartM": 123.48,
+      "trimFinishM": 36.5,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H09-S02",
@@ -4115,17 +4681,17 @@
       7,
       7
     ],
-    "lengthM": 5663.701415249794,
+    "lengthM": 5468.9755631789285,
     "laps": 1,
-    "estimatedDrivingSeconds": 218,
+    "estimatedDrivingSeconds": 211,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 37.2672682,
       "lon": -109.964421
     },
     "finishGps": {
-      "lat": 37.2331083,
-      "lon": -109.9933018
+      "lat": 37.2347022,
+      "lon": -109.9927569
     },
     "surface": [
       "dirt"
@@ -4148,7 +4714,22 @@
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        9.46,
+        155.59
+      ],
+      "lengthBeforeM": 5663.7,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 194.73,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H09-S03",
@@ -4171,17 +4752,17 @@
       7,
       7
     ],
-    "lengthM": 5673.564905444647,
+    "lengthM": 5578.3289850971905,
     "laps": 1,
-    "estimatedDrivingSeconds": 120,
+    "estimatedDrivingSeconds": 118,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.1745677,
-      "lon": -109.9270958
+      "lat": 37.1751569,
+      "lon": -109.9266127
     },
     "finishGps": {
-      "lat": 37.1987708,
-      "lon": -109.8789994
+      "lat": 37.1988527,
+      "lon": -109.8791581
     },
     "surface": [
       "asphalt"
@@ -4204,7 +4785,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        26.67,
+        13.71
+      ],
+      "lengthBeforeM": 5673.56,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 78.48,
+      "trimFinishM": 16.75,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H09-S04",
@@ -4451,13 +5047,13 @@
       4.5,
       4.5
     ],
-    "lengthM": 3537.946691412174,
+    "lengthM": 3401.8010853786327,
     "laps": 1,
-    "estimatedDrivingSeconds": 214,
+    "estimatedDrivingSeconds": 206,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 38.4549351,
-      "lon": -109.8167123
+      "lat": 38.4540993,
+      "lon": -109.8162762
     },
     "finishGps": {
       "lat": 38.4558231,
@@ -4484,7 +5080,22 @@
     "installedSurfaces": [
       "dirt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        97.76,
+        20.6
+      ],
+      "lengthBeforeM": 3537.95,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "trimStartM": 136.15,
+      "trimFinishM": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H09-S09",
@@ -4507,17 +5118,17 @@
       4.5,
       4.5
     ],
-    "lengthM": 3859.0630548917443,
+    "lengthM": 3681.9447622999555,
     "laps": 1,
-    "estimatedDrivingSeconds": 219,
+    "estimatedDrivingSeconds": 209,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 37.8491267,
-      "lon": -111.0327498
+      "lat": 37.8490409,
+      "lon": -111.0315128
     },
     "finishGps": {
-      "lat": 37.8546933,
-      "lon": -111.0125014
+      "lat": 37.8544336,
+      "lon": -111.013191
     },
     "surface": [
       "asphalt",
@@ -4542,7 +5153,22 @@
       "dirt",
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        30.06,
+        50.09
+      ],
+      "lengthBeforeM": 3859.06,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "trimStartM": 109.6,
+      "trimFinishM": 67.52,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H10-S01",
@@ -4565,13 +5191,13 @@
       4.2576,
       7
     ],
-    "lengthM": 7880.774080956459,
+    "lengthM": 7821.551824734985,
     "laps": 1,
-    "estimatedDrivingSeconds": 220,
+    "estimatedDrivingSeconds": 218,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.7728929,
-      "lon": -111.7639617
+      "lat": 34.7733437,
+      "lon": -111.7638054
     },
     "finishGps": {
       "lat": 34.8359513,
@@ -4598,7 +5224,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        166.48,
+        0
+      ],
+      "lengthBeforeM": 7880.67,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 59.12,
+      "trimFinishM": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H10-S02",
@@ -4621,17 +5262,17 @@
       7,
       7
     ],
-    "lengthM": 6045.165102373832,
+    "lengthM": 5908.906303847953,
     "laps": 1,
-    "estimatedDrivingSeconds": 218,
+    "estimatedDrivingSeconds": 213,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.8476392,
-      "lon": -111.8291045
+      "lat": 34.8469185,
+      "lon": -111.828522
     },
     "finishGps": {
-      "lat": 34.820709,
-      "lon": -111.834839
+      "lat": 34.8210393,
+      "lon": -111.8347746
     },
     "surface": [
       "asphalt"
@@ -4654,7 +5295,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        42.99,
+        18.29
+      ],
+      "lengthBeforeM": 6045.03,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 98.93,
+      "trimFinishM": 37.2,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H10-S03",
@@ -4845,13 +5501,13 @@
       7,
       7
     ],
-    "lengthM": 3944.4815021857544,
+    "lengthM": 3744.5343282827857,
     "laps": 1,
-    "estimatedDrivingSeconds": 221,
+    "estimatedDrivingSeconds": 210,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.8707327,
-      "lon": -111.7209475
+      "lat": 34.8700439,
+      "lon": -111.7192467
     },
     "finishGps": {
       "lat": 34.8840432,
@@ -4878,7 +5534,22 @@
     "installedSurfaces": [
       "gravel"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        107.74,
+        41.68
+      ],
+      "lengthBeforeM": 3944.48,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "trimStartM": 199.95,
+      "trimFinishM": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H10-S07",
@@ -4901,17 +5572,17 @@
       7,
       10.200000000000001
     ],
-    "lengthM": 6160.060139856786,
+    "lengthM": 6112.056729471676,
     "laps": 1,
-    "estimatedDrivingSeconds": 218,
+    "estimatedDrivingSeconds": 216,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 34.6855052,
       "lon": -112.1700549
     },
     "finishGps": {
-      "lat": 34.718148,
-      "lon": -112.1543377
+      "lat": 34.7177928,
+      "lon": -112.1540419
     },
     "surface": [
       "asphalt"
@@ -4934,7 +5605,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        7.34,
+        13.2
+      ],
+      "lengthBeforeM": 6159.93,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 47.87,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H10-S08",
@@ -4957,17 +5643,17 @@
       10,
       10
     ],
-    "lengthM": 3725.9448356273315,
+    "lengthM": 3724.7047518618742,
     "laps": 2,
     "estimatedDrivingSeconds": 308,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 32.8182785,
-      "lon": -111.8357456
+      "lat": 32.815395188888886,
+      "lon": -111.8394983
     },
     "finishGps": {
-      "lat": 32.8182785,
-      "lon": -111.8357456
+      "lat": 32.815395188888886,
+      "lon": -111.8394983
     },
     "surface": [
       "asphalt"
@@ -4990,7 +5676,19 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        7.69,
+        17.74
+      ],
+      "lengthBeforeM": 3724.7,
+      "gridWindowM": 80,
+      "rotatedM": 2990.86,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H10-S09",
@@ -5069,17 +5767,17 @@
       7,
       7
     ],
-    "lengthM": 7679.756964801281,
+    "lengthM": 7616.346941596509,
     "laps": 1,
-    "estimatedDrivingSeconds": 231,
+    "estimatedDrivingSeconds": 229,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 34.3918205,
       "lon": -118.0813467
     },
     "finishGps": {
-      "lat": 34.3445276,
-      "lon": -118.110387
+      "lat": 34.3449967,
+      "lon": -118.1099943
     },
     "surface": [
       "asphalt"
@@ -5102,7 +5800,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        7.8,
+        19.66
+      ],
+      "lengthBeforeM": 7679.76,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 63.41,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H11-S02",
@@ -5125,17 +5838,17 @@
       7,
       7
     ],
-    "lengthM": 8222.997667716198,
+    "lengthM": 8170.567564553632,
     "laps": 1,
-    "estimatedDrivingSeconds": 226,
+    "estimatedDrivingSeconds": 225,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 34.308386125,
       "lon": -118.076425175
     },
     "finishGps": {
-      "lat": 34.2729488,
-      "lon": -118.0433912
+      "lat": 34.2733379,
+      "lon": -118.0431342
     },
     "surface": [
       "asphalt"
@@ -5158,7 +5871,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        7.31,
+        56.19
+      ],
+      "lengthBeforeM": 8223,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 52.43,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H11-S03",
@@ -5181,17 +5909,17 @@
       7,
       7
     ],
-    "lengthM": 6965.0302286497335,
+    "lengthM": 6831.81856049913,
     "laps": 1,
-    "estimatedDrivingSeconds": 200,
+    "estimatedDrivingSeconds": 196,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
       "lat": 34.3028058,
       "lon": -118.2559542
     },
     "finishGps": {
-      "lat": 34.2836407,
-      "lon": -118.1975979
+      "lat": 34.2837552,
+      "lon": -118.1989666
     },
     "surface": [
       "asphalt"
@@ -5214,7 +5942,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        3.85,
+        25.95
+      ],
+      "lengthBeforeM": 6965.03,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 0,
+      "trimFinishM": 133.21,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H11-S04",
@@ -5237,17 +5980,17 @@
       7,
       7
     ],
-    "lengthM": 4344.112637016781,
+    "lengthM": 4173.296619647713,
     "laps": 1,
-    "estimatedDrivingSeconds": 211,
+    "estimatedDrivingSeconds": 203,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.2123163,
-      "lon": -117.8004408
+      "lat": 34.2129104,
+      "lon": -117.7994728
     },
     "finishGps": {
-      "lat": 34.2280684,
-      "lon": -117.7825349
+      "lat": 34.2281616,
+      "lon": -117.7828782
     },
     "surface": [
       "asphalt"
@@ -5270,7 +6013,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        76.98,
+        25.04
+      ],
+      "lengthBeforeM": 4343.81,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "trimStartM": 137.28,
+      "trimFinishM": 33.23,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H11-S05",
@@ -5293,17 +6051,17 @@
       3.8000000000000003,
       3.8000000000000003
     ],
-    "lengthM": 4921.501772376578,
+    "lengthM": 4316.546283848359,
     "laps": 1,
-    "estimatedDrivingSeconds": 223,
+    "estimatedDrivingSeconds": 196,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.22014745,
-      "lon": -117.70801184999999
+      "lat": 34.2195599,
+      "lon": -117.71073
     },
     "finishGps": {
-      "lat": 34.2177248,
-      "lon": -117.7444881
+      "lat": 34.2199863,
+      "lon": -117.7433399
     },
     "surface": [
       "asphalt"
@@ -5326,7 +6084,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        19.23,
+        36.25
+      ],
+      "lengthBeforeM": 4921.5,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 267.66,
+      "trimFinishM": 337.29,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H11-S06",
@@ -5349,17 +6122,17 @@
       7,
       7
     ],
-    "lengthM": 6772.1782364208475,
+    "lengthM": 6424.488738039978,
     "laps": 1,
-    "estimatedDrivingSeconds": 219,
+    "estimatedDrivingSeconds": 208,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.2308872,
-      "lon": -117.8458232
+      "lat": 34.2294391,
+      "lon": -117.8458393
     },
     "finishGps": {
-      "lat": 34.1902056,
-      "lon": -117.865933
+      "lat": 34.1917343,
+      "lon": -117.8660055
     },
     "surface": [
       "asphalt"
@@ -5382,7 +6155,22 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        11.65,
+        44.51
+      ],
+      "lengthBeforeM": 6771.95,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 165.1,
+      "trimFinishM": 182.37,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H11-S07",
@@ -5405,17 +6193,17 @@
       7,
       7
     ],
-    "lengthM": 4464.306070665003,
+    "lengthM": 4242.634822313955,
     "laps": 1,
-    "estimatedDrivingSeconds": 210,
+    "estimatedDrivingSeconds": 200,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.3321288,
-      "lon": -118.3425764
+      "lat": 34.3324309,
+      "lon": -118.3429053
     },
     "finishGps": {
-      "lat": 34.3439202,
-      "lon": -118.3578516
+      "lat": 34.3434729,
+      "lon": -118.3564461
     },
     "surface": [
       "asphalt"
@@ -5438,14 +6226,29 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        37.2,
+        67.59
+      ],
+      "lengthBeforeM": 4464.31,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "trimStartM": 45.58,
+      "trimFinishM": 176.09,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    }
   },
   {
     "id": "H11-S08",
     "name": "Willow Springs — Horse Thief Mile",
-    "event_type": "Drift circuit detour",
+    "event_type": "Circuit race",
     "selection_guidance": "1-mile 11-turn canyon-simulating track; Rosamond is a considerable detour",
-    "import_kind": "track_trace",
+    "import_kind": "circuit",
     "priority": "wildcard_detour",
     "duration_target_seconds": [
       120,
@@ -5461,17 +6264,17 @@
       10,
       10
     ],
-    "lengthM": 1611.431452022178,
+    "lengthM": 1611.508675740356,
     "laps": 3,
-    "estimatedDrivingSeconds": 238,
+    "estimatedDrivingSeconds": 237,
     "durationMethod": "Fast-build planning estimate: up to 145 mph paved / 72 mph loose, curvature-limited, 3.2 m/s² acceleration, 6 m/s² braking; not a measured gameplay run",
     "startGps": {
-      "lat": 34.8771727,
-      "lon": -118.2654893
+      "lat": 34.877523360000005,
+      "lon": -118.26569186
     },
     "finishGps": {
-      "lat": 34.8771727,
-      "lon": -118.2654893
+      "lat": 34.877523360000005,
+      "lon": -118.26569186
     },
     "surface": [
       "asphalt"
@@ -5484,17 +6287,34 @@
     ],
     "geometryMethod": "osm",
     "confidence": "Mapped geometry; width/banking and gameplay runtime require review",
-    "generatedPath": "artifacts/campaign-import/side-races/H11-S08.json",
-    "lightingPreset": "evening",
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-willow-horse-thief.json",
+    "lightingPreset": "night",
     "raceRef": "Willow Springs — Horse Thief Mile",
     "displayName": "Willow Springs — Horse Thief Mile",
     "documentPath": "races/Willow Springs %E2%80%94 Horse Thief Mile/document.json",
     "hubRaceRef": "Angeles Crest Highway",
-    "sceneryCount": 50,
+    "sceneryCount": 46,
     "installedSurfaces": [
       "asphalt"
     ],
-    "conditionNotes": ""
+    "conditionNotes": "",
+    "linePlacement": {
+      "beforeDegrees": [
+        0,
+        31.12
+      ],
+      "lengthBeforeM": 1607.51,
+      "gridWindowM": 80,
+      "rotatedM": 43.15,
+      "seamDegrees": 0,
+      "method": "existing-road-straight-v1",
+      "surveyedStartLine": false
+    },
+    "venueKey": "willow",
+    "venueName": "Willow Springs",
+    "layoutLabel": "Horse Thief Mile",
+    "replaceRaceRef": "Willow Springs — Horse Thief Mile",
+    "existingSideId": "H11-S08"
   },
   {
     "id": "H11-S09",

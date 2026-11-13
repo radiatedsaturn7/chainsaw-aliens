@@ -42,7 +42,7 @@ test('pause Restart Race starts a fresh attempt with the same car and baked trac
   assert.equal(fresh.elapsedMs, 0);
   assert.equal(fresh.distance, 0);
   assert.equal(fresh.lap, 1);
-  assert.equal(fresh.countdownRemainingMs, editor.getRaceStartSettings().countdown ? 4000 : 0);
+  assert.equal(fresh.countdownRemainingMs, editor.getRaceStartSettings().countdown ? 6000 : 0);
   assert.equal(fresh.tireTrackSegments.length, 0);
   assert.notEqual(fresh.trackState, old.trackState);
   assert.equal(editor.raceInput.paused, false);

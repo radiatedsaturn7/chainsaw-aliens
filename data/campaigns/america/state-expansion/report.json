@@ -1,0 +1,4113 @@
+[
+  {
+    "id": "state-ak",
+    "name": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+    "displayName": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+    "status": "imported",
+    "state": "Alaska",
+    "stateCode": "AK",
+    "location": {
+      "lat": 61.738,
+      "lon": -149.24
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 7580.250938814882,
+    "estimatedDrivingSeconds": 388,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-ak.json",
+    "references": [
+      "https://dnr.alaska.gov/parks/aspunits/matsu/hatcherpassema.htm"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage.",
+      "direction": "Reverse of mapped source traversal, selected for uphill progression."
+    }
+  },
+  {
+    "id": "state-ar",
+    "name": "Pig Trail \u2014 Arkansas 23",
+    "displayName": "Pig Trail \u2014 Arkansas 23",
+    "status": "imported",
+    "state": "Arkansas",
+    "stateCode": "AR",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 5,
+    "lengthM": 12797.49392620099,
+    "estimatedDrivingSeconds": 627,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-ar.json",
+    "references": [
+      "https://www.arkansas.com/experiences/discover/all-experiences/road-trips"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "state-de",
+    "name": "Brandywine Valley \u2014 Montchanin Road",
+    "displayName": "Brandywine Valley \u2014 Montchanin Road",
+    "status": "imported",
+    "state": "Delaware",
+    "stateCode": "DE",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 3,
+    "lengthM": 8606.06528692618,
+    "estimatedDrivingSeconds": 342,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-de.json",
+    "references": [
+      "https://deldot.gov/Programs/byways/index.shtml?dc=brandywine"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "state-hi",
+    "name": "Hana Highway \u2014 Rainforest Bends",
+    "displayName": "Hana Highway \u2014 Rainforest Bends",
+    "status": "imported",
+    "state": "Hawaii",
+    "stateCode": "HI",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 7559.198245455156,
+    "estimatedDrivingSeconds": 681,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-hi.json",
+    "references": [
+      "https://www.gohawaii.com/islands/maui/regions/east-maui/Hana"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "state-me",
+    "name": "Grafton Notch \u2014 Maine 26",
+    "displayName": "Grafton Notch \u2014 Maine 26",
+    "status": "imported",
+    "state": "Maine",
+    "stateCode": "ME",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 2,
+    "lengthM": 13985.925319493965,
+    "estimatedDrivingSeconds": 387,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-me.json",
+    "references": [
+      "https://www.exploremaine.org/byways/"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "state-md",
+    "name": "National Road \u2014 Sideling Hill",
+    "displayName": "National Road \u2014 Sideling Hill",
+    "status": "imported",
+    "state": "Maryland",
+    "stateCode": "MD",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 3,
+    "lengthM": 8620.162757036105,
+    "estimatedDrivingSeconds": 204,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-md.json",
+    "references": [
+      "https://www.visitmaryland.org/scenic-byways/historic-national-road"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "state-ms",
+    "name": "Natchez Trace \u2014 Tishomingo",
+    "displayName": "Natchez Trace \u2014 Tishomingo",
+    "status": "imported",
+    "state": "Mississippi",
+    "stateCode": "MS",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 5,
+    "lengthM": 13611.183172186704,
+    "estimatedDrivingSeconds": 303,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-ms.json",
+    "references": [
+      "https://www.nps.gov/natr/planyourvisit/tishomingo-state-park.htm"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "state-mt",
+    "name": "Beartooth Highway \u2014 Rock Creek Climb",
+    "displayName": "Beartooth Highway \u2014 Rock Creek Climb",
+    "status": "imported",
+    "state": "Montana",
+    "stateCode": "MT",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 11779.806555244591,
+    "estimatedDrivingSeconds": 481,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-mt.json",
+    "references": [
+      "https://www.fs.usda.gov/sites/nfs/files/r01/custergallatin/publication/Beartooth%20Sign%20Map%20Brochure_FINAL5_PRINT.pdf"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "city-al",
+    "name": "Birmingham \u2014 Landmark Run",
+    "displayName": "Birmingham \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Alabama",
+    "stateCode": "AL",
+    "city": "Birmingham",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 5,
+    "lengthM": 12547.998470134613,
+    "estimatedDrivingSeconds": 630,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-al.json",
+    "references": [
+      "https://www.birminghamal.org/wp-content/uploads/2024/01/HistoryItinerary.pdf",
+      "https://birminghamal.org/INguide/data/document.pdf",
+      "https://www.birminghamal.org/wp-content/uploads/2021/06/EVENT-SERVICES-profile-2021_HL.pdf"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Birmingham Civil Rights Institute",
+        "Alabama Theatre",
+        "Sloss Furnaces",
+        "Vulcan Park"
+      ],
+      "waypoints": [
+        {
+          "x": -1374.3103256931015,
+          "y": -1026.9088049726242
+        },
+        {
+          "x": -705.4643441615749,
+          "y": 222.60143111987998
+        },
+        {
+          "x": -196.94189765001443,
+          "y": 348.69665210475216
+        },
+        {
+          "x": 1506.627766154661,
+          "y": -463.6834845740552
+        },
+        {
+          "x": 1123.8036434156115,
+          "y": 3013.397793836588
+        },
+        {
+          "x": 2236.964785490347,
+          "y": 3746.162253067723
+        }
+      ],
+      "rightAngleTurns": 13,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-az",
+    "name": "Phoenix \u2014 Landmark Run",
+    "displayName": "Phoenix \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Arizona",
+    "stateCode": "AZ",
+    "city": "Phoenix",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 10,
+    "lengthM": 7483.205832608303,
+    "estimatedDrivingSeconds": 414,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-az.json",
+    "references": [
+      "https://www.visitphoenix.com/greater-phoenix/phoenix/downtown-phoenix/heritage-square/",
+      "https://www.visitphoenix.com/things-to-do/attractions/",
+      "https://www.visitphoenix.com/greater-phoenix/phoenix/downtown-phoenix/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Chase Field",
+        "Heritage Square",
+        "Orpheum Theatre",
+        "Arizona State Capitol"
+      ],
+      "waypoints": [
+        {
+          "x": 1766.613932953997,
+          "y": -538.2064273459837
+        },
+        {
+          "x": 996.6068779812008,
+          "y": 392.7632624011302
+        },
+        {
+          "x": 1196.310496974383,
+          "y": 131.17683615167226
+        },
+        {
+          "x": 145.7442114174519,
+          "y": 77.10266863426006
+        },
+        {
+          "x": -1655.6056262754198,
+          "y": 153.83839350341174
+        },
+        {
+          "x": -2247.6004472126046,
+          "y": 1054.8521286355528
+        }
+      ],
+      "rightAngleTurns": 13,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ca",
+    "name": "Los Angeles \u2014 Landmark Run",
+    "displayName": "Los Angeles \u2014 Landmark Run",
+    "status": "imported",
+    "state": "California",
+    "stateCode": "CA",
+    "city": "Los Angeles",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 7035.9012568584485,
+    "estimatedDrivingSeconds": 427,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ca.json",
+    "references": [
+      "https://www.discoverlosangeles.com/sites/default/files/2022-03/2022%20MPG_AtlasObscura_MAP.pdf",
+      "https://www.discoverlosangeles.com/sites/default/files/2026-02/lat_regional-factsheet_8.5x11in_dtla_2026.pdf",
+      "https://www.discoverlosangeles.com/travel/go-metro-and-go-everywhere-in-la"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Crypto.com Arena",
+        "Walt Disney Concert Hall",
+        "Los Angeles City Hall",
+        "Union Station"
+      ],
+      "waypoints": [
+        {
+          "x": -2315.0492310165355,
+          "y": 1468.0085687512228
+        },
+        {
+          "x": -1762.8959168014017,
+          "y": 1000.9892317698931
+        },
+        {
+          "x": -176.20483352514938,
+          "y": -381.29904962860604
+        },
+        {
+          "x": 467.9018657900564,
+          "y": -188.59797558451248
+        },
+        {
+          "x": 1115.1040803230435,
+          "y": -451.18515755591585
+        },
+        {
+          "x": 1812.5623529383913,
+          "y": -1161.0879082909225
+        }
+      ],
+      "rightAngleTurns": 13,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ct",
+    "name": "Hartford \u2014 Landmark Run",
+    "displayName": "Hartford \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Connecticut",
+    "stateCode": "CT",
+    "city": "Hartford",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 1,
+    "lengthM": 7358.475929639659,
+    "estimatedDrivingSeconds": 514,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ct.json",
+    "references": [
+      "https://ctvisit.com/articles/step-back-time-these-connecticut-towns-and-cities",
+      "https://ctvisit.com/articles/top-things-to-do-without-a-car-in-connecticut",
+      "https://ctvisit.com/listings/mark-twain-house-museum"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Mark Twain House",
+        "Connecticut State Capitol",
+        "Wadsworth Atheneum",
+        "Bushnell Park"
+      ],
+      "waypoints": [
+        {
+          "x": -1811.1352057754837,
+          "y": -1147.7444986626138
+        },
+        {
+          "x": -1190.8601312954313,
+          "y": -452.6418131066158
+        },
+        {
+          "x": 392.60173364381274,
+          "y": -126.7623914661691
+        },
+        {
+          "x": 1169.3452079387296,
+          "y": -51.51668067217726
+        },
+        {
+          "x": 501.6444080326131,
+          "y": -264.8110835759898
+        },
+        {
+          "x": 1767.5662418617376,
+          "y": 540.3191338706174
+        }
+      ],
+      "rightAngleTurns": 13,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-de",
+    "name": "Wilmington \u2014 Landmark Run",
+    "displayName": "Wilmington \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Delaware",
+    "stateCode": "DE",
+    "city": "Wilmington",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 3,
+    "lengthM": 7606.99168152671,
+    "estimatedDrivingSeconds": 455,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-de.json",
+    "references": [
+      "https://www.visitwilmingtonde.com/things-to-do/attractions/",
+      "https://www.visitwilmingtonde.com/things-to-do/attractions/?bounds=false&skip=60&sort=qualityScore&view=list",
+      "https://www.visitwilmingtonde.com/wilmington-arts-blog/stories/post/grand-opera-at-wilmingtons-the-grand/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Chase Center on the Riverfront",
+        "Grand Opera House",
+        "Delaware History Museum",
+        "Rodney Square"
+      ],
+      "waypoints": [
+        {
+          "x": -1738.3113956358518,
+          "y": 1434.694522713459
+        },
+        {
+          "x": -947.375478365934,
+          "y": 1308.6326602522565
+        },
+        {
+          "x": 301.32805660578464,
+          "y": -82.98488837782635
+        },
+        {
+          "x": 148.64195057410734,
+          "y": 185.5178718616032
+        },
+        {
+          "x": 421.29326848319,
+          "y": -307.7101455297032
+        },
+        {
+          "x": 1065.2715874526764,
+          "y": -896.6548879866144
+        }
+      ],
+      "rightAngleTurns": 20,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-fl",
+    "name": "Miami \u2014 Landmark Run",
+    "displayName": "Miami \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Florida",
+    "stateCode": "FL",
+    "city": "Miami",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 4,
+    "lengthM": 7502.484938611308,
+    "estimatedDrivingSeconds": 464,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-fl.json",
+    "references": [
+      "https://www.miamiandbeaches.com/things-to-do/history-and-heritage/downtown-miami-architecture",
+      "https://www.miamiandbeaches.com/neighborhoods/downtown-miami-brickell-area",
+      "https://www.miamiandbeaches.com/getmedia/a4dd7c64-7059-4511-86b4-9bb46e0e517d/Miami-sports-entertainment-venues-guide-2020.pdf.aspx"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "HistoryMiami Museum",
+        "Olympia Theater",
+        "Adrienne Arsht Center",
+        "Freedom Tower"
+      ],
+      "waypoints": [
+        {
+          "x": -954.7657100522636,
+          "y": 996.341277416331
+        },
+        {
+          "x": -359.0346823422299,
+          "y": 393.3192378020793
+        },
+        {
+          "x": 252.70706732068453,
+          "y": 433.22715209771474
+        },
+        {
+          "x": 487.11044500512884,
+          "y": -1278.710064161744
+        },
+        {
+          "x": 237.72768017773473,
+          "y": -270.5153911922637
+        },
+        {
+          "x": 658.6524640788263,
+          "y": -1746.0073888429554
+        }
+      ],
+      "rightAngleTurns": 18,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ga",
+    "name": "Atlanta \u2014 Landmark Run",
+    "displayName": "Atlanta \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Georgia",
+    "stateCode": "GA",
+    "city": "Atlanta",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 4,
+    "lengthM": 8885.698266431784,
+    "estimatedDrivingSeconds": 540,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ga.json",
+    "references": [
+      "https://discoveratlanta.com/things-to-do/arts-culture/fox-theatre/",
+      "https://discoveratlanta.com/things-to-do/history/ebenezer-baptist-church/",
+      "https://discoveratlanta.com/partner/fox-theatre/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Fox Theatre",
+        "Centennial Olympic Park",
+        "Georgia State Capitol",
+        "Ebenezer Baptist Church"
+      ],
+      "waypoints": [
+        {
+          "x": -1033.6707093208415,
+          "y": -2476.7592171220467
+        },
+        {
+          "x": 285.5837749911737,
+          "y": -1806.4419149497853
+        },
+        {
+          "x": -377.30228949865125,
+          "y": -414.0460007576627
+        },
+        {
+          "x": 30.7854705497138,
+          "y": 851.2650562357958
+        },
+        {
+          "x": 1259.1534800967077,
+          "y": 56.59829583897732
+        },
+        {
+          "x": 1835.8772065940707,
+          "y": 1467.8417761305036
+        }
+      ],
+      "rightAngleTurns": 14,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-il",
+    "name": "Chicago \u2014 Landmark Run",
+    "displayName": "Chicago \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Illinois",
+    "stateCode": "IL",
+    "city": "Chicago",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 6,
+    "lengthM": 6855.528467552772,
+    "estimatedDrivingSeconds": 394,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-il.json",
+    "references": [
+      "https://www.choosechicago.com/listing/chicago-union-station/",
+      "https://www.choosechicago.com/blog/architecture-history/10-iconic-buildings-in-downtown-chicago/",
+      "https://cdn.choosechicago.com/uploads/2025/05/Map_Digital-Brochure_Neighborhoods-Near-the-Center-copy.pdf"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Navy Pier",
+        "Wrigley Building",
+        "Art Institute of Chicago",
+        "Union Station"
+      ],
+      "waypoints": [
+        {
+          "x": 1485.5862818315782,
+          "y": -792.5874123966448
+        },
+        {
+          "x": 1485.5862818315782,
+          "y": -792.5874123966448
+        },
+        {
+          "x": 220.2033662857862,
+          "y": -567.9955893410272
+        },
+        {
+          "x": 307.1257477135501,
+          "y": 605.0124315503842
+        },
+        {
+          "x": -959.6562042576047,
+          "y": 772.2498322212911
+        },
+        {
+          "x": -1569.4456841049207,
+          "y": 1448.171366437237
+        }
+      ],
+      "rightAngleTurns": 16,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ia",
+    "name": "Des Moines \u2014 Landmark Run",
+    "displayName": "Des Moines \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Iowa",
+    "stateCode": "IA",
+    "city": "Des Moines",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 6,
+    "lengthM": 7553.247193811593,
+    "estimatedDrivingSeconds": 373,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ia.json",
+    "references": [
+      "https://www.catchdesmoines.com/things-to-do/arts-culture/public-art/",
+      "https://www.catchdesmoines.com/civil-rights-tour/",
+      "https://www.catchdesmoines.com/discover-downtown-des-moines/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Pappajohn Sculpture Park",
+        "Principal Park",
+        "State Historical Museum",
+        "Iowa State Capitol"
+      ],
+      "waypoints": [
+        {
+          "x": -2308.2174264063265,
+          "y": 776.3862892069122
+        },
+        {
+          "x": -1537.4809261329585,
+          "y": 213.11649077573009
+        },
+        {
+          "x": 32.069664462463265,
+          "y": 754.2028707002339
+        },
+        {
+          "x": 648.9116960610907,
+          "y": -403.6159022315438
+        },
+        {
+          "x": 1096.273535125296,
+          "y": -467.5864318900373
+        },
+        {
+          "x": 1657.9584052311768,
+          "y": -1206.1330352929397
+        }
+      ],
+      "rightAngleTurns": 11,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ky",
+    "name": "Louisville \u2014 Landmark Run",
+    "displayName": "Louisville \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Kentucky",
+    "stateCode": "KY",
+    "city": "Louisville",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 6,
+    "lengthM": 7559.546650707744,
+    "estimatedDrivingSeconds": 453,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ky.json",
+    "references": [
+      "https://reservations.gotolouisville.com/package/ticket/23323/7321",
+      "https://reservations.gotolouisville.com/attraction/single/6880/1630",
+      "https://reservations.gotolouisville.com/attraction/single/7142/1630"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Louisville Slugger Field",
+        "Louisville Palace",
+        "Muhammad Ali Center",
+        "Louisville Slugger Museum"
+      ],
+      "waypoints": [
+        {
+          "x": 1944.8983980399794,
+          "y": -727.0045540748852
+        },
+        {
+          "x": 1342.5831703658066,
+          "y": -161.36630043470387
+        },
+        {
+          "x": 104.13469708917123,
+          "y": 773.306185484003
+        },
+        {
+          "x": -86.19970901097966,
+          "y": -366.94376477019847
+        },
+        {
+          "x": -411.47438081915203,
+          "y": -206.65605661372294
+        },
+        {
+          "x": -1008.5156392620677,
+          "y": 1301.9831944548037
+        }
+      ],
+      "rightAngleTurns": 15,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-md",
+    "name": "Baltimore \u2014 Landmark Run",
+    "displayName": "Baltimore \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Maryland",
+    "stateCode": "MD",
+    "city": "Baltimore",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 3,
+    "lengthM": 7447.760601503319,
+    "estimatedDrivingSeconds": 504,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-md.json",
+    "references": [
+      "https://baltimore.org/listings/lexington-market/",
+      "https://baltimore.org/plan/transportation/find-a-place-to-park-in-baltimore/",
+      "https://baltimore.org/listings/washington-monument-and-mount-vernon-place/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Oriole Park at Camden Yards",
+        "Lexington Market",
+        "Washington Monument",
+        "National Aquarium"
+      ],
+      "waypoints": [
+        {
+          "x": -1253.0086453631543,
+          "y": 1482.786394913925
+        },
+        {
+          "x": -654.5249006298019,
+          "y": 807.4653141311463
+        },
+        {
+          "x": -484.9900770468798,
+          "y": -137.81518244176183
+        },
+        {
+          "x": -142.3059818661269,
+          "y": -721.7561462881558
+        },
+        {
+          "x": 486.1776813964699,
+          "y": 485.17749358234
+        },
+        {
+          "x": 1100.4359099690678,
+          "y": -1329.6596499252137
+        }
+      ],
+      "rightAngleTurns": 17,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-mi",
+    "name": "Detroit \u2014 Landmark Run",
+    "displayName": "Detroit \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Michigan",
+    "stateCode": "MI",
+    "city": "Detroit",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 4,
+    "lengthM": 8665.13048094806,
+    "estimatedDrivingSeconds": 517,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-mi.json",
+    "references": [
+      "https://visitdetroit.com/directory/eastern-market/",
+      "https://visitdetroit.com/directory/fox-theatre/",
+      "https://visitdetroit.com/directory/fox-theatre-performance-venue/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Eastern Market",
+        "Fox Theatre",
+        "Guardian Building",
+        "Michigan Central Station"
+      ],
+      "waypoints": [
+        {
+          "x": 1557.1515066323768,
+          "y": -2115.264011282177
+        },
+        {
+          "x": 986.9549121246376,
+          "y": -1497.0972017405095
+        },
+        {
+          "x": -20.179513031276944,
+          "y": -398.40085296848434
+        },
+        {
+          "x": 487.92500756841366,
+          "y": 609.2044860751917
+        },
+        {
+          "x": -2121.0517642825384,
+          "y": 698.1939087862705
+        },
+        {
+          "x": -2792.696647931092,
+          "y": 1336.6760594877746
+        }
+      ],
+      "rightAngleTurns": 19,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ak",
+    "name": "Anchorage \u2014 Landmark Run",
+    "displayName": "Anchorage \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Alaska",
+    "stateCode": "AK",
+    "city": "Anchorage",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 7450.939842279752,
+    "estimatedDrivingSeconds": 477,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ak.json",
+    "references": [
+      "https://www.anchorage.net/meetings/why-anchorage/walkable-downtown/",
+      "https://www.anchorage.net/plan-your-trip/itineraries/to-the-north/",
+      "https://www.anchorage.net/plan-your-trip/about-anchorage/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Anchorage Museum",
+        "Town Square Park",
+        "Oscar Anderson House",
+        "Alaska Railroad Depot"
+      ],
+      "waypoints": [
+        {
+          "x": -302.21143681092906,
+          "y": -169.5947363717528
+        },
+        {
+          "x": 571.5987112196548,
+          "y": 158.33067474519785
+        },
+        {
+          "x": 243.8549908549351,
+          "y": 48.15858924938601
+        },
+        {
+          "x": -522.5632352127428,
+          "y": 48.525533014494364
+        },
+        {
+          "x": 224.4742262355196,
+          "y": -385.29095300902446
+        },
+        {
+          "x": 1119.2926948086179,
+          "y": 705.9886839108715
+        }
+      ],
+      "rightAngleTurns": 21,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ar",
+    "name": "Little Rock \u2014 Landmark Run",
+    "displayName": "Little Rock \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Arkansas",
+    "stateCode": "AR",
+    "city": "Little Rock",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 5,
+    "lengthM": 10704.080948295781,
+    "estimatedDrivingSeconds": 625,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ar.json",
+    "references": [
+      "https://www.littlerock.com/things-to-do/black-culture/attractions/",
+      "https://www.littlerock.com/directory/visitor-center-at-historic-curran-hall/",
+      "https://www.littlerock.com/things-to-do/museums-attractions/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Clinton Presidential Library",
+        "Old State House Museum",
+        "Arkansas State Capitol",
+        "Little Rock Central High School"
+      ],
+      "waypoints": [
+        {
+          "x": 2835.004059013424,
+          "y": 1601.7428917473399
+        },
+        {
+          "x": 2222.971305282897,
+          "y": 5.848861219896488
+        },
+        {
+          "x": 939.0593465730045,
+          "y": -380.0425452222952
+        },
+        {
+          "x": -516.2327474180497,
+          "y": -264.9778761967091
+        },
+        {
+          "x": -1468.1202493421101,
+          "y": 1022.6833919233568
+        },
+        {
+          "x": -2084.37423367983,
+          "y": -998.0759206684932
+        }
+      ],
+      "rightAngleTurns": 32,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-id",
+    "name": "Boise \u2014 Landmark Run",
+    "displayName": "Boise \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Idaho",
+    "stateCode": "ID",
+    "city": "Boise",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 9,
+    "lengthM": 7654.326807565118,
+    "estimatedDrivingSeconds": 412,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-id.json",
+    "references": [
+      "https://visitboise.com/meeting-place/egyptian-theatre/",
+      "https://visitboise.com/events/candlelight-tribute-to-the-beatles-2/",
+      "https://visitboise.com/events/candlelight-the-soundtrack-of-the-60s-2/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Idaho State Capitol",
+        "Basque Block",
+        "Egyptian Theatre",
+        "Boise Depot"
+      ],
+      "waypoints": [
+        {
+          "x": -1458.6005168943773,
+          "y": -859.7603603653635
+        },
+        {
+          "x": 259.2237497115569,
+          "y": -240.3481659247486
+        },
+        {
+          "x": 91.66216193255555,
+          "y": 148.5121491603995
+        },
+        {
+          "x": 54.13912164068359,
+          "y": -5.0260176260335765
+        },
+        {
+          "x": -909.8351093520231,
+          "y": 1345.149124601036
+        },
+        {
+          "x": 866.5962658839819,
+          "y": 1985.721742810867
+        }
+      ],
+      "rightAngleTurns": 10,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ks",
+    "name": "Wichita \u2014 Landmark Run",
+    "displayName": "Wichita \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Kansas",
+    "stateCode": "KS",
+    "city": "Wichita",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 7,
+    "lengthM": 8624.470580917714,
+    "estimatedDrivingSeconds": 527,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ks.json",
+    "references": [
+      "https://www.visitwichita.com/things-to-do/uniquely-wichita/experiences/historical-experiences/",
+      "https://www.visitwichita.com/listing/old-cowtown-museum/25660/",
+      "https://www.visitwichita.com/listing/exploration-place/25530/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Old Cowtown Museum",
+        "Exploration Place",
+        "Orpheum Theatre",
+        "Union Station"
+      ],
+      "waypoints": [
+        {
+          "x": -2027.4517230706672,
+          "y": -1155.6504688671678
+        },
+        {
+          "x": -1957.9634792571808,
+          "y": -613.8857989532135
+        },
+        {
+          "x": -614.8966034810908,
+          "y": 129.631224536536
+        },
+        {
+          "x": 387.9180990908999,
+          "y": 118.42276044837729
+        },
+        {
+          "x": 980.1124524731111,
+          "y": 326.0684532766824
+        },
+        {
+          "x": 1551.4084167131919,
+          "y": 907.2406596252993
+        }
+      ],
+      "rightAngleTurns": 15,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-me",
+    "name": "Portland \u2014 Landmark Run",
+    "displayName": "Portland \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Maine",
+    "stateCode": "ME",
+    "city": "Portland",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 2,
+    "lengthM": 7261.220545001178,
+    "estimatedDrivingSeconds": 487,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-me.json",
+    "references": [
+      "https://www.visitportland.com/listing/victoria-mansion/",
+      "https://www.visitportland.com/event/portland-city-and-lighthouse-tour/",
+      "https://www.visitportland.com/listing/portland-museum-of-art/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Portland Museum of Art",
+        "Portland City Hall",
+        "Victoria Mansion",
+        "Portland Observatory"
+      ],
+      "waypoints": [
+        {
+          "x": -1198.152929672014,
+          "y": 1460.102598546669
+        },
+        {
+          "x": -629.6939621525707,
+          "y": 648.8677711950098
+        },
+        {
+          "x": -230.26674807916703,
+          "y": -11.208464087368618
+        },
+        {
+          "x": -538.3080531885229,
+          "y": 868.7671618644522
+        },
+        {
+          "x": 467.13001423544335,
+          "y": -738.4354083229495
+        },
+        {
+          "x": 988.2227641508695,
+          "y": -1257.4384453133646
+        }
+      ],
+      "rightAngleTurns": 20,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "state-al",
+    "name": "Barber Motorsports Park",
+    "displayName": "Barber Motorsports Park",
+    "status": "imported",
+    "state": "Alabama",
+    "stateCode": "AL",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-al",
+    "venueName": "Barber Motorsports Park",
+    "layoutLabel": "Road Course",
+    "hubStage": 5,
+    "lengthM": 3720.1163215327797,
+    "estimatedDrivingSeconds": 781,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-al.json",
+    "references": [
+      "https://www.imsa.com/nascar-tracks/barber-motorsports-park/"
+    ],
+    "routeReference": {
+      "layoutIndex": 0,
+      "mappedLengthM": 3720.1163215327792,
+      "layoutReference": "https://www.imsa.com/nascar-tracks/barber-motorsports-park/",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-ia",
+    "name": "Raceway Park of the Midlands",
+    "displayName": "Raceway Park of the Midlands",
+    "status": "imported",
+    "state": "Iowa",
+    "stateCode": "IA",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-ia",
+    "venueName": "Raceway Park of the Midlands",
+    "layoutLabel": "Road Course",
+    "hubStage": 6,
+    "lengthM": 3572.2661324633355,
+    "estimatedDrivingSeconds": 627,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-ia.json",
+    "references": [
+      "https://www.midiv.org/midwest-division-track-records/"
+    ],
+    "routeReference": {
+      "layoutIndex": 1,
+      "mappedLengthM": 3572.2661324633373,
+      "layoutReference": "https://www.midiv.org/midwest-division-track-records/",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-ks",
+    "name": "Heartland Motorsports Park",
+    "displayName": "Heartland Motorsports Park",
+    "status": "imported",
+    "state": "Kansas",
+    "stateCode": "KS",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-ks",
+    "venueName": "Heartland Motorsports Park",
+    "layoutLabel": "Road Course",
+    "hubStage": 5,
+    "lengthM": 3967.7182396639614,
+    "estimatedDrivingSeconds": 749,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-ks.json",
+    "references": [
+      "https://heartlandmotorsports.us/tracks/track-roadcourse/"
+    ],
+    "routeReference": {
+      "layoutIndex": 0,
+      "mappedLengthM": 3967.7182396639605,
+      "layoutReference": "https://heartlandmotorsports.us/tracks/track-roadcourse/",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-ky",
+    "name": "NCM Motorsports Park",
+    "displayName": "NCM Motorsports Park",
+    "status": "imported",
+    "state": "Kentucky",
+    "stateCode": "KY",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-ky",
+    "venueName": "NCM Motorsports Park",
+    "layoutLabel": "Road Course",
+    "hubStage": 6,
+    "lengthM": 5053.710119488701,
+    "estimatedDrivingSeconds": 1080,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-ky.json",
+    "references": [
+      "https://motorsportspark.org/wp-content/uploads/2017/12/facility-overview.compressed.pdf"
+    ],
+    "routeReference": {
+      "layoutIndex": 3,
+      "mappedLengthM": 5053.710119488701,
+      "layoutReference": "https://motorsportspark.org/wp-content/uploads/2017/12/facility-overview.compressed.pdf",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-la",
+    "name": "NOLA Motorsports Park",
+    "displayName": "NOLA Motorsports Park",
+    "status": "imported",
+    "state": "Louisiana",
+    "stateCode": "LA",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-la",
+    "venueName": "NOLA Motorsports Park",
+    "layoutLabel": "Road Course",
+    "hubStage": 5,
+    "lengthM": 4424.182735738084,
+    "estimatedDrivingSeconds": 752,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-la.json",
+    "references": [
+      "https://nolamotor.com/track-events/"
+    ],
+    "routeReference": {
+      "layoutIndex": 2,
+      "mappedLengthM": 4424.182735738085,
+      "layoutReference": "https://nolamotor.com/track-events/",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-mi",
+    "name": "GingerMan Raceway",
+    "displayName": "GingerMan Raceway",
+    "status": "imported",
+    "state": "Michigan",
+    "stateCode": "MI",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-mi",
+    "venueName": "GingerMan Raceway",
+    "layoutLabel": "Road Course",
+    "hubStage": 4,
+    "lengthM": 3438.9536437769175,
+    "estimatedDrivingSeconds": 704,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-mi.json",
+    "references": [
+      "https://www.gingermanraceway.com/about-track-maps.html"
+    ],
+    "routeReference": {
+      "layoutIndex": 1,
+      "mappedLengthM": 3438.9536437769166,
+      "layoutReference": "https://www.gingermanraceway.com/about-track-maps.html",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-mn",
+    "name": "Brainerd \u2014 Competition Course",
+    "displayName": "Brainerd \u2014 Competition Course",
+    "status": "imported",
+    "state": "Minnesota",
+    "stateCode": "MN",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-mn",
+    "venueName": "Brainerd \u2014 Competition Course",
+    "layoutLabel": "Road Course",
+    "hubStage": 6,
+    "lengthM": 3891.8751046741545,
+    "estimatedDrivingSeconds": 635,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-mn.json",
+    "references": [
+      "https://www.birmn.com/apex-hpde"
+    ],
+    "routeReference": {
+      "layoutIndex": 1,
+      "mappedLengthM": 3891.875104674154,
+      "layoutReference": "https://www.birmn.com/apex-hpde",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-nv",
+    "name": "Spring Mountain \u2014 North South",
+    "displayName": "Spring Mountain \u2014 North South",
+    "status": "imported",
+    "state": "Nevada",
+    "stateCode": "NV",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-nv",
+    "venueName": "Spring Mountain \u2014 North South",
+    "layoutLabel": "Road Course",
+    "hubStage": 11,
+    "lengthM": 3502.8329491509007,
+    "estimatedDrivingSeconds": 689,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-nv.json",
+    "references": [
+      "https://www.springmountainmotorsports.com/track-rentals-group-events/track-rentals/north-south/"
+    ],
+    "routeReference": {
+      "layoutIndex": 35,
+      "mappedLengthM": 3502.8329491509,
+      "layoutReference": "https://www.springmountainmotorsports.com/track-rentals-group-events/track-rentals/north-south/",
+      "layoutNotes": "Mapped North/South configuration; excludes Charleston Peak connectors and pit-lane variants. Approximately the published 2.2-mile footprint, not a surveyed named configuration."
+    }
+  },
+  {
+    "id": "state-nj",
+    "name": "NJMP \u2014 Thunderbolt",
+    "displayName": "NJMP \u2014 Thunderbolt",
+    "status": "imported",
+    "state": "New Jersey",
+    "stateCode": "NJ",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-nj",
+    "venueName": "NJMP \u2014 Thunderbolt",
+    "layoutLabel": "Road Course",
+    "hubStage": 3,
+    "lengthM": 3500.329852543267,
+    "estimatedDrivingSeconds": 708,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-nj.json",
+    "references": [
+      "https://njmp.com/track-map/"
+    ],
+    "routeReference": {
+      "layoutIndex": 0,
+      "mappedLengthM": 3500.329852543265,
+      "layoutReference": "https://njmp.com/track-map/",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-nm",
+    "name": "Sandia Speedway \u2014 Road Course",
+    "displayName": "Sandia Speedway \u2014 Road Course",
+    "status": "imported",
+    "state": "New Mexico",
+    "stateCode": "NM",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-nm",
+    "venueName": "Sandia Speedway \u2014 Road Course",
+    "layoutLabel": "Road Course",
+    "hubStage": 9,
+    "lengthM": 2643.098918906927,
+    "estimatedDrivingSeconds": 600,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-nm.json",
+    "references": [
+      "https://www.smri-racing.org/Directions",
+      "https://static1.squarespace.com/static/5dfaaf2503a8984f92e8f45e/t/604841e1cd6aa951fd199432/1615348194341/Sandia.pdf"
+    ],
+    "routeReference": {
+      "layoutIndex": 2,
+      "mappedLengthM": 2643.0989189069273,
+      "layoutReference": "https://www.smri-racing.org/Directions",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-nc",
+    "name": "NCCAR \u2014 Road Course",
+    "displayName": "NCCAR \u2014 Road Course",
+    "status": "imported",
+    "state": "North Carolina",
+    "stateCode": "NC",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-nc",
+    "venueName": "NCCAR \u2014 Road Course",
+    "layoutLabel": "Road Course",
+    "hubStage": 3,
+    "lengthM": 3270.905544066492,
+    "estimatedDrivingSeconds": 637,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-nc.json",
+    "references": [
+      "https://nccar.us/contact-us/"
+    ],
+    "routeReference": {
+      "layoutIndex": 0,
+      "mappedLengthM": 3270.905544066493,
+      "layoutReference": "https://nccar.us/contact-us/",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-nd",
+    "name": "Theodore Roosevelt \u2014 North Unit Drive",
+    "displayName": "Theodore Roosevelt \u2014 North Unit Drive",
+    "status": "imported",
+    "state": "North Dakota",
+    "stateCode": "ND",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 8069.318821633145,
+    "estimatedDrivingSeconds": 397,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-nd.json",
+    "references": [
+      "https://www.nps.gov/thingstodo/drive-the-north-unit-scenic-drive.htm"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "state-sd",
+    "name": "Needles Highway \u2014 Granite Gates",
+    "displayName": "Needles Highway \u2014 Granite Gates",
+    "status": "imported",
+    "state": "South Dakota",
+    "stateCode": "SD",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 11032.603271147955,
+    "estimatedDrivingSeconds": 752,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-sd.json",
+    "references": [
+      "https://gfp.sd.gov/userdocs/docs/tatanka_2022.pdf"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "state-tn",
+    "name": "Flatrock Motorclub \u2014 Club Course",
+    "displayName": "Flatrock Motorclub \u2014 Club Course",
+    "status": "imported",
+    "state": "Tennessee",
+    "stateCode": "TN",
+    "location": {
+      "lat": 35.8793707,
+      "lon": -84.7538283
+    },
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-tn",
+    "venueName": "Flatrock Motorclub \u2014 Club Course",
+    "layoutLabel": "Road Course",
+    "hubStage": 4,
+    "lengthM": 5629.284753627067,
+    "estimatedDrivingSeconds": 960,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-tn.json",
+    "references": [
+      "https://www.flatrockmotorclub.com/drive"
+    ],
+    "routeReference": {
+      "layoutIndex": 1,
+      "mappedLengthM": 5629.284753627071,
+      "layoutReference": "https://www.flatrockmotorclub.com/drive",
+      "layoutNotes": "Mapped 3.5-mile Club Course; excludes pit lanes. Banking and as-built grading are not surveyed."
+    }
+  },
+  {
+    "id": "state-vt",
+    "name": "Smugglers Notch \u2014 Vermont 108",
+    "displayName": "Smugglers Notch \u2014 Vermont 108",
+    "status": "imported",
+    "state": "Vermont",
+    "stateCode": "VT",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 2,
+    "lengthM": 12761.781795184923,
+    "estimatedDrivingSeconds": 543,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-vt.json",
+    "references": [
+      "https://www.vtstateparks.com/parks/smugglers-notch"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "state-wy",
+    "name": "Wind River Canyon \u2014 Canyon Walls",
+    "displayName": "Wind River Canyon \u2014 Canyon Walls",
+    "status": "imported",
+    "state": "Wyoming",
+    "stateCode": "WY",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 10994.580615912862,
+    "estimatedDrivingSeconds": 325,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-wy.json",
+    "references": [
+      "https://travelwyoming.com/wp-content/uploads/2023/04/Wind-River-Scenic-Byway.pdf"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "state-ne",
+    "name": "Motorsport Park Hastings",
+    "displayName": "Motorsport Park Hastings",
+    "status": "imported",
+    "state": "Nebraska",
+    "stateCode": "NE",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-ne",
+    "venueName": "Motorsport Park Hastings",
+    "layoutLabel": "Road Course",
+    "hubStage": 8,
+    "lengthM": 3366.608339825151,
+    "estimatedDrivingSeconds": 696,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-ne.json",
+    "references": [
+      "https://racemph.com/track-rental/"
+    ],
+    "routeReference": {
+      "layoutIndex": 0,
+      "mappedLengthM": 3366.608339825151,
+      "layoutReference": "https://racemph.com/track-rental/",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-or",
+    "name": "Portland International Raceway",
+    "displayName": "Portland International Raceway",
+    "status": "imported",
+    "state": "Oregon",
+    "stateCode": "OR",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-or",
+    "venueName": "Portland International Raceway",
+    "layoutLabel": "Road Course",
+    "hubStage": 11,
+    "lengthM": 3159.055183940582,
+    "estimatedDrivingSeconds": 516,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-or.json",
+    "references": [
+      "https://portlandraceway.com/"
+    ],
+    "routeReference": {
+      "layoutIndex": 2,
+      "mappedLengthM": 3159.055183940583,
+      "layoutReference": "https://portlandraceway.com/",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-sc",
+    "name": "Carolina Motorsports Park",
+    "displayName": "Carolina Motorsports Park",
+    "status": "imported",
+    "state": "South Carolina",
+    "stateCode": "SC",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-sc",
+    "venueName": "Carolina Motorsports Park",
+    "layoutLabel": "Road Course",
+    "hubStage": 4,
+    "lengthM": 3676.434723333409,
+    "estimatedDrivingSeconds": 776,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-sc.json",
+    "references": [
+      "https://carolinamotorsportspark.com/the-road-course/"
+    ],
+    "routeReference": {
+      "layoutIndex": 0,
+      "mappedLengthM": 3676.4347233334083,
+      "layoutReference": "https://carolinamotorsportspark.com/the-road-course/",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "state-wa",
+    "name": "Pacific Raceways",
+    "displayName": "Pacific Raceways",
+    "status": "imported",
+    "state": "Washington",
+    "stateCode": "WA",
+    "city": null,
+    "kind": "circuit",
+    "event_type": "Circuit race",
+    "import_kind": "circuit",
+    "venueKey": "state-wa",
+    "venueName": "Pacific Raceways",
+    "layoutLabel": "Road Course",
+    "hubStage": 11,
+    "lengthM": 3622.0274314265216,
+    "estimatedDrivingSeconds": 580,
+    "laps": 3,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-wa.json",
+    "references": [
+      "https://pacificraceways.com/road-course-track-map/"
+    ],
+    "routeReference": {
+      "layoutIndex": 0,
+      "mappedLengthM": 3622.02743142652,
+      "layoutReference": "https://pacificraceways.com/road-course-track-map/",
+      "layoutNotes": "Mapped centerline reviewed against published course information."
+    }
+  },
+  {
+    "id": "city-hi",
+    "name": "Honolulu \u2014 Landmark Run",
+    "displayName": "Honolulu \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Hawaii",
+    "stateCode": "HI",
+    "city": "Honolulu",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 7488.402887691081,
+    "estimatedDrivingSeconds": 447,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-hi.json",
+    "references": [
+      "https://www.gohawaii.com/islands/oahu/regions/honolulu/iolani-palace",
+      "https://www.gohawaii.com/islands/oahu/regions/honolulu/downtown-honolulu",
+      "https://www.gohawaii.com/honolulu"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Iolani Palace",
+        "Hawaii State Capitol",
+        "Aloha Tower",
+        "Honolulu Museum of Art"
+      ],
+      "waypoints": [
+        {
+          "x": -1210.3779477662783,
+          "y": -664.4795604597283
+        },
+        {
+          "x": -63.4412995092399,
+          "y": 96.18374440172255
+        },
+        {
+          "x": 332.7560387922308,
+          "y": 22.928425543863234
+        },
+        {
+          "x": -513.5803175193786,
+          "y": 184.5727136796342
+        },
+        {
+          "x": 1131.2420746533262,
+          "y": 406.12891104495566
+        },
+        {
+          "x": 1715.9711258501302,
+          "y": 1014.1992073019424
+        }
+      ],
+      "rightAngleTurns": 16,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-in",
+    "name": "Indianapolis \u2014 Landmark Run",
+    "displayName": "Indianapolis \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Indiana",
+    "stateCode": "IN",
+    "city": "Indianapolis",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 6,
+    "lengthM": 7677.512841452131,
+    "estimatedDrivingSeconds": 475,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-in.json",
+    "references": [
+      "https://www.visitindy.com/directory/soldiers-sailors-monument-monument-circle/",
+      "https://www.visitindy.com/blog/post/see-indy-one-mile-at-a-time-during-the-monumental-marathon/",
+      "https://www.visitindy.com/things-to-do/museums-attractions/monuments-memorials/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Soldiers and Sailors Monument",
+        "Indiana Statehouse",
+        "Lucas Oil Stadium",
+        "Scottish Rite Cathedral"
+      ],
+      "waypoints": [
+        {
+          "x": 747.5872492401295,
+          "y": 1667.926203503057
+        },
+        {
+          "x": 80.0491845936275,
+          "y": 111.85113120641739
+        },
+        {
+          "x": -228.49828636603823,
+          "y": 44.18892488448413
+        },
+        {
+          "x": -258.1898160770967,
+          "y": 1109.8825738430874
+        },
+        {
+          "x": 27.58902069961196,
+          "y": -725.7702886840908
+        },
+        {
+          "x": -906.6172703510406,
+          "y": -1323.6328765764447
+        }
+      ],
+      "rightAngleTurns": 18,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-la",
+    "name": "New Orleans \u2014 Landmark Run",
+    "displayName": "New Orleans \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Louisiana",
+    "stateCode": "LA",
+    "city": "New Orleans",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 5,
+    "lengthM": 7729.601838254019,
+    "estimatedDrivingSeconds": 457,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-la.json",
+    "references": [
+      "https://www.neworleans.com/plan/neighborhoods/french-quarter/history/the-most-popular-historic-attractions-in-the-french-quarter/",
+      "https://www.neworleans.com/things-to-do/attractions/cemeteries/",
+      "https://www.neworleans.com/plan/neighborhoods/treme/attractions/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Jackson Square",
+        "New Orleans Jazz Museum",
+        "Saint Louis Cemetery No. 1",
+        "Saenger Theatre"
+      ],
+      "waypoints": [
+        {
+          "x": 1351.3400484278407,
+          "y": -985.8555813506306
+        },
+        {
+          "x": 272.17551185740064,
+          "y": 189.38746065352044
+        },
+        {
+          "x": 797.1721322256017,
+          "y": -419.76142788169483
+        },
+        {
+          "x": -493.60953918361133,
+          "y": -194.46907582071555
+        },
+        {
+          "x": -576.1041911735209,
+          "y": 153.30465711797913
+        },
+        {
+          "x": -1192.3815341408692,
+          "y": 704.6432234397294
+        }
+      ],
+      "rightAngleTurns": 20,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ma",
+    "name": "Boston \u2014 Landmark Run",
+    "displayName": "Boston \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Massachusetts",
+    "stateCode": "MA",
+    "city": "Boston",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 1,
+    "lengthM": 12706.866954011854,
+    "estimatedDrivingSeconds": 919,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ma.json",
+    "references": [
+      "https://www.meetboston.com/coupon/boston-250-pass/10147/print/",
+      "https://www.meetboston.com/things-to-do/sightseeing-and-tours/walking-tours/the-freedom-trail/",
+      "https://www.meetboston.com/blog/post/bostons-famous-landmarks/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Old North Church",
+        "Old State House",
+        "Massachusetts State House",
+        "Boston Public Library"
+      ],
+      "waypoints": [
+        {
+          "x": -2127.722248210778,
+          "y": -1771.6267353287083
+        },
+        {
+          "x": 516.258658964097,
+          "y": -1157.8298924391408
+        },
+        {
+          "x": 260.44652789424714,
+          "y": -314.9934232855732
+        },
+        {
+          "x": -242.36087645834425,
+          "y": -378.97507245143
+        },
+        {
+          "x": -1520.1971964755633,
+          "y": 721.088975806859
+        },
+        {
+          "x": 1227.7536096593994,
+          "y": 1456.9668972837835
+        }
+      ],
+      "rightAngleTurns": 36,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-mn",
+    "name": "Minneapolis \u2014 Landmark Run",
+    "displayName": "Minneapolis \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Minnesota",
+    "stateCode": "MN",
+    "city": "Minneapolis",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 6,
+    "lengthM": 10150.62576771075,
+    "estimatedDrivingSeconds": 584,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-mn.json",
+    "references": [
+      "https://www.minneapolis.org/calendar/downtown-events/",
+      "https://www.minneapolis.org/minneapolis-convention-center/attendees/convention-center-guide/",
+      "https://www.minneapolis.org/directory/walker-art-center/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Minneapolis Institute of Art",
+        "Walker Art Center",
+        "Basilica of Saint Mary",
+        "Guthrie Theater"
+      ],
+      "waypoints": [
+        {
+          "x": -2021.5152713344985,
+          "y": 2251.500223584342
+        },
+        {
+          "x": -418.40566132898437,
+          "y": 1645.3980802475767
+        },
+        {
+          "x": -1467.967491907782,
+          "y": 764.0992328405251
+        },
+        {
+          "x": -1230.3281794662532,
+          "y": 155.41736364221777
+        },
+        {
+          "x": 1068.661077536623,
+          "y": -460.69233691558225
+        },
+        {
+          "x": 1694.6727214528003,
+          "y": -995.4183582506687
+        }
+      ],
+      "rightAngleTurns": 17,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ms",
+    "name": "Jackson \u2014 Landmark Run",
+    "displayName": "Jackson \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Mississippi",
+    "stateCode": "MS",
+    "city": "Jackson",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 5,
+    "lengthM": 7453.505135991448,
+    "estimatedDrivingSeconds": 427,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ms.json",
+    "references": [
+      "https://www.visitjackson.com/plan-your-trip/neighborhoods/downtown/",
+      "https://www.visitjackson.com/directory/mississippi-state-capitol/",
+      "https://www.visitjackson.com/directory/the-old-capitol-museum/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Mississippi State Capitol",
+        "Old Capitol Museum",
+        "Smith Robertson Museum",
+        "Mississippi Museum of Art"
+      ],
+      "waypoints": [
+        {
+          "x": -952.1435194452707,
+          "y": -1090.8570956148112
+        },
+        {
+          "x": 202.73910585759754,
+          "y": -184.61719171145728
+        },
+        {
+          "x": 242.41096927794905,
+          "y": 311.41294170208636
+        },
+        {
+          "x": -410.99524176028905,
+          "y": -426.47761072767236
+        },
+        {
+          "x": -162.01458934457295,
+          "y": 600.1309675279732
+        },
+        {
+          "x": 424.8019149113525,
+          "y": 1162.4778467934932
+        }
+      ],
+      "rightAngleTurns": 23,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-mo",
+    "name": "St. Louis \u2014 Landmark Run",
+    "displayName": "St. Louis \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Missouri",
+    "stateCode": "MO",
+    "city": "St. Louis",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 6,
+    "lengthM": 8326.783233522892,
+    "estimatedDrivingSeconds": 433,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-mo.json",
+    "references": [
+      "https://explorestlouis.com/partner/landmarks-association-of-st-louis-inc/",
+      "https://explorestlouis.com/partner/old-courthouse/",
+      "https://explorestlouis.com/wp-content/uploads/2025/01/LTS-Domestic-Profile-Sheet-Jan-2025.pdf"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Old Courthouse",
+        "Union Station",
+        "City Museum",
+        "Fabulous Fox Theatre"
+      ],
+      "waypoints": [
+        {
+          "x": 2507.10219375061,
+          "y": 1751.61162088664
+        },
+        {
+          "x": 2199.6653356887336,
+          "y": 976.1148923217203
+        },
+        {
+          "x": 694.3842966771182,
+          "y": 891.9846946167459
+        },
+        {
+          "x": 1318.3521331673915,
+          "y": 105.8799553984148
+        },
+        {
+          "x": -1422.330848462004,
+          "y": -475.1365778384261
+        },
+        {
+          "x": -1919.7453575906457,
+          "y": -1029.7331600111681
+        }
+      ],
+      "rightAngleTurns": 13,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-mt",
+    "name": "Billings \u2014 Landmark Run",
+    "displayName": "Billings \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Montana",
+    "stateCode": "MT",
+    "city": "Billings",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 7372.566985701618,
+    "estimatedDrivingSeconds": 436,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-mt.json",
+    "references": [
+      "https://www.visitbillings.com/sites/default/files/BMT_2024_Visitor_Guide.pdf",
+      "https://www.visitbillings.com/arts-culture-nightlife/museums/",
+      "https://www.visitbillings.com/sites/default/files/BMT-ADV-10940_VisitBillingsVisitorGuide_FINAL-2020edits-V11_web.pdf"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Moss Mansion",
+        "Yellowstone Art Museum",
+        "Billings Depot",
+        "Alberta Bair Theater"
+      ],
+      "waypoints": [
+        {
+          "x": -1354.3152971930404,
+          "y": -883.5894660597677
+        },
+        {
+          "x": -720.8426123056669,
+          "y": 331.5726097485673
+        },
+        {
+          "x": -82.2752223209254,
+          "y": -249.855345284415
+        },
+        {
+          "x": 557.9438757074508,
+          "y": -135.94710509334035
+        },
+        {
+          "x": -111.78884118680816,
+          "y": -90.23480760923647
+        },
+        {
+          "x": 914.503441924244,
+          "y": 1049.6926769124698
+        }
+      ],
+      "rightAngleTurns": 26,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-nv",
+    "name": "Las Vegas \u2014 Landmark Run",
+    "displayName": "Las Vegas \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Nevada",
+    "stateCode": "NV",
+    "city": "Las Vegas",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 10,
+    "lengthM": 7383.477553066795,
+    "estimatedDrivingSeconds": 455,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-nv.json",
+    "references": [
+      "https://www.visitlasvegas.com/experience/post/national-plan-for-vacation-day/",
+      "https://www.visitlasvegas.com/experience/post/things-to-do-downtown/",
+      "https://www.visitlasvegas.com/experience/post/budget-briendly-vegas-incredible-attractions-that-wont-break-the-bank/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Mob Museum",
+        "Neon Museum",
+        "Downtown Container Park",
+        "Old Las Vegas Mormon Fort"
+      ],
+      "waypoints": [
+        {
+          "x": -1099.4847117265856,
+          "y": 1550.281808615929
+        },
+        {
+          "x": -487.2038054824297,
+          "y": 383.6007877894755
+        },
+        {
+          "x": 68.8888947503069,
+          "y": -11.797798012382557
+        },
+        {
+          "x": -281.8296294833356,
+          "y": 990.6703283245168
+        },
+        {
+          "x": 168.03504868129988,
+          "y": -570.4418811055193
+        },
+        {
+          "x": 761.3232642032831,
+          "y": -1377.0287541036164
+        }
+      ],
+      "rightAngleTurns": 17,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-nh",
+    "name": "Manchester \u2014 Landmark Run",
+    "displayName": "Manchester \u2014 Landmark Run",
+    "status": "imported",
+    "state": "New Hampshire",
+    "stateCode": "NH",
+    "city": "Manchester",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 1,
+    "lengthM": 7678.607057082923,
+    "estimatedDrivingSeconds": 496,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-nh.json",
+    "references": [
+      "https://www.visitnh.gov/business/detail/567",
+      "https://www.visitnh.gov/business/detail/391",
+      "https://www.visitnh.gov/blog/exploring-the-summertime-charms-of-new-hampshire"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Currier Museum of Art",
+        "Palace Theatre",
+        "SNHU Arena",
+        "Millyard Museum"
+      ],
+      "waypoints": [
+        {
+          "x": 1121.7519255244908,
+          "y": 1102.8328057560664
+        },
+        {
+          "x": 554.865415539758,
+          "y": -675.0542125902599
+        },
+        {
+          "x": 110.10118776048235,
+          "y": 118.42276044837729
+        },
+        {
+          "x": -36.8034183797291,
+          "y": 532.001741869132
+        },
+        {
+          "x": -420.7220388881699,
+          "y": 293.44381673573196
+        },
+        {
+          "x": -958.1088807041345,
+          "y": -1338.45518077097
+        }
+      ],
+      "rightAngleTurns": 24,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-nj",
+    "name": "Newark \u2014 Landmark Run",
+    "displayName": "Newark \u2014 Landmark Run",
+    "status": "imported",
+    "state": "New Jersey",
+    "stateCode": "NJ",
+    "city": "Newark",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 1,
+    "lengthM": 7458.50047841127,
+    "estimatedDrivingSeconds": 456,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-nj.json",
+    "references": [
+      "https://www.newarkhappening.com/plan/transportation/",
+      "https://www.newarkhappening.com/plan/accessibility/",
+      "https://www.newarkhappening.com/listing/trinity-and-st-philips-cathedral/394/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Cathedral Basilica of the Sacred Heart",
+        "Newark Museum of Art",
+        "New Jersey Performing Arts Center",
+        "Newark Penn Station"
+      ],
+      "waypoints": [
+        {
+          "x": -1331.35900865029,
+          "y": -1680.9916254306938
+        },
+        {
+          "x": -696.285749047049,
+          "y": -1133.2446601997935
+        },
+        {
+          "x": -17.135453278762782,
+          "y": 131.09899959538924
+        },
+        {
+          "x": 263.3754552027721,
+          "y": 476.6265919127958
+        },
+        {
+          "x": 691.4837783653117,
+          "y": 1035.6932163110173
+        },
+        {
+          "x": 1363.5237877181569,
+          "y": 1563.0914818584106
+        }
+      ],
+      "rightAngleTurns": 13,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "state-id",
+    "name": "Ponderosa Pine \u2014 Idaho 21",
+    "displayName": "Ponderosa Pine \u2014 Idaho 21",
+    "status": "imported",
+    "state": "Idaho",
+    "stateCode": "ID",
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 9,
+    "lengthM": 7505.118463351534,
+    "estimatedDrivingSeconds": 319,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/state-id.json",
+    "references": [
+      "https://visitidaho.org/things-to-do/road-trips/ponderosa-pine-scenic-byway/"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    }
+  },
+  {
+    "id": "city-nm",
+    "name": "Albuquerque \u2014 Landmark Run",
+    "displayName": "Albuquerque \u2014 Landmark Run",
+    "status": "imported",
+    "state": "New Mexico",
+    "stateCode": "NM",
+    "city": "Albuquerque",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 9,
+    "lengthM": 7461.472043489078,
+    "estimatedDrivingSeconds": 471,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-nm.json",
+    "references": [
+      "https://www.visitalbuquerque.org/things-to-do/tours-sightseeing/walking/plaza-to-plaza/",
+      "https://www.visitalbuquerque.org/route-66-centennial/explore/neighborhood-guide/old-town/",
+      "https://www.visitalbuquerque.org/about-abq/neighborhoods/historic-old-town/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "New Mexico Museum of Natural History",
+        "San Felipe de Neri Church",
+        "KiMo Theatre",
+        "Albuquerque Rail Yards"
+      ],
+      "waypoints": [
+        {
+          "x": -1561.0270889389058,
+          "y": -1382.1548473022397
+        },
+        {
+          "x": -653.2022496430978,
+          "y": -788.8290186842852
+        },
+        {
+          "x": -1126.317134021066,
+          "y": -699.4170546689116
+        },
+        {
+          "x": 472.8510267709673,
+          "y": 587.8883891949895
+        },
+        {
+          "x": 590.2494643016345,
+          "y": 1816.038050374678
+        },
+        {
+          "x": 1140.34707982188,
+          "y": 2376.4390157354937
+        }
+      ],
+      "rightAngleTurns": 19,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-nc",
+    "name": "Charlotte \u2014 Landmark Run",
+    "displayName": "Charlotte \u2014 Landmark Run",
+    "status": "imported",
+    "state": "North Carolina",
+    "stateCode": "NC",
+    "city": "Charlotte",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 4,
+    "lengthM": 7325.328812936056,
+    "estimatedDrivingSeconds": 459,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-nc.json",
+    "references": [
+      "https://www.charlottesgotalot.com/things-to-do/attractions/nascar-hall-of-fame",
+      "https://www.charlottesgotalot.com/neighborhoods/uptown",
+      "https://www.charlottesgotalot.com/articles/arts-culture/charlotte-museum-guide"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "NASCAR Hall of Fame",
+        "Bank of America Stadium",
+        "Mint Museum Uptown",
+        "Discovery Place Science"
+      ],
+      "waypoints": [
+        {
+          "x": 910.9659963864134,
+          "y": 1147.6666621063307
+        },
+        {
+          "x": 210.21314030500673,
+          "y": 635.6689151703237
+        },
+        {
+          "x": -694.4400127809737,
+          "y": 305.53072195693983
+        },
+        {
+          "x": -322.8179149826871,
+          "y": 213.09425175942349
+        },
+        {
+          "x": 280.18124382535814,
+          "y": -300.8382895723448
+        },
+        {
+          "x": -1268.836087338678,
+          "y": -906.795879304698
+        }
+      ],
+      "rightAngleTurns": 16,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-nd",
+    "name": "Fargo \u2014 Landmark Run",
+    "displayName": "Fargo \u2014 Landmark Run",
+    "status": "imported",
+    "state": "North Dakota",
+    "stateCode": "ND",
+    "city": "Fargo",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 6,
+    "lengthM": 7324.959051412803,
+    "estimatedDrivingSeconds": 483,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-nd.json",
+    "references": [
+      "https://www.fargomoorhead.org/listing/plains-art-museum/13383/",
+      "https://www.fargomoorhead.org/things-to-do/downtown-fargo/",
+      "https://www.fargomoorhead.org/things-to-do/downtown-fargo/?adgroup=null&campaign=null&device=c&gadid=122&keyword=walnut+crossings&network=g"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Fargo Theatre",
+        "Plains Art Museum",
+        "Island Park",
+        "Fargo Civic Center"
+      ],
+      "waypoints": [
+        {
+          "x": -962.3560730114921,
+          "y": -1099.1077705689568
+        },
+        {
+          "x": -53.95998485256834,
+          "y": -453.4646567004787
+        },
+        {
+          "x": -332.31871218238285,
+          "y": -124.42729478162985
+        },
+        {
+          "x": -244.60238238840145,
+          "y": 752.790693180567
+        },
+        {
+          "x": 179.6892579142432,
+          "y": -223.50211127002586
+        },
+        {
+          "x": 794.9653438338039,
+          "y": 1323.577279035678
+        }
+      ],
+      "rightAngleTurns": 23,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-oh",
+    "name": "Cleveland \u2014 Landmark Run",
+    "displayName": "Cleveland \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Ohio",
+    "stateCode": "OH",
+    "city": "Cleveland",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 4,
+    "lengthM": 8588.802816160402,
+    "estimatedDrivingSeconds": 470,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-oh.json",
+    "references": [
+      "https://www.thisiscleveland.com/locations/west-side-market",
+      "https://www.thisiscleveland.com/Locations/Terminal-Tower",
+      "https://www.thisiscleveland.com/Neighborhoods/downtown-cleveland"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Rock and Roll Hall of Fame",
+        "Playhouse Square",
+        "Terminal Tower",
+        "West Side Market"
+      ],
+      "waypoints": [
+        {
+          "x": -509.69096990930177,
+          "y": -1007.1494392149214
+        },
+        {
+          "x": -82.74847595661569,
+          "y": -1035.6598577865573
+        },
+        {
+          "x": 930.2457745438118,
+          "y": -218.02019381365756
+        },
+        {
+          "x": -13.55822452252164,
+          "y": 150.90284338491514
+        },
+        {
+          "x": -864.5450170132267,
+          "y": 1649.023039863677
+        },
+        {
+          "x": 1453.8697356242262,
+          "y": 2305.563271594391
+        }
+      ],
+      "rightAngleTurns": 15,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-co",
+    "name": "Denver, CO \u2014 Landmark Run",
+    "displayName": "Denver, CO \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Colorado",
+    "stateCode": "CO",
+    "city": "Denver",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 7622.788761112339,
+    "estimatedDrivingSeconds": 474,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-co.json",
+    "references": [
+      "https://www.denver.org/about-denver/denver-neighborhoods/capitol-hill-congress-park/",
+      "https://www.denver.org/about-denver/transportation/airport-rail/",
+      "https://www.denver.org/travel-trade/itineraries/downtown-denver/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Coors Field",
+        "Union Station",
+        "Colorado State Capitol",
+        "Denver Art Museum"
+      ],
+      "waypoints": [
+        {
+          "x": -1047.7022323163994,
+          "y": -1489.980716605359
+        },
+        {
+          "x": 178.42579245902212,
+          "y": -907.8077545347967
+        },
+        {
+          "x": -489.6749251973296,
+          "y": -538.0507542342077
+        },
+        {
+          "x": 781.1835138641712,
+          "y": 887.581369440186
+        },
+        {
+          "x": 320.2003452308566,
+          "y": 1239.4804398551635
+        },
+        {
+          "x": 1402.0915925940294,
+          "y": 1773.2946615319506
+        }
+      ],
+      "rightAngleTurns": 19,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ne",
+    "name": "Omaha, NE \u2014 Landmark Run",
+    "displayName": "Omaha, NE \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Nebraska",
+    "stateCode": "NE",
+    "city": "Omaha",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 6,
+    "lengthM": 7529.27230003882,
+    "estimatedDrivingSeconds": 530,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ne.json",
+    "references": [
+      "https://www.visitomaha.com/listings/durham-museum/62308/",
+      "https://www.visitomaha.com/things-to-do/arts-and-culture/historic-sites/",
+      "https://www.visitomaha.com/things-to-do/arts-and-culture/museums/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Joslyn Art Museum",
+        "Lewis and Clark Landing",
+        "Durham Museum",
+        "Orpheum Theater"
+      ],
+      "waypoints": [
+        {
+          "x": -670.5326653008716,
+          "y": -1102.6437741198304
+        },
+        {
+          "x": -656.3220372252537,
+          "y": -518.5804956853303
+        },
+        {
+          "x": 1028.8243950267026,
+          "y": -350.87607567751553
+        },
+        {
+          "x": 926.1233500113749,
+          "y": 524.3181618252739
+        },
+        {
+          "x": 262.0690592754186,
+          "y": 51.09413936709251
+        },
+        {
+          "x": 1469.71331063956,
+          "y": 1233.4870250300642
+        }
+      ],
+      "rightAngleTurns": 23,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ny",
+    "name": "New York, NY \u2014 Landmark Run",
+    "displayName": "New York, NY \u2014 Landmark Run",
+    "status": "imported",
+    "state": "New York",
+    "stateCode": "NY",
+    "city": "New York",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 1,
+    "lengthM": 7493.378286002544,
+    "estimatedDrivingSeconds": 429,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ny.json",
+    "references": [
+      "https://business.nyctourism.com/press-media/press-releases/nyc-company-invites-visitors-to-see-manhattan-like-a-new-yorker",
+      "https://www.nyctourism.com/NYCTourismOVM-090924.pdf",
+      "https://www.business.nyctourism.com/press-media/press-releases/nyc-company-invites-visitors-to-see-manhattan-like-a-new-yorker"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Flatiron Building",
+        "Grand Central Terminal",
+        "New York Public Library Stephen A. Schwarzman Building",
+        "Rockefeller Center"
+      ],
+      "waypoints": [
+        {
+          "x": 691.764787582398,
+          "y": 1737.512084712598
+        },
+        {
+          "x": -596.6705048433358,
+          "y": 1124.6492804976363
+        },
+        {
+          "x": 453.0140341367218,
+          "y": -132.87812087937445
+        },
+        {
+          "x": 136.43742559255108,
+          "y": -201.9191461965148
+        },
+        {
+          "x": 178.3449512030231,
+          "y": -920.0725718848771
+        },
+        {
+          "x": -1093.512650689777,
+          "y": -1444.6909604263396
+        }
+      ],
+      "rightAngleTurns": 13,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ok",
+    "name": "Oklahoma City, OK \u2014 Landmark Run",
+    "displayName": "Oklahoma City, OK \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Oklahoma",
+    "stateCode": "OK",
+    "city": "Oklahoma City",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 7,
+    "lengthM": 8223.885276432417,
+    "estimatedDrivingSeconds": 480,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ok.json",
+    "references": [
+      "https://www.visitokc.com/faq/html/attractions/oklahoma-city-convention-center.html",
+      "https://www.visitokc.com/districts/city-center-downtown/",
+      "https://www.visitokc.com/listing/myriad-botanical-gardens-%26-crystal-bridge-conservatory/848/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Oklahoma State Capitol",
+        "Oklahoma City National Memorial",
+        "Chickasaw Bricktown Ballpark",
+        "Myriad Botanical Gardens"
+      ],
+      "waypoints": [
+        {
+          "x": 1409.4252985238957,
+          "y": -2316.504867489241
+        },
+        {
+          "x": 812.7465241468379,
+          "y": -1684.8389752066994
+        },
+        {
+          "x": -709.1089818765714,
+          "y": 333.35173103176237
+        },
+        {
+          "x": 74.14453439115698,
+          "y": 1306.8868974927314
+        },
+        {
+          "x": -702.2903650714094,
+          "y": 1300.9157216839385
+        },
+        {
+          "x": -1289.5788265331887,
+          "y": 1892.4624290186978
+        }
+      ],
+      "rightAngleTurns": 17,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-tx",
+    "name": "San Antonio, TX \u2014 Landmark Run",
+    "displayName": "San Antonio, TX \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Texas",
+    "stateCode": "TX",
+    "city": "San Antonio",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 7,
+    "lengthM": 7271.248580784309,
+    "estimatedDrivingSeconds": 396,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-tx.json",
+    "references": [
+      "https://www.visitsanantonio.com/plan-your-trip/neighborhood-guide/downtown/",
+      "https://www.visitsanantonio.com/media/media-kit/san-antonios-legendary-attractions/",
+      "https://www.visitsanantonio.com/welcome-international-travelers/bienvenido/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "The Alamo",
+        "Tower of the Americas",
+        "Spanish Governors Palace",
+        "San Fernando Cathedral"
+      ],
+      "waypoints": [
+        {
+          "x": 1670.6647733067853,
+          "y": -823.8777079742113
+        },
+        {
+          "x": 552.4427594075227,
+          "y": -273.87348261505497
+        },
+        {
+          "x": 1069.0794023780334,
+          "y": 552.161409915613
+        },
+        {
+          "x": -368.2306050596917,
+          "y": -126.98478162686477
+        },
+        {
+          "x": -257.4805532749258,
+          "y": -10.974954418914693
+        },
+        {
+          "x": -1131.9071755229968,
+          "y": 1182.003702882347
+        }
+      ],
+      "rightAngleTurns": 12,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-or",
+    "name": "Portland, OR \u2014 Landmark Run",
+    "displayName": "Portland, OR \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Oregon",
+    "stateCode": "OR",
+    "city": "Portland",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 7373.216552621834,
+    "estimatedDrivingSeconds": 523,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-or.json",
+    "references": [
+      "https://www.travelportland.com/attractions/powells/",
+      "https://www.travelportland.com/attractions/pioneer-courthouse-square/",
+      "https://www.travelportland.com/wp-content/uploads/2023/04/Walkable-Portland.pdf"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Pioneer Courthouse Square",
+        "Union Station",
+        "Powells City of Books",
+        "Portland Art Museum"
+      ],
+      "waypoints": [
+        {
+          "x": 206.77762359712872,
+          "y": -769.4699552153605
+        },
+        {
+          "x": -125.77894405043881,
+          "y": 405.039199259364
+        },
+        {
+          "x": 45.27107115915837,
+          "y": -651.0805532906531
+        },
+        {
+          "x": -323.2156600032185,
+          "y": -75.63489357461671
+        },
+        {
+          "x": -343.3854764264655,
+          "y": 748.1872168596182
+        },
+        {
+          "x": -962.3861577222252,
+          "y": 1275.3074947071293
+        }
+      ],
+      "rightAngleTurns": 23,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ri",
+    "name": "Providence, RI \u2014 Landmark Run",
+    "displayName": "Providence, RI \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Rhode Island",
+    "stateCode": "RI",
+    "city": "Providence",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 1,
+    "lengthM": 7650.07696106834,
+    "estimatedDrivingSeconds": 547,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ri.json",
+    "references": [
+      "https://www.goprovidence.com/listing/john-brown-house-museum/",
+      "https://www.goprovidence.com/articles/post/living-history-historic-sites-and-attraction/",
+      "https://www.goprovidence.com/experiences/the-museum-at-the-john-brown-house/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Rhode Island State House",
+        "John Brown House",
+        "Providence City Hall",
+        "Providence Performing Arts Center"
+      ],
+      "waypoints": [
+        {
+          "x": 1168.2477810046075,
+          "y": -1341.9578257981739
+        },
+        {
+          "x": -437.7790821539822,
+          "y": -760.5298707651916
+        },
+        {
+          "x": 588.7019561595696,
+          "y": 238.71359824596615
+        },
+        {
+          "x": -160.70046219750736,
+          "y": 147.83385917094927
+        },
+        {
+          "x": -67.85480483319131,
+          "y": 486.98997339078505
+        },
+        {
+          "x": -1047.7514356762522,
+          "y": 1168.4267835859791
+        }
+      ],
+      "rightAngleTurns": 25,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-pa",
+    "name": "Philadelphia, PA \u2014 Landmark Run",
+    "displayName": "Philadelphia, PA \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Pennsylvania",
+    "stateCode": "PA",
+    "city": "Philadelphia",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 3,
+    "lengthM": 6517.014314108714,
+    "estimatedDrivingSeconds": 397,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-pa.json",
+    "references": [
+      "https://www.visitphilly.com/things-to-do/attractions/independence-hall/",
+      "https://www.visitphilly.com/wp-content/uploads/2025/04/PHLASH-PAD-MAP-2025-1.pdf",
+      "https://www.visitphilly.com/features/philly-phlash-downtown-loop/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Philadelphia Museum of Art",
+        "Reading Terminal Market",
+        "Philadelphia City Hall",
+        "Independence Hall"
+      ],
+      "waypoints": [
+        {
+          "x": -2128.7044558277144,
+          "y": -1210.7921091554451
+        },
+        {
+          "x": -1542.5075897117867,
+          "y": -1052.2279247421884
+        },
+        {
+          "x": 369.32115818692705,
+          "y": 228.30573873536375
+        },
+        {
+          "x": 124.43674186715205,
+          "y": 277.1203789578934
+        },
+        {
+          "x": 1262.1562727217172,
+          "y": 661.9109541063402
+        },
+        {
+          "x": 1877.8534856835968,
+          "y": 1207.8676785443117
+        }
+      ],
+      "rightAngleTurns": 13,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-sc",
+    "name": "Charleston, SC \u2014 Landmark Run",
+    "displayName": "Charleston, SC \u2014 Landmark Run",
+    "status": "imported",
+    "state": "South Carolina",
+    "stateCode": "SC",
+    "city": "Charleston",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 4,
+    "lengthM": 7514.793986248239,
+    "estimatedDrivingSeconds": 485,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-sc.json",
+    "references": [
+      "https://www.charlestoncvb.com/plan-your-trip/tours-attractions~204att..?location=charleston-downtown~445",
+      "https://www.charlestoncvb.com/lgbtq/",
+      "https://www.charlestoncvb.com/plan-your-trip/tours-attractions~204Travel/?location=charleston-downtown~445"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Charleston Museum",
+        "Old Exchange and Provost Dungeon",
+        "Rainbow Row",
+        "Emanuel African Methodist Episcopal Church"
+      ],
+      "waypoints": [
+        {
+          "x": -1041.4433205683479,
+          "y": -605.512809411752
+        },
+        {
+          "x": -335.79898135686426,
+          "y": -578.3923293434763
+        },
+        {
+          "x": 558.3157028651532,
+          "y": 904.5830972074748
+        },
+        {
+          "x": 554.7072730666579,
+          "y": 970.0436409411282
+        },
+        {
+          "x": 96.72648478954504,
+          "y": -302.5395743000471
+        },
+        {
+          "x": 506.4234909135019,
+          "y": 1383.1333640086684
+        }
+      ],
+      "rightAngleTurns": 26,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-sd",
+    "name": "Sioux Falls, SD \u2014 Landmark Run",
+    "displayName": "Sioux Falls, SD \u2014 Landmark Run",
+    "status": "imported",
+    "state": "South Dakota",
+    "stateCode": "SD",
+    "city": "Sioux Falls",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 6,
+    "lengthM": 7532.76478042617,
+    "estimatedDrivingSeconds": 453,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-sd.json",
+    "references": [
+      "https://www.experiencesiouxfalls.com/general-uploads/ESF.TearoffMap.10.2023.pdf",
+      "https://www.experiencesiouxfalls.com/general-uploads/2025-Sioux-Falls-Visitor-Guide.pdf",
+      "https://www.experiencesiouxfalls.com/general-uploads/ESF.TearoffMap.6.2024.pdf"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Falls Park",
+        "Old Courthouse Museum",
+        "Pettigrew Home and Museum",
+        "Washington Pavilion"
+      ],
+      "waypoints": [
+        {
+          "x": -1045.4282794110582,
+          "y": -1483.0310240901374
+        },
+        {
+          "x": 368.4489562775748,
+          "y": -942.3449464552017
+        },
+        {
+          "x": -27.843809881553447,
+          "y": -25.05225157625516
+        },
+        {
+          "x": -502.0508897680803,
+          "y": 267.768872710793
+        },
+        {
+          "x": -23.451660420969656,
+          "y": 701.1183393966138
+        },
+        {
+          "x": 941.6929622509191,
+          "y": 1171.3289751800157
+        }
+      ],
+      "rightAngleTurns": 19,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-tn",
+    "name": "Nashville, TN \u2014 Landmark Run",
+    "displayName": "Nashville, TN \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Tennessee",
+    "stateCode": "TN",
+    "city": "Nashville",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 6,
+    "lengthM": 7615.0793861320335,
+    "estimatedDrivingSeconds": 463,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-tn.json",
+    "references": [
+      "https://www.visitmusiccity.com/nashville-businesses/ajs-good-time-bar/6387",
+      "https://www.visitmusiccity.com/sites/default/files/2025-06/2025-July4_Map_General-FA.pdf",
+      "https://www.visitmusiccity.com/nashville-businesses/ryman-auditorium/7672"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Tennessee State Capitol",
+        "Ryman Auditorium",
+        "Union Station Hotel",
+        "Country Music Hall of Fame"
+      ],
+      "waypoints": [
+        {
+          "x": -759.1880016879375,
+          "y": 1081.1386456026023
+        },
+        {
+          "x": -15.081956825389577,
+          "y": -367.9556400010872
+        },
+        {
+          "x": 410.5613877900398,
+          "y": 168.83860982680966
+        },
+        {
+          "x": -116.76845977711517,
+          "y": 447.7603490842048
+        },
+        {
+          "x": 686.0225563762508,
+          "y": 419.8948619775592
+        },
+        {
+          "x": 208.88510202947685,
+          "y": -757.4608865512257
+        }
+      ],
+      "rightAngleTurns": 16,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-ut",
+    "name": "Salt Lake City, UT \u2014 Landmark Run",
+    "displayName": "Salt Lake City, UT \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Utah",
+    "stateCode": "UT",
+    "city": "Salt Lake City",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 9,
+    "lengthM": 7722.523290833362,
+    "estimatedDrivingSeconds": 466,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-ut.json",
+    "references": [
+      "https://www.visitsaltlake.com/plan-your-visit/trip-ideas-itineraries/salt-lake-and-beyond/",
+      "https://www.visitsaltlake.com/blog/stories/post/temple-square-renovation-update/",
+      "https://www.visitsaltlake.com/plan-your-visit/trip-ideas-itineraries/a-quick-guide-to-fun-in-salt-lake/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Union Pacific Depot",
+        "Utah State Capitol",
+        "Temple Square",
+        "Salt Lake City and County Building"
+      ],
+      "waypoints": [
+        {
+          "x": -1546.7548677033963,
+          "y": -1803.0059869707113
+        },
+        {
+          "x": -1065.5147304066363,
+          "y": -604.4898146735
+        },
+        {
+          "x": 140.3774979162356,
+          "y": -1334.8635796793296
+        },
+        {
+          "x": -100.2636256711866,
+          "y": -587.8439111623762
+        },
+        {
+          "x": 155.72233840223583,
+          "y": 384.29019728707897
+        },
+        {
+          "x": 724.9637041430873,
+          "y": 984.5101208802786
+        }
+      ],
+      "rightAngleTurns": 15,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-vt",
+    "name": "Burlington, VT \u2014 Landmark Run",
+    "displayName": "Burlington, VT \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Vermont",
+    "stateCode": "VT",
+    "city": "Burlington",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 2,
+    "lengthM": 7421.205558494264,
+    "estimatedDrivingSeconds": 414,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-vt.json",
+    "references": [
+      "https://www.helloburlingtonvt.com/things-to-do/arts-culture/",
+      "https://www.helloburlingtonvt.com/listing/flynn-theater/467/",
+      "https://www.helloburlingtonvt.com/things-to-do/outdoors-recreation/parks-gardens/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Waterman Building",
+        "Burlington City Hall",
+        "Flynn Center",
+        "ECHO Leahy Center"
+      ],
+      "waypoints": [
+        {
+          "x": -1018.3048972280666,
+          "y": -876.6508930534894
+        },
+        {
+          "x": 825.9024370012504,
+          "y": -84.2413927849273
+        },
+        {
+          "x": -118.04386817586378,
+          "y": 117.3219291538423
+        },
+        {
+          "x": -118.04386817586378,
+          "y": 117.3219291538423
+        },
+        {
+          "x": -690.3638296597125,
+          "y": 16.990608259135414
+        },
+        {
+          "x": 1476.2227525681367,
+          "y": 575.6569303685786
+        }
+      ],
+      "rightAngleTurns": 16,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-va",
+    "name": "Richmond, VA \u2014 Landmark Run",
+    "displayName": "Richmond, VA \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Virginia",
+    "stateCode": "VA",
+    "city": "Richmond",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 3,
+    "lengthM": 8625.096631847799,
+    "estimatedDrivingSeconds": 482,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-va.json",
+    "references": [
+      "https://www.visitrichmondva.com/listing/main-street-station/1097/",
+      "https://www.visitrichmondva.com/listing/main-street-station/40/",
+      "https://www.visitrichmondva.com/listing/main-street-station/4535/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Virginia Museum of Fine Arts",
+        "Virginia State Capitol",
+        "Main Street Station",
+        "Poe Museum"
+      ],
+      "waypoints": [
+        {
+          "x": -4047.806862013312,
+          "y": -1437.0629779216679
+        },
+        {
+          "x": -3557.569977316928,
+          "y": -1366.5875360701345
+        },
+        {
+          "x": 338.7036699909254,
+          "y": 254.15859488996534
+        },
+        {
+          "x": 731.6126232786825,
+          "y": 853.9337381617736
+        },
+        {
+          "x": 895.8683857716413,
+          "y": 1134.0786233018098
+        },
+        {
+          "x": 1433.9184212992902,
+          "y": 1694.757576363297
+        }
+      ],
+      "rightAngleTurns": 16,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-wa",
+    "name": "Seattle, WA \u2014 Landmark Run",
+    "displayName": "Seattle, WA \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Washington",
+    "stateCode": "WA",
+    "city": "Seattle",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 7656.429745805353,
+    "estimatedDrivingSeconds": 436,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-wa.json",
+    "references": [
+      "https://visitseattle.org/things-to-do/sightseeing/pike-place-market/",
+      "https://visitseattle.org/things-to-do/sightseeing/sights-in-the-city/",
+      "https://visitseattle.org/things-to-do/cruises/pre-post-cruise-activities/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Space Needle",
+        "Smith Tower",
+        "Pike Place Market",
+        "King Street Station"
+      ],
+      "waypoints": [
+        {
+          "x": -1528.6651936554144,
+          "y": -1181.9925833749837
+        },
+        {
+          "x": -933.0997531197415,
+          "y": -1177.211194924372
+        },
+        {
+          "x": 376.5549703894205,
+          "y": 697.3599456842543
+        },
+        {
+          "x": -291.72908315386496,
+          "y": -204.95477188681085
+        },
+        {
+          "x": 596.1876719669123,
+          "y": 1061.6239090211118
+        },
+        {
+          "x": 1066.8495237054813,
+          "y": 1692.5892722986873
+        }
+      ],
+      "rightAngleTurns": 12,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-wv",
+    "name": "Charleston, WV \u2014 Landmark Run",
+    "displayName": "Charleston, WV \u2014 Landmark Run",
+    "status": "imported",
+    "state": "West Virginia",
+    "stateCode": "WV",
+    "location": {
+      "lat": 38.347,
+      "lon": -81.626
+    },
+    "city": "Charleston",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 4,
+    "lengthM": 7491.007692070882,
+    "estimatedDrivingSeconds": 480,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-wv.json",
+    "references": [
+      "https://events.charlestonwv.com/",
+      "https://events.charlestonwv.com/calendar/upcoming",
+      "https://events.charlestonwv.com/capitol_market_228"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "West Virginia State Capitol",
+        "Clay Center",
+        "Haddad Riverfront Park",
+        "Capitol Market"
+      ],
+      "waypoints": [
+        {
+          "x": 1079.5580213940927,
+          "y": 375.427949392403
+        },
+        {
+          "x": 1351.2941288196382,
+          "y": 1170.8174778112846
+        },
+        {
+          "x": -202.93873414388034,
+          "y": -97.79607306498848
+        },
+        {
+          "x": -1096.3627543520663,
+          "y": -320.34190664489205
+        },
+        {
+          "x": -163.4428153194319,
+          "y": -565.8495242919336
+        },
+        {
+          "x": -451.4516947768572,
+          "y": 423.3863874973998
+        }
+      ],
+      "rightAngleTurns": 21,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-wi",
+    "name": "Milwaukee, WI \u2014 Landmark Run",
+    "displayName": "Milwaukee, WI \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Wisconsin",
+    "stateCode": "WI",
+    "location": {
+      "lat": 43.038,
+      "lon": -87.911
+    },
+    "city": "Milwaukee",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 6,
+    "lengthM": 7521.2648138077075,
+    "estimatedDrivingSeconds": 521,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-wi.json",
+    "references": [
+      "https://www.visitmilwaukee.org/listing/pabst-mansion/517/",
+      "https://www.visitmilwaukee.org/things-to-do/museums/",
+      "https://www.visitmilwaukee.org/things-to-do/attractions/milwaukee-art-museum/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Pabst Theater",
+        "Milwaukee Art Museum",
+        "Milwaukee City Hall",
+        "Harley Davidson Museum"
+      ],
+      "waypoints": [
+        {
+          "x": 936.1305469370114,
+          "y": -574.9897598880718
+        },
+        {
+          "x": 95.35716512066054,
+          "y": -336.7098224553437
+        },
+        {
+          "x": 1087.0781841803603,
+          "y": -195.82565579961604
+        },
+        {
+          "x": 108.7265111208113,
+          "y": -339.3562653650149
+        },
+        {
+          "x": -610.9344122778635,
+          "y": 740.781624515642
+        },
+        {
+          "x": -1163.0518294152014,
+          "y": 1405.639248247842
+        }
+      ],
+      "rightAngleTurns": 22,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  },
+  {
+    "id": "city-wy",
+    "name": "Cheyenne, WY \u2014 Landmark Run",
+    "displayName": "Cheyenne, WY \u2014 Landmark Run",
+    "status": "imported",
+    "state": "Wyoming",
+    "stateCode": "WY",
+    "location": {
+      "lat": 41.14,
+      "lon": -104.814
+    },
+    "city": "Cheyenne",
+    "kind": "city",
+    "event_type": "City run",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 4636.580712310972,
+    "estimatedDrivingSeconds": 278,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/state-expansion/city-wy.json",
+    "references": [
+      "https://www.cheyenne.org/articles/post/the-western-experience/",
+      "https://www.cheyenne.org/plan-your-visit/about-cheyenne/visitor-resources/",
+      "https://www.cheyenne.org/groups/history-trivia/"
+    ],
+    "routeReference": {
+      "landmarkOrder": [
+        "Big Boy Steam Engine",
+        "Wyoming State Capitol",
+        "Cheyenne Depot Museum",
+        "Historic Governors Mansion"
+      ],
+      "waypoints": [
+        {
+          "x": 497.2569687712538,
+          "y": 384.212360730796
+        },
+        {
+          "x": 546.1452507466488,
+          "y": 483.1092650903194
+        },
+        {
+          "x": -303.613146848181,
+          "y": 413.4900253563185
+        },
+        {
+          "x": -109.9023317309799,
+          "y": 807.2651629875473
+        },
+        {
+          "x": 74.20333445998286,
+          "y": 470.8333282328758
+        },
+        {
+          "x": -888.3632245756029,
+          "y": 1296.4456794592493
+        }
+      ],
+      "rightAngleTurns": 14,
+      "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
+    }
+  }
+]

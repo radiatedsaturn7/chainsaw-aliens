@@ -1,0 +1,640 @@
+{
+  "checkedAt": "2026-11-13T14:12:54.714829+00:00",
+  "fullLoadingChecks": 79,
+  "passed": 79,
+  "scope": "Native world preparation, road/terrain physics sampling, finite geometry, and transferable buffers. City scenery and menu references additionally validated by unit tests.",
+  "results": [
+    {
+      "id": "city-ak",
+      "name": "Anchorage, AK \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 21.813,
+      "peakRssKB": 908572,
+      "triangles": 276959
+    },
+    {
+      "id": "city-al",
+      "name": "Birmingham, AL \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 80.459,
+      "peakRssKB": 1020708,
+      "triangles": 387391
+    },
+    {
+      "id": "city-ar",
+      "name": "Little Rock, AR \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 23.213,
+      "peakRssKB": 961276,
+      "triangles": 312280
+    },
+    {
+      "id": "city-az",
+      "name": "Phoenix, AZ \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 22.929,
+      "peakRssKB": 907592,
+      "triangles": 276466
+    },
+    {
+      "id": "city-ca",
+      "name": "Los Angeles, CA \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 46.849,
+      "peakRssKB": 965244,
+      "triangles": 289278
+    },
+    {
+      "id": "city-co",
+      "name": "Denver, CO \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 34.981,
+      "peakRssKB": 992256,
+      "triangles": 348923
+    },
+    {
+      "id": "city-ct",
+      "name": "Hartford, CT \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 49.887,
+      "peakRssKB": 954508,
+      "triangles": 332212
+    },
+    {
+      "id": "city-de",
+      "name": "Wilmington, DE \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 49.125,
+      "peakRssKB": 760080,
+      "triangles": 224789
+    },
+    {
+      "id": "city-fl",
+      "name": "Miami, FL \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 9.788,
+      "peakRssKB": 727560,
+      "triangles": 162704
+    },
+    {
+      "id": "city-ga",
+      "name": "Atlanta, GA \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 21.268,
+      "peakRssKB": 1005856,
+      "triangles": 344129
+    },
+    {
+      "id": "city-hi",
+      "name": "Honolulu, HI \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 14.588,
+      "peakRssKB": 764352,
+      "triangles": 185232
+    },
+    {
+      "id": "city-ia",
+      "name": "Des Moines, IA \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 17.978,
+      "peakRssKB": 856224,
+      "triangles": 260382
+    },
+    {
+      "id": "city-id",
+      "name": "Boise, ID \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 34.055,
+      "peakRssKB": 1012992,
+      "triangles": 399236
+    },
+    {
+      "id": "city-il",
+      "name": "Chicago, IL \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 19.271,
+      "peakRssKB": 856776,
+      "triangles": 302901
+    },
+    {
+      "id": "city-in",
+      "name": "Indianapolis, IN \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 14.963,
+      "peakRssKB": 775448,
+      "triangles": 176691
+    },
+    {
+      "id": "city-ks",
+      "name": "Wichita, KS \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 38.949,
+      "peakRssKB": 1030328,
+      "triangles": 386112
+    },
+    {
+      "id": "city-ky",
+      "name": "Louisville, KY \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 13.259,
+      "peakRssKB": 699192,
+      "triangles": 182072
+    },
+    {
+      "id": "city-la",
+      "name": "New Orleans, LA \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 17.365,
+      "peakRssKB": 758868,
+      "triangles": 207061
+    },
+    {
+      "id": "city-ma",
+      "name": "Boston, MA \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 67.602,
+      "peakRssKB": 1216840,
+      "triangles": 578212
+    },
+    {
+      "id": "city-md",
+      "name": "Baltimore, MD \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 14.488,
+      "peakRssKB": 769728,
+      "triangles": 183386
+    },
+    {
+      "id": "city-me",
+      "name": "Portland, ME \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 20.996,
+      "peakRssKB": 762692,
+      "triangles": 190766
+    },
+    {
+      "id": "city-mi",
+      "name": "Detroit, MI \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 27.337,
+      "peakRssKB": 996096,
+      "triangles": 348292
+    },
+    {
+      "id": "city-mn",
+      "name": "Minneapolis, MN \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 65.847,
+      "peakRssKB": 1104804,
+      "triangles": 520157
+    },
+    {
+      "id": "city-mo",
+      "name": "St. Louis, MO \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 70.715,
+      "peakRssKB": 958016,
+      "triangles": 334240
+    },
+    {
+      "id": "city-ms",
+      "name": "Jackson, MS \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 95.5,
+      "peakRssKB": 674188,
+      "triangles": 162081
+    },
+    {
+      "id": "city-mt",
+      "name": "Billings, MT \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 69.235,
+      "peakRssKB": 756940,
+      "triangles": 170047
+    },
+    {
+      "id": "city-nc",
+      "name": "Charlotte, NC \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 21.566,
+      "peakRssKB": 752692,
+      "triangles": 205281
+    },
+    {
+      "id": "city-nd",
+      "name": "Fargo, ND \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 19.514,
+      "peakRssKB": 766880,
+      "triangles": 196194
+    },
+    {
+      "id": "city-ne",
+      "name": "Omaha, NE \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 18.237,
+      "peakRssKB": 695084,
+      "triangles": 165404
+    },
+    {
+      "id": "city-nh",
+      "name": "Manchester, NH \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 20.278,
+      "peakRssKB": 777520,
+      "triangles": 212947
+    },
+    {
+      "id": "city-nj",
+      "name": "Newark, NJ \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 26.319,
+      "peakRssKB": 1008736,
+      "triangles": 396385
+    },
+    {
+      "id": "city-nm",
+      "name": "Albuquerque, NM \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 38.216,
+      "peakRssKB": 924960,
+      "triangles": 349141
+    },
+    {
+      "id": "city-nv",
+      "name": "Las Vegas, NV \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 133.737,
+      "peakRssKB": 766068,
+      "triangles": 177438
+    },
+    {
+      "id": "city-ny",
+      "name": "New York, NY \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 34.505,
+      "peakRssKB": 952176,
+      "triangles": 335088
+    },
+    {
+      "id": "city-oh",
+      "name": "Cleveland, OH \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 44.497,
+      "peakRssKB": 981940,
+      "triangles": 399818
+    },
+    {
+      "id": "city-ok",
+      "name": "Oklahoma City, OK \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 14.789,
+      "peakRssKB": 956768,
+      "triangles": 316952
+    },
+    {
+      "id": "city-or",
+      "name": "Portland, OR \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 107.566,
+      "peakRssKB": 656496,
+      "triangles": 161731
+    },
+    {
+      "id": "city-pa",
+      "name": "Philadelphia, PA \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 157.835,
+      "peakRssKB": 714976,
+      "triangles": 228960
+    },
+    {
+      "id": "city-ri",
+      "name": "Providence, RI \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 153.565,
+      "peakRssKB": 726748,
+      "triangles": 181718
+    },
+    {
+      "id": "city-sc",
+      "name": "Charleston, SC \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 127.131,
+      "peakRssKB": 857708,
+      "triangles": 261434
+    },
+    {
+      "id": "city-sd",
+      "name": "Sioux Falls, SD \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 118.983,
+      "peakRssKB": 724996,
+      "triangles": 173127
+    },
+    {
+      "id": "city-tn",
+      "name": "Nashville, TN \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 234.233,
+      "peakRssKB": 889864,
+      "triangles": 266344
+    },
+    {
+      "id": "city-tx",
+      "name": "San Antonio, TX \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 20.217,
+      "peakRssKB": 788112,
+      "triangles": 208790
+    },
+    {
+      "id": "city-ut",
+      "name": "Salt Lake City, UT \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 145.502,
+      "peakRssKB": 746664,
+      "triangles": 181669
+    },
+    {
+      "id": "city-va",
+      "name": "Richmond, VA \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 29.286,
+      "peakRssKB": 808076,
+      "triangles": 240788
+    },
+    {
+      "id": "city-vt",
+      "name": "Burlington, VT \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 87.241,
+      "peakRssKB": 687192,
+      "triangles": 163034
+    },
+    {
+      "id": "city-wa",
+      "name": "Seattle, WA \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 9.142,
+      "peakRssKB": 753348,
+      "triangles": 211226
+    },
+    {
+      "id": "city-wi",
+      "name": "Milwaukee, WI \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 21.44,
+      "peakRssKB": 702644,
+      "triangles": 193471
+    },
+    {
+      "id": "city-wv",
+      "name": "Charleston, WV \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 20.927,
+      "peakRssKB": 709488,
+      "triangles": 181596
+    },
+    {
+      "id": "city-wy",
+      "name": "Cheyenne, WY \u2014 Landmark Run",
+      "ok": true,
+      "seconds": 15.458,
+      "peakRssKB": 717196,
+      "triangles": 184914
+    },
+    {
+      "id": "state-ak",
+      "name": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+      "ok": true,
+      "seconds": 423.878,
+      "peakRssKB": 1038156,
+      "triangles": 410822
+    },
+    {
+      "id": "state-al",
+      "name": "Barber Motorsports Park",
+      "ok": true,
+      "seconds": 7.356,
+      "peakRssKB": 464048,
+      "triangles": 86207
+    },
+    {
+      "id": "state-ar",
+      "name": "Pig Trail \u2014 Arkansas 23",
+      "ok": true,
+      "seconds": 255.821,
+      "peakRssKB": 1034948,
+      "triangles": 501022
+    },
+    {
+      "id": "state-de",
+      "name": "Brandywine Valley \u2014 Montchanin Road",
+      "ok": true,
+      "seconds": 134.072,
+      "peakRssKB": 990572,
+      "triangles": 419720
+    },
+    {
+      "id": "state-hi",
+      "name": "Hana Highway \u2014 Rainforest Bends",
+      "ok": true,
+      "seconds": 31.763,
+      "peakRssKB": 949708,
+      "triangles": 316433
+    },
+    {
+      "id": "state-ia",
+      "name": "Raceway Park of the Midlands",
+      "ok": true,
+      "seconds": 6.872,
+      "peakRssKB": 413096,
+      "triangles": 78671
+    },
+    {
+      "id": "state-id",
+      "name": "Ponderosa Pine \u2014 Idaho 21",
+      "ok": true,
+      "seconds": 227.307,
+      "peakRssKB": 910528,
+      "triangles": 359047
+    },
+    {
+      "id": "state-ks",
+      "name": "Heartland Motorsports Park",
+      "ok": true,
+      "seconds": 8.271,
+      "peakRssKB": 545468,
+      "triangles": 95001
+    },
+    {
+      "id": "state-ky",
+      "name": "NCM Motorsports Park",
+      "ok": true,
+      "seconds": 10.191,
+      "peakRssKB": 594676,
+      "triangles": 118576
+    },
+    {
+      "id": "state-la",
+      "name": "NOLA Motorsports Park",
+      "ok": true,
+      "seconds": 12.564,
+      "peakRssKB": 650064,
+      "triangles": 153832
+    },
+    {
+      "id": "state-md",
+      "name": "National Road \u2014 Sideling Hill",
+      "ok": true,
+      "seconds": 88.187,
+      "peakRssKB": 1037704,
+      "triangles": 455852
+    },
+    {
+      "id": "state-me",
+      "name": "Grafton Notch \u2014 Maine 26",
+      "ok": true,
+      "seconds": 77.175,
+      "peakRssKB": 1140232,
+      "triangles": 578502
+    },
+    {
+      "id": "state-mi",
+      "name": "GingerMan Raceway",
+      "ok": true,
+      "seconds": 7.151,
+      "peakRssKB": 421608,
+      "triangles": 80175
+    },
+    {
+      "id": "state-mn",
+      "name": "Brainerd \u2014 Competition Course",
+      "ok": true,
+      "seconds": 7.712,
+      "peakRssKB": 508008,
+      "triangles": 98724
+    },
+    {
+      "id": "state-ms",
+      "name": "Natchez Trace \u2014 Tishomingo",
+      "ok": true,
+      "seconds": 39.581,
+      "peakRssKB": 1132476,
+      "triangles": 530070
+    },
+    {
+      "id": "state-mt",
+      "name": "Beartooth Highway \u2014 Rock Creek Climb",
+      "ok": true,
+      "seconds": 63.008,
+      "peakRssKB": 1282896,
+      "triangles": 744077
+    },
+    {
+      "id": "state-nc",
+      "name": "NCCAR \u2014 Road Course",
+      "ok": true,
+      "seconds": 7.515,
+      "peakRssKB": 356224,
+      "triangles": 70666
+    },
+    {
+      "id": "state-nd",
+      "name": "Theodore Roosevelt \u2014 North Unit Drive",
+      "ok": true,
+      "seconds": 23.47,
+      "peakRssKB": 746680,
+      "triangles": 200361
+    },
+    {
+      "id": "state-ne",
+      "name": "Motorsport Park Hastings",
+      "ok": true,
+      "seconds": 59.62,
+      "peakRssKB": 348088,
+      "triangles": 73622
+    },
+    {
+      "id": "state-nj",
+      "name": "NJMP \u2014 Thunderbolt",
+      "ok": true,
+      "seconds": 8.259,
+      "peakRssKB": 499284,
+      "triangles": 90192
+    },
+    {
+      "id": "state-nm",
+      "name": "Sandia Speedway \u2014 Road Course",
+      "ok": true,
+      "seconds": 5.478,
+      "peakRssKB": 306532,
+      "triangles": 47169
+    },
+    {
+      "id": "state-nv",
+      "name": "Spring Mountain \u2014 North South",
+      "ok": true,
+      "seconds": 5.375,
+      "peakRssKB": 433024,
+      "triangles": 77864
+    },
+    {
+      "id": "state-or",
+      "name": "Portland International Raceway",
+      "ok": true,
+      "seconds": 28.879,
+      "peakRssKB": 466484,
+      "triangles": 83427
+    },
+    {
+      "id": "state-sc",
+      "name": "Carolina Motorsports Park",
+      "ok": true,
+      "seconds": 32.485,
+      "peakRssKB": 493712,
+      "triangles": 86688
+    },
+    {
+      "id": "state-sd",
+      "name": "Needles Highway \u2014 Granite Gates",
+      "ok": true,
+      "seconds": 66.664,
+      "peakRssKB": 1200512,
+      "triangles": 634335
+    },
+    {
+      "id": "state-tn",
+      "name": "Flatrock Motorclub \u2014 Club Course",
+      "ok": true,
+      "seconds": 145.533,
+      "peakRssKB": 579576,
+      "triangles": 130078
+    },
+    {
+      "id": "state-vt",
+      "name": "Smugglers Notch \u2014 Vermont 108",
+      "ok": true,
+      "seconds": 63.353,
+      "peakRssKB": 1032652,
+      "triangles": 477442
+    },
+    {
+      "id": "state-wa",
+      "name": "Pacific Raceways",
+      "ok": true,
+      "seconds": 7.239,
+      "peakRssKB": 562196,
+      "triangles": 118501
+    },
+    {
+      "id": "state-wy",
+      "name": "Wind River Canyon \u2014 Canyon Walls",
+      "ok": true,
+      "seconds": 97.01,
+      "peakRssKB": 1025404,
+      "triangles": 474310
+    }
+  ]
+}

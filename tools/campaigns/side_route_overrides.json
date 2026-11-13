@@ -1,0 +1,8 @@
+{
+  "H01-S01": {
+    "waypoints": [{"lat":41.9040701,"lon":-71.350996},{"lat":41.7830262,"lon":-71.4238989}],
+    "description":"Southbound I-95 from South Attleboro through Pawtucket S-curves and Providence, ending beyond the Thurbers Avenue curve. Explicit directed endpoints replace the automatic northbound longest-path selection.",
+    "requiredHighway":"motorway",
+    "requiredRef":"I 95"
+  }
+}

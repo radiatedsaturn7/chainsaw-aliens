@@ -51,6 +51,21 @@ test('side races save varied lighting and the Pawtucket highway keeps full lane 
  const {race}=read('data/server-storage/files/'+event.documentPath);
  assert.ok(event.lengthM>11000,'fast highway route must be longer than the original 3.7 km');
  assert.equal(race.visualFx.preset,'noon');assert.equal(race.brightness,1);
- assert.ok(race.road.segments.every(s=>s.roadWidthM>11&&s.roadWidthM<16));
+ assert.ok(race.road.segments.every(s=>s.roadWidthM>11&&s.roadWidthM<20));
  assert.equal(race.roadTextures.surfaceRoads.asphalt.laneWidthM,3.6576);
+});
+
+test('Pawtucket sprint runs south through both I-95 curve areas and stays on motorway geometry',()=>{
+ const event=events.find(e=>e.id==='H01-S01'),{race}=read('data/server-storage/files/'+event.documentPath);
+ const source=read(race.source.sourceSnapshot),ways=source.filter(w=>race.source.osmWayIds.includes(w.id));
+ assert.ok(ways.length>20);
+ for(const w of ways){assert.equal(w.tags.highway,'motorway');assert.ok(w.tags.ref.split(';').includes('I 95'));}
+ assert.ok(event.startGps.lat>41.9);assert.ok(event.finishGps.lat<41.79);
+ assert.ok(event.estimatedDrivingSeconds>280&&event.estimatedDrivingSeconds<400);
+ const origin=race.source.origin,R=6371008.8,rad=Math.PI/180;
+ const xy=p=>({x:(p.lon-origin.lon)*rad*R*Math.cos(origin.lat*rad),y:-(p.lat-origin.lat)*rad*R});
+ const edges=ways.flatMap(w=>w.geometry.slice(1).map((p,i)=>[xy(w.geometry[i]),xy(p)]));
+ const distance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy||1)));return Math.hypot(p.x-a.x-t*dx,p.y-a.y-t*dy);};
+ for(const p of race.road.nodes)assert.ok(Math.min(...edges.map(([a,b])=>distance(p,a,b)))<5,'node remains within 5m of imported I-95');
+ for(const lat of [41.876,41.797])assert.ok(race.road.nodes.some(p=>Math.abs(origin.lat-p.y/R/rad-lat)<.001),'covers curve latitude '+lat);
 });

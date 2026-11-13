@@ -1,0 +1,11 @@
+{
+  "method": "Complete mapped ways from cached OSM extracts; sufficient connected street district for four landmarks. Not a complete city map.",
+  "mapRequests": [
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-122.35930,47.59045,-122.33960,47.60948",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-122.33960,47.59045,-122.32975,47.59996",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-122.32975,47.59045,-122.31990,47.59996",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-122.33960,47.59996,-122.32975,47.60948",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-122.32975,47.59996,-122.31990,47.60948",
+    "https://api.openstreetmap.org/api/0.6/map.json?bbox=-122.35930,47.60948,-122.34945,47.61900"
+  ]
+}

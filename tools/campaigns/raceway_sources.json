@@ -1,0 +1,377 @@
+[
+  {
+    "key": "watkins",
+    "name": "Watkins Glen",
+    "lat": 42.3369,
+    "lon": -76.9272,
+    "hubStage": 3,
+    "layouts": [
+      {
+        "index": 0,
+        "key": "long",
+        "label": "Long Course",
+        "mappedLengthM": 5473
+      },
+      {
+        "index": 2,
+        "key": "short",
+        "label": "Short Course",
+        "mappedLengthM": 3935
+      },
+      {
+        "index": 1,
+        "key": "long-no-loop",
+        "label": "Long \u2014 No Inner Loop",
+        "mappedLengthM": 5451
+      },
+      {
+        "index": 3,
+        "key": "short-no-loop",
+        "label": "Short \u2014 No Inner Loop",
+        "mappedLengthM": 3914
+      }
+    ],
+    "reference": "https://www.theglen.com/track-info/"
+  },
+  {
+    "key": "road-america",
+    "name": "Road America",
+    "lat": 43.7975,
+    "lon": -87.9897,
+    "hubStage": 6,
+    "layouts": [
+      {
+        "index": 1,
+        "key": "full",
+        "label": "Full Course",
+        "mappedLengthM": 6438
+      },
+      {
+        "index": 0,
+        "key": "bend",
+        "label": "The Bend",
+        "mappedLengthM": 6493
+      }
+    ],
+    "reference": "https://www.roadamerica.com/sites/main/files/file-attachments/road_america_track_notes_2023_july_for_web.pdf"
+  },
+  {
+    "key": "road-atlanta",
+    "name": "Road Atlanta",
+    "lat": 34.1495,
+    "lon": -83.8131,
+    "hubStage": 4,
+    "layouts": [
+      {
+        "index": 8,
+        "key": "grand-prix",
+        "label": "Grand Prix",
+        "mappedLengthM": 4090
+      },
+      {
+        "index": 16,
+        "key": "short",
+        "label": "Short Course",
+        "mappedLengthM": 2855
+      },
+      {
+        "index": 17,
+        "key": "club",
+        "label": "Club Course",
+        "mappedLengthM": 1449
+      }
+    ],
+    "reference": "https://www.roadatlanta.com/track-info/about-mrra/track-map"
+  },
+  {
+    "key": "vir",
+    "name": "Virginia International Raceway",
+    "lat": 36.561,
+    "lon": -79.204,
+    "hubStage": 4,
+    "reference": "https://virnow.com/track/configurations/",
+    "layouts": [
+      {
+        "index": 38,
+        "key": "full",
+        "label": "Full Course",
+        "mappedLengthM": 5262
+      },
+      {
+        "index": 41,
+        "key": "north",
+        "label": "North Course",
+        "mappedLengthM": 3668
+      },
+      {
+        "index": 52,
+        "key": "south",
+        "label": "South Course",
+        "mappedLengthM": 2625
+      },
+      {
+        "index": 6,
+        "key": "grand",
+        "label": "Grand Course",
+        "mappedLengthM": 6646
+      }
+    ]
+  },
+  {
+    "key": "sebring",
+    "name": "Sebring International Raceway",
+    "lat": 27.454,
+    "lon": -81.349,
+    "hubStage": 5,
+    "reference": "https://www.imsa.com/sebring-international-raceway",
+    "layouts": [
+      {
+        "index": 0,
+        "key": "full",
+        "label": "Full Circuit",
+        "mappedLengthM": 5866
+      },
+      {
+        "index": 2,
+        "key": "short",
+        "label": "Short Circuit",
+        "mappedLengthM": 3119
+      },
+      {
+        "index": 5,
+        "key": "club",
+        "label": "Club Circuit",
+        "mappedLengthM": 2688
+      }
+    ]
+  },
+  {
+    "key": "indianapolis",
+    "name": "Indianapolis Motor Speedway",
+    "lat": 39.795,
+    "lon": -86.234,
+    "hubStage": 6,
+    "reference": "https://www.indianapolismotorspeedway.com/",
+    "layouts": [
+      {
+        "index": 13,
+        "key": "oval",
+        "label": "Oval",
+        "mappedLengthM": 4071,
+        "widthM": 15
+      },
+      {
+        "index": 16,
+        "key": "road",
+        "label": "Grand Prix Road Course",
+        "mappedLengthM": 3911,
+        "widthM": 15
+      }
+    ]
+  },
+  {
+    "key": "homestead",
+    "name": "Homestead-Miami Speedway",
+    "lat": 25.4517,
+    "lon": -80.4098,
+    "hubStage": 5,
+    "reference": "https://www.homesteadmiamispeedway.com/track-history/",
+    "layouts": [
+      {
+        "index": 4,
+        "key": "oval",
+        "label": "Oval",
+        "mappedLengthM": 2417,
+        "widthM": 16.7
+      },
+      {
+        "index": 0,
+        "key": "road",
+        "label": "Road Course",
+        "mappedLengthM": 3666,
+        "widthM": 16.7
+      },
+      {
+        "index": 1,
+        "key": "infield",
+        "label": "Modified Road Course",
+        "mappedLengthM": 3523,
+        "widthM": 16.7
+      }
+    ],
+    "ovalWayIds": [
+      108159182,
+      1146967009,
+      1146967010,
+      1146967011,
+      1146967012
+    ]
+  },
+  {
+    "key": "daytona",
+    "name": "Daytona International Speedway",
+    "lat": 29.1852,
+    "lon": -81.0705,
+    "hubStage": 5,
+    "reference": "https://www.daytonainternationalspeedway.com/",
+    "layouts": [
+      {
+        "index": 2,
+        "key": "oval",
+        "label": "Tri-Oval",
+        "mappedLengthM": 4018,
+        "raceRef": "Daytona Tri-Oval",
+        "legacyId": "daytona-tri-oval",
+        "widthM": 12.2
+      },
+      {
+        "index": 12,
+        "key": "sports-car",
+        "label": "Sports Car Course",
+        "mappedLengthM": 5762,
+        "widthM": 12.2
+      },
+      {
+        "index": 11,
+        "key": "stock-car",
+        "label": "Stock Car Road Course",
+        "mappedLengthM": 5776,
+        "widthM": 12.2
+      }
+    ]
+  },
+  {
+    "key": "laguna",
+    "name": "WeatherTech Raceway Laguna Seca",
+    "lat": 36.584,
+    "lon": -121.753,
+    "hubStage": 11,
+    "reference": "https://www.co.monterey.ca.us/government/government-links/weathertech-raceway",
+    "layouts": [
+      {
+        "index": 0,
+        "key": "full",
+        "label": "Full Circuit",
+        "mappedLengthM": 3601,
+        "raceRef": "WeatherTech Raceway Laguna Seca",
+        "legacyId": "weathertech-raceway"
+      }
+    ]
+  },
+  {
+    "key": "willow",
+    "name": "Willow Springs",
+    "lat": 34.872,
+    "lon": -118.264,
+    "hubStage": 11,
+    "reference": "https://willowspringsraceway.com/tracks/",
+    "layouts": [
+      {
+        "index": 0,
+        "key": "big",
+        "label": "Big Willow",
+        "mappedLengthM": 3944
+      },
+      {
+        "index": 1,
+        "key": "streets",
+        "label": "Streets of Willow",
+        "mappedLengthM": 2576
+      },
+      {
+        "index": 5,
+        "key": "streets-short",
+        "label": "Streets \u2014 Short",
+        "mappedLengthM": 1973
+      },
+      {
+        "index": 11,
+        "key": "horse-thief",
+        "label": "Horse Thief Mile",
+        "mappedLengthM": 1612,
+        "raceRef": "Willow Springs \u2014 Horse Thief Mile",
+        "existingSideId": "H11-S08"
+      }
+    ]
+  },
+  {
+    "key": "lime",
+    "name": "Lime Rock Park",
+    "lat": 41.928,
+    "lon": -73.38,
+    "hubStage": 1,
+    "reference": "https://limerock.com/",
+    "layouts": [
+      {
+        "index": 24,
+        "key": "full",
+        "label": "Full Circuit",
+        "mappedLengthM": 2372,
+        "raceRef": "Lime Rock Park \u2014 Connecticut",
+        "existingSideId": "H01-S08"
+      },
+      {
+        "index": 22,
+        "key": "west-chicane",
+        "label": "West Chicane",
+        "mappedLengthM": 2411
+      },
+      {
+        "index": 23,
+        "key": "both-chicanes",
+        "label": "Both Chicanes",
+        "mappedLengthM": 2405
+      }
+    ]
+  },
+  {
+    "key": "mid-ohio",
+    "name": "Mid-Ohio Sports Car Course",
+    "lat": 40.689,
+    "lon": -82.635,
+    "hubStage": 4,
+    "reference": "https://midohio.com/",
+    "layouts": [
+      {
+        "index": 3,
+        "key": "sports-car",
+        "label": "Sports Car Course",
+        "mappedLengthM": 3616,
+        "raceRef": "Mid-Ohio Sports Car Course \u2014 Lexington",
+        "existingSideId": "H04-S09"
+      },
+      {
+        "index": 2,
+        "key": "chicane",
+        "label": "Chicane Course",
+        "mappedLengthM": 3646
+      },
+      {
+        "index": 4,
+        "key": "short",
+        "label": "Short Course",
+        "mappedLengthM": 2731
+      }
+    ]
+  },
+  {
+    "key": "nordschleife",
+    "name": "Nurburgring Nordschleife",
+    "lat": 50.36,
+    "lon": 6.96,
+    "radius": 14000,
+    "country": "de",
+    "layouts": [
+      {
+        "index": 17,
+        "key": "full",
+        "label": "Nordschleife",
+        "mappedLengthM": 20747,
+        "raceRef": "Nurburgring Nordschleife",
+        "legacyId": "nurburgring-nordschleife",
+        "widthM": 10,
+        "laps": 1
+      }
+    ]
+  }
+]
