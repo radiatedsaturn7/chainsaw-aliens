@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794607600039,
+  "doodad": {
+    "id": "campaign-landmark-city-oh-terminal-tower",
+    "name": "landmark-city-oh-terminal-tower",
+    "artRef": "landmark-city-oh-terminal-tower",
+    "widthM": 39.9609375,
+    "heightM": 60,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 33.966796875,
+    "hitboxHeightM": 54,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

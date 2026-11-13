@@ -2260,6 +2260,34 @@
       "heightM": 48,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-oh-rock-and-roll-hall-of-fame",
+      "source": "landmarks/OH/landmark-city-oh-rock-and-roll-hall-of-fame.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-oh-playhouse-square",
+      "source": "landmarks/OH/landmark-city-oh-playhouse-square.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-oh-terminal-tower",
+      "source": "landmarks/OH/landmark-city-oh-terminal-tower.png",
+      "heightM": 60,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-oh-west-side-market",
+      "source": "landmarks/OH/landmark-city-oh-west-side-market.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

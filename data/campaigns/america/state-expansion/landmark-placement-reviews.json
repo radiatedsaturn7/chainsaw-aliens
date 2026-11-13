@@ -420,5 +420,125 @@
     "allowOppositeSide": true,
     "facingApproachBeforeM": 105,
     "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-oh-rock-and-roll-hall-of-fame": {
+    "reason": "Cleveland safe approach shortlist; GPS zero/large offsets are references only. Compact game-scale silhouettes, not surveyed dimensions. Preserve road geometry and daytime lighting. Initial actual desktop/handheld showed off-axis or occluded framing; broaden safe shortlist to \u00b1240m.",
+    "distanceOffsets": [
+      -240,
+      -210,
+      -180,
+      -150,
+      -120,
+      -90,
+      -60,
+      -30,
+      0,
+      30,
+      60,
+      90,
+      120,
+      150,
+      180,
+      210,
+      240
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 120,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 150,
+    "approachOffsetsM": [
+      85,
+      105,
+      150,
+      195,
+      245
+    ],
+    "occlusionWidthFactor": 0.75
+  },
+  "landmark-city-oh-playhouse-square": {
+    "reason": "Cleveland safe approach shortlist; GPS zero/large offsets are references only. Compact game-scale silhouettes, not surveyed dimensions. Preserve road geometry and daytime lighting.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 85,
+    "approachOffsetsM": [
+      85,
+      105,
+      150,
+      195,
+      245
+    ],
+    "occlusionWidthFactor": 0.75
+  },
+  "landmark-city-oh-terminal-tower": {
+    "reason": "Cleveland safe approach shortlist; GPS zero/large offsets are references only. Compact game-scale silhouettes, not surveyed dimensions. Preserve road geometry and daytime lighting. Initial actual desktop/handheld showed off-axis or occluded framing; broaden safe shortlist to \u00b1240m.",
+    "distanceOffsets": [
+      -240,
+      -210,
+      -180,
+      -150,
+      -120,
+      -90,
+      -60,
+      -30,
+      0,
+      30,
+      60,
+      90,
+      120,
+      150,
+      180,
+      210,
+      240
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 120,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 150,
+    "approachOffsetsM": [
+      85,
+      105,
+      150,
+      195,
+      245
+    ],
+    "occlusionWidthFactor": 0.75
+  },
+  "landmark-city-oh-west-side-market": {
+    "reason": "Cleveland safe approach shortlist; GPS zero/large offsets are references only. Compact game-scale silhouettes, not surveyed dimensions. Preserve road geometry and daytime lighting.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      85,
+      105,
+      150,
+      195,
+      245
+    ],
+    "occlusionWidthFactor": 0.75
   }
 }

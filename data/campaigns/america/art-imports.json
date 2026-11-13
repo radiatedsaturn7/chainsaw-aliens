@@ -1678,5 +1678,33 @@
     "documentSha256": "1cf6f1ac5451cb7446b92e9d1c379551ec900cd512805df6934807679f4ae5e2",
     "width": 341,
     "height": 512
+  },
+  "landmark-city-oh-rock-and-roll-hall-of-fame": {
+    "source": "assets/campaign-art/landmarks/OH/landmark-city-oh-rock-and-roll-hall-of-fame.png",
+    "sourceSha256": "8d31ac6cb4c9ef587f36393f0c8c1325c669bfdf3c0a7e6d435b0f4b0c9266f3",
+    "documentSha256": "0b80bb71e87688f37366d51c3f85e16e0fc533b94774c95700bb773b199e3591",
+    "width": 512,
+    "height": 228
+  },
+  "landmark-city-oh-playhouse-square": {
+    "source": "assets/campaign-art/landmarks/OH/landmark-city-oh-playhouse-square.png",
+    "sourceSha256": "b8dc353dffda0d219b5a4f81dc6cd2be25fd160508360f4df9d1cea157cf3739",
+    "documentSha256": "4093335100f10df4044304a2447997ef4d231b658eb21ad4fb5dda3c704d0b98",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-oh-terminal-tower": {
+    "source": "assets/campaign-art/landmarks/OH/landmark-city-oh-terminal-tower.png",
+    "sourceSha256": "b15122de08722572decda2334776316078b98bc6fff6c622a01fabaae9150105",
+    "documentSha256": "db59b0025595ae07edbb766243c4ff9e202c76701cf12f20d6a20173a85969f2",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-oh-west-side-market": {
+    "source": "assets/campaign-art/landmarks/OH/landmark-city-oh-west-side-market.png",
+    "sourceSha256": "6af3bc518ea8f67e06375570db522bb7057a14b279c9bedf7489b26a7b64042e",
+    "documentSha256": "2bf861817a5fc4f8b1fe2ce4e1166e0b9913a1903c576e6545c44d88e1167a53",
+    "width": 512,
+    "height": 213
   }
 }
