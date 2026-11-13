@@ -1986,5 +1986,33 @@
     "documentSha256": "f6c3d773dc1a0262ce0e3aa7b205c3b2d75ad40872c8f4012ba5ff6dbd60cdcd",
     "width": 512,
     "height": 341
+  },
+  "landmark-city-ga-fox-theatre": {
+    "source": "assets/campaign-art/landmarks/GA/landmark-city-ga-fox-theatre.png",
+    "sourceSha256": "e44f25b46f5aa0cf7a0cb28167303e54471ad2a9920b3e57e59e35a9cfecf6c5",
+    "documentSha256": "1463c50360984154dbf2c01664ad295e328e10f598b2ae59930cdaf80618a141",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ga-centennial-olympic-park": {
+    "source": "assets/campaign-art/landmarks/GA/landmark-city-ga-centennial-olympic-park.png",
+    "sourceSha256": "23157c4677b3ed2e2d7eafd79ae4362bbdf44b8352ec4f9ed2c544a591ef391a",
+    "documentSha256": "6fd353530465408886814917257f275766954f18e823d98fd392f9aa34fe7f0b",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-ga-georgia-state-capitol": {
+    "source": "assets/campaign-art/landmarks/GA/landmark-city-ga-georgia-state-capitol.png",
+    "sourceSha256": "68baa72e0bd4a3325e536cfec9f12c8cb3d9c5ff1b7163048c2ebfc71013f8a9",
+    "documentSha256": "43c012580142113cca6f9e013876ba3f6de158150b403cd790ffbe36097dc8ce",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ga-ebenezer-baptist-church": {
+    "source": "assets/campaign-art/landmarks/GA/landmark-city-ga-ebenezer-baptist-church.png",
+    "sourceSha256": "8baa61c685f228c739e2ab6128c431930d250df99544ba47f013627b9983b7b3",
+    "documentSha256": "675318bb3abc6ea7c372ee57d35376cd328739c1f2711a0d4a65e5fa856ed2df",
+    "width": 512,
+    "height": 468
   }
 }

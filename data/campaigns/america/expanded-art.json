@@ -2568,6 +2568,34 @@
       "heightM": 42,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ga-fox-theatre",
+      "source": "landmarks/GA/landmark-city-ga-fox-theatre.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ga-centennial-olympic-park",
+      "source": "landmarks/GA/landmark-city-ga-centennial-olympic-park.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ga-georgia-state-capitol",
+      "source": "landmarks/GA/landmark-city-ga-georgia-state-capitol.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ga-ebenezer-baptist-church",
+      "source": "landmarks/GA/landmark-city-ga-ebenezer-baptist-church.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

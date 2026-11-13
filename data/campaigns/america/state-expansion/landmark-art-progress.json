@@ -1919,35 +1919,464 @@
     },
     "landmark-city-ga-fox-theatre": {
       "raceRef": "Atlanta, GA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 225.408811686597,
+        "worldZ": -1850.6086008187528,
+        "routeDistanceM": 1773,
+        "offsetFromRoadM": 43,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.2818597250442916,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 13.778512341359408,
+            "angularWidthDegrees": 14.418609438763626,
+            "rangeM": 178.04740131152087,
+            "occluderIds": [],
+            "score": 0.44885950634562366
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 12.396700753729053,
+            "angularWidthDegrees": 13.00937555278886,
+            "rangeM": 197.5293171340646,
+            "occluderIds": [],
+            "score": 0.5041319698508379
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 11.263518104792704,
+            "angularWidthDegrees": 11.845081037157362,
+            "rangeM": 217.1054700856568,
+            "occluderIds": [
+              "city-ga-prop-101"
+            ],
+            "score": 0.06593511309699503
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.627628244873534,
+            "angularWidthDegrees": 10.436741758159377,
+            "rangeM": 246.5990247853501,
+            "occluderIds": [
+              "city-ga-prop-97",
+              "city-ga-prop-100",
+              "city-ga-prop-101"
+            ],
+            "score": 0.07858738442460703
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 7.145650268330817,
+            "angularWidthDegrees": 9.318967790946312,
+            "rangeM": 276.33301674210253,
+            "occluderIds": [
+              "city-ga-prop-95",
+              "city-ga-prop-100",
+              "city-ga-prop-101"
+            ],
+            "score": 0.08570087871201208
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 6.445674210456515,
+            "angularWidthDegrees": 8.415539483257474,
+            "rangeM": 306.12285542862185,
+            "occluderIds": [
+              "city-ga-prop-95",
+              "city-ga-prop-100",
+              "city-ga-prop-101"
+            ],
+            "score": 0.08906076378980873
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 5.711643994915145,
+            "angularWidthDegrees": 7.345340722563287,
+            "rangeM": 350.8747672984557,
+            "occluderIds": [
+              "city-ga-prop-93",
+              "city-ga-prop-95",
+              "city-ga-prop-100",
+              "city-ga-prop-101"
+            ],
+            "score": 0.0925841088244073
+          }
+        ],
+        "sourceDistanceShiftM": 90
+      },
+      "signature": "05d79d748cfbd85d1eb1c0d8369bea997e694e4eb9061e81d744784726515391",
+      "sourceSha256": "e44f25b46f5aa0cf7a0cb28167303e54471ad2a9920b3e57e59e35a9cfecf6c5",
+      "roadSha256": "7916f7d1514c2356130abaf43eeec0e34b7198a25a8b1cf23016e060ff685105",
+      "placementDetails": {
+        "x": 422.3911459521755,
+        "z": -1761.5215043493824,
+        "yaw": 1.3877107999992246,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 1863.0892511149323,
+        "trackLateral": -140,
+        "minimumRoadClearanceM": 104.22672687632968,
+        "checkedSegments": 5030,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/GA/fox-theatre-desktop.png",
+        "docs/art/landmark-previews/GA/fox-theatre-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 65,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Theater dome, minaret-like tower and broken facade clearly recognizable outside bend in native desktop and actual handheld."
+      }
     },
     "landmark-city-ga-centennial-olympic-park": {
       "raceRef": "Atlanta, GA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -504.1328812268634,
+        "worldZ": -460.8146515036883,
+        "routeDistanceM": 3596,
+        "offsetFromRoadM": 128,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 5.312798546724715,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 3.736147175922325,
+            "angularWidthDegrees": 9.997641186390588,
+            "rangeM": 83.75838537971767,
+            "occluderIds": [],
+            "score": 0.850554112963107
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 3.00343419724653,
+            "angularWidthDegrees": 8.080315835292694,
+            "rangeM": 103.7243577096934,
+            "occluderIds": [],
+            "score": 0.8798626321101388
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.7486565098124645,
+            "angularWidthDegrees": 6.778730691594001,
+            "rangeM": 123.70132433874548,
+            "occluderIds": [],
+            "score": 0.9300537396075015
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.9947855024077706,
+            "angularWidthDegrees": 5.458114781116302,
+            "rangeM": 153.6945482046858,
+            "occluderIds": [],
+            "score": 0.8734881071545033
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 0.42420324236901397,
+            "angularWidthDegrees": 4.567854840345514,
+            "rangeM": 183.69076499296224,
+            "occluderIds": [],
+            "score": 0.7483911478312819
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 0.18990830675086057,
+            "angularWidthDegrees": 3.927130391586121,
+            "rangeM": 213.6900693708572,
+            "occluderIds": [],
+            "score": 0.6495497673773137
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 0.0385641254704489,
+            "angularWidthDegrees": 3.2443989343884914,
+            "rangeM": 258.6898651831783,
+            "occluderIds": [],
+            "score": 0.5398990396808688
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "50e1af4f31dc0f66256958c2d81298d7081f6db1d3c2b50d486f1b46eaed9d21",
+      "sourceSha256": "23157c4677b3ed2e2d7eafd79ae4362bbdf44b8352ec4f9ed2c544a591ef391a",
+      "roadSha256": "7916f7d1514c2356130abaf43eeec0e34b7198a25a8b1cf23016e060ff685105",
+      "placementDetails": {
+        "x": -378.2174970403225,
+        "z": -288.74906631163446,
+        "yaw": -0.012782945827875345,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 3745.6834408624663,
+        "trackLateral": -34.999357901554426,
+        "minimumRoadClearanceM": 17.492702019538257,
+        "checkedSegments": 5030,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Native desktop torch visible, but its identifying crown is clipped or hidden behind handheld pause overlay across25–275m windows; placement visual QA remains pending."
+      ],
+      "visualEvidence": [
+        "docs/art/landmark-previews/GA/centennial-olympic-park-desktop.png",
+        "docs/art/landmark-previews/GA/centennial-olympic-park-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 115,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Native desktop torch visible, but its identifying crown is clipped or hidden behind handheld pause overlay across25–275m windows; placement visual QA remains pending."
+      }
     },
     "landmark-city-ga-georgia-state-capitol": {
       "raceRef": "Atlanta, GA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -16.471349336052636,
+        "worldZ": 776.3939140119162,
+        "routeDistanceM": 5475,
+        "offsetFromRoadM": 64,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.754280836408709,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 50.99333258812476,
+            "angularWidthDegrees": 34.61674762742667,
+            "rangeM": 121.94118087282018,
+            "occluderIds": [
+              "city-ga-prop-313"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 39.52330338785633,
+            "angularWidthDegrees": 31.169329305874168,
+            "rangeM": 136.24148133651985,
+            "occluderIds": [
+              "city-ga-prop-311",
+              "city-ga-prop-313"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 34.69334599213196,
+            "angularWidthDegrees": 28.035413589184923,
+            "rangeM": 152.20926860702892,
+            "occluderIds": [
+              "city-ga-prop-311"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 25.019649802221682,
+            "angularWidthDegrees": 24.121986520921414,
+            "rangeM": 177.84480297526505,
+            "occluderIds": [
+              "city-ga-prop-311"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 17.9244497382624,
+            "angularWidthDegrees": 20.916784564975984,
+            "rangeM": 205.86385962908525,
+            "occluderIds": [
+              "city-ga-prop-309",
+              "city-ga-prop-311"
+            ],
+            "score": 0.033962641256340485
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 15.668842902916543,
+            "angularWidthDegrees": 18.40227956343576,
+            "rangeM": 234.58951681424384,
+            "occluderIds": [
+              "city-ga-prop-309"
+            ],
+            "score": 0.04478955406600059
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 5.536783972840802,
+            "angularWidthDegrees": 15.53409075767194,
+            "rangeM": 278.5984059261657,
+            "occluderIds": [],
+            "score": 0.7785286410863679
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "df589ee659ff69424bfa0f8f58c24653063d82bb0b79dd22bf38a2c339b23504",
+      "sourceSha256": "68baa72e0bd4a3325e536cfec9f12c8cb3d9c5ff1b7163048c2ebfc71013f8a9",
+      "roadSha256": "7916f7d1514c2356130abaf43eeec0e34b7198a25a8b1cf23016e060ff685105",
+      "placementDetails": {
+        "x": 67.26836883715708,
+        "z": 551.384306855378,
+        "yaw": 3.1268098091635292,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 5684.401236742188,
+        "trackLateral": -99.99999999999997,
+        "minimumRoadClearanceM": 47.220901935349005,
+        "checkedSegments": 5030,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/GA/georgia-state-capitol-desktop.png",
+        "docs/art/landmark-previews/GA/georgia-state-capitol-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 195,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Dome and central columned portico readable to left of road in both modes, clear of handheld minimap; existing building partly overlaps right wing."
+      }
     },
     "landmark-city-ga-ebenezer-baptist-church": {
       "raceRef": "Atlanta, GA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1275.0916636477004,
+        "worldZ": 96.05031030546316,
+        "routeDistanceM": 7154,
+        "offsetFromRoadM": 16,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 6.053230023858957,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 2.95273490272156,
+            "angularWidthDegrees": 10.568730754229874,
+            "rangeM": 130.11061354818048,
+            "occluderIds": [],
+            "score": 0.8818906038911376
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 2.559437746702901,
+            "angularWidthDegrees": 9.168462341500273,
+            "rangeM": 150.08759689618145,
+            "occluderIds": [],
+            "score": 0.897622490131884
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 2.25855005090253,
+            "angularWidthDegrees": 8.095030000429078,
+            "rangeM": 170.06999066930464,
+            "occluderIds": [],
+            "score": 0.9096579979638988
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 1.9199382584450586,
+            "angularWidthDegrees": 6.885055283719409,
+            "rangeM": 200.0501792114606,
+            "occluderIds": [],
+            "score": 0.9232024696621977
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 1.6695962721003492,
+            "angularWidthDegrees": 5.989337284375169,
+            "rangeM": 230.03553351344985,
+            "occluderIds": [],
+            "score": 0.9315577127135654
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 1.476995424178451,
+            "angularWidthDegrees": 5.299632468138819,
+            "rangeM": 260.0242664735304,
+            "occluderIds": [],
+            "score": 0.831088525321346
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 1.2591099061573428,
+            "angularWidthDegrees": 4.518850523387209,
+            "rangeM": 305.01152087997787,
+            "occluderIds": [],
+            "score": 0.7152102241749272
+          }
+        ],
+        "sourceDistanceShiftM": -30
+      },
+      "signature": "27cba93d7a2900f93405c0f60ab2b5cb93c211d8425fe882a5b35fd94d28d717",
+      "sourceSha256": "8baa61c685f228c739e2ab6128c431930d250df99544ba47f013627b9983b7b3",
+      "roadSha256": "7916f7d1514c2356130abaf43eeec0e34b7198a25a8b1cf23016e060ff685105",
+      "placementDetails": {
+        "x": 1329.0551534164554,
+        "z": 63.93631288125279,
+        "yaw": 1.530533460972505,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 7123.042053462468,
+        "trackLateral": -69.95326620502867,
+        "minimumRoadClearanceM": 49.99174809172763,
+        "checkedSegments": 5030,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Native desktop church facade readable, but handheld pause overlay masks identifying upper facade at close windows and distant windows become too small;25–275m survey did not establish clean dual-mode visibility."
+      ],
+      "visualEvidence": [
+        "docs/art/landmark-previews/GA/ebenezer-baptist-church-desktop.png",
+        "docs/art/landmark-previews/GA/ebenezer-baptist-church-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 65,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Native desktop church facade readable, but handheld pause overlay masks identifying upper facade at close windows and distant windows become too small;25–275m survey did not establish clean dual-mode visibility."
+      }
     },
     "landmark-city-hi-hawaii-state-capitol": {
       "raceRef": "Honolulu, HI — Landmark Run",
