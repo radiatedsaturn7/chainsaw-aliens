@@ -6548,35 +6548,472 @@
     },
     "landmark-city-va-virginia-museum-of-fine-arts": {
       "raceRef": "Richmond, VA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -3429.321758249492,
+        "worldZ": -1563.236035462823,
+        "routeDistanceM": 906,
+        "offsetFromRoadM": 232,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 3.8617600929521645,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 11.447028190719838,
+            "angularWidthDegrees": 22.189534304249516,
+            "rangeM": 152.6870178838799,
+            "occluderIds": [],
+            "score": 0.5421188723712065
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 11.024954799910951,
+            "angularWidthDegrees": 19.719683061880062,
+            "rangeM": 172.2699925262645,
+            "occluderIds": [],
+            "score": 0.5590018080035619
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 9.883157172073867,
+            "angularWidthDegrees": 17.732791451350362,
+            "rangeM": 191.93898960079807,
+            "occluderIds": [],
+            "score": 0.6046737131170453
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.95391332658485,
+            "angularWidthDegrees": 16.10257370413666,
+            "rangeM": 211.6700300992099,
+            "occluderIds": [],
+            "score": 0.641843466936606
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 7.8453880921516514,
+            "angularWidthDegrees": 14.143814733382493,
+            "rangeM": 241.34962495699165,
+            "occluderIds": [],
+            "score": 0.686184476313934
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 6.7321350457708995,
+            "angularWidthDegrees": 12.16301375696663,
+            "rangeM": 281.0282838947456,
+            "occluderIds": [],
+            "score": 0.7307145981691641
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 5.894582216926668,
+            "angularWidthDegrees": 10.664821245237011,
+            "rangeM": 320.78677227680004,
+            "occluderIds": [
+              "city-va-prop-49"
+            ],
+            "score": 0.09170600535875198
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 5.100593191271909,
+            "angularWidthDegrees": 9.239060475246605,
+            "rangeM": 370.55799449070213,
+            "occluderIds": [
+              "city-va-prop-43",
+              "city-va-prop-45",
+              "city-va-prop-47",
+              "city-va-prop-49",
+              "city-va-prop-51",
+              "city-va-prop-53"
+            ],
+            "score": 0.09551715268189483
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "c4ff776f28d63367733303465273d33ca0931d9ceb282498d5be58caf3898099",
+      "sourceSha256": "6758478fec5c586a3a1c0430a71505822594761b4e71f5ccfb2e23cb462152d1",
+      "roadSha256": "46250602608ba399b967d48920281884b19c2bdf21656b6d9a5bd5bfd614472f",
+      "placementDetails": {
+        "x": -3333.2279028357775,
+        "z": -1229.8448732255047,
+        "yaw": 0.9919326293646921,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1026.3728249778503,
+        "trackLateral": -135.00000000000023,
+        "minimumRoadClearanceM": 93.5078513248674,
+        "checkedSegments": 4800,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/VA/virginia-museum-of-fine-arts-desktop.png",
+        "docs/art/landmark-previews/VA/virginia-museum-of-fine-arts-mobile.png"
+      ]
     },
     "landmark-city-va-virginia-state-capitol": {
       "raceRef": "Richmond, VA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 215.33110506634307,
+        "worldZ": 353.8783428433517,
+        "routeDistanceM": 6254,
+        "offsetFromRoadM": 154,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.3568281212213764,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 12.2422551662329,
+            "angularWidthDegrees": 17.702891387213555,
+            "rangeM": 154.11514154229624,
+            "occluderIds": [],
+            "score": 0.5103097933506839
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 11.347106617433768,
+            "angularWidthDegrees": 15.735743251367413,
+            "rangeM": 173.67396702504695,
+            "occluderIds": [],
+            "score": 0.5461157353026493
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 10.18078356089173,
+            "angularWidthDegrees": 14.153498611334102,
+            "rangeM": 193.3230904498511,
+            "occluderIds": [
+              "city-va-prop-342"
+            ],
+            "score": 0.07113223890771969
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 9.229987419386019,
+            "angularWidthDegrees": 12.855249526363153,
+            "rangeM": 213.03752788932434,
+            "occluderIds": [
+              "city-va-prop-342"
+            ],
+            "score": 0.07569606038694711
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.269023076922148,
+            "angularWidthDegrees": 11.295100380746149,
+            "rangeM": 242.69681853334367,
+            "occluderIds": [
+              "city-va-prop-341",
+              "city-va-prop-342"
+            ],
+            "score": 0.08030868923077368
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 7.543912980395154,
+            "angularWidthDegrees": 9.718450357215957,
+            "rangeM": 282.30843583135226,
+            "occluderIds": [
+              "city-va-prop-336",
+              "city-va-prop-341",
+              "city-va-prop-342"
+            ],
+            "score": 0.08378921769410326
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 6.60945921274694,
+            "angularWidthDegrees": 8.52508892335504,
+            "rangeM": 322.005054325221,
+            "occluderIds": [
+              "city-va-prop-334",
+              "city-va-prop-336",
+              "city-va-prop-338",
+              "city-va-prop-341",
+              "city-va-prop-342"
+            ],
+            "score": 0.08827459577881468
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 5.999626964648985,
+            "angularWidthDegrees": 7.388399072737363,
+            "rangeM": 371.7158941843214,
+            "occluderIds": [
+              "city-va-prop-330",
+              "city-va-prop-332",
+              "city-va-prop-334",
+              "city-va-prop-336",
+              "city-va-prop-341",
+              "city-va-prop-342"
+            ],
+            "score": 0.09120179056968487
+          }
+        ],
+        "sourceDistanceShiftM": -120
+      },
+      "signature": "8e79ce513ccfa883b49c7ac7296e477ef221fbb7500be5a948e9e0bc257ba80e",
+      "sourceSha256": "e52e0514630e546fc0e5f8fdd230176a9ea60aa69469f3cb8ebed51371398060",
+      "roadSha256": "46250602608ba399b967d48920281884b19c2bdf21656b6d9a5bd5bfd614472f",
+      "placementDetails": {
+        "x": 293.68237191484917,
+        "z": 50.756597042751324,
+        "yaw": 2.3309144926874175,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6133.636662513412,
+        "trackLateral": -134.99999999999997,
+        "minimumRoadClearanceM": 100.65004332758886,
+        "checkedSegments": 4800,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/VA/virginia-state-capitol-desktop.png",
+        "docs/art/landmark-previews/VA/virginia-state-capitol-mobile.png"
+      ]
     },
     "landmark-city-va-main-street-station": {
       "raceRef": "Richmond, VA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 642.6782230496917,
+        "worldZ": 771.9940835377157,
+        "routeDistanceM": 7181,
+        "offsetFromRoadM": 42,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.300346421520129,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 7.039324414723874,
+            "angularWidthDegrees": 17.61490287148167,
+            "rangeM": 164.7392808795797,
+            "occluderIds": [],
+            "score": 0.718427023411045
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 6.278581784697308,
+            "angularWidthDegrees": 15.74451102431676,
+            "rangeM": 184.60480452483338,
+            "occluderIds": [],
+            "score": 0.7488567286121077
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 5.6657455130429515,
+            "angularWidthDegrees": 14.229539772213572,
+            "rangeM": 204.49654655233616,
+            "occluderIds": [],
+            "score": 0.7733701794782819
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 5.161609933260272,
+            "angularWidthDegrees": 12.978281880891142,
+            "rangeM": 224.40753498771193,
+            "occluderIds": [],
+            "score": 0.7935356026695891
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 40.29614767924267,
+            "angularWidthDegrees": 11.481678568869714,
+            "rangeM": 253.89549103734618,
+            "occluderIds": [
+              "city-va-prop-400"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 1.6308298359382871,
+            "angularWidthDegrees": 11.017508414866066,
+            "rangeM": 264.66263717852377,
+            "occluderIds": [
+              "city-va-prop-396",
+              "city-va-prop-398",
+              "city-va-prop-402"
+            ],
+            "score": 0.11217201678749622
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 2.5672766384095724,
+            "angularWidthDegrees": 9.579667318173948,
+            "rangeM": 304.6164377611744,
+            "occluderIds": [
+              "city-va-prop-396",
+              "city-va-prop-398",
+              "city-va-prop-401",
+              "city-va-prop-402"
+            ],
+            "score": 0.10767707213563406
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 2.227541994588759,
+            "angularWidthDegrees": 8.234979536366266,
+            "rangeM": 354.573342644162,
+            "occluderIds": [
+              "city-va-prop-396",
+              "city-va-prop-398",
+              "city-va-prop-401",
+              "city-va-prop-402"
+            ],
+            "score": 0.10930779842597396
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "29a1a41d5c6246e2de1a5d5d76b0f1a14b80b9fcdc6b2cbaefd23fac7f35f59e",
+      "sourceSha256": "57d760598a95cd3cb13d740876051f9e259d62931c26e0fe1c0b4b2cd1bf4246",
+      "roadSha256": "46250602608ba399b967d48920281884b19c2bdf21656b6d9a5bd5bfd614472f",
+      "placementDetails": {
+        "x": 604.0047115537853,
+        "z": 926.8997391968912,
+        "yaw": -0.5563801939262504,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 7210.583949878443,
+        "trackLateral": 134.99986372128933,
+        "minimumRoadClearanceM": 98.81682084779641,
+        "checkedSegments": 4800,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/VA/main-street-station-desktop.png",
+        "docs/art/landmark-previews/VA/main-street-station-mobile.png"
+      ]
     },
     "landmark-city-va-poe-museum": {
       "raceRef": "Richmond, VA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 875.0785259779652,
+        "worldZ": 1094.393099166475,
+        "routeDistanceM": 7667,
+        "offsetFromRoadM": 41,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 6.646072450448493,
+        "views": [
+          {
+            "beforeM": 35,
+            "angleDegrees": 0.5654551233747485,
+            "angularWidthDegrees": 15.125747594867983,
+            "rangeM": 56.54429469254886,
+            "occluderIds": [],
+            "score": 0.9773817950650101
+          },
+          {
+            "beforeM": 45,
+            "angleDegrees": 0.48048167472063297,
+            "angularWidthDegrees": 12.873528757172616,
+            "rangeM": 66.54388406921208,
+            "occluderIds": [],
+            "score": 0.9807807330111746
+          },
+          {
+            "beforeM": 55,
+            "angleDegrees": 0.4177100768516057,
+            "angularWidthDegrees": 11.203214131806249,
+            "rangeM": 76.54358156676356,
+            "occluderIds": [],
+            "score": 0.9832915969259358
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 0.3694444896748642,
+            "angularWidthDegrees": 9.915593200669155,
+            "rangeM": 86.54334970655484,
+            "occluderIds": [],
+            "score": 0.9852222204130054
+          },
+          {
+            "beforeM": 75,
+            "angleDegrees": 0.33117745453234043,
+            "angularWidthDegrees": 8.892903741475012,
+            "rangeM": 96.54316653760024,
+            "occluderIds": [],
+            "score": 0.9867529018187063
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.25555501164492345,
+            "angularWidthDegrees": 8.061131382066439,
+            "rangeM": 106.54301834984211,
+            "occluderIds": [],
+            "score": 0.9897777995342031
+          },
+          {
+            "beforeM": 95,
+            "angleDegrees": 2.778364907988604,
+            "angularWidthDegrees": 7.371463842963627,
+            "rangeM": 116.542637531728,
+            "occluderIds": [],
+            "score": 0.8888654036804559
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "84b404c5409b8a249a59a42f1c2297520a4d9a7f54009d9f22b83aaa9d31425d",
+      "sourceSha256": "2eec19caecba5e54ba60e568bcdb14f086269a540d00ade74f130ded0dff8a7f",
+      "roadSha256": "46250602608ba399b967d48920281884b19c2bdf21656b6d9a5bd5bfd614472f",
+      "placementDetails": {
+        "x": 995.3166807462576,
+        "z": 1210.7579097101827,
+        "yaw": 0.9111141052923083,
+        "facingApproachBeforeM": 55,
+        "trackDistance": 7786.62246777348,
+        "trackLateral": -24.99777906658134,
+        "minimumRoadClearanceM": 7.2733546920245775,
+        "checkedSegments": 4800,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/VA/poe-museum-desktop.png",
+        "docs/art/landmark-previews/VA/poe-museum-mobile.png"
+      ]
     },
     "landmark-city-vt-waterman-building": {
       "raceRef": "Burlington, VT — Landmark Run",

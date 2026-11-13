@@ -2484,6 +2484,34 @@
       "heightM": 28,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-va-virginia-museum-of-fine-arts",
+      "source": "landmarks/VA/landmark-city-va-virginia-museum-of-fine-arts.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-va-virginia-state-capitol",
+      "source": "landmarks/VA/landmark-city-va-virginia-state-capitol.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-va-main-street-station",
+      "source": "landmarks/VA/landmark-city-va-main-street-station.png",
+      "heightM": 34,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-va-poe-museum",
+      "source": "landmarks/VA/landmark-city-va-poe-museum.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

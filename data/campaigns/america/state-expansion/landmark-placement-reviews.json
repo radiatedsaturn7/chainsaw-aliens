@@ -1448,5 +1448,136 @@
       265
     ],
     "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-va-virginia-museum-of-fine-arts": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-va-virginia-state-capitol": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-va-main-street-station": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-va-poe-museum": {
+    "reason": "Smaller Old Stone House should read at close range. Rank native approach on a safe adjacent verge, not far setbacks.",
+    "distanceOffsets": [
+      0,
+      15,
+      -15,
+      30,
+      -30,
+      60,
+      -60,
+      90,
+      -90,
+      120,
+      -120,
+      180,
+      -180
+    ],
+    "minimumSetbackM": 25,
+    "maximumSetbackM": 50,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 55,
+    "approachOffsetsM": [
+      35,
+      45,
+      55,
+      65,
+      75,
+      85,
+      95
+    ],
+    "occlusionWidthFactor": 0.85
   }
 }

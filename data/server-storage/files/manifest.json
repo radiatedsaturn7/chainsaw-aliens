@@ -568,7 +568,11 @@
       "landmark-city-mn-minneapolis-institute-of-art": "art/landmark-city-mn-minneapolis-institute-of-art/document.json",
       "landmark-city-mn-walker-art-center": "art/landmark-city-mn-walker-art-center/document.json",
       "landmark-city-mn-basilica-of-saint-mary": "art/landmark-city-mn-basilica-of-saint-mary/document.json",
-      "landmark-city-mn-guthrie-theater": "art/landmark-city-mn-guthrie-theater/document.json"
+      "landmark-city-mn-guthrie-theater": "art/landmark-city-mn-guthrie-theater/document.json",
+      "landmark-city-va-virginia-museum-of-fine-arts": "art/landmark-city-va-virginia-museum-of-fine-arts/document.json",
+      "landmark-city-va-virginia-state-capitol": "art/landmark-city-va-virginia-state-capitol/document.json",
+      "landmark-city-va-main-street-station": "art/landmark-city-va-main-street-station/document.json",
+      "landmark-city-va-poe-museum": "art/landmark-city-va-poe-museum/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -872,7 +876,11 @@
       "landmark-city-mn-minneapolis-institute-of-art": "doodads/landmark-city-mn-minneapolis-institute-of-art/document.json",
       "landmark-city-mn-walker-art-center": "doodads/landmark-city-mn-walker-art-center/document.json",
       "landmark-city-mn-basilica-of-saint-mary": "doodads/landmark-city-mn-basilica-of-saint-mary/document.json",
-      "landmark-city-mn-guthrie-theater": "doodads/landmark-city-mn-guthrie-theater/document.json"
+      "landmark-city-mn-guthrie-theater": "doodads/landmark-city-mn-guthrie-theater/document.json",
+      "landmark-city-va-virginia-museum-of-fine-arts": "doodads/landmark-city-va-virginia-museum-of-fine-arts/document.json",
+      "landmark-city-va-virginia-state-capitol": "doodads/landmark-city-va-virginia-state-capitol/document.json",
+      "landmark-city-va-main-street-station": "doodads/landmark-city-va-main-street-station/document.json",
+      "landmark-city-va-poe-museum": "doodads/landmark-city-va-poe-museum/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

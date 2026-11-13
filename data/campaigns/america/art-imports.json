@@ -1902,5 +1902,33 @@
     "documentSha256": "95b06984157542d645610a112b344a9459e30e7c6e8c6a57054f725b48e9d017",
     "width": 512,
     "height": 205
+  },
+  "landmark-city-va-virginia-museum-of-fine-arts": {
+    "source": "assets/campaign-art/landmarks/VA/landmark-city-va-virginia-museum-of-fine-arts.png",
+    "sourceSha256": "6758478fec5c586a3a1c0430a71505822594761b4e71f5ccfb2e23cb462152d1",
+    "documentSha256": "e10686752603bfa0c2ebe4725feddc5eb0ca5fdf74fa179f3954947379df8107",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-va-virginia-state-capitol": {
+    "source": "assets/campaign-art/landmarks/VA/landmark-city-va-virginia-state-capitol.png",
+    "sourceSha256": "e52e0514630e546fc0e5f8fdd230176a9ea60aa69469f3cb8ebed51371398060",
+    "documentSha256": "f85cf84f51119b2136a49c91661782cb732b8e17821ebc8caff4d265ebb4b4a9",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-va-main-street-station": {
+    "source": "assets/campaign-art/landmarks/VA/landmark-city-va-main-street-station.png",
+    "sourceSha256": "57d760598a95cd3cb13d740876051f9e259d62931c26e0fe1c0b4b2cd1bf4246",
+    "documentSha256": "fcc66b30ea5bebf5141b9a3daf280fbacf587efede9374cb613ad5901b4869d9",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-va-poe-museum": {
+    "source": "assets/campaign-art/landmarks/VA/landmark-city-va-poe-museum.png",
+    "sourceSha256": "2eec19caecba5e54ba60e568bcdb14f086269a540d00ade74f130ded0dff8a7f",
+    "documentSha256": "ad9ae5a4d2dc0b365d3405a5fc0c484730d3f99365109da23384141d881b17d4",
+    "width": 512,
+    "height": 341
   }
 }
