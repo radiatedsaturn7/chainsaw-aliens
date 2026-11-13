@@ -1,0 +1,80 @@
+{
+  "status": "Implemented draft; exact-tree CI and visual QA pending",
+  "duplicateCheck": "Read all50 current assets/car-catalog research packets and base data/vehicle-catalog/research.json on origin/staging; no Cadillac/CTS or Dodge Magnum match. Current62 include pending RX8/205. Recheck live runtime roster before import.",
+  "simulationEstimates": [
+    "Full torque curve between/away from published anchors",
+    "Idle speed, shift timings, launch and clutch or converter parameters",
+    "CG height, inertia, tire grip/pressure, dynamic brake bias, damping and springs unless specified",
+    "Differential details and control behavior unless verified; do not claim electronic stability/ABS/cylinder-deactivation fidelity"
+  ],
+  "artConstraints": "Original fictional logo-free art, eight exterior views, separate existing steering wheel, gauges visible through upper wheel opening; fixed rear camera. Do not copy OEM artwork.",
+  "candidateId": "hawthorn-v-2005",
+  "fictionalName": "Hawthorn V 2005",
+  "reference": "US2005 Cadillac CTS-V sedan 5.7LS6 conventional6MT RWD LHD standard wheels, no optional sunroof; not2006LS2 or2009supercharged",
+  "sources": [
+    {
+      "url": "https://xr793.com/wp-content/uploads/2021/11/2005-Cadillac-CTS-V-Spec-Sheet.pdf",
+      "type": "Original GM2005 two-page specsheet on independent archive",
+      "inspection": "Downloaded; page2 rendered and personally visually inspected. Original datedAugust21 2004. Power/torque, tire/wheel and17gal approximate tank verified.",
+      "fields": [
+        "Downloaded; page2 rendered and personally visually inspected. Original datedAugust21 2004. Power/torque, tire/wheel and17gal approximate tank verified."
+      ]
+    },
+    {
+      "url": "https://www.cadillacvnet.com/tech-center/cts-v/2005/2005_cadillac_cts-v_specifications.html",
+      "type": "Archived GM Media technical table, independent host",
+      "inspection": "Full table read and HTML saved; malformed wheel/brake entries and approximate unit conversions identified, not blindly imported.",
+      "fields": [
+        "Full table read and HTML saved; malformed wheel/brake entries and approximate unit conversions identified, not blindly imported."
+      ]
+    }
+  ],
+  "facts": {
+    "displacementCc": 5665,
+    "engine": "Naturally aspirated gasoline OHV V8",
+    "compression": 10.5,
+    "powerHp": 400,
+    "powerRpm": 6000,
+    "torqueLbFt": 395,
+    "torqueNmConverted": 535.5480895784999,
+    "torqueRpm": 4800,
+    "redlineRpm": 6500,
+    "drive": "RWD",
+    "gears": [
+      2.97,
+      2.07,
+      1.43,
+      1,
+      0.84,
+      0.56
+    ],
+    "reverse": 3.28,
+    "finalDrive": 3.73,
+    "massKg": 1746,
+    "massLbPublished": 3850,
+    "frontWeightFraction": 0.54,
+    "lengthM": 4.864,
+    "widthM": 1.793,
+    "heightM": 1.455,
+    "wheelbaseM": 2.88,
+    "trackFrontM": 1.552,
+    "trackRearM": 1.559,
+    "tires": "P245/45R18",
+    "wheelInches": [
+      18,
+      8.5
+    ],
+    "nominalTireRadiusM": 0.33885,
+    "turningCircleM": 11,
+    "fuelTankApproxUSGalBrochure": 17,
+    "fuelTankUSGalTechnical": 17.5,
+    "fuelTankLTechnical": 66.2
+  },
+  "cautions": [
+    "Technical table torque533Nm is not exact conversion of395lbft; use535.548Nm converted from brochure-confirmed imperial rating.",
+    "Technical wheel18x18.5 is malformed; actual OEMsheet clearly18x8.5. Brake table malformed; do not import its transposed units.",
+    "17gal brochure explicitlyapproximate, technical17.5gal; keep provenance rather than falsely claim exact agreement.",
+    "Gears/dimensions/mass/redline are archived GM Media facts, not independently verified original table scan.6500redline is not verified fuel-cut.",
+    "No authoritative steering ratio, drag coefficient or ground clearance found in bounded pass."
+  ]
+}
