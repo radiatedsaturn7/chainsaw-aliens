@@ -8,7 +8,7 @@
 | Garage | Sparse exchange about leaving tomorrow | ESTABLISHED | Promise and unspoken tension |
 | Early journey | Mount Washington climb | PLANNED / PLACEMENT OPEN | Cait wants the view; Rob thinks it pointless |
 | Early journey | Encounter with starving dog | PROPOSED | Demonstrate compassion without a companion mechanic |
-| Middle journey | Machine City | PROPOSED | Cait examines the civilization humans left |
+| Early/middle journey | Other Scientist: Cait disobeys Rob and saves him during husk attack | CORE BEAT ESTABLISHED / LOCATION OPEN | Demonstrate Cait's free will through action; possible Laurel Highlands barn |\n| Middle journey | Machine City | PROPOSED | Cait examines the civilization humans left |
 | Middle journey | Data Center City and uploaded humans | PROPOSED | Question immortality and humanity |
 | Across the US | Race bosses, vehicle repairs and gates | PLANNED | Progression linked to travel conditions |
 | Late journey | Rob/Cait argument and emotional truth | PROPOSED | Test the promise and their independence |
