@@ -1,0 +1,147 @@
+{
+  "status": "Measured source alpha; runtime validation pending",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 66,
+        "y": 291,
+        "radius": 29
+      },
+      {
+        "wheel": "fr",
+        "x": 325,
+        "y": 291,
+        "radius": 29
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1918,
+        "y": 662,
+        "radius": 53
+      },
+      {
+        "wheel": "rr",
+        "x": 2108,
+        "y": 632,
+        "radius": 47
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1135,
+        "y": 291,
+        "radius": 58
+      },
+      {
+        "wheel": "rr",
+        "x": 1512,
+        "y": 285,
+        "radius": 58
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1695,
+        "y": 268,
+        "radius": 43
+      },
+      {
+        "wheel": "rr",
+        "x": 1875,
+        "y": 279,
+        "radius": 48
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 66,
+        "y": 653,
+        "radius": 29
+      },
+      {
+        "wheel": "rl",
+        "x": 310,
+        "y": 653,
+        "radius": 29
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 650,
+        "y": 644,
+        "radius": 47
+      },
+      {
+        "wheel": "fl",
+        "x": 838,
+        "y": 630,
+        "radius": 32
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 1045,
+        "y": 648,
+        "radius": 54
+      },
+      {
+        "wheel": "fl",
+        "x": 1435,
+        "y": 654,
+        "radius": 52
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 440,
+        "y": 262,
+        "radius": 48
+      },
+      {
+        "wheel": "fl",
+        "x": 664,
+        "y": 291,
+        "radius": 47
+      }
+    ]
+  },
+  "cockpit": {
+    "coordinateSpace": "dashboard",
+    "sourceImageSize": [
+      1983,
+      793
+    ],
+    "clusterPixels": [
+      180,
+      555,
+      580,
+      115
+    ],
+    "wheelPivotAndWidthPixels": [
+      470,
+      793,
+      240
+    ],
+    "method": "Original PNG blank cluster visually inspected; hub positions measured against alpha opening tops. Runtime visual validation pending."
+  }
+}

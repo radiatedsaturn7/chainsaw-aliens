@@ -1,0 +1,30 @@
+{
+  "name": "Sunstriker GT 1994",
+  "status": "Source-only original fictional artwork; not a completed runtime vehicle",
+  "settingYear": 2994,
+  "realWorldInspiration": "Stock1994 US Toyota Supra Turbo6MT, NOT modified movie vehicle",
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-11-13",
+    "referenceRole": "Nightcoil body and dashboard were style/layout references only",
+    "bodyDesign": "Original amber-orange faded long-hood coupe, bronze repair door, plain rectangular headlamp pairs, high arch wing. Same8angle4x2layout. No logos, sponsors, words, tires, wheels, axles, ground, snow. Transparent wheel openings.",
+    "dashboardDesign": "Original orange/bronze cracked black curved dashboard with blank left binnacle, blank amber radio, climate knobs, transparent windshield. No steering wheel/wipers/numerals/logos/scenery; shared editor overlays supply instruments."
+  },
+  "files": {
+    "body.png": {
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "sha256": "cc9c7c102c619cb88be39ef365890371382e96bff9381a224741252f8ff62e47",
+      "transparentPixels": 841317
+    },
+    "dashboard.png": {
+      "width": 1983,
+      "height": 793,
+      "mode": "RGBA",
+      "sha256": "a9da667d0e67948aa39197af96b3ba063a3f16d825e6723b04056d337bd42083",
+      "transparentPixels": 850514
+    }
+  },
+  "review": "Viewed actual generated images: consistent4x2body views and alpha wheel openings, no visible logos/text, blank dashboard cluster. Runtime sizing, stock staggered tire support,8angle wheel calibration and cockpit review pending."
+}

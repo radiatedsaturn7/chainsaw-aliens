@@ -1,0 +1,159 @@
+{
+  "vehicle": "1994 US Toyota Supra Turbo 6MT, stock, standard roof unless explicitly selecting Sport Roof",
+  "fictionalName": "Sunstriker GT",
+  "researchedAt": "2026-11-13",
+  "scope": "Factory vehicle only, not movie-tuned vehicle. Two primary manufacturer publications hosted by third parties, downloaded and text inspected; relevant specification table images visually inspected. No repository edits.",
+  "sources": [
+    {
+      "id": "S1",
+      "title": "Toyota 1994 Pocket Resource Product Information",
+      "url": "https://xr793.com/wp-content/uploads/2025/10/1994-Toyota-Pocket-Resource-Product-Information.pdf",
+      "pages": "PDF24\u201325, printed22\u201323 Supra",
+      "sha256": "9254c0459e1a17f192ebe82a0ecd197f1144e17f7beb9f6cbac40b3348e4194c",
+      "applicability": "1994 US; explicitly states Supra is complete carryover from1993 introduction."
+    },
+    {
+      "id": "S2",
+      "title": "Toyota Supra New Car Features, JZA80 series,1993 introduction",
+      "url": "https://97supraturbo.com/wp-content/uploads/2018/05/New-MKiV-Features.pdf",
+      "pages": "printed256\u2013257 (PDF257\u2013258), transmission printed148 and differential section",
+      "sha256": "472b8342bcf909832ab66c87e669fddfef00b6646d06f1f5c651822948b0b6fe",
+      "applicability": "US model JZA80L-ALFVZA standard-roof Turbo6MT / AJFVZA Sport Roof; applied as carryover using S1. Do not mix Japanese or UK gearing/power."
+    }
+  ],
+  "verified": {
+    "power": {
+      "hp": 320,
+      "rpm": 5600,
+      "kwSource": 239,
+      "sources": [
+        "S1",
+        "S2"
+      ]
+    },
+    "torque": {
+      "lbFt": 315,
+      "nmSource": 427,
+      "rpm": 4000,
+      "sources": [
+        "S1",
+        "S2"
+      ]
+    },
+    "curbMass": {
+      "standardRoofKg": 1549,
+      "standardRoofLb": 3415,
+      "sportRoofKg": 1576,
+      "sportRoofLb": 3475,
+      "sources": [
+        "S1",
+        "S2"
+      ],
+      "note": "S2 direct metric recommended; no exact-conversion claim for rounded lb/kg pairs."
+    },
+    "engine": {
+      "name": "2JZ-GTE",
+      "configuration": "3.0L inline6 sequential twin turbo, DOHC24valve",
+      "compression": 8.5,
+      "sources": [
+        "S1",
+        "S2"
+      ]
+    },
+    "drive": {
+      "layout": "front engine rear wheel drive",
+      "sources": [
+        "S1"
+      ]
+    },
+    "transmission": {
+      "type": "V160 six-speed manual",
+      "forward": [
+        3.827,
+        2.36,
+        1.685,
+        1.312,
+        1.0,
+        0.793
+      ],
+      "reverse": 3.28,
+      "finalDrive": 3.133,
+      "sources": [
+        "S2"
+      ],
+      "note": "US export ratio3.133; not Japanese3.266. S2 appendix labels final reduction Counter Gear Ratio; differential specifications independently list3.133 for turbo manual."
+    },
+    "tires": {
+      "front": "235/45ZR17",
+      "rear": "255/40ZR17",
+      "frontRim": "17x8.0",
+      "rearRim": "17x9.5",
+      "sources": [
+        "S1"
+      ]
+    },
+    "nominalTireDiametersM": {
+      "front": 0.6433,
+      "rear": 0.6358,
+      "status": "calculated geometry, not measured rolling diameter"
+    },
+    "fuelTank": {
+      "usGallons": 18.5,
+      "sources": [
+        "S1"
+      ]
+    },
+    "dimensions1994Pocket": {
+      "lengthIn": 177.7,
+      "widthIn": 71.3,
+      "heightIn": 50.2,
+      "wheelbaseIn": 100.4,
+      "lengthM": 4.513579999999999,
+      "widthM": 1.8110199999999999,
+      "heightM": 1.27508,
+      "wheelbaseM": 2.55016,
+      "sources": [
+        "S1"
+      ],
+      "note": "Meter values are exact unit conversions of rounded published inches."
+    },
+    "dimensions1993NCF": {
+      "lengthMm": 4515,
+      "widthMm": 1810,
+      "heightMm": 1265,
+      "wheelbaseMm": 2550,
+      "sources": [
+        "S2"
+      ]
+    },
+    "dragCoefficient": {
+      "noOptionalRearSpoiler": 0.32,
+      "optionalRearSpoiler": 0.33,
+      "sources": [
+        "S1"
+      ],
+      "note": "Choose according to fictional artwork spoiler configuration; not universal0.32."
+    }
+  },
+  "conflicts": [
+    {
+      "field": "dimensions",
+      "details": "1994 pocket length177.7in versus NCF4515mm(177.8in); height50.2in versus1265mm(49.8in). Width/wheelbase differ only in rounded conversion. Actual convention/reason for height/length differences not stated. Prefer explicit1994 S1 convention for this model year, preserve discrepancy. Do not silently combine tables or claim exact metric dimensions from S1."
+    },
+    {
+      "field": "curbMass/bodyStyle",
+      "details": "3415lb/1549kg is standard roof;3475lb/1576kg Sport Roof. If artwork/story uses removable roof choose Sport Roof and document it."
+    }
+  ],
+  "unverifiedSimulationParameters": [
+    "Full torque curve",
+    "redline/rev limiter",
+    "turbo spool/boost response curve",
+    "brake torque/friction",
+    "spring/damper rates",
+    "center of gravity height",
+    "damage/wear parameters",
+    "frontal area"
+  ],
+  "performanceCaution": "S1 acceleration figures are explicitly Car & Driver road-test sourced, not factory guarantees; excluded from verified simulation target. Do not claim movie horsepower."
+}
