@@ -1,0 +1,122 @@
+{
+  "fictionalName": "Copperhead SC 2006",
+  "reference": "2006 US Chevrolet Cobalt SS Supercharged coupe, F35 5MT, LHD, standard configuration without optional Performance Package",
+  "status": "Original-art additive candidate; actual browser acceptance pending",
+  "duplicateCheck": "No cobalt/copperhead matches in inspected copperwing-work catalog research.json",
+  "sources": [
+    {
+      "url": "https://news.chevrolet.com/content/dam/company/no_search/heritage-archive-docs/vehicle-information-kits/chevrolet/2006-Chevrolet-Cobalt.pdf",
+      "publisher": "Chevrolet / GM Heritage",
+      "file": "gm-2006-cobalt.pdf",
+      "evidence": "Genuine scanned 156-page PDF; physical pages 15,16,17 (printed 5,6,7) rendered and visually inspected. Product information physical 11-14 OCR-read. PDF creation Jan 2007."
+    }
+  ],
+  "engine": {
+    "code": "LSJ",
+    "layout": "front transverse gasoline supercharged inline four DOHC 16V",
+    "displacementCc": 1998,
+    "boreMm": 86,
+    "strokeMm": 86,
+    "compression": 9.5,
+    "powerHp": 205,
+    "powerRpm": 5600,
+    "torqueLbFt": 200,
+    "torqueNmCalculated": 271.16358966628,
+    "torqueRpm": 4400,
+    "maximumEngineSpeedRpm": 6450,
+    "fuel": "premium recommended but not required",
+    "unknown": [
+      "idle",
+      "actual fuel-cut threshold",
+      "full torque curve",
+      "boost curve"
+    ]
+  },
+  "transmission": {
+    "type": "F35 five-speed manual FWD",
+    "physicalForwardRatios": [
+      3.38,
+      1.76,
+      1.18,
+      0.89,
+      0.7
+    ],
+    "physicalReverseRatio": 3.17,
+    "physicalFinalDrive": 4.05,
+    "representation": "Physical ratios, no effective scaling required. Verify unchanged after car-editor roundtrip.",
+    "differential": "Standard non-Performance-Package; do not assume optional LSD. Actual standard differential specification not established by inspected pages."
+  },
+  "mass": {
+    "curbLb": 2925,
+    "publishedRoundedKg": 1327,
+    "calculatedKg": 1326.78048225,
+    "scope": "Explicit SS Supercharged coupe row",
+    "convention": "OEM calls curb weight; fuel/driver/load definition not specified on table",
+    "frontFraction": 0.6,
+    "frontFractionScope": "Generic coupe column; not independently SS-specific"
+  },
+  "tires": {
+    "front": "P215/45ZR18 W-rated",
+    "rear": "P215/45ZR18 W-rated",
+    "wheelInches": "18x7",
+    "nominalRadiusM": 0.32535,
+    "radiusConvention": "Geometric unloaded radius; actual loaded rolling radius unknown"
+  },
+  "dimensionsMm": {
+    "wheelbase": 2624,
+    "length": 4580,
+    "width": 1725,
+    "height": 1415.4,
+    "frontTrackPublished": 1449.7,
+    "rearTrackPublished": 1476,
+    "groundClearance": 136.2,
+    "scope": "Generic coupe column, not SS-specific; front track requires caution"
+  },
+  "chassis": {
+    "front": "Independent strut with stabilizer",
+    "rear": "Semi-independent torsion beam with stabilizer",
+    "steeringRatio": 16.63,
+    "steeringTurnsLockToLock": 3.38,
+    "turningCircleM": 12.4,
+    "frontBrakeMm": [
+      295,
+      26
+    ],
+    "frontBrakeType": "vented disc",
+    "rearBrakeMm": [
+      270,
+      14
+    ],
+    "rearBrakeType": "solid disc"
+  },
+  "fuelTank": {
+    "publishedUSGal": 13.2,
+    "publishedL": 49,
+    "convertedFromUSGalL": 49.9672473888
+  },
+  "conflictsAndCaveats": [
+    "Engine table prints 200 lb-ft / 230 Nm at 4400 RPM. These are dimensionally inconsistent: 200 lb-ft converts to 271.16 Nm. Use imperial published anchor with explicit converted Nm, never silently claim 230 Nm is equivalent.",
+    "Engine table prints 205 hp / 152 kW; retain hp anchor, do not call converted 152.87 kW identical to published rounded 152.",
+    "Fuel table 13.2 gal / 49 L does not convert exactly. Choose one anchor and disclose conversion.",
+    "Generic coupe front track 57.1 in / 1449.7 mm differs from common secondary values; not independently SS-trim verified. Preserve uncertainty, not silent sedan substitution.",
+    "Curb mass is explicit SS Supercharged but measurement convention unspecified. 60/40 distribution is generic coupe.",
+    "6450 is labelled maximum engine speed, not proven fuel cut.",
+    "The preliminary SAE certification asterisk is attached to 2.4L output, not 2.0L SC entries. Do not transfer naturally aspirated SS engine or F23 gearing."
+  ],
+  "simulationEstimatesRequired": [
+    "idle and actual cutoff",
+    "torque interpolation away from published peak",
+    "drivetrain efficiency",
+    "Cd/frontal area",
+    "CG and inertia",
+    "spring/damper/antiroll values and motion ratios",
+    "tire friction/loaded radius",
+    "differential behavior unless separately sourced"
+  ],
+  "visualNotes": [
+    "Original logo-free 2994 salvage coupe, not exact manufacturer trade dress",
+    "LHD dashboard, source mentions separate A-pillar boost gauge",
+    "Use existing shared steering wheel; individually position gauges",
+    "Fixed rear camera and appropriate driven-front tire smoke; not AWD or turbo config"
+  ]
+}
