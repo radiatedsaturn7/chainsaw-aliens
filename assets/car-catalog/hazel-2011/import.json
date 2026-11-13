@@ -1031,13 +1031,13 @@
   },
   "mapping": [
     0,
-    7,
+    1,
     2,
-    3,
-    4,
     5,
+    4,
+    3,
     6,
-    1
+    7
   ],
   "provenance": {
     "inspiration": "US2011 Suzuki Kizashi S FWD6MT LHD standard sedan, noSport/AWD/CVT",
