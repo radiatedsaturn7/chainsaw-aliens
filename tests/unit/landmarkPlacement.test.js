@@ -37,6 +37,8 @@ test('review ranking stays a safe shortlist and avoids a different closest road 
  const context={segments:[line(0,-1000,0,1000)],scenery:[],poseAt:d=>({x:0,z:d,yaw:0}),project:p=>({distance:p.z,lateral:-p.x})};
  const a=rankLandmarkPositions(mark,def,context,{distanceOffsets:[0]});
  assert.ok(a.length>0);assert.ok(a.every(p=>p.roadClearanceM>=5 && p.lateralM<0));
+ const custom=rankLandmarkPositions(mark,def,context,{approachOffsetsM:[85,105,195],occlusionWidthFactor:.75});
+ assert.deepEqual(custom[0].views.map(v=>v.beforeM),[85,105,195]);
  assert.ok(a.every(p=>p.views.length===6));assert.ok(a[0].score>=a.at(-1).score);
  assert.throws(()=>rankLandmarkPositions(mark,def,{...context,project:()=>({distance:1000})}),/No safe ranked/);
 });

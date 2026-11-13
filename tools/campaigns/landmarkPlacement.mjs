@@ -53,7 +53,7 @@ export function rankLandmarkPositions(mark,def,{poseAt,project,segments,scenery=
    if(scenery.some(s=>Math.hypot(s.x-p.x,s.z-p.z)<landmarkRadius(def)+Math.max(.5,Number(s.widthM)||1)/Math.SQRT2+2))continue;
    const projected=project(p);if(Math.abs(projected.distance-distance)>35)continue; // another branch is not the requested approach
    const views=[];
-   for(const back of [75,105,150,205,260,325]){
+   for(const back of options.approachOffsetsM??[75,105,150,205,260,325]){
     const camera=poseAt(Math.max(0,projected.distance-back));
     const dx=p.x-camera.x,dz=p.z-camera.z,range=Math.hypot(dx,dz);
     const angle=Math.abs(Math.atan2(Math.sin(Math.atan2(dx,dz)-camera.yaw),Math.cos(Math.atan2(dx,dz)-camera.yaw)))*180/Math.PI;
