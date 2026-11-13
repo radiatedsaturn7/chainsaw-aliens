@@ -9110,6 +9110,7 @@ export default class RaceEditor {
     clone.art.brakeLightOffsetY = clamp(Number(clone.art.brakeLightOffsetY || 0), -16, 16);
     const interior = clone.art.interior && typeof clone.art.interior === 'object' ? clone.art.interior : {};
     const normalizeInteriorLayer = (layer = {}) => ({
+      ...(layer.sizeSpace==='viewport'?{sizeSpace:'viewport'}:{}),
       ...(layer.coordinateSpace==='dashboard'?{coordinateSpace:'dashboard',anchorX:clamp(Number(layer.anchorX)||0,-4,4),anchorY:clamp(Number(layer.anchorY)||0,-4,4),width:clamp(Number(layer.width)||.24,.01,2)}:{}),
       artRef: String(layer?.artRef || '').trim() || null,
       frameIndex: Number.isFinite(Number(layer?.frameIndex)) ? Math.max(0, Math.round(Number(layer.frameIndex))) : 0,

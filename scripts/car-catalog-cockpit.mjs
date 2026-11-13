@@ -6,8 +6,8 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
- 'quince-2014':{size:[1983,793],cluster:[1250,560,460,130],wheel:[1480,793,250]},
- 'mossling-2019':{size:[1983,793],cluster:[1240,575,465,120],wheel:[1475,793,250]},
+ 'quince-2014':{wheelOpening:true,size:[1983,793],cluster:[1250,560,460,130],wheel:[1480,793,250]},
+ 'mossling-2019':{wheelOpening:true,size:[1983,793],cluster:[1240,575,465,120],wheel:[1475,793,250]},
  'cicada-turbo-2015':{size:[1983,793],cluster:[250,550,510,130],wheel:[505,793,255]},
  'nettle-turbo-2017':{size:[1983,793],cluster:[255,570,475,125],wheel:[490,793,250]},
  'marigold-1991':{size:[1983,793],cluster:[1240,585,490,125],wheel:[1485,793,250]},
@@ -15,7 +15,7 @@ export const cockpitAnchors={
  'rosefinch-1991':{size:[1983,793],cluster:[1335,545,475,130],wheel:[1573,793,250]},
  'larch-turbo-1995':{size:[1983,793],cluster:[230,560,420,125],wheel:[440,793,250]},
  'vesper-v6-2003':{size:[1983,793],cluster:[285,560,480,125],wheel:[525,793,255]},
- 'bramble-2021':{size:[1983,793],cluster:[1335,545,475,130],wheel:[1573,793,250]},
+ 'bramble-2021':{wheelOpening:true,size:[1983,793],cluster:[1335,545,475,130],wheel:[1573,793,250]},
  'sundew-660-1991':{size:[1983,793],cluster:[1335,545,475,130],wheel:[1573,793,250]},
  'pipit-100-2007':{size:[1983,793],cluster:[1135,550,560,115],wheel:[1415,793,270]},
  'cairn-1974':{size:[1983,793],cluster:[330,585,510,130],wheel:[580,793,270]},
@@ -48,6 +48,16 @@ export function applyCockpitAnchors(car,a){
  });
  widgets.push({id:'cockpit-reserve',name:a.electric?'Battery reserve (0–100%)':'Fuel reserve (0–100%)',source:a.electric?'tractionBattery.percent':'fuel',format:'bar',enabled:true,x:x/w,y:(y+ch*.9)/h,width:cw/w,height:ch*.1/h,min:0,max:100,color:'#ffcc79',background:'#35302a',showValue:false,outline:0});
  const layout=normalizeCarGauges({interior:{enabled:true,coordinateSpace:'dashboard',widgets}}).interior;
+ if(a.wheelOpening){
+  // Match the playable WRX-derived Airslayer wheel diameter on every viewport,
+  // but retain the authored right-hand-drive dashboard anchor.
+  Object.assign(car.art.interior.steeringWheel,{sizeSpace:'viewport',scaleX:1.6875,scaleY:1.6875});
+  layout.coordinateSpace='wheel-opening';
+  for(const [i,g] of layout.widgets.entries()){
+   const xs=[0,.28,.8,0],widths=[.26,.50,.20,1];
+   Object.assign(g,{x:xs[i],y:i===3?.92:0,width:widths[i],height:i===3?.08:.88,fontSize:i===3?18:120});
+  }
+ }
  car.art.gauges={...car.art.gauges,interior:layout};return car;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){
