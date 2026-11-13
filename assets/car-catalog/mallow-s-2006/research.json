@@ -1,0 +1,123 @@
+{
+  "fictionalName": "Mallow S 2006",
+  "reference": "US2006 Acura RSX Type-S standard6MT FWD LHD, no A-Spec/dealer aero accessories; not JDM Integra TypeR",
+  "duplicateCheck": "No Acura/RSX/Integra matches in inspected catalog",
+  "sources": [
+    {
+      "url": "https://acuranews.com/en-US/releases/release-0daa64f6d63e67bca17317004c34c18f-2006-acura-rsx-rsx-type-s-specifications",
+      "publisher": "American Honda Acura newsroom",
+      "date": "2005-09-01",
+      "verified": "Read complete US OEM specification table through web tool"
+    },
+    {
+      "url": "https://hondanews.com/en-US/releases/release-156d5d1a7637acd0dcfdc2004c34c192-2006-acura-rsx-powertrain",
+      "publisher": "American Honda",
+      "verified": "Read direct OEM powertrain release"
+    },
+    {
+      "url": "https://files.directechs.com/directwirebrochures/brochure1953_0.pdf",
+      "publisher": "OEM Acura specification printout on independent mirror",
+      "local": "oem-specs-mirror.pdf",
+      "verified": "Downloaded PDF, actual second-page Type-S gear table visually inspected; lacks Type-S mass and has conflicting mass distribution"
+    }
+  ],
+  "engine": {
+    "displacementCc": 1998,
+    "layout": "naturally aspirated gasoline inline4 DOHC16V i-VTEC",
+    "boreMm": 86,
+    "strokeMm": 86,
+    "compression": 11,
+    "powerHp": 201,
+    "powerRpm": 7800,
+    "torqueLbFt": 140,
+    "torqueRpm": 7000,
+    "ratingConvention": "SAE net J1349 Rev8/04; do not substitute2005 210hp/143lb-ft",
+    "redlineRpm": 8100,
+    "cutoffRpm": null,
+    "vtecHighLiftRpm": 5800,
+    "fuel": "premium unleaded"
+  },
+  "transmission": {
+    "type": "6MT",
+    "drive": "FWD",
+    "physicalForwardRatios": [
+      3.267,
+      2.13,
+      1.517,
+      1.147,
+      0.921,
+      0.738
+    ],
+    "reverse": 3.583,
+    "finalDrive": 4.765,
+    "corroboration": "Mirrored OEM table rounds3.27/2.13/1.52/1.15/.92/.74,reverse3.58,final4.77",
+    "differential": "Not verified in inspected documents; do not borrow JDM TypeR LSD"
+  },
+  "mass": {
+    "curbLb": 2840,
+    "publishedKg": 1288,
+    "convertedKg": 1288.2023308,
+    "convention": "OEM curb; fuel/driver convention unspecified",
+    "frontFractionPreferred": 0.63,
+    "conflict": "Direct US Type-S-specific press table63/37 vs mirrored generic RSX/Type-S manual61/39; retain discrepancy, preference to trim-specific direct source"
+  },
+  "tires": {
+    "size": "P215/45R17 all-season high-performance",
+    "nominalRadiusM": 0.31265,
+    "wheel": "17-inch; direct table malformed7x7 JJ likely missing1, width not independently verified",
+    "loadedRadius": "unknown"
+  },
+  "dimensionsMm": {
+    "wheelbase": 2570,
+    "frontTrack": 1487,
+    "rearTrack": 1486,
+    "length": 4379.5,
+    "width": 1723.9,
+    "height": 1393.6,
+    "groundClearance": "Unresolved OEM5.9in/137mm non-equivalent; do not claim exact"
+  },
+  "fuelTankL": 50,
+  "chassis": {
+    "front": "Control-Link MacPherson strut",
+    "rear": "double-wishbone with coils/stabilizer",
+    "steeringRatio": 14.9,
+    "turnsLockToLock": 2.59,
+    "turningCircleM": 11.6,
+    "frontBrakeMm": [
+      300,
+      25
+    ],
+    "rearBrakeMm": [
+      260,
+      9
+    ],
+    "frontBrake": "vented",
+    "rearBrake": "solid",
+    "frontAntirollMm": 26.5,
+    "frontAntirollWallMm": 3.5,
+    "rearAntirollMm": 21
+  },
+  "unknowns": [
+    "idle",
+    "actual fuel cutoff",
+    "full torque curve",
+    "Cd/frontal area",
+    "CG/inertia",
+    "drivetrain efficiency",
+    "differential behavior",
+    "spring/damper and tire friction calibration"
+  ],
+  "conflicts": [
+    "Direct US wheel cell7x7 malformed; diameter17 corroborated tire and PDF equipment.",
+    "Direct ground clearance5.9in/137mm inconsistent.",
+    "Front weight split conflict63/37 direct versus61/39 mirrored.",
+    "Direct VTEC threshold5800 is not proof of a stepwise torque jump; curve remains estimated."
+  ],
+  "implementationNotes": [
+    "Physical ratios all within editor range; assert roundtrip.",
+    "Use201hp revised2006 anchor, not earlier210.",
+    "Original2994 logo-free coupe/hatch silhouette; LHD individually positioned cockpit gauges, existing shared wheel.",
+    "No art/code/maps/import done by source worker."
+  ],
+  "status": "Original-art additive candidate; actual browser acceptance pending"
+}
