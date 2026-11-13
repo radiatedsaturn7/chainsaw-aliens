@@ -1,0 +1,82 @@
+{
+  "fictionalName": "Redbud V6 2007",
+  "inspiration": "2007 US Honda Accord Coupe EX-L V6 6-Speed Manual, LHD, standard non-navigation base equipment",
+  "duplicateCheck": "No Accord/Redbud match in inspected copperwing-work research ledger or importer. Recheck live staging before import.",
+  "sources": [
+    {
+      "url": "https://automobiles.honda.com/images/2007/accord-coupe/downloads/2007-accord-coupe-factsheet.pdf",
+      "type": "OEM US2007 factsheet",
+      "inspection": "FullPDF and actualpage2 screenshot visually inspected, rightmost EX-L V6 6-Speed column."
+    },
+    {
+      "url": "https://hondanews.com/en-US/releases/release-15abafe6d87b2a69ba8d7d004c34bfbd-2007-honda-accord-coupe-specifications",
+      "type": "OEM US2007 specifications August26,2006",
+      "inspection": "FullHTML table read; EXV6MT column gives physical gears/final."
+    }
+  ],
+  "specs": {
+    "engine": "Naturally aspirated gasoline V6 SOHC24valve VTEC",
+    "displacementCc": 2997,
+    "compressionRatio": 10,
+    "powerHp": 244,
+    "powerRpm": 6250,
+    "powerStandard": "SAE net J1349 revised8/2004",
+    "torqueLbFt": 211,
+    "torqueRpm": 5000,
+    "drivetrain": "FWD",
+    "gearRatios": [
+      3.933,
+      2.487,
+      1.7,
+      1.25,
+      0.976,
+      0.771
+    ],
+    "reverse": 4.008,
+    "finalDrive": 3.286,
+    "tires": "P215/50R17 93V all-season",
+    "curbMassLb": 3298,
+    "massConvention": "OEM curb mass. Driver/fuel accounting not expressly specified; do not invent adjustment. Optional navigation/accessory additions excluded.",
+    "wheelbaseIn": 105.1,
+    "lengthIn": 187.8,
+    "widthIn": 71.3,
+    "heightIn": 55.8,
+    "trackFrontIn": 61.1,
+    "trackRearIn": 61.2,
+    "fuelTankUSgal": 17.1,
+    "steeringRatio": 15.22,
+    "steeringTurnsLockToLock": 2.75,
+    "turningDiameterFt": 38.9,
+    "brakeDiscFrontIn": 11.8,
+    "brakeDiscRearIn": 10.2,
+    "stabilizerFrontMm": 25.4,
+    "stabilizerRearMm": 14,
+    "suspension": "Front doublewishbone, rear5-link doublewishbone",
+    "fuel": "regular unleaded"
+  },
+  "derivedMetric": {
+    "curbMassKg": 1495.94763626,
+    "torqueNm": 286.0775870979254,
+    "wheelbaseM": 2.6695399999999996,
+    "lengthM": 4.77012,
+    "widthM": 1.8110199999999999,
+    "heightM": 1.41732,
+    "frontTrackM": 1.5519399999999999,
+    "rearTrackM": 1.55448,
+    "fuelTankL": 64.7305415064,
+    "nominalUnloadedTireRadiusM": 0.32339999999999997
+  },
+  "uncertainties": [
+    "2007 OEM HTML prints second gear2.487;2008 OEM table has2.478. Preserve2007 as source-published with discrepancy flag, do not silently mix year. No independently inspected tooth-count verification.",
+    "No exact redline/fuel-cut or idle found in chosen2007 sources.",
+    "CG, axle mass distribution, Cd/frontalarea, fulltorquecurve and absolute spring/damper values are unverified simulation parameters.",
+    "Groundclearance not found.",
+    "No limited-slip differential specified by inspected OEMsources; do not claim verified factoryLSD."
+  ],
+  "rejectedAlternative": {
+    "model": "2007 US Toyota FJ Cruiser6MT4WD",
+    "reason": "OEM brochure confirms fulltime Torsen center differential and locking feature. Inspected runtime PowertrainModel has generic capacity-based center bias/lock, not verified exactTorsen/transfer-low-range model. Parent requested conventional fallback if fixed4WDfidelity unsupported.",
+    "source": "https://cdn.dealereprocess.org/cdn/brochures/toyota/2007-fjcruiser.pdf"
+  },
+  "artPlan": "Original2994 logo-free elongated two-door coupe, burgundy/silver salvage panels, altered lights/fascia. LHD dashboard with red-lit blank gauge wells and sharedwheel opening. Use fixedrear camera and source-informed dualexhaust positions, individually fit gauges. No art/code/maps changed."
+}
