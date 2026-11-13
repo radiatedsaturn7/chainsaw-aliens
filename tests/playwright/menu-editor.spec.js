@@ -17,7 +17,7 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} menu desig
  await page.evaluate(()=>window.__game.menuEditor.handleMenuAction('undo'));await expect.poll(()=>page.evaluate(()=>window.__game.menuEditor.screen.name)).toBe('Splash');
  await page.evaluate(async()=>{
   const g=window.__game,e=g.menuEditor,{saveProjectFileAndConfirm}=await import('/src/ui/projectFiles.js');
-  const car=structuredClone(g.carEditor.selectedCar);delete car.__systemPreset;delete car.__editorDraft;delete car.systemFile;car.name='Menu Test Car';await saveProjectFileAndConfirm('cars','Menu Test Car',car);e.menu.parameters.carRef='Menu Test Car';e.menu.parameters.raceRef='Test Track';const raceChoice=e.menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.id==='event');raceChoice.nodes=[{id:'test',label:'Test Track',raceRef:'Test Track',x:.5,y:.5}];
+  const {createDefaultCar}=await import('/src/racing/raceData.js');const car=createDefaultCar();car.id='menu-test-car';car.name='Menu Test Car';await saveProjectFileAndConfirm('cars','Menu Test Car',car);e.menu.parameters.carRef='Menu Test Car';e.menu.parameters.raceRef='Test Track';const raceChoice=e.menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.id==='event');raceChoice.nodes=[{id:'test',label:'Test Track',raceRef:'Test Track',x:.5,y:.5}];
   e.currentMenuName='Menu Browser Test';await e.saveMenu();await e.runAction('starting-menu');
   g.startRaceTravel=async params=>{g.__menuRaceLaunch={raceName:params.raceName,carRef:params.carRef,configuration:params.menuConfiguration};return true;};
   g.transitionTo('title');await g.playStartingMenu();
