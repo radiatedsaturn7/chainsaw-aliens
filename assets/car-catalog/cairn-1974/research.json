@@ -1,0 +1,35 @@
+{
+  "inspiration": "1974 European 2002 turbo standard four-speed steel-wheel configuration",
+  "sources": [
+    {
+      "url": "https://www.bmw-m.com/en/topics/magazine-article-pool/bmw-2002-turbo-e20.html",
+      "fields": [
+        "Modern manufacturer retrospective:125kW5800rpm,240Nm4000rpm,1990cc,1080kgcurb,211kmh,0\u2013100kmh7s"
+      ]
+    },
+    {
+      "url": "https://faquploads.s3.amazonaws.com/monthly_2021_05/BMW_2002_turbo_brochure_ENG2_pdf.0778c4b050778d8e815c1069550f5484",
+      "locator": "Original brochure scan pages28\u201329,publication3 32 01 003 2 2/74; visually read",
+      "fields": [
+        "4220x1620x1410mm,2500mmwheelbase,1375/1362mmtracks,70Ltank",
+        "4MT3.764/2.09/1.32/1 reverse4.096 final3.36;40percentLSD",
+        "185/70VR13,5.5Jx13steelwheel,17.57steering;256mmventilatedfrontdisc250mmreardrum"
+      ]
+    },
+    {
+      "url": "https://www.bmw2002.co.uk/wp-content/uploads/2012/01/bmw-2002-turbo-technical-supplement.pdf",
+      "locator": "Club compilation,not verified OEM original",
+      "fields": [
+        "6400rpmmaximum,6000continuous;100mmclearance,4degcaster;secondary evidence only"
+      ]
+    }
+  ],
+  "estimates": [
+    "Conflicting primary specifications resolved explicitly: use modern OEM1080kgcurb and240Nm, NOT original brochure1035kg unladen or printed245Nm. Brochure24.5mkp converts240.26Nm; its245Nm conversion is inconsistent. Do not claim identical mass measurement conditions.",
+    "Use125kW converted to mechanicalhp167.627762: not170mechanicalhp. Original brochure labels170BHP but its125kW equates170metricPS. Original brochure1620mmwidth preferred over modern article1630mm.",
+    "0\u201360mph6.8s is a game estimate; OEM7s is0\u2013100kmh and is not copied as0\u201360. Rated211kmh is source target,not proven simulated result.",
+    "Torque curve except240Nm4000rpm and125kW5800rpm;900idle6500cut,.5barboost and turbo transient behavior are game approximations.6400rpmmaximum from secondaryclub compilation.",
+    "53percentfrontmass,.52mCG,.43Cd,.71/1.01moverhangs,brakebalance,28/30psi,camber/toe,suspension/grip and cooling/wear/economy are explicitly estimated.40percentLSD mapped to game accel/decel settings is an approximation,not a differential bench simulation.",
+    "Original native art, fixedrear, existing surface smoke and reusedsteeringwheel; authored dashboard placement requires browserQA."
+  ]
+}
