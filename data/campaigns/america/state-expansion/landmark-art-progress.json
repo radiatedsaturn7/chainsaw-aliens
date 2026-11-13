@@ -2702,35 +2702,454 @@
     },
     "landmark-city-in-soldiers-and-sailors-monument": {
       "raceRef": "Indianapolis, IN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 81.66452688367974,
+        "worldZ": 54.941489143098195,
+        "routeDistanceM": 2032,
+        "offsetFromRoadM": 56,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 4.399897324242325,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 12.16162077150659,
+            "angularWidthDegrees": 18.17018381661996,
+            "rangeM": 99.96032753873787,
+            "occluderIds": [
+              "city-in-prop-107"
+            ],
+            "score": 0.06162422029676837
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 10.142474300192918,
+            "angularWidthDegrees": 15.226567252488902,
+            "rangeM": 119.5858223435808,
+            "occluderIds": [],
+            "score": 0.5943010279922833
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.693886147950796,
+            "angularWidthDegrees": 13.09020639952606,
+            "rangeM": 139.31790606054332,
+            "occluderIds": [],
+            "score": 0.6522445540819681
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.605236598601538,
+            "angularWidthDegrees": 11.473009261847857,
+            "rangeM": 159.11692937008138,
+            "occluderIds": [],
+            "score": 0.6957905360559384
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.400833474186005,
+            "angularWidthDegrees": 9.6737444453673,
+            "rangeM": 188.89491792648036,
+            "occluderIds": [],
+            "score": 0.7439666610325598
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.283515515282193,
+            "angularWidthDegrees": 7.996441882892882,
+            "rangeM": 228.689256114014,
+            "occluderIds": [],
+            "score": 0.7886593793887122
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.497617045633585,
+            "angularWidthDegrees": 6.8127034555792125,
+            "rangeM": 268.5447720283733,
+            "occluderIds": [],
+            "score": 0.8200953181746566
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 3.6397483761586167,
+            "angularWidthDegrees": 5.747569653499176,
+            "rangeM": 318.4194898607707,
+            "occluderIds": [
+              "city-in-prop-97",
+              "city-in-prop-103"
+            ],
+            "score": 0.09821562721943779
+          }
+        ],
+        "sourceDistanceShiftM": -90
+      },
+      "signature": "3780f998a7de43e31be0bda7331fd5ae867421e668e030ee05fd5ddffa7fde1d",
+      "sourceSha256": "af0db14432f3f91ed92a010491270b5b9d5404e7d097ac551e15c3f64c80d162",
+      "roadSha256": "dff0b4414d3e6f73ca185f76fbda561ad5aa78073d4f79ab107a6a4e4bfac7b5",
+      "placementDetails": {
+        "x": 7.7581882800233615,
+        "z": 193.40072001385164,
+        "yaw": -1.7328642339289304,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1940.7265487314887,
+        "trackLateral": -69.99954538374115,
+        "minimumRoadClearanceM": 43.14926312049772,
+        "checkedSegments": 4174,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/IN/soldiers-and-sailors-monument-desktop.png",
+        "docs/art/landmark-previews/IN/soldiers-and-sailors-monument-mobile.png"
+      ]
     },
     "landmark-city-in-indiana-statehouse": {
       "raceRef": "Indianapolis, IN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -309.0260908969642,
+        "worldZ": 36.872288604944316,
+        "routeDistanceM": 2548,
+        "offsetFromRoadM": 81,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 6.892002292367338,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 0.3708642485085144,
+            "angularWidthDegrees": 32.25434604430212,
+            "rangeM": 131.42012902824985,
+            "occluderIds": [],
+            "score": 0.9851654300596594
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 0.3218794470087094,
+            "angularWidthDegrees": 28.175765351931084,
+            "rangeM": 151.41986813904498,
+            "occluderIds": [],
+            "score": 0.9871248221196516
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.2843249016043989,
+            "angularWidthDegrees": 24.99819628751742,
+            "rangeM": 171.41969210173838,
+            "occluderIds": [],
+            "score": 0.988627003935824
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.2546178866297649,
+            "angularWidthDegrees": 22.45639246079237,
+            "rangeM": 191.41957431994484,
+            "occluderIds": [],
+            "score": 0.9898152845348094
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.22011978635554197,
+            "angularWidthDegrees": 19.476461324314926,
+            "rangeM": 221.41947234463063,
+            "occluderIds": [],
+            "score": 0.9911952085457784
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.18643898608752016,
+            "angularWidthDegrees": 16.541206765124826,
+            "rangeM": 261.41942780886365,
+            "occluderIds": [],
+            "score": 0.9925424405564992
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.16169743462208017,
+            "angularWidthDegrees": 14.370762076873463,
+            "rangeM": 301.4194496324234,
+            "occluderIds": [],
+            "score": 0.9935321026151168
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 76.03846880432788,
+            "angularWidthDegrees": 12.611674365940758,
+            "rangeM": 343.8784916580538,
+            "occluderIds": [
+              "city-in-prop-125",
+              "city-in-prop-127",
+              "city-in-prop-279"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "c8d372e959541af9cd69306e87558e66c4f9a33dbfade0643a367cfb673d661a",
+      "sourceSha256": "eb60064ce89f4dee00d293960510051273f45b16abab90d1b1ee07ea8beba411",
+      "roadSha256": "dff0b4414d3e6f73ca185f76fbda561ad5aa78073d4f79ab107a6a4e4bfac7b5",
+      "placementDetails": {
+        "x": -318.25257014377576,
+        "z": 40.772299110327296,
+        "yaw": -1.6038174826596907,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2547.558598306492,
+        "trackLateral": 89.81314668678618,
+        "minimumRoadClearanceM": 34.03600307535599,
+        "checkedSegments": 4174,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/IN/indiana-statehouse-desktop.png",
+        "docs/art/landmark-previews/IN/indiana-statehouse-mobile.png"
+      ]
     },
     "landmark-city-in-lucas-oil-stadium": {
       "raceRef": "Indianapolis, IN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -413.45925196238653,
+        "worldZ": 1105.0455878524995,
+        "routeDistanceM": 3599,
+        "offsetFromRoadM": 156,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.7600011678081873,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 9.082785089476873,
+            "angularWidthDegrees": 23.692623956999693,
+            "rangeM": 162.09418006596485,
+            "occluderIds": [],
+            "score": 0.636688596420925
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 8.088091464776111,
+            "angularWidthDegrees": 21.177952469994352,
+            "rangeM": 181.87091379627455,
+            "occluderIds": [],
+            "score": 0.6764763414089556
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 7.288697261181518,
+            "angularWidthDegrees": 19.137248083511768,
+            "rangeM": 201.6917042877371,
+            "occluderIds": [],
+            "score": 0.7084521095527393
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 6.59927662643014,
+            "angularWidthDegrees": 17.449977580429785,
+            "rangeM": 221.54472706759856,
+            "occluderIds": [],
+            "score": 0.7360289349427944
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 5.7832384370173875,
+            "angularWidthDegrees": 15.40595316645405,
+            "rangeM": 251.37107043848067,
+            "occluderIds": [],
+            "score": 0.7686704625193045
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 4.99014434718171,
+            "angularWidthDegrees": 13.319403123051947,
+            "rangeM": 291.19558071715977,
+            "occluderIds": [
+              "city-in-prop-197"
+            ],
+            "score": 0.09604730713352778
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.3879672954890765,
+            "angularWidthDegrees": 11.727398393575067,
+            "rangeM": 331.0624567710461,
+            "occluderIds": [
+              "city-in-prop-193",
+              "city-in-prop-197"
+            ],
+            "score": 0.09893775698165243
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 3.8125710732733857,
+            "angularWidthDegrees": 10.200723560381405,
+            "rangeM": 380.93536405265786,
+            "occluderIds": [
+              "city-in-prop-193",
+              "city-in-prop-197"
+            ],
+            "score": 0.10169965884828774
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "d3d97eeb417d2e7d512be3b1af8d005563b72bd788cf7f7179d5e7602a4eb83f",
+      "sourceSha256": "55b054f5797809efeb1c27c9cec8b8cb7bbcdda9a35c62a6fd6c08fb41f1e218",
+      "roadSha256": "dff0b4414d3e6f73ca185f76fbda561ad5aa78073d4f79ab107a6a4e4bfac7b5",
+      "placementDetails": {
+        "x": -236.15773563040474,
+        "z": 1245.2928741077303,
+        "yaw": 0.08943555595727183,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3628.349413553616,
+        "trackLateral": 135.00000000000009,
+        "minimumRoadClearanceM": 84.35132780102387,
+        "checkedSegments": 4174,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/IN/lucas-oil-stadium-desktop.png",
+        "docs/art/landmark-previews/IN/lucas-oil-stadium-mobile.png"
+      ]
     },
     "landmark-city-in-scottish-rite-cathedral": {
       "raceRef": "Indianapolis, IN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 60.383033222050784,
+        "worldZ": -796.1678939801317,
+        "routeDistanceM": 6101,
+        "offsetFromRoadM": 48,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 4.42414865528133,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 2.4559576129925076,
+            "angularWidthDegrees": 20.598329769277232,
+            "rangeM": 173.51711651391034,
+            "occluderIds": [],
+            "score": 0.9017616954802997
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 2.202188437770112,
+            "angularWidthDegrees": 18.509919161087456,
+            "rangeM": 193.50074623179194,
+            "occluderIds": [],
+            "score": 0.9119124624891956
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 1.9959316091994947,
+            "angularWidthDegrees": 16.80299752841075,
+            "rangeM": 213.48746117930187,
+            "occluderIds": [],
+            "score": 0.9201627356320202
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.8249900859754817,
+            "angularWidthDegrees": 15.38242354474717,
+            "rangeM": 233.47646902605152,
+            "occluderIds": [],
+            "score": 0.9270003965609808
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 1.617215872029159,
+            "angularWidthDegrees": 13.649192331173554,
+            "rangeM": 263.4631383375869,
+            "occluderIds": [],
+            "score": 0.9353113651188336
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 84.44931263617792,
+            "angularWidthDegrees": 12.353579740492298,
+            "rangeM": 291.3450538628044,
+            "occluderIds": [
+              "city-in-prop-323",
+              "city-in-prop-325"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 76.950334503125,
+            "angularWidthDegrees": 12.089456249122941,
+            "rangeM": 297.7592472869288,
+            "occluderIds": [
+              "city-in-prop-327",
+              "city-in-prop-329"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 67.99366951234678,
+            "angularWidthDegrees": 11.509804508201297,
+            "rangeM": 312.864030767568,
+            "occluderIds": [
+              "city-in-prop-316"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -60
+      },
+      "signature": "5ba879bc5c8e64eb012325778fa3708a1fcc5ad1db34afe666124663c8a69e5f",
+      "sourceSha256": "ea138877be0507a56511895bcf080f3cd98ab0ddfeefabf5949ab99bf0f440e9",
+      "roadSha256": "dff0b4414d3e6f73ca185f76fbda561ad5aa78073d4f79ab107a6a4e4bfac7b5",
+      "placementDetails": {
+        "x": 241.18281872848365,
+        "z": -727.1252398233642,
+        "yaw": 1.5732675157029543,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6040.671013990719,
+        "trackLateral": 134.9706820504528,
+        "minimumRoadClearanceM": 88.38413333261005,
+        "checkedSegments": 4174,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ks-old-cowtown-museum": {
       "raceRef": "Wichita, KS — Landmark Run",

@@ -2126,5 +2126,33 @@
     "documentSha256": "ccf4e634d846d9cba311c3cf84005a830d32a417e1cd5aafed5b805fb4fcdb7f",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-in-soldiers-and-sailors-monument": {
+    "source": "assets/campaign-art/landmarks/IN/landmark-city-in-soldiers-and-sailors-monument.png",
+    "sourceSha256": "af0db14432f3f91ed92a010491270b5b9d5404e7d097ac551e15c3f64c80d162",
+    "documentSha256": "fbb79a6523d2a57768611ae3144da09989f20f216b758d55e1c6f0e3184add34",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-in-indiana-statehouse": {
+    "source": "assets/campaign-art/landmarks/IN/landmark-city-in-indiana-statehouse.png",
+    "sourceSha256": "eb60064ce89f4dee00d293960510051273f45b16abab90d1b1ee07ea8beba411",
+    "documentSha256": "b2d580b281928b7f195ce6024e68fbe0b68e53f1bb8462a3db52acdf886aa135",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-in-lucas-oil-stadium": {
+    "source": "assets/campaign-art/landmarks/IN/landmark-city-in-lucas-oil-stadium.png",
+    "sourceSha256": "55b054f5797809efeb1c27c9cec8b8cb7bbcdda9a35c62a6fd6c08fb41f1e218",
+    "documentSha256": "1666aad97dd8f77a0189c231e78fe248e340d9b09c5f3d4427f4275cf6a6b65c",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-in-scottish-rite-cathedral": {
+    "source": "assets/campaign-art/landmarks/IN/landmark-city-in-scottish-rite-cathedral.png",
+    "sourceSha256": "ea138877be0507a56511895bcf080f3cd98ab0ddfeefabf5949ab99bf0f440e9",
+    "documentSha256": "3d7aa231a449cc4f68e00927f5cffc4049a878714c47c77cc3da8c6b6d334ee6",
+    "width": 512,
+    "height": 341
   }
 }

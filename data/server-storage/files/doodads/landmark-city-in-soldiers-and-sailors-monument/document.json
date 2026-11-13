@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613310013,
+  "doodad": {
+    "id": "campaign-landmark-city-in-soldiers-and-sailors-monument",
+    "name": "landmark-city-in-soldiers-and-sailors-monument",
+    "artRef": "landmark-city-in-soldiers-and-sailors-monument",
+    "widthM": 31.96875,
+    "heightM": 48,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 27.1734375,
+    "hitboxHeightM": 43.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -2708,6 +2708,34 @@
       "heightM": 22,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-in-soldiers-and-sailors-monument",
+      "source": "landmarks/IN/landmark-city-in-soldiers-and-sailors-monument.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-in-indiana-statehouse",
+      "source": "landmarks/IN/landmark-city-in-indiana-statehouse.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-in-lucas-oil-stadium",
+      "source": "landmarks/IN/landmark-city-in-lucas-oil-stadium.png",
+      "heightM": 34,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-in-scottish-rite-cathedral",
+      "source": "landmarks/IN/landmark-city-in-scottish-rite-cathedral.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

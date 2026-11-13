@@ -600,7 +600,11 @@
       "landmark-city-wi-pabst-theater": "art/landmark-city-wi-pabst-theater/document.json",
       "landmark-city-wi-milwaukee-art-museum": "art/landmark-city-wi-milwaukee-art-museum/document.json",
       "landmark-city-wi-milwaukee-city-hall": "art/landmark-city-wi-milwaukee-city-hall/document.json",
-      "landmark-city-wi-harley-davidson-museum": "art/landmark-city-wi-harley-davidson-museum/document.json"
+      "landmark-city-wi-harley-davidson-museum": "art/landmark-city-wi-harley-davidson-museum/document.json",
+      "landmark-city-in-soldiers-and-sailors-monument": "art/landmark-city-in-soldiers-and-sailors-monument/document.json",
+      "landmark-city-in-indiana-statehouse": "art/landmark-city-in-indiana-statehouse/document.json",
+      "landmark-city-in-lucas-oil-stadium": "art/landmark-city-in-lucas-oil-stadium/document.json",
+      "landmark-city-in-scottish-rite-cathedral": "art/landmark-city-in-scottish-rite-cathedral/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -936,7 +940,11 @@
       "landmark-city-wi-pabst-theater": "doodads/landmark-city-wi-pabst-theater/document.json",
       "landmark-city-wi-milwaukee-art-museum": "doodads/landmark-city-wi-milwaukee-art-museum/document.json",
       "landmark-city-wi-milwaukee-city-hall": "doodads/landmark-city-wi-milwaukee-city-hall/document.json",
-      "landmark-city-wi-harley-davidson-museum": "doodads/landmark-city-wi-harley-davidson-museum/document.json"
+      "landmark-city-wi-harley-davidson-museum": "doodads/landmark-city-wi-harley-davidson-museum/document.json",
+      "landmark-city-in-soldiers-and-sailors-monument": "doodads/landmark-city-in-soldiers-and-sailors-monument/document.json",
+      "landmark-city-in-indiana-statehouse": "doodads/landmark-city-in-indiana-statehouse/document.json",
+      "landmark-city-in-lucas-oil-stadium": "doodads/landmark-city-in-lucas-oil-stadium/document.json",
+      "landmark-city-in-scottish-rite-cathedral": "doodads/landmark-city-in-scottish-rite-cathedral/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",
