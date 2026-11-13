@@ -1,0 +1,60 @@
+{
+  "originalName": "Sunmallow 2006",
+  "inspiration": "2006 US Pontiac Solstice base 5MT, not later GXP",
+  "sources": [
+    {
+      "url": "https://www.nextcar.com.au/n.pontiac.solstice.2006.05sep.html",
+      "type": "Contemporary GM press-release reproduction; full specifications read 2026-11-13",
+      "verified": true
+    },
+    {
+      "url": "https://www.theautochannel.com/news/2005/09/16/143196.html",
+      "type": "Contemporary specification search corroboration; full open returned429",
+      "verified": false
+    }
+  ],
+  "publishedSpecs": {
+    "engineCc": 2384,
+    "horsepower": 177,
+    "powerRpm": 6600,
+    "torqueLbFt": 166,
+    "torqueNm": 225,
+    "torqueRpm": 4800,
+    "fuelCutRpm": 7000,
+    "gearRatios": [
+      3.75,
+      2.26,
+      1.37,
+      1,
+      0.73
+    ],
+    "reverse": 3.67,
+    "finalDrive": 3.91,
+    "steeringRatio": 16.4,
+    "wheelbaseMm": 2415,
+    "lengthMm": 3992,
+    "widthMm": 1810,
+    "heightMm": 1273,
+    "frontTrackMm": 1543,
+    "rearTrackMm": 1561,
+    "curbKg": 1297,
+    "frontWeightFractionApprox": 0.5,
+    "fuelUsGal": 13.8,
+    "tires": "245/45R18 all corners",
+    "drivetrain": "front engine RWD"
+  },
+  "derived": {
+    "nominalTireRadiusM": 0.33885
+  },
+  "unverifiedRuntimeEstimates": [
+    "CG height",
+    "aerodynamicCd",
+    "ground clearance",
+    "idle/redline distinct from OEMfuelcut",
+    "torque curve outside peak",
+    "suspension damping",
+    "gear shift timings",
+    "performance displays"
+  ],
+  "artDirection": "Original logo-free2994 salvage roadster: warm golden yellow, cream bonnet patch, charcoal softtop folded; single wide rectangular grille and paired round lamps rather than Pontiac splitgrille; original rear light layout; shared wheel, LHD blank binnacle."
+}
