@@ -24,6 +24,10 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} menu desig
  });
  await expect.poll(()=>page.evaluate(()=>window.__game.state)).toBe('menu-player');await pressKey(page,'Space');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('saves-start');await pressKey(page,'Enter');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('cars');
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.resources.cars.has('Menu Test Car'))).toBe(true);
+ // New-game flow can initially highlight another saved catalog car. Select
+ // this fixture through the showroom before checking its rendered pixels.
+ await page.evaluate(()=>{const p=window.__game.menuPlayer;p.selectShowroomCar(p.flow.screen.elements.find(e=>e.id==='car'),'Menu Test Car');});
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.parameters.carRef)).toBe('Menu Test Car');
  const previewPixels=()=>page.evaluate(()=>{const g=window.__game,p=g.menuPlayer,e=p.flow.screen.elements.find(e=>e.id==='car'),w=Math.round(e.w*p.bounds.w),h=Math.round(e.h*p.bounds.h),pixels=g.ctx.getImageData(Math.round(p.bounds.x+e.x*p.bounds.w),Math.round(p.bounds.y+e.y*p.bounds.h),w,h).data;let colored=0,hash=0;for(let i=0;i<pixels.length;i+=4){if(pixels[i+1]>100&&pixels[i+2]>100)colored++;hash=(Math.imul(hash,31)+pixels[i]+pixels[i+1]*3+pixels[i+2]*7)>>>0;}return {colored,hash}});
  await expect.poll(async()=>(await previewPixels()).colored).toBeGreaterThan(100);const before=(await previewPixels()).hash;await expect.poll(async()=>(await previewPixels()).hash).not.toBe(before);
  await page.screenshot({path:`test-results/menu-${mobile?'portrait':'desktop'}-cars.png`});
