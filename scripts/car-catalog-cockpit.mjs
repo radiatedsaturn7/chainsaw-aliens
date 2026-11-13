@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'cairn-1974':{size:[1983,793],cluster:[330,585,510,130],wheel:[580,793,270]},
  'stormline-2002':{size:[1983,793],cluster:[1305,555,490,130],wheel:[1550,793,250]},
  'rotorveil-1993':{size:[1983,793],cluster:[280,545,495,125],wheel:[530,793,255]},
  'cinder-si-1991':{size:[1983,793],cluster:[245,555,570,145],wheel:[530,793,255]},
