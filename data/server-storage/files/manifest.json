@@ -450,7 +450,9 @@
       "catalog-podmoss-2005-body": "art/catalog-podmoss-2005-body/document.json",
       "catalog-podmoss-2005-dashboard": "art/catalog-podmoss-2005-dashboard/document.json",
       "catalog-dewskipper-2004-body": "art/catalog-dewskipper-2004-body/document.json",
-      "catalog-dewskipper-2004-dashboard": "art/catalog-dewskipper-2004-dashboard/document.json"
+      "catalog-dewskipper-2004-dashboard": "art/catalog-dewskipper-2004-dashboard/document.json",
+      "catalog-copperwing-2004-body": "art/catalog-copperwing-2004-body/document.json",
+      "catalog-copperwing-2004-dashboard": "art/catalog-copperwing-2004-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -494,7 +496,8 @@
       "Quince 2014": "cars/Quince 2014/document.json",
       "Glasswing 1990": "cars/Glasswing 1990/document.json",
       "Podmoss 2005": "cars/Podmoss 2005/document.json",
-      "Dewskipper 2004": "cars/Dewskipper 2004/document.json"
+      "Dewskipper 2004": "cars/Dewskipper 2004/document.json",
+      "Copperwing 2004": "cars/Copperwing 2004/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
