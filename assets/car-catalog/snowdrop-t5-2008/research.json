@@ -1,0 +1,108 @@
+{
+  "fictionalName": "Snowdrop T5 2008",
+  "inspiration": "US 2008 Volvo C30 T5 Version 1.0 standard six-speed manual FWD LHD, no Custom Build options",
+  "duplicateCheck": "No C30 match in inspected copperwing-work/data/vehicle-catalog/research.json; no existing shared packet. Recheck latest roster before importing.",
+  "status": "Original-art additive candidate, actual browser acceptance pending",
+  "sources": [
+    {
+      "id": "presskit",
+      "url": "https://www.volvoclub.org.uk/press/volvo2008/cd/models/2008_C30/specifications_prt.htm",
+      "provenance": "Archived Volvo Cars of North America 2008 media-CD technical data, copyright 2007; read full HTML and saved locally; not direct manufacturer hosting. Contains internally suspect equipment entries noted below."
+    },
+    {
+      "id": "pricing",
+      "url": "https://www.volvocars.com/us/media/press-releases/59708A25EBDA190B/",
+      "provenance": "Direct manufacturer April 4, 2007 announcement and US MY2008 trim/option tables; full read."
+    },
+    {
+      "id": "brochure",
+      "url": "https://personalizeyourvolvo.com/PDF_Brochures/2008%20Volvo%20C30%20Brochure%20%28US%29.pdf",
+      "provenance": "Archived OEM US MY2008 brochure; genuine PDF downloaded, pages 26 wheels and 36 specs rendered and visually inspected."
+    }
+  ],
+  "engine": {
+    "source": "presskit and brochure page 36",
+    "displacementCc": 2521,
+    "layout": "Transverse turbocharged gasoline inline five-cylinder DOHC 20-valve, continuously variable intake/exhaust cam timing",
+    "powerHpSAENet": 227,
+    "powerRpm": 5000,
+    "torqueLbFtSAENet": 236,
+    "torquePlateauRpm": [
+      1500,
+      5000
+    ],
+    "compression": 9.0,
+    "maximumEngineSpeedRpm": 6500,
+    "maximumEngineSpeedNote": "Press-kit label; not separately verified as rev limiter/fuel cutoff",
+    "boreMm": 83,
+    "strokeMm": 93.2
+  },
+  "drivetrain": {
+    "source": "presskit technical table",
+    "drive": "FWD",
+    "gearbox": "Conventional 6MT, not Geartronic automatic",
+    "forwardRatios": [
+      3.39,
+      1.91,
+      1.27,
+      0.95,
+      0.78,
+      0.65
+    ],
+    "reverse": 3.2,
+    "finalDrive": 3.77,
+    "precision": "OEM archive published rounded ratios; do not invent tooth counts. Current conventional gearbox representation supported; editor roundtrip still required."
+  },
+  "chassis": {
+    "source": "presskit except wheel width and standard chassis determined by brochure/direct pricing",
+    "curbWeightLbPublished": 3201,
+    "curbWeightKgDerived": 1451.94917637,
+    "massConvention": "Presskit lists identical 3201 lb under both versions, without manual/automatic differentiation, fuel/driver definition or equipment assumptions. Treat as OEM nominal model figure, not verified exact standard Version 1.0 manual curb. Roadtest measured 3120 lb and secondary 2970 lb conflict; do not silently swap. Exact trim-specific mass remains uncertainty.",
+    "tiresFrontRear": "205/50R17",
+    "wheelInches": [
+      17,
+      7
+    ],
+    "wheelWidthNote": "Brochure page 26 actual image labels Mestra 7x17 standard Version 1.0; presskit says 17x7.5, conflicting. Prefer brochure 7-inch while flagging unresolved production source conflict.",
+    "nominalTireRadiusM": 0.3184,
+    "fuelUSGallons": 15.9,
+    "wheelbaseIn": 103.9,
+    "lengthIn": 167.4,
+    "widthIn": 70.2,
+    "heightIn": 57,
+    "trackFrontIn": 60.4,
+    "trackRearIn": 60.3,
+    "frontSuspension": "MacPherson coil strut",
+    "rearSuspension": "Independent multilink coils",
+    "suspensionVariant": "Standard Version 1.0, not optional Dynamic sport chassis",
+    "frontRearBrakeInches": [
+      11.8,
+      11.0
+    ],
+    "steeringRatioPublished": 15.4,
+    "turnsLockToLock": "Press kit 2.6; brochure 2.6\u20132.9 depending wheel size",
+    "turningCircleFeet": 38.1
+  },
+  "equipment": [
+    "Four seats, three-door glass-tailgate hatch",
+    "Standard 17-inch wheels; no 18-inch Version 2.0 package",
+    "T-Tec upholstery, bauxite dash trim, manual seats",
+    "Standard halogen; no optional xenon/moonroof/roofspoiler/sport ground effects",
+    "Polished 2.75-inch exhaust tips per direct US pricing; Version 2.0 sport 3.5-inch tips not selected"
+  ],
+  "conflicts": [
+    "Presskit marks Dynamic sport suspension STD footnote for 1.0; direct US pricing lists option 000159 and brochure explicitly includes sport chassis on 2.0. Select standard 1.0 chassis.",
+    "Mestra width 7-inch brochure versus 7.5-inch presskit; retain disclosure.",
+    "Brochure top speed 146 mph versus presskit electronically limited 149 mph; do not implement speed limiter as settled fact.",
+    "Nominal 3201 lb is not proven trim/transmission-specific; exact curb mass and convention unresolved."
+  ],
+  "unknowns": [
+    "Exact idle/fuel cutoff",
+    "Full torque curve beyond stated plateau and power anchor",
+    "Front/rear mass distribution",
+    "Cd/frontal area/CG height",
+    "Spring/damper curves and tire coefficients",
+    "Differential hardware type not independently established"
+  ],
+  "artPlan": "Original logo-free 2994 glass-tailgate hatch, modest standard trim without spoiler. LHD blank driver binnacle, shared runtime wheel and tires."
+}
