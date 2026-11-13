@@ -10,10 +10,14 @@ export function cockpitWheelLayout(bounds,wheel={},dashboardRect){
  const sx=clamp(finite(wheel.scaleX,1)||1,.05,12),sy=clamp(finite(wheel.scaleY,1)||1,.05,12);
  const anchored=wheel.coordinateSpace==='dashboard';
  const basis=anchored?dashboardRect:bounds;
- const diameter=anchored?basis.w*clamp(finite(wheel.width,.24),.01,2):Math.max(34,Math.min(bounds.w,bounds.h)*.13)*2;
+ const diameter=anchored&&wheel.sizeSpace!=='viewport'?basis.w*clamp(finite(wheel.width,.24),.01,2):Math.max(34,Math.min(bounds.w,bounds.h)*.13)*2;
  return {x:basis.x+basis.w*(anchored?finite(wheel.anchorX,.35):.5)+clamp(finite(wheel.offsetX,0),-4,4)*basis.w*.2,
  y:basis.y+basis.h*(anchored?finite(wheel.anchorY,1.1):.82)+clamp(finite(wheel.offsetY,0),-4,4)*basis.h*.2,width:diameter*sx,heightScale:diameter*sy};
 }
 export function cockpitGaugeBounds(bounds,car,image,side='interior'){
+ if(side==='interior'&&car?.art?.gauges?.interior?.coordinateSpace==='wheel-opening'){
+  const rect=cockpitDashboardRect(bounds,car.art.interior?.dashboard,image),wheel=cockpitWheelLayout(bounds,car.art.interior?.steeringWheel,rect);
+  return {x:wheel.x-wheel.width*.22,y:wheel.y-wheel.heightScale*.30,w:wheel.width*.44,h:wheel.heightScale*.13};
+ }
  return side==='interior'&&car?.art?.gauges?.interior?.coordinateSpace==='dashboard'?cockpitDashboardRect(bounds,car.art.interior?.dashboard,image):bounds;
 }

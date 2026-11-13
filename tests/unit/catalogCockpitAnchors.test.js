@@ -9,13 +9,13 @@ for(const [id,a] of Object.entries(cockpitAnchors))for(const [w,h] of [[1280,720
  const editor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'}),clean=editor.normalizeLoadedCarDocument(structuredClone(car));
  assert.deepEqual(clean.art.gauges.interior,car.art.gauges.interior);assert.equal(clean.art.interior.steeringWheel.coordinateSpace,'dashboard');
  const bounds={x:11,y:17,w,h},image={width:a.size[0],height:a.size[1]},dash=cockpitDashboardRect(bounds,car.art.interior.dashboard,image),wheel=cockpitWheelLayout(bounds,car.art.interior.steeringWheel,dash);
- close(wheel.x,dash.x+dash.w*a.wheel[0]/a.size[0]);close(wheel.y,dash.y+dash.h*a.wheel[1]/a.size[1]);close(wheel.width,dash.w*a.wheel[2]/a.size[0]);
+ close(wheel.x,dash.x+dash.w*a.wheel[0]/a.size[0]);close(wheel.y,dash.y+dash.h*a.wheel[1]/a.size[1]);close(wheel.width,a.wheelOpening?Math.max(34,Math.min(w,h)*.13)*2*1.6875:dash.w*a.wheel[2]/a.size[0]);
  const calls=[];const ctx=new Proxy({globalAlpha:1,drawImage:(...args)=>calls.push(args),measureText:()=>({width:12})},{get:(o,k)=>k in o?o[k]:()=>{}});
  editor.getRaceArtSpriteCanvas=ref=>ref==='steeringwheel'?{width:512,height:468}:image;
  car.art.interior.dashboard.artRef='dashboard-test';editor.drawCarInteriorLayers(ctx,bounds,car);
  assert.equal(calls.length,2);close(calls[0][1],dash.x);close(calls[0][2],dash.y);close(calls[1][3],wheel.width);
  const gaugeBounds=cockpitGaugeBounds(bounds,car,image);const regions=drawCarGauges(ctx,gaugeBounds,car.art.gauges.interior,{session:{speedMps:20,engineRpm:3000},car});
- assert.equal(regions.length,4);for(const region of regions){assert.ok(region.x>=dash.x+dash.w*a.cluster[0]/a.size[0]-1e-7);assert.ok(region.x+region.w<=dash.x+dash.w*(a.cluster[0]+a.cluster[2])/a.size[0]+1e-7);assert.ok(region.y>=dash.y+dash.h*a.cluster[1]/a.size[1]-1e-7);assert.ok(region.y+region.h<=dash.y+dash.h*(a.cluster[1]+a.cluster[3])/a.size[1]+1e-7);}
+ assert.equal(regions.length,4);for(const region of regions){if(a.wheelOpening){assert.ok(region.x>=gaugeBounds.x-1e-7);assert.ok(region.x+region.w<=gaugeBounds.x+gaugeBounds.w+1e-7);assert.ok(region.y>=gaugeBounds.y-1e-7);assert.ok(region.y+region.h<=gaugeBounds.y+gaugeBounds.h+1e-7);continue;}assert.ok(region.x>=dash.x+dash.w*a.cluster[0]/a.size[0]-1e-7);assert.ok(region.x+region.w<=dash.x+dash.w*(a.cluster[0]+a.cluster[2])/a.size[0]+1e-7);assert.ok(region.y>=dash.y+dash.h*a.cluster[1]/a.size[1]-1e-7);assert.ok(region.y+region.h<=dash.y+dash.h*(a.cluster[1]+a.cluster[3])/a.size[1]+1e-7);}
 });
 test('legacy viewport layouts and exterior gauges remain unchanged',()=>{
  const b={x:10,y:20,w:960,h:540},d={x:0,y:400,w:960,h:140},w=cockpitWheelLayout(b,{},d);close(w.x,490);close(w.y,462.8);close(w.width,140.4);
