@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import zlib from 'node:zlib';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {normalizeMenuDocument} from '../../src/menus/MenuDocument.js';
 import {createCampaignHubMenus,campaignEventCategory} from '../../src/menus/CampaignHubMenus.js';
 const rootPath=fileURLToPath(new URL('../../',import.meta.url));
 const read=p=>JSON.parse(fs.readFileSync(path.resolve(rootPath,p)));
@@ -47,4 +48,14 @@ test('new events appear exactly once under campaign hubs and never exceed eight 
  const selected=screens.flatMap(s=>s.elements).filter(e=>e.action?.parameter==='raceRef');
  for(const e of extras())assert.equal(selected.filter(s=>s.action.value===e.raceRef).length,1,e.id);
  for(const screen of screens.filter(s=>/^campaign-hub-\d+$/.test(s.id)))assert.ok(screen.elements.some(e=>e.label==='City Runs'));
+});
+
+test('the complete saved campaign menu retains every linked page beyond 100 screens',()=>{
+ const stored=read('data/server-storage/files/menus/Game Menu/document.json');
+ const source=stored.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(stored.data,'base64'))):stored;
+ assert.ok(source.screens.length>100);
+ const normalized=normalizeMenuDocument(source);
+ assert.equal(normalized.screens.length,source.screens.length);
+ assert.ok(normalized.screens.some(s=>s.id==='campaign-hub-11-raceways'));
+ assert.throws(()=>normalizeMenuDocument({screens:Array.from({length:2049},(_,i)=>({id:`screen-${i}`,elements:[]}))}),/at most 2048/);
 });

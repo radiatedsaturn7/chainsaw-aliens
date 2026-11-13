@@ -134,7 +134,13 @@ jobs:
         run: npm ci
 
       - name: Build the actual Pages artifact
-        run: python3 tools/build_static_site.py --output _site
+        env:
+          ASSET_REPOSITORY: ${{ github.repository }}
+          ASSET_COMMIT: ${{ github.sha }}
+        run: >-
+          python3 tools/build_static_site.py --output _site
+          --remote-repository "$ASSET_REPOSITORY"
+          --remote-commit "$ASSET_COMMIT"
 
       - name: Run static-host project loading browser tests
         env:
