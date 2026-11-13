@@ -432,7 +432,9 @@
       "catalog-larch-turbo-1995-body": "art/catalog-larch-turbo-1995-body/document.json",
       "catalog-larch-turbo-1995-dashboard": "art/catalog-larch-turbo-1995-dashboard/document.json",
       "catalog-rosefinch-1991-body": "art/catalog-rosefinch-1991-body/document.json",
-      "catalog-rosefinch-1991-dashboard": "art/catalog-rosefinch-1991-dashboard/document.json"
+      "catalog-rosefinch-1991-dashboard": "art/catalog-rosefinch-1991-dashboard/document.json",
+      "catalog-glimmer-1986-body": "art/catalog-glimmer-1986-body/document.json",
+      "catalog-glimmer-1986-dashboard": "art/catalog-glimmer-1986-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -467,7 +469,8 @@
       "Bramble 2021": "cars/Bramble 2021/document.json",
       "Vesper V6 2003": "cars/Vesper V6 2003/document.json",
       "Larch Turbo 1995": "cars/Larch Turbo 1995/document.json",
-      "Rosefinch 1991": "cars/Rosefinch 1991/document.json"
+      "Rosefinch 1991": "cars/Rosefinch 1991/document.json",
+      "Glimmer 1986": "cars/Glimmer 1986/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
