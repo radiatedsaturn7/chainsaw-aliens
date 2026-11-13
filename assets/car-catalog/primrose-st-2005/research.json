@@ -1,0 +1,100 @@
+{
+  "fictionalName": "Primrose ST 2005",
+  "reference": "Germany January-September2005 Ford Fiesta ST150 three-door5MT FWD LHD, standard16-inch wheels",
+  "status": "Source packet usable with provenance qualifications; actual OEM PDF table visual inspection blocked403/502. Do not claim visual primary-document verification.",
+  "duplicateCheck": "No shared car-next JSON/source-plan Fiesta matches; vehicle research no implemented Fiesta; roster candidates1981XR2 is different pending model.",
+  "sources": [
+    {
+      "url": "https://www.fordfan.de/technische-daten/2005/01/31/technische-daten-ford-fiesta-st",
+      "type": "Ford-attributed January31 2005 technical release mirrored HTML on fan archive",
+      "verification": "Full technical table read as web text, not actual OEM PDF/image"
+    },
+    {
+      "url": "https://www.carenthusiast.com/reviews.html?id=162&mode=tech",
+      "type": "Contemporary2005 secondary UK road-test technical table",
+      "verification": "All physical gear ratios/mass/engine corroborate German Ford-attributed table. UK17-inch wheels not used for selected German standard16-inch variant."
+    },
+    {
+      "url": "https://www.autobild.de/artikel/fahrbericht-ford-fiesta-st-48508.html",
+      "type": "Contemporary January7 2005 German secondary road test",
+      "verification": "Search excerpt corroborates standard195/45R16,1137kg,45L and190Nm."
+    }
+  ],
+  "engine": {
+    "type": "NA gasoline Duratec2.0 DOHC16V inline4",
+    "displacementCc": 1999,
+    "boreMm": 87.5,
+    "strokeMm": 83.1,
+    "powerKw": 110,
+    "powerPs": 150,
+    "powerHpApproxFromKw": 147.51243,
+    "powerRpm": 6000,
+    "torqueNm": 190,
+    "torqueRpm": 4500,
+    "redlineRpm": null,
+    "fuelCutRpm": null,
+    "idleRpm": null,
+    "compression": null
+  },
+  "transmission": {
+    "type": "5MT",
+    "forward": [
+      3.583,
+      2.038,
+      1.414,
+      1.108,
+      0.878
+    ],
+    "reverse": 3.615,
+    "final": 3.824,
+    "provenance": "Ford-attributed2005HTML table, independently corroborated exact2005CarEnthusiast table; no dual-final conversion needed"
+  },
+  "mass": {
+    "publishedLeergewichtKg": 1137,
+    "convention": "Not defined in retrieved2005table; do not assert excludes/includes75kgdriver or subtract75without primary footnote. Treat1137 as published unspecified-convention curb anchor.",
+    "grossKg": 1590
+  },
+  "dimensionsMm": {
+    "length": 3921,
+    "widthExcludingMirrors": 1683,
+    "widthWithMirrors": 1905,
+    "height": 1468,
+    "wheelbase": 2486,
+    "frontTrackRange": [
+      1464,
+      1478
+    ],
+    "rearTrackRange": [
+      1434,
+      1444
+    ]
+  },
+  "tires": {
+    "front": "195/45R16",
+    "rear": "195/45R16",
+    "wheel": "6.5x16",
+    "nominalRadiusM": 0.29095,
+    "optionalExcluded": "205/40R17 on7Jx17",
+    "trackUncertainty": "OEM mirroredtable gives track ranges, not wheel-specific mapping. Do not assert maxtrack exact16-inch value; choose disclosed estimate if runtime needs scalar."
+  },
+  "fuelLitres": 45,
+  "fuelProvenance": "Contemporary secondary corroboration only",
+  "unknowns": [
+    "Mass fuel/driver convention",
+    "Specific16-inch track values within publishedrange",
+    "Redline/cutoff/idle/compression/fulltorquecurve",
+    "Frontweightfraction,CGheight,inertia,Cd/frontalarea,diffbehavior,spring/damperrates"
+  ],
+  "retrievalLimitations": [
+    "Exact2005price PDF guessed URL403HTML; preserved failed-price2005.html",
+    "2006OEMtechnicalPDF mirror502; no readableactualPDF obtained",
+    "January2006pricePDF403; not used to override2005"
+  ],
+  "implementationNotes": [
+    "Use mechanicalhp conversion not150hp:150PS is not150SAEhp",
+    "Original2994 logo-free design, not OEM art",
+    "Fixed rear camera, existing sharedwheel, LHD dashboard gauge placement individually fitted",
+    "Any unsourced numeric physics values must be marked simulation estimates",
+    "Source-only task, no code/maps/art changed"
+  ]
+}

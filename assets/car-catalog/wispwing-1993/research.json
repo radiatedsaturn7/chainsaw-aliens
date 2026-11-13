@@ -1,0 +1,113 @@
+{
+  "fictionalName": "Wispwing 660 1993",
+  "reference": "JDM January1993 Suzuki Cara base E-PG6SS FAXF, mid-engine RWD five-speed manual, RHD, fixed-roof two-seat gullwing coupe, doors closed",
+  "status": "Primary OEM source-ready; redline/limiter/differential details remain unknown",
+  "duplicateCheck": "Copen rejected because Buttoncap Turbo2003 already represents it. No implemented or shared Cara/AZ-1 source packet found; full-candidate-backlog has unimplemented AutozamAZ-1 1993 candidate. Treat Cara/AZ-1 as one closely related family for future duplicate prevention, not two new distinct designs.",
+  "sources": [
+    {
+      "url": "https://www.suzuki.co.jp/suzuki_digital_library/pdf/1_auto/cara/61.pdf",
+      "type": "Official Suzuki digital-library historical technical table",
+      "local": "oem-cara.pdf",
+      "verification": "Actual single-page PDF downloaded, text extracted, rendered to oem-table.png and visually inspected. Header explicitly January1993, E-PG6SS, FAXF, five-speed manual."
+    },
+    {
+      "url": "https://www.suzuki.co.jp/suzuki_digital_library/1_auto/cara.html",
+      "type": "Official Suzuki historical model entry",
+      "verification": "OEM description confirms Mazda-built AZ-1-derived supply model, Suzuki F6A engine, engine behind driver and rear-wheel drive."
+    }
+  ],
+  "engine": {
+    "code": "F6A",
+    "layout": "Water-cooled inline-three, DOHC12-valve intercooled turbo gasoline",
+    "displacementCc": 657,
+    "boreMm": 65,
+    "strokeMm": 66,
+    "compressionRatio": 8.3,
+    "powerPs": 64,
+    "powerHpDerived": 63.124484519616,
+    "powerKwDerived": 47.07192,
+    "powerRpm": 6500,
+    "powerConvention": "OEM table labels net and supplies PS only; kW column blank. Converted hp/kW are derived, not separately published.",
+    "torqueKgfM": 8.7,
+    "torqueNmDerived": 85.317855,
+    "torqueRpm": 4000,
+    "torqueConvention": "OEM kg\u00b7m legacy unit interpreted kgf\u00b7m; Nm column blank. Do not misread8.7 asNm.",
+    "fuel": "Unleaded gasoline; grade not stated",
+    "redlineRpm": null,
+    "fuelCutRpm": null,
+    "idleRpm": null,
+    "boostPressure": null
+  },
+  "drivetrain": {
+    "drive": "RWD",
+    "enginePosition": "Mid-engine behind occupants",
+    "transmission": "5MT",
+    "forwardRatios": [
+      3.818,
+      2.277,
+      1.521,
+      1.03,
+      0.837
+    ],
+    "reverseRatio": 3.583,
+    "finalDrive": 4.705,
+    "clutch": "Dry single plate diaphragm",
+    "ratioProvenance": "Exact selected Suzuki OEM table, not Mazda or Cappuccino ratios",
+    "differential": "Open/LSD type not stated; do not claim factory LSD or import an aftermarket setup"
+  },
+  "mass": {
+    "vehicleMassKg": 720,
+    "sourceLabel": "\u8eca\u4e21\u91cd\u91cf (vehicle mass)",
+    "convention": "OEM vehicle weight; detailed driver/fluid convention not defined in this sheet. Do not call dry mass or adjust by75kg."
+  },
+  "dimensionsMm": {
+    "length": 3295,
+    "width": 1395,
+    "height": 1150,
+    "wheelbase": 2235,
+    "trackFront": 1200,
+    "trackRear": 1195,
+    "groundClearance": 135
+  },
+  "wheels": {
+    "front": "155/65R13 73H",
+    "rear": "155/65R13 73H",
+    "nominalRadiusM": 0.26585000000000003,
+    "note": "Unloaded geometric radius0.26585m, not measured loaded radius. Wheel width not given."
+  },
+  "fuelTankLitres": 30,
+  "chassis": {
+    "frontSuspension": "MacPherson strut coil spring",
+    "rearSuspension": "MacPherson strut coil spring",
+    "stabilizers": "Torsion bar front/rear",
+    "frontBrakes": "Disc",
+    "rearBrakes": "Disc",
+    "brakeAssist": "Vacuum servo",
+    "brakeBiasControl": "Proportioning device",
+    "steering": "Rack and pinion",
+    "minimumTurningRadiusM": 4.7,
+    "turningNote": "Radius, not diameter; detailed measurement convention unspecified",
+    "ABS": "Not established by selected OEM sheet; do not assume"
+  },
+  "unknownSimulationFields": [
+    "Redline, fuel cut and speed limiter",
+    "Idle/full torque curve/boost threshold",
+    "Differential locking/LSD",
+    "Static front mass fraction",
+    "CG/inertia",
+    "Drag/frontal area",
+    "Overhang split",
+    "Wheel widths and loaded radius",
+    "Spring/damper rates",
+    "Brake dimensions",
+    "Exact mass fluid/driver convention"
+  ],
+  "implementationNotes": [
+    "Supported ordinary turbo ICE RWD manual mechanics; no hybrid or roof-state simulation required.",
+    "Fixed roof with gullwing doors CLOSED in artwork/runtime; this is not a retractable Copen roof.",
+    "Original fictional 2994 styling, no Suzuki/Mazda/Autozam logos or copied panels.",
+    "PS to mechanicalhp conversion matters:64PS is approximately63.124hp, not64hp.",
+    "No source support for common140km/h limiter claim or8500rpm limit; keep unknown rather than importing folklore.",
+    "Source-only, no code/maps/art changed."
+  ]
+}

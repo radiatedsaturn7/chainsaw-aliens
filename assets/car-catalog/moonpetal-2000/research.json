@@ -1,0 +1,139 @@
+{
+  "fictionalName": "Moonpetal GT 2000",
+  "reference": "US 2000 Toyota Celica GT-S six-speed manual, LHD FWD, standard P205/55R15 package, no TRD/optional 16-inch package",
+  "duplicateCheck": "No Celica reference found in current copperwing-work catalog research or shared car-next JSON/Markdown packets.",
+  "status": "Source-ready with disclosed cross-market gearing corroboration and unverified fuel-cut speed; not all details exact-US OEM verified",
+  "sources": [
+    {
+      "url": "https://importarchive.com/brochure/toyotacelica2000_01",
+      "type": "Actual OEM 2000 US brochure, archived scan",
+      "identity": "PC0-009 (9/99) 00634-00CEL",
+      "verification": "Actual pages 23\u201325 downloaded and visually inspected; low resolution. Technical page 24 corroborated by separate OEM 2000 web-specification text layer.",
+      "local": [
+        "page-023.jpg",
+        "page-024.jpg",
+        "page-025.jpg"
+      ]
+    },
+    {
+      "url": "https://usersmanualguide.com/toyota/automobile/celica-2000/user-manual/2c97n",
+      "type": "OEM 2000 US sales specification document mislabeled user manual by host",
+      "verification": "Read complete HTML text layer, marked 2000 CELICA and copyright 2000 Toyota Motor Sales USA. Downloaded bg4 PNG contains background only, NOT verified text image."
+    },
+    {
+      "url": "https://assets.sia.toyota.com/publications/en/om-s/OM20735U/pdf/00Celica_OM20735U_edited.pdf",
+      "type": "Exact 2000 Toyota US owner manual, official Toyota hosting",
+      "verification": "Physical PDF page 222 / printed 221 rendered and visually inspected for displacement, metric dimensions and 55 L tank.",
+      "local": "oem-owner.pdf"
+    },
+    {
+      "url": "https://motorsport.org.au/wpblob0fe832abcb/wp-content/uploads/docs/default-source/sporting-technical/group-3e/3-09-038-toyota-celica.pdf?x41820=",
+      "type": "Motorsport Australia recognition 3-09-038, Celica ZR; cross-market technical corroboration NOT exact US trim",
+      "verification": "Actual page 4 rendered and visually inspected: all forward/reverse ratios and final drive. Racing mass 1192 kg is NOT used.",
+      "local": "au-homologation.pdf"
+    },
+    {
+      "url": "https://www.carspecs.us/cars/2000/toyota/celica/9206",
+      "type": "Exact US 2000 GT-S manual secondary database",
+      "verification": "Rounded gear ratios corroborate Australian recognition table. 2500 lb matches OEM. Fuel 13.2 gal conflicts with both OEM brochure/manual and is rejected."
+    },
+    {
+      "url": "https://www.caranddriver.com/reviews/a15139705/toyota-thunder-trd-celica-gt-s-road-test/",
+      "type": "Contemporary 2000 TRD-modified test, limited redline corroboration only",
+      "verification": "States 7800-rpm redline. Do not import modified suspension/performance/mass or equate redline with ECU cut."
+    }
+  ],
+  "engine": {
+    "code": "2ZZ-GE",
+    "layout": "NA gasoline inline four, DOHC 16 valves, VVTL-i",
+    "displacementCc": 1796,
+    "boreMm": 82,
+    "strokeMm": 85,
+    "compressionRatio": 11.5,
+    "powerHp": 180,
+    "powerRpm": 7600,
+    "torqueLbFt": 130,
+    "torqueNmDerived": 176.256333283082,
+    "torqueRpm": 6800,
+    "redlineRpmProposed": 7800,
+    "redlineProvenance": "Contemporary secondary test, not independently verified OEM tach boundary",
+    "fuelCutRpm": null,
+    "fuelCutNote": "Common 8400-rpm early-year claims and 7800-rpm later-year claims were not validated in an exact 2000 OEM ECU document. Do not assert 8400 as verified, and do not confuse tach redline with fuel cut.",
+    "idleRpm": null,
+    "liftTransitionRpm": null
+  },
+  "drivetrain": {
+    "drive": "FWD",
+    "transmission": "6MT / C60",
+    "forwardRatios": [
+      3.166,
+      2.05,
+      1.481,
+      1.166,
+      0.916,
+      0.725
+    ],
+    "reverseRatio": 3.25,
+    "finalDrive": 4.529,
+    "provenance": "Exact-US secondary data rounded to 3.17/2.05/1.48/1.17/.92/.73, reverse3.25, final4.53; finer physical values corroborated by actual Australian Celica ZR recognition page. Cross-market matching inference explicitly retained, not exact US OEM ratio proof.",
+    "differential": "LSD not verified; do not add it as factory fact."
+  },
+  "mass": {
+    "curbLb": 2500,
+    "curbKgDerived": 1133.980925,
+    "source": "Exact OEM brochure manual column; automatic2580 lb excluded",
+    "convention": "Called curb weight; detailed driver/fluid convention not stated. No driver-mass adjustment."
+  },
+  "dimensions": {
+    "lengthMm": 4330,
+    "widthMm": 1735,
+    "heightMm": 1305,
+    "wheelbaseMm": 2600,
+    "frontTrackMm": 1490,
+    "rearTrackMm": 1480,
+    "source": "Exact owner manual metric table, printed221",
+    "conflict": "Brochure gives height51.4in and tracks58.6/58.2in; manual gives1305mm (but inconsistent51.8in parenthesis),1490/1480mm. Retain source metric numbers and explicit rounding/typographic discrepancy, not silent blend.",
+    "brochureInches": {
+      "length": 170.5,
+      "width": 68.3,
+      "height": 51.4,
+      "wheelbase": 102.4,
+      "frontTrack": 58.6,
+      "rearTrack": 58.2
+    },
+    "groundClearanceInches": 5.5
+  },
+  "wheels": {
+    "front": "P205/55R15",
+    "rear": "P205/55R15",
+    "standardWheel": "15-inch five-spoke aluminum alloy",
+    "nominalRadiusM": 0.30325,
+    "radiusDerivation": "205*.55/1000 + 15*.0254/2; unloaded geometric estimate",
+    "excludedOptional": "P205/50R16 on optional16-inch alloys"
+  },
+  "fuelTankLitres": 55,
+  "fuelTankSource": "Exact owner manual55 L/14.5 USgal corroborates brochure; secondary13.2gal rejected",
+  "chassis": {
+    "frontSuspension": "Independent MacPherson strut",
+    "rearSuspension": "Double wishbone",
+    "frontBrakeDiameterInches": 10.8,
+    "rearBrakeDiameterInches": 10.6,
+    "rearBrakes": "Solid discs",
+    "ABS": "Optional, not selected as standard",
+    "dragCoefficient": 0.32,
+    "dragSource": "OEM 2000 specification text; frontal area not verified"
+  },
+  "unknownSimulationFields": [
+    "Fuel cut",
+    "Idle",
+    "VVTL-i transition/calibration and full torque curve",
+    "Weight distribution",
+    "CG/inertia",
+    "Frontal area",
+    "Spring/damper rates",
+    "Differential behavior",
+    "Overhang split",
+    "Loaded rolling radius"
+  ],
+  "scope": "Research only; no artwork, code, imports or maps changed."
+}

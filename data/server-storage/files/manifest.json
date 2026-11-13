@@ -490,7 +490,21 @@
       "catalog-chicory-gt-2008-body": "art/catalog-chicory-gt-2008-body/document.json",
       "catalog-chicory-gt-2008-dashboard": "art/catalog-chicory-gt-2008-dashboard/document.json",
       "catalog-bluebell-gt-2006-body": "art/catalog-bluebell-gt-2006-body/document.json",
-      "catalog-bluebell-gt-2006-dashboard": "art/catalog-bluebell-gt-2006-dashboard/document.json"
+      "catalog-bluebell-gt-2006-dashboard": "art/catalog-bluebell-gt-2006-dashboard/document.json",
+      "catalog-primrose-st-2005-body": "art/catalog-primrose-st-2005-body/document.json",
+      "catalog-primrose-st-2005-dashboard": "art/catalog-primrose-st-2005-dashboard/document.json",
+      "catalog-hazel-2011-body": "art/catalog-hazel-2011-body/document.json",
+      "catalog-hazel-2011-dashboard": "art/catalog-hazel-2011-dashboard/document.json",
+      "catalog-foxmint-2000-body": "art/catalog-foxmint-2000-body/document.json",
+      "catalog-foxmint-2000-dashboard": "art/catalog-foxmint-2000-dashboard/document.json",
+      "catalog-moonpetal-2000-body": "art/catalog-moonpetal-2000-body/document.json",
+      "catalog-moonpetal-2000-dashboard": "art/catalog-moonpetal-2000-dashboard/document.json",
+      "catalog-buckwheat-1997-body": "art/catalog-buckwheat-1997-body/document.json",
+      "catalog-buckwheat-1997-dashboard": "art/catalog-buckwheat-1997-dashboard/document.json",
+      "catalog-wispwing-1993-body": "art/catalog-wispwing-1993-body/document.json",
+      "catalog-wispwing-1993-dashboard": "art/catalog-wispwing-1993-dashboard/document.json",
+      "catalog-glowmoth-sc-1988-body": "art/catalog-glowmoth-sc-1988-body/document.json",
+      "catalog-glowmoth-sc-1988-dashboard": "art/catalog-glowmoth-sc-1988-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -554,7 +568,14 @@
       "Firethorn Turbo 2005": "cars/Firethorn Turbo 2005/document.json",
       "Mallow S 2006": "cars/Mallow S 2006/document.json",
       "Chicory GT 2008": "cars/Chicory GT 2008/document.json",
-      "Bluebell GT 2006": "cars/Bluebell GT 2006/document.json"
+      "Bluebell GT 2006": "cars/Bluebell GT 2006/document.json",
+      "Primrose ST 2005": "cars/Primrose ST 2005/document.json",
+      "Hazel S 2011": "cars/Hazel S 2011/document.json",
+      "Foxmint 1.7 2000": "cars/Foxmint 1.7 2000/document.json",
+      "Moonpetal GT 2000": "cars/Moonpetal GT 2000/document.json",
+      "Buckwheat 2.4 1997": "cars/Buckwheat 2.4 1997/document.json",
+      "Wispwing 660 1993": "cars/Wispwing 660 1993/document.json",
+      "Glowmoth SC 1988": "cars/Glowmoth SC 1988/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
