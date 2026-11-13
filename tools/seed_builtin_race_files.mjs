@@ -10,11 +10,14 @@ const COMPACT_STORAGE_ENCODING = 'json-gzip-base64';
 const COMPACT_STORAGE_MIN_BYTES = 4096;
 
 function sanitizeProjectFileName(name = '') {
+  // Curated landmark IDs must round-trip exactly; other filenames retain the legacy cap.
+  const raw = String(name || '');
+  const limit = raw.length <= 80 && /^landmark-city-[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(raw) ? 80 : 64;
   return String(name || '')
     .trim()
     .replace(/\s+/g, ' ')
     .replace(/[\\/:*?"<>|]/g, '')
-    .slice(0, 64);
+    .slice(0, limit);
 }
 
 function encodeDocument(value) {
