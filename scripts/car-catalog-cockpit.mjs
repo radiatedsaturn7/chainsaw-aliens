@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'firethorn-turbo-2005':{wheelOpening:true,size:[1983,793],cluster:[285,510,420,175],wheel:[495,720,250]},
  'copperhead-sc-2006':{wheelOpening:true,size:[1983,793],cluster:[265,500,465,185],wheel:[500,715,250]},
  'snowdrop-t5-2008':{wheelOpening:true,size:[1983,793],cluster:[200,490,535,205],wheel:[470,720,250]},
  'aster-170-2003':{wheelOpening:true,size:[1983,793],cluster:[225,490,535,195],wheel:[490,710,250]},

@@ -1,0 +1,121 @@
+{
+  "fictionalName": "Firethorn Turbo 2005",
+  "reference": "US 2005 Dodge SRT-4 standard four-door sedan, T850 5MT FWD LHD, not ACR or Commemorative Edition",
+  "duplicateCheck": "No Neon/SRT-4/Firethorn match in inspected catalog",
+  "status": "Original-art additive candidate; actual browser acceptance pending",
+  "sources": [
+    {
+      "url": "https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2005DodgeSRT4Specs.pdf",
+      "publisher": "Dodge/Chrysler media archive",
+      "local": "oem-2005-srt4.pdf",
+      "verification": "Genuine PDF; actual physical pages 1,2,4 (printed7,8,10) rendered and visually inspected; full text extracted."
+    },
+    {
+      "url": "https://xr793.com/wp-content/uploads/2016/11/2005-Dodge-SRT4.pdf",
+      "publisher": "DaimlerChrysler OEM brochure on independent mirror",
+      "local": "oem-brochure-mirror.pdf",
+      "verification": "Downloaded genuine PDF and extracted text; also prints 17x6 inch wheels."
+    }
+  ],
+  "engine": {
+    "displacementCc": 2429,
+    "layout": "transverse front turbocharged gasoline I4 DOHC16V",
+    "boreMm": 87.5,
+    "strokeMm": 101,
+    "compression": 8.1,
+    "powerSAENetHp": 230,
+    "powerRpm": 5300,
+    "torqueLbFt": 250,
+    "torquePublishedNm": 339,
+    "torquePlateauRpm": [
+      2200,
+      4400
+    ],
+    "electronicallyLimitedRpm": 6240,
+    "fuel": "91 AKI preferred,87 AKI acceptable",
+    "blockMaterial": "Unresolved; press sheet claims aluminum block with iron liners, suspicious; do not encode material as verified"
+  },
+  "transmission": {
+    "type": "T850 five-speed manual",
+    "drive": "FWD",
+    "physicalRatiosPublished": [
+      3.65,
+      2.05,
+      1.37,
+      0.97,
+      0.76
+    ],
+    "reversePublished": 3.47,
+    "finalDrivePublished": 3.53,
+    "differential": "Standard limited-slip developed with Quaife",
+    "topOverallCalculated": 2.6828,
+    "topOverallErroneousPublished": 3.2,
+    "note": "Use individual published ratios with final3.53; product2.6828 conflicts with printed overall3.2. Do not rescale final to force3.2. Published rounded ratios, not independently tooth-count verified."
+  },
+  "mass": {
+    "curbLb": 2900,
+    "curbKgPublished": 1315,
+    "curbKgConverted": 1315.417873,
+    "status": "Explicitly estimated OEM curb weight, not measured production curb",
+    "convention": "Fuel and driver convention unspecified",
+    "frontFraction": 0.63
+  },
+  "tires": {
+    "size": "205/50ZR17 three-season ultra-performance",
+    "sourceModel": "BFGoodrich KDW II",
+    "wheelPublished": "17x6 cast aluminum",
+    "revolutionsPerMile": 821,
+    "nominalGeometricRadiusM": 0.3184,
+    "rollingRadiusCalculatedFromRevsM": 0.3119793577774461,
+    "note": "Nominal geometric and revs-per-mile-derived effective rolling radii are different; choose runtime convention explicitly."
+  },
+  "dimensionsMm": {
+    "wheelbase": 2667,
+    "frontTrack": 1474,
+    "rearTrack": 1476,
+    "length": 4430,
+    "widthAtFrontSeatReference": 1711,
+    "height": 1421,
+    "groundClearance": 154
+  },
+  "aero": {
+    "Cd": 0.35,
+    "frontalArea": "unknown"
+  },
+  "fuelTank": {
+    "USGal": 12.5,
+    "publishedL": 47.3
+  },
+  "chassis": {
+    "front": "MacPherson struts, asymmetrical lower arms, coils, stabilizer",
+    "rear": "Chapman struts, coils, dual lower transverse links, lower trailing link, stabilizer",
+    "steeringRatio": 18,
+    "turnsLockToLock": 2.7,
+    "turningDiameterM": 12.5,
+    "frontBrakesMm": [
+      280,
+      28
+    ],
+    "frontBrakeType": "vented single-piston sliding caliper",
+    "rearBrakesMm": [
+      270,
+      12
+    ],
+    "rearBrakeType": "solid disc, ABS and electronic brake proportioning"
+  },
+  "uncertainties": [
+    "OEM overall top gear3.2 inconsistent with .76*3.53; preserve discrepancy.",
+    "Published fourth .97 differs from some secondary claims .947; use OEM rounded figure unless actual service evidence supersedes.",
+    "Press sheet and brochure both print17x6; secondary6.5 claims not resolved. Do not silently replace.",
+    "Press sheet aluminum-block description suspicious and unnecessary for simulation; leave unresolved.",
+    "Curb explicitly estimated; not exact production measured weight.",
+    "Idle, full torque curve outside plateau, boost transient, drivetrain efficiency, CG/inertia and handling parameters unknown.",
+    "LSD existence verified; simulation locking values are estimates, not actual Quaife mechanism calibration."
+  ],
+  "visualPlan": [
+    "Original fictional2994 logo-free sport sedan, not manufacturer replica",
+    "LHD cockpit with individually aligned gauges and existing shared wheel",
+    "Fixed rear camera; front-driven tire smoke; dual rear exhaust tips source-confirmed",
+    "Do not use ACR wheels/suspension or later CaliberSRT drivetrain"
+  ]
+}
