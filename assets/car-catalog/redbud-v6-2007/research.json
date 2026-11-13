@@ -78,5 +78,23 @@
     "reason": "OEM brochure confirms fulltime Torsen center differential and locking feature. Inspected runtime PowertrainModel has generic capacity-based center bias/lock, not verified exactTorsen/transfer-low-range model. Parent requested conventional fallback if fixed4WDfidelity unsupported.",
     "source": "https://cdn.dealereprocess.org/cdn/brochures/toyota/2007-fjcruiser.pdf"
   },
-  "artPlan": "Original2994 logo-free elongated two-door coupe, burgundy/silver salvage panels, altered lights/fascia. LHD dashboard with red-lit blank gauge wells and sharedwheel opening. Use fixedrear camera and source-informed dualexhaust positions, individually fit gauges. No art/code/maps changed."
+  "artPlan": "Original2994 logo-free elongated two-door coupe, burgundy/silver salvage panels, altered lights/fascia. LHD dashboard with red-lit blank gauge wells and sharedwheel opening. Use fixedrear camera and source-informed dualexhaust positions, individually fit gauges. No art/code/maps changed.",
+  "secondGearCrossCheck": {
+    "result": "Retain explicit uncertainty. Likely typographical transposition but not conclusively resolved by inspected first-party service/parts tooth evidence. Existing source-published2.487 unchanged.",
+    "evidence": [
+      {
+        "url": "https://hondanews.com/en-US/releases/release-96ea207fc4b0277b2dc477004c34c12b-2006-honda-accord-coupe-specifications",
+        "finding": "Contemporaneous2006 coupe OEM table also prints2.487 with final3.286; may perpetuate same table error, not independent hardware proof."
+      },
+      {
+        "url": "https://hondanews.com/en-US/releases/release-44c7378894c75d8ecc4920004c34bfbe-2007-honda-accord-sedan-specifications",
+        "finding": "Sameyear OEM sedan6MT table prints2.478 with same other ratios; body variant not direct coupe service evidence."
+      },
+      {
+        "url": "https://diagnostdata.com/honda/accord/vii-facelift-2005-2008/remont/anti-locktraction-control/specifications-v6/specifications/",
+        "finding": "Third-party service-style reproduction identifiesATC6 and2.478,final3.286. Not independently authenticated OEM manual provenance."
+      }
+    ],
+    "recommendedHandling": "Either retain2.487 as source-published with conflict label, or explicitly document2.478 as inferred hardware correction based on service reproduction plus contemporary sedan corroboration. Do not call the correction unambiguously OEM-verified for2007coupe. No need to block unrelated art."
+  }
 }
