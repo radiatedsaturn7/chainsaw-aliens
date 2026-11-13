@@ -1,0 +1,34 @@
+{
+  "inspiration": "2021 UK Toyota GR Yaris base 6MT, not Circuit Pack",
+  "sources": [
+    {
+      "url": "https://www.toyota.co.uk/content/dam/toyota/nmsc/united-kingdom/brochure-archive/gr-yaris/gr-yaris-jan-21.pdf",
+      "fields": [
+        "{\"powerBhp\":257,\"powerKW\":192,\"powerRpm\":6500,\"torqueNm\":360,\"torqueRpm\":[3000,4600],\"cc\":1618,\"tankLitres\":50,\"gears\":[3.538,2.238,1.535,1.162,1.081,0.902],\"topMph\":142,\"zeroTo62\":5.5,\"cd\":0.352,\"curbKgRange\":[1280,1305],\"grossKg\":1645,\"lengthMm\":3995,\"widthMm\":1805,\"heightMm\":1455,\"wbMm\":2560,\"frontTrackMm\":1536,\"rearTrackMm\":1572,\"frontOverhangMm\":830,\"rearOverhangMm\":605,\"clearanceMm\":124,\"tires\":\"225/40R18\",\"differentials\":\"Base open front/rear. Torsen only Circuit Pack.\"}"
+      ]
+    },
+    {
+      "url": "https://media.toyota.co.uk/the-new-toyota-gr-yaris-forged-in-the-heat-of-world-rally-competition/",
+      "fields": [
+        "{\"minimumCurbKg\":1280,\"AWDNormalFrontPercent\":60,\"AWDSportFrontPercent\":30,\"AWDTrackFrontPercent\":50}"
+      ]
+    },
+    {
+      "url": "https://media.toyota.co.uk/wp-content/uploads/sites/5/2021/03/1605890847201029MGRYarisFullRelease.pdf",
+      "fields": [
+        "{\"reverse\":3.831,\"finalDriveGears1to4\":3.941,\"finalDriveGears5to6AndReverse\":3.35,\"steeringRatio\":13.6,\"turnsLockToLock\":2.36,\"minimumMassKg\":1280,\"maxMassKg\":1310,\"topMph\":143}",
+        "Table torque3600 is typo; narrative and Jan2021 brochure corroborate360Nm.",
+        "Launch top143mph differs Jan2021 brochure142mph and maximum mass1310 differs1305; record rather than silently mixing."
+      ]
+    }
+  ],
+  "estimates": [
+    "257 bhp and 360 Nm are UK figures, not Japanese 272 PS. 1280kg is minimum kerb mass, not every option configuration.",
+    "OEM final drives: 3.941 for gears 1\u20134, 3.350 for gears 5\u20136 and reverse. Runtime has one final drive; fifth/sixth/reverse are equivalent ratios multiplied by 3.350/3.941 to preserve total reduction, not literal gearbox ratios.",
+    "Normal AWD nominal 60/40 front/rear represented as centerDifferentialBalance 0.4 rear share. Dynamic OEM coupling/GR-FOUR ECU is not simulated. Base front/rear open differentials, not Circuit Pack Torsen.",
+    "7000 redline,7200 limiter,850 idle, torque interpolation except 3000\u20134600 peak and6500 power anchor,84% drivetrain efficiency and shift/launch behavior are modeling estimates.",
+    "60% front mass,.50m CG, collider subshapes,suspension/brakes/alignment/aero except OEM drag coefficient and33psi tire pressures are development assumptions.",
+    "142mph brochure display conflicts with143mph launch press pack; neither a measured game result nor implemented governor. OEM5.5sec is0\u201362, not0\u201360;5.3sec0\u201360 display is unvalidated estimate.",
+    "Nominal tire radius .3186m calculated from225/40R18; sprite anchors and cockpit placements are artistic calibration."
+  ]
+}

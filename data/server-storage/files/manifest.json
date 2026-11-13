@@ -422,7 +422,11 @@
       "catalog-cairn-1974-body": "art/catalog-cairn-1974-body/document.json",
       "catalog-cairn-1974-dashboard": "art/catalog-cairn-1974-dashboard/document.json",
       "catalog-pipit-100-2007-body": "art/catalog-pipit-100-2007-body/document.json",
-      "catalog-pipit-100-2007-dashboard": "art/catalog-pipit-100-2007-dashboard/document.json"
+      "catalog-pipit-100-2007-dashboard": "art/catalog-pipit-100-2007-dashboard/document.json",
+      "catalog-sundew-660-1991-body": "art/catalog-sundew-660-1991-body/document.json",
+      "catalog-sundew-660-1991-dashboard": "art/catalog-sundew-660-1991-dashboard/document.json",
+      "catalog-bramble-2021-body": "art/catalog-bramble-2021-body/document.json",
+      "catalog-bramble-2021-dashboard": "art/catalog-bramble-2021-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -452,7 +456,9 @@
       "Stormline 2002": "cars/Stormline 2002/document.json",
       "Ashbaron 1987": "cars/Ashbaron 1987/document.json",
       "Cairn 1974": "cars/Cairn 1974/document.json",
-      "Pipit 100 2007": "cars/Pipit 100 2007/document.json"
+      "Pipit 100 2007": "cars/Pipit 100 2007/document.json",
+      "Sundew 660 1991": "cars/Sundew 660 1991/document.json",
+      "Bramble 2021": "cars/Bramble 2021/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
