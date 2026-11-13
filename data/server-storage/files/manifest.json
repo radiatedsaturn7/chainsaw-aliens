@@ -437,6 +437,8 @@
       "catalog-glimmer-1986-dashboard": "art/catalog-glimmer-1986-dashboard/document.json",
       "catalog-marigold-1991-body": "art/catalog-marigold-1991-body/document.json",
       "catalog-marigold-1991-dashboard": "art/catalog-marigold-1991-dashboard/document.json",
+      "catalog-nettle-turbo-2017-body": "art/catalog-nettle-turbo-2017-body/document.json",
+      "catalog-nettle-turbo-2017-dashboard": "art/catalog-nettle-turbo-2017-dashboard/document.json",
       "catalog-cicada-turbo-2015-body": "art/catalog-cicada-turbo-2015-body/document.json",
       "catalog-cicada-turbo-2015-dashboard": "art/catalog-cicada-turbo-2015-dashboard/document.json"
     },
@@ -476,6 +478,7 @@
       "Rosefinch 1991": "cars/Rosefinch 1991/document.json",
       "Glimmer 1986": "cars/Glimmer 1986/document.json",
       "Marigold 1991": "cars/Marigold 1991/document.json",
+      "Nettle Turbo 2017": "cars/Nettle Turbo 2017/document.json",
       "Cicada Turbo 2015": "cars/Cicada Turbo 2015/document.json"
     },
     "cutscenes": {

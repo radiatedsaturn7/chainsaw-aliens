@@ -1,0 +1,38 @@
+{
+  "inspiration": "2017 US Fiat 124 Spider Abarth 6MT, sport-mode torque reference, standard brakes",
+  "sources": [
+    {
+      "url": "https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2017_FIAT_124Spider_Specsuftn9g4spiianhf952u5vplq06.pdf",
+      "kind": "OEM US MY2017 specification PDF, all relevant pages read",
+      "fields": [
+        "{\"displacementCc\": 1368, \"powerSaeHp\": 164, \"powerRpm\": 5500, \"torqueLbFt\": 184, \"sportTorqueRpm\": 2500, \"normalTorqueRpm\": 3200, \"limitRpm\": 6250, \"curbKg\": 1124, \"curbLb\": 2477, \"gears\": [4.363, 2.348, 1.647, 1.262, 1, 0.844], \"reverse\": 3.863, \"finalDrive\": 3.454, \"drive\": \"RWD\", \"limitedSlip\": \"mechanical rear standard Abarth\", \"steeringRatio\": 15.5, \"steeringTurns\": 2.7, \"lengthMm\": 4054, \"widthMm\": 1740, \"heightMm\": 1232, \"wheelbaseMm\": 2309, \"trackFrontMm\": 1496, \"trackRearMm\": 1503, \"tankL\": 45, \"tires\": \"205/45R17\", \"fuelEconomyMpgUS\": [26, 35, 30], \"frontBrake\": \"11-inch vented floating disc standard; Brembo optional\", \"rearBrake\": \"11-inch solid floating disc\", \"ABS\": true, \"ESC\": true}"
+      ]
+    },
+    {
+      "url": "https://vehicleinfo.mopar.com/assets/publications/en-us/Fiat/2017/124_Spider_Abarth/2136.pdf",
+      "kind": "OEM US2017 owner manual opened",
+      "fields": [
+        "{\"curbMassCorroboration\": \"1124kg 6MT /1141kg 6AT\"}"
+      ]
+    },
+    {
+      "url": "https://www.media.stellantis.com/uploads/em/2016/ABARTH/Schde_tecniche/160607_Abarth_124-spider_Scheda-Tecnica_ENG.pdf",
+      "kind": "OEM European specification, comparison only",
+      "fields": [
+        "{\"emptyWeightKg\": 1060, \"powerKW\": 125, \"maximumRpm\": 6500}"
+      ]
+    }
+  ],
+  "estimates": [
+    "Use US1124kg curb, not European1060kg empty mass or USClassica1105kg.",
+    "Use164SAEhp, not European170metricHP; OEM123kW rounding conflicts slightly with164hp, preserve SAEhp.",
+    "Use US6250rpm limiter, not European6500.",
+    "Sport-mode2500rpm torque peak; separate controller mode switching is not emulated.",
+    "OEM22psi/2.49bar boost pairs gauge and absolute values; do not use2.49bar as gauge.",
+    "Manual ratios match European source; use USprimary values.",
+    "Runtime setup needs explicit estimates for axle weight distribution, drag,CG,height/clearance,alignment,suspension,damping,pressures and torque curve beyond sourced anchors.",
+    "Top speed and acceleration fromEuropeanpress are not automatically USverified.",
+    "Original art should not reproduce brands, badges or exact exterior design.",
+    "53 percent front weight, .13m clearance, .44m CG, .35 drag, 29psi, alignment, suspension, brake balance and LSD locking percentages are provisional game estimates, not OEM measured values. Torque curve between cited anchors approximates sport mode. 140mph/6.8s0-60 display targets are game estimates, not measured simulation."
+  ]
+}
