@@ -4,3 +4,10 @@ test('Ashbaron source openings and eight-angle yaw mapping are individually auth
 test('Ashbaron real editor roundtrip preserves fixed rear camera, LHD instruments and shared wheel',()=>{const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(structuredClone(doc),{name:doc.car.name});const c=e.serializeSelectedCarDocument().car;assert.deepEqual(c,doc.car);assert.equal(c.camera.trackingMode,'fixed-rear');assert.equal(c.art.interior.steeringWheel.artRef,'steeringwheel');assert.ok(c.art.interior.steeringWheel.anchorX<.3);assert.equal(c.art.gauges.interior.coordinateSpace,'dashboard');for(const w of c.art.gauges.interior.widgets)assert.ok(w.x<.4);assert.equal(c.tuning.powerHp,276);});
 
 test('Ashbaron production rating and shared transmission preserve source distinctions',()=>{const c=cfg.car,t=c.tuning;assert.equal(t.powerHp,276);assert.equal(t.torqueLbFt,360);assert.equal(t.drivetrain,'rwd');assert.equal(c.defaultTransmissionType,'automatic');assert.deepEqual(c.transmissions.automatic.gearRatios,[2.74,1.57,1,.67]);assert.equal(t.reverseRatio,2.07);assert.equal(t.gearFinalDrive,3.42);assert.equal(c.setup.tireSizeByAxle.front.widthMm,245);assert.equal(c.setup.tireSizeByAxle.rear.widthMm,255);assert.ok(cfg.provenance.estimates.some(s=>s.includes('prototype')));});
+
+test('Ashbaron all exterior slots retain automatic visible-side tires and correct four-speed label',()=>{
+ for(const car of [cfg.car,doc.car]){
+  assert.equal(car.transmissions.automatic.label,'4AT');
+  for(const [slot,layer] of Object.entries(car.art.angleLayers))assert.equal(layer.tires.tireMode,'auto',slot);
+ }
+});
