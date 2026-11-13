@@ -482,38 +482,22 @@
     "occlusionWidthFactor": 0.75
   },
   "landmark-city-oh-terminal-tower": {
-    "reason": "Cleveland safe approach shortlist; GPS zero/large offsets are references only. Compact game-scale silhouettes, not surveyed dimensions. Preserve road geometry and daytime lighting. Initial actual desktop/handheld showed off-axis or occluded framing; broaden safe shortlist to ±240m.",
+    "reason": "Exact zero-shift 70m safe candidate; real handheld175m clears minimap and gear, preserve original source GPS. Other cities and scenery unchanged.",
     "distanceOffsets": [
-      -240,
-      -210,
-      -180,
-      -150,
-      -120,
-      -90,
-      -60,
-      -30,
-      0,
-      30,
-      60,
-      90,
-      120,
-      150,
-      180,
-      210,
-      240
+      0
     ],
-    "minimumSetbackM": 20,
-    "maximumSetbackM": 120,
+    "minimumSetbackM": 70,
+    "maximumSetbackM": 70,
     "allowOppositeSide": true,
     "facingApproachBeforeM": 150,
     "approachOffsetsM": [
-      85,
-      105,
+      100,
+      125,
       150,
-      195,
-      245
+      175,
+      200
     ],
-    "occlusionWidthFactor": 0.75
+    "occlusionWidthFactor": 1
   },
   "landmark-city-oh-west-side-market": {
     "reason": "Cleveland safe approach shortlist; GPS zero/large offsets are references only. Compact game-scale silhouettes, not surveyed dimensions. Preserve road geometry and daytime lighting.",

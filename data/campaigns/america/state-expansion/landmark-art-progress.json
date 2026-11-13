@@ -3018,7 +3018,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": -67.59957521528099,
         "worldZ": 80.43852104153478,
@@ -3027,91 +3027,89 @@
         "side": "right"
       },
       "candidateReview": {
-        "score": 0.2108103759601007,
+        "score": 0.2517884690048099,
         "views": [
           {
-            "beforeM": 85,
-            "angleDegrees": 17.52732136700635,
-            "angularWidthDegrees": 15.652630843535496,
-            "rangeM": 145.36440920770383,
-            "occluderIds": [],
-            "score": 0.29890714531974594
+            "beforeM": 100,
+            "angleDegrees": 14.338608406919827,
+            "angularWidthDegrees": 18.465343945377843,
+            "rangeM": 122.91898184884921,
+            "occluderIds": [
+              "city-oh-prop-172"
+            ],
+            "score": 0.051174679646784835
           },
           {
-            "beforeM": 105,
-            "angleDegrees": 14.149207788333419,
-            "angularWidthDegrees": 13.842693443069088,
-            "rangeM": 164.59550313059063,
+            "beforeM": 125,
+            "angleDegrees": 3.075318221424203,
+            "angularWidthDegrees": 15.397378726077298,
+            "rangeM": 147.80419753945745,
             "occluderIds": [
-              "city-oh-prop-170"
+              "city-oh-prop-172"
             ],
-            "score": 0.05208380261599959
+            "score": 0.10523847253716383
           },
           {
             "beforeM": 150,
-            "angleDegrees": 27.663616002133864,
-            "angularWidthDegrees": 10.998858283225484,
-            "rangeM": 207.5267743964929,
+            "angleDegrees": 2.7091641490963303,
+            "angularWidthDegrees": 13.194331042352548,
+            "rangeM": 172.76100061439027,
             "occluderIds": [
-              "city-oh-prop-168"
+              "city-oh-prop-172"
             ],
-            "score": 0
+            "score": 0.10699601208433761
           },
           {
-            "beforeM": 195,
-            "angleDegrees": 26.73894026074494,
-            "angularWidthDegrees": 9.251981299526834,
-            "rangeM": 246.93260101075091,
+            "beforeM": 175,
+            "angleDegrees": 9.346539183426476,
+            "angularWidthDegrees": 11.541751876718749,
+            "rangeM": 197.70355950881378,
             "occluderIds": [
-              "city-oh-prop-164",
-              "city-oh-prop-168"
+              "city-oh-prop-172"
             ],
-            "score": 0
+            "score": 0.0751366119195529
           },
           {
-            "beforeM": 245,
-            "angleDegrees": 22.329285828259337,
-            "angularWidthDegrees": 7.816815933396663,
-            "rangeM": 292.451638506814,
+            "beforeM": 200,
+            "angleDegrees": 16.407772329797766,
+            "angularWidthDegrees": 10.296612914555668,
+            "rangeM": 221.7649415231795,
             "occluderIds": [
-              "city-oh-prop-164",
-              "city-oh-prop-168"
+              "city-oh-prop-172"
             ],
-            "score": 0.012819428024355178
+            "score": 0.041242692816970725
           }
         ],
-        "sourceDistanceShiftM": -30
+        "sourceDistanceShiftM": 0
       },
-      "signature": "cda64ca7352603c6e4729b0dadb2322c33fd9e6b8ba66576a1dc08d65c4a1432",
+      "signature": "bb4de921faf520b5a7d45b00240414e7ac9bc1fb8274e48f2155f04697563e4b",
       "sourceSha256": "b15122de08722572decda2334776316078b98bc6fff6c622a01fabaae9150105",
       "roadSha256": "446b0b6433cce2e482584b8a0d02c5874028efc3b947c5ad175f427b92a27b41",
       "placementDetails": {
-        "x": -53.467126282974625,
-        "z": 257.8352849586122,
-        "yaw": -0.7945192217615901,
+        "x": -79.87646352535512,
+        "z": 215.37885645454182,
+        "yaw": -1.0277802493642574,
         "facingApproachBeforeM": 150,
-        "trackDistance": 3253.1138893182415,
-        "trackLateral": -109.99999999999999,
-        "minimumRoadClearanceM": 74.08184759450145,
+        "trackDistance": 3283.101608547861,
+        "trackLateral": -70,
+        "minimumRoadClearanceM": 34.08184759450146,
         "checkedSegments": 4673,
         "samplingStepM": 2,
         "samplingPaddingM": 2,
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Improve Terminal Tower handheld framing; desktop silhouette verified, not sufficient for both-mode approval."
-      ],
+      "remaining": [],
       "visualEvidence": [
         "docs/art/landmark-previews/OH/terminal-tower-desktop.png",
         "docs/art/landmark-previews/OH/terminal-tower-mobile.png"
       ],
       "visualReview": {
-        "approachBeforeClosestRouteProjectionM": 150,
+        "approachBeforeClosestRouteProjectionM": 175,
         "desktopViewport": "960x540",
         "mobileViewport": "390x844 handheld",
         "conditions": "existing authored daytime, unchanged lighting and road",
-        "notes": "Full tower visible in desktop capture; actual handheld places tower behind left minimap and crops it at nearer85m. Requires improved handheld framing before visual approval."
+        "notes": "Exact persisted candidate: crown, tower shaft and base readable in both modes; handheld clears minimap and central gear overlay. Small existing foreground robot overlaps only left base."
       }
     },
     "landmark-city-oh-west-side-market": {
