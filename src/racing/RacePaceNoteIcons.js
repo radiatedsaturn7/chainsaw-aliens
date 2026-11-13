@@ -3,9 +3,9 @@ export const PACE_NOTE_COLORS={1:'#ef4444',2:'#f97316',3:'#fbbf24',4:'#d4df43',5
 export function paceNoteIcon(note={}){
  const text=String(note.body||note.text||'').replace(/^Brake,\s*/i,''),first=text.split(/,?\s+(?:into|and)\s+/i)[0];
  const direction=String(note.direction||first.match(/\b(left|right)\b/i)?.[1]||'').toLowerCase();
- const shape=String(note.shape||first.match(/\b(hairpin|square)\b/i)?.[1]||'').toLowerCase();
+ const shape=String(note.shape||first.match(/\b(hairpin|acute|square)\b/i)?.[1]||'').toLowerCase();
  const number=Number(note.severity||first.match(/\b(?:left|right)\s+([1-6])\b/i)?.[1]||first.match(/\b([1-6])\s+(?:left|right)\b/i)?.[1]);
- const severity=shape==='hairpin'?1:shape==='square'?2:number>=1&&number<=6?number:null;
+ const severity=(shape==='hairpin'||shape==='acute')?1:shape==='square'?2:number>=1&&number<=6?number:null;
  const kind=direction?'turn':/crest/i.test(first)?'crest':/dip/i.test(first)?'dip':'caution';
  const modifiers=note.modifiers||[...first.matchAll(/don't cut|tightens(?:\s+[1-6])?|opens|long/gi)].map(m=>m[0]);
  return {kind,direction,shape,severity,color:PACE_NOTE_COLORS[severity]||'#fbbf24',modifiers,text:first};
@@ -17,7 +17,7 @@ export function drawPaceNoteIcon(ctx,note,x,y,size=90){
  ctx.strokeStyle=icon.color;ctx.fillStyle=icon.color;ctx.lineWidth=6;ctx.lineCap='round';ctx.lineJoin='round';
  if(icon.kind==='turn'){
   const sign=icon.direction==='right'?1:-1;
-  const degrees=icon.shape==='hairpin'?165:icon.shape==='square'?90:({1:120,2:95,3:70,4:50,5:35,6:20}[icon.severity]||60);
+  const degrees=icon.shape==='hairpin'?165:icon.shape==='acute'?135:icon.shape==='square'?90:({1:120,2:95,3:70,4:50,5:35,6:20}[icon.severity]||60);
   const angle=degrees*Math.PI/180,radius=48/angle;
   const endX=sign*radius*(1-Math.cos(angle)),endY=24-radius*Math.sin(angle);
   const startX=-endX/2;
