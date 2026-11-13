@@ -157,10 +157,10 @@
             "artRef": "catalog-kestrel-660-2018-body",
             "frameIndex": 0,
             "transforms": {
-              "bodyScaleX": 2.3705718736741144,
-              "bodyScaleY": 1.8489404077282248,
-              "bodyOffsetX": 0.09397087237080193,
-              "bodyOffsetY": 1.873462290493209,
+              "bodyScaleX": 2.3755836535338903,
+              "bodyScaleY": 1.8218497057834886,
+              "bodyOffsetX": 0.10963268443260255,
+              "bodyOffsetY": 1.955965791870359,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -186,10 +186,10 @@
             "artRef": "catalog-kestrel-660-2018-body",
             "frameIndex": 7,
             "transforms": {
-              "bodyScaleX": 3.636292751224786,
-              "bodyScaleY": 2.836146280453593,
-              "bodyOffsetX": -6.71972279766187,
-              "bodyOffsetY": 0.32877935751498966,
+              "bodyScaleX": 3.624649012344063,
+              "bodyScaleY": 2.779765607026323,
+              "bodyOffsetX": -6.573092745316515,
+              "bodyOffsetY": 0.3280678978485296,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -198,13 +198,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 1.2596352396780777,
-              "tireScaleY": 1.2596352396780777,
+              "tireScaleX": 1.2534036348093829,
+              "tireScaleY": 1.2534036348093829,
               "tireSpacingScale": 1,
-              "frontTireOffsetX": 1.4606173765282973,
-              "frontTireOffsetY": -0.50273167497825,
-              "rearTireOffsetX": -1.4606173765282944,
-              "rearTireOffsetY": 0.50273167497825
+              "frontTireOffsetX": 1.4739339238220994,
+              "frontTireOffsetY": -0.5072305085234524,
+              "rearTireOffsetX": -1.4739339238220948,
+              "rearTireOffsetY": 0.5072305085234542
             },
             "cylinder": true,
             "tireMode": "auto"
@@ -215,10 +215,10 @@
             "artRef": "catalog-kestrel-660-2018-body",
             "frameIndex": 2,
             "transforms": {
-              "bodyScaleX": 2.7146338722053205,
-              "bodyScaleY": 2.1172934321240287,
-              "bodyOffsetX": -5.57635370709801,
-              "bodyOffsetY": -0.551209009960552,
+              "bodyScaleX": 2.720373055867489,
+              "bodyScaleY": 2.0862708177339333,
+              "bodyOffsetX": -5.558418758153735,
+              "bodyOffsetY": -0.5272369897500235,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -227,8 +227,8 @@
             "artRef": "8582 tires 3",
             "frameIndex": 2,
             "transforms": {
-              "tireScaleX": 1.3662923651096746,
-              "tireScaleY": 1.3662923651096746,
+              "tireScaleX": 1.3671820541519357,
+              "tireScaleY": 1.3671820541519357,
               "tireSpacingScale": 1,
               "frontTireOffsetX": 0,
               "frontTireOffsetY": 0.0670019911705854,
@@ -244,10 +244,10 @@
             "artRef": "catalog-kestrel-660-2018-body",
             "frameIndex": 3,
             "transforms": {
-              "bodyScaleX": 3.2973680724868406,
-              "bodyScaleY": 2.571800136531934,
-              "bodyOffsetX": -0.8464393197832081,
-              "bodyOffsetY": -2.3097131868942515,
+              "bodyScaleX": 3.2902989394282667,
+              "bodyScaleY": 2.523350480973326,
+              "bodyOffsetX": -0.8424269307239882,
+              "bodyOffsetY": -2.225224042168608,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -256,13 +256,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 1.3789970613505445,
-              "tireScaleY": 1.3789970613505445,
+              "tireScaleX": 1.3736128938442256,
+              "tireScaleY": 1.3736128938442256,
               "tireSpacingScale": 1,
-              "frontTireOffsetX": 0.6123083754293831,
-              "frontTireOffsetY": 0.7840959422485795,
-              "rearTireOffsetX": -0.6123083754293817,
-              "rearTireOffsetY": -0.7840959422485807
+              "frontTireOffsetX": 0.6262147931000521,
+              "frontTireOffsetY": 0.7862524536286145,
+              "rearTireOffsetX": -0.6262147931000572,
+              "rearTireOffsetY": -0.7862524536286137
             },
             "cylinder": true,
             "tireMode": "auto"
@@ -273,10 +273,10 @@
             "artRef": "catalog-kestrel-660-2018-body",
             "frameIndex": 4,
             "transforms": {
-              "bodyScaleX": 1.8564455821264163,
-              "bodyScaleY": 1.4479448143549272,
-              "bodyOffsetX": -0.06132550152373195,
-              "bodyOffsetY": -0.6572301881004754,
+              "bodyScaleX": 1.8603704142239352,
+              "bodyScaleY": 1.4267295057196903,
+              "bodyOffsetX": -0.049060401218985916,
+              "bodyOffsetY": -0.6408365405187004,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -302,10 +302,10 @@
             "artRef": "catalog-kestrel-660-2018-body",
             "frameIndex": 5,
             "transforms": {
-              "bodyScaleX": 3.510433364781358,
-              "bodyScaleY": 2.737981568439834,
-              "bodyOffsetX": 0.8094999885170946,
-              "bodyOffsetY": -2.3456679735921,
+              "bodyScaleX": 3.507508697619922,
+              "bodyScaleY": 2.6899299796435137,
+              "bodyOffsetX": 0.2668606949522516,
+              "bodyOffsetY": -2.3057551146451347,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -314,13 +314,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 1.4314135230147673,
-              "tireScaleY": 1.4314135230147673,
+              "tireScaleX": 1.5730248739534556,
+              "tireScaleY": 1.5730248739534556,
               "tireSpacingScale": 1,
-              "frontTireOffsetX": -0.6293079670810392,
-              "frontTireOffsetY": 0.6702528035772768,
-              "rearTireOffsetX": 0.6293079670810422,
-              "rearTireOffsetY": -0.670252803577276
+              "frontTireOffsetX": -1.3507810419575332,
+              "frontTireOffsetY": 0.6720803060204443,
+              "rearTireOffsetX": 1.3507810419575297,
+              "rearTireOffsetY": -0.6720803060204457
             },
             "cylinder": true,
             "tireMode": "auto"
@@ -331,10 +331,10 @@
             "artRef": "catalog-kestrel-660-2018-body",
             "frameIndex": 6,
             "transforms": {
-              "bodyScaleX": 2.7723920396990507,
-              "bodyScaleY": 2.1623422285521996,
-              "bodyOffsetX": 5.517969724364521,
-              "bodyOffsetY": -0.9664890071370585,
+              "bodyScaleX": 2.7782533336519024,
+              "bodyScaleY": 2.1306595585367827,
+              "bodyOffsetX": 5.463020093556532,
+              "bodyOffsetY": -0.9780099780517556,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -343,12 +343,12 @@
             "artRef": "8582 tires 3",
             "frameIndex": 2,
             "transforms": {
-              "tireScaleX": 1.35263796783024,
-              "tireScaleY": 1.35263796783024,
+              "tireScaleX": 1.6812243062780203,
+              "tireScaleY": 1.6812243062780203,
               "tireSpacingScale": 1,
               "frontTireOffsetX": 0,
               "frontTireOffsetY": 0.06865213023388797,
-              "rearTireOffsetX": 5.709718412357947e-16,
+              "rearTireOffsetX": 6.344131569286608e-17,
               "rearTireOffsetY": -0.06865213023388846
             },
             "cylinder": true,
@@ -360,10 +360,10 @@
             "artRef": "catalog-kestrel-660-2018-body",
             "frameIndex": 1,
             "transforms": {
-              "bodyScaleX": 3.3680270512386468,
-              "bodyScaleY": 2.626910990766672,
-              "bodyOffsetX": 6.097438893984064,
-              "bodyOffsetY": 0.2654830407301806,
+              "bodyScaleX": 3.3636433527050156,
+              "bodyScaleY": 2.579598762337921,
+              "bodyOffsetX": 6.059942160705118,
+              "bodyOffsetY": 0.26095058893777917,
               "bodyRotationDeg": 0
             },
             "fitToCar": true
@@ -372,13 +372,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 1.1313388165131897,
-              "tireScaleY": 1.1313388165131897,
+              "tireScaleX": 1.6918514578176118,
+              "tireScaleY": 1.6918514578176118,
               "tireSpacingScale": 1,
-              "frontTireOffsetX": -0.6256584059105068,
-              "frontTireOffsetY": -0.6101785135065143,
-              "rearTireOffsetX": 0.6256584059105083,
-              "rearTireOffsetY": 0.6101785135065161
+              "frontTireOffsetX": -0.6370603469911744,
+              "frontTireOffsetY": -0.6127028075353006,
+              "rearTireOffsetX": 0.6370603469911753,
+              "rearTireOffsetY": 0.6127028075353006
             },
             "cylinder": true,
             "tireMode": "auto"
@@ -3789,7 +3789,7 @@
         "engineLayout": "mid-engine three-cylinder"
       },
       "sourceHashes": {
-        "body": "8ec24c95b82610d0a46af162bf69df15d7aff92d9e40637c50d7c129be46201e",
+        "body": "e784d859bb06384b81347dc67e02f811560f95d18a189a00fdf4c74c835485d1",
         "dashboard": "509f68fce017a570112a958c9ed6937c8f711122870caa001190f4e15aca3ef9"
       }
     }
