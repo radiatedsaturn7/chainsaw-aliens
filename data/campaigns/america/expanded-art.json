@@ -2540,6 +2540,34 @@
       "heightM": 20,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-mi-eastern-market",
+      "source": "landmarks/MI/landmark-city-mi-eastern-market.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mi-fox-theatre",
+      "source": "landmarks/MI/landmark-city-mi-fox-theatre.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mi-guardian-building",
+      "source": "landmarks/MI/landmark-city-mi-guardian-building.png",
+      "heightM": 55,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mi-michigan-central-station",
+      "source": "landmarks/MI/landmark-city-mi-michigan-central-station.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

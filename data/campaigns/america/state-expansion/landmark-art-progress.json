@@ -3758,35 +3758,485 @@
     },
     "landmark-city-mi-eastern-market": {
       "raceRef": "Detroit, MI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 986.9549121246376,
+        "worldZ": -1497.0972017405097,
+        "routeDistanceM": 1062,
+        "offsetFromRoadM": 4,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.5567161823764258,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 3.7973834911577167,
+            "angularWidthDegrees": 12.01195926033292,
+            "rangeM": 170.7532968469963,
+            "occluderIds": [
+              "city-mi-prop-47",
+              "city-mi-prop-48"
+            ],
+            "score": 0.10177255924244295
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 3.3994436650426647,
+            "angularWidthDegrees": 10.76255925489637,
+            "rangeM": 190.7139865370648,
+            "occluderIds": [
+              "city-mi-prop-45",
+              "city-mi-prop-47",
+              "city-mi-prop-48"
+            ],
+            "score": 0.1036826704077952
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 3.0769229604439836,
+            "angularWidthDegrees": 9.747668218274303,
+            "rangeM": 210.68213245930724,
+            "occluderIds": [
+              "city-mi-prop-45",
+              "city-mi-prop-47",
+              "city-mi-prop-48"
+            ],
+            "score": 0.10523076978986887
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.6935187980984843,
+            "angularWidthDegrees": 8.538810000603677,
+            "rangeM": 240.64427138976944,
+            "occluderIds": [
+              "city-mi-prop-45",
+              "city-mi-prop-47",
+              "city-mi-prop-48"
+            ],
+            "score": 0.10707110976912727
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 2.3950274769309643,
+            "angularWidthDegrees": 7.596077999507762,
+            "rangeM": 270.6147996097495,
+            "occluderIds": [
+              "city-mi-prop-41",
+              "city-mi-prop-45",
+              "city-mi-prop-47",
+              "city-mi-prop-48"
+            ],
+            "score": 0.10850386811073137
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 2.1560646996811426,
+            "angularWidthDegrees": 6.8404578425973845,
+            "rangeM": 300.5912077605345,
+            "occluderIds": [
+              "city-mi-prop-41",
+              "city-mi-prop-45",
+              "city-mi-prop-47",
+              "city-mi-prop-48"
+            ],
+            "score": 0.10965088944153051
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 1.51938283067808,
+            "angularWidthDegrees": 5.951947238476197,
+            "rangeM": 345.5634975016959,
+            "occluderIds": [
+              "city-mi-prop-41",
+              "city-mi-prop-45",
+              "city-mi-prop-47",
+              "city-mi-prop-48"
+            ],
+            "score": 0.1118043156149299
+          }
+        ],
+        "sourceDistanceShiftM": -150
+      },
+      "signature": "dd258b51573a822547bee4c3c1f0071c64fad545e13d338ce8879ef5d804c0a5",
+      "sourceSha256": "78ff132054a65b3543ca0542970d474498c2e62041eba059dce24cf4442f96da",
+      "roadSha256": "48fcfeacbaadc46459fc5ec8d533ce9b276894d4fc7b73c06f8ca5fa4bc26d9f",
+      "placementDetails": {
+        "x": 821.316511242183,
+        "z": -1585.0011183415036,
+        "yaw": -1.0630225851895876,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 911.877992787858,
+        "trackLateral": 114.98633642984993,
+        "minimumRoadClearanceM": 87.89104722477025,
+        "checkedSegments": 4869,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MI/eastern-market-desktop.png",
+        "docs/art/landmark-previews/MI/eastern-market-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 65,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Low arched market hall and broken roof clearly recognizable ahead of bend on desktop and handheld."
+      }
     },
     "landmark-city-mi-fox-theatre": {
       "raceRef": "Detroit, MI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -20.179513031276944,
+        "worldZ": -398.40085296848434,
+        "routeDistanceM": 3108,
+        "offsetFromRoadM": 16,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 6.696217663282317,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 0.4662596458483064,
+            "angularWidthDegrees": 16.693341209597687,
+            "rangeM": 98.44419397637417,
+            "occluderIds": [],
+            "score": 0.9813496141660677
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.3875294358776039,
+            "angularWidthDegrees": 13.904973645598684,
+            "rangeM": 118.44364356761466,
+            "occluderIds": [],
+            "score": 0.9844988225648958
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.3315459860951731,
+            "angularWidthDegrees": 11.911893415209384,
+            "rangeM": 138.44325218473605,
+            "occluderIds": [],
+            "score": 0.9867381605561931
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.5109138038805173,
+            "angularWidthDegrees": 9.801832879059388,
+            "rangeM": 168.44283937394817,
+            "occluderIds": [],
+            "score": 0.9795634478447793
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 1.5989437903593868,
+            "angularWidthDegrees": 8.326014978885182,
+            "rangeM": 198.43508909828242,
+            "occluderIds": [],
+            "score": 0.9360422483856246
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 1.388974621907512,
+            "angularWidthDegrees": 7.236016427869712,
+            "rangeM": 228.42494182157387,
+            "occluderIds": [],
+            "score": 0.9444410151236995
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 1.1603911339735742,
+            "angularWidthDegrees": 6.0477909667362555,
+            "rangeM": 273.4138954722457,
+            "occluderIds": [],
+            "score": 0.9535843546410571
+          }
+        ],
+        "sourceDistanceShiftM": -180
+      },
+      "signature": "c15b569729d0e78fdea20e5d1180689f383ad2636cf666fe2fbb0568be04aefa",
+      "sourceSha256": "8dfe7351f50075e56854ed201f0b9334195e706fcdf7a0186baad894683e02cd",
+      "roadSha256": "48fcfeacbaadc46459fc5ec8d533ce9b276894d4fc7b73c06f8ca5fa4bc26d9f",
+      "placementDetails": {
+        "x": -117.3603484241807,
+        "z": -555.0584274949479,
+        "yaw": -1.0477596301610095,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 2929.6598514850875,
+        "trackLateral": 39.91586759551777,
+        "minimumRoadClearanceM": 9.433428069325107,
+        "checkedSegments": 4869,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MI/fox-theatre-desktop.png",
+        "docs/art/landmark-previews/MI/fox-theatre-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 150,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Ornate theater facade and marquee visible below handheld pause control; larger closer views overlap control, so150m is selected."
+      }
     },
     "landmark-city-mi-guardian-building": {
       "raceRef": "Detroit, MI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 487.9250075684138,
+        "worldZ": 609.2044860751917,
+        "routeDistanceM": 4284,
+        "offsetFromRoadM": 25,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.7774331326258382,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 52.10163439900653,
+            "angularWidthDegrees": 23.47060837928718,
+            "rangeM": 88.16824394515687,
+            "occluderIds": [
+              "city-mi-prop-220",
+              "city-mi-prop-222"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 20.20211355814224,
+            "angularWidthDegrees": 20.04806070167775,
+            "rangeM": 103.61781793320152,
+            "occluderIds": [],
+            "score": 0.1919154576743104
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 14.85286038929596,
+            "angularWidthDegrees": 16.918358778182654,
+            "rangeM": 123.15153138451004,
+            "occluderIds": [],
+            "score": 0.4058855844281616
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 21.224219155066496,
+            "angularWidthDegrees": 13.750427829411244,
+            "rangeM": 151.90149681371065,
+            "occluderIds": [
+              "city-mi-prop-218"
+            ],
+            "score": 0.01812374805568082
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 7.996826760737923,
+            "angularWidthDegrees": 11.539087472605232,
+            "rangeM": 181.27039326404216,
+            "occluderIds": [
+              "city-mi-prop-218"
+            ],
+            "score": 0.08161523154845796
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 6.8635582289989365,
+            "angularWidthDegrees": 9.92108615415114,
+            "rangeM": 211.01994272051795,
+            "occluderIds": [
+              "city-mi-prop-216",
+              "city-mi-prop-218"
+            ],
+            "score": 0.0870549205008051
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 5.658710329495343,
+            "angularWidthDegrees": 8.192312852263239,
+            "rangeM": 255.75399772687047,
+            "occluderIds": [
+              "city-mi-prop-214",
+              "city-mi-prop-216",
+              "city-mi-prop-218"
+            ],
+            "score": 0.09283819041842235
+          }
+        ],
+        "sourceDistanceShiftM": -240
+      },
+      "signature": "cc844527297241e48cc73ef8828af681a8d1fd1102509be93825ef3276403934",
+      "sourceSha256": "896beb5a96c9261b8964217de7f5360dd6bf83d5e013ead5a5be6e54b86c2b63",
+      "roadSha256": "48fcfeacbaadc46459fc5ec8d533ce9b276894d4fc7b73c06f8ca5fa4bc26d9f",
+      "placementDetails": {
+        "x": 478.99861007548276,
+        "z": 414.5932999735954,
+        "yaw": 0.6763414315459815,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 4046.53151098567,
+        "trackLateral": -69.99057083510131,
+        "minimumRoadClearanceM": 40.873945425883946,
+        "checkedSegments": 4869,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MI/guardian-building-desktop.png",
+        "docs/art/landmark-previews/MI/guardian-building-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 245,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Stepped main tower and arched entrance recognizable in both modes at245m; tall crown remains left of handheld pause control, smaller right wing partly near its edge."
+      }
     },
     "landmark-city-mi-michigan-central-station": {
       "raceRef": "Detroit, MI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -2121.0517642825384,
+        "worldZ": 698.1939087862706,
+        "routeDistanceM": 7422,
+        "offsetFromRoadM": 84,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 3.567148814796165,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 6.912011032597572,
+            "angularWidthDegrees": 33.85324206422665,
+            "rangeM": 103.60696392859232,
+            "occluderIds": [],
+            "score": 0.7235195586960972
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.016248611416801857,
+            "angularWidthDegrees": 28.62312419089502,
+            "rangeM": 123.59601299746883,
+            "occluderIds": [],
+            "score": 0.9993500555433279
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.03722665580846332,
+            "angularWidthDegrees": 24.768911460945596,
+            "rangeM": 143.59600809290183,
+            "occluderIds": [],
+            "score": 0.9985109337676614
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.030793330273038613,
+            "angularWidthDegrees": 20.589169576880415,
+            "rangeM": 173.5960028550078,
+            "occluderIds": [],
+            "score": 0.9987682667890785
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 36.69489577527385,
+            "angularWidthDegrees": 17.664850716497977,
+            "rangeM": 202.91688027842102,
+            "occluderIds": [
+              "city-mi-prop-408"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 35.01963334922234,
+            "angularWidthDegrees": 15.825957536993801,
+            "rangeM": 226.85270074523817,
+            "occluderIds": [
+              "city-mi-prop-404",
+              "city-mi-prop-406",
+              "city-mi-prop-408",
+              "city-mi-prop-410",
+              "city-mi-prop-412"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 29.426735152168288,
+            "angularWidthDegrees": 13.572444905351794,
+            "rangeM": 264.96707504168177,
+            "occluderIds": [
+              "city-mi-prop-402",
+              "city-mi-prop-404",
+              "city-mi-prop-406",
+              "city-mi-prop-408",
+              "city-mi-prop-412"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 90
+      },
+      "signature": "23ac63df4eaa130125dd6eb6fb1972777007c87541a4e09d120482e310107ea8",
+      "sourceSha256": "ffde2b50c7262c54012cf278714ad92fa3fa485c86b2478f7e87a9961ce81b8b",
+      "roadSha256": "48fcfeacbaadc46459fc5ec8d533ce9b276894d4fc7b73c06f8ca5fa4bc26d9f",
+      "placementDetails": {
+        "x": -2216.3178332378866,
+        "z": 577.6783782177698,
+        "yaw": -1.8933453093851351,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 7511.855774256645,
+        "trackLateral": 64.99999999999986,
+        "minimumRoadClearanceM": 21.597417626861542,
+        "checkedSegments": 4869,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MI/michigan-central-station-desktop.png",
+        "docs/art/landmark-previews/MI/michigan-central-station-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 150,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Station triple-arched lower facade and tall windowed mass recognizable in both modes; handheld pause control overlaps part of upper block, not identifying arches."
+      }
     },
     "landmark-city-mn-minneapolis-institute-of-art": {
       "raceRef": "Minneapolis, MN — Landmark Run",

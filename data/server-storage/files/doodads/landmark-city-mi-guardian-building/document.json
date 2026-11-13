@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794612225888,
+  "doodad": {
+    "id": "campaign-landmark-city-mi-guardian-building",
+    "name": "landmark-city-mi-guardian-building",
+    "artRef": "landmark-city-mi-guardian-building",
+    "widthM": 36.630859375,
+    "heightM": 55,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 31.13623046875,
+    "hitboxHeightM": 49.5,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

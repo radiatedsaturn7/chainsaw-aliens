@@ -1958,5 +1958,33 @@
     "documentSha256": "c9f91adc6205163168b9861c4e323dcd7565941bf27b2815b4c2aa51dba1af19",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-mi-eastern-market": {
+    "source": "assets/campaign-art/landmarks/MI/landmark-city-mi-eastern-market.png",
+    "sourceSha256": "78ff132054a65b3543ca0542970d474498c2e62041eba059dce24cf4442f96da",
+    "documentSha256": "f9a1ef1731de2514dade971cc457c33aa3021993572de0cf9372102f2e6041b8",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-mi-fox-theatre": {
+    "source": "assets/campaign-art/landmarks/MI/landmark-city-mi-fox-theatre.png",
+    "sourceSha256": "8dfe7351f50075e56854ed201f0b9334195e706fcdf7a0186baad894683e02cd",
+    "documentSha256": "8066dd76e2e39dd05ca510b50921bfedb3e898a03d4a17243f22a6315d743e84",
+    "width": 493,
+    "height": 512
+  },
+  "landmark-city-mi-guardian-building": {
+    "source": "assets/campaign-art/landmarks/MI/landmark-city-mi-guardian-building.png",
+    "sourceSha256": "896beb5a96c9261b8964217de7f5360dd6bf83d5e013ead5a5be6e54b86c2b63",
+    "documentSha256": "ee379ec0d0973555ffdd4f2a5c59894bc3be2f54ae81159c4535115f0b8a685c",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-mi-michigan-central-station": {
+    "source": "assets/campaign-art/landmarks/MI/landmark-city-mi-michigan-central-station.png",
+    "sourceSha256": "ffde2b50c7262c54012cf278714ad92fa3fa485c86b2478f7e87a9961ce81b8b",
+    "documentSha256": "f6c3d773dc1a0262ce0e3aa7b205c3b2d75ad40872c8f4012ba5ff6dbd60cdcd",
+    "width": 512,
+    "height": 341
   }
 }
