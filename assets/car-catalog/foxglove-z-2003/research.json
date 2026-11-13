@@ -1,0 +1,95 @@
+{
+  "fictionalIdentity": "Foxglove Z 2003",
+  "reference": "US 2003 Nissan 350Z base coupe 6MT LHD standard 17-inch staggered wheels, no options; not Track, Touring, Enthusiast or Canadian Performance",
+  "duplicateCheck": "No 350Z duplicate in inspected copperwing-work research ledger; Sunmallow 2006 already covers Solstice. Recheck live roster before import.",
+  "sources": [
+    {
+      "url": "https://usa.nissannews.com/en-US/releases/2003-nissan-350z-press-kit-overview",
+      "provenance": "Direct manufacturer archived overview read; confirms 2003 US model, RWD 6MT, 287 hp and 274 lb-ft; repost dated 2010 not model year"
+    },
+    {
+      "url": "https://boredmder.com/FSMs/Nissan/350z/2003/MT.pdf",
+      "provenance": "Manufacturer 2003 service manual,April 2004 revision, third-party archive. Actual 64-page PDF downloaded,MT-61 rendered and visually inspected. Physical transmission gears verified.",
+      "localEvidence": [
+        "nissan-2003-MT.pdf",
+        "nissan-2003-MT61.png"
+      ]
+    },
+    {
+      "url": "https://www.scribd.com/document/893325935/2003-350z-specs",
+      "provenance": "Six-page 10/02 manufacturer-style US specification sheet mirrored by third party; full readable transcription inspected, NOT authenticated original scan/table image. Base column clearly 3188 lb and no VLSD.",
+      "fields": "full specification anchors below except fuel capacity"
+    },
+    {
+      "url": "https://350z.se/fsm/coupe/2003/FL.pdf",
+      "provenance": "Manufacturer fuel-system service manual archive,76 L, approximately 20 US gallons"
+    }
+  ],
+  "specs": {
+    "engine": "VQ35DE naturally aspirated gasoline longitudinal DOHC 24V aluminum V6, variable intake timing",
+    "displacementCc": 3498,
+    "compression": 10.3,
+    "powerHp": 287,
+    "powerRpm": 6200,
+    "torqueLbFt": 274,
+    "torqueRpm": 4800,
+    "maximumEngineSpeedRpm": 6600,
+    "maximumEngineSpeedCaveat": "Source says maximum engine speed; do not call it a measured fuel-cut threshold",
+    "drivetrain": "RWD",
+    "differential": "Open; Base explicitly excluded from standard VLSD",
+    "transmission": "FS6R31A conventional 6MT; CD000/CD005 have the same gears",
+    "gearRatios": [
+      3.794,
+      2.324,
+      1.624,
+      1.271,
+      1,
+      0.794
+    ],
+    "reverse": 3.446,
+    "finalDrive": 3.538,
+    "curbLb": 3188,
+    "curbKgDerived": 1446.0524755600002,
+    "massConvention": "Published curb, exact driver/fuel convention not explicit; not 3815 lb GVWR or a heavier trim",
+    "frontFraction": 0.53,
+    "frontTire": "225/50R17 94W summer",
+    "rearTire": "235/50R17 96W summer",
+    "frontWheel": "17x7.5in",
+    "rearWheel": "17x8in",
+    "frontNominalRadiusM": 0.3284,
+    "rearNominalRadiusM": 0.3334,
+    "wheelbaseIn": 104.3,
+    "lengthIn": 169.6,
+    "widthIn": 71.5,
+    "heightIn": 51.9,
+    "frontTrackIn": 60.4,
+    "rearTrackIn": 60.8,
+    "Cd": 0.3,
+    "fuelLitresApprox": 76,
+    "steeringRatio": 15.9,
+    "steeringTurns": 2.6,
+    "curbTurningFt": 35.33,
+    "frontSuspension": "Independent multilink",
+    "rearSuspension": "Independent multilink",
+    "frontBrakeDiameterIn": 11.65,
+    "rearBrakeDiameterIn": 11.5,
+    "brakes": "Vented standard discs, front 2-piston/rear 1-piston; not Brembo",
+    "exhaust": "Dual rear outlets one each side"
+  },
+  "conflicts": [
+    "New-cars.com secondary transcription incorrectly gives sixth 0.974; actual OEM MT-61 explicitly gives 0.794. Do not propagate typo.",
+    "Canadian brochure uses different trim names and mass; only cross-check engine/gears, do not mix Canadian Performance with US base.",
+    "Track Cd .29, 18-inch wheels, Brembo brakes, VLSD and higher-trim mass not selected."
+  ],
+  "simulationUnknowns": [
+    "Idle RPM",
+    "Exact fuel-cut behaviour",
+    "Full torque curve",
+    "CG height",
+    "Frontal area",
+    "Spring and damper rates",
+    "Tire grip coefficients",
+    "Exact curb fuel/driver convention"
+  ],
+  "artPlan": "Original 2994 logo-free compact RWD V6 fastback coupe with altered lamps and fascia, not a replica. LHD blank driver binnacle and three central round vents. Shared runtime steering wheel and tires; transparent wheel openings in all eight views, fixed-rear camera, independent front/rear tire sizes."
+}
