@@ -210,7 +210,10 @@ export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',
       }
       // Most final boundaries are unchanged. Retain these already-checked
       // triangles rather than sampling the expensive road field twice.
-      if(reuseConformingPolygons)poly.adaptiveConformance={boundary:[...poly],triangles,maxError,errors};
+      // Cache the expensive road-edge cuts, not every simple distant quad.
+      // Keeping two triangulations and a boundary copy for the entire mountain
+      // survey can exhaust the worker heap before the conformity pass begins.
+      if(reuseConformingPolygons&&distance<=40)poly.adaptiveConformance={boundary:[...poly],triangles,maxError,errors};
     }
   };
   // Align roots with source material tiles; only refine where geometry needs it.

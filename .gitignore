@@ -33,3 +33,10 @@ data/server-storage/performance-captures/
 
 # Generated static website
 /_site/
+
+# Reproducible previews; committed OSM source snapshots are authoritative.
+data/campaigns/america/raceways/*-layouts.json
+data/campaigns/america/raceways/*-route.json
+
+# Reviewed circuit candidates can be regenerated from source snapshots.
+data/campaigns/america/state-expansion/previews/

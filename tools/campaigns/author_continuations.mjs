@@ -20,6 +20,7 @@ export function authorRaceContinuations(race) {
   fixProvidenceStart(race);
   const editor=new RaceEditor({deviceIsMobile:true,isMobile:true,exitRaceEditor(){}});
   editor.applyLoadedRaceDocument(race);
+  return editor.withRaceGeometryReadCache(()=>{
   const samples=editor.getRacePathSamplesCached({step:4});
   const routeLength=samples.at(-1).distance;
   const nodes=race.road.nodes;
@@ -81,6 +82,7 @@ export function authorRaceContinuations(race) {
   race.source ||= {};
   race.source.continuationDescription=continuations.description;
   return race;
+  });
 }
 
 // Keep imported maps rectangular so the runtime can extend boundary heights

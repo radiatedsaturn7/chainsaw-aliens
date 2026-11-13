@@ -1,4 +1,5 @@
 import { axleTireGeometry, tireSizeForWheel } from '../racing/TireSizes.js';
+import {stopCodriver} from '../racing/RaceCodriver.js';
 import {cockpitDashboardRect,cockpitWheelLayout,cockpitGaugeBounds} from '../racing/CarCockpitLayout.js';
 import { normalizeCvtTuning, validateCvt } from '../racing/simulation/CvtTransmissionModel.js';
 import {raceDriftScoreVariables} from '../racing/RaceDriftScore.js';
@@ -1253,6 +1254,7 @@ export default class RaceEditor {
   }
 
   disposeRacePlaytestSession(session = this.playtestSession, reason = 'session-ended') {
+    stopCodriver(session?.drivingAssists);
     const result = disposeRaceSessionResources(this, session, { reason });
     if (result.disposed) {
       const release = operation => {
@@ -13648,7 +13650,7 @@ export default class RaceEditor {
       speedMps: initialSpeedMps,
       countdownRemainingMs: options?.carEditorPreview === true
         ? 0
-        : (raceStart.countdown ? 4000 : 0),
+        : (raceStart.countdown ? 6000 : 0),
       rollingStart: raceStart.rollingStart,
       rollingStartSpeedMps: raceStart.rollingStartSpeedMps,
       firedTriggerIds: new Set(),
@@ -15779,10 +15781,24 @@ export default class RaceEditor {
     const verticalCue = clamp(Number(session?.verticalVelocityMps || 0) / 28, -0.18, 0.18);
     const terrainHillPitch = clamp(closeDelta * 1.15 + farDelta * 0.52, -0.34, 0.34);
     const hillPitch = clamp(terrainHillPitch + verticalCue, -0.34, 0.34);
-    const terrainHorizonRatio = clamp(0.31 - speedFactor * 0.04 - terrainHillPitch * 0.16, 0.16, 0.48);
+    const fixedRear = this.getCarCameraTrackingMode(this.getRaceSessionCar(session)) === 'fixed-rear'
+      && (session?.cameraView || this.raceInput.cameraView) !== 'first-person'
+      && !this.isCarExteriorArtPreview(session);
+    // Positive road grade needs more sky; a descent needs the horizon higher
+    // on screen. Use the local driving deck, not distant raw GPS heights.
+    let gradeHorizon = null;
+    if (fixedRear) {
+      const direction=this.getRaceCameraRouteSampleDirection(Number(session?.cameraYaw??session?.carYaw??0),
+        this.getRaceWorldPoseAtDistance(visualTravel,{runtimeType:routeRuntimeType}).yaw);
+      const near=this.getRaceRoadSurfaceProfileAtDistance(visualTravel+direction*10,{runtimeType:routeRuntimeType});
+      const far=this.getRaceRoadSurfaceProfileAtDistance(visualTravel+direction*60,{runtimeType:routeRuntimeType});
+      const grade=(Number(far.elevation||0)-Number(near.elevation||0))*RACE_THREE_ELEVATION_M/50;
+      gradeHorizon=clamp(.31-speedFactor*.04+Math.atan(grade)/(2*Math.tan(48*Math.PI/360)),.08,.58);
+    }
+    const terrainHorizonRatio = gradeHorizon ?? clamp(0.31 - speedFactor * 0.04 - terrainHillPitch * 0.16, 0.16, 0.48);
     return {
       hillPitch,
-      horizonRatio: clamp(terrainHorizonRatio - verticalCue * 0.16, 0.16, 0.48),
+      horizonRatio: clamp(terrainHorizonRatio - verticalCue * 0.16, 0.08, 0.58),
       nearPlaneBoost: Math.abs(closeDelta) * 0.52 + Math.abs(farDelta) * 0.24,
       terrainHillPitch,
       terrainHorizonRatio,
@@ -15835,7 +15851,7 @@ export default class RaceEditor {
       visualTravel: Number(visualTravel || 0)
     };
     smoothed.hillPitch = clamp(smoothed.terrainHillPitch + smoothed.verticalCue, -0.34, 0.34);
-    smoothed.horizonRatio = clamp(smoothed.terrainHorizonRatio - smoothed.verticalCue * 0.16, 0.16, 0.48);
+    smoothed.horizonRatio = clamp(smoothed.terrainHorizonRatio - smoothed.verticalCue * 0.16, 0.08, 0.58);
     session.cameraSmoothing = smoothed;
     return {
       ...pitchProfile,
@@ -24607,7 +24623,7 @@ export default class RaceEditor {
   drawRaceCountdown(ctx, bounds) {
     const remaining = Number(this.playtestSession?.countdownRemainingMs || 0);
     if (remaining <= 0) return;
-    const label = remaining > 3000 ? '3' : remaining > 2000 ? '2' : remaining > 1000 ? '1' : 'GO!';
+    const label = remaining > 1000 ? String(Math.ceil((remaining - 1000) / 1000)) : 'GO!';
     ctx.save();
     ctx.fillStyle = 'rgba(5,8,7,0.58)';
     ctx.fillRect(bounds.x + bounds.w / 2 - 42, bounds.y + bounds.h * 0.2 - 30, 84, 60);

@@ -1,0 +1,339 @@
+{
+  "reviewedAt": "2026-11-13T04:50:59.517822+00:00",
+  "scope": "12 real US venues with multiple mapped layouts, plus all five legacy real-world starter tracks. Fictional editor test tracks are unchanged.",
+  "categories": {
+    "Main Mission": "Existing campaign boss, unchanged",
+    "Road Runs": "Paved open-road events",
+    "Detours": "Open-road events with any installed non-paved surface",
+    "Raceways": "Circuits, ovals, kart courses, and drag strips; venue submenus for multiple imported layouts"
+  },
+  "venues": [
+    {
+      "name": "Watkins Glen",
+      "hubStage": 3,
+      "location": {
+        "lat": 42.3369,
+        "lon": -76.9272,
+        "country": "us"
+      },
+      "reference": "https://www.theglen.com/track-info/",
+      "layouts": [
+        {
+          "label": "Long Course",
+          "mappedLengthM": 5473
+        },
+        {
+          "label": "Short Course",
+          "mappedLengthM": 3935
+        },
+        {
+          "label": "Long \u2014 No Inner Loop",
+          "mappedLengthM": 5451
+        },
+        {
+          "label": "Short \u2014 No Inner Loop",
+          "mappedLengthM": 3914
+        }
+      ]
+    },
+    {
+      "name": "Road America",
+      "hubStage": 6,
+      "location": {
+        "lat": 43.7975,
+        "lon": -87.9897,
+        "country": "us"
+      },
+      "reference": "https://www.roadamerica.com/sites/main/files/file-attachments/road_america_track_notes_2023_july_for_web.pdf",
+      "layouts": [
+        {
+          "label": "Full Course",
+          "mappedLengthM": 6438
+        },
+        {
+          "label": "The Bend",
+          "mappedLengthM": 6493
+        }
+      ]
+    },
+    {
+      "name": "Road Atlanta",
+      "hubStage": 4,
+      "location": {
+        "lat": 34.1495,
+        "lon": -83.8131,
+        "country": "us"
+      },
+      "reference": "https://www.roadatlanta.com/track-info/about-mrra/track-map",
+      "layouts": [
+        {
+          "label": "Grand Prix",
+          "mappedLengthM": 4090
+        },
+        {
+          "label": "Short Course",
+          "mappedLengthM": 2855
+        },
+        {
+          "label": "Club Course",
+          "mappedLengthM": 1449
+        }
+      ]
+    },
+    {
+      "name": "Virginia International Raceway",
+      "hubStage": 4,
+      "location": {
+        "lat": 36.561,
+        "lon": -79.204,
+        "country": "us"
+      },
+      "reference": "https://virnow.com/track/configurations/",
+      "layouts": [
+        {
+          "label": "Full Course",
+          "mappedLengthM": 5262
+        },
+        {
+          "label": "North Course",
+          "mappedLengthM": 3668
+        },
+        {
+          "label": "South Course",
+          "mappedLengthM": 2625
+        },
+        {
+          "label": "Grand Course",
+          "mappedLengthM": 6646
+        }
+      ]
+    },
+    {
+      "name": "Sebring International Raceway",
+      "hubStage": 5,
+      "location": {
+        "lat": 27.454,
+        "lon": -81.349,
+        "country": "us"
+      },
+      "reference": "https://www.imsa.com/sebring-international-raceway",
+      "layouts": [
+        {
+          "label": "Full Circuit",
+          "mappedLengthM": 5866
+        },
+        {
+          "label": "Short Circuit",
+          "mappedLengthM": 3119
+        },
+        {
+          "label": "Club Circuit",
+          "mappedLengthM": 2688
+        }
+      ]
+    },
+    {
+      "name": "Indianapolis Motor Speedway",
+      "hubStage": 6,
+      "location": {
+        "lat": 39.795,
+        "lon": -86.234,
+        "country": "us"
+      },
+      "reference": "https://www.indianapolismotorspeedway.com/",
+      "layouts": [
+        {
+          "label": "Oval",
+          "mappedLengthM": 4071
+        },
+        {
+          "label": "Grand Prix Road Course",
+          "mappedLengthM": 3911
+        }
+      ]
+    },
+    {
+      "name": "Homestead-Miami Speedway",
+      "hubStage": 5,
+      "location": {
+        "lat": 25.4517,
+        "lon": -80.4098,
+        "country": "us"
+      },
+      "reference": "https://www.homesteadmiamispeedway.com/track-history/",
+      "layouts": [
+        {
+          "label": "Oval",
+          "mappedLengthM": 2417
+        },
+        {
+          "label": "Road Course",
+          "mappedLengthM": 3666
+        },
+        {
+          "label": "Modified Road Course",
+          "mappedLengthM": 3523
+        }
+      ]
+    },
+    {
+      "name": "Daytona International Speedway",
+      "hubStage": 5,
+      "location": {
+        "lat": 29.1852,
+        "lon": -81.0705,
+        "country": "us"
+      },
+      "reference": "https://www.daytonainternationalspeedway.com/",
+      "layouts": [
+        {
+          "label": "Tri-Oval",
+          "mappedLengthM": 4018
+        },
+        {
+          "label": "Sports Car Course",
+          "mappedLengthM": 5762
+        },
+        {
+          "label": "Stock Car Road Course",
+          "mappedLengthM": 5776
+        }
+      ]
+    },
+    {
+      "name": "WeatherTech Raceway Laguna Seca",
+      "hubStage": 11,
+      "location": {
+        "lat": 36.584,
+        "lon": -121.753,
+        "country": "us"
+      },
+      "reference": "https://www.co.monterey.ca.us/government/government-links/weathertech-raceway",
+      "layouts": [
+        {
+          "label": "Full Circuit",
+          "mappedLengthM": 3601
+        }
+      ]
+    },
+    {
+      "name": "Willow Springs",
+      "hubStage": 11,
+      "location": {
+        "lat": 34.872,
+        "lon": -118.264,
+        "country": "us"
+      },
+      "reference": "https://willowspringsraceway.com/tracks/",
+      "layouts": [
+        {
+          "label": "Big Willow",
+          "mappedLengthM": 3944
+        },
+        {
+          "label": "Streets of Willow",
+          "mappedLengthM": 2576
+        },
+        {
+          "label": "Streets \u2014 Short",
+          "mappedLengthM": 1973
+        },
+        {
+          "label": "Horse Thief Mile",
+          "mappedLengthM": 1612
+        }
+      ]
+    },
+    {
+      "name": "Lime Rock Park",
+      "hubStage": 1,
+      "location": {
+        "lat": 41.928,
+        "lon": -73.38,
+        "country": "us"
+      },
+      "reference": "https://limerock.com/",
+      "layouts": [
+        {
+          "label": "Full Circuit",
+          "mappedLengthM": 2372
+        },
+        {
+          "label": "West Chicane",
+          "mappedLengthM": 2411
+        },
+        {
+          "label": "Both Chicanes",
+          "mappedLengthM": 2405
+        }
+      ]
+    },
+    {
+      "name": "Mid-Ohio Sports Car Course",
+      "hubStage": 4,
+      "location": {
+        "lat": 40.689,
+        "lon": -82.635,
+        "country": "us"
+      },
+      "reference": "https://midohio.com/",
+      "layouts": [
+        {
+          "label": "Sports Car Course",
+          "mappedLengthM": 3616
+        },
+        {
+          "label": "Chicane Course",
+          "mappedLengthM": 3646
+        },
+        {
+          "label": "Short Course",
+          "mappedLengthM": 2731
+        }
+      ]
+    },
+    {
+      "name": "Nurburgring Nordschleife",
+      "hubStage": null,
+      "location": {
+        "lat": 50.36,
+        "lon": 6.96,
+        "country": "de"
+      },
+      "reference": null,
+      "layouts": [
+        {
+          "label": "Nordschleife",
+          "mappedLengthM": 20747
+        }
+      ]
+    }
+  ],
+  "legacyStages": {
+    "Col de Turini": "15.1 km mapped La Bollene-Vesubie to Col de Turini summit ascent. Excludes the descent to Moulinet to keep the mountain terrain bake practical; not an exact WRC edition or timing section.",
+    "Ouninpohja": "17.4 km mapped Ouninpohjantie road, with straight timing lines inset. Not the full 24/33 km WRC edition. Mapped compacted surfaces use gravel; the unspecified bridge surface uses the importer asphalt default."
+  },
+  "limitations": [
+    "OpenStreetMap centerlines, not laser scans; no rescaling to force advertised lap distances.",
+    "OSM widths where tagged; explicit defaults elsewhere. Elevation is coarse Mapzen DEM, not surveyed road-deck heights.",
+    "Nominal oval banking is included; transitions are estimated. Homestead progressive banking is represented by a uniform 19 degree cross-slope in bends.",
+    "Timing lines are moved onto existing straight sections, not claimed to be surveyed official timing-loop positions.",
+    "VIR Patriot is not installed: available 1.58 km mapped loop does not match the venue published 1.77 km course.",
+    "Regional campaign hubs provide optional excursion menus; Florida and other distant venues do not move the main cross-country route.",
+    "Scenery uses existing regional assets, not photographic replicas of circuit facilities.",
+    "Turini is the 15.1 km ascent only and is still a heavy terrain bake (about 65 seconds / 1.2 GB peak RSS in local validation)."
+  ],
+  "validation": {
+    "javascriptTestsPassed": 40,
+    "pythonTestsPassed": 21,
+    "worldBakesPassed": 38,
+    "browserVisualCheck": "Not run on Android/Termux; GitHub Playwright remains authoritative.",
+    "turiniBake": {
+      "seconds": 65.393,
+      "peakRssKB": 1209576,
+      "terrainTriangles": 596957,
+      "heightToleranceExceptions": 1565,
+      "note": "Loaded and transferred render/physics meshes successfully. Steep off-road transitions retain bounded refinement tolerance exceptions; elevation and roadside cuts remain approximations."
+    }
+  }
+}

@@ -1,0 +1,1012 @@
+[
+  {
+    "id": "raceway-watkins-long",
+    "status": "imported",
+    "name": "Watkins Glen \u2014 Long Course",
+    "raceRef": "Watkins Glen \u2014 Long Course",
+    "displayName": "Watkins Glen \u2014 Long Course",
+    "venueKey": "watkins",
+    "venueName": "Watkins Glen",
+    "layoutLabel": "Long Course",
+    "hubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 5472.7621034583335,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-watkins-long.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-watkins-short",
+    "status": "imported",
+    "name": "Watkins Glen \u2014 Short Course",
+    "raceRef": "Watkins Glen \u2014 Short Course",
+    "displayName": "Watkins Glen \u2014 Short Course",
+    "venueKey": "watkins",
+    "venueName": "Watkins Glen",
+    "layoutLabel": "Short Course",
+    "hubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3935.3389102765996,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-watkins-short.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-watkins-long-no-loop",
+    "status": "imported",
+    "name": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+    "raceRef": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+    "displayName": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+    "venueKey": "watkins",
+    "venueName": "Watkins Glen",
+    "layoutLabel": "Long \u2014 No Inner Loop",
+    "hubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 5451.296943010442,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-watkins-long-no-loop.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-watkins-short-no-loop",
+    "status": "imported",
+    "name": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+    "raceRef": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+    "displayName": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+    "venueKey": "watkins",
+    "venueName": "Watkins Glen",
+    "layoutLabel": "Short \u2014 No Inner Loop",
+    "hubStage": 3,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3913.8737498287082,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-watkins-short-no-loop.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-road-america-full",
+    "status": "imported",
+    "name": "Road America \u2014 Full Course",
+    "raceRef": "Road America \u2014 Full Course",
+    "displayName": "Road America \u2014 Full Course",
+    "venueKey": "road-america",
+    "venueName": "Road America",
+    "layoutLabel": "Full Course",
+    "hubStage": 6,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 6437.948402381949,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-road-america-full.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-road-america-bend",
+    "status": "imported",
+    "name": "Road America \u2014 The Bend",
+    "raceRef": "Road America \u2014 The Bend",
+    "displayName": "Road America \u2014 The Bend",
+    "venueKey": "road-america",
+    "venueName": "Road America",
+    "layoutLabel": "The Bend",
+    "hubStage": 6,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 6493.406638627473,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-road-america-bend.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-road-atlanta-grand-prix",
+    "status": "imported",
+    "name": "Road Atlanta \u2014 Grand Prix",
+    "raceRef": "Road Atlanta \u2014 Grand Prix",
+    "displayName": "Road Atlanta \u2014 Grand Prix",
+    "venueKey": "road-atlanta",
+    "venueName": "Road Atlanta",
+    "layoutLabel": "Grand Prix",
+    "hubStage": 4,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 4089.9520442266767,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-road-atlanta-grand-prix.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-road-atlanta-short",
+    "status": "imported",
+    "name": "Road Atlanta \u2014 Short Course",
+    "raceRef": "Road Atlanta \u2014 Short Course",
+    "displayName": "Road Atlanta \u2014 Short Course",
+    "venueKey": "road-atlanta",
+    "venueName": "Road Atlanta",
+    "layoutLabel": "Short Course",
+    "hubStage": 4,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2855.1629997063555,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-road-atlanta-short.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-road-atlanta-club",
+    "status": "imported",
+    "name": "Road Atlanta \u2014 Club Course",
+    "raceRef": "Road Atlanta \u2014 Club Course",
+    "displayName": "Road Atlanta \u2014 Club Course",
+    "venueKey": "road-atlanta",
+    "venueName": "Road Atlanta",
+    "layoutLabel": "Club Course",
+    "hubStage": 4,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 1448.7001960044734,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-road-atlanta-club.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-vir-full",
+    "status": "imported",
+    "name": "Virginia International Raceway \u2014 Full Course",
+    "raceRef": "Virginia International Raceway \u2014 Full Course",
+    "displayName": "Virginia International Raceway \u2014 Full Course",
+    "venueKey": "vir",
+    "venueName": "Virginia International Raceway",
+    "layoutLabel": "Full Course",
+    "hubStage": 4,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 5261.925366134707,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-vir-full.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-vir-north",
+    "status": "imported",
+    "name": "Virginia International Raceway \u2014 North Course",
+    "raceRef": "Virginia International Raceway \u2014 North Course",
+    "displayName": "Virginia International Raceway \u2014 North Course",
+    "venueKey": "vir",
+    "venueName": "Virginia International Raceway",
+    "layoutLabel": "North Course",
+    "hubStage": 4,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3668.136793725792,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-vir-north.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-vir-south",
+    "status": "imported",
+    "name": "Virginia International Raceway \u2014 South Course",
+    "raceRef": "Virginia International Raceway \u2014 South Course",
+    "displayName": "Virginia International Raceway \u2014 South Course",
+    "venueKey": "vir",
+    "venueName": "Virginia International Raceway",
+    "layoutLabel": "South Course",
+    "hubStage": 4,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2624.8683480149193,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-vir-south.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-vir-grand",
+    "status": "imported",
+    "name": "Virginia International Raceway \u2014 Grand Course",
+    "raceRef": "Virginia International Raceway \u2014 Grand Course",
+    "displayName": "Virginia International Raceway \u2014 Grand Course",
+    "venueKey": "vir",
+    "venueName": "Virginia International Raceway",
+    "layoutLabel": "Grand Course",
+    "hubStage": 4,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 6646.320199767828,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-vir-grand.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-sebring-full",
+    "status": "imported",
+    "name": "Sebring International Raceway \u2014 Full Circuit",
+    "raceRef": "Sebring International Raceway \u2014 Full Circuit",
+    "displayName": "Sebring International Raceway \u2014 Full Circuit",
+    "venueKey": "sebring",
+    "venueName": "Sebring International Raceway",
+    "layoutLabel": "Full Circuit",
+    "hubStage": 5,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 5865.604380975315,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-sebring-full.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-sebring-short",
+    "status": "imported",
+    "name": "Sebring International Raceway \u2014 Short Circuit",
+    "raceRef": "Sebring International Raceway \u2014 Short Circuit",
+    "displayName": "Sebring International Raceway \u2014 Short Circuit",
+    "venueKey": "sebring",
+    "venueName": "Sebring International Raceway",
+    "layoutLabel": "Short Circuit",
+    "hubStage": 5,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3118.54517968031,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-sebring-short.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-sebring-club",
+    "status": "imported",
+    "name": "Sebring International Raceway \u2014 Club Circuit",
+    "raceRef": "Sebring International Raceway \u2014 Club Circuit",
+    "displayName": "Sebring International Raceway \u2014 Club Circuit",
+    "venueKey": "sebring",
+    "venueName": "Sebring International Raceway",
+    "layoutLabel": "Club Circuit",
+    "hubStage": 5,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2688.2404613188087,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-sebring-club.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-indianapolis-oval",
+    "status": "imported",
+    "name": "Indianapolis Motor Speedway \u2014 Oval",
+    "raceRef": "Indianapolis Motor Speedway \u2014 Oval",
+    "displayName": "Indianapolis Motor Speedway \u2014 Oval",
+    "venueKey": "indianapolis",
+    "venueName": "Indianapolis Motor Speedway",
+    "layoutLabel": "Oval",
+    "hubStage": 6,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 4071.086032031583,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-indianapolis-oval.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-indianapolis-road",
+    "status": "imported",
+    "name": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+    "raceRef": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+    "displayName": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+    "venueKey": "indianapolis",
+    "venueName": "Indianapolis Motor Speedway",
+    "layoutLabel": "Grand Prix Road Course",
+    "hubStage": 6,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3911.0277301040433,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-indianapolis-road.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-homestead-oval",
+    "status": "imported",
+    "name": "Homestead-Miami Speedway \u2014 Oval",
+    "raceRef": "Homestead-Miami Speedway \u2014 Oval",
+    "displayName": "Homestead-Miami Speedway \u2014 Oval",
+    "venueKey": "homestead",
+    "venueName": "Homestead-Miami Speedway",
+    "layoutLabel": "Oval",
+    "hubStage": 5,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2417.2512547167003,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-homestead-oval.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-homestead-road",
+    "status": "imported",
+    "name": "Homestead-Miami Speedway \u2014 Road Course",
+    "raceRef": "Homestead-Miami Speedway \u2014 Road Course",
+    "displayName": "Homestead-Miami Speedway \u2014 Road Course",
+    "venueKey": "homestead",
+    "venueName": "Homestead-Miami Speedway",
+    "layoutLabel": "Road Course",
+    "hubStage": 5,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3666.0991582523343,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-homestead-road.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-homestead-infield",
+    "status": "imported",
+    "name": "Homestead-Miami Speedway \u2014 Modified Road Course",
+    "raceRef": "Homestead-Miami Speedway \u2014 Modified Road Course",
+    "displayName": "Homestead-Miami Speedway \u2014 Modified Road Course",
+    "venueKey": "homestead",
+    "venueName": "Homestead-Miami Speedway",
+    "layoutLabel": "Modified Road Course",
+    "hubStage": 5,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3523.4762580499983,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-homestead-infield.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-daytona-oval",
+    "status": "imported",
+    "name": "Daytona Tri-Oval",
+    "raceRef": "Daytona Tri-Oval",
+    "displayName": "Daytona Tri-Oval",
+    "venueKey": "daytona",
+    "venueName": "Daytona International Speedway",
+    "layoutLabel": "Tri-Oval",
+    "hubStage": 5,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 4017.9351676312817,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-daytona-oval.json",
+    "replaceRaceRef": "Daytona Tri-Oval",
+    "existingSideId": null,
+    "warnings": [
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-daytona-sports-car",
+    "status": "imported",
+    "name": "Daytona International Speedway \u2014 Sports Car Course",
+    "raceRef": "Daytona International Speedway \u2014 Sports Car Course",
+    "displayName": "Daytona International Speedway \u2014 Sports Car Course",
+    "venueKey": "daytona",
+    "venueName": "Daytona International Speedway",
+    "layoutLabel": "Sports Car Course",
+    "hubStage": 5,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 5761.859535359753,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-daytona-sports-car.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-daytona-stock-car",
+    "status": "imported",
+    "name": "Daytona International Speedway \u2014 Stock Car Road Course",
+    "raceRef": "Daytona International Speedway \u2014 Stock Car Road Course",
+    "displayName": "Daytona International Speedway \u2014 Stock Car Road Course",
+    "venueKey": "daytona",
+    "venueName": "Daytona International Speedway",
+    "layoutLabel": "Stock Car Road Course",
+    "hubStage": 5,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 5775.918974588535,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-daytona-stock-car.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-laguna-full",
+    "status": "imported",
+    "name": "WeatherTech Raceway Laguna Seca",
+    "raceRef": "WeatherTech Raceway Laguna Seca",
+    "displayName": "WeatherTech Raceway Laguna Seca",
+    "venueKey": "laguna",
+    "venueName": "WeatherTech Raceway Laguna Seca",
+    "layoutLabel": "Full Circuit",
+    "hubStage": 11,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3600.8580776611207,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-laguna-full.json",
+    "replaceRaceRef": "WeatherTech Raceway Laguna Seca",
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-willow-big",
+    "status": "imported",
+    "name": "Willow Springs \u2014 Big Willow",
+    "raceRef": "Willow Springs \u2014 Big Willow",
+    "displayName": "Willow Springs \u2014 Big Willow",
+    "venueKey": "willow",
+    "venueName": "Willow Springs",
+    "layoutLabel": "Big Willow",
+    "hubStage": 11,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3943.9513690354415,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-willow-big.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-willow-streets",
+    "status": "imported",
+    "name": "Willow Springs \u2014 Streets of Willow",
+    "raceRef": "Willow Springs \u2014 Streets of Willow",
+    "displayName": "Willow Springs \u2014 Streets of Willow",
+    "venueKey": "willow",
+    "venueName": "Willow Springs",
+    "layoutLabel": "Streets of Willow",
+    "hubStage": 11,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2575.6881411875174,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-willow-streets.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-willow-streets-short",
+    "status": "imported",
+    "name": "Willow Springs \u2014 Streets \u2014 Short",
+    "raceRef": "Willow Springs \u2014 Streets \u2014 Short",
+    "displayName": "Willow Springs \u2014 Streets \u2014 Short",
+    "venueKey": "willow",
+    "venueName": "Willow Springs",
+    "layoutLabel": "Streets \u2014 Short",
+    "hubStage": 11,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 1973.2024845225144,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-willow-streets-short.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-willow-horse-thief",
+    "status": "imported",
+    "name": "Willow Springs \u2014 Horse Thief Mile",
+    "raceRef": "Willow Springs \u2014 Horse Thief Mile",
+    "displayName": "Willow Springs \u2014 Horse Thief Mile",
+    "venueKey": "willow",
+    "venueName": "Willow Springs",
+    "layoutLabel": "Horse Thief Mile",
+    "hubStage": 11,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 1611.508675740356,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-willow-horse-thief.json",
+    "replaceRaceRef": "Willow Springs \u2014 Horse Thief Mile",
+    "existingSideId": "H11-S08",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-lime-full",
+    "status": "imported",
+    "name": "Lime Rock Park \u2014 Connecticut",
+    "raceRef": "Lime Rock Park \u2014 Connecticut",
+    "displayName": "Lime Rock Park \u2014 Connecticut",
+    "venueKey": "lime",
+    "venueName": "Lime Rock Park",
+    "layoutLabel": "Full Circuit",
+    "hubStage": 1,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2371.7268920976235,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-lime-full.json",
+    "replaceRaceRef": "Lime Rock Park \u2014 Connecticut",
+    "existingSideId": "H01-S08",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-lime-west-chicane",
+    "status": "imported",
+    "name": "Lime Rock Park \u2014 West Chicane",
+    "raceRef": "Lime Rock Park \u2014 West Chicane",
+    "displayName": "Lime Rock Park \u2014 West Chicane",
+    "venueKey": "lime",
+    "venueName": "Lime Rock Park",
+    "layoutLabel": "West Chicane",
+    "hubStage": 1,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2411.371845944385,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-lime-west-chicane.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-lime-both-chicanes",
+    "status": "imported",
+    "name": "Lime Rock Park \u2014 Both Chicanes",
+    "raceRef": "Lime Rock Park \u2014 Both Chicanes",
+    "displayName": "Lime Rock Park \u2014 Both Chicanes",
+    "venueKey": "lime",
+    "venueName": "Lime Rock Park",
+    "layoutLabel": "Both Chicanes",
+    "hubStage": 1,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2404.8503973710267,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-lime-both-chicanes.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-mid-ohio-sports-car",
+    "status": "imported",
+    "name": "Mid-Ohio Sports Car Course \u2014 Lexington",
+    "raceRef": "Mid-Ohio Sports Car Course \u2014 Lexington",
+    "displayName": "Mid-Ohio Sports Car Course \u2014 Lexington",
+    "venueKey": "mid-ohio",
+    "venueName": "Mid-Ohio Sports Car Course",
+    "layoutLabel": "Sports Car Course",
+    "hubStage": 4,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3616.1760963168667,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-mid-ohio-sports-car.json",
+    "replaceRaceRef": "Mid-Ohio Sports Car Course \u2014 Lexington",
+    "existingSideId": "H04-S09",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-mid-ohio-chicane",
+    "status": "imported",
+    "name": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+    "raceRef": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+    "displayName": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+    "venueKey": "mid-ohio",
+    "venueName": "Mid-Ohio Sports Car Course",
+    "layoutLabel": "Chicane Course",
+    "hubStage": 4,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 3646.183002485484,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-mid-ohio-chicane.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-mid-ohio-short",
+    "status": "imported",
+    "name": "Mid-Ohio Sports Car Course \u2014 Short Course",
+    "raceRef": "Mid-Ohio Sports Car Course \u2014 Short Course",
+    "displayName": "Mid-Ohio Sports Car Course \u2014 Short Course",
+    "venueKey": "mid-ohio",
+    "venueName": "Mid-Ohio Sports Car Course",
+    "layoutLabel": "Short Course",
+    "hubStage": 4,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 2731.101727471827,
+    "laps": 3,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-mid-ohio-short.json",
+    "replaceRaceRef": null,
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "raceway-nordschleife-full",
+    "status": "imported",
+    "name": "Nurburgring Nordschleife",
+    "raceRef": "Nurburgring Nordschleife",
+    "displayName": "Nurburgring Nordschleife",
+    "venueKey": "nordschleife",
+    "venueName": "Nurburgring Nordschleife",
+    "layoutLabel": "Nordschleife",
+    "hubStage": null,
+    "import_kind": "circuit",
+    "event_type": "Circuit race",
+    "surface": [
+      "asphalt"
+    ],
+    "lengthM": 20746.720958627473,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/raceway-nordschleife-full.json",
+    "replaceRaceRef": "Nurburgring Nordschleife",
+    "existingSideId": null,
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "legacy-turini",
+    "status": "imported",
+    "name": "Col de Turini",
+    "raceRef": "Col de Turini",
+    "replaceRaceRef": "Col de Turini",
+    "venueKey": "turini",
+    "venueName": "Col de Turini",
+    "layoutLabel": "Mapped road stage",
+    "hubStage": null,
+    "artHubStage": 2,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "lengthM": 15111.180850802595,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/legacy-turini.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  },
+  {
+    "id": "legacy-ouninpohja",
+    "status": "imported",
+    "name": "Ouninpohja",
+    "raceRef": "Ouninpohja",
+    "replaceRaceRef": "Ouninpohja",
+    "venueKey": "ouninpohja",
+    "venueName": "Ouninpohja",
+    "layoutLabel": "Mapped road stage",
+    "hubStage": null,
+    "artHubStage": 5,
+    "import_kind": "road",
+    "event_type": "Rally stage",
+    "lengthM": 17404.92383592243,
+    "laps": 1,
+    "generatedPath": "artifacts/campaign-import/raceways/legacy-ouninpohja.json",
+    "warnings": [
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
+      "Start line and driving direction are provisional; verify against the real circuit.",
+      "Road width uses OSM width where available, otherwise your default.",
+      "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
+    ]
+  }
+]
