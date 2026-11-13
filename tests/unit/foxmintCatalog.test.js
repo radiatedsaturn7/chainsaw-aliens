@@ -27,3 +27,22 @@ test('Foxmint production editor preview launches on tire support, not an occludi
 
 test('Foxmint preserves dated UK source, unit conversion and RHD fit',()=>{const {car}=c,t=car.tuning;assert.equal(t.powerHp,92/.7456998715822702);assert.ok(t.powerHp<125);assert.equal(t.torqueLbFt,157/1.3558179483314004);assert.equal(t.weightKg,1038);assert.equal(t.engineDisplacementL,1.679);assert.equal(t.aspiration,'Naturally Aspirated');assert.equal(t.drivetrain,'fwd');assert.deepEqual(t.gearRatios,[3.15,1.93,1.41,1.11,.88]);assert.equal(t.gearFinalDrive,3.82);assert.equal(t.reverseRatio,3.62);assert.equal(t.wheelRadiusM,.288);assert.deepEqual(car.setup.tireSize,{widthMm:195,aspectRatio:50,wheelDiameterIn:15});assert.equal(car.dimensions.wheelbaseM,2.446);assert.equal(car.mechanics.fuelLiters,40);assert.equal(t.topSpeedMph,203/1.609344);const notes=c.provenance.estimates.join(' ');assert.match(notes,/09.2000/);assert.match(notes,/NOT 125 mechanical hp/);assert.match(notes,/full fluid levels/);assert.match(notes,/two decimals/);assert.match(notes,/RIGHT HAND DRIVE/);assert.ok(d.car.art.interior.steeringWheel.anchorX>.7);assert.deepEqual(c.cockpitCalibration.wheelPivotAndWidthPixels,[1450,655,250]);assert.equal(d.car.art.gauges.interior.coordinateSpace,'wheel-opening');});
 test('Foxmint conventional gearing remains editable through actual bounded editor fields',()=>{const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(structuredClone(d),{name:d.car.name});for(let i=0;i<5;i++){const ratio=c.car.tuning.gearRatios[i];assert.ok(ratio>=.35&&ratio<=5.5);assert.equal(e.setCarTuneNumericValue(`gearRatio-${i+1}`,ratio),true);}const saved=e.serializeSelectedCarDocument().car;assert.deepEqual(saved.tuning.gearRatios,c.car.tuning.gearRatios.map(x=>Math.round(x*1000)/1000));assert.equal(saved.transmissions.manual.gearFinalDrive,3.82);const second=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});second.applyLoadedCarDocument({kind:'race-car',car:saved},{name:saved.name});assert.deepEqual(second.serializeSelectedCarDocument().car,saved);});
+
+test('Foxmint diagonal graphical tires stay within native wheel wells and sill envelope',async()=>{
+ const {decodePng}=await import('../../scripts/car-catalog-import.mjs');
+ const {prepareCarSheet}=await import('../../src/racing/CarGraphicImport.js');
+ const {gunzipSync}=await import('node:zlib');
+ const root=new URL('../../',import.meta.url),source=decodePng(new URL('assets/car-catalog/foxmint-2000/body.png',root).pathname),prepared=prepareCarSheet(source);
+ const packed=JSON.parse(fs.readFileSync(new URL('data/server-storage/files/art/catalog-foxmint-2000-body/document.json',root))),art=packed.__chainsawStorage?JSON.parse(gunzipSync(Buffer.from(packed.data,'base64'))):packed;
+ const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'}),car=d.car;
+ for(const [index,slot]of [[1,'frontRight'],[3,'rearRight'],[5,'rearLeft'],[7,'frontLeft']]){
+  const layer=car.art.angleLayers[slot],crop=prepared.crops[c.mapping[index]],neutral=structuredClone(car);neutral.art.tireScaleX=neutral.art.tireScaleY=1;
+  const rig=e.getRaceSpriteWheelRig({car:neutral,viewSlot:slot,bodyBaseWidth:100}),scale=100*layer.body.transforms.bodyScaleX/art.width;
+  for(const a of c.authoredWheelAnchors[slot]){
+   const radius=rig.wheels[a.wheel].height*layer.tires.transforms.tireScaleY/2/scale;
+   assert.ok(radius<=58,`${slot}/${a.wheel}: no oversized diagonal truck tire`);
+   assert.ok(a.y+radius<=crop.y+crop.height+15,`${slot}/${a.wheel}: lower tire edge stays near body sill`);
+  }
+ }
+ assert.equal(car.tuning.wheelRadiusM,.288);assert.deepEqual(car.setup.tireSize,{widthMm:195,aspectRatio:50,wheelDiameterIn:15});
+});
