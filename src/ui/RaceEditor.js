@@ -10821,6 +10821,13 @@ export default class RaceEditor {
     });
   }
 
+  selectRaceTravelGridCars(race, playerCarId) {
+    const count = (race?.competition?.aiDrivers || []).filter(driver => driver.enabled).length;
+    return selectEligibleRaceAiCars(this.project.cars, Math.min(RACE_MAX_AI_DRIVERS, count), {
+      playerCarId, selection: normalizeAiCarSelection(race?.competition?.carSelection)
+    });
+  }
+
   getRaceAiCarSelection() {
     const rules = normalizeAiCarSelection(this.selectedRace?.competition?.carSelection);
     if (rules.availableCarIds === null) {
@@ -13624,7 +13631,9 @@ export default class RaceEditor {
     const hazards = this.selectedRace.hazards || [];
     const diagnosticMode = this.pendingDiagnosticMode || this.selectedRace.diagnosticMode || null;
     const rules = this.getRaceAiCarSelection();
-    const gridCars = selectEligibleRaceAiCars(this.project.cars, Math.min(RACE_MAX_AI_DRIVERS, aiDrivers.length), { playerCarId: playtestCarId, selection: rules });
+    const gridCars = Array.isArray(options?.preparedAiCarIds)
+      ? options.preparedAiCarIds.slice(0, Math.min(RACE_MAX_AI_DRIVERS, aiDrivers.length))
+      : selectEligibleRaceAiCars(this.project.cars, Math.min(RACE_MAX_AI_DRIVERS, aiDrivers.length), { playerCarId: playtestCarId, selection: rules });
     const normalizedAiDrivers = aiDrivers.slice(0, gridCars.length).map((driver, index) => this.normalizeRaceAiDriver({
       ...driver, carId: gridCars[index] || this.selectedCar?.id
     }, index));

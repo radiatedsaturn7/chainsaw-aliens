@@ -129,3 +129,20 @@ test('stock save-slot icons prepare without garage builds or tuning calculations
   await resources.prepareScreen(doc,doc.screens[0],{});
  }finally{globalThis.document=previous;}
 });
+
+test('showroom entry prepares the visible page instead of decoding the entire car catalog',async()=>{
+ const {normalizeMenuDocument}=await import('../../src/menus/MenuDocument.js');
+ const previous=globalThis.document;
+ const ctx=new Proxy({measureText:()=>({width:20})},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
+ globalThis.document={createElement:()=>({getContext:()=>ctx})};
+ try{
+  const requested=new Set();
+  const resources=new MenuResources({carEditor:{getRaceCarProjectedArtRef:()=>({artRef:''})}});
+  resources.choices=()=>Array.from({length:60},(_,i)=>({value:`Car ${i}`,label:`Car ${i}`}));
+  resources.car=ref=>{requested.add(ref);return {art:{}};};
+  resources.exteriorArtRefs=()=>[];resources.carPreview.drawSprite=()=>true;resources.carPreview.draw=()=>true;
+  const doc=normalizeMenuDocument({screens:[{id:'cars',elements:[{id:'showroom',type:'car-showroom',binding:'carRef',maxVisible:4}]}]});
+  await resources.prepareScreen(doc,doc.screens[0],{carRef:'Car 9'});
+  assert.deepEqual([...requested].sort(),['Car 10','Car 11','Car 8','Car 9']);
+ }finally{globalThis.document=previous;}
+});
