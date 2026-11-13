@@ -1,0 +1,81 @@
+{
+  "id": "glowmoth-sc-1988",
+  "fictionalName": "Glowmoth SC 1988",
+  "reference": "1988 US Toyota MR2 Supercharged 5-speed manual, T-Bar roof closed, LHD",
+  "duplicateCheck": "Shared packets and copperwing-work/assets/car-catalog research checked: Glimmer1986 is naturally aspirated AW11; Starwort2005 is third-generation Spyder. Meaningful powertrain variant, not new model family.",
+  "sources": [
+    {
+      "url": "https://xr793.com/wp-content/uploads/2024/12/1988-Toyota-MR2.pdf",
+      "kind": "OEM US brochure mirrored",
+      "inspection": "PDF page6 printed10-11 actually rendered/viewed table.png; exact Supercharged column, manual curb row."
+    },
+    {
+      "url": "https://xsocam.com/downloads/mr2/Toyota%20MR2%201988%20Repair%20Manual%20RM070U.pdf",
+      "kind": "OEM factory manual mirror",
+      "inspection": "Downloaded genuine1065page scannedPDF; inspectedMT1 contents only, NOT numeric gear verification."
+    },
+    {
+      "url": "https://mr2wiki.com/MKI/Transmission/",
+      "kind": "secondary specialist reference",
+      "inspection": "SC forward ratios/final and no standard federalLSD; not OEM numericproof."
+    },
+    {
+      "url": "https://www.mygarageiscoolerthanyours.com/information/e-series-ratios",
+      "kind": "secondary corroboration",
+      "inspection": "E51 row and1988-89SC application; reverse3.583, not E1533.545."
+    }
+  ],
+  "oemFacts": {
+    "engine": "1587cc inline4 twin-cam16V Roots supercharged/intercooled EFI, computer-controlled electromagnetic supercharger clutch",
+    "powerHpSAEnet": 145,
+    "powerRpm": 6400,
+    "torqueLbFt": 140,
+    "torqueRpm": 4000,
+    "curbMassLbManual": 2493,
+    "curbMassConvention": "Brochure curb; fluid/driver/options detail unspecified. Automatic2531lb is excluded; period tested2604lb not baseline.",
+    "frontWeightPercent": 42,
+    "rearWeightPercent": 58,
+    "dragCoefficient": 0.36,
+    "wheelbaseIn": 91.3,
+    "lengthIn": 155.5,
+    "widthIn": 65.6,
+    "heightIn": 48.6,
+    "trackFrontIn": 56.7,
+    "trackRearIn": 56.7,
+    "fuelUSgal": 10.8,
+    "tiresBoth": "185/60HR14",
+    "wheelsBoth": "14x6.0JJ alloy",
+    "roof": "T-Bar dual removable tinted panels standard; closed in art/runtime",
+    "brakes": "Power four-wheel discs, ventilated front",
+    "suspension": "Front MacPherson offsetcoil gasdamper and stabilizer; rear independentdual-linkMacPherson offsetcoil gasdamper",
+    "steering": "Quick-ratio rackpinion",
+    "turningDiameterFt": 31.5
+  },
+  "secondaryGearing": {
+    "label": "E51 five-speed physical ratios, corroborated secondary only, not established OEM numeric table in bounded research",
+    "forward": [
+      3.23,
+      1.913,
+      1.258,
+      0.918,
+      0.731
+    ],
+    "reverse": 3.583,
+    "final": 4.285,
+    "differential": "No standard federal LSD reported by MR2Wiki; choose open only with secondary-provenance label."
+  },
+  "derived": {
+    "massKg": 1130.8057784100001,
+    "torqueNm": 189.814512762,
+    "nominalTireRadiusM": 0.2888,
+    "fuelL": 40.8824472672
+  },
+  "unknowns": [
+    "Idle, redline and fuel cutoff unverified; do not equate6400powerpeak withredline.",
+    "Full torque/boost curves and supercharger clutch engagement are not provided. Treat simplified combustion curve as simulation approximation, not physicalclutch simulation.",
+    "Loadedtire radius, CGheight/inertia, frontalarea, spring/damper values, overhang split and precise fluid/driver mass convention unknown.",
+    "No verified OEM limiter/top speed in inspected table; do not invent.",
+    "Factory manual present but full OCR not warranted for bounded sourcepass; gears remain secondary."
+  ],
+  "artPlan": "Original logo-free2994 midengine wedge with closed removable roof panels, distinctive fictional fascia and rear, no Toyota/MR2 branding. LHD cockpit, existingsharedwheel, body-only8angles. No artwork generated."
+}
