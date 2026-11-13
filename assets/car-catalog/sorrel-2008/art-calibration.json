@@ -1,0 +1,145 @@
+{
+  "status": "Native source art measurements applied to candidate; actual runtime screenshot review pending",
+  "mapping": [
+    0,
+    7,
+    2,
+    3,
+    4,
+    5,
+    6,
+    1
+  ],
+  "authoredWheelAnchors": {
+    "front": [
+      {
+        "wheel": "fl",
+        "x": 50,
+        "y": 305,
+        "radius": 50
+      },
+      {
+        "wheel": "fr",
+        "x": 335,
+        "y": 305,
+        "radius": 50
+      }
+    ],
+    "frontRight": [
+      {
+        "wheel": "fr",
+        "x": 1920,
+        "y": 665,
+        "radius": 65
+      },
+      {
+        "wheel": "rr",
+        "x": 2105,
+        "y": 630,
+        "radius": 60
+      }
+    ],
+    "right": [
+      {
+        "wheel": "fr",
+        "x": 1110,
+        "y": 305,
+        "radius": 80
+      },
+      {
+        "wheel": "rr",
+        "x": 1515,
+        "y": 305,
+        "radius": 80
+      }
+    ],
+    "rearRight": [
+      {
+        "wheel": "fr",
+        "x": 1715,
+        "y": 280,
+        "radius": 60
+      },
+      {
+        "wheel": "rr",
+        "x": 1900,
+        "y": 305,
+        "radius": 70
+      }
+    ],
+    "rear": [
+      {
+        "wheel": "rr",
+        "x": 50,
+        "y": 665,
+        "radius": 50
+      },
+      {
+        "wheel": "rl",
+        "x": 330,
+        "y": 665,
+        "radius": 50
+      }
+    ],
+    "rearLeft": [
+      {
+        "wheel": "rl",
+        "x": 660,
+        "y": 665,
+        "radius": 70
+      },
+      {
+        "wheel": "fl",
+        "x": 850,
+        "y": 640,
+        "radius": 60
+      }
+    ],
+    "left": [
+      {
+        "wheel": "rl",
+        "x": 1060,
+        "y": 665,
+        "radius": 80
+      },
+      {
+        "wheel": "fl",
+        "x": 1470,
+        "y": 665,
+        "radius": 80
+      }
+    ],
+    "frontLeft": [
+      {
+        "wheel": "rl",
+        "x": 450,
+        "y": 275,
+        "radius": 60
+      },
+      {
+        "wheel": "fl",
+        "x": 665,
+        "y": 305,
+        "radius": 75
+      }
+    ]
+  },
+  "cockpitCalibration": {
+    "sourceImageSize": [
+      1983,
+      793
+    ],
+    "clusterPixels": [
+      1160,
+      420,
+      560,
+      210
+    ],
+    "wheelPivotAndWidthPixels": [
+      1450,
+      655,
+      250
+    ]
+  },
+  "releaseGate": "Actual desktop/mobile cockpit and eight-angle scene QA required after import"
+}

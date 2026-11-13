@@ -1,0 +1,26 @@
+{
+  "inspiration": "1990 Japan Toyota Sera base 5MT E-EXY10-ACMGH, without optional ABS or premium sound",
+  "sources": [
+    {
+      "url": "https://toyota.jp/ucar/catalog/brand-TOYOTA/car-SERA/199003/1003592/",
+      "kind": "OEM historical model catalog, full page read",
+      "fields": [
+        "{\"curbKg\": 890, \"powerKw\": 81, \"powerPs\": 110, \"powerRpm\": 6400, \"torqueNm\": 132.4, \"torqueRpm\": 5200, \"engineCc\": 1496, \"fuelLiters\": 40, \"gearRatios\": [3.166, 1.904, 1.31, 0.969, 0.725], \"reverse\": 3.25, \"finalDrive\": 4.312, \"lengthMm\": 3860, \"widthMm\": 1650, \"heightMm\": 1265, \"wheelbaseMm\": 2300, \"trackFrontMm\": 1405, \"trackRearMm\": 1405, \"clearanceMm\": 145, \"tires\": \"175/65R14 82H\", \"drivetrain\": \"front engine FWD\", \"frontBrakes\": \"ventilated disc\", \"rearBrakes\": \"drum\", \"frontSuspension\": \"strut coil with stabilizer\", \"rearSuspension\": \"torsion beam coil with stabilizer\"}"
+      ]
+    },
+    {
+      "url": "https://www.toyota.co.jp/jpn/company/history/75years/vehicle_lineage/car/id60009860/news/60009860.pdf",
+      "kind": "OEM original launch release; actual page11 rendered and visually reviewed",
+      "fields": [
+        "{\"curbKg\": 890, \"powerKw\": 81, \"powerPs\": 110, \"powerRpm\": 6400, \"torqueNm\": 132.4, \"torqueRpm\": 5200, \"engineCc\": 1496, \"fuelLiters\": 40, \"gearRatios\": [3.166, 1.904, 1.31, 0.969, 0.725], \"reverse\": 3.25, \"finalDrive\": 4.312, \"lengthMm\": 3860, \"widthMm\": 1650, \"heightMm\": 1265, \"wheelbaseMm\": 2300, \"trackFrontMm\": 1405, \"trackRearMm\": 1405, \"clearanceMm\": 145, \"tires\": \"175/65R14 82H\", \"drivetrain\": \"front engine FWD\", \"frontBrakes\": \"ventilated disc\", \"rearBrakes\": \"drum\", \"frontSuspension\": \"strut coil with stabilizer\", \"rearSuspension\": \"torsion beam coil with stabilizer\"}"
+      ]
+    }
+  ],
+  "estimates": [
+    "Automatic is930kg, not selected.",
+    "Optional ABS adds10kg and changes rear brakes to discs; not selected.",
+    "Premium sound adds20kg; not selected.",
+    "60 percent front weight, .43m CG, .31 Cd,32psi,15:1 steering, brake balance, suspension and alignment are provisional game estimates.",
+    "6800 redline/7000 limiter,750rpm idle,torque interpolation outside anchors and112mph/10.5s0-60 displays are unverified estimates."
+  ]
+}

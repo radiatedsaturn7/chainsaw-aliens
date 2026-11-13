@@ -1,0 +1,83 @@
+{
+  "fictionalName": "Stonepod",
+  "year": 2006,
+  "inspiration": "US Honda Element EX 2WD 5MT LHD; not EX-P, AWD, LX or automatic",
+  "status": "Original candidate imported; actual browser visual acceptance pending",
+  "duplicateCheck": "No Element matches in inspected copperwing-work car-catalog scripts or shared car-next/car-sources; recheck live roster before import.",
+  "sources": [
+    {
+      "url": "https://hondanews.com/en-US/releases/release-8493873629d176ff002ee9004c34c10f-2006-honda-element-specifications",
+      "publisher": "American Honda",
+      "date": "2005-09-21",
+      "access": "Full OEM HTML table read, columns checked for 2WD EX and manual"
+    },
+    {
+      "url": "https://hondanews.com/en-US/releases/release-edcbca9daea918ef2247a7004c34c10e-hondas-versatile-and-fun-to-drive-element-adds-a-new-trim-level-for-2006",
+      "publisher": "American Honda",
+      "date": "2005-09-21",
+      "access": "Full OEM HTML read",
+      "facts": "2006 SAE net revision8/04 ratings156hp160lbft; EX-P painted panels differs EX; no hybrid"
+    }
+  ],
+  "verified": {
+    "fuel": "gasoline",
+    "aspiration": "naturally aspirated",
+    "engine": "2354cc inline4 DOHC16V i-VTEC",
+    "powerHpSAENetRev804": 156,
+    "powerRpm": 5500,
+    "torqueLbFt": 160,
+    "torqueRpm": 4500,
+    "compression": 9.7,
+    "drive": "FWD",
+    "gearRatios": [
+      3.533,
+      2.042,
+      1.355,
+      1.028,
+      0.825
+    ],
+    "reverseRatio": 3.583,
+    "finalDrive": 4.765,
+    "tires": "P215/70R16 all-season",
+    "wheelInches": "16x6.5 alloy",
+    "curbMassLb": 3391,
+    "massConvention": "OEM US curb weight, EX2WD manual column; no explicit driver/fuel definition and no invented adjustment",
+    "frontWeightFraction": 0.58,
+    "wheelbaseIn": 101.4,
+    "lengthIn": 169.3,
+    "widthIn": 71.5,
+    "heightIn": 70.4,
+    "frontTrackIn": 62.1,
+    "rearTrackIn": 62.3,
+    "groundClearanceIn": 6.9,
+    "fuelUSGallons": 15.9,
+    "steeringRatio": 16.2,
+    "steeringTurnsLockToLock": 3.26,
+    "turningDiameterFt": 34.9,
+    "frontBrakeDiameterIn": 11.1,
+    "rearBrakeDiameterIn": 11.1,
+    "frontSuspension": "control-link MacPherson strut",
+    "rearSuspension": "compact double wishbone"
+  },
+  "derived": {
+    "massKg": 1538.13172667,
+    "torqueNm": 216.930871733024,
+    "wheelbaseM": 2.57556,
+    "lengthM": 4.30022,
+    "widthM": 1.8160999999999998,
+    "heightM": 1.78816,
+    "frontTrackM": 1.57734,
+    "rearTrackM": 1.58242,
+    "groundClearanceM": 0.17526,
+    "fuelLiters": 60.1880473656,
+    "nominalTireRadiusM": 0.3537
+  },
+  "uncertainties": [
+    "Exact redline and ECU cut not established for2006 in inspected sources; do not borrow2007 6500rpm as verified, since2007 engine output changed.",
+    "Idle, CG, Cd/frontal area, torque curve and absolute springs/dampers not verified; any runtime values labeled simulation calibration.",
+    "Ground clearance load condition unspecified.",
+    "Use3391lb not LX3371, EXautomatic3441 or AWD3527. OEM EX-P automatic3341 row looks inconsistent; irrelevant to selectedtrim, do notcopy.",
+    "2006uses156hp rating after SAE revision, not prior160hp or2007 166hp."
+  ],
+  "artPlan": "Original2994 utilitarian tall box wagon with short hood, large windows, opposing-side door seams, sage-gray metal and charcoal armored-looking cladding; alter lamps/grille/roofline, no logos. LHD sparse upright dashboard, blank gauge wells, opening for shared existing wheel, high-mounted manual shifter. All8body angles wheel-less with transparent holes, fixedrear camera and appropriate FWDsmoke/spray. No artwork created."
+}

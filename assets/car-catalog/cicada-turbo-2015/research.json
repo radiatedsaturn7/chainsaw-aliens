@@ -1,0 +1,57 @@
+{
+  "referenceVehicle": "2015 US Alfa Romeo 4C base coupe, standard17/18 inch wheels; not Spider, Launch or European dry-weight version",
+  "source": {
+    "url": "https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/specs/2015_AR_4C_4CSpider_SPj23a58s7rdl2f6oi4jt6oabq56.pdf",
+    "title": "FCA North America 2015 Alfa Romeo 4C and 4C Spider specifications",
+    "readAt": "2026-11-13",
+    "verified": true
+  },
+  "facts": {
+    "engine": "1742cc turbo I4 transverse midengine RWD",
+    "hpSAE": 237,
+    "powerRpm": 6000,
+    "torqueLbFt": 258,
+    "torqueNm": 350,
+    "torqueRpm": [
+      2200,
+      4250
+    ],
+    "fuelCutoffRpm": 6500,
+    "transmission": "6-speed TCT dual-clutch automatic with sequential paddles",
+    "gearRatios": [
+      4.154,
+      2.269,
+      1.435,
+      0.978,
+      0.755,
+      0.622
+    ],
+    "finalDrive": 4.118,
+    "steeringRatio": 15.7,
+    "curbMassKg": 1118,
+    "dryMassKg_NOT_CURB": 1050,
+    "lengthM": 3.989,
+    "widthM": 1.868,
+    "heightM": 1.183,
+    "wheelbaseM": 2.38,
+    "frontTrackM": 1.639,
+    "rearTrackM": 1.604,
+    "clearanceM": 0.114,
+    "frontWeightFraction": 0.41,
+    "dragCd": 0.335,
+    "fuelCapacityL": 40,
+    "frontTire": "205/45ZR17",
+    "rearTire": "235/40ZR18",
+    "frontNominalRadiusM": 0.30815,
+    "rearNominalRadiusM": 0.3226,
+    "frontRevsPerMile": 835,
+    "rearRevsPerMile": 764
+  },
+  "caveats": [
+    "Reverse ratio absent in OEM sheet; source separately or label estimate.",
+    "Dual-clutch represented through available automatic mode: do not claim full TCT controller.",
+    "OEM revs/mile rolling radii differ from nominal tire geometry; preserve distinction.",
+    "CG height, torque curve intermediates, gearing shift speed, pressure and drivetrain efficiency require qualified model assumptions.",
+    "No artwork or implementation yet."
+  ]
+}

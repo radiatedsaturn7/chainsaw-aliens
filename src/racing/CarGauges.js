@@ -59,7 +59,7 @@ export function defaultGauges(){
  GAUGE_SOURCES.filter(s=>s.startsWith('damage.')).forEach((source,i)=>base.push({source,format:'icon',x:.02+(i%4)*.035,y:.72+Math.floor(i/4)*.06,width:.028,height:.045,name:source.replace('damage.','')}));
  return base.map((g,i)=>normalizeGauge(g,i));
 }
-export function normalizeCarGauges(value={}){return Object.fromEntries(['exterior','interior'].map(k=>[k,{...(k==='interior'&&value?.[k]?.coordinateSpace==='dashboard'?{coordinateSpace:'dashboard'}:{}),enabled:value?.[k]?.enabled===true,widgets:Array.isArray(value?.[k]?.widgets)?value[k].widgets.filter(g=>g&&typeof g==='object').map(normalizeGauge):defaultGauges()}]));}
+export function normalizeCarGauges(value={}){return Object.fromEntries(['exterior','interior'].map(k=>[k,{...(k==='interior'&&['dashboard','wheel-opening'].includes(value?.[k]?.coordinateSpace)?{coordinateSpace:value[k].coordinateSpace}:{}),enabled:value?.[k]?.enabled===true,widgets:Array.isArray(value?.[k]?.widgets)?value[k].widgets.filter(g=>g&&typeof g==='object').map(normalizeGauge):defaultGauges()}]));}
 export function gaugeArtRefs(car){return [...new Set([...Object.values(car?.art?.gauges||{}).flatMap(l=>(l.widgets||[]).flatMap(g=>GAUGE_ART_FIELDS.map(key=>g[key]))),...(car?.art?.indicators||[]).map(v=>v.artRef)].filter(Boolean))];}
 function isCircuit(state={}){return (state.session?.routeRuntimeType||state.race?.type)==='circuit';}
 export function gaugeCompletion({session={},race={}}={}){

@@ -1,0 +1,160 @@
+{
+  "fictionalIdentity": "Ironbloom GT 2005",
+  "reference": "US2005 Ford Mustang GT Coupe Deluxe T82/130A, conventional TR3650 5MT, standard17in wheels; no optional equipment",
+  "status": "Later production manufacturer form resolves preliminary gearing/mass differences. Use explicit mirrored-OEM-transcription provenance; no visual inspection of that form. Owner manual dimensions visually verified from Ford-hosted PDF.",
+  "primarySource": {
+    "url": "https://shnack.com/docs/05_mustang_product_guide.pdf",
+    "description": "Ford Retailer Education and Training August2004 product guide, archived third-party; downloaded real24pagePDF; finalpage rendered and visually inspected",
+    "localEvidence": [
+      "ford-aug2004-product-guide.pdf",
+      "ford-aug2004-spec-table.png"
+    ]
+  },
+  "uncontestedPrimaryAnchors": {
+    "engine": "4.6L NA gasoline90degreeV8 SOHC3valves/cylinder variable cam timing",
+    "displacementCubicInches": 281,
+    "compression": 9.8,
+    "powerHp": 300,
+    "powerRpm": 5750,
+    "torqueLbFt": 320,
+    "torqueRpm": 4500,
+    "drivetrain": "RWD",
+    "transmission": "TremecTR3650 conventional5MT",
+    "finalDrive": 3.55,
+    "fuelUSGallons": 16,
+    "tire": "P235/55WR17",
+    "wheel": "17x8in alloy",
+    "wheelbaseInches": 107.1,
+    "steeringRatio": 15.7,
+    "frontDiscMm": 316,
+    "rearDiscMm": 300,
+    "frontSuspension": "Reverse-L independent MacPherson strut",
+    "rearSuspension": "Three-link solid axle coil springs and Panhard rod"
+  },
+  "conflicts": {
+    "gears": {
+      "earlyFordGuide": [
+        3.33,
+        2,
+        1.41,
+        1,
+        0.67
+      ],
+      "earlyFordReverse": 3.38,
+      "modernDrivelineApplicationTable": [
+        3.38,
+        2,
+        1.32,
+        1,
+        0.68
+      ],
+      "modernDrivelineReverse": 3.38,
+      "secondaryNewCars": [
+        3.34,
+        2,
+        1.32,
+        1,
+        0.68
+      ],
+      "policy": "Earlyguide visually really prints3.33/1.41/.67. Do not silently substitute or call those verifiedproduction. Transmission-specialist production application table strongly supports3.38/2/1.32/1/.68 but primaryproduction proof not recovered in bounded pass.",
+      "resolution": "Select later10/25/2004 manufacturer form ratios, including exact fifth0.675 rather than rounded0.68; provenance caveat applies."
+    },
+    "curbMassLb": {
+      "earlyFordGuide": 3450,
+      "secondaryNewCars": 3483,
+      "SCCAIndexedFordVTS": 3487,
+      "policy": "SCCA candidate is indexed wetcurbSAEJ1100 but actualPDF unavailable. No false claim inspected/verified. Select only with explicit source/version caveat or resolve actualproductionFordtable.",
+      "resolution": "Select standard GT Deluxe3487lb/1582kg from latermanufacturer form, SAEJ1100 curb; not Premium or optional equipment."
+    },
+    "dimensions": {
+      "earlyFordGuideInches": {
+        "length": 187.6,
+        "width": 73.8,
+        "height": 54.4,
+        "trackFront": 62.3,
+        "trackRear": 62.5
+      },
+      "secondaryNewCarsInches": {
+        "length": 188,
+        "width": 73.9,
+        "height": 55.4,
+        "trackFront": 61.9,
+        "trackRear": 62.5
+      },
+      "policy": "Do not merge inconsistent earlyretailer and latertranscribed dimensions silently.",
+      "resolution": "Select Ford-hosted owner manual GT column page232:4775x1877x1407mm,WB2720,tracks1582/1588."
+    }
+  },
+  "secondarySources": [
+    {
+      "url": "https://www.moderndriveline.com/resources/mustangs-manual-transmissions/",
+      "status": "Transmission specialist application table indexed; production05-10GT ratios3.38/2/1.32/1/.68 reverse3.38, notOEMprimary"
+    },
+    {
+      "url": "https://www.new-cars.com/2005/ford/ford-mustang-specs.html",
+      "status": "Fulltextread, third-party transcription; possible firstgear typo3.34; reports6250redline,3483lb54/46massfraction and differing dimensions, do notupgradeprovenance"
+    }
+  ],
+  "primaryUnretrieved": {
+    "url": "https://www.crbscca.com/uploadedFiles/mvmaVTS/05%20Mustang%20GT.pdf",
+    "status": "Searchindexed Ford2005VTS3487lbSAEJ1100wetcurb; webtimeouttwice, shell98byteerrorNOTPDF; noactualtableinspection"
+  },
+  "unknowns": [
+    "fuelcut (SCCA indexed6200 vs secondary6250 not resolved)",
+    "full torque curve",
+    "CGheight",
+    "frontalarea/Cd",
+    "spring/damper constants",
+    "differential preload/locking calibration"
+  ],
+  "artPlan": "Original logo-free2994 American longhoodV8 fastbackcoupe; altered lamps and fascia, no pony badge or exacttriplebar lamp copy, LHD two-large-gauge dashboard and existing sharedwheel, dualrear exhaust smoke,fixedrear,8wheel-lessbodyangles. Noartcreated.",
+  "productionResolution": {
+    "source": {
+      "url": "https://www.scribd.com/document/365710536/2005mustang-Specs",
+      "title": "Ford Motor Company AAM/AIAM MVMS-2004 Mustang Coupe model-year2005 specifications",
+      "issued": "2004-10-25",
+      "provenance": "Manufacturer-authored form mirrored by third party; readable document transcription inspected, NOT original PDF/table image. No paywall bypass or paid access.",
+      "pages": {
+        "powerTeams": 2,
+        "idle": 6,
+        "manualTransmission": 8,
+        "mass": 26
+      }
+    },
+    "gears": [
+      3.38,
+      2.0,
+      1.32,
+      1.0,
+      0.675
+    ],
+    "reverse": 3.38,
+    "finalDrive": 3.55,
+    "idleRpm": 740,
+    "curbMassKg": 1582,
+    "curbMassLb": 3487,
+    "frontCurbKg": 850,
+    "rearCurbKg": 732,
+    "frontFractionDerived": 0.5372945638432364,
+    "shippingMassKg": 1522,
+    "shippingMassLb": 3356,
+    "massConvention": "Document explicitly references SAE J1100 curb-weight definition. Standard GT Deluxe without optional equipment, not GT Premium1590kg/3506lb. Shipping mass differs by59.4kg/131lb. Do not use shipping or ETWC3750lb as curb.",
+    "supersedes": "Earlier August2004 retailer guide preliminary3.33/1.41/.67 and3450lb. Secondary3483lb is not selected.",
+    "uncertainty": "Exact curb-mass definition details not independently retrieved from SAE standard; preserve source label and avoid double-counting runtime fuel. Mirrored transcription is not authenticated original scan."
+  },
+  "productionDimensions": {
+    "source": "https://www.fordservicecontent.com/Ford_Content/catalog/owner_guides/05musog2e.pdf",
+    "page": 232,
+    "evidence": "Direct Ford-hosted genuine PDF downloaded, page232 rendered and visually inspected",
+    "heightMm": 1407,
+    "frontTrackMm": 1582,
+    "rearTrackMm": 1588,
+    "widthMm": 1877,
+    "wheelbaseMm": 2720,
+    "lengthMm": 4775,
+    "localEvidence": [
+      "ford-owner-2005.pdf",
+      "ford-owner-dimensions-p232.png"
+    ]
+  }
+}

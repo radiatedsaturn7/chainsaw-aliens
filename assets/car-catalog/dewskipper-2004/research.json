@@ -1,0 +1,33 @@
+{
+  "inspiration": "2004 UK smart roadster 80 bhp (60 kW) standard, not coupe/BRABUS",
+  "sources": [
+    {
+      "url": "https://www.evilution.co.uk/wp-content/uploads/smartmanuals/brochures/2004roadster.pdf",
+      "kind": "OEM UK2004 brochure, page44 inspected",
+      "fields": [
+        "60kW5250rpm,110Nm2250\u20134500,698cc turbo1bar,790kg without driver,dimensions/tracks,185/55R15,35L,175km/h,10.9sec0\u2013100"
+      ]
+    },
+    {
+      "url": "https://mercedes-bulgaria.com/Download/Tech_data/Smart_roadster_englisch.pdf",
+      "kind": "OEM technical data mirror, pages1\u20132",
+      "fields": [
+        "Overall forward reductions13.250,9.604,7.370,5.796,4.208,3.230; dualrange final3.920/1.717; frontdisc/reardrum"
+      ]
+    },
+    {
+      "url": "https://smartcarhub.co.uk/data-a-reference/69-gear-ratios",
+      "kind": "Secondary specialist tooth-count table",
+      "fields": [
+        "Roadster2004\u20132005 reverse overall12.005; forward tooth ratios slightly differ from OEMrounded published values, discrepancy disclosed"
+      ]
+    }
+  ],
+  "estimates": [
+    "Handling settings,0\u201360 extrapolation10.4sec,Cd.38,45percentfrontweight,.43mCG,.12mclearance,steering17,29psi,6000redline6200limit900idle and torque curve outside published plateau/power anchor are estimates.",
+    "Effective final3.920 with each forward gear equal OEMtotal/3.920 preserves overall published wheel reductions; not literal gear pair ratios. Do not multiply total ratios again. Reverse uses secondary12.005overall. OEMforward figures differ slightly from secondary tooth table; OEM chosen consistently.",
+    "Automated-manual approximated by automatic shifting with zero torque-converter slip and estimated650ms shift/100msclutch; no claim of full softouch/ESP/hillstart reproduction.",
+    "Original logo-free2994 artwork, not licensed replica; native shared wheel/tires and fixedrear camera retained.",
+    "MacPherson/DeDion OEM layout approximated by existing independent wheel contact model; body shape and springs/dampers/antiroll/brake balance/aero/contact grip are explicit game calibration estimates, not measured OEMrates."
+  ]
+}

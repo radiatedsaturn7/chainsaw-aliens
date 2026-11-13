@@ -1,0 +1,119 @@
+{
+  "fictionalName": "Bluebell GT 2006",
+  "reference": "US 2006 Mitsubishi Eclipse GT coupe standard 6MT FWD LHD, no Premium Sport Package/sunroof, not GS/Spyder/AT",
+  "duplicateCheck": "Roster has pending 1995 Eclipse RS, different generation/engine; no 2006 GT or shared Eclipse source packet found. Previous Yarrow/Crossfire candidate deferred because Copperwing2004 already covers it.",
+  "sources": [
+    {
+      "url": "https://tearstone.com/eclipsefsm/2006_PS24S_MMNA_TIM/GR00000100-00.pdf",
+      "type": "OEM 2006 MMNA technical-information manual, independent archive",
+      "local": "oem-technical.pdf",
+      "verification": "Actual pages 00-5 and 00-18 rendered and visually inspected; technical.txt saved. Exact engine, physical gearbox dual-final and manual mass/dimensions."
+    },
+    {
+      "url": "https://www.automotivearticles.com/123/printer_2006_Mitsubishi_Eclipse.shtml",
+      "type": "Mirrored OEM introduction release January10 2005, technical table last updated December20 2004 PRELIMINARY",
+      "verification": "Read table text; use standard tire/fuel/redline/front split only with preliminary qualification. Its 260hp superseded by technical manual263. GS errors do not apply to selected GT."
+    },
+    {
+      "url": "https://www.theautochannel.com/news/2005/05/19/094947.html",
+      "type": "Later OEM on-sale release mirrored; search excerpt only, page429",
+      "verification": "Search excerpt corroborates production263hp GT6MT; not full-page inspection."
+    }
+  ],
+  "engine": {
+    "layout": "NA gasoline SOHC24V 6G75 V6 with MIVEC",
+    "displacementCc": 3828,
+    "boreMm": 95,
+    "strokeMm": 90,
+    "compression": 10.5,
+    "powerHp": 263,
+    "powerRpm": 5750,
+    "torqueNm": 353,
+    "torqueLbFt": 260,
+    "torqueRpm": 4500,
+    "redlineRpm": 6500,
+    "redlineProvenance": "Preliminary OEM introduction table, not verified electronic cutoff",
+    "fuelCutRpm": null,
+    "idleRpm": null,
+    "conflict": "Technical manual prints194kW and263HP, inconsistent if mechanical hp. Retain published263HP, corroborated production release; do not simultaneously claim194kW equivalent."
+  },
+  "transmission": {
+    "type": "F6MBA six-speed manual",
+    "physicalForward": [
+      3.214,
+      2.238,
+      1.535,
+      1.171,
+      1.085,
+      0.79
+    ],
+    "physicalReverse": 3.456,
+    "physicalFinalsForward": [
+      3.777,
+      3.777,
+      3.777,
+      3.777,
+      3.238,
+      3.238
+    ],
+    "physicalFinalReverse": 3.238,
+    "overallForward": [
+      12.139278,
+      8.452926,
+      5.797695,
+      4.422867,
+      3.51323,
+      2.55802
+    ],
+    "overallReverse": 11.190528,
+    "runtimeEffectiveFinal": 4,
+    "runtimeEffectiveForward": [
+      3.0348195,
+      2.1132315,
+      1.44942375,
+      1.10571675,
+      0.8783075,
+      0.639505
+    ],
+    "runtimeEffectiveReverse": 2.797632,
+    "representation": "Arbitrary effective final4 with ratios overall/4 preserves wheel reduction and avoids editor5.5 clamp. NOT physical gear tooth split. Editor roundtrip must preserve every effective ratio.",
+    "differential": "Not verified; any lock setting simulation estimate"
+  },
+  "mass": {
+    "curbKg": 1575,
+    "curbLb": 3472,
+    "provenance": "Exact OEM manual6MT column00-18; driver/fuel convention not specified",
+    "frontFraction": 0.62,
+    "frontFractionProvenance": "Preliminary OEM introduction table6MT; production confirmation not found"
+  },
+  "dimensionsMm": {
+    "wheelbase": 2575,
+    "length": 4565,
+    "width": 1835,
+    "height": 1358,
+    "trackFront": 1570,
+    "trackRear": 1570,
+    "groundClearance": 148
+  },
+  "tires": {
+    "front": "225/50R17",
+    "rear": "225/50R17",
+    "wheel": "17x7.5",
+    "nominalRadiusM": 0.3284,
+    "provenance": "Preliminary OEM introduction table standard configuration; do not use optional235/45R18 Premium Sport setup with base mass/height"
+  },
+  "fuelLitres": 67,
+  "fuelProvenance": "Preliminary OEM release table17.7USgal/67L",
+  "simulationUnknowns": [
+    "Full torque curve/MIVEC switching RPM, idle and electronic cutoff",
+    "Production-confirmed front weight split, CG height, inertia, Cd/frontal area, suspension damping/spring rates and differential behavior",
+    "Nominal tire radius is geometric unloaded value; loaded radius/grip/wear are estimates"
+  ],
+  "implementationRequirements": [
+    "Original2994 fictional identity/art, no logos; no copied OEM dashboard",
+    "Fixed rear camera; shared steering wheel; individually aligned LHD cockpit gauges",
+    "Gasoline tire smoke/spray only as appropriate; do not imply constant exhaust smoke",
+    "Validate effective dual-final ratio mapping through car editor and launch tests",
+    "No map/code edits in this source-only task"
+  ]
+}
