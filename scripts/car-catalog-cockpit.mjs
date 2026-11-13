@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'glasswing-1990':{wheelOpening:true,size:[1983,793],cluster:[1250,560,460,130],wheel:[1480,793,250]},
  'quince-2014':{wheelOpening:true,size:[1983,793],cluster:[1250,560,460,130],wheel:[1480,793,250]},
  'mossling-2019':{wheelOpening:true,size:[1983,793],cluster:[1240,575,465,120],wheel:[1475,793,250]},
  'cicada-turbo-2015':{size:[1983,793],cluster:[250,550,510,130],wheel:[505,793,255]},

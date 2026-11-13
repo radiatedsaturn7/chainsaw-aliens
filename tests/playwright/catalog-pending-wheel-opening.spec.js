@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import {test,expect}from'@playwright/test';
-for(const [name,id]of [['Quince 2014','quince-2014'],['Mossling 2019','mossling-2019']])for(const viewport of [{width:1280,height:720},{width:390,height:844}])test(`${id} preserved cockpit ${viewport.width}`,async({page},info)=>{
+for(const [name,id]of [['Glasswing 1990','glasswing-1990'],['Quince 2014','quince-2014'],['Mossling 2019','mossling-2019']])for(const viewport of [{width:1280,height:720},{width:390,height:844}])test(`${id} preserved cockpit ${viewport.width}`,async({page},info)=>{
  test.setTimeout(120000);await page.setViewportSize(viewport);await page.goto('/index.html?hideFullscreenForTesting');await page.waitForFunction(()=>window.__gameReady&&window.__game?.state!=='loading');
  const result=await page.evaluate(async({name,viewport})=>{
   const {hydrateProjectFilePayload}=await import('/src/ui/projectFiles.js');const {cockpitGaugeBounds,cockpitDashboardRect,cockpitWheelLayout}=await import('/src/racing/CarCockpitLayout.js');const {drawCarGauges}=await import('/src/racing/CarGauges.js');
