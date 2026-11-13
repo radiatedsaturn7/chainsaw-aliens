@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794609301168,
+  "doodad": {
+    "id": "campaign-landmark-city-la-saint-louis-cemetery-no-1",
+    "name": "landmark-city-la-saint-louis-cemetery-no-1",
+    "artRef": "landmark-city-la-saint-louis-cemetery-no-1",
+    "widthM": 7.507331378299121,
+    "heightM": 5,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 6.381231671554253,
+    "hitboxHeightM": 4.5,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

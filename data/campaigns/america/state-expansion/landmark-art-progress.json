@@ -1497,35 +1497,481 @@
     },
     "landmark-city-la-jackson-square": {
       "raceRef": "New Orleans, LA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 293.84203904644755,
+        "worldZ": 59.2336192401002,
+        "routeDistanceM": 1746,
+        "offsetFromRoadM": 64,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.347920259689241,
+        "views": [
+          {
+            "beforeM": 35,
+            "angleDegrees": 29.13903311476816,
+            "angularWidthDegrees": 12.16293842584811,
+            "rangeM": 41.07362087771979,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 50,
+            "angleDegrees": 21.460657687648286,
+            "angularWidthDegrees": 9.153753651984283,
+            "rangeM": 54.66538048111561,
+            "occluderIds": [],
+            "score": 0.1415736924940686
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 16.918821260786327,
+            "angularWidthDegrees": 7.274172050929039,
+            "rangeM": 68.84450236319361,
+            "occluderIds": [],
+            "score": 0.32324714956854694
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 14.410562583421507,
+            "angularWidthDegrees": 5.682533734998798,
+            "rangeM": 88.1735866342575,
+            "occluderIds": [],
+            "score": 0.4011655690291054
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 12.581630739711875,
+            "angularWidthDegrees": 4.657417412642262,
+            "rangeM": 107.60992651060545,
+            "occluderIds": [],
+            "score": 0.38558352819658215
+          },
+          {
+            "beforeM": 130,
+            "angleDegrees": 9.037324384584315,
+            "angularWidthDegrees": 3.7940518182811123,
+            "rangeM": 132.12187648799474,
+            "occluderIds": [
+              "city-la-prop-83"
+            ],
+            "score": 0.04845057475463956
+          },
+          {
+            "beforeM": 155,
+            "angleDegrees": 5.69237343246875,
+            "angularWidthDegrees": 3.1948814439558233,
+            "rangeM": 156.9167953822546,
+            "occluderIds": [
+              "city-la-prop-83"
+            ],
+            "score": 0.04934846227794724
+          },
+          {
+            "beforeM": 190,
+            "angleDegrees": 4.655138524511069,
+            "angularWidthDegrees": 2.614375343598195,
+            "rangeM": 191.77563407256164,
+            "occluderIds": [
+              "city-la-prop-81",
+              "city-la-prop-83"
+            ],
+            "score": 0.04255128336835125
+          }
+        ],
+        "sourceDistanceShiftM": -120
+      },
+      "signature": "f5990e61670b613d3398388a257084591badfc6cd1ffd9865d476fc0abd26b8c",
+      "sourceSha256": "d32a4b53a463afa736d25c7a549ee113260f36294ea7e13fad0ea53f1b638ed6",
+      "roadSha256": "d1f250fe9b34afee9acafa186bb3f778537c692e6b3210d0262c315aae4f8ca0",
+      "placementDetails": {
+        "x": 402.1496104807017,
+        "z": -9.530287781417112,
+        "yaw": -0.8785010951012244,
+        "facingApproachBeforeM": 85,
+        "trackDistance": 1625.1246354064288,
+        "trackLateral": 20,
+        "minimumRoadClearanceM": 6.039609039788321,
+        "checkedSegments": 4354,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/LA/jackson-square-desktop.png",
+        "docs/art/landmark-previews/LA/jackson-square-mobile.png"
+      ]
     },
     "landmark-city-la-new-orleans-jazz-museum": {
       "raceRef": "New Orleans, LA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 792.3455737012943,
+        "worldZ": -381.42136421710717,
+        "routeDistanceM": 4144,
+        "offsetFromRoadM": 41,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": -0.002766513152137169,
+        "views": [
+          {
+            "beforeM": 35,
+            "angleDegrees": 59.135118070223115,
+            "angularWidthDegrees": 27.338750090847807,
+            "rangeM": 69.89915240364034,
+            "occluderIds": [
+              "city-la-prop-55",
+              "city-la-prop-221"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 50,
+            "angleDegrees": 49.71353771537614,
+            "angularWidthDegrees": 24.39178938802824,
+            "rangeM": 78.65539850431236,
+            "occluderIds": [
+              "city-la-prop-55",
+              "city-la-prop-221"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 42.33454026829018,
+            "angularWidthDegrees": 21.60585725088236,
+            "rangeM": 89.09237965364493,
+            "occluderIds": [
+              "city-la-prop-55",
+              "city-la-prop-221"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 34.90281651872097,
+            "angularWidthDegrees": 18.437065075628322,
+            "rangeM": 104.74648573887389,
+            "occluderIds": [
+              "city-la-prop-55"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 13.076356906695244,
+            "angularWidthDegrees": 15.842675446788432,
+            "rangeM": 122.17815998490998,
+            "occluderIds": [
+              "city-la-prop-55"
+            ],
+            "score": 0.05723348684786283
+          },
+          {
+            "beforeM": 130,
+            "angleDegrees": 140.59474010017456,
+            "angularWidthDegrees": 16.18603572843478,
+            "rangeM": 119.55266352694314,
+            "occluderIds": [
+              "city-la-prop-55"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 155,
+            "angleDegrees": 131.99169098166328,
+            "angularWidthDegrees": 19.039316352628635,
+            "rangeM": 101.3743153351243,
+            "occluderIds": [
+              "city-la-prop-55",
+              "city-la-prop-221"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 190,
+            "angleDegrees": 113.53868628215044,
+            "angularWidthDegrees": 23.373909087979563,
+            "rangeM": 82.18412338908364,
+            "occluderIds": [
+              "city-la-prop-55",
+              "city-la-prop-221"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "dbfa4720e2a90881ebd802f9cec61fda1e5dbc32bd4841c072a5314322b8303a",
+      "sourceSha256": "483f74177dad5b779614a8e0eda9565ed2e478877d4cfe709e775215b88eb78d",
+      "roadSha256": "d1f250fe9b34afee9acafa186bb3f778537c692e6b3210d0262c315aae4f8ca0",
+      "placementDetails": {
+        "x": 760.9788633744232,
+        "z": -545.5712583254463,
+        "yaw": -2.8645105866763663,
+        "facingApproachBeforeM": 85,
+        "trackDistance": 4263.140678200058,
+        "trackLateral": 60.000000000000085,
+        "minimumRoadClearanceM": 35.664614023708864,
+        "checkedSegments": 4354,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/LA/new-orleans-jazz-museum-desktop.png",
+        "docs/art/landmark-previews/LA/new-orleans-jazz-museum-mobile.png"
+      ]
     },
     "landmark-city-la-saint-louis-cemetery-no-1": {
       "raceRef": "New Orleans, LA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -530.218166715713,
+        "worldZ": -157.35215803876898,
+        "routeDistanceM": 6210,
+        "offsetFromRoadM": 52,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.486282836180769,
+        "views": [
+          {
+            "beforeM": 35,
+            "angleDegrees": 14.58463643407378,
+            "angularWidthDegrees": 8.72288654802423,
+            "rangeM": 49.21619340770366,
+            "occluderIds": [],
+            "score": 0.4166145426370488
+          },
+          {
+            "beforeM": 50,
+            "angleDegrees": 11.192949942213582,
+            "angularWidthDegrees": 6.729516599452942,
+            "rangeM": 63.84467628431007,
+            "occluderIds": [],
+            "score": 0.5522820023114567
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 9.070324632977547,
+            "angularWidthDegrees": 5.467419938057922,
+            "rangeM": 78.61330598254034,
+            "occluderIds": [],
+            "score": 0.5806281647229913
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 7.04282664799002,
+            "angularWidthDegrees": 4.368597250736548,
+            "rangeM": 98.41374103940743,
+            "occluderIds": [
+              "city-la-prop-316"
+            ],
+            "score": 0.06275812650927233
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 70.31280196860676,
+            "angularWidthDegrees": 3.7292253221052323,
+            "rangeM": 115.30183994420035,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 130,
+            "angleDegrees": 66.08126941809648,
+            "angularWidthDegrees": 3.4882871010572534,
+            "rangeM": 123.27125579829453,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 155,
+            "angleDegrees": 56.36069034634396,
+            "angularWidthDegrees": 3.1771448400535682,
+            "rangeM": 135.350511408205,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 190,
+            "angleDegrees": 45.69620379742477,
+            "angularWidthDegrees": 2.7312331169069886,
+            "rangeM": 157.45889507030944,
+            "occluderIds": [
+              "city-la-prop-310",
+              "city-la-prop-317",
+              "city-la-prop-319"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -60
+      },
+      "signature": "400eda03e5d7b376173b732a43bb0ff1b058a41c41a04c6582238d9b283784d5",
+      "sourceSha256": "419b8e5e85912315a848f759430facd7463da897eb133e4f07499ed70d0a0b29",
+      "roadSha256": "d1f250fe9b34afee9acafa186bb3f778537c692e6b3210d0262c315aae4f8ca0",
+      "placementDetails": {
+        "x": -626.6142091791075,
+        "z": -154.53435825938502,
+        "yaw": -0.823278231919795,
+        "facingApproachBeforeM": 85,
+        "trackDistance": 6150.476589145843,
+        "trackLateral": 19.997275543370126,
+        "minimumRoadClearanceM": 9.985064060245893,
+        "checkedSegments": 4354,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/LA/saint-louis-cemetery-no-1-desktop.png",
+        "docs/art/landmark-previews/LA/saint-louis-cemetery-no-1-mobile.png"
+      ]
     },
     "landmark-city-la-saenger-theatre": {
       "raceRef": "New Orleans, LA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -633.5122994552922,
+        "worldZ": 178.65713541121298,
+        "routeDistanceM": 6635,
+        "offsetFromRoadM": 29,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.1675706457430765,
+        "views": [
+          {
+            "beforeM": 35,
+            "angleDegrees": 59.26433928554743,
+            "angularWidthDegrees": 25.976094803245015,
+            "rangeM": 69.36963409537024,
+            "occluderIds": [
+              "city-la-prop-350"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 50,
+            "angleDegrees": 48.68666297827403,
+            "angularWidthDegrees": 23.128363199657155,
+            "rangeM": 78.1940637201752,
+            "occluderIds": [
+              "city-la-prop-350"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 41.13096627531365,
+            "angularWidthDegrees": 20.41778048572185,
+            "rangeM": 88.84516173009327,
+            "occluderIds": [
+              "city-la-prop-350"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 33.89414098236824,
+            "angularWidthDegrees": 17.370024338888264,
+            "rangeM": 104.74371075595671,
+            "occluderIds": [
+              "city-la-prop-348",
+              "city-la-prop-350"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 28.64266207714557,
+            "angularWidthDegrees": 14.96050603012302,
+            "rangeM": 121.85658563733884,
+            "occluderIds": [
+              "city-la-prop-348",
+              "city-la-prop-350"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 130,
+            "angleDegrees": 23.87880860497663,
+            "angularWidthDegrees": 12.65460687660092,
+            "rangeM": 144.2957244408126,
+            "occluderIds": [
+              "city-la-prop-348"
+            ],
+            "score": 0.005381718696112169
+          },
+          {
+            "beforeM": 155,
+            "angleDegrees": 20.41418863158133,
+            "angularWidthDegrees": 10.915416306101719,
+            "rangeM": 167.461891940051,
+            "occluderIds": [],
+            "score": 0.18343245473674685
+          },
+          {
+            "beforeM": 190,
+            "angleDegrees": 16.925734935371363,
+            "angularWidthDegrees": 9.11898933346242,
+            "rangeM": 200.63550774839885,
+            "occluderIds": [
+              "city-la-prop-344"
+            ],
+            "score": 0.03875647231021746
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "92c0419666359c3e997c4ae94e44a81695ad3d15e90e6b4c10b4902996297d62",
+      "sourceSha256": "f182298311acacdd72bf7909d26b526e00ac5795390ee3435eff1cbbc2636d9e",
+      "roadSha256": "d1f250fe9b34afee9acafa186bb3f778537c692e6b3210d0262c315aae4f8ca0",
+      "placementDetails": {
+        "x": -732.3899948466869,
+        "z": 256.8099708707011,
+        "yaw": -1.2543918925473452,
+        "facingApproachBeforeM": 85,
+        "trackDistance": 6755.208578891554,
+        "trackLateral": 60.00000000000014,
+        "minimumRoadClearanceM": 35.26669555172596,
+        "checkedSegments": 4354,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/LA/saenger-theatre-desktop.png",
+        "docs/art/landmark-previews/LA/saenger-theatre-mobile.png"
+      ]
     },
     "landmark-city-ma-old-north-church": {
       "raceRef": "Boston, MA — Landmark Run",

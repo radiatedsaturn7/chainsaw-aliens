@@ -544,7 +544,11 @@
       "landmark-city-ny-flatiron-building": "art/landmark-city-ny-flatiron-building/document.json",
       "landmark-city-ny-grand-central-terminal": "art/landmark-city-ny-grand-central-terminal/document.json",
       "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building": "art/landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building/document.json",
-      "landmark-city-ny-rockefeller-center": "art/landmark-city-ny-rockefeller-center/document.json"
+      "landmark-city-ny-rockefeller-center": "art/landmark-city-ny-rockefeller-center/document.json",
+      "landmark-city-la-jackson-square": "art/landmark-city-la-jackson-square/document.json",
+      "landmark-city-la-new-orleans-jazz-museum": "art/landmark-city-la-new-orleans-jazz-museum/document.json",
+      "landmark-city-la-saint-louis-cemetery-no-1": "art/landmark-city-la-saint-louis-cemetery-no-1/document.json",
+      "landmark-city-la-saenger-theatre": "art/landmark-city-la-saenger-theatre/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -824,7 +828,11 @@
       "landmark-city-ny-flatiron-building": "doodads/landmark-city-ny-flatiron-building/document.json",
       "landmark-city-ny-grand-central-terminal": "doodads/landmark-city-ny-grand-central-terminal/document.json",
       "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building": "doodads/landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building/document.json",
-      "landmark-city-ny-rockefeller-center": "doodads/landmark-city-ny-rockefeller-center/document.json"
+      "landmark-city-ny-rockefeller-center": "doodads/landmark-city-ny-rockefeller-center/document.json",
+      "landmark-city-la-jackson-square": "doodads/landmark-city-la-jackson-square/document.json",
+      "landmark-city-la-new-orleans-jazz-museum": "doodads/landmark-city-la-new-orleans-jazz-museum/document.json",
+      "landmark-city-la-saint-louis-cemetery-no-1": "doodads/landmark-city-la-saint-louis-cemetery-no-1/document.json",
+      "landmark-city-la-saenger-theatre": "doodads/landmark-city-la-saenger-theatre/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

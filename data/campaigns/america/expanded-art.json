@@ -2316,6 +2316,34 @@
       "heightM": 70,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-la-jackson-square",
+      "source": "landmarks/LA/landmark-city-la-jackson-square.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-la-new-orleans-jazz-museum",
+      "source": "landmarks/LA/landmark-city-la-new-orleans-jazz-museum.png",
+      "heightM": 17,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-la-saint-louis-cemetery-no-1",
+      "source": "landmarks/LA/landmark-city-la-saint-louis-cemetery-no-1.png",
+      "heightM": 5,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-la-saenger-theatre",
+      "source": "landmarks/LA/landmark-city-la-saenger-theatre.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
