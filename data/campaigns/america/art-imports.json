@@ -2070,5 +2070,33 @@
     "documentSha256": "f5557be90eaa44a406fef5117d0c3a5a13823d7f13d53a621686e11242026594",
     "width": 512,
     "height": 468
+  },
+  "landmark-city-vt-waterman-building": {
+    "source": "assets/campaign-art/landmarks/VT/landmark-city-vt-waterman-building.png",
+    "sourceSha256": "bdf209293b6f2750b5527e6b5d930f44b2e18b366f9d45536259d9854ee180b0",
+    "documentSha256": "d77fd2cd14d6e84100382198faa9ab1834b6a64c6621ffe5ff5c1fdf8655666e",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-vt-burlington-city-hall": {
+    "source": "assets/campaign-art/landmarks/VT/landmark-city-vt-burlington-city-hall.png",
+    "sourceSha256": "896133c137da35a70fff4f6a2e26984c49ae4314cd4cb1102f146f5a85669b3f",
+    "documentSha256": "34958eda698fa69340d84e2539bc8c27295d33e6484660e61476717f41dda96d",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-vt-flynn-center": {
+    "source": "assets/campaign-art/landmarks/VT/landmark-city-vt-flynn-center.png",
+    "sourceSha256": "1419db54dec4cbb1295c1add705b06de23b6c488c55d75e06a921d0016dc3e5a",
+    "documentSha256": "d8d86c324d4e08bc9748f905f08315002aadf69f65db5037fc2c54d89edd7433",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-vt-echo-leahy-center": {
+    "source": "assets/campaign-art/landmarks/VT/landmark-city-vt-echo-leahy-center.png",
+    "sourceSha256": "fb01e7a2e5356aef2fdb6c758b019a9058e609c20e9767dd6ca0f9c789734a0c",
+    "documentSha256": "ed077f496cef8d36b3ba5be364cfc97a8d6b8cbb348956282c8bbfb175942885",
+    "width": 512,
+    "height": 262
   }
 }

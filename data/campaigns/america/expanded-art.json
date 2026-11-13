@@ -2652,6 +2652,34 @@
       "heightM": 28,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-vt-waterman-building",
+      "source": "landmarks/VT/landmark-city-vt-waterman-building.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-vt-burlington-city-hall",
+      "source": "landmarks/VT/landmark-city-vt-burlington-city-hall.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-vt-flynn-center",
+      "source": "landmarks/VT/landmark-city-vt-flynn-center.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-vt-echo-leahy-center",
+      "source": "landmarks/VT/landmark-city-vt-echo-leahy-center.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

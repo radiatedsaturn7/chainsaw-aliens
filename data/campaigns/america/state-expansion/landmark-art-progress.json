@@ -9265,35 +9265,474 @@
     },
     "landmark-city-vt-waterman-building": {
       "raceRef": "Burlington, VT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 779.7337806689109,
+        "worldZ": -141.8515638540033,
+        "routeDistanceM": 2407,
+        "offsetFromRoadM": 61,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 7.779258837901486,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 0.2997064702008322,
+            "angularWidthDegrees": 32.35542369112813,
+            "rangeM": 89.62270158951027,
+            "occluderIds": [],
+            "score": 0.9880117411919667
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 0.2450269555585906,
+            "angularWidthDegrees": 26.685465539850103,
+            "rangeM": 109.62248158886956,
+            "occluderIds": [],
+            "score": 0.9901989217776563
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.20722077345892462,
+            "angularWidthDegrees": 22.6840645779573,
+            "rangeM": 129.6223306188775,
+            "occluderIds": [],
+            "score": 0.991711169061643
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.17952163001434251,
+            "angularWidthDegrees": 19.71581217595087,
+            "rangeM": 149.62222099776838,
+            "occluderIds": [],
+            "score": 0.9928191347994263
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.14953845303472682,
+            "angularWidthDegrees": 16.472528320633213,
+            "rangeM": 179.62210388176166,
+            "occluderIds": [],
+            "score": 0.994018461878611
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.12230287251066904,
+            "angularWidthDegrees": 13.503099356014646,
+            "rangeM": 219.62199985563527,
+            "occluderIds": [],
+            "score": 0.9951078850995733
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.10345965624224508,
+            "angularWidthDegrees": 11.437708009728484,
+            "rangeM": 259.6219301633406,
+            "occluderIds": [],
+            "score": 0.9958616137503102
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.08675224144252983,
+            "angularWidthDegrees": 9.600119463540564,
+            "rangeM": 309.6218710579608,
+            "occluderIds": [],
+            "score": 0.9965299103422988
+          }
+        ],
+        "sourceDistanceShiftM": -150
+      },
+      "signature": "88c3be582835d36186b33061d430e5f29c7c2ce3c3bf9a407fa4d2392fbf3fea",
+      "sourceSha256": "bdf209293b6f2750b5527e6b5d930f44b2e18b366f9d45536259d9854ee180b0",
+      "roadSha256": "f1af7a33e7656e153367d1be8016e428019360d36b0ba0330f58756bbad099be",
+      "placementDetails": {
+        "x": 631.5924098129143,
+        "z": -20.05311398086235,
+        "yaw": 0.06466092191423273,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2257.971686422262,
+        "trackLateral": 49.99116997708816,
+        "minimumRoadClearanceM": 13.242155631867515,
+        "checkedSegments": 3947,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/VT/waterman-building-desktop.png",
+        "docs/art/landmark-previews/VT/waterman-building-mobile.png"
+      ]
     },
     "landmark-city-vt-burlington-city-hall": {
       "raceRef": "Burlington, VT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -147.20176678719966,
+        "worldZ": 91.54690955552374,
+        "routeDistanceM": 3561,
+        "offsetFromRoadM": 27,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.14994176005488297,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 45.34200667475529,
+            "angularWidthDegrees": 31.791088832539742,
+            "rangeM": 63.269933256578106,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 34.917588551150374,
+            "angularWidthDegrees": 25.813890385919144,
+            "rangeM": 78.62515516341432,
+            "occluderIds": [
+              "city-vt-prop-183"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 28.048073176894437,
+            "angularWidthDegrees": 21.322152589474914,
+            "rangeM": 95.71178553614999,
+            "occluderIds": [
+              "city-vt-prop-183"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 23.305843903996248,
+            "angularWidthDegrees": 18.000989599350856,
+            "rangeM": 113.7522617464495,
+            "occluderIds": [
+              "city-vt-prop-183"
+            ],
+            "score": 0.008131949260818007
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 18.504430034062118,
+            "angularWidthDegrees": 14.48257974402293,
+            "rangeM": 141.80206045772866,
+            "occluderIds": [
+              "city-vt-prop-181",
+              "city-vt-prop-183"
+            ],
+            "score": 0.03117873583650184
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 14.461727564944448,
+            "angularWidthDegrees": 11.420816812981762,
+            "rangeM": 180.18182052885984,
+            "occluderIds": [
+              "city-vt-prop-179",
+              "city-vt-prop-183"
+            ],
+            "score": 0.050583707688266644
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 11.359021265423868,
+            "angularWidthDegrees": 9.399167351616857,
+            "rangeM": 219.17175854040613,
+            "occluderIds": [
+              "city-vt-prop-179",
+              "city-vt-prop-183"
+            ],
+            "score": 0.06547669792596543
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 9.256110553472695,
+            "angularWidthDegrees": 7.68173302753835,
+            "rangeM": 268.37312315969876,
+            "occluderIds": [
+              "city-vt-prop-177",
+              "city-vt-prop-179",
+              "city-vt-prop-183"
+            ],
+            "score": 0.07557066934333105
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "1f8fd1141f4daaf5e828c6b3e1a7dcb3bdcaa8dfe02263e3d93ad1a4ce940c37",
+      "sourceSha256": "896133c137da35a70fff4f6a2e26984c49ae4314cd4cb1102f146f5a85669b3f",
+      "roadSha256": "f1af7a33e7656e153367d1be8016e428019360d36b0ba0330f58756bbad099be",
+      "placementDetails": {
+        "x": 61.10335708801172,
+        "z": 63.769619039792225,
+        "yaw": -1.9223206717775125,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3351.427900018945,
+        "trackLateral": 44.99953982059972,
+        "minimumRoadClearanceM": 16.24092132166351,
+        "checkedSegments": 3947,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/VT/burlington-city-hall-desktop.png",
+        "docs/art/landmark-previews/VT/burlington-city-hall-mobile.png"
+      ]
     },
     "landmark-city-vt-flynn-center": {
       "raceRef": "Burlington, VT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -168.2351243973919,
+        "worldZ": 137.72622637653546,
+        "routeDistanceM": 3584,
+        "offsetFromRoadM": 18,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.2916471068888308,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 47.994248458227744,
+            "angularWidthDegrees": 29.95281970707938,
+            "rangeM": 67.28771865788134,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 37.556116124037864,
+            "angularWidthDegrees": 24.75293629032334,
+            "rangeM": 82.02931926075551,
+            "occluderIds": [
+              "city-vt-prop-207"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 30.4569163001202,
+            "angularWidthDegrees": 20.683153265334226,
+            "rangeM": 98.64066935322117,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 25.34868629089373,
+            "angularWidthDegrees": 17.592469236275367,
+            "rangeM": 116.32349022612826,
+            "occluderIds": [
+              "city-vt-prop-205"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 19.856080398896154,
+            "angularWidthDegrees": 14.245282889041457,
+            "rangeM": 144.04851247074214,
+            "occluderIds": [],
+            "score": 0.20575678404415387
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 15.603252839391999,
+            "angularWidthDegrees": 11.285506687053378,
+            "rangeM": 182.17835583950387,
+            "occluderIds": [
+              "city-vt-prop-203"
+            ],
+            "score": 0.0451043863709184
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 13.329951128744229,
+            "angularWidthDegrees": 9.315837593211539,
+            "rangeM": 220.92506394864458,
+            "occluderIds": [
+              "city-vt-prop-203"
+            ],
+            "score": 0.056016234582027695
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 10.881312105889414,
+            "angularWidthDegrees": 7.633100257618414,
+            "rangeM": 269.82436791893645,
+            "occluderIds": [
+              "city-vt-prop-199",
+              "city-vt-prop-203"
+            ],
+            "score": 0.06776970189173082
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "aa63e2c329c0a5ebeea2a24b885220fe3ed18ebd2feea85084b82fb99e30bea2",
+      "sourceSha256": "1419db54dec4cbb1295c1add705b06de23b6c488c55d75e06a921d0016dc3e5a",
+      "roadSha256": "f1af7a33e7656e153367d1be8016e428019360d36b0ba0330f58756bbad099be",
+      "placementDetails": {
+        "x": -376.41160801270325,
+        "z": 181.33495264211237,
+        "yaw": -1.0761287390743732,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3793.9707169467297,
+        "trackLateral": -50.00000000000001,
+        "minimumRoadClearanceM": 22.862532495691653,
+        "checkedSegments": 3947,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/VT/flynn-center-desktop.png",
+        "docs/art/landmark-previews/VT/flynn-center-mobile.png"
+      ]
     },
     "landmark-city-vt-echo-leahy-center": {
       "raceRef": "Burlington, VT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -794.8165467271957,
+        "worldZ": 48.3809794092916,
+        "routeDistanceM": 4185,
+        "offsetFromRoadM": 109,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 2.2478565520480536,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 1.8808911552255174,
+            "angularWidthDegrees": 23.562389144031624,
+            "rangeM": 93.69582287937786,
+            "occluderIds": [
+              "city-vt-prop-225"
+            ],
+            "score": 0.11097172245491752
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 6.4940401965152645,
+            "angularWidthDegrees": 19.52966512786302,
+            "rangeM": 113.5515191624227,
+            "occluderIds": [
+              "city-vt-prop-225"
+            ],
+            "score": 0.08882860705672672
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 5.710670993103089,
+            "angularWidthDegrees": 16.663374025136406,
+            "rangeM": 133.4387661756436,
+            "occluderIds": [
+              "city-vt-prop-225"
+            ],
+            "score": 0.09258877923310517
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 5.068511341183972,
+            "angularWidthDegrees": 14.524340156081655,
+            "rangeM": 153.35235340099214,
+            "occluderIds": [
+              "city-vt-prop-225"
+            ],
+            "score": 0.09567114556231693
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 4.76188089051689,
+            "angularWidthDegrees": 12.174673211347093,
+            "rangeM": 183.24223940343404,
+            "occluderIds": [
+              "city-vt-prop-225"
+            ],
+            "score": 0.09714297172551893
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 3.9091760220621308,
+            "angularWidthDegrees": 10.010568563150022,
+            "rangeM": 223.12888901538676,
+            "occluderIds": [],
+            "score": 0.8436329591175148
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 3.31518780631781,
+            "angularWidthDegrees": 8.497398634846487,
+            "rangeM": 263.04996694234376,
+            "occluderIds": [],
+            "score": 0.8673924877472876
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 2.7858585102779267,
+            "angularWidthDegrees": 7.145650336743383,
+            "rangeM": 312.97965871048893,
+            "occluderIds": [
+              "city-vt-prop-218",
+              "city-vt-prop-220"
+            ],
+            "score": 0.10662787915066595
+          }
+        ],
+        "sourceDistanceShiftM": -90
+      },
+      "signature": "b7acfccef932f5e217f33a457da52c198d3d88cf3ca523acf53ab74ddd614ac3",
+      "sourceSha256": "fb01e7a2e5356aef2fdb6c758b019a9058e609c20e9767dd6ca0f9c789734a0c",
+      "roadSha256": "f1af7a33e7656e153367d1be8016e428019360d36b0ba0330f58756bbad099be",
+      "placementDetails": {
+        "x": -727.608477968558,
+        "z": 133.7404277533815,
+        "yaw": -1.6188353197865717,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4094.74621825969,
+        "trackLateral": -69.99996192233338,
+        "minimumRoadClearanceM": 41.008903054212425,
+        "checkedSegments": 3947,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/VT/echo-leahy-center-desktop.png",
+        "docs/art/landmark-previews/VT/echo-leahy-center-mobile.png"
+      ]
     },
     "landmark-city-wa-space-needle": {
       "raceRef": "Seattle, WA — Landmark Run",
