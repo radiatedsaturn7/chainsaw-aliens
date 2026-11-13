@@ -1762,5 +1762,33 @@
     "documentSha256": "9206f045c89b8b95148951edf38157cd622d5405b988b4b963a5aa2fd89895e5",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-co-coors-field": {
+    "source": "assets/campaign-art/landmarks/CO/landmark-city-co-coors-field.png",
+    "sourceSha256": "8cf73e1b10b5b986d7a79fc992063083cc4f4ba76b53a61c3e233368d9df0d02",
+    "documentSha256": "d47f07b862e338c3347bb3d93c078e7af5e915f9830dbd19fbda33f17f70878d",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-co-union-station": {
+    "source": "assets/campaign-art/landmarks/CO/landmark-city-co-union-station.png",
+    "sourceSha256": "77fad7ab09baf69fb620756941febd8124968bf85a0949792d6483ca740c0845",
+    "documentSha256": "eb0d124a9fc4fefbaa43d1dcdcd5ef2ce43883d7efa0f8075f4b1b41382746f1",
+    "width": 512,
+    "height": 174
+  },
+  "landmark-city-co-colorado-state-capitol": {
+    "source": "assets/campaign-art/landmarks/CO/landmark-city-co-colorado-state-capitol.png",
+    "sourceSha256": "4295191297a0447b7a2a28b2dff8311d084bdc1e2cdc214272a965f2f7c2d358",
+    "documentSha256": "33d1937f519c6ff7f29d04eb6cc6df586d7036177ca16d5762a1bc367c0d97da",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-co-denver-art-museum": {
+    "source": "assets/campaign-art/landmarks/CO/landmark-city-co-denver-art-museum.png",
+    "sourceSha256": "dfdaab44c272fb04220ef99f8d76dfc2f1268847f154310565b9bc0d26ad1363",
+    "documentSha256": "507b630e43456b9018075a2e37d9a33c9d081b3550fc81ca3e67f1a5ad780494",
+    "width": 512,
+    "height": 341
   }
 }

@@ -776,5 +776,125 @@
       190
     ],
     "occlusionWidthFactor": 0.8
+  },
+  "landmark-city-co-coors-field": {
+    "reason": "Search near authored landmark references with road-edge and native daytime visibility checks.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 125,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 135,
+    "approachOffsetsM": [
+      65,
+      85,
+      105,
+      135,
+      165,
+      195,
+      240
+    ],
+    "occlusionWidthFactor": 0.9
+  },
+  "landmark-city-co-union-station": {
+    "reason": "Search near authored landmark references with road-edge and native daytime visibility checks.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 125,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 135,
+    "approachOffsetsM": [
+      65,
+      85,
+      105,
+      135,
+      165,
+      195,
+      240
+    ],
+    "occlusionWidthFactor": 0.9
+  },
+  "landmark-city-co-colorado-state-capitol": {
+    "reason": "Search near authored landmark references with road-edge and native daytime visibility checks.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 125,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 135,
+    "approachOffsetsM": [
+      65,
+      85,
+      105,
+      135,
+      165,
+      195,
+      240
+    ],
+    "occlusionWidthFactor": 0.9
+  },
+  "landmark-city-co-denver-art-museum": {
+    "reason": "Search near authored landmark references with road-edge and native daytime visibility checks.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 125,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 135,
+    "approachOffsetsM": [
+      65,
+      85,
+      105,
+      135,
+      165,
+      195,
+      240
+    ],
+    "occlusionWidthFactor": 0.9
   }
 }

@@ -2344,6 +2344,34 @@
       "heightM": 16,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-co-coors-field",
+      "source": "landmarks/CO/landmark-city-co-coors-field.png",
+      "heightM": 23,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-co-union-station",
+      "source": "landmarks/CO/landmark-city-co-union-station.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-co-colorado-state-capitol",
+      "source": "landmarks/CO/landmark-city-co-colorado-state-capitol.png",
+      "heightM": 45,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-co-denver-art-museum",
+      "source": "landmarks/CO/landmark-city-co-denver-art-museum.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

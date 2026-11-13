@@ -164,35 +164,452 @@
     },
     "landmark-city-co-coors-field": {
       "raceRef": "Denver, CO — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 91.59817634903924,
+        "worldZ": -893.0521673876109,
+        "routeDistanceM": 1967,
+        "offsetFromRoadM": 51,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.576971050766829,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 4.499611276149474,
+            "angularWidthDegrees": 21.02067688595491,
+            "rangeM": 123.97204986686958,
+            "occluderIds": [],
+            "score": 0.8200155489540211
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 3.3088417395567227,
+            "angularWidthDegrees": 18.159565670022662,
+            "rangeM": 143.91896054430714,
+            "occluderIds": [],
+            "score": 0.8676463304177311
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 10.013041801335609,
+            "angularWidthDegrees": 15.98286793340023,
+            "rangeM": 163.8312237356697,
+            "occluderIds": [],
+            "score": 0.5994783279465756
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 14.888618364606982,
+            "angularWidthDegrees": 13.57157868224524,
+            "rangeM": 193.2915418404323,
+            "occluderIds": [],
+            "score": 0.40445526541572074
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 21.080759491458466,
+            "angularWidthDegrees": 11.864137065517303,
+            "rangeM": 221.3546429456147,
+            "occluderIds": [
+              "city-co-prop-95",
+              "city-co-prop-97"
+            ],
+            "score": 0.01881235444099937
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 26.798299722038912,
+            "angularWidthDegrees": 10.57331278242504,
+            "rangeM": 248.56183694993624,
+            "occluderIds": [
+              "city-co-prop-93",
+              "city-co-prop-97",
+              "city-co-prop-99"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 22.79932841837906,
+            "angularWidthDegrees": 9.08699017203433,
+            "rangeM": 289.43346218441053,
+            "occluderIds": [
+              "city-co-prop-91",
+              "city-co-prop-93",
+              "city-co-prop-97",
+              "city-co-prop-99"
+            ],
+            "score": 0.010563223591780519
+          }
+        ],
+        "sourceDistanceShiftM": -60
+      },
+      "signature": "0e010fdbeeb1b1501a3b8889cdfa5274773bd6e07a158735288ef91afbac98cf",
+      "sourceSha256": "8cf73e1b10b5b986d7a79fc992063083cc4f4ba76b53a61c3e233368d9df0d02",
+      "roadSha256": "a8717d23dd98e34edd034a9fae426a4b0f2d8701b2622480ab3018eaa86edfdb",
+      "placementDetails": {
+        "x": 216.7285485656868,
+        "z": -854.2263375287232,
+        "yaw": 0.6629171937914792,
+        "facingApproachBeforeM": 135,
+        "trackDistance": 1905.3787949161826,
+        "trackLateral": -64.98445421866144,
+        "minimumRoadClearanceM": 28.636579074267413,
+        "checkedSegments": 4145,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/CO/coors-field-desktop.png",
+        "docs/art/landmark-previews/CO/coors-field-mobile.png"
+      ]
     },
     "landmark-city-co-union-station": {
       "raceRef": "Denver, CO — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -521.0340917871439,
+        "worldZ": -581.294520936723,
+        "routeDistanceM": 2815,
+        "offsetFromRoadM": 53,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.813691344327937,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 55.58505719128816,
+            "angularWidthDegrees": 34.094208586874295,
+            "rangeM": 115.15624337753177,
+            "occluderIds": [
+              "city-co-prop-139"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 48.15162014501231,
+            "angularWidthDegrees": 30.952167455431997,
+            "rangeM": 127.53168481527241,
+            "occluderIds": [
+              "city-co-prop-137"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 42.11473133912193,
+            "angularWidthDegrees": 27.992697989486327,
+            "rangeM": 141.66051275785574,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 126.84292903867637,
+            "angularWidthDegrees": 25.113592562015143,
+            "rangeM": 158.5308176633499,
+            "occluderIds": [
+              "city-co-prop-135"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 113.41203352634572,
+            "angularWidthDegrees": 27.674326374958344,
+            "rangeM": 143.35650710210552,
+            "occluderIds": [
+              "city-co-prop-132"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 101.57623945593943,
+            "angularWidthDegrees": 29.463585002326013,
+            "rangeM": 134.29139718409937,
+            "occluderIds": [
+              "city-co-prop-130"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 0.08271639180157392,
+            "angularWidthDegrees": 28.06554748727281,
+            "rangeM": 141.27773969153884,
+            "occluderIds": [],
+            "score": 0.996691344327937
+          }
+        ],
+        "sourceDistanceShiftM": -150
+      },
+      "signature": "227600d39e99554fc1881e25b0caf0909e997226922446fa835f6cb6fd67bb21",
+      "sourceSha256": "77fad7ab09baf69fb620756941febd8124968bf85a0949792d6483ca740c0845",
+      "roadSha256": "a8717d23dd98e34edd034a9fae426a4b0f2d8701b2622480ab3018eaa86edfdb",
+      "placementDetails": {
+        "x": -309.6243645002643,
+        "z": -583.6956556044327,
+        "yaw": -0.20004758821519084,
+        "facingApproachBeforeM": 135,
+        "trackDistance": 2664.9157439250826,
+        "trackLateral": -94.99999999999997,
+        "minimumRoadClearanceM": 47.05408673484337,
+        "checkedSegments": 4145,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/CO/union-station-desktop.png",
+        "docs/art/landmark-previews/CO/union-station-mobile.png"
+      ]
     },
     "landmark-city-co-colorado-state-capitol": {
       "raceRef": "Denver, CO — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 797.2820173228804,
+        "worldZ": 974.7027148028434,
+        "routeDistanceM": 4902,
+        "offsetFromRoadM": 87,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.6575282795063251,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 6.217310369041327,
+            "angularWidthDegrees": 26.265786003112606,
+            "rangeM": 144.79714515191372,
+            "occluderIds": [
+              "city-co-prop-267"
+            ],
+            "score": 0.09015691022860163
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 5.463754775930411,
+            "angularWidthDegrees": 23.184121731714324,
+            "rangeM": 164.69375475338086,
+            "occluderIds": [
+              "city-co-prop-267"
+            ],
+            "score": 0.09377397707553402
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 4.872725651320546,
+            "angularWidthDegrees": 20.74007691227316,
+            "rangeM": 184.61270938207002,
+            "occluderIds": [
+              "city-co-prop-267"
+            ],
+            "score": 0.09661091687366137
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 4.19209238882396,
+            "angularWidthDegrees": 17.899127408741613,
+            "rangeM": 214.51942075560876,
+            "occluderIds": [
+              "city-co-prop-267"
+            ],
+            "score": 0.099877956533645
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 3.6780699001367196,
+            "angularWidthDegrees": 15.736935678709935,
+            "rangeM": 244.4489952878818,
+            "occluderIds": [
+              "city-co-prop-267"
+            ],
+            "score": 0.10234526447934374
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 3.2762125313811996,
+            "angularWidthDegrees": 14.03770474385689,
+            "rangeM": 274.393951670199,
+            "occluderIds": [
+              "city-co-prop-266",
+              "city-co-prop-267"
+            ],
+            "score": 0.10427417984937024
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 2.8147761528814135,
+            "angularWidthDegrees": 12.078070017859035,
+            "rangeM": 319.3307608688622,
+            "occluderIds": [
+              "city-co-prop-266",
+              "city-co-prop-267"
+            ],
+            "score": 0.10648907446616922
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "4958ab2b991376a1a6df2e963acae4ab91a6dca605656e2c2dc0fc2c46504770",
+      "sourceSha256": "4295191297a0447b7a2a28b2dff8311d084bdc1e2cdc214272a965f2f7c2d358",
+      "roadSha256": "a8717d23dd98e34edd034a9fae426a4b0f2d8701b2622480ab3018eaa86edfdb",
+      "placementDetails": {
+        "x": 796.5434143331133,
+        "z": 977.6413017032737,
+        "yaw": 0.0695938985026588,
+        "facingApproachBeforeM": 135,
+        "trackDistance": 4900.942479658776,
+        "trackLateral": 89.99937945217873,
+        "minimumRoadClearanceM": 43.889469766673244,
+        "checkedSegments": 4145,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Find a clear handheld look at the Colorado State Capitol dome; the apparent dome top is clipped or under the pause overlay at tested approaches. Desktop 135m is clearly legible."
+      ],
+      "visualEvidence": [
+        "docs/art/landmark-previews/CO/colorado-state-capitol-desktop.png"
+      ]
     },
     "landmark-city-co-denver-art-museum": {
       "raceRef": "Denver, CO — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 374.1470031327297,
+        "worldZ": 1179.3239014482158,
+        "routeDistanceM": 5852,
+        "offsetFromRoadM": 60,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.7449567137278769,
+        "views": [
+          {
+            "beforeM": 65,
+            "angleDegrees": 1.3172179920206233,
+            "angularWidthDegrees": 12.051147812610242,
+            "rangeM": 170.6930396309574,
+            "occluderIds": [
+              "city-co-prop-324"
+            ],
+            "score": 0.113677353638301
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 1.1790759897350276,
+            "angularWidthDegrees": 10.79537982906308,
+            "rangeM": 190.68830880170913,
+            "occluderIds": [
+              "city-co-prop-324"
+            ],
+            "score": 0.11434043524927186
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.0671556866212941,
+            "angularWidthDegrees": 9.776007236602567,
+            "rangeM": 210.68447605093192,
+            "occluderIds": [
+              "city-co-prop-324"
+            ],
+            "score": 0.11487765270421779
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.9341456364985659,
+            "angularWidthDegrees": 8.562493747848208,
+            "rangeM": 240.67992116430406,
+            "occluderIds": [
+              "city-co-prop-324"
+            ],
+            "score": 0.11551610094480688
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 0.8306155714589372,
+            "angularWidthDegrees": 7.61656041720722,
+            "rangeM": 270.67637587062507,
+            "occluderIds": [
+              "city-co-prop-324"
+            ],
+            "score": 0.1160130452569971
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 0.7477429542480882,
+            "angularWidthDegrees": 6.858595960565429,
+            "rangeM": 300.673538006349,
+            "occluderIds": [
+              "city-co-prop-324"
+            ],
+            "score": 0.11641083381960918
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 0.6764360455033309,
+            "angularWidthDegrees": 5.967530721027723,
+            "rangeM": 345.6702047638112,
+            "occluderIds": [
+              "city-co-prop-324"
+            ],
+            "score": 0.11612129211467313
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "a76c71194e862f13a31c4c9f75c2486229111194e805d7ac41a7412e0ab46ecc",
+      "sourceSha256": "dfdaab44c272fb04220ef99f8d76dfc2f1268847f154310565b9bc0d26ad1363",
+      "roadSha256": "a8717d23dd98e34edd034a9fae426a4b0f2d8701b2622480ab3018eaa86edfdb",
+      "placementDetails": {
+        "x": 210.38144331053687,
+        "z": 1243.1498673298156,
+        "yaw": -1.5568092625232126,
+        "facingApproachBeforeM": 135,
+        "trackDistance": 5910.754486045246,
+        "trackLateral": 109.82205547505431,
+        "minimumRoadClearanceM": 81.25730878436954,
+        "checkedSegments": 4145,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/CO/denver-art-museum-desktop.png",
+        "docs/art/landmark-previews/CO/denver-art-museum-mobile.png"
+      ]
     },
     "landmark-city-ct-mark-twain-house": {
       "raceRef": "Hartford, CT — Landmark Run",
