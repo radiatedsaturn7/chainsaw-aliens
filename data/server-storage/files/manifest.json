@@ -408,7 +408,9 @@
       "catalog-lark-1600-1990-body": "art/catalog-lark-1600-1990-body/document.json",
       "catalog-lark-1600-1990-dashboard": "art/catalog-lark-1600-1990-dashboard/document.json",
       "catalog-cinder-si-1991-body": "art/catalog-cinder-si-1991-body/document.json",
-      "catalog-cinder-si-1991-dashboard": "art/catalog-cinder-si-1991-dashboard/document.json"
+      "catalog-cinder-si-1991-dashboard": "art/catalog-cinder-si-1991-dashboard/document.json",
+      "catalog-sti-airslayer-body": "art/catalog-sti-airslayer-body/document.json",
+      "catalog-rtg-s-body": "art/catalog-rtg-s-body/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

@@ -15,7 +15,8 @@ test('saved Airslayer survives editor round trip with its own engine, chassis an
   assert.equal(car.setup.tireSize.wheelDiameterIn, 19);
   const source = editor.normalizeLoadedCarDocument(JSON.parse(fs.readFileSync('data/server-storage/files/cars/RTG-001/document.json')));
   for (const angle of Object.keys(source.art.angleLayers)) {
-    assert.deepEqual(car.art.angleLayers[angle].body, source.art.angleLayers[angle].body);
+    assert.equal(car.art.angleLayers[angle].body.artRef, 'catalog-sti-airslayer-body');
+    assert.notEqual(car.art.angleLayers[angle].body.artRef, source.art.angleLayers[angle].body.artRef);
   }
   assert.deepEqual(car.art.smoke, source.art.smoke);
   for (const transmissionType of ['manual', 'automatic']) {

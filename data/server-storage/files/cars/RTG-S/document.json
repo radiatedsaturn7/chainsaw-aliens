@@ -78,13 +78,14 @@
       "angleLayers": {
         "front": {
           "body": {
-            "artRef": "8300 body",
+            "artRef": "catalog-rtg-s-body",
             "frameIndex": 0,
             "transforms": {
-              "bodyScaleX": 2.4831177137924674,
-              "bodyScaleY": 2.2958861916001347,
-              "bodyOffsetX": 0.03383458646616333,
-              "bodyOffsetY": -0.09833176691729406
+              "bodyScaleX": 2.355351103481684,
+              "bodyScaleY": 1.2441329888977994,
+              "bodyOffsetX": 0.02397547947355072,
+              "bodyOffsetY": 2.4506444616735465,
+              "bodyRotationDeg": 0
             },
             "fitToCar": true
           },
@@ -92,13 +93,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 1.4287106822818194,
-              "tireScaleY": 1.1908884148848684,
-              "tireSpacingScale": 1.1041129434915415,
-              "frontTireOffsetX": 0.06790374338593352,
-              "frontTireOffsetY": -1.0931657818645828,
-              "rearTireOffsetX": -0.08670112781954842,
-              "rearTireOffsetY": 7.825969392383872
+              "tireScaleX": 0.51939407691255,
+              "tireScaleY": 0.51939407691255,
+              "tireSpacingScale": 1,
+              "frontTireOffsetX": 2.2006138438074125e-16,
+              "frontTireOffsetY": 0,
+              "rearTireOffsetX": 0,
+              "rearTireOffsetY": 0
             },
             "cylinder": true,
             "tireMode": "front"
@@ -109,14 +110,14 @@
         },
         "frontRight": {
           "body": {
-            "artRef": "8300 body",
+            "artRef": "catalog-rtg-s-body",
             "frameIndex": 7,
             "transforms": {
-              "bodyScaleX": 4.083142548754699,
-              "bodyScaleY": 2.513625800340695,
-              "bodyOffsetX": -6.0458176691729335,
-              "bodyOffsetY": -0.468397556390979,
-              "bodyRotationDeg": 2.771528430451127
+              "bodyScaleX": 3.636086269540527,
+              "bodyScaleY": 1.9206371702828737,
+              "bodyOffsetX": -5.113199917108664,
+              "bodyOffsetY": 0.6473074816647029,
+              "bodyRotationDeg": 0
             },
             "fitToCar": true
           },
@@ -124,12 +125,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 2.4642699277490596,
-              "tireScaleY": 1.3586983816964284,
-              "frontTireOffsetX": -1.0499295112781954,
-              "frontTireOffsetY": -1.4199953007518804,
-              "rearTireOffsetX": -0.5476973684210531,
-              "rearTireOffsetY": -0.28336466165413654
+              "tireScaleX": 1.3400273093233797,
+              "tireScaleY": 1.3400273093233797,
+              "tireSpacingScale": 1,
+              "frontTireOffsetX": -0.12339604869662231,
+              "frontTireOffsetY": -1.198439666760674,
+              "rearTireOffsetX": 0.12339604869662735,
+              "rearTireOffsetY": 1.1984396667606758
             },
             "cylinder": true,
             "tireMode": "right"
@@ -140,13 +142,14 @@
         },
         "right": {
           "body": {
-            "artRef": "8300 body",
+            "artRef": "catalog-rtg-s-body",
             "frameIndex": 2,
             "transforms": {
-              "bodyScaleX": 2.63207989456062,
-              "bodyScaleY": 2.6123375455239657,
-              "bodyOffsetX": -4.421757518796991,
-              "bodyOffsetY": -1.9486607142857153
+              "bodyScaleX": 2.7579945395573846,
+              "bodyScaleY": 1.4568154976093237,
+              "bodyOffsetX": -5.002464692683345,
+              "bodyOffsetY": 0.13704539305353972,
+              "bodyRotationDeg": 0
             },
             "fitToCar": true
           },
@@ -154,12 +157,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 2,
             "transforms": {
-              "tireScaleX": 2.128649994125939,
-              "tireScaleY": 1.4672813013980261,
-              "frontTireOffsetX": -0.5212640977443623,
-              "frontTireOffsetY": -0.7591635338345881,
-              "rearTireOffsetX": -1.0234962406015047,
-              "rearTireOffsetY": -0.8913298872180455
+              "tireScaleX": 1.339266095457928,
+              "tireScaleY": 1.339266095457928,
+              "tireSpacingScale": 1,
+              "frontTireOffsetX": 0,
+              "frontTireOffsetY": 0.01698383267876758,
+              "rearTireOffsetX": 1.2688263138573217e-16,
+              "rearTireOffsetY": -0.01698383267876638
             },
             "cylinder": true,
             "tireMode": "right"
@@ -170,14 +174,14 @@
         },
         "rearRight": {
           "body": {
-            "artRef": "8300 body",
+            "artRef": "catalog-rtg-s-body",
             "frameIndex": 3,
             "transforms": {
-              "bodyScaleX": 2.7011781161889092,
-              "bodyScaleY": 2.4247852296757517,
-              "bodyOffsetX": -1.6198308270676698,
-              "bodyOffsetY": -2.9002584586466167,
-              "bodyRotationDeg": 1.0199938322368425
+              "bodyScaleX": 3.4625424145733006,
+              "bodyScaleY": 1.8289686140892512,
+              "bodyOffsetX": -0.29493606288040297,
+              "bodyOffsetY": -1.2842930833949473,
+              "bodyRotationDeg": 0
             },
             "fitToCar": true
           },
@@ -185,13 +189,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 2.020067074424342,
-              "tireScaleY": 1.576524592526598,
-              "tireSpacingScale": 0.7385903724154136,
-              "frontTireOffsetX": -2.0808270676691745,
-              "frontTireOffsetY": 1.0118656015037573,
-              "rearTireOffsetX": -6.098684210526317,
-              "rearTireOffsetY": -0.09833176691729406
+              "tireScaleX": 1.5919799829026888,
+              "tireScaleY": 1.5919799829026888,
+              "tireSpacingScale": 1,
+              "frontTireOffsetX": 0.3819276636338585,
+              "frontTireOffsetY": 1.1453139930436962,
+              "rearTireOffsetX": -0.38192766363386194,
+              "rearTireOffsetY": -1.1453139930436955
             },
             "cylinder": true,
             "tireMode": "left"
@@ -202,13 +206,14 @@
         },
         "rear": {
           "body": {
-            "artRef": "8300 body",
+            "artRef": "catalog-rtg-s-body",
             "frameIndex": 4,
             "transforms": {
-              "bodyScaleX": 2.0891652960526312,
-              "bodyScaleY": 1.9114841547227441,
-              "bodyOffsetX": 0.007401315789472562,
-              "bodyOffsetY": -0.09833176691729406
+              "bodyScaleX": 1.8536400876749293,
+              "bodyScaleY": 0.9791214478430826,
+              "bodyOffsetX": -0.009434243117238061,
+              "bodyOffsetY": -0.5467102259724177,
+              "bodyRotationDeg": 0
             },
             "fitToCar": true
           },
@@ -216,12 +221,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 1.6252200936912593,
-              "tireScaleY": 1.447538952361372,
-              "tireSpacingScale": 1.2357010690789474,
-              "frontTireOffsetY": -0.17763157894736992,
-              "rearTireOffsetX": 0.08670112781954842,
-              "rearTireOffsetY": 1.6198308270676698
+              "tireScaleX": 0.5305389469714175,
+              "tireScaleY": 0.5305389469714175,
+              "tireSpacingScale": 1,
+              "frontTireOffsetX": 0,
+              "frontTireOffsetY": 0,
+              "rearTireOffsetX": 2.9966024033516617e-16,
+              "rearTireOffsetY": 0
             },
             "cylinder": true,
             "tireMode": "rear"
@@ -232,14 +238,14 @@
         },
         "rearLeft": {
           "body": {
-            "artRef": "8300 body",
+            "artRef": "catalog-rtg-s-body",
             "frameIndex": 5,
             "transforms": {
-              "bodyScaleX": 2.7011781161889092,
-              "bodyScaleY": 2.4247852296757517,
-              "bodyOffsetX": 1.6198308270676698,
-              "bodyOffsetY": -2.9002584586466167,
-              "bodyRotationDeg": -1.0199938322368425
+              "bodyScaleX": 3.3102089518614157,
+              "bodyScaleY": 1.7485037160989958,
+              "bodyOffsetX": 0.4283518356559135,
+              "bodyOffsetY": -1.4891206822194099,
+              "bodyRotationDeg": 0
             },
             "visible": true,
             "fitToCar": true
@@ -248,12 +254,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 2.020067074424342,
-              "tireScaleY": 1.3389560326597745,
-              "frontTireOffsetX": 3.496593045112782,
-              "frontTireOffsetY": 0.5360667293233057,
-              "rearTireOffsetX": 6.034187030075188,
-              "rearTireOffsetY": -0.6534304511278197
+              "tireScaleX": 1.5793730731984061,
+              "tireScaleY": 1.5793730731984061,
+              "tireSpacingScale": 1,
+              "frontTireOffsetX": -0.6674933043597214,
+              "frontTireOffsetY": 1.3784557864348292,
+              "rearTireOffsetX": 0.6674933043597225,
+              "rearTireOffsetY": -1.3784557864348275
             },
             "cylinder": true,
             "tireMode": "right"
@@ -264,13 +271,14 @@
         },
         "left": {
           "body": {
-            "artRef": "8300 body",
+            "artRef": "catalog-rtg-s-body",
             "frameIndex": 6,
             "transforms": {
-              "bodyScaleX": 2.63207989456062,
-              "bodyScaleY": 2.6123375455239657,
-              "bodyOffsetX": 4.421757518796991,
-              "bodyOffsetY": -1.9486607142857153
+              "bodyScaleX": 2.6764409375812255,
+              "bodyScaleY": 1.4137376199918437,
+              "bodyOffsetX": 5.11385527281809,
+              "bodyOffsetY": 0.11767221530958943,
+              "bodyRotationDeg": 0
             },
             "fitToCar": true
           },
@@ -278,12 +286,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 2,
             "transforms": {
-              "tireScaleX": 2.128649994125939,
-              "tireScaleY": 1.4672813013980261,
-              "frontTireOffsetX": 0.4039003759398483,
-              "frontTireOffsetY": -0.5476973684210531,
-              "rearTireOffsetX": 0.35103383458646675,
-              "rearTireOffsetY": -0.697346105895301
+              "tireScaleX": 1.299315550279864,
+              "tireScaleY": 1.299315550279864,
+              "tireSpacingScale": 1,
+              "frontTireOffsetX": 0,
+              "frontTireOffsetY": 0.03126153832849988,
+              "rearTireOffsetX": -6.344131569286608e-16,
+              "rearTireOffsetY": -0.031261538328499636
             },
             "cylinder": true,
             "tireMode": "auto"
@@ -294,14 +303,14 @@
         },
         "frontLeft": {
           "body": {
-            "artRef": "8300 body",
+            "artRef": "catalog-rtg-s-body",
             "frameIndex": 1,
             "transforms": {
-              "bodyScaleX": 4.083142548754699,
-              "bodyScaleY": 2.513625800340695,
-              "bodyOffsetX": 6.0458176691729335,
-              "bodyOffsetY": -0.468397556390979,
-              "bodyRotationDeg": 3.753356361996481
+              "bodyScaleX": 3.381958472484407,
+              "bodyScaleY": 1.78640292586552,
+              "bodyOffsetX": 5.4888037876124685,
+              "bodyOffsetY": 1.1431480960182552,
+              "bodyRotationDeg": 0
             },
             "fitToCar": true
           },
@@ -309,12 +318,13 @@
             "artRef": "8582 tires 3",
             "frameIndex": 0,
             "transforms": {
-              "tireScaleX": 2.4642699277490596,
-              "tireScaleY": 1.3586983816964284,
-              "frontTireOffsetX": 0.8268327067669148,
-              "frontTireOffsetY": -0.7591635338345881,
-              "rearTireOffsetX": -0.09833176691729406,
-              "rearTireOffsetY": 0.3774671052631575
+              "tireScaleX": 1.3919342027810493,
+              "tireScaleY": 1.3919342027810493,
+              "tireSpacingScale": 1,
+              "frontTireOffsetX": -0.30309589550661103,
+              "frontTireOffsetY": -1.0511142795775352,
+              "rearTireOffsetX": 0.30309589550661054,
+              "rearTireOffsetY": 1.0511142795775361
             },
             "cylinder": true,
             "tireMode": "auto"
