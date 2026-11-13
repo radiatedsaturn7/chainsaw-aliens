@@ -1,6 +1,7 @@
 // Run after importing reviewed PNGs with import_campaign_art.py --only NAME.
 // Additive only: never rewrite roads, ground, textures, or existing scenery.
 import fs from 'node:fs';
+import {selectLandmarkCity} from './landmarkCitySelector.mjs';
 import zlib from 'node:zlib';
 import crypto from 'node:crypto';
 import RaceEditor from '../../src/ui/RaceEditor.js';
@@ -12,9 +13,9 @@ const write=(p,d)=>{fs.mkdirSync(p.slice(0,p.lastIndexOf('/')),{recursive:true})
 const encode=d=>({__chainsawStorage:'compact-v1',encoding:'json-gzip-base64',data:zlib.gzipSync(Buffer.from(JSON.stringify(d)),{level:9}).toString('base64')});
 const hash=d=>crypto.createHash('sha256').update(JSON.stringify(d)).digest('hex');
 const cityName=process.argv[2];
-if(!cityName)throw Error('Specify exact city name, e.g. node tools/campaigns/import_landmark_batch.mjs Providence');
+if(!cityName)throw Error('Specify exact raceRef or unambiguous city name, e.g. node tools/campaigns/import_landmark_batch.mjs Providence');
 const brief=read('AI/last-on-the-grid/state-expansion-landmark-artwork.json');
-const city=brief.cities.find(c=>c.city===cityName);if(!city)throw Error('Unknown city');
+const city=selectLandmarkCity(brief.cities,cityName);
 const manifest=read(`${root}/manifest.json`),imports=read('data/campaigns/america/art-imports.json');
 const expanded=read('data/campaigns/america/expanded-art.json').assets;
 const ledgerPath='data/campaigns/america/state-expansion/landmark-art-progress.json';
