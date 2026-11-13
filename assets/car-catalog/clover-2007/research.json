@@ -1,0 +1,84 @@
+{
+  "fictionalName": "Clover Sport",
+  "year": 2007,
+  "inspiration": "US Honda Fit Sport 5-speed manual, LHD, first-generation US model; not base, AT, Japanese second-generation or hybrid",
+  "status": "Original candidate imported; actual browser visual acceptance pending",
+  "duplicateCheck": "No Honda Fit/Jazz matches in inspected copperwing-work importer or shared source/art packets. Panda100HP already represented by Pipit; live staging recheck before import.",
+  "sources": [
+    {
+      "url": "https://automobiles.honda.com/images/2007/fit/downloads/2007-fit-factsheet.pdf",
+      "publisher": "American Honda",
+      "access": "Full PDF text and page2 technical-table screenshot visually inspected",
+      "role": "Production fact sheet authoritative trim columns and values"
+    },
+    {
+      "url": "https://hondanews.com/en-US/releases/release-603be0ccf05af70a3188ce004c34c035-2007-honda-fit-powertrain",
+      "publisher": "American Honda",
+      "date": "2006-03-31",
+      "access": "Full OEM HTML read",
+      "role": "Corroborates production manual gear ratios and final4.29; engine NA L15A"
+    },
+    {
+      "url": "https://hondanews.com/en-US/honda-automobiles/releases/release-038289ba6cfd8bd9199f65004c34c06f-2007-honda-fit-specifications",
+      "publisher": "American Honda",
+      "date": "2006-01-07",
+      "access": "Indexed table read",
+      "role": "Earlier preview differs: redline6300, final4.294 and turningdiameter35.6; use later production fact sheet instead, do not mix"
+    }
+  ],
+  "verified": {
+    "engine": "NA gasoline inline4 SOHC16V VTEC,1497cc",
+    "powerHpSAENet": 109,
+    "powerRpm": 5800,
+    "torqueLbFt": 105,
+    "torqueRpm": 4800,
+    "redlineRpm": 6500,
+    "compression": 10.4,
+    "drive": "FWD",
+    "gearRatios": [
+      3.462,
+      1.87,
+      1.321,
+      0.97,
+      0.757
+    ],
+    "reverseRatio": 3.231,
+    "finalDrive": 4.29,
+    "tires": "P195/55R15 84H",
+    "curbMassLb": 2471,
+    "massConvention": "US OEM curb weight Sport manual; driver/fuel accounting not explicitly defined on sheet; retain label without extra driver adjustment",
+    "weightDistributionFront": 0.62,
+    "wheelbaseIn": 96.5,
+    "lengthIn": 157.4,
+    "widthIn": 66.2,
+    "heightIn": 60.0,
+    "frontTrackIn": 57.3,
+    "rearTrackIn": 57.1,
+    "fuelUSGallons": 10.8,
+    "steeringRatio": 12.8,
+    "wheelTurnsLockToLock": 2.41,
+    "turningDiameterFt": 34.4,
+    "frontBrakeDiameterIn": 10.3,
+    "rearDrumDiameterIn": 7.9
+  },
+  "derived": {
+    "curbMassKg": 1120.82674627,
+    "torqueNm": 142.36088457479698,
+    "wheelbaseM": 2.4511,
+    "lengthM": 3.99796,
+    "widthM": 1.68148,
+    "heightM": 1.524,
+    "frontTrackM": 1.45542,
+    "rearTrackM": 1.45034,
+    "fuelLiters": 40.8824472672,
+    "nominalTireRadiusM": 0.29775
+  },
+  "uncertainties": [
+    "Published6500rpm redline is not verified exact fuel-cut behavior.",
+    "No verified idle, complete torque curve, CG height, Cd/frontal area, absolute suspension rates or damper constants; label runtime choices simulation estimates.",
+    "Actual loaded rolling radius differs from geometric nominal tire radius.",
+    "Sport manual is2471lb, not base2432lb or Sport automatic2551lb.",
+    "Use actual5MT; do not copy automatic paddles or ratios."
+  ],
+  "artPlan": "Original2994 logo-free tall compact five-door, olive-teal with pale repaired roof, altered squared lamps and split angular grille, small roof spoiler; compact LHD charcoal cockpit with blue-lit blank gauge wells behind shared-wheel opening. Fixed rear camera, eight wheel-less body angles with transparent wheel openings; individually aligned internal gauges; appropriate FWD smoke/spray. No artwork produced."
+}
