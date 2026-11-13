@@ -9029,7 +9029,8 @@ export default class RaceEditor {
     const torquePoints = sourcePoints
       .map((point) => ({
         rpm: Math.max(0, Math.round(Number(point?.rpm) || 0)),
-        torqueLbFt: Math.max(0, Math.round(Number(point?.torqueLbFt) || 0))
+        // Preserve authored fractional torque: rounding can change a sourced horsepower anchor.
+        torqueLbFt: Math.max(0, Number.isFinite(Number(point?.torqueLbFt)) ? Number(point.torqueLbFt) : 0)
       }))
       .filter((point) => (tuning.powertrainType === 'electric' ? point.rpm >= 0 : point.rpm > 0) && point.torqueLbFt > 0)
       .sort((a, b) => a.rpm - b.rpm);

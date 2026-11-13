@@ -1,5 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {buildCatalogDocuments,decodePng} from '../../scripts/car-catalog-import.mjs';
+import RaceEditor from '../../src/ui/RaceEditor.js';
 import {prepareCarSheet} from '../../src/racing/CarGraphicImport.js';
 const base=new URL('../../assets/car-catalog/cinder-si-1991/',import.meta.url),config=JSON.parse(fs.readFileSync(new URL('import.json',base)));
 test('Cinder exact US1991Si uses corroborated secondary mass and retains alternate',()=>{
@@ -15,7 +16,7 @@ test('Cinder measured source openings serialize through real editor',()=>{
   const crop=prepared.crops[config.mapping[slots.indexOf(slot)]];
   for(const p of points){assert.ok(p.x>=crop.x&&p.x<crop.x+crop.width);if(['front','rear'].includes(slot))continue;assert.ok(body.data[(p.y*body.width+p.x)*4+3]<128);let top=p.y;while(top>0&&body.data[((top-1)*body.width+p.x)*4+3]<128)top--;assert.ok(p.radius>=p.y-top,`${slot} ${p.x} radius${p.radius} needs${p.y-top}`);}
  }
- const b=buildCatalogDocuments(config,body,decodePng(new URL('dashboard.png',base).pathname));assert.equal(b.car.car.id,'cinder-si-1991');assert.equal(b.car.car.camera.trackingMode,'fixed-rear');assert.equal(b.car.car.art.interior.steeringWheel.artRef,'steeringwheel');assert.equal(b.car.car.art.gauges.interior.coordinateSpace,'dashboard');assert.equal(b.art['catalog-cinder-si-1991-body'].frames.length,8);
+ const b=buildCatalogDocuments(config,body,decodePng(new URL('dashboard.png',base).pathname));assert.equal(b.car.car.id,'cinder-si-1991');assert.equal(b.car.car.tuning.powerHp,108);assert.equal(b.car.car.tuning.torqueLbFt,100);assert.equal(b.car.car.tuning.engineCurve.torquePoints.find(p=>p.rpm===6000).torqueLbFt,108*5252/6000);assert.equal(b.car.car.camera.trackingMode,'fixed-rear');assert.equal(b.car.car.art.interior.steeringWheel.artRef,'steeringwheel');assert.equal(b.car.car.art.gauges.interior.coordinateSpace,'dashboard');assert.equal(b.art['catalog-cinder-si-1991-body'].frames.length,8);
 });
 test('Cinder angle mapping follows nose direction and physical wheel identities',()=>{
  // Sources1/2/5 nose left;3/6/7 nose right. Rear diagonals differ from Lark atlas.
@@ -24,4 +25,12 @@ test('Cinder angle mapping follows nose direction and physical wheel identities'
  assert.deepEqual(config.authoredWheelAnchors.frontLeft.map(p=>p.wheel),['rl','fl']);
  const doc=JSON.parse(fs.readFileSync(new URL('../../data/server-storage/files/cars/Cinder Si 1991/document.json',import.meta.url)));
  for(const [slot,frame]of Object.entries({frontRight:1,right:2,rearRight:5,rearLeft:3,left:6,frontLeft:7}))assert.equal(doc.car.art.angleLayers[slot].body.frameIndex,frame);
+});
+
+test('engine curve normalization preserves fractional sourced anchors and finite integer legacy points',()=>{
+ const editor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});
+ const curve=editor.normalizeCarEngineCurve({engineCurve:{rpmMin:750,rpmMax:6800,torquePoints:[{rpm:5000,torqueLbFt:100},{rpm:6000,torqueLbFt:108*5252/6000},{rpm:6500,torqueLbFt:Infinity},{rpm:6600,torqueLbFt:-2},{rpm:6700,torqueLbFt:'bad'},null]}});
+ assert.deepEqual(curve.torquePoints,[{rpm:5000,torqueLbFt:100},{rpm:6000,torqueLbFt:94.536}]);
+ const doc=JSON.parse(fs.readFileSync(new URL('../../data/server-storage/files/cars/Cinder Si 1991/document.json',import.meta.url)));
+ editor.applyLoadedCarDocument(doc,{name:doc.car.name});const c=editor.serializeSelectedCarDocument().car;assert.equal(c.tuning.powerHp,108);assert.equal(c.tuning.torqueLbFt,100);
 });
