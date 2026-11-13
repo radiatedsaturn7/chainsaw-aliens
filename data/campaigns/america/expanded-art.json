@@ -2400,6 +2400,34 @@
       "heightM": 29,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-pa-philadelphia-museum-of-art",
+      "source": "landmarks/PA/landmark-city-pa-philadelphia-museum-of-art.png",
+      "heightM": 27,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-pa-philadelphia-city-hall",
+      "source": "landmarks/PA/landmark-city-pa-philadelphia-city-hall.png",
+      "heightM": 60,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-pa-reading-terminal-market",
+      "source": "landmarks/PA/landmark-city-pa-reading-terminal-market.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-pa-independence-hall",
+      "source": "landmarks/PA/landmark-city-pa-independence-hall.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

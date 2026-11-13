@@ -4585,35 +4585,488 @@
     },
     "landmark-city-pa-philadelphia-museum-of-art": {
       "raceRef": "Philadelphia, PA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -1493.3602334813181,
+        "worldZ": -1174.8983372553494,
+        "routeDistanceM": 860,
+        "offsetFromRoadM": 133,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.5246747280756704,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 23.61511010001792,
+            "angularWidthDegrees": 34.42046048842515,
+            "rangeM": 130.49683424460596,
+            "occluderIds": [
+              "city-pa-prop-46"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 14.91369051199681,
+            "angularWidthDegrees": 28.535915097465335,
+            "rangeM": 158.9494491761559,
+            "occluderIds": [
+              "city-pa-prop-44",
+              "city-pa-prop-46"
+            ],
+            "score": 0.04841428554241531
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 7.1859711520004215,
+            "angularWidthDegrees": 24.21076276230327,
+            "rangeM": 188.4610016654261,
+            "occluderIds": [
+              "city-pa-prop-44",
+              "city-pa-prop-46"
+            ],
+            "score": 0.08550733847039799
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 0.5846649670616798,
+            "angularWidthDegrees": 20.97778421487223,
+            "rangeM": 218.32869738543576,
+            "occluderIds": [
+              "city-pa-prop-44",
+              "city-pa-prop-46"
+            ],
+            "score": 0.11719360815810394
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 2.8081979476179333,
+            "angularWidthDegrees": 18.490513271256347,
+            "rangeM": 248.3241485748196,
+            "occluderIds": [
+              "city-pa-prop-44",
+              "city-pa-prop-46"
+            ],
+            "score": 0.10652064985143392
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 3.0989588161056374,
+            "angularWidthDegrees": 15.696556986965154,
+            "rangeM": 293.24300466700123,
+            "occluderIds": [
+              "city-pa-prop-44",
+              "city-pa-prop-46"
+            ],
+            "score": 0.10512499768269294
+          },
+          {
+            "beforeM": 280,
+            "angleDegrees": 2.7262815894528587,
+            "angularWidthDegrees": 13.834041060491575,
+            "rangeM": 333.19165148393995,
+            "occluderIds": [
+              "city-pa-prop-44",
+              "city-pa-prop-46"
+            ],
+            "score": 0.10691384837062627
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "563777c72dc006a23b8da3dcdc4a94c36f7e76f9e97a994574a98da4f6080f98",
+      "sourceSha256": "9fab6eb645995a1b9a29e2684ba25dba5843eb56cb226501e4fa3abf5f409600",
+      "roadSha256": "d7136ac087f1aaf999979eb1ccc5790f3766756e2f855da195f729b3378cd4d5",
+      "placementDetails": {
+        "x": -1471.0026775010517,
+        "z": -1114.9958991412311,
+        "yaw": 1.9468349765688895,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 889.9570636651755,
+        "trackLateral": -89.99985683876123,
+        "minimumRoadClearanceM": 36.449336685142825,
+        "checkedSegments": 3600,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Classical roofline visible, but foreground generic building obscures lower facade; improve actual sightline."
+      ],
+      "visualEvidence": [
+        "docs/art/landmark-previews/PA/philadelphia-museum-of-art-desktop.png",
+        "docs/art/landmark-previews/PA/philadelphia-museum-of-art-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 135,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Classical roofline visible, but foreground generic building obscures lower facade; improve actual sightline."
+      }
     },
     "landmark-city-pa-philadelphia-city-hall": {
       "raceRef": "Philadelphia, PA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 86.14851359987016,
+        "worldZ": 289.1628061472783,
+        "routeDistanceM": 3845,
+        "offsetFromRoadM": 40,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 4.926896902769813,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 0.3266472292743208,
+            "angularWidthDegrees": 34.30202692012166,
+            "rangeM": 129.61130493838618,
+            "occluderIds": [],
+            "score": 0.9869341108290272
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.2652517761066982,
+            "angularWidthDegrees": 28.138194027736194,
+            "rangeM": 159.6109784886744,
+            "occluderIds": [],
+            "score": 0.9893899289557321
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.22328399292595758,
+            "angularWidthDegrees": 23.82473177600167,
+            "rangeM": 189.61077731553982,
+            "occluderIds": [],
+            "score": 0.9910686402829617
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 0.19278219962298168,
+            "angularWidthDegrees": 20.645447159916557,
+            "rangeM": 219.61065007896323,
+            "occluderIds": [],
+            "score": 0.9922887120150807
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 0.16961223282471413,
+            "angularWidthDegrees": 18.20844355018963,
+            "rangeM": 249.61057012037176,
+            "occluderIds": [],
+            "score": 0.9932155106870114
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 66.65238746755185,
+            "angularWidthDegrees": 15.582969770617531,
+            "rangeM": 292.3302234890901,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 280,
+            "angleDegrees": 80.96862429107497,
+            "angularWidthDegrees": 15.347981642566893,
+            "rangeM": 296.86123678447484,
+            "occluderIds": [
+              "city-pa-prop-202",
+              "city-pa-prop-204",
+              "city-pa-prop-206",
+              "city-pa-prop-208",
+              "city-pa-prop-210",
+              "city-pa-prop-214"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "d19aeae4663d83293c2972795b783d938cdbc284c677ad8da24e2d1872b4ca58",
+      "sourceSha256": "5a993b6e5c91c772d9ffc303f23e2e2bb7d7d57f53425de8aaed80aa92de98de",
+      "roadSha256": "d7136ac087f1aaf999979eb1ccc5790f3766756e2f855da195f729b3378cd4d5",
+      "placementDetails": {
+        "x": 61.34846554048279,
+        "z": 294.537407608486,
+        "yaw": -1.7355761781263184,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 3844.0853830823594,
+        "trackLateral": -64.99997742120676,
+        "minimumRoadClearanceM": 11.416716300521529,
+        "checkedSegments": 3600,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Desktop landmark legible; handheld tower crown clips or overlaps pause overlay. Seek different approach before approval."
+      ],
+      "visualEvidence": [
+        "docs/art/landmark-previews/PA/philadelphia-city-hall-desktop.png",
+        "docs/art/landmark-previews/PA/philadelphia-city-hall-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 165,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Desktop landmark legible; handheld tower crown clips or overlaps pause overlay. Seek different approach before approval."
+      }
     },
     "landmark-city-pa-reading-terminal-market": {
       "raceRef": "Philadelphia, PA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 421.98878117413346,
+        "worldZ": 206.3669494048976,
+        "routeDistanceM": 4219,
+        "offsetFromRoadM": 29,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 2.7639900234227834,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 6.138567122542875,
+            "angularWidthDegrees": 12.849912111491642,
+            "rangeM": 177.6056358813093,
+            "occluderIds": [
+              "city-pa-prop-242",
+              "city-pa-prop-245"
+            ],
+            "score": 0.09053487781179419
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 5.252545770600097,
+            "angularWidthDegrees": 11.013145051701644,
+            "rangeM": 207.45849543051287,
+            "occluderIds": [
+              "city-pa-prop-245"
+            ],
+            "score": 0.09478778030111953
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 4.589555953601617,
+            "angularWidthDegrees": 9.633218680332956,
+            "rangeM": 237.34848027655588,
+            "occluderIds": [],
+            "score": 0.8164177618559353
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 4.0749258679866385,
+            "angularWidthDegrees": 8.559233114050135,
+            "rangeM": 267.2631347318581,
+            "occluderIds": [],
+            "score": 0.8370029652805344
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 4.08466685668406,
+            "angularWidthDegrees": 7.699930279623575,
+            "rangeM": 297.19500940900554,
+            "occluderIds": [],
+            "score": 0.8366133257326376
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 3.7795285493265993,
+            "angularWidthDegrees": 6.692000633046301,
+            "rangeM": 342.08383286139764,
+            "occluderIds": [
+              "city-pa-prop-241"
+            ],
+            "score": 0.10185826296323232
+          },
+          {
+            "beforeM": 280,
+            "angleDegrees": 3.1499531714629647,
+            "angularWidthDegrees": 5.9939831193341915,
+            "rangeM": 382.00651502409283,
+            "occluderIds": [
+              "city-pa-prop-231",
+              "city-pa-prop-235",
+              "city-pa-prop-237",
+              "city-pa-prop-241",
+              "city-pa-prop-243"
+            ],
+            "score": 0.10477504947753005
+          }
+        ],
+        "sourceDistanceShiftM": 240
+      },
+      "signature": "5836c49d7baf45f60a83b3679306a1dc0b095e1e651fa1cdabf8e1936b7f919f",
+      "sourceSha256": "c8090bcce070c90736032fcc50c2d9fb18dc1fa81a332f0ceeb187341babafe3",
+      "roadSha256": "d7136ac087f1aaf999979eb1ccc5790f3766756e2f855da195f729b3378cd4d5",
+      "placementDetails": {
+        "x": 749.1991200121796,
+        "z": 307.925648331053,
+        "yaw": 1.3335881344013876,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 4457.446218044285,
+        "trackLateral": -114.99924314573717,
+        "minimumRoadClearanceM": 87.05761258539454,
+        "checkedSegments": 3600,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/PA/reading-terminal-market-desktop.png",
+        "docs/art/landmark-previews/PA/reading-terminal-market-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 75,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Arched train-shed roof and facade readable in both modes with no foreground occlusion."
+      }
     },
     "landmark-city-pa-independence-hall": {
       "raceRef": "Philadelphia, PA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 1191.0946166529725,
+        "worldZ": 679.7021669430319,
+        "routeDistanceM": 5335,
+        "offsetFromRoadM": 29,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.17544883945004394,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 44.66204303801203,
+            "angularWidthDegrees": 25.37772136949015,
+            "rangeM": 106.69721908212624,
+            "occluderIds": [
+              "city-pa-prop-281",
+              "city-pa-prop-283"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 35.30923650039087,
+            "angularWidthDegrees": 20.977652793623978,
+            "rangeM": 129.7602135889883,
+            "occluderIds": [
+              "city-pa-prop-281",
+              "city-pa-prop-283"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 28.895022164986553,
+            "angularWidthDegrees": 17.596530038846307,
+            "rangeM": 155.213201227445,
+            "occluderIds": [
+              "city-pa-prop-281"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 165,
+            "angleDegrees": 24.32801931755193,
+            "angularWidthDegrees": 15.034192520407476,
+            "rangeM": 182.05650489255578,
+            "occluderIds": [
+              "city-pa-prop-281"
+            ],
+            "score": 0.0032255072757507363
+          },
+          {
+            "beforeM": 195,
+            "angleDegrees": 20.950210816086535,
+            "angularWidthDegrees": 13.067228194996234,
+            "rangeM": 209.75703193439236,
+            "occluderIds": [],
+            "score": 0.16199156735653863
+          },
+          {
+            "beforeM": 240,
+            "angleDegrees": 17.293710355061815,
+            "angularWidthDegrees": 10.87854190630755,
+            "rangeM": 252.29583880866778,
+            "occluderIds": [
+              "city-pa-prop-273",
+              "city-pa-prop-275"
+            ],
+            "score": 0.03699019029570329
+          },
+          {
+            "beforeM": 280,
+            "angleDegrees": 14.949671974572661,
+            "angularWidthDegrees": 9.447380787187438,
+            "rangeM": 290.7309326642175,
+            "occluderIds": [
+              "city-pa-prop-269",
+              "city-pa-prop-271",
+              "city-pa-prop-273"
+            ],
+            "score": 0.048241574522051224
+          }
+        ],
+        "sourceDistanceShiftM": -150
+      },
+      "signature": "5841d4654834bde8ceeed924685be683ef1d94b8cf1b17754cfc042b8a8f4e1b",
+      "sourceSha256": "9eaf1d3bcdf4c424f32285409717bebc2f8a0af4218fe47220300399f74a9d42",
+      "roadSha256": "d7136ac087f1aaf999979eb1ccc5790f3766756e2f855da195f729b3378cd4d5",
+      "placementDetails": {
+        "x": 1034.076955757987,
+        "z": 701.6662050754526,
+        "yaw": 0.9486677678006628,
+        "facingApproachBeforeM": 150,
+        "trackDistance": 5184.110146297111,
+        "trackLateral": 75.00000000000009,
+        "minimumRoadClearanceM": 40.621842001418344,
+        "checkedSegments": 3600,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/PA/independence-hall-desktop.png",
+        "docs/art/landmark-previews/PA/independence-hall-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 195,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "unchanged authored native conditions",
+        "notes": "Clock tower and brick facade distinguishable right of approach, outside handheld overlays."
+      }
     },
     "landmark-city-ri-rhode-island-state-house": {
       "raceRef": "Providence, RI — Landmark Run",

@@ -556,7 +556,11 @@
       "landmark-city-az-chase-field": "art/landmark-city-az-chase-field/document.json",
       "landmark-city-az-heritage-square": "art/landmark-city-az-heritage-square/document.json",
       "landmark-city-az-orpheum-theatre": "art/landmark-city-az-orpheum-theatre/document.json",
-      "landmark-city-az-arizona-state-capitol": "art/landmark-city-az-arizona-state-capitol/document.json"
+      "landmark-city-az-arizona-state-capitol": "art/landmark-city-az-arizona-state-capitol/document.json",
+      "landmark-city-pa-philadelphia-museum-of-art": "art/landmark-city-pa-philadelphia-museum-of-art/document.json",
+      "landmark-city-pa-philadelphia-city-hall": "art/landmark-city-pa-philadelphia-city-hall/document.json",
+      "landmark-city-pa-reading-terminal-market": "art/landmark-city-pa-reading-terminal-market/document.json",
+      "landmark-city-pa-independence-hall": "art/landmark-city-pa-independence-hall/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -848,7 +852,11 @@
       "landmark-city-az-chase-field": "doodads/landmark-city-az-chase-field/document.json",
       "landmark-city-az-heritage-square": "doodads/landmark-city-az-heritage-square/document.json",
       "landmark-city-az-orpheum-theatre": "doodads/landmark-city-az-orpheum-theatre/document.json",
-      "landmark-city-az-arizona-state-capitol": "doodads/landmark-city-az-arizona-state-capitol/document.json"
+      "landmark-city-az-arizona-state-capitol": "doodads/landmark-city-az-arizona-state-capitol/document.json",
+      "landmark-city-pa-philadelphia-museum-of-art": "doodads/landmark-city-pa-philadelphia-museum-of-art/document.json",
+      "landmark-city-pa-philadelphia-city-hall": "doodads/landmark-city-pa-philadelphia-city-hall/document.json",
+      "landmark-city-pa-reading-terminal-market": "doodads/landmark-city-pa-reading-terminal-market/document.json",
+      "landmark-city-pa-independence-hall": "doodads/landmark-city-pa-independence-hall/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

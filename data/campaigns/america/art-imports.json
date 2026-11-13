@@ -1818,5 +1818,33 @@
     "documentSha256": "435c618232cdec7b22d14e1433b18ebf4646293bfde24edc9fa04d7b17db3235",
     "width": 512,
     "height": 207
+  },
+  "landmark-city-pa-philadelphia-museum-of-art": {
+    "source": "assets/campaign-art/landmarks/PA/landmark-city-pa-philadelphia-museum-of-art.png",
+    "sourceSha256": "9fab6eb645995a1b9a29e2684ba25dba5843eb56cb226501e4fa3abf5f409600",
+    "documentSha256": "6a56fb2dcf3e348d4a3e461497a5c3b9e05a61ba9220deb58674e28770aa1f8a",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-pa-philadelphia-city-hall": {
+    "source": "assets/campaign-art/landmarks/PA/landmark-city-pa-philadelphia-city-hall.png",
+    "sourceSha256": "5a993b6e5c91c772d9ffc303f23e2e2bb7d7d57f53425de8aaed80aa92de98de",
+    "documentSha256": "c88298727e888c1eb68248e08fc42f69c6f73cce7ff968050ae4576ce4bcd568",
+    "width": 512,
+    "height": 384
+  },
+  "landmark-city-pa-reading-terminal-market": {
+    "source": "assets/campaign-art/landmarks/PA/landmark-city-pa-reading-terminal-market.png",
+    "sourceSha256": "c8090bcce070c90736032fcc50c2d9fb18dc1fa81a332f0ceeb187341babafe3",
+    "documentSha256": "7fec499b0e37e8cc1061c1edbc9d7af43a97aad985e84095b128225239f5c556",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-pa-independence-hall": {
+    "source": "assets/campaign-art/landmarks/PA/landmark-city-pa-independence-hall.png",
+    "sourceSha256": "9eaf1d3bcdf4c424f32285409717bebc2f8a0af4218fe47220300399f74a9d42",
+    "documentSha256": "83143ebe341e5fe3afc8107e4ec499e6cd4e4f3f436435114a4c4a970355336e",
+    "width": 512,
+    "height": 341
   }
 }
