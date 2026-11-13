@@ -1,0 +1,111 @@
+{
+  "originalName": "Buttoncap Turbo 2003",
+  "status": "German June2003 candidate imported from published text with independent corroboration; actual browser visual acceptance pending",
+  "requestedInspiration": "June2003 German export RHD Daihatsu Copen 659cc turbo 5MT",
+  "verifiedSourceVariant": "June 2003 German-market RHD Copen 5MT export specification; do not silently relabel UK",
+  "duplicateCheck": "No CR-Z or Copen matches in copperwing-work/data/vehicle-catalog or shared/car-next at research time; recheck current roster before integration",
+  "hybridDeferral": {
+    "candidate": "2011 US Honda CR-Z 6MT",
+    "reason": "PowertrainModel.js uses mutually exclusive electric or combustion torque paths; EV forces one forward ratio and removes clutch. No inspected hybrid assist/regen/SOC coupling. Do not fake IMA with a combined ICE torque curve.",
+    "files": [
+      "src/racing/simulation/PowertrainModel.js:314,441,697,726,739",
+      "docs/engineering/electric-powertrain-foundation.md"
+    ]
+  },
+  "sources": [
+    {
+      "url": "https://www.micro-roadster.de/CopenProspekte/DE-2003-06-Preisliste-TechnischeDaten.PDF",
+      "publisher": "Daihatsu Deutschland GmbH, preserved by micro-roadster.de",
+      "date": "2003-06",
+      "access": "Two-page OEM PDF text read, specification table p2",
+      "authority": "OEM German-market sheet, not UK proof"
+    },
+    {
+      "url": "https://www.rac.co.uk/drive/car-reviews/daihatsu/copen/copen-2003-2010/",
+      "authority": "UK secondary review",
+      "access": "search excerpt only; not used for numeric anchors"
+    },
+    {
+      "url": "https://www.adac.de/rund-ums-fahrzeug/autokatalog/marken-modelle/daihatsu/copen/1generation/996165/",
+      "publisher": "ADAC",
+      "access": "German production model page read; corroborates2225mm wheelbase and50kW",
+      "authority": "Secondary German market catalog"
+    },
+    {
+      "url": "https://typenscheine.ch/de/Info/1DB132-DAIHATSUCopen",
+      "publisher": "typenscheine.ch",
+      "access": "Swiss homologation transcription read",
+      "authority": "Secondary transcription of approval1DB132 dated2003-11-25; corroboration only, not German OEM sheet",
+      "corroborates": {
+        "wheelbaseMm": 2225,
+        "powerKw": 50,
+        "powerRpm": 6000,
+        "torqueNm": 100,
+        "torqueRpm": 3200
+      },
+      "doNotImport": "Swiss mass898-908kg and length3440mm differ; do not substitute them into German variant."
+    }
+  ],
+  "publishedGermanExportSpecs": {
+    "engineCc": 659,
+    "cylinders": 4,
+    "induction": "turbocharged intercooled gasoline",
+    "boreMm": 61,
+    "strokeMm": 56.4,
+    "powerKw": 50,
+    "powerPs": 68,
+    "powerRpm": 6000,
+    "torqueNm": 100,
+    "torqueRpm": 3200,
+    "compression": 8.2,
+    "maximumBoostBar": 0.9,
+    "gears": [
+      3.181,
+      1.842,
+      1.25,
+      0.916,
+      0.707
+    ],
+    "reverse": 3.142,
+    "finalDrive": 5.545,
+    "drive": "FWD",
+    "steeringSide": "RHD",
+    "tires": "165/50R15",
+    "rim": "4.50Jx15",
+    "massKg": 830,
+    "massLabel": "Leergewicht (unladen); fuel/driver convention not specified in sheet, not proven DIN or EU mass",
+    "gvwrKg": 1040,
+    "lengthMm": 3395,
+    "widthMm": 1475,
+    "heightMm": 1245,
+    "wheelbaseMmAsPrintedText": 2225,
+    "frontTrackMm": 1300,
+    "rearTrackMm": 1290,
+    "groundClearanceMm": 105,
+    "Cd": 0.382,
+    "fuelL": 40,
+    "turningCircleM": 9.2,
+    "sourcePerformanceTopKmh": 170,
+    "sourcePerformance0to100Seconds": 11.7
+  },
+  "derived": {
+    "powerMechanicalHp": 67.05110447975139,
+    "nominalTireRadiusM": 0.273
+  },
+  "uncertainties": [
+    "OEM sheet marks power/torque with a footnote: internal test data, then undergoing EU homologation. Preserve provisional homologation status.",
+    "2225mm OEM text corroborated by ADAC and Swiss approval transcription; original PDF pixels unavailable. Do not silently substitute common2230mm.",
+    "830kg Leergewicht does not establish fuel fill/driver convention; do not add a full tank automatically.",
+    "Idle, redline/fuel-cut, torque curve outside peak, weight distribution, CG height, suspension rates/damping, steering ratio and clutch timing remain unverified.",
+    "Do not use Japanese64PS/110Nm calibration, fifth0.750, or later1.3L K3-VE gear ratios for this export659cc variant.",
+    "No hybrid simulation change is proposed.",
+    "ADAC labels830kg EU and lists165/60R15, conflicting with original OEM sheet165/50R15 and unspecified Leergewicht convention. Use ADAC only to corroborate wheelbase/output, not tires or mass convention."
+  ],
+  "artPlan": "Original 2994 salvage tiny folding-hardtop roadster, muted peach with deep-blue hood repair panel, squared-off twin small lamps and distinct tall rear lights, no badges/logos. RHD blank dashboard binnacle and shared steering wheel. This is an art direction only; no generation.",
+  "validationUpdate": {
+    "date": "2026-11-13",
+    "wheelbase": "2225mm text corroborated by German ADAC production catalog and Swiss approval transcription; visual reading of original PDF still unavailable.",
+    "power": "Later Swiss approval transcription independently corroborates50kW/6000 and100Nm/3200. June2003 OEM provisional footnote remains part of source history; no later German OEM sheet obtained.",
+    "localPdf": "Direct request returned239-byte403HTML, not PDF. Renamed to download-error.html to avoid false evidence. pdftoppm could not render. Web screenshot retry also failed content-type detection."
+  }
+}
