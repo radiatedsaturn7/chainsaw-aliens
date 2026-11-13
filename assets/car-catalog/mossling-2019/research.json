@@ -1,0 +1,28 @@
+{
+  "inspiration": "2019 UK Suzuki Jimny SZ5 1.5 5MT, full-options mass reference",
+  "sources": [
+    {
+      "url": "https://bluesky-cogcms.cdn.imgeng.in/media/17577/jimny_brochure_combined_web.pdf",
+      "kind": "Suzuki GB December2018 brochure JIMNY-BROCH-18A",
+      "fields": [
+        "{\"powerKw\": 75, \"powerRpm\": 6000, \"torqueNm\": 130, \"torqueRpm\": 4000, \"displacementCc\": 1462, \"cylinders\": 4, \"fuelL\": 40, \"lengthBumpersMm\": 3480, \"lengthIncludingSpareMm\": 3645, \"widthMm\": 1645, \"heightMm\": 1725, \"wheelbaseMm\": 2250, \"trackFrontMm\": 1395, \"trackRearMm\": 1405, \"clearanceMm\": 210, \"forwardRatios\": [4.425, 2.304, 1.674, 1.19, 1.0], \"reverseRatio\": 5.151, \"finalDrive\": 4.09, \"transferHigh\": 1.0, \"transferLow\": 2.002, \"tires\": \"195/80R15\", \"topSpeedKmh\": 145, \"brakes\": \"front discs, rear self-adjusting drums\", \"suspension\": \"front and rear rigid axles with three-link coil spring/telescopic arrangement\", \"seats\": 4, \"publishedFullOptionsKerbMassKg\": 1135, \"cockpitSide\": \"RHD\"}"
+      ]
+    }
+  ],
+  "estimates": [
+    "Select high-range reference explicitly; do not invent runtime low-range support.",
+    "Part-time selectable 4WD is not full-time AWD; preserve dry-road 2H behavior or explicitly implement/select 4H rather than silently substitute AWD.",
+    "1135kg is explicitly full-options kerb mass. Do not substitute Croatian minimum1090kg or gross1435kg.",
+    "Do not use 4AT ratios, 1.320 transfer high or 4.300 final for 5MT.",
+    "102 metric PS is not 102 SAE hp; use 75kW conversion.",
+    "No sourced center-of-gravity, weight distribution, Cd, rev limiter, tire pressure or steering ratio yet.",
+    "Original logo-free 2994 artwork needed, no direct branded replica.",
+    "UK brochure labels101PS(75kW), a unit-label inconsistency: preserve75kW as anchor rather than treating101PS as exact.",
+    "Secondary UK long-term review lists205/70R15; OEM launch brochure lists195/80R15, use OEM tire reference.",
+    "Factory brake-based traction system is not a mechanical LSD.",
+    "This playable reference uses factory dry-road 2H (rear drive), 1.000 high transfer ratio. Selectable 4H/4L and brake-based cross-axle traction are not implemented; not a complete Allgrip simulation.",
+    "53 percent front weight, .62m CG, .49 drag, 26psi, 20:1 steering ratio, alignment, suspension and brake balance are provisional game estimates. Source rigid axle behavior is approximated by existing independent wheel contacts.",
+    "6500 redline/6700 limiter, 800rpm idle, curve away from OEM anchors and 13.5s0-60 display target are provisional. 145km/h is OEM performance reference, not a measured simulation result.",
+    "1135kg is the published full-options UK kerb mass rather than a bare base-trim figure."
+  ]
+}
