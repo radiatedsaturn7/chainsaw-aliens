@@ -17,3 +17,13 @@ test('Lark source alpha openings, unique sprite regions and actual editor serial
  }
  const b=buildCatalogDocuments(config,body,decodePng(new URL('dashboard.png',base).pathname));assert.equal(b.car.car.id,'lark-1600-1990');assert.equal(b.car.car.camera.trackingMode,'fixed-rear');assert.equal(b.car.car.art.interior.steeringWheel.artRef,'steeringwheel');assert.equal(b.car.car.art.gauges.interior.coordinateSpace,'dashboard');assert.equal(b.art['catalog-lark-1600-1990-body'].frames.length,8);
 });
+
+test('Lark front diagonals follow adjacent side silhouettes, not mirrored yaw',()=>{
+ // Source1/frontRight and source2/right both nose left; source7/frontLeft and source6/left both nose right.
+ assert.deepEqual(config.mapping,[0,1,2,3,4,5,6,7]);
+ assert.deepEqual(config.authoredWheelAnchors.frontRight.map(p=>p.wheel),['fr','rr']);
+ assert.deepEqual(config.authoredWheelAnchors.frontLeft.map(p=>p.wheel),['rl','fl']);
+ const doc=JSON.parse(fs.readFileSync(new URL('../../data/server-storage/files/cars/Lark 1600 1990/document.json',import.meta.url)));
+ assert.equal(doc.car.art.angleLayers.frontRight.body.frameIndex,1);
+ assert.equal(doc.car.art.angleLayers.frontLeft.body.frameIndex,7);
+});

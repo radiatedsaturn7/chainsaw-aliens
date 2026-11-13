@@ -17,3 +17,7 @@ Source only, not imported or counted as a finished playable car. Pending: atlas 
 Fixed-rear camera, existing surface-specific smoke, shared steering wheel, and individual dashboard-space speed/RPM/gear/fuel instrumentation are configured. The blank binnacle uses authored pixels [220,540,570,130]; wheel pivot/width [505,793,250] on the1983×793 source. This is fictional cockpit calibration, not a claim of exact manufacturer instrument layout. Exterior gauges retain the existing shared configuration.
 
 Base manual steering18:1, RWD, open differential,185/60R14 tires and five forward ratios use the sources in research.json. Only the published peak torque and power anchors are factual curve inputs. All interpolation, ECU limiter, aero, suspension, CG and performance displays remain provisional game settings, individually disclosed in import.json. Full dynamic/performance calibration and human review of actual editor screenshots are required before claiming a finished car.
+
+## Direction regression check
+
+Front-right uses source view 1 (nose screen-left), consistent with right profile view 2. Front-left uses view 7 (nose screen-right), consistent with left profile view 6. Compare these pairs in every eight-angle preview. Wheel identities and transforms are recalibrated from source anchors after a mapping change, never blindly swapped. Corrected front diagonals still require exact-head visual approval.

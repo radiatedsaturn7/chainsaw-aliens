@@ -1028,13 +1028,13 @@
   "dashboardPng": "dashboard.png",
   "mapping": [
     0,
-    7,
+    1,
     2,
     3,
     4,
     5,
     6,
-    1
+    7
   ],
   "provenance": {
     "inspiration": "1990 US Mazda MX-5 Miata base1.6L5MT, no optionalLSD/hardtop/AorBpackage",
@@ -1088,15 +1088,15 @@
     "frontRight": [
       {
         "wheel": "fr",
-        "x": 1680,
-        "y": 630,
-        "radius": 52
+        "x": 732,
+        "y": 280,
+        "radius": 63
       },
       {
         "wheel": "rr",
-        "x": 1850,
-        "y": 637,
-        "radius": 59
+        "x": 922,
+        "y": 270,
+        "radius": 55
       }
     ],
     "right": [
@@ -1172,15 +1172,15 @@
     "frontLeft": [
       {
         "wheel": "rl",
-        "x": 732,
-        "y": 280,
-        "radius": 63
+        "x": 1680,
+        "y": 630,
+        "radius": 52
       },
       {
         "wheel": "fl",
-        "x": 922,
-        "y": 270,
-        "radius": 55
+        "x": 1850,
+        "y": 637,
+        "radius": 59
       }
     ]
   },
