@@ -2456,6 +2456,34 @@
       "heightM": 22,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-mn-minneapolis-institute-of-art",
+      "source": "landmarks/MN/landmark-city-mn-minneapolis-institute-of-art.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mn-walker-art-center",
+      "source": "landmarks/MN/landmark-city-mn-walker-art-center.png",
+      "heightM": 25,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mn-basilica-of-saint-mary",
+      "source": "landmarks/MN/landmark-city-mn-basilica-of-saint-mary.png",
+      "heightM": 40,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mn-guthrie-theater",
+      "source": "landmarks/MN/landmark-city-mn-guthrie-theater.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

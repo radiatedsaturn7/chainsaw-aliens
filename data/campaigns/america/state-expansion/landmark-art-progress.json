@@ -3790,35 +3790,499 @@
     },
     "landmark-city-mn-minneapolis-institute-of-art": {
       "raceRef": "Minneapolis, MN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -326.6694924547779,
+        "worldZ": 1726.1813060371232,
+        "routeDistanceM": 2188,
+        "offsetFromRoadM": 125,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.4414751894574065,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 10.361776611459888,
+            "angularWidthDegrees": 23.511208461431384,
+            "rangeM": 158.26670514104788,
+            "occluderIds": [],
+            "score": 0.5855289355416045
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 9.277816566276602,
+            "angularWidthDegrees": 20.969164960349637,
+            "rangeM": 177.97224015992273,
+            "occluderIds": [],
+            "score": 0.6288873373489359
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.343469696881675,
+            "angularWidthDegrees": 18.913096361328595,
+            "rangeM": 197.73691676878772,
+            "occluderIds": [
+              "city-mn-prop-132",
+              "city-mn-prop-133",
+              "city-mn-prop-134"
+            ],
+            "score": 0.07995134545496796
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.57909606670192,
+            "angularWidthDegrees": 17.218097011954068,
+            "rangeM": 217.5446159142051,
+            "occluderIds": [
+              "city-mn-prop-132",
+              "city-mn-prop-133",
+              "city-mn-prop-134"
+            ],
+            "score": 0.08362033887983078
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.662366406674016,
+            "angularWidthDegrees": 15.171278444479508,
+            "rangeM": 247.31421419463476,
+            "occluderIds": [
+              "city-mn-prop-132",
+              "city-mn-prop-133",
+              "city-mn-prop-134"
+            ],
+            "score": 0.08802064124796473
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.736126878311919,
+            "angularWidthDegrees": 13.089381156954387,
+            "rangeM": 287.0816502475555,
+            "occluderIds": [
+              "city-mn-prop-132",
+              "city-mn-prop-133",
+              "city-mn-prop-134"
+            ],
+            "score": 0.09246659098410279
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 78.48212748832339,
+            "angularWidthDegrees": 11.641315959096172,
+            "rangeM": 323.0869673247519,
+            "occluderIds": [
+              "city-mn-prop-126",
+              "city-mn-prop-128",
+              "city-mn-prop-130",
+              "city-mn-prop-132",
+              "city-mn-prop-134"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 84.50965240624737,
+            "angularWidthDegrees": 11.59076029816137,
+            "rangeM": 324.50590400553284,
+            "occluderIds": [
+              "city-mn-prop-120",
+              "city-mn-prop-135",
+              "city-mn-prop-136"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "089691fb5e8fb32a955baadcb128db11ef5821475e333c3ecca07c07db3ed823",
+      "sourceSha256": "21cb08b2af7ff7ece6ca298c22b2f33e55fa74a0072a3f14a654a57f1b31b59a",
+      "roadSha256": "7fda6a6665076aba71fe7c1f6ee8018e870be6f7d2780e46ea4be148a919acd8",
+      "placementDetails": {
+        "x": -444.4080858332596,
+        "z": 1322.37937111529,
+        "yaw": -3.0176448097499566,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2398.2291419204466,
+        "trackLateral": 135.00000000000009,
+        "minimumRoadClearanceM": 89.90863645735399,
+        "checkedSegments": 5738,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MN/minneapolis-institute-of-art-desktop.png",
+        "docs/art/landmark-previews/MN/minneapolis-institute-of-art-mobile.png"
+      ]
     },
     "landmark-city-mn-walker-art-center": {
       "raceRef": "Minneapolis, MN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -1476.1169234766548,
+        "worldZ": 666.8702546842441,
+        "routeDistanceM": 3958,
+        "offsetFromRoadM": 94,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.973985467235199,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 47.33173642121102,
+            "angularWidthDegrees": 39.82891090466548,
+            "rangeM": 81.03613650558357,
+            "occluderIds": [
+              "city-mn-prop-223"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 27.357542232132474,
+            "angularWidthDegrees": 33.58629746805953,
+            "rangeM": 97.2797577834242,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 13.508595234343908,
+            "angularWidthDegrees": 28.363695446105552,
+            "rangeM": 116.17564731033073,
+            "occluderIds": [],
+            "score": 0.45965619062624374
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.8659849626293209,
+            "angularWidthDegrees": 24.37540432946495,
+            "rangeM": 135.92643503639098,
+            "occluderIds": [],
+            "score": 0.9653606014948272
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.585503312820513,
+            "angularWidthDegrees": 20.071096990360903,
+            "rangeM": 165.89440284064995,
+            "occluderIds": [],
+            "score": 0.8965798674871794
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.315279809326295,
+            "angularWidthDegrees": 16.231479908108934,
+            "rangeM": 205.87319163441148,
+            "occluderIds": [],
+            "score": 0.7873888076269482
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 32.9610524172204,
+            "angularWidthDegrees": 13.866154921060206,
+            "rangeM": 241.43104294675376,
+            "occluderIds": [
+              "city-mn-prop-215",
+              "city-mn-prop-217",
+              "city-mn-prop-219",
+              "city-mn-prop-221"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 27.477724450950838,
+            "angularWidthDegrees": 11.77545823798525,
+            "rangeM": 284.6858262019684,
+            "occluderIds": [
+              "city-mn-prop-211",
+              "city-mn-prop-215",
+              "city-mn-prop-217",
+              "city-mn-prop-219",
+              "city-mn-prop-221"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "c2b26fe9018700aa6c6c12d6d3510b95a2deaa82033df654fa301f2b362e9ef0",
+      "sourceSha256": "16b75d4dbc0b26feb5ead9101eb067d6cd74a5cdfc29c3e3fa18fbaf4a591dcd",
+      "roadSha256": "7fda6a6665076aba71fe7c1f6ee8018e870be6f7d2780e46ea4be148a919acd8",
+      "placementDetails": {
+        "x": -1612.056475725834,
+        "z": 755.2445949890316,
+        "yaw": -1.6330654866281726,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3988.5937208310147,
+        "trackLateral": -64.94990737568142,
+        "minimumRoadClearanceM": 24.15944049811425,
+        "checkedSegments": 5738,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MN/walker-art-center-desktop.png",
+        "docs/art/landmark-previews/MN/walker-art-center-mobile.png"
+      ]
     },
     "landmark-city-mn-basilica-of-saint-mary": {
       "raceRef": "Minneapolis, MN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -1279.9169985871727,
+        "worldZ": 110.39447565571744,
+        "routeDistanceM": 4861,
+        "offsetFromRoadM": 65,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.7478993857155292,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 50.29298232129905,
+            "angularWidthDegrees": 28.935459966767276,
+            "rangeM": 116.38516318668465,
+            "occluderIds": [
+              "city-mn-prop-267"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 32.55764598937555,
+            "angularWidthDegrees": 25.721508694037386,
+            "rangeM": 131.52885527856745,
+            "occluderIds": [
+              "city-mn-prop-267"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 22.6846733451707,
+            "angularWidthDegrees": 22.732892352983097,
+            "rangeM": 149.38030145024197,
+            "occluderIds": [
+              "city-mn-prop-267"
+            ],
+            "score": 0.011113567943180639
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 19.350916431164325,
+            "angularWidthDegrees": 20.265714737063256,
+            "rangeM": 168.02550236934292,
+            "occluderIds": [
+              "city-mn-prop-265",
+              "city-mn-prop-267"
+            ],
+            "score": 0.02711560113041124
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 9.672213213798306,
+            "angularWidthDegrees": 17.317503111111744,
+            "rangeM": 197.19186966863305,
+            "occluderIds": [],
+            "score": 0.6131114714480678
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 8.262620391654202,
+            "angularWidthDegrees": 14.459342691773909,
+            "rangeM": 236.7206466537903,
+            "occluderIds": [
+              "city-mn-prop-263"
+            ],
+            "score": 0.08033942212005983
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 15.796643321556099,
+            "angularWidthDegrees": 12.425957969600434,
+            "rangeM": 275.84264736357466,
+            "occluderIds": [
+              "city-mn-prop-263"
+            ],
+            "score": 0.04417611205653073
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 18.32433103806686,
+            "angularWidthDegrees": 10.628649107173796,
+            "rangeM": 322.8287581886936,
+            "occluderIds": [
+              "city-mn-prop-257",
+              "city-mn-prop-259",
+              "city-mn-prop-261",
+              "city-mn-prop-263"
+            ],
+            "score": 0.03204321101727907
+          }
+        ],
+        "sourceDistanceShiftM": -60
+      },
+      "signature": "4ac13dbf93cb14e0e31edf1951895e4eaaecf8eff7beff42f6559c963cd24130",
+      "sourceSha256": "877e6820362d3fca43c3a84663d27dc5c98df6fe20c2bce044d1290718832bc1",
+      "roadSha256": "7fda6a6665076aba71fe7c1f6ee8018e870be6f7d2780e46ea4be148a919acd8",
+      "placementDetails": {
+        "x": -1363.2149078367872,
+        "z": 126.76846559182182,
+        "yaw": -2.9378903461686163,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4802.426246691273,
+        "trackLateral": -104.99989074540261,
+        "minimumRoadClearanceM": 63.40219324717563,
+        "checkedSegments": 5738,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MN/basilica-of-saint-mary-desktop.png",
+        "docs/art/landmark-previews/MN/basilica-of-saint-mary-mobile.png"
+      ]
     },
     "landmark-city-mn-guthrie-theater": {
       "raceRef": "Minneapolis, MN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1139.1033166265868,
+        "worldZ": -469.92152857536666,
+        "routeDistanceM": 7770,
+        "offsetFromRoadM": 75,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.0802300671932452,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 63.615846359992204,
+            "angularWidthDegrees": 38.41911709394964,
+            "rangeM": 100.35434494226384,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 3.894588841946269,
+            "angularWidthDegrees": 34.20214865633277,
+            "rangeM": 113.65070102683092,
+            "occluderIds": [],
+            "score": 0.8442164463221492
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 29.37145787452207,
+            "angularWidthDegrees": 29.823271191355598,
+            "rangeM": 131.30402283983418,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 25.60834719649456,
+            "angularWidthDegrees": 26.403948553399637,
+            "rangeM": 149.05457523925193,
+            "occluderIds": [
+              "city-mn-prop-431"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 21.39734914516249,
+            "angularWidthDegrees": 22.40075019031724,
+            "rangeM": 176.58439771933485,
+            "occluderIds": [],
+            "score": 0.14410603419350043
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 17.493061033309072,
+            "angularWidthDegrees": 18.531692833004133,
+            "rangeM": 214.3247525034023,
+            "occluderIds": [
+              "city-mn-prop-429"
+            ],
+            "score": 0.03603330704011646
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 14.766521622694084,
+            "angularWidthDegrees": 15.75211837715489,
+            "rangeM": 252.76106553577316,
+            "occluderIds": [
+              "city-mn-prop-429",
+              "city-mn-prop-435"
+            ],
+            "score": 0.04912069621106839
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 12.343003452831061,
+            "angularWidthDegrees": 13.235672093934259,
+            "rangeM": 301.3793067927888,
+            "occluderIds": [
+              "city-mn-prop-423",
+              "city-mn-prop-429"
+            ],
+            "score": 0.060753583426410906
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "8c0a33429c9e0317305063cc85151bfeefa7d1632e356516bc995544845bff37",
+      "sourceSha256": "057a018a7d9dc423935078692f2fc67da7bea954707e7487b69f8bfb438f664d",
+      "roadSha256": "7fda6a6665076aba71fe7c1f6ee8018e870be6f7d2780e46ea4be148a919acd8",
+      "placementDetails": {
+        "x": 1112.7993273562392,
+        "z": -359.28379212682194,
+        "yaw": 0.5853807600381241,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 7830.604162091054,
+        "trackLateral": -89.99999999999986,
+        "minimumRoadClearanceM": 42.46819320572288,
+        "checkedSegments": 5738,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Native desktop175 shows distinctive cantilevered bridge; foreground/HUD or authored skyline merge with the bridge in handheld. Find cleaner safe approach before pass."
+      ],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MN/guthrie-theater-desktop.png"
+      ]
     },
     "landmark-city-mo-old-courthouse": {
       "raceRef": "St. Louis, MO — Landmark Run",

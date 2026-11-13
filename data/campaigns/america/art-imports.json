@@ -1874,5 +1874,33 @@
     "documentSha256": "d1bd51e7776252eee4045c9ce73482dd58915849b60a9eac32aea61fd470abb4",
     "width": 512,
     "height": 213
+  },
+  "landmark-city-mn-minneapolis-institute-of-art": {
+    "source": "assets/campaign-art/landmarks/MN/landmark-city-mn-minneapolis-institute-of-art.png",
+    "sourceSha256": "21cb08b2af7ff7ece6ca298c22b2f33e55fa74a0072a3f14a654a57f1b31b59a",
+    "documentSha256": "a03c4c41d2898b01ce0348db40606f6a6af5c1481d4a1bc0a45d98b9485a864c",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-mn-walker-art-center": {
+    "source": "assets/campaign-art/landmarks/MN/landmark-city-mn-walker-art-center.png",
+    "sourceSha256": "16b75d4dbc0b26feb5ead9101eb067d6cd74a5cdfc29c3e3fa18fbaf4a591dcd",
+    "documentSha256": "bbc0eb372bb53db036a03aea989bef27a705cc6b2518b2feb1cf75a540fc5ff5",
+    "width": 512,
+    "height": 218
+  },
+  "landmark-city-mn-basilica-of-saint-mary": {
+    "source": "assets/campaign-art/landmarks/MN/landmark-city-mn-basilica-of-saint-mary.png",
+    "sourceSha256": "877e6820362d3fca43c3a84663d27dc5c98df6fe20c2bce044d1290718832bc1",
+    "documentSha256": "97912017f6a9e43b3e75dde97c957a959b5eb17810151bf9c4a0e794e517440d",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-mn-guthrie-theater": {
+    "source": "assets/campaign-art/landmarks/MN/landmark-city-mn-guthrie-theater.png",
+    "sourceSha256": "057a018a7d9dc423935078692f2fc67da7bea954707e7487b69f8bfb438f664d",
+    "documentSha256": "95b06984157542d645610a112b344a9459e30e7c6e8c6a57054f725b48e9d017",
+    "width": 512,
+    "height": 205
   }
 }

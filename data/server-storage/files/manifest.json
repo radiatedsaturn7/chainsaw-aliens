@@ -564,7 +564,11 @@
       "landmark-city-ks-old-cowtown-museum": "art/landmark-city-ks-old-cowtown-museum/document.json",
       "landmark-city-ks-exploration-place": "art/landmark-city-ks-exploration-place/document.json",
       "landmark-city-ks-orpheum-theatre": "art/landmark-city-ks-orpheum-theatre/document.json",
-      "landmark-city-ks-union-station": "art/landmark-city-ks-union-station/document.json"
+      "landmark-city-ks-union-station": "art/landmark-city-ks-union-station/document.json",
+      "landmark-city-mn-minneapolis-institute-of-art": "art/landmark-city-mn-minneapolis-institute-of-art/document.json",
+      "landmark-city-mn-walker-art-center": "art/landmark-city-mn-walker-art-center/document.json",
+      "landmark-city-mn-basilica-of-saint-mary": "art/landmark-city-mn-basilica-of-saint-mary/document.json",
+      "landmark-city-mn-guthrie-theater": "art/landmark-city-mn-guthrie-theater/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -864,7 +868,11 @@
       "landmark-city-ks-old-cowtown-museum": "doodads/landmark-city-ks-old-cowtown-museum/document.json",
       "landmark-city-ks-exploration-place": "doodads/landmark-city-ks-exploration-place/document.json",
       "landmark-city-ks-orpheum-theatre": "doodads/landmark-city-ks-orpheum-theatre/document.json",
-      "landmark-city-ks-union-station": "doodads/landmark-city-ks-union-station/document.json"
+      "landmark-city-ks-union-station": "doodads/landmark-city-ks-union-station/document.json",
+      "landmark-city-mn-minneapolis-institute-of-art": "doodads/landmark-city-mn-minneapolis-institute-of-art/document.json",
+      "landmark-city-mn-walker-art-center": "doodads/landmark-city-mn-walker-art-center/document.json",
+      "landmark-city-mn-basilica-of-saint-mary": "doodads/landmark-city-mn-basilica-of-saint-mary/document.json",
+      "landmark-city-mn-guthrie-theater": "doodads/landmark-city-mn-guthrie-theater/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",
