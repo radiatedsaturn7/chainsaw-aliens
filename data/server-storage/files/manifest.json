@@ -454,7 +454,9 @@
       "catalog-copperwing-2004-body": "art/catalog-copperwing-2004-body/document.json",
       "catalog-copperwing-2004-dashboard": "art/catalog-copperwing-2004-dashboard/document.json",
       "catalog-sunmallow-2006-body": "art/catalog-sunmallow-2006-body/document.json",
-      "catalog-sunmallow-2006-dashboard": "art/catalog-sunmallow-2006-dashboard/document.json"
+      "catalog-sunmallow-2006-dashboard": "art/catalog-sunmallow-2006-dashboard/document.json",
+      "catalog-cubby-2014-body": "art/catalog-cubby-2014-body/document.json",
+      "catalog-cubby-2014-dashboard": "art/catalog-cubby-2014-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -500,7 +502,8 @@
       "Podmoss 2005": "cars/Podmoss 2005/document.json",
       "Dewskipper 2004": "cars/Dewskipper 2004/document.json",
       "Copperwing 2004": "cars/Copperwing 2004/document.json",
-      "Sunmallow 2006": "cars/Sunmallow 2006/document.json"
+      "Sunmallow 2006": "cars/Sunmallow 2006/document.json",
+      "Cubby 1.8 2014": "cars/Cubby 1.8 2014/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
