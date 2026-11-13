@@ -306,5 +306,81 @@
     "allowOppositeSide": true,
     "facingApproachBeforeM": 105,
     "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-fl-historymiami-museum": {
+    "reason": "Miami daytime safe approach shortlist. Compact silhouette game scales, not survey measurements; original road and lighting preserved.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-fl-olympia-theater": {
+    "reason": "Miami daytime safe approach shortlist. Compact silhouette game scales, not survey measurements; original road and lighting preserved.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-fl-adrienne-arsht-center": {
+    "reason": "Miami daytime safe approach shortlist. Compact silhouette game scales, not survey measurements; original road and lighting preserved.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
+  },
+  "landmark-city-fl-freedom-tower": {
+    "reason": "Miami daytime safe approach shortlist. Compact silhouette game scales, not survey measurements; original road and lighting preserved.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "occlusionWidthFactor": 0.6
   }
 }

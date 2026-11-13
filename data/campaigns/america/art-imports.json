@@ -1650,5 +1650,33 @@
     "documentSha256": "0056cd091de6c85def334f74ab311615ecf69a05697ee3dc9630b5ce7365ce2b",
     "width": 512,
     "height": 450
+  },
+  "landmark-city-fl-historymiami-museum": {
+    "source": "assets/campaign-art/landmarks/FL/landmark-city-fl-historymiami-museum.png",
+    "sourceSha256": "924db36931a40229f15219a2b9c44e8541bd05b6035fdb482ef50e569b8f3672",
+    "documentSha256": "3c2d58bfa31db425ac7a550008e711e8b804a4fa6a54fc78c85dcb1015b4580e",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-fl-olympia-theater": {
+    "source": "assets/campaign-art/landmarks/FL/landmark-city-fl-olympia-theater.png",
+    "sourceSha256": "98dc36f62c65dd5433fbca781dd16341cb66d22691ab5bccf56ce37574b5e4f8",
+    "documentSha256": "d7b2802960aa68d3479e38a794b8e9598117003a47d972b6b36a1cae00a33da1",
+    "width": 468,
+    "height": 512
+  },
+  "landmark-city-fl-adrienne-arsht-center": {
+    "source": "assets/campaign-art/landmarks/FL/landmark-city-fl-adrienne-arsht-center.png",
+    "sourceSha256": "391293111d4b65c908fedcd551a3e63da6998b1a9c1fa777349ed90be1295b43",
+    "documentSha256": "65e7d2d8ee80896c0ee2887ced6ed5fb6a4bca2458f365ae07f742800d2d6d7c",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-fl-freedom-tower": {
+    "source": "assets/campaign-art/landmarks/FL/landmark-city-fl-freedom-tower.png",
+    "sourceSha256": "6519f44495b6926973f4e221f673f213eafaa44d29249548ac4b23ab0097dde6",
+    "documentSha256": "1cf6f1ac5451cb7446b92e9d1c379551ec900cd512805df6934807679f4ae5e2",
+    "width": 341,
+    "height": 512
   }
 }

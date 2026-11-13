@@ -2232,6 +2232,34 @@
       "heightM": 22,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-fl-historymiami-museum",
+      "source": "landmarks/FL/landmark-city-fl-historymiami-museum.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-fl-olympia-theater",
+      "source": "landmarks/FL/landmark-city-fl-olympia-theater.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-fl-adrienne-arsht-center",
+      "source": "landmarks/FL/landmark-city-fl-adrienne-arsht-center.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-fl-freedom-tower",
+      "source": "landmarks/FL/landmark-city-fl-freedom-tower.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
