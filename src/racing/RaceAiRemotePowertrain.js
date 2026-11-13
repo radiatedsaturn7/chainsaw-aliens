@@ -1,3 +1,4 @@
+import { tireSizeForWheel } from './TireSizes.js';
 import {clamp,RACE_WHEEL_IDS} from './simulation/SimulationMath.js';
 import {getRaceServiceBrakeForceN} from './simulation/RaceSimulationConfig.js';
 import {planRaceAiControls} from './RaceAiControls.js';
@@ -7,7 +8,7 @@ import {planRaceAiControls} from './RaceAiControls.js';
 // only supplies longitudinal forces to the existing swept, terrain-following
 // distant chassis; obstacles and traffic still promote detailed physics.
 export function useRaceAiRemotePowertrain(ai, session, tuning = {}) {
-  return !tuning.cvt && tuning.powertrainType !== 'electric' && session?.debugAiDetailedLongitudinal !== true
+  return !tuning.wheelRadiusByWheelM && !tuning.cvt && tuning.powertrainType !== 'electric' && session?.debugAiDetailedLongitudinal !== true
     && (ai.physicsBudgetDetail === 'cheap' || Math.hypot(ai.worldX-session.worldX,ai.worldZ-session.worldZ)>120);
 }
 const scratchByCar=new WeakMap();
@@ -43,7 +44,7 @@ export function stepRaceAiRemotePowertrain(editor,ai,{car,tuning,contactState,pr
     snow+=Number(contact.snowDepthInches??weather.snowDepthInches??0);
     const pressure=editor.getRaceTirePressureDynamics({pressurePsi:setup.tirePressurePsi[id],
       compoundId:editor.getRaceTireCompound(setup.tireCompoundByWheel[id],car).id,
-      surfaceId:surface,tireSize:setup.tireSize,temperatureF:temperature});
+      surfaceId:surface,tireSize:tireSizeForWheel(setup, id),temperatureF:temperature});
     pressureRolling+=Number(pressure.rollingMultiplier||1);
     records.temperature[id]=editor.getRaceUpdatedTireTemperature({previousTemperatureF:temperature,
       seconds:dt,speedMps:speed,loadRatio:1,slip:Number(ai.engineDrive?.tireSlipByWheel?.[id]||0),pressureDynamics:pressure,handbrake:0,

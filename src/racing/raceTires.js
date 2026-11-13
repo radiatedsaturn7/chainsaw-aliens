@@ -63,6 +63,7 @@ export function applyTireDefinition(car, definition, ref = '') {
   car.setup.defaultTireCompound=tire.baseCompound;
   car.setup.tireCompoundByWheel=Object.fromEntries(['fl','fr','rl','rr'].map(w=>[w,tire.baseCompound]));
   car.setup.tireSize=copy(tire.size);
+  delete car.setup.tireSizeByAxle;
   car.setup.tirePressurePsi=Object.fromEntries(['fl','fr','rl','rr'].map(w=>[w,tire.pressurePsi]));
   car.art ||= {};
   for(const key of ['tireSurfaces','tireTreads','tires']) {

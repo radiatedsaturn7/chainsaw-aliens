@@ -1,0 +1,33 @@
+name: Staggered tire validation
+on:
+  pull_request:
+    branches: [staging, main]
+    paths:
+      - 'src/racing/**'
+      - 'src/garage/**'
+      - 'src/ui/RaceEditor.js'
+      - 'tests/unit/staggeredTires.test.js'
+      - 'tests/playwright/staggered-tires-editor.spec.js'
+      - '.github/workflows/staggered-tires.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  axle-tires:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node --test tests/unit/staggeredTires.test.js tests/unit/contactPatchTireModel.test.js tests/unit/tireGripSettings.test.js tests/unit/raceTires.test.js tests/unit/vehicleRenderState.test.js tests/unit/raceAiRemotePowertrain.test.js tests/unit/raceAiDistantPhysics.test.js tests/unit/vehicleDynamicsReplay.test.js
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/playwright/staggered-tires-editor.spec.js --workers=1 --reporter=line
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: staggered-tires-editor
+          path: test-results
