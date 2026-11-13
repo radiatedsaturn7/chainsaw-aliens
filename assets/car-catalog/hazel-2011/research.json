@@ -1,0 +1,90 @@
+{
+  "fictionalName": "Hazel S 2011",
+  "reference": "US2011 Suzuki Kizashi S FWD6MT LHD standard sedan, noSport/AWD/CVT",
+  "status": "Source backlog: exact US individual gearbox ratios remain unverified; do not call proposed global6MT gearing USverified",
+  "duplicateCheck": "No Kizashi reference found in implemented research.json or shared car-next source packets; Suzuki kei models are distinct.",
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Suzuki/Kizashi/Suzuki_US%20Kizashi_2011.pdf",
+      "type": "Exact OEM US2011 brochure independent archive",
+      "local": "oem-us-brochure.pdf",
+      "verification": "Actual physicalpages30and31 rendered and visually inspected; confirms185hpMT/170lbft,6MTFWD,S16inchtires,dimensions,fuel. No mass or individual gearing."
+    },
+    {
+      "url": "https://www.caranddriver.com/suzuki/kizashi/specs/2011/suzuki_kizashi_suzuki-kizashi_2011",
+      "type": "Exact US2011Smanual secondaryspecdatabase",
+      "verification": "Full table read: powerRPM6500,torqueRPM4000,curb3241lb,final4.12. Individual ratiosNA."
+    },
+    {
+      "url": "https://www.australiancar.reviews/_pdfs/Suzuki_Kizashi_FRI_Specifications_201102.pdf",
+      "type": "Australian2011 OEM specs archive search excerpt only",
+      "verification": "PDF403blocked; excerpt lists proposed6MT ratios, not USverification"
+    },
+    {
+      "url": "https://autocatalogarchive.com/wp-content/uploads/2021/11/Suzuki-Kizashi-2011-ZA.pdf",
+      "type": "SouthAfrican2011OEMbrochure search excerpt only",
+      "verification": "Retrievalblocked; do not mix131kWcalibration with US185hp"
+    }
+  ],
+  "engine": {
+    "layout": "NA gasoline DOHC16V inline4",
+    "displacementLitres": 2.4,
+    "displacementCcProposed": 2393,
+    "displacementCcStatus": "Globalmodel fact, not stated in inspectedUSbrochure",
+    "powerHp": 185,
+    "powerRpm": 6500,
+    "torqueLbFt": 170,
+    "torqueRpm": 4000,
+    "rpmProvenance": "ExactUSsecondary; peakmagnitudesOEMbrochure",
+    "redlineRpm": null,
+    "fuelCutRpm": null,
+    "idleRpm": null
+  },
+  "transmission": {
+    "type": "6MTFWD",
+    "proposedForward": [
+      3.615,
+      2.047,
+      1.379,
+      1.029,
+      0.837,
+      0.707
+    ],
+    "proposedReverse": 3.481,
+    "proposedFinal": 4.117,
+    "status": "Global2011manual OEMsearchtable; exactUSfinalsecondary4.12roundedcorroborates but physicalforwardratiosnotUSverified. Treatcarryoverinferenceifused,otherwisehold."
+  },
+  "mass": {
+    "curbLb": 3241,
+    "curbKgCalculated": 1470.093,
+    "provenance": "ExactUS2011Smanual secondarydatabase only; fuel/driverconventionunknown"
+  },
+  "dimensionsInches": {
+    "wheelbase": 106.3,
+    "length": 183.1,
+    "width": 71.7,
+    "height": 58.3,
+    "provenance": "ExactOEMUSbrochure"
+  },
+  "tires": {
+    "front": "215/60R16",
+    "rear": "215/60R16",
+    "wheel": "16inchsteelwithcovers",
+    "nominalRadiusM": 0.3322,
+    "provenance": "OEMUS Scolumn actualpage30; not18inchSport"
+  },
+  "fuelUsGal": 16.6,
+  "fuelLitresCalculated": 62.8378,
+  "unknowns": [
+    "ExactUSphysicalforward/reversegearverification",
+    "PrimaryexactUSmass andmassconvention",
+    "Compression/borestroke/redline/cutoff/idle/fulltorquecurve",
+    "Frontweightfraction,CGheight,inertia,differential,springrates,Cd/frontalarea"
+  ],
+  "implementationNotes": [
+    "Preserve185hpmanual versus180hpCVT",
+    "OrdinaryScloth/noSportbodykit/no18inch/noAWD",
+    "Fixedrear/sharedwheel/individuallyfittedLHDgauges; original2994art only",
+    "Source-onlytask: noart/code/maps changed"
+  ]
+}
