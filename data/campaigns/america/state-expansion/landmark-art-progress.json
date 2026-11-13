@@ -5325,35 +5325,482 @@
     },
     "landmark-city-ne-joslyn-art-museum": {
       "raceRef": "Omaha, NE — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -587.1497152735668,
+        "worldZ": -379.7756770297764,
+        "routeDistanceM": 598,
+        "offsetFromRoadM": 157,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.5805661376889928,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 58.017558790160074,
+            "angularWidthDegrees": 20.2902562356228,
+            "rangeM": 139.57543281076573,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 50.04055142894982,
+            "angularWidthDegrees": 18.721830418107974,
+            "rangeM": 151.50676244683316,
+            "occluderIds": [
+              "city-ne-prop-20"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 44.758292781360424,
+            "angularWidthDegrees": 17.208051783488436,
+            "rangeM": 165.06507843039395,
+            "occluderIds": [
+              "city-ne-prop-20"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 52.03121485477219,
+            "angularWidthDegrees": 15.880594525506044,
+            "rangeM": 179.06435634366755,
+            "occluderIds": [
+              "city-ne-prop-19"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.371859660241416,
+            "angularWidthDegrees": 14.343365070790046,
+            "rangeM": 198.4912009689078,
+            "occluderIds": [],
+            "score": 0.6651256135903434
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 50.53266343127125,
+            "angularWidthDegrees": 12.365317966569352,
+            "rangeM": 230.55428107039376,
+            "occluderIds": [
+              "city-ne-prop-16"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 44.991986006421044,
+            "angularWidthDegrees": 11.095490416828309,
+            "rangeM": 257.135492571183,
+            "occluderIds": [
+              "city-ne-prop-14"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 24.699890812781366,
+            "angularWidthDegrees": 9.64574989154068,
+            "rangeM": 296.0092685615734,
+            "occluderIds": [
+              "city-ne-prop-12"
+            ],
+            "score": 0.0014405240986494405
+          }
+        ],
+        "sourceDistanceShiftM": -120
+      },
+      "signature": "6d1773e32d84201ed161f4081d777f6bbac8e41905216e120bd952bd625497ad",
+      "sourceSha256": "a4fb6b0f418a1d18e5b00bd8fe40cbfdc340e7b749c5c54cd149de763b50c90d",
+      "roadSha256": "6595bfba42786467c1d944ed146a433cf8eb1d606ed711ac5dbc2fb3fa626724",
+      "placementDetails": {
+        "x": -803.9530277193548,
+        "z": -625.1350683147128,
+        "yaw": -0.9092567747259513,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 477.8259504272588,
+        "trackLateral": 124.99860975414889,
+        "minimumRoadClearanceM": 89.47675617939007,
+        "checkedSegments": 4120,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NE/joslyn-art-museum-desktop.png",
+        "docs/art/landmark-previews/NE/joslyn-art-museum-mobile.png"
+      ]
     },
     "landmark-city-ne-lewis-and-clark-landing": {
       "raceRef": "Omaha, NE — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1209.3328083466697,
+        "worldZ": -534.2256434745086,
+        "routeDistanceM": 2815,
+        "offsetFromRoadM": 255,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.7201880564145906,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 22.869034886115326,
+            "angularWidthDegrees": 16.66714113854305,
+            "rangeM": 71.75090801727731,
+            "occluderIds": [
+              "city-ne-prop-143"
+            ],
+            "score": 0.010228632546646441
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 7.227894641183528,
+            "angularWidthDegrees": 13.166314668236653,
+            "rangeM": 91.0720260730401,
+            "occluderIds": [
+              "city-ne-prop-143"
+            ],
+            "score": 0.08530610572231907
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.692096581203266,
+            "angularWidthDegrees": 10.815919526980469,
+            "rangeM": 111.02235286150211,
+            "occluderIds": [
+              "city-ne-prop-141",
+              "city-ne-prop-143"
+            ],
+            "score": 0.11667793641022432
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.41385977582663946,
+            "angularWidthDegrees": 9.17263107493891,
+            "rangeM": 131.02174117710848,
+            "occluderIds": [
+              "city-ne-prop-141",
+              "city-ne-prop-143"
+            ],
+            "score": 0.11801347307603213
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.3367537893040597,
+            "angularWidthDegrees": 7.469091786711643,
+            "rangeM": 161.0211104416715,
+            "occluderIds": [
+              "city-ne-prop-141",
+              "city-ne-prop-143"
+            ],
+            "score": 0.11838358181134051
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.7961982962377847,
+            "angularWidthDegrees": 5.985914221250738,
+            "rangeM": 201.02056512778248,
+            "occluderIds": [
+              "city-ne-prop-141",
+              "city-ne-prop-143"
+            ],
+            "score": 0.11590550466150647
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 1.2568422231965106,
+            "angularWidthDegrees": 5.003669303202984,
+            "rangeM": 240.54786778033633,
+            "occluderIds": [
+              "city-ne-prop-141",
+              "city-ne-prop-143"
+            ],
+            "score": 0.09504232778311747
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 1.2796769981504357,
+            "angularWidthDegrees": 4.143624772588103,
+            "rangeM": 290.5336802343824,
+            "occluderIds": [
+              "city-ne-prop-141",
+              "city-ne-prop-143"
+            ],
+            "score": 0.07863049440340418
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "94ef003b31794f6ee316af4170e9b2b54e7a664fc46db524e629ece50a00047e",
+      "sourceSha256": "f74d1eab2ee20639fba9dd17294a48b4f1c56e4649ddccbdbedd76dd02dd1243",
+      "roadSha256": "6595bfba42786467c1d944ed146a433cf8eb1d606ed711ac5dbc2fb3fa626724",
+      "placementDetails": {
+        "x": 1051.059475395019,
+        "z": -395.41269961074397,
+        "yaw": 1.5666899208581675,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2813.7609022466754,
+        "trackLateral": -44.88358017838374,
+        "minimumRoadClearanceM": 28.35717441027544,
+        "checkedSegments": 4120,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ne-durham-museum": {
       "raceRef": "Omaha, NE — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 911.1603945678095,
+        "worldZ": 622.8926004523023,
+        "routeDistanceM": 4029,
+        "offsetFromRoadM": 99,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.6663311361445772,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 12.32418090756923,
+            "angularWidthDegrees": 34.30720096730539,
+            "rangeM": 116.40413331919369,
+            "occluderIds": [],
+            "score": 0.5070327636972307
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 10.958052084048129,
+            "angularWidthDegrees": 29.602405744520397,
+            "rangeM": 135.97736881153256,
+            "occluderIds": [
+              "city-ne-prop-199"
+            ],
+            "score": 0.06740134999656898
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 9.507536387419533,
+            "angularWidthDegrees": 25.995163849263548,
+            "rangeM": 155.65913955831272,
+            "occluderIds": [
+              "city-ne-prop-199"
+            ],
+            "score": 0.07436382534038624
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.1389172686684874,
+            "angularWidthDegrees": 23.142588975079217,
+            "rangeM": 175.4827603454951,
+            "occluderIds": [
+              "city-ne-prop-199"
+            ],
+            "score": 0.11453319711039125
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 74.77749624575371,
+            "angularWidthDegrees": 20.84185312948436,
+            "rangeM": 195.36431596442677,
+            "occluderIds": [
+              "city-ne-prop-191",
+              "city-ne-prop-193",
+              "city-ne-prop-195"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 64.46060139643924,
+            "angularWidthDegrees": 19.486507988270162,
+            "rangeM": 209.24686983063557,
+            "occluderIds": [
+              "city-ne-prop-189",
+              "city-ne-prop-197"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 55.40662936001348,
+            "angularWidthDegrees": 17.80712885797744,
+            "rangeM": 229.34971203739516,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 46.333223492230154,
+            "angularWidthDegrees": 15.67620970803636,
+            "rangeM": 261.0030451572315,
+            "occluderIds": [
+              "city-ne-prop-185"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "1581b0e2a87c5a077a36ae56e8b684e27b92a343fabf74bda4999dff653f3119",
+      "sourceSha256": "4425a4333c5e7ef5ac5179c4a3d29951f844795c7528ee17c6059d7a5e5a65fe",
+      "roadSha256": "6595bfba42786467c1d944ed146a433cf8eb1d606ed711ac5dbc2fb3fa626724",
+      "placementDetails": {
+        "x": 1002.893253654166,
+        "z": 325.02153787723483,
+        "yaw": 1.3933415090687074,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3816.9019376335787,
+        "trackLateral": -84.99856662072344,
+        "minimumRoadClearanceM": 36.30798821056404,
+        "checkedSegments": 4120,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NE/durham-museum-desktop.png",
+        "docs/art/landmark-previews/NE/durham-museum-mobile.png"
+      ]
     },
     "landmark-city-ne-orpheum-theater": {
       "raceRef": "Omaha, NE — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 225.95734557948833,
+        "worldZ": 93.03692363147367,
+        "routeDistanceM": 5093,
+        "offsetFromRoadM": 36,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 6.201206073858932,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 3.0843053187170986,
+            "angularWidthDegrees": 10.898217569835287,
+            "rangeM": 160.55991817546584,
+            "occluderIds": [],
+            "score": 0.8766277872513161
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 2.742781606803689,
+            "angularWidthDegrees": 9.698546838348168,
+            "rangeM": 180.5341583356388,
+            "occluderIds": [],
+            "score": 0.8902887357278524
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 2.4693092809919195,
+            "angularWidthDegrees": 8.736119182916164,
+            "rangeM": 200.5135348334721,
+            "occluderIds": [],
+            "score": 0.9012276287603233
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 2.2454009628754417,
+            "angularWidthDegrees": 7.9470461350410675,
+            "rangeM": 220.49665145049835,
+            "occluderIds": [],
+            "score": 0.9101839614849824
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 1.9765331038491536,
+            "angularWidthDegrees": 6.998380841015045,
+            "rangeM": 250.47638088771365,
+            "occluderIds": [],
+            "score": 0.9209386758460338
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 1.7043886363124365,
+            "angularWidthDegrees": 6.0370193033402595,
+            "rangeM": 290.45586691546373,
+            "occluderIds": [],
+            "score": 0.9318244545475025
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 1.370398101033589,
+            "angularWidthDegrees": 5.307631718570094,
+            "rangeM": 330.44049602578457,
+            "occluderIds": [],
+            "score": 0.8361148302409216
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 81.00949092786915,
+            "angularWidthDegrees": 5.082025249901639,
+            "rangeM": 345.1303036832228,
+            "occluderIds": [
+              "city-ne-prop-248",
+              "city-ne-prop-250",
+              "city-ne-prop-252",
+              "city-ne-prop-255",
+              "city-ne-prop-278"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -60
+      },
+      "signature": "47e079f181ea79308fb5ce9f01b5953297c02c69ae46bb07e4924e061de648b5",
+      "sourceSha256": "8d02c9b130b22fb6b38fc71e14f6cc47a0adb1c8a51a1ee9eac8cfb394f0bfb7",
+      "roadSha256": "6595bfba42786467c1d944ed146a433cf8eb1d606ed711ac5dbc2fb3fa626724",
+      "placementDetails": {
+        "x": 142.33190356843093,
+        "z": 157.54149732622918,
+        "yaw": -1.621013140836164,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5029.190708716233,
+        "trackLateral": -119.97381579054037,
+        "minimumRoadClearanceM": 96.06244742979935,
+        "checkedSegments": 4120,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-nh-currier-museum-of-art": {
       "raceRef": "Manchester, NH — Landmark Run",

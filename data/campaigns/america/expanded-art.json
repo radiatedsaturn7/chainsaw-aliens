@@ -2624,6 +2624,34 @@
       "heightM": 10,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ne-joslyn-art-museum",
+      "source": "landmarks/NE/landmark-city-ne-joslyn-art-museum.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ne-lewis-and-clark-landing",
+      "source": "landmarks/NE/landmark-city-ne-lewis-and-clark-landing.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ne-durham-museum",
+      "source": "landmarks/NE/landmark-city-ne-durham-museum.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ne-orpheum-theater",
+      "source": "landmarks/NE/landmark-city-ne-orpheum-theater.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

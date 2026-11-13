@@ -2042,5 +2042,33 @@
     "documentSha256": "b91614983ef247ce963af34a5cb3759bb15e0bbbabc9c99bf8f82509eef1d016",
     "width": 512,
     "height": 171
+  },
+  "landmark-city-ne-joslyn-art-museum": {
+    "source": "assets/campaign-art/landmarks/NE/landmark-city-ne-joslyn-art-museum.png",
+    "sourceSha256": "a4fb6b0f418a1d18e5b00bd8fe40cbfdc340e7b749c5c54cd149de763b50c90d",
+    "documentSha256": "d8e589d4033d2aab9520c19e1ff632381058b1cf8da6eeb24ac81bddfc7a8572",
+    "width": 512,
+    "height": 205
+  },
+  "landmark-city-ne-lewis-and-clark-landing": {
+    "source": "assets/campaign-art/landmarks/NE/landmark-city-ne-lewis-and-clark-landing.png",
+    "sourceSha256": "f74d1eab2ee20639fba9dd17294a48b4f1c56e4649ddccbdbedd76dd02dd1243",
+    "documentSha256": "22eb08e7a272024665fa943d3658a6affee65a8624fb5216773a7047664cf5f5",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ne-durham-museum": {
+    "source": "assets/campaign-art/landmarks/NE/landmark-city-ne-durham-museum.png",
+    "sourceSha256": "4425a4333c5e7ef5ac5179c4a3d29951f844795c7528ee17c6059d7a5e5a65fe",
+    "documentSha256": "4bdf5889013df6897270741a3f39818af78b7e1dc024c551782c5d1c7e24f634",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ne-orpheum-theater": {
+    "source": "assets/campaign-art/landmarks/NE/landmark-city-ne-orpheum-theater.png",
+    "sourceSha256": "8d02c9b130b22fb6b38fc71e14f6cc47a0adb1c8a51a1ee9eac8cfb394f0bfb7",
+    "documentSha256": "f5557be90eaa44a406fef5117d0c3a5a13823d7f13d53a621686e11242026594",
+    "width": 512,
+    "height": 468
   }
 }
