@@ -783,7 +783,7 @@
               "source": "fuel",
               "format": "bar",
               "textAlign": "center",
-              "name": "Fuel reserve (0–100%)",
+              "name": "Fuel reserve (0\u2013100%)",
               "enabled": true,
               "x": 0.2252670692057594,
               "y": 0.86,
@@ -1148,9 +1148,9 @@
     "rearLeft": [
       {
         "wheel": "rl",
-        "x": 611,
+        "x": 636,
         "y": 762,
-        "radius": 38
+        "radius": 43
       },
       {
         "wheel": "fl",
@@ -1164,13 +1164,13 @@
         "wheel": "rl",
         "x": 905,
         "y": 766,
-        "radius": 47
+        "radius": 59
       },
       {
         "wheel": "fl",
         "x": 1187,
         "y": 770,
-        "radius": 48
+        "radius": 59
       }
     ],
     "frontLeft": [
@@ -1178,13 +1178,13 @@
         "wheel": "rl",
         "x": 440,
         "y": 348,
-        "radius": 31
+        "radius": 48
       },
       {
         "wheel": "fl",
         "x": 581,
         "y": 381,
-        "radius": 39
+        "radius": 44
       }
     ]
   },
@@ -1206,5 +1206,6 @@
       168
     ],
     "method": "Visual inspection of original dashboard PNG. Shared steering wheel pivot retained. Numeric instruments occupy the authored dark cluster; browser QA required."
-  }
+  },
+  "wheelFit": "cover"
 }
