@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794611308153,
+  "doodad": {
+    "id": "campaign-landmark-city-or-pioneer-courthouse-square",
+    "name": "landmark-city-or-pioneer-courthouse-square",
+    "artRef": "landmark-city-or-pioneer-courthouse-square",
+    "widthM": 18.01759530791789,
+    "heightM": 12,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 15.314956011730207,
+    "hitboxHeightM": 10.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -572,7 +572,11 @@
       "landmark-city-va-virginia-museum-of-fine-arts": "art/landmark-city-va-virginia-museum-of-fine-arts/document.json",
       "landmark-city-va-virginia-state-capitol": "art/landmark-city-va-virginia-state-capitol/document.json",
       "landmark-city-va-main-street-station": "art/landmark-city-va-main-street-station/document.json",
-      "landmark-city-va-poe-museum": "art/landmark-city-va-poe-museum/document.json"
+      "landmark-city-va-poe-museum": "art/landmark-city-va-poe-museum/document.json",
+      "landmark-city-or-pioneer-courthouse-square": "art/landmark-city-or-pioneer-courthouse-square/document.json",
+      "landmark-city-or-union-station": "art/landmark-city-or-union-station/document.json",
+      "landmark-city-or-powells-city-of-books": "art/landmark-city-or-powells-city-of-books/document.json",
+      "landmark-city-or-portland-art-museum": "art/landmark-city-or-portland-art-museum/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -880,7 +884,11 @@
       "landmark-city-va-virginia-museum-of-fine-arts": "doodads/landmark-city-va-virginia-museum-of-fine-arts/document.json",
       "landmark-city-va-virginia-state-capitol": "doodads/landmark-city-va-virginia-state-capitol/document.json",
       "landmark-city-va-main-street-station": "doodads/landmark-city-va-main-street-station/document.json",
-      "landmark-city-va-poe-museum": "doodads/landmark-city-va-poe-museum/document.json"
+      "landmark-city-va-poe-museum": "doodads/landmark-city-va-poe-museum/document.json",
+      "landmark-city-or-pioneer-courthouse-square": "doodads/landmark-city-or-pioneer-courthouse-square/document.json",
+      "landmark-city-or-union-station": "doodads/landmark-city-or-union-station/document.json",
+      "landmark-city-or-powells-city-of-books": "doodads/landmark-city-or-powells-city-of-books/document.json",
+      "landmark-city-or-portland-art-museum": "doodads/landmark-city-or-portland-art-museum/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

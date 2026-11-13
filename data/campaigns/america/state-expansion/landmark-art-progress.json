@@ -5467,35 +5467,481 @@
     },
     "landmark-city-or-pioneer-courthouse-square": {
       "raceRef": "Portland, OR — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -101.01268433322868,
+        "worldZ": 455.82199240132456,
+        "routeDistanceM": 1835,
+        "offsetFromRoadM": 60,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.3170963521972354,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 15.967986082525007,
+            "angularWidthDegrees": 16.067977205563025,
+            "rangeM": 63.82617607177073,
+            "occluderIds": [],
+            "score": 0.3612805566989997
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 12.294888332893594,
+            "angularWidthDegrees": 12.354300061547898,
+            "rangeM": 83.2365527339285,
+            "occluderIds": [],
+            "score": 0.5082044666842562
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 10.13888065831599,
+            "angularWidthDegrees": 10.010637600526366,
+            "rangeM": 102.861050501158,
+            "occluderIds": [
+              "city-or-prop-94"
+            ],
+            "score": 0.07133337284008325
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.483912120727032,
+            "angularWidthDegrees": 8.405287354179217,
+            "rangeM": 122.59903434423123,
+            "occluderIds": [
+              "city-or-prop-94"
+            ],
+            "score": 0.07927722182051024
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.815423713935632,
+            "angularWidthDegrees": 6.768824305721846,
+            "rangeM": 152.33535158438713,
+            "occluderIds": [
+              "city-or-prop-94"
+            ],
+            "score": 0.08728596617310896
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.399566339846332,
+            "angularWidthDegrees": 5.369679533757741,
+            "rangeM": 192.11136436381565,
+            "occluderIds": [
+              "city-or-prop-93",
+              "city-or-prop-94"
+            ],
+            "score": 0.08419843798216277
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.4698003079368025,
+            "angularWidthDegrees": 4.448154492017346,
+            "rangeM": 231.96442776531495,
+            "occluderIds": [
+              "city-or-prop-93",
+              "city-or-prop-94"
+            ],
+            "score": 0.07305719998581123
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 3.6776092249721097,
+            "angularWidthDegrees": 3.6615927988158146,
+            "rangeM": 281.8393132439398,
+            "occluderIds": [
+              "city-or-prop-85",
+              "city-or-prop-89",
+              "city-or-prop-93",
+              "city-or-prop-94"
+            ],
+            "score": 0.06245913001230311
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "e6853ad1533b2a7e4fafa5632caf103ca98907141fbc1e2e93c98b5af8b034b0",
+      "sourceSha256": "c15907d59cb9f5304a78800de9480d72c3fe9c5888934cb6c9773fc233c40845",
+      "roadSha256": "c48f7d77aaffd73be80a4d5300ecfd535594a5e3c3c3cde22d6bc07abcd3bb43",
+      "placementDetails": {
+        "x": -113.86908618266835,
+        "z": 423.27226125230095,
+        "yaw": -0.21701962490762772,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1834.008337827421,
+        "trackLateral": -24.909437107426033,
+        "minimumRoadClearanceM": 8.666230389339328,
+        "checkedSegments": 4063,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/OR/pioneer-courthouse-square-desktop.png",
+        "docs/art/landmark-previews/OR/pioneer-courthouse-square-mobile.png"
+      ]
     },
     "landmark-city-or-union-station": {
       "raceRef": "Portland, OR — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 96.26042940145022,
+        "worldZ": -668.4381053156869,
+        "routeDistanceM": 3188,
+        "offsetFromRoadM": 50,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.1644446608216117,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 64.303625954983,
+            "angularWidthDegrees": 33.81141690162572,
+            "rangeM": 105.2866876145738,
+            "occluderIds": [
+              "city-or-prop-175"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 22.02529506688087,
+            "angularWidthDegrees": 30.089419723506538,
+            "rangeM": 119.05394055967598,
+            "occluderIds": [
+              "city-or-prop-175"
+            ],
+            "score": 0.014278583678971835
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 15.76453917089727,
+            "angularWidthDegrees": 26.08387902979577,
+            "rangeM": 138.14580418999626,
+            "occluderIds": [],
+            "score": 0.36941843316410916
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 13.787302831080758,
+            "angularWidthDegrees": 22.97124404599263,
+            "rangeM": 157.48730386533884,
+            "occluderIds": [],
+            "score": 0.44850788675676967
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 14.169006069455971,
+            "angularWidthDegrees": 19.449279082283947,
+            "rangeM": 186.72418032652885,
+            "occluderIds": [],
+            "score": 0.4332397572217611
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 38.79567716597541,
+            "angularWidthDegrees": 16.482685448013385,
+            "rangeM": 220.93523097836595,
+            "occluderIds": [
+              "city-or-prop-167",
+              "city-or-prop-169",
+              "city-or-prop-171"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 38.53009713588568,
+            "angularWidthDegrees": 14.511705249175881,
+            "rangeM": 251.33547483888447,
+            "occluderIds": [
+              "city-or-prop-165",
+              "city-or-prop-167",
+              "city-or-prop-169",
+              "city-or-prop-171"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 32.36422562089026,
+            "angularWidthDegrees": 12.503190844545024,
+            "rangeM": 292.11475173242354,
+            "occluderIds": [
+              "city-or-prop-163"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "b9a291fc6d6d0669e17f38d41327d5030f7c050011acf1a682d585735757cc14",
+      "sourceSha256": "d8978a05c0cb38e69fd677e120e209992455ebc8608f61048d0630c3265fd6ea",
+      "roadSha256": "c48f7d77aaffd73be80a4d5300ecfd535594a5e3c3c3cde22d6bc07abcd3bb43",
+      "placementDetails": {
+        "x": 57.294336988948224,
+        "z": -882.1257053769491,
+        "yaw": 2.9162507316304316,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3396.9899758934985,
+        "trackLateral": 94.99999635075335,
+        "minimumRoadClearanceM": 51.03338745420515,
+        "checkedSegments": 4063,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/OR/union-station-desktop.png",
+        "docs/art/landmark-previews/OR/union-station-mobile.png"
+      ]
     },
     "landmark-city-or-powells-city-of-books": {
       "raceRef": "Portland, OR — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -283.5460171974483,
+        "worldZ": -37.20587384559278,
+        "routeDistanceM": 4583,
+        "offsetFromRoadM": 39,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.851339784800536,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 53.067603166763725,
+            "angularWidthDegrees": 26.970175838451652,
+            "rangeM": 75.06145335440453,
+            "occluderIds": [
+              "city-or-prop-254"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 42.66446046173795,
+            "angularWidthDegrees": 22.98446304648547,
+            "rangeM": 88.53426846084248,
+            "occluderIds": [
+              "city-or-prop-254"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 32.98071052411406,
+            "angularWidthDegrees": 19.61366900804876,
+            "rangeM": 104.13482429930242,
+            "occluderIds": [
+              "city-or-prop-252"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 10.506273263514741,
+            "angularWidthDegrees": 16.605209714341672,
+            "rangeM": 123.34625704875128,
+            "occluderIds": [],
+            "score": 0.5797490694594103
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.447319842721456,
+            "angularWidthDegrees": 13.424711486963217,
+            "rangeM": 152.94205548583108,
+            "occluderIds": [
+              "city-or-prop-250"
+            ],
+            "score": 0.079452864754937
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 6.710747866381216,
+            "angularWidthDegrees": 10.67860458866667,
+            "rangeM": 192.59762388266026,
+            "occluderIds": [
+              "city-or-prop-250"
+            ],
+            "score": 0.08778841024137016
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 5.559579998465455,
+            "angularWidthDegrees": 8.858858403564904,
+            "rangeM": 232.37048840818792,
+            "occluderIds": [
+              "city-or-prop-250"
+            ],
+            "score": 0.09331401600736582
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 4.575953263030652,
+            "angularWidthDegrees": 7.299879003022421,
+            "rangeM": 282.17688828675745,
+            "occluderIds": [
+              "city-or-prop-246",
+              "city-or-prop-250"
+            ],
+            "score": 0.09803542433745287
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "e43e9e92fcaddf4ca06344cd18a0e237331b92112bec8b1d4658e7352c22432e",
+      "sourceSha256": "30e783508f24347d9a8ce0c9c5c0f7136e535be389f2f455062aa2b799b05ce8",
+      "roadSha256": "c48f7d77aaffd73be80a4d5300ecfd535594a5e3c3c3cde22d6bc07abcd3bb43",
+      "placementDetails": {
+        "x": -293.8920132880967,
+        "z": 189.41802669781805,
+        "yaw": 0.20922582404679263,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4792.897669474753,
+        "trackLateral": -60.00000000000001,
+        "minimumRoadClearanceM": 31.262532495691666,
+        "checkedSegments": 4063,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/OR/powells-city-of-books-desktop.png",
+        "docs/art/landmark-previews/OR/powells-city-of-books-mobile.png"
+      ]
     },
     "landmark-city-or-portland-art-museum": {
       "raceRef": "Portland, OR — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -421.51722185130313,
+        "worldZ": 717.3972991434193,
+        "routeDistanceM": 5494,
+        "offsetFromRoadM": 39,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.10179762912567691,
+        "views": [
+          {
+            "beforeM": 75,
+            "angleDegrees": 40.64432387705374,
+            "angularWidthDegrees": 22.66601629839686,
+            "rangeM": 99.790992688854,
+            "occluderIds": [
+              "city-or-prop-294"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 31.584953906229007,
+            "angularWidthDegrees": 18.30987124120941,
+            "rangeM": 124.10211615126174,
+            "occluderIds": [
+              "city-or-prop-292"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 150,
+            "angleDegrees": 23.329010257332452,
+            "angularWidthDegrees": 13.894415817171932,
+            "rangeM": 164.1370687564703,
+            "occluderIds": [
+              "city-or-prop-292",
+              "city-or-prop-316"
+            ],
+            "score": 0.008020750764804227
+          },
+          {
+            "beforeM": 205,
+            "angleDegrees": 17.534773812835738,
+            "angularWidthDegrees": 10.592700258203894,
+            "rangeM": 215.74287608052592,
+            "occluderIds": [
+              "city-or-prop-289",
+              "city-or-prop-292",
+              "city-or-prop-316"
+            ],
+            "score": 0.03583308569838845
+          },
+          {
+            "beforeM": 260,
+            "angleDegrees": 14.725365003902994,
+            "angularWidthDegrees": 8.51511367058699,
+            "rangeM": 268.6530585213074,
+            "occluderIds": [
+              "city-or-prop-292",
+              "city-or-prop-316"
+            ],
+            "score": 0.049318247981265634
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 12.161344858079461,
+            "angularWidthDegrees": 6.896351910740177,
+            "rangeM": 331.92383921286245,
+            "occluderIds": [
+              "city-or-prop-283",
+              "city-or-prop-285",
+              "city-or-prop-292",
+              "city-or-prop-316"
+            ],
+            "score": 0.06162554468121858
+          }
+        ],
+        "sourceDistanceShiftM": 90
+      },
+      "signature": "ab080bd35a9359aead4c549beef53446867234fb53f33ff53944a95c70f408f5",
+      "sourceSha256": "9cdf11c0f6132012dd0e04cc097a2d24bf333c846c8598d6e4e6626a99f1b045",
+      "roadSha256": "c48f7d77aaffd73be80a4d5300ecfd535594a5e3c3c3cde22d6bc07abcd3bb43",
+      "placementDetails": {
+        "x": -477.4223944244815,
+        "z": 791.6300008595028,
+        "yaw": -0.6713986586146035,
+        "facingApproachBeforeM": 205,
+        "trackDistance": 5583.281852751889,
+        "trackLateral": 64.99999999999997,
+        "minimumRoadClearanceM": 37.058369439657326,
+        "checkedSegments": 4063,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/OR/portland-art-museum-desktop.png",
+        "docs/art/landmark-previews/OR/portland-art-museum-mobile.png"
+      ]
     },
     "landmark-city-pa-philadelphia-museum-of-art": {
       "raceRef": "Philadelphia, PA — Landmark Run",

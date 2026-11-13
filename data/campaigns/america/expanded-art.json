@@ -2512,6 +2512,34 @@
       "heightM": 10,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-or-pioneer-courthouse-square",
+      "source": "landmarks/OR/landmark-city-or-pioneer-courthouse-square.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-or-union-station",
+      "source": "landmarks/OR/landmark-city-or-union-station.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-or-powells-city-of-books",
+      "source": "landmarks/OR/landmark-city-or-powells-city-of-books.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-or-portland-art-museum",
+      "source": "landmarks/OR/landmark-city-or-portland-art-museum.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
