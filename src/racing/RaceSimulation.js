@@ -1,3 +1,4 @@
+import { tireSizeForWheel } from './TireSizes.js';
 import {advanceRaceDriftScore} from './RaceDriftScore.js';
 import { advanceRaceSimulationClock } from './RaceFrameBudget.js';
 import {updateGlassWeather} from './GlassWeather.js';
@@ -1198,9 +1199,7 @@ function advanceVehicleDynamicsAuthority(editor, {
         pressurePsi: pressure.pressurePsi ?? setup.tirePressurePsi[wheelId],
         coldPressurePsi: setup.tirePressurePsi[wheelId],
         targetPressurePsi: pressure.targetPsi,
-        widthMm: setup.tireSize?.widthMm,
-        aspectRatio: setup.tireSize?.aspectRatio,
-        wheelDiameterIn: setup.tireSize?.wheelDiameterIn,
+        ...tireSizeForWheel(setup, wheelId),
         wear: tireDamage / 100,
         damage: tireDamage,
         loadSensitivityExponent: 0.08
@@ -1469,7 +1468,6 @@ function advanceVehicleDynamicsAuthority(editor, {
       MAX_RACE_TIRE_FOOTPRINT_SAMPLES,
       Math.trunc(Number(authority.runner.config.contactFootprintSamples) || 4)
     ));
-    const tireWidthM = Math.max(0.12, Number(setup.tireSize?.widthMm || 245) / 1000);
     authority.terrainWheelPointBuffer ||= new Float64Array(
       (1 + MAX_RACE_TIRE_FOOTPRINT_SAMPLES) * RACE_WHEEL_IDS.length * 3
     );
@@ -1487,6 +1485,7 @@ function advanceVehicleDynamicsAuthority(editor, {
       const lateral = RACE_TIRE_FOOTPRINT_OFFSETS[offsetIndex * 2 + 1];
       for (let wheelIndex = 0; wheelIndex < RACE_WHEEL_IDS.length; wheelIndex += 1) {
         const wheelId = RACE_WHEEL_IDS[wheelIndex];
+        const tireWidthM = Math.max(.12, Number(tireSizeForWheel(setup, wheelId).widthMm || 245) / 1000);
         const patch = preliminaryPatches[wheelId];
         const pointOffset = (RACE_WHEEL_IDS.length
           + offsetIndex * RACE_WHEEL_IDS.length + wheelIndex) * 3;
@@ -2629,7 +2628,7 @@ export function updateRaceSimulation({
         pressurePsi: setup.tirePressurePsi[wheelId],
         compoundId: compound.id,
         surfaceId: wheelSurfaceState.surfaceByWheel?.[wheelId] || surface.id,
-        tireSize: setup.tireSize,
+        tireSize: tireSizeForWheel(setup, wheelId),
         temperatureF: tireTemperatures[wheelId]
       })
     ];

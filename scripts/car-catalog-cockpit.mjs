@@ -6,6 +6,9 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'lark-1600-1990':{size:[1983,793],cluster:[220,540,570,130],wheel:[505,793,250]},
+ 'sunstriker-gt-1994':{size:[1983,793],cluster:[180,555,580,115],wheel:[470,793,240]},
+ 'briar-xt-2004':{size:[1983,793],cluster:[335,565,475,115],wheel:[573,793,230]},
  'kestrel-660-2018':{size:[2153,730],cluster:[485,554,590,82],wheel:[775,730,168]},
  'flint-coupe-2005':{size:[1670,941],cluster:[535,610,600,63],wheel:[795,947,420]},
  'volt-hound-gt-2023':{size:[2172,724],cluster:[425,535,855,80],wheel:[845,724,198],electric:true},

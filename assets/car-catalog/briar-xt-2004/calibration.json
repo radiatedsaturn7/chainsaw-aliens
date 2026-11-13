@@ -1,0 +1,17 @@
+{
+  "status": "Measured from source pixels; runtime render validation pending",
+  "mapping": [0,7,2,3,4,5,6,1],
+  "wheelFit": "cover",
+  "authoredWheelAnchors": {
+    "front": [{"wheel":"fl","x":66,"y":280,"radius":31},{"wheel":"fr","x":324,"y":280,"radius":31}],
+    "frontRight": [{"wheel":"fr","x":1920,"y":636,"radius":49},{"wheel":"rr","x":2105,"y":624,"radius":50}],
+    "right": [{"wheel":"fr","x":1095,"y":280,"radius":59},{"wheel":"rr","x":1504,"y":280,"radius":60}],
+    "rearRight": [{"wheel":"fr","x":1708,"y":263,"radius":48},{"wheel":"rr","x":1880,"y":280,"radius":60}],
+    "rear": [{"wheel":"rr","x":65,"y":650,"radius":31},{"wheel":"rl","x":324,"y":650,"radius":31}],
+    "rearLeft": [{"wheel":"rl","x":652,"y":641,"radius":53},{"wheel":"fl","x":860,"y":625,"radius":43}],
+    "left": [{"wheel":"rl","x":1064,"y":641,"radius":53},{"wheel":"fl","x":1477,"y":641,"radius":52}],
+    "frontLeft": [{"wheel":"rl","x":439,"y":263,"radius":53},{"wheel":"fl","x":654,"y":280,"radius":57}]
+  },
+  "cockpit": {"size":[1983,793],"cluster":[335,565,475,115],"wheel":[573,793,230]},
+  "notes": ["Source PNG measurements are artistic placement, not physical wheel dimensions.","Side/diagonal anchor centers measured against alpha openings; radii conservatively cover opening tops.","Front/rear wheel centers are inferred beneath opaque fascia; verify production rig.","Shared steering wheel uses dashboard-relative coordinates; fixed-rear external camera remains required."]
+}

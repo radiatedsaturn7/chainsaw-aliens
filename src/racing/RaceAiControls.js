@@ -1,3 +1,4 @@
+import { wheelRadiusFor } from './TireSizes.js';
 import {getRaceAiRoadPlan} from './RaceAiDirector.js';
 import {raceAiRoadPlanIndex} from './RaceAiRoadPlan.js';
 import {clamp,RACE_WHEEL_IDS} from './simulation/SimulationMath.js';
@@ -86,11 +87,11 @@ export function syncRaceAiPhysicalTireEffects(ai) {
   drive.tireSlipByWheel[id]=supported?Math.max(Math.abs(longitudinal),lateral):0;
   drive.contactWheelSpinRatioByWheel[id]=supported?Math.max(0,longitudinal):0;
   const brakeTorque=Math.max(0,Number(state.powertrainState?.telemetry?.appliedBrakeTorqueNm?.[id]||0));
-  drive.combinedBrakeState.appliedByWheel[id]=brakeTorque/Math.max(.1,runner.config.wheelRadiusM);
+  drive.combinedBrakeState.appliedByWheel[id]=brakeTorque/Math.max(.1,wheelRadiusFor(runner.config,id));
   drive.combinedBrakeState.lockByWheel[id]=supported&&brakeTorque>0?Math.max(0,-longitudinal):0;
   ai.tireTemperature[id]=Number(state.tireState?.[id]?.temperatureF??70);
   const driveTorque=Math.abs(Number(state.powertrainState?.telemetry?.wheelDriveTorqueNm?.[id]||0));
-  demand=Math.max(demand,driveTorque/Math.max(1,Number(patch.combinedSlipLimitN||load)*runner.config.wheelRadiusM));
+  demand=Math.max(demand,driveTorque/Math.max(1,Number(patch.combinedSlipLimitN||load)*wheelRadiusFor(runner.config,id)));
  }
  drive.driveDemandRatio=demand;
 }
