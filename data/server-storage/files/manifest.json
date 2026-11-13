@@ -429,12 +429,14 @@
       "catalog-bramble-2021-dashboard": "art/catalog-bramble-2021-dashboard/document.json",
       "catalog-vesper-v6-2003-body": "art/catalog-vesper-v6-2003-body/document.json",
       "catalog-vesper-v6-2003-dashboard": "art/catalog-vesper-v6-2003-dashboard/document.json",
+      "catalog-larch-turbo-1995-body": "art/catalog-larch-turbo-1995-body/document.json",
+      "catalog-larch-turbo-1995-dashboard": "art/catalog-larch-turbo-1995-dashboard/document.json",
       "catalog-rosefinch-1991-body": "art/catalog-rosefinch-1991-body/document.json",
       "catalog-rosefinch-1991-dashboard": "art/catalog-rosefinch-1991-dashboard/document.json",
+      "catalog-glimmer-1986-body": "art/catalog-glimmer-1986-body/document.json",
+      "catalog-glimmer-1986-dashboard": "art/catalog-glimmer-1986-dashboard/document.json",
       "catalog-cicada-turbo-2015-body": "art/catalog-cicada-turbo-2015-body/document.json",
-      "catalog-cicada-turbo-2015-dashboard": "art/catalog-cicada-turbo-2015-dashboard/document.json",
-      "catalog-larch-turbo-1995-body": "art/catalog-larch-turbo-1995-body/document.json",
-      "catalog-larch-turbo-1995-dashboard": "art/catalog-larch-turbo-1995-dashboard/document.json"
+      "catalog-cicada-turbo-2015-dashboard": "art/catalog-cicada-turbo-2015-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -468,9 +470,10 @@
       "Sundew 660 1991": "cars/Sundew 660 1991/document.json",
       "Bramble 2021": "cars/Bramble 2021/document.json",
       "Vesper V6 2003": "cars/Vesper V6 2003/document.json",
+      "Larch Turbo 1995": "cars/Larch Turbo 1995/document.json",
       "Rosefinch 1991": "cars/Rosefinch 1991/document.json",
-      "Cicada Turbo 2015": "cars/Cicada Turbo 2015/document.json",
-      "Larch Turbo 1995": "cars/Larch Turbo 1995/document.json"
+      "Glimmer 1986": "cars/Glimmer 1986/document.json",
+      "Cicada Turbo 2015": "cars/Cicada Turbo 2015/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
