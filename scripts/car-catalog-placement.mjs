@@ -1,7 +1,7 @@
 /** Calibrate original sprite wheel wells to the production rear-axle anchored rig.
  * Points are measured in ORIGINAL sheet pixels. This changes graphics only.
  * Perspective/holes are artist estimates, not vehicle physics specifications. */
-export function calibrateCatalogPlacement(editor, car, document, prepared, mapping, anchors) {
+export function calibrateCatalogPlacement(editor, car, document, prepared, mapping, anchors, wheelFit = 'average') {
  const slots=['front','frontRight','right','rearRight','rear','rearLeft','left','frontLeft'];
  // First establish the principal silhouettes. Diagonal source images may have
  // different artistic perspective; their near-side wheel gap must not set scale.
@@ -38,7 +38,9 @@ export function calibrateCatalogPlacement(editor, car, document, prepared, mappi
   if(!(scale>0&&Number.isFinite(scale)))throw Error(`Wheel mapping mirrored or degenerate: ${slot}`);
   const left=tx-scale*mx,top=ty-scale*my,w=document.width*scale,h=document.height*scale;
   const body={bodyScaleX:w/100,bodyScaleY:h/74,bodyOffsetX:(left+w/2)/16,bodyOffsetY:(top+h*.58)/(74*.22),bodyRotationDeg:0};
-  const tireScale=p.reduce((s,a)=>s+2*a.radius*scale/a.target.height,0)/p.length;
+  if(!['average','cover'].includes(wheelFit))throw Error('Unsupported wheel fit policy');
+  const scales=p.map(a=>2*a.radius*scale/a.target.height);
+  const tireScale=wheelFit==='cover'?Math.max(...scales):scales.reduce((sum,v)=>sum+v,0)/scales.length;
   const tires={tireScaleX:tireScale,tireScaleY:tireScale,tireSpacingScale:1,frontTireOffsetX:0,frontTireOffsetY:0,rearTireOffsetX:0,rearTireOffsetY:0};
   for(const axle of ['front','rear']) {
    const group=p.filter(a=>a.wheel.startsWith(axle==='front'?'f':'r'));

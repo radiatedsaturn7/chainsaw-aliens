@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "vehicle": "Nightcoil GT 1995",
+  "inspiration": "Broad 1995 Eclipse GSX front-engine AWD compact sportscoupe proportions; fictional original design, no copied movie livery",
+  "method": "OpenAI built-in image generation",
+  "recovery": {
+    "reconstructed": true,
+    "basis": "Original generating agent conversation and surviving generated PNG files; exact PNG hashes reverified. Earlier provenance file lost with prior workspace.",
+    "promptStatus": "Creative brief reconstructed from original generation context; not represented as verbatim prompt. Original generation timestamps are not asserted.",
+    "imageEditsDuringRecovery": false
+  },
+  "creativeBrief": "Dark plum/oxidized silver, rounded 1990s coupe, long sloping front hood, rear hatch glass and modest spoiler. Eight wheel-less views. Dashboard curved charcoal/plum with silver center panel, oval vents, blank driver recess and plain glovebox.",
+  "requirements": [
+    "Original weathered painted pixel-art 2994 salvage style",
+    "No manufacturer logos, badges, numbers or copied liveries",
+    "Transparent eight-angle body sheet with empty wheel arches, no baked wheels",
+    "Dashboard transparent road-view area and no steering wheel; reuse shared runtime wheel"
+  ],
+  "sources": {
+    "body": {
+      "file": "body.png",
+      "originalGeneratedFilename": "exec-a965aa09-c9a0-4ebf-9a59-61bbb45dd67e.png",
+      "sha256": "881712e7959354158d71294d5647d7c88b1551059979864e0dea84d562705ecf"
+    },
+    "dashboard": {
+      "file": "dashboard.png",
+      "originalGeneratedFilename": "exec-d7ba531f-e5e6-4ae0-a139-eee2352e1b05.png",
+      "sha256": "0a8c3ed1341c77a3afedbf730745ce4c14b472e73077a70893bc4883112110dd"
+    }
+  },
+  "references": [
+    "Ember Pod body painted style and eight-angle layout",
+    "Ember Pod dashboard overlay format"
+  ],
+  "validation": {
+    "originalVisualReview": "Eight complete wheel-less views; no logos; no dashboard steering wheel",
+    "originalImporterFrameDimensions": [
+      678,
+      237
+    ],
+    "originalSideWheelArchAlphaSamples": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "originalDashboardDimensions": [
+      1983,
+      793
+    ],
+    "originalDashboardTopCenterAlpha": 0,
+    "recoveryValidation": "SHA-256 equality only; previous importer and visual results retained as historical checks, not rerun in this recovery",
+    "pending": "Per-frame wheel-anchor calibration and runtime/browser validation at integration"
+  },
+  "status": "Source artwork only; no runtime/config/manifest changes by this art task"
+}
