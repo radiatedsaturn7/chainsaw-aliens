@@ -855,8 +855,14 @@
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
       "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+        "Verify readable facade on approach using existing race conditions or an approved targeted visual remedy."
+      ],
+      "visualReview": {
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing night, default headlights",
+        "notes": "The distinctive steeple reads in silhouette at 85m before closest projection. Exterior is unlit outside headlights."
+      }
     },
     "landmark-city-ma-old-state-house": {
       "raceRef": "Boston, MA — Landmark Run",
@@ -950,8 +956,14 @@
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
       "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+        "Verify readable facade on approach using existing race conditions or an approved targeted visual remedy."
+      ],
+      "visualReview": {
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing night, default headlights",
+        "notes": "The cupola and stepped gable outline read at 105m. Brick facade is obscured by the existing night exposure."
+      }
     },
     "landmark-city-ma-massachusetts-state-house": {
       "raceRef": "Boston, MA — Landmark Run",
@@ -1044,8 +1056,14 @@
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
       "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+        "Verify readable facade on approach using existing race conditions or an approved targeted visual remedy."
+      ],
+      "visualReview": {
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing night, default headlights",
+        "notes": "The dome reads against the horizon by 310m, with a sharply curved approach. Stonework and portico are not visible under current night settings."
+      }
     },
     "landmark-city-ma-boston-public-library": {
       "raceRef": "Boston, MA — Landmark Run",
@@ -1142,8 +1160,14 @@
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
       "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+        "Verify readable facade on approach using existing race conditions or an approved targeted visual remedy."
+      ],
+      "visualReview": {
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "conditions": "existing night, default headlights",
+        "notes": "The broad McKim block is in-frame at 105m; its architectural details are not recognizable at the existing night exposure."
+      }
     },
     "landmark-city-md-oriole-park-at-camden-yards": {
       "raceRef": "Baltimore, MD — Landmark Run",
