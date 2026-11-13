@@ -486,7 +486,9 @@
       "catalog-firethorn-turbo-2005-body": "art/catalog-firethorn-turbo-2005-body/document.json",
       "catalog-firethorn-turbo-2005-dashboard": "art/catalog-firethorn-turbo-2005-dashboard/document.json",
       "catalog-mallow-s-2006-body": "art/catalog-mallow-s-2006-body/document.json",
-      "catalog-mallow-s-2006-dashboard": "art/catalog-mallow-s-2006-dashboard/document.json"
+      "catalog-mallow-s-2006-dashboard": "art/catalog-mallow-s-2006-dashboard/document.json",
+      "catalog-chicory-gt-2008-body": "art/catalog-chicory-gt-2008-body/document.json",
+      "catalog-chicory-gt-2008-dashboard": "art/catalog-chicory-gt-2008-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -548,7 +550,8 @@
       "Snowdrop T5 2008": "cars/Snowdrop T5 2008/document.json",
       "Copperhead SC 2006": "cars/Copperhead SC 2006/document.json",
       "Firethorn Turbo 2005": "cars/Firethorn Turbo 2005/document.json",
-      "Mallow S 2006": "cars/Mallow S 2006/document.json"
+      "Mallow S 2006": "cars/Mallow S 2006/document.json",
+      "Chicory GT 2008": "cars/Chicory GT 2008/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
