@@ -164,3 +164,11 @@ test('ignored cue seek cannot pin the countdown for a long song intro',async()=>
  assert.equal(director.countdownSeekFailed,true);assert.equal(session.raceMusicCountdownClock,false);
  session.countdownRemainingMs=1000;director.update(session,{dt:.1});assert.equal(director.go,true);
 });
+
+test('five-second rally countdown stays aligned with the musical start cue',async()=>{
+ const {radio,director,session}=await fixture();session.countdownRemainingMs=6000;
+ director.update(session);await tick();assert.equal(radio.audio.currentTime,7);
+ radio.audio.currentTime=8;director.update(session);assert.equal(session.countdownRemainingMs,5000);
+ radio.audio.currentTime=12;director.update(session);assert.equal(session.countdownRemainingMs,1000);
+ assert.equal(radio.audio.currentTime,12);
+});

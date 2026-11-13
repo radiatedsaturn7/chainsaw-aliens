@@ -20,6 +20,7 @@ export function normalizeMenuAction(action,depth=0){
   if(!MENU_ACTION_TYPES.includes(action.type))throw Error(`Unknown menu action: ${action.type}`);
   const result={type:action.type,target:text(action.target),parameter:text(action.parameter),value:structuredClone(action.value??null)};
   if(result.parameter&&!validMenuParameter(result.parameter))throw Error('Invalid parameter name');
+  if(action.type==='screen'&&action.replace===true)result.replace=true;
   if(action.then&&!['race','level'].includes(action.type))result.then=normalizeMenuAction(action.then,depth+1);
   return result;
 }

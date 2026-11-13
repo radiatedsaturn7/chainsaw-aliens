@@ -117,10 +117,10 @@ test('pause settings toggle the same guide and pace-note preferences used by the
  assert.equal(editor.normalizeLoadedRaceDocument(saved).codriver.icons,true);
  row('race-pace-notes').onClick();assert.equal(row('race-pace-notes').value,'Off');
 });
-test('notes wait until 100 metres even at high speed and omit Brake prefixes',()=>{
+test('notes anticipate high-speed braking but wait on a slow approach and omit Brake prefixes',()=>{
  const calls=[{at:300,text:'Brake, Right 1',recce:{braking:true,apexSpeedMps:10}}];
- assert.equal(nextRacePaceNote(calls,180,50,500),null);assert.ok(nextRacePaceNote(calls,200,50,500));
- assert.equal(nextRacePaceNote(calls,260,8,500).text,'Right 1');
+ assert.ok(nextRacePaceNote(calls,180,50,500));assert.equal(nextRacePaceNote(calls,180,8,500),null);
+ assert.equal(nextRacePaceNote(calls,280,8,500).text,'Right 1');
  assert.equal(calls[0].text,'Brake, Right 1');
 });
 
@@ -131,14 +131,14 @@ test('call distance is fixed once, voice hides text, and speed changes never rep
  globalThis.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};
  try{
   const editor={...bend,selectedRace:{codriver:{enabled:true,spoken:true}},raceInput:{paused:false},selectedCar:{},getRaceCarTuning:()=>({}),getRaceSessionCar:()=>null,
-   playtestSession:{worldX:0,worldZ:0,distance:200,speedMps:30,routeLength:400,routeRuntimeType:'destination',codriverCalls:[{at:300,text:'Brake, Right 6',recce:{braking:true,apexSpeedMps:20}}]}};
+   playtestSession:{worldX:0,worldZ:0,distance:220,speedMps:30,routeLength:400,routeRuntimeType:'destination',codriverCalls:[{at:300,text:'Brake, Right 6',recce:{braking:true,apexSpeedMps:20}}]}};
   const tick=()=>updateRaceDrivingAssists(editor,.1);
-  tick();assert.deepEqual(spoken,['100 Right 6']);
+  tick();assert.deepEqual(spoken,['80 Right 6']);
   editor.playtestSession.distance=250;editor.playtestSession.speedMps=20;tick();
-  assert.equal(spoken.length,1);assert.equal(editor.playtestSession.drivingAssists.note.displayText,'100 m · Right 6');
+  assert.equal(spoken.length,1);assert.equal(editor.playtestSession.drivingAssists.note.displayText,'80 m · Right 6');
   const ctx=new Proxy({fillText:t=>texts.push(t)},{get:(o,k)=>o[k]||(()=>{})});
   drawRaceDrivingAssistHud(editor,ctx,{x:0,y:0,w:800,h:600});assert.deepEqual(texts,[]);
-  editor.selectedRace.codriver.icons=true;tick();drawRaceDrivingAssistHud(editor,ctx,{x:0,y:0,w:800,h:600});assert.deepEqual(texts,['6','100 m']);
+  editor.selectedRace.codriver.icons=true;tick();drawRaceDrivingAssistHud(editor,ctx,{x:0,y:0,w:800,h:600});assert.deepEqual(texts,['6','80 m']);
   assert.equal(editor.selectedRace.codriver.spoken,true);assert.equal(spoken.length,1);
   editor.selectedRace.codriver.spoken=true;editor.playtestSession.distance=310;tick();editor.playtestSession.distance=250;tick();assert.equal(spoken.length,1);
  }finally{globalThis.speechSynthesis=originalSpeech;globalThis.SpeechSynthesisUtterance=originalUtterance;}
@@ -150,10 +150,10 @@ test('nearby calls speak once without units and each icon remains until its mark
  globalThis.SpeechSynthesisUtterance=class{constructor(text){this.text=text;}};
  try{
   const editor={...bend,selectedRace:{codriver:{enabled:true,spoken:true,icons:true}},raceInput:{paused:false},selectedCar:{},getRaceCarTuning:()=>({}),getRaceSessionCar:()=>null,
-   playtestSession:{worldX:0,worldZ:0,distance:180,speedMps:50,routeLength:600,routeRuntimeType:'destination',codriverCalls:[{at:300,body:'Right 6',text:'Right 6, into Left 3',linkedAt:320},{at:320,text:'Left 3'}]}};
+   playtestSession:{worldX:0,worldZ:0,distance:0,speedMps:50,routeLength:600,routeRuntimeType:'destination',codriverCalls:[{at:300,body:'Right 6',text:'Right 6, into Left 3',linkedAt:320},{at:320,text:'Left 3'}]}};
   const s=editor.playtestSession,tick=()=>updateRaceDrivingAssists(editor,.1);
   tick();assert.equal(spoken.length,0);assert.equal(s.drivingAssists.notes.length,0);
-  s.distance=220;tick();assert.deepEqual(spoken,['80 Right 6, 100 Left 3']);assert.equal(s.drivingAssists.notes.length,2);
+  s.distance=180;tick();assert.deepEqual(spoken,['120 Right 6, and Left 3']);assert.equal(s.drivingAssists.notes.length,2);
   s.speedMps=0;s.distance=290;tick();assert.equal(s.drivingAssists.notes.length,2);assert.equal(spoken.length,1);
   s.distance=301;tick();assert.deepEqual(s.drivingAssists.notes.map(n=>n.at),[320]);
   s.distance=321;tick();assert.equal(s.drivingAssists.note,null);

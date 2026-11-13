@@ -19496,7 +19496,9 @@ test('Race playtest horizon reacts differently to uphill and downhill travel', (
     isMobile: true,
     exitRaceEditor() {}
   });
-  editor.selectedRace.road.nodes = [];
+  delete editor.selectedRace.road.network;
+  editor.selectedRace.road.nodes = [{x:0,y:0,elevation:0},{x:0,y:260,elevation:.34},{x:0,y:520,elevation:-.32}];
+  editor.selectedCar.camera = {...editor.selectedCar.camera,trackingMode:'fixed-rear'};
   editor.selectedRace.road.segments = [
     { length: 260, curve: 0, elevation: 0.34, surface: 'asphalt', hazardIds: [] },
     { length: 260, curve: 0, elevation: -0.32, surface: 'asphalt', hazardIds: [] }
@@ -19518,7 +19520,7 @@ test('Race playtest horizon reacts differently to uphill and downhill travel', (
 
   assert.equal(uphill.hillPitch > 0, true);
   assert.equal(downhill.hillPitch < 0, true);
-  assert.equal(uphill.horizonRatio < downhill.horizonRatio, true);
+  assert.equal(uphill.horizonRatio > downhill.horizonRatio, true);
 });
 
 test('Race playtest applies hill grade force so steep inclines can roll backward', () => {

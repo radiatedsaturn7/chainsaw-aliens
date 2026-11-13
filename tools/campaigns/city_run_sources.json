@@ -1,0 +1,2689 @@
+[
+  {
+    "id": "city-al",
+    "stateCode": "AL",
+    "state": "Alabama",
+    "city": "Birmingham",
+    "name": "Birmingham, AL \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 33.518,
+    "lon": -86.807,
+    "landmarks": [
+      {
+        "name": "Alabama Theatre",
+        "lat": 33.5148641,
+        "lon": -86.8091244,
+        "osmType": "way",
+        "osmId": 129478059,
+        "mappedName": "Alabama Theatre, 1817, 3rd Avenue North, Morris Avenue-First Avenue North Historic District, Central City, Birmingham, Jefferson County, Alabama, 35203, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/129478059"
+      },
+      {
+        "name": "Birmingham Civil Rights Institute",
+        "lat": 33.5159981,
+        "lon": -86.8146098,
+        "osmType": "relation",
+        "osmId": 6930627,
+        "mappedName": "Birmingham Civil Rights Institute, 520, 16th Street North, Fourth Avenue Historic District, Magnolia Heights, Birmingham, Jefferson County, Alabama, 35203, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/6930627"
+      },
+      {
+        "name": "Sloss Furnaces",
+        "lat": 33.52217,
+        "lon": -86.7907481,
+        "osmType": "way",
+        "osmId": 129478688,
+        "mappedName": "Sloss Furnaces National Historic Landmark, 29th Street North, Central City, Birmingham, Jefferson County, Alabama, 35203, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/129478688"
+      },
+      {
+        "name": "Vulcan Park",
+        "lat": 33.4908999,
+        "lon": -86.7948776,
+        "osmType": "relation",
+        "osmId": 21472423,
+        "mappedName": "Vulcan Park, 1701, Rosedale, Birmingham, Jefferson County, Alabama, 35209, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/21472423"
+      }
+    ],
+    "references": [
+      "https://www.birminghamal.org/wp-content/uploads/2024/01/HistoryItinerary.pdf",
+      "https://birminghamal.org/INguide/data/document.pdf",
+      "https://www.birminghamal.org/wp-content/uploads/2021/06/EVENT-SERVICES-profile-2021_HL.pdf"
+    ]
+  },
+  {
+    "id": "city-ak",
+    "stateCode": "AK",
+    "state": "Alaska",
+    "city": "Anchorage",
+    "name": "Anchorage, AK \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 61.218,
+    "lon": -149.896,
+    "landmarks": [
+      {
+        "name": "Anchorage Museum",
+        "lat": 61.2159911,
+        "lon": -149.8846851,
+        "osmType": "way",
+        "osmId": 285248750,
+        "mappedName": "Anchorage Museum, 625, C Street, Anchorage, Alaska, 99501, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/285248750"
+      },
+      {
+        "name": "Town Square Park",
+        "lat": 61.2171274,
+        "lon": -149.8924689,
+        "osmType": "way",
+        "osmId": 285248746,
+        "mappedName": "Town Square Park, Anchorage, Alaska, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/285248746"
+      },
+      {
+        "name": "Alaska Railroad Depot",
+        "lat": 61.2216699,
+        "lon": -149.8904654,
+        "osmType": "way",
+        "osmId": 28576590,
+        "mappedName": "Anchorage Rail Depot, 411, West 1st Avenue, Anchorage, Alaska, 99501, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/28576590",
+        "query": "Anchorage Depot"
+      },
+      {
+        "name": "Oscar Anderson House",
+        "lat": 61.2185673,
+        "lon": -149.905981,
+        "osmType": "way",
+        "osmId": 488772967,
+        "mappedName": "Oscar Anderson House, Tony Knowles Coastal Trail, South Addition, Anchorage, Alaska, 99513, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/488772967"
+      }
+    ],
+    "references": [
+      "https://www.anchorage.net/meetings/why-anchorage/walkable-downtown/",
+      "https://www.anchorage.net/plan-your-trip/itineraries/to-the-north/",
+      "https://www.anchorage.net/plan-your-trip/about-anchorage/"
+    ]
+  },
+  {
+    "id": "city-az",
+    "stateCode": "AZ",
+    "state": "Arizona",
+    "city": "Phoenix",
+    "name": "Phoenix, AZ \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 33.45,
+    "lon": -112.078,
+    "landmarks": [
+      {
+        "name": "Arizona State Capitol",
+        "lat": 33.448122,
+        "lon": -112.0972114,
+        "osmType": "way",
+        "osmId": 30694422,
+        "mappedName": "Arizona State Capitol, 1700, South 18th Avenue, Central City, Phoenix, Maricopa County, Arizona, 85007, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/30694422"
+      },
+      {
+        "name": "Orpheum Theatre",
+        "lat": 33.4490155,
+        "lon": -112.07687,
+        "osmType": "way",
+        "osmId": 109819768,
+        "mappedName": "Orpheum Theatre, 203, West Adams Street, Downtown, Central City, Phoenix, Maricopa County, Arizona, 85003, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/109819768"
+      },
+      {
+        "name": "Chase Field",
+        "lat": 33.4453388,
+        "lon": -112.0667651,
+        "osmType": "relation",
+        "osmId": 21951331,
+        "mappedName": "Chase Field, South 7th Street, Downtown, Central City, Phoenix, Maricopa County, Arizona, 85004, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/21951331"
+      },
+      {
+        "name": "Heritage Square",
+        "lat": 33.4493658,
+        "lon": -112.0662925,
+        "osmType": "way",
+        "osmId": 109818823,
+        "mappedName": "Heritage and Science Park, 115, Downtown, Central City, Phoenix, Maricopa County, Arizona, 85004, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/109818823"
+      }
+    ],
+    "references": [
+      "https://www.visitphoenix.com/greater-phoenix/phoenix/downtown-phoenix/heritage-square/",
+      "https://www.visitphoenix.com/things-to-do/attractions/",
+      "https://www.visitphoenix.com/greater-phoenix/phoenix/downtown-phoenix/"
+    ]
+  },
+  {
+    "id": "city-ar",
+    "stateCode": "AR",
+    "state": "Arkansas",
+    "city": "Little Rock",
+    "name": "Little Rock, AR \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 34.745,
+    "lon": -92.283,
+    "landmarks": [
+      {
+        "name": "Arkansas State Capitol",
+        "lat": 34.74662,
+        "lon": -92.2890401,
+        "osmType": "node",
+        "osmId": 367131374,
+        "mappedName": "Arkansas State Capitol, State Capitol, Little Rock, Big Rock Township, Pulaski County, Arkansas, 72201, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/367131374"
+      },
+      {
+        "name": "Little Rock Central High School",
+        "lat": 34.7368439,
+        "lon": -92.2989768,
+        "osmType": "way",
+        "osmId": 38553298,
+        "mappedName": "Little Rock Central High School, 1500, South Park Street, Little Rock, Big Rock Township, Pulaski County, Arkansas, 72202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/38553298"
+      },
+      {
+        "name": "Old State House Museum",
+        "lat": 34.7490356,
+        "lon": -92.2725882,
+        "osmType": "way",
+        "osmId": 130061600,
+        "mappedName": "Old State House, 300, West Markham Street, Little Rock, Big Rock Township, Pulaski County, Arkansas, 72201, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/130061600"
+      },
+      {
+        "name": "Clinton Presidential Library",
+        "lat": 34.7462532,
+        "lon": -92.2583641,
+        "osmType": "way",
+        "osmId": 37954690,
+        "mappedName": "William J Clinton Presidential Library, 1200, President Clinton Avenue, Little Rock, Big Rock Township, Pulaski County, Arkansas, 72201, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/37954690"
+      }
+    ],
+    "references": [
+      "https://www.littlerock.com/things-to-do/black-culture/attractions/",
+      "https://www.littlerock.com/directory/visitor-center-at-historic-curran-hall/",
+      "https://www.littlerock.com/things-to-do/museums-attractions/"
+    ]
+  },
+  {
+    "id": "city-ca",
+    "stateCode": "CA",
+    "state": "California",
+    "city": "Los Angeles",
+    "name": "Los Angeles, CA \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 34.052,
+    "lon": -118.248,
+    "landmarks": [
+      {
+        "name": "Union Station",
+        "lat": 34.0560576,
+        "lon": -118.2358962,
+        "osmType": "relation",
+        "osmId": 1483140,
+        "mappedName": "Union Station, 800, North Alameda Street, New Chinatown, Civic Center, Chinatown, Los Angeles, Los Angeles County, California, 90012, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/1483140"
+      },
+      {
+        "name": "Los Angeles City Hall",
+        "lat": 34.0536961,
+        "lon": -118.2429212,
+        "osmType": "relation",
+        "osmId": 6333145,
+        "mappedName": "Los Angeles City Hall, 200, North Spring Street, Civic Center, Downtown, Los Angeles, Los Angeles County, California, 90012, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/6333145"
+      },
+      {
+        "name": "Walt Disney Concert Hall",
+        "lat": 34.0554291,
+        "lon": -118.2499126,
+        "osmType": "relation",
+        "osmId": 6333150,
+        "mappedName": "Walt Disney Concert Hall, South Hope Street, Bunker Hill, Downtown, Los Angeles, Los Angeles County, California, 90012, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/6333150"
+      },
+      {
+        "name": "Crypto.com Arena",
+        "lat": 34.0429979,
+        "lon": -118.2671352,
+        "osmType": "way",
+        "osmId": 428021739,
+        "mappedName": "Crypto.com Arena, 1111, South Figueroa Street, South Park, Downtown, Los Angeles, Los Angeles County, California, 90015, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/428021739"
+      }
+    ],
+    "references": [
+      "https://www.discoverlosangeles.com/sites/default/files/2022-03/2022%20MPG_AtlasObscura_MAP.pdf",
+      "https://www.discoverlosangeles.com/sites/default/files/2026-02/lat_regional-factsheet_8.5x11in_dtla_2026.pdf",
+      "https://www.discoverlosangeles.com/travel/go-metro-and-go-everywhere-in-la"
+    ]
+  },
+  {
+    "id": "city-co",
+    "stateCode": "CO",
+    "state": "Colorado",
+    "city": "Denver",
+    "name": "Denver, CO \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 39.748,
+    "lon": -104.994,
+    "landmarks": [
+      {
+        "name": "Union Station",
+        "lat": 39.7532277,
+        "lon": -105.0000944,
+        "osmType": "way",
+        "osmId": 25650822,
+        "mappedName": "Union Station, 1701, Wynkoop Street, Lower Downtown, Denver, Colorado, 80202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/25650822"
+      },
+      {
+        "name": "Coors Field",
+        "lat": 39.7560314,
+        "lon": -104.9929286,
+        "osmType": "relation",
+        "osmId": 4423251,
+        "mappedName": "Coors Field, 2001, Blake Street~, Ballpark, Five Points, Denver, Colorado, 80205, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/4423251"
+      },
+      {
+        "name": "Colorado State Capitol",
+        "lat": 39.7392343,
+        "lon": -104.9846744,
+        "osmType": "node",
+        "osmId": 5085822235,
+        "mappedName": "Brass Etching Colorado State Capitol, Mile-High Steps, Capitol Hill, Denver, Colorado, 80274, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/5085822235"
+      },
+      {
+        "name": "Denver Art Museum",
+        "lat": 39.7373941,
+        "lon": -104.9896237,
+        "osmType": "way",
+        "osmId": 35205743,
+        "mappedName": "Denver Art Museum, 100, West 14th Avenue Parkway, Civic Center, Denver, Colorado, 80204, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/35205743"
+      }
+    ],
+    "references": [
+      "https://www.denver.org/about-denver/denver-neighborhoods/capitol-hill-congress-park/",
+      "https://www.denver.org/about-denver/transportation/airport-rail/",
+      "https://www.denver.org/travel-trade/itineraries/downtown-denver/"
+    ],
+    "roadOnlySnapshot": true
+  },
+  {
+    "id": "city-ct",
+    "stateCode": "CT",
+    "state": "Connecticut",
+    "city": "Hartford",
+    "name": "Hartford, CT \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 41.763,
+    "lon": -72.687,
+    "landmarks": [
+      {
+        "name": "Connecticut State Capitol",
+        "lat": 41.76414,
+        "lon": -72.6822665,
+        "osmType": "way",
+        "osmId": 28678350,
+        "mappedName": "Connecticut State Capitol, 168, Capitol Avenue, Elm Street Historic District, Frog Hollow, Clay Arsenal, Hartford, Connecticut, 06106, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/28678350"
+      },
+      {
+        "name": "Wadsworth Atheneum",
+        "lat": 41.7634633,
+        "lon": -72.6729015,
+        "osmType": "relation",
+        "osmId": 12429125,
+        "mappedName": "Wadsworth Atheneum, 600, Main Street, Main Street Historic District No. 2, Downtown Hartford, Coltville, Hartford, Connecticut, 06103, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/12429125"
+      },
+      {
+        "name": "Mark Twain House",
+        "lat": 41.7670707,
+        "lon": -72.7013579,
+        "osmType": "way",
+        "osmId": 194716932,
+        "mappedName": "Mark Twain House, 351, Farmington Avenue, Nook Farm and Woodland Street Historic District, Asylum Hill, Clay Arsenal, Hartford, Connecticut, 06105, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/194716932"
+      },
+      {
+        "name": "Bushnell Park",
+        "lat": 41.7653815,
+        "lon": -72.6809518,
+        "osmType": "relation",
+        "osmId": 10547018,
+        "mappedName": "Bushnell Park, Downtown Hartford, Clay Arsenal, Hartford, Capitol Planning Region, Connecticut, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/10547018"
+      }
+    ],
+    "references": [
+      "https://ctvisit.com/articles/step-back-time-these-connecticut-towns-and-cities",
+      "https://ctvisit.com/articles/top-things-to-do-without-a-car-in-connecticut",
+      "https://ctvisit.com/listings/mark-twain-house-museum"
+    ]
+  },
+  {
+    "id": "city-de",
+    "stateCode": "DE",
+    "state": "Delaware",
+    "city": "Wilmington",
+    "name": "Wilmington, DE \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 39.743,
+    "lon": -75.552,
+    "landmarks": [
+      {
+        "name": "Rodney Square",
+        "lat": 39.7457673,
+        "lon": -75.5470726,
+        "osmType": "way",
+        "osmId": 469421832,
+        "mappedName": "Rodney Square, Wilmington, New Castle County, Delaware, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/469421832"
+      },
+      {
+        "name": "Grand Opera House",
+        "lat": 39.7437463,
+        "lon": -75.5484757,
+        "osmType": "way",
+        "osmId": 368223186,
+        "mappedName": "Grand Opera House, 818, North Market Street, Downtown, Wilmington, New Castle County, Delaware, 19801, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/368223186"
+      },
+      {
+        "name": "Delaware History Museum",
+        "lat": 39.7413316,
+        "lon": -75.5502615,
+        "osmType": "way",
+        "osmId": 426169138,
+        "mappedName": "Delaware History Museum and Mitchell Center for African American Heritage, 504, North Market Street, LOMA, Wilmington, New Castle County, Delaware, 19801, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/426169138"
+      },
+      {
+        "name": "Chase Center on the Riverfront",
+        "lat": 39.7312312,
+        "lon": -75.5630804,
+        "osmType": "way",
+        "osmId": 1259386929,
+        "mappedName": "Chase Center on the Riverfront, 815, South Justison Street, Riverfront, Wilmington, New Castle County, Delaware, 19801, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/1259386929"
+      }
+    ],
+    "references": [
+      "https://www.visitwilmingtonde.com/things-to-do/attractions/",
+      "https://www.visitwilmingtonde.com/things-to-do/attractions/?bounds=false&skip=60&sort=qualityScore&view=list",
+      "https://www.visitwilmingtonde.com/wilmington-arts-blog/stories/post/grand-opera-at-wilmingtons-the-grand/"
+    ]
+  },
+  {
+    "id": "city-fl",
+    "stateCode": "FL",
+    "state": "Florida",
+    "city": "Miami",
+    "name": "Miami, FL \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 25.778,
+    "lon": -80.193,
+    "landmarks": [
+      {
+        "name": "Freedom Tower",
+        "lat": 25.7804328,
+        "lon": -80.1906258,
+        "osmType": "node",
+        "osmId": 6612243709,
+        "mappedName": "Freedom Tower, Northeast 2nd Avenue, Torch of Friendship, Miami, Miami-Dade County, Florida, 33137, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/6612243709"
+      },
+      {
+        "name": "Adrienne Arsht Center",
+        "lat": 25.7894997,
+        "lon": -80.1881352,
+        "osmType": "node",
+        "osmId": 6612199471,
+        "mappedName": "Adrienne Arsht Center, Northeast 15th Street, Miami, Miami-Dade County, Florida, 33132, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/6612199471"
+      },
+      {
+        "name": "HistoryMiami Museum",
+        "lat": 25.7744628,
+        "lon": -80.1965857,
+        "osmType": "way",
+        "osmId": 648249520,
+        "mappedName": "HistoryMiami Museum, 101, West Flagler Street, Downtown Miami, Torch of Friendship, Miami, Miami-Dade County, Florida, 33130, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/648249520"
+      },
+      {
+        "name": "Olympia Theater",
+        "lat": 25.7741039,
+        "lon": -80.1904762,
+        "osmType": "node",
+        "osmId": 1025611004,
+        "mappedName": "Olympia Theater at Gusman Center, 174, East Flagler Street, Downtown Miami, Torch of Friendship, Miami, Miami-Dade County, Florida, 33131, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/1025611004"
+      }
+    ],
+    "references": [
+      "https://www.miamiandbeaches.com/things-to-do/history-and-heritage/downtown-miami-architecture",
+      "https://www.miamiandbeaches.com/neighborhoods/downtown-miami-brickell-area",
+      "https://www.miamiandbeaches.com/getmedia/a4dd7c64-7059-4511-86b4-9bb46e0e517d/Miami-sports-entertainment-venues-guide-2020.pdf.aspx"
+    ]
+  },
+  {
+    "id": "city-ga",
+    "stateCode": "GA",
+    "state": "Georgia",
+    "city": "Atlanta",
+    "name": "Atlanta, GA \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 33.756,
+    "lon": -84.388,
+    "landmarks": [
+      {
+        "name": "Fox Theatre",
+        "lat": 33.7726429,
+        "lon": -84.3855618,
+        "osmType": "way",
+        "osmId": 208355446,
+        "mappedName": "Fox Theatre, 660, Peachtree Street Northeast, Midtown, Atlanta, Fulton County, Georgia, 30308, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/208355446"
+      },
+      {
+        "name": "Centennial Olympic Park",
+        "lat": 33.7601442,
+        "lon": -84.3934531,
+        "osmType": "relation",
+        "osmId": 9685734,
+        "mappedName": "Centennial Olympic Park, 265, Atlanta, Fulton County, Georgia, 30313, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/9685734"
+      },
+      {
+        "name": "Georgia State Capitol",
+        "lat": 33.74901773142857,
+        "lon": -84.38817816714285,
+        "osmType": "way",
+        "osmId": 113041732,
+        "mappedName": "The Georgia State Capitol",
+        "coordinateSource": "https://www.openstreetmap.org/way/113041732"
+      },
+      {
+        "name": "Ebenezer Baptist Church",
+        "lat": 33.7551362,
+        "lon": -84.3742076,
+        "osmType": "node",
+        "osmId": 358770038,
+        "mappedName": "Ebenezer Baptist Church, Jackson Street Northeast, Atlanta, Fulton County, Georgia, 30312, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/358770038"
+      }
+    ],
+    "references": [
+      "https://discoveratlanta.com/things-to-do/arts-culture/fox-theatre/",
+      "https://discoveratlanta.com/things-to-do/history/ebenezer-baptist-church/",
+      "https://discoveratlanta.com/partner/fox-theatre/"
+    ]
+  },
+  {
+    "id": "city-hi",
+    "stateCode": "HI",
+    "state": "Hawaii",
+    "city": "Honolulu",
+    "name": "Honolulu, HI \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 21.307,
+    "lon": -157.859,
+    "landmarks": [
+      {
+        "name": "Aloha Tower",
+        "lat": 21.3056107,
+        "lon": -157.8642323,
+        "osmType": "node",
+        "osmId": 6535073898,
+        "mappedName": "Aloha Tower, Aloha Tower Drive, Downtown, Hawaii Capital Historic District, Honolulu, Honolulu County, Hawaii, 96850, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/6535073898"
+      },
+      {
+        "name": "Iolani Palace",
+        "lat": 21.3068147,
+        "lon": -157.8587655,
+        "osmType": "way",
+        "osmId": 67136074,
+        "mappedName": "\u02bbIolani Palace, 364, South King Street, Downtown, Hawaii Capital Historic District, East Honolulu, Honolulu, Honolulu County, Hawaii, 96813, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/67136074"
+      },
+      {
+        "name": "Hawaii State Capitol",
+        "lat": 21.3073335,
+        "lon": -157.8569903,
+        "osmType": "relation",
+        "osmId": 1267925,
+        "mappedName": "Hawaii State Capitol, 415, South Beretania Street, Downtown, Hawaii Capital Historic District, East Honolulu, Honolulu, Honolulu County, Hawaii, 96813, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/1267925"
+      },
+      {
+        "name": "Honolulu Museum of Art",
+        "query": "900 South Beretania Street",
+        "lat": 21.30375,
+        "lon": -157.8485186,
+        "osmType": "node",
+        "osmId": 10853523205,
+        "mappedName": "900, South Beretania Street, Makiki Kai, East Honolulu, Honolulu, Honolulu County, Hawaii, 96814, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/10853523205"
+      }
+    ],
+    "references": [
+      "https://www.gohawaii.com/islands/oahu/regions/honolulu/iolani-palace",
+      "https://www.gohawaii.com/islands/oahu/regions/honolulu/downtown-honolulu",
+      "https://www.gohawaii.com/honolulu"
+    ]
+  },
+  {
+    "id": "city-id",
+    "stateCode": "ID",
+    "state": "Idaho",
+    "city": "Boise",
+    "name": "Boise, ID \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 43.615,
+    "lon": -116.203,
+    "landmarks": [
+      {
+        "name": "Idaho State Capitol",
+        "lat": 43.6177696,
+        "lon": -116.1996904,
+        "osmType": "way",
+        "osmId": 32113664,
+        "mappedName": "Idaho State Capitol, 700, West Jefferson Street, Downtown, North End, Boise, Ada County, Idaho, 83702, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/32113664"
+      },
+      {
+        "name": "Egyptian Theatre",
+        "lat": 43.615387,
+        "lon": -116.2023828,
+        "osmType": "way",
+        "osmId": 776891169,
+        "mappedName": "The Egyptian Theatre, 700, West Main Street, Downtown, North End, Boise, Ada County, Idaho, 83702, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/776891169"
+      },
+      {
+        "name": "Basque Block",
+        "lat": 43.6136884,
+        "lon": -116.2018705,
+        "osmType": "node",
+        "osmId": 11111027778,
+        "mappedName": "Basque Block",
+        "coordinateSource": "https://www.openstreetmap.org/node/11111027778"
+      },
+      {
+        "name": "Boise Depot",
+        "lat": 43.6020326,
+        "lon": -116.2147089,
+        "osmType": "way",
+        "osmId": 661654288,
+        "mappedName": "Boise Union Depot, 2603, West Eastover Terrace, Boise, Ada County, Idaho, 83706, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/661654288"
+      }
+    ],
+    "references": [
+      "https://visitboise.com/meeting-place/egyptian-theatre/",
+      "https://visitboise.com/events/candlelight-tribute-to-the-beatles-2/",
+      "https://visitboise.com/events/candlelight-the-soundtrack-of-the-60s-2/"
+    ]
+  },
+  {
+    "id": "city-il",
+    "stateCode": "IL",
+    "state": "Illinois",
+    "city": "Chicago",
+    "name": "Chicago, IL \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 41.885,
+    "lon": -87.628,
+    "landmarks": [
+      {
+        "name": "Union Station",
+        "lat": 41.8786411,
+        "lon": -87.6390928,
+        "osmType": "node",
+        "osmId": 5073776567,
+        "mappedName": "Chicago Union Station, 225, South Canal Street, West Loop Gate, Near West Side, Chicago, West Chicago Township, Cook County, Illinois, 60606, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/5073776567"
+      },
+      {
+        "name": "Art Institute of Chicago",
+        "lat": 41.879605,
+        "lon": -87.6230716,
+        "osmType": "relation",
+        "osmId": 1870546,
+        "mappedName": "The Art Institute of Chicago, 111, South Michigan Avenue, Jewelers Row, Loop, Chicago, South Chicago Township, Cook County, Illinois, 60603, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/1870546",
+        "query": "Art Institute of Chicago"
+      },
+      {
+        "name": "Wrigley Building",
+        "lat": 41.889912,
+        "lon": -87.6248201,
+        "osmType": "relation",
+        "osmId": 17460539,
+        "mappedName": "Wrigley Building, 400-410, North Michigan Avenue, Theatre District, Near North Side, Chicago, North Chicago Township, Cook County, Illinois, 60611, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/17460539"
+      },
+      {
+        "name": "Navy Pier",
+        "lat": 41.8917999,
+        "lon": -87.6041447,
+        "osmType": "way",
+        "osmId": 24800238,
+        "mappedName": "Navy Pier, 600, East Grand Avenue, Near North Side, Chicago, North Chicago Township, Cook County, Illinois, 60611, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/24800238",
+        "query": "Navy Pier"
+      }
+    ],
+    "references": [
+      "https://www.choosechicago.com/listing/chicago-union-station/",
+      "https://www.choosechicago.com/blog/architecture-history/10-iconic-buildings-in-downtown-chicago/",
+      "https://cdn.choosechicago.com/uploads/2025/05/Map_Digital-Brochure_Neighborhoods-Near-the-Center-copy.pdf"
+    ]
+  },
+  {
+    "id": "city-in",
+    "stateCode": "IN",
+    "state": "Indiana",
+    "city": "Indianapolis",
+    "name": "Indianapolis, IN \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 39.769,
+    "lon": -86.159,
+    "landmarks": [
+      {
+        "name": "Soldiers and Sailors Monument",
+        "lat": 39.7685059,
+        "lon": -86.1580445,
+        "osmType": "way",
+        "osmId": 339773760,
+        "mappedName": "Soldiers and Sailors Monument, 1, Monument Circle, Indianapolis, Center Township, Marion, Indiana, 46204, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/339773760"
+      },
+      {
+        "name": "Indiana Statehouse",
+        "query": "Indiana State Capitol",
+        "lat": 39.7686684,
+        "lon": -86.1626157,
+        "osmType": "way",
+        "osmId": 339985770,
+        "mappedName": "Indiana State Capitol Building, 200, West Washington Street, Indianapolis, Center Township, Marion, Indiana, 46204, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/339985770"
+      },
+      {
+        "name": "Lucas Oil Stadium",
+        "lat": 39.7590621,
+        "lon": -86.1638376,
+        "osmType": "way",
+        "osmId": 989245934,
+        "mappedName": "Lucas Oil Stadium, West Empire Street, Old Southside, Indianapolis, Center Township, Marion County, Indiana, 46206, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/989245934"
+      },
+      {
+        "name": "Scottish Rite Cathedral",
+        "lat": 39.7761601,
+        "lon": -86.1582935,
+        "osmType": "way",
+        "osmId": 201717690,
+        "mappedName": "Scottish Rite Cathedral, 650, North Meridian Street, St. Joseph, Indianapolis, Center Township, Marion County, Indiana, 46204, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/201717690"
+      }
+    ],
+    "references": [
+      "https://www.visitindy.com/directory/soldiers-sailors-monument-monument-circle/",
+      "https://www.visitindy.com/blog/post/see-indy-one-mile-at-a-time-during-the-monumental-marathon/",
+      "https://www.visitindy.com/things-to-do/museums-attractions/monuments-memorials/"
+    ]
+  },
+  {
+    "id": "city-ia",
+    "stateCode": "IA",
+    "state": "Iowa",
+    "city": "Des Moines",
+    "name": "Des Moines, IA \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 41.587,
+    "lon": -93.617,
+    "landmarks": [
+      {
+        "name": "Iowa State Capitol",
+        "lat": 41.5912051,
+        "lon": -93.6038186,
+        "osmType": "way",
+        "osmId": 34105125,
+        "mappedName": "Iowa State Capitol, 1007, East Grand Avenue, Des Moines, Polk County, Iowa, 50319, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/34105125"
+      },
+      {
+        "name": "State Historical Museum",
+        "lat": 41.5906298,
+        "lon": -93.6091976,
+        "osmType": "way",
+        "osmId": 34105134,
+        "mappedName": "State of Iowa Historical Building, 600, East Locust Street, East Village, Des Moines, Polk County, Iowa, 50319, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/34105134"
+      },
+      {
+        "name": "Principal Park",
+        "lat": 41.5802173,
+        "lon": -93.6166144,
+        "osmType": "relation",
+        "osmId": 1476861,
+        "mappedName": "Principal Park, 1, Line Drive, Des Moines, Polk County, Iowa, 50309, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/1476861"
+      },
+      {
+        "name": "Pappajohn Sculpture Park",
+        "lat": 41.5850834,
+        "lon": -93.6354864,
+        "osmType": "way",
+        "osmId": 1106728268,
+        "mappedName": "John and Mary Pappajohn Sculpture Park, Des Moines, Polk County, Iowa, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/1106728268"
+      }
+    ],
+    "references": [
+      "https://www.catchdesmoines.com/things-to-do/arts-culture/public-art/",
+      "https://www.catchdesmoines.com/civil-rights-tour/",
+      "https://www.catchdesmoines.com/discover-downtown-des-moines/"
+    ]
+  },
+  {
+    "id": "city-ks",
+    "stateCode": "KS",
+    "state": "Kansas",
+    "city": "Wichita",
+    "name": "Wichita, KS \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 37.689,
+    "lon": -97.34,
+    "landmarks": [
+      {
+        "name": "Exploration Place",
+        "lat": 37.6893901,
+        "lon": -97.3468617,
+        "osmType": "way",
+        "osmId": 133195442,
+        "mappedName": "Exploration Place - Science and Discovery Center, 300, McLean Boulevard, Wichita, Sedgwick County, Kansas, 67203, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/133195442"
+      },
+      {
+        "name": "Old Cowtown Museum",
+        "lat": 37.693791,
+        "lon": -97.362251,
+        "osmType": "node",
+        "osmId": 366766028,
+        "mappedName": "Old Cowtown Museum, 1865, West Museum Boulevard, Wichita, Sedgwick County, Kansas, 67203, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/366766028"
+      },
+      {
+        "name": "Orpheum Theatre",
+        "lat": 37.6882261,
+        "lon": -97.3351255,
+        "osmType": "way",
+        "osmId": 1436754249,
+        "mappedName": "Orpheum Theatre, East 1st Street North, Wichita, Sedgwick County, Kansas, 67202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/1436754249"
+      },
+      {
+        "name": "Union Station",
+        "lat": 37.6852593,
+        "lon": -97.3295461,
+        "osmType": "way",
+        "osmId": 376909691,
+        "mappedName": "Wichita Union Station, East Douglas Avenue, Wichita, Sedgwick County, Kansas, 67202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/376909691"
+      }
+    ],
+    "references": [
+      "https://www.visitwichita.com/things-to-do/uniquely-wichita/experiences/historical-experiences/",
+      "https://www.visitwichita.com/listing/old-cowtown-museum/25660/",
+      "https://www.visitwichita.com/listing/exploration-place/25530/"
+    ]
+  },
+  {
+    "id": "city-ky",
+    "stateCode": "KY",
+    "state": "Kentucky",
+    "city": "Louisville",
+    "name": "Louisville, KY \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 38.255,
+    "lon": -85.759,
+    "landmarks": [
+      {
+        "name": "Louisville Slugger Museum",
+        "lat": 38.2568585,
+        "lon": -85.7637124,
+        "osmType": "way",
+        "osmId": 331282813,
+        "mappedName": "Louisville Slugger Museum & Factory, 800, West Main Street, Louisville, Jefferson County, Kentucky, 40202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/331282813"
+      },
+      {
+        "name": "Muhammad Ali Center",
+        "lat": 38.2583,
+        "lon": -85.7599872,
+        "osmType": "way",
+        "osmId": 264161753,
+        "mappedName": "Muhammad Ali Center, 144, North 6th Street, Louisville, Jefferson County, Kentucky, 40202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/264161753"
+      },
+      {
+        "name": "Louisville Palace",
+        "lat": 38.2480455,
+        "lon": -85.7578074,
+        "osmType": "way",
+        "osmId": 350407860,
+        "mappedName": "The Louisville Palace Theater, 623, South 4th Street, Louisville, Jefferson County, Kentucky, 40202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/350407860"
+      },
+      {
+        "name": "Louisville Slugger Field",
+        "lat": 38.2564512,
+        "lon": -85.7436241,
+        "osmType": "relation",
+        "osmId": 4713814,
+        "mappedName": "Louisville Slugger Field, 401, East Main Street, Louisville, Jefferson County, Kentucky, 40202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/4713814"
+      }
+    ],
+    "references": [
+      "https://reservations.gotolouisville.com/package/ticket/23323/7321",
+      "https://reservations.gotolouisville.com/attraction/single/6880/1630",
+      "https://reservations.gotolouisville.com/attraction/single/7142/1630"
+    ]
+  },
+  {
+    "id": "city-la",
+    "stateCode": "LA",
+    "state": "Louisiana",
+    "city": "New Orleans",
+    "name": "New Orleans, LA \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 29.958,
+    "lon": -90.066,
+    "landmarks": [
+      {
+        "name": "Jackson Square",
+        "lat": 29.9574673,
+        "lon": -90.0629499,
+        "osmType": "way",
+        "osmId": 27844554,
+        "mappedName": "Jackson Square, 700, French Quarter, New Orleans, Orleans Parish, Louisiana, 70116, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/27844554"
+      },
+      {
+        "name": "New Orleans Jazz Museum",
+        "lat": 29.9614302,
+        "lon": -90.0577754,
+        "osmType": "node",
+        "osmId": 4738015422,
+        "mappedName": "New Orleans Jazz Museum, 400, Esplanade Avenue, French Market, Faubourg Marigny, New Orleans, Orleans Parish, Louisiana, 70116, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/4738015422"
+      },
+      {
+        "name": "Saint Louis Cemetery No. 1",
+        "query": "Saint Louis Cemetery Number One",
+        "lat": 29.9594151,
+        "lon": -90.0715037,
+        "osmType": "way",
+        "osmId": 27936018,
+        "mappedName": "Saint Louis Cemetery Number One, 425, Storyville, New Orleans, Orleans Parish, Louisiana, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/27936018"
+      },
+      {
+        "name": "Saenger Theatre",
+        "lat": 29.9563933,
+        "lon": -90.0725759,
+        "osmType": "way",
+        "osmId": 367725783,
+        "mappedName": "Saenger Theatre, 1111, Canal Street, Storyville, New Orleans, Orleans Parish, Louisiana, 70112, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/367725783"
+      }
+    ],
+    "references": [
+      "https://www.neworleans.com/plan/neighborhoods/french-quarter/history/the-most-popular-historic-attractions-in-the-french-quarter/",
+      "https://www.neworleans.com/things-to-do/attractions/cemeteries/",
+      "https://www.neworleans.com/plan/neighborhoods/treme/attractions/"
+    ]
+  },
+  {
+    "id": "city-me",
+    "stateCode": "ME",
+    "state": "Maine",
+    "city": "Portland",
+    "name": "Portland, ME \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 43.659,
+    "lon": -70.254,
+    "landmarks": [
+      {
+        "name": "Portland Observatory",
+        "lat": 43.6653727,
+        "lon": -70.2482523,
+        "osmType": "way",
+        "osmId": 334261315,
+        "mappedName": "Portland Observatory, 138, Congress Street, Munjoy Hill, East End, Portland, Cumberland County, Maine, 04101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/334261315"
+      },
+      {
+        "name": "Victoria Mansion",
+        "lat": 43.6515353,
+        "lon": -70.2607382,
+        "osmType": "way",
+        "osmId": 397103375,
+        "mappedName": "Victoria Mansion, 109, Danforth Street, Arts District, Portland, Cumberland County, Maine, 04101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/397103375"
+      },
+      {
+        "name": "Portland Museum of Art",
+        "lat": 43.6537342,
+        "lon": -70.2620333,
+        "osmType": "relation",
+        "osmId": 20195397,
+        "mappedName": "Portland Museum of Art, 7, High Street, Parkside, West End, Portland, Cumberland County, Maine, 04101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/20195397"
+      },
+      {
+        "name": "Portland City Hall",
+        "lat": 43.6592404,
+        "lon": -70.2573592,
+        "osmType": "way",
+        "osmId": 29987107,
+        "mappedName": "Portland City Hall, 389, Congress Street, Downtown, East End, Portland, Cumberland County, Maine, 04101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/29987107"
+      }
+    ],
+    "references": [
+      "https://www.visitportland.com/listing/victoria-mansion/",
+      "https://www.visitportland.com/event/portland-city-and-lighthouse-tour/",
+      "https://www.visitportland.com/listing/portland-museum-of-art/"
+    ]
+  },
+  {
+    "id": "city-md",
+    "stateCode": "MD",
+    "state": "Maryland",
+    "city": "Baltimore",
+    "name": "Baltimore, MD \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 39.291,
+    "lon": -76.614,
+    "landmarks": [
+      {
+        "name": "Washington Monument",
+        "lat": 39.2974909,
+        "lon": -76.6156536,
+        "osmType": "way",
+        "osmId": 116542858,
+        "mappedName": "Washington Monument, 699, Washington Place, Mount Vernon, Sowebo, Baltimore, Maryland, 21201, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/116542858"
+      },
+      {
+        "name": "Lexington Market",
+        "lat": 39.2922394,
+        "lon": -76.6196356,
+        "osmType": "node",
+        "osmId": 845372088,
+        "mappedName": "Lexington Market, 299, North Howard Street, Chinatown, Downtown, Baltimore, Maryland, 21201, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/845372088"
+      },
+      {
+        "name": "Oriole Park at Camden Yards",
+        "lat": 39.2837383,
+        "lon": -76.6216056,
+        "osmType": "way",
+        "osmId": 1171328455,
+        "mappedName": "Oriole Park at Camden Yards, Russell Street, Sowebo, Baltimore, Maryland, 21230, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/1171328455"
+      },
+      {
+        "name": "National Aquarium",
+        "lat": 39.2866367,
+        "lon": -76.6083506,
+        "osmType": "node",
+        "osmId": 1994082429,
+        "mappedName": "National Aquarium, Jones Falls Trail, Inner Harbor, Baltimore, Maryland, 21202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/1994082429"
+      }
+    ],
+    "references": [
+      "https://baltimore.org/listings/lexington-market/",
+      "https://baltimore.org/plan/transportation/find-a-place-to-park-in-baltimore/",
+      "https://baltimore.org/listings/washington-monument-and-mount-vernon-place/"
+    ]
+  },
+  {
+    "id": "city-ma",
+    "stateCode": "MA",
+    "state": "Massachusetts",
+    "city": "Boston",
+    "name": "Boston, MA \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 42.356,
+    "lon": -71.061,
+    "landmarks": [
+      {
+        "name": "Old State House",
+        "lat": 42.3587306,
+        "lon": -71.0574681,
+        "osmType": "way",
+        "osmId": 29608515,
+        "mappedName": "Old State House, 208, Washington Street, Downtown Crossing, Downtown, Boston, Suffolk County, Massachusetts, 02109, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/29608515"
+      },
+      {
+        "name": "Old North Church",
+        "lat": 42.366316,
+        "lon": -71.0544478,
+        "osmType": "way",
+        "osmId": 29650592,
+        "mappedName": "Old North Church, 193, Salem Street, North End, Boston, Suffolk County, Massachusetts, 02113, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/29650592"
+      },
+      {
+        "name": "Massachusetts State House",
+        "lat": 42.358602,
+        "lon": -71.0638751,
+        "osmType": "way",
+        "osmId": 29718019,
+        "mappedName": "Massachusetts State House, 24, Beacon Street, Beacon Hill, Boston, Suffolk County, Massachusetts, 02108, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/29718019"
+      },
+      {
+        "name": "Boston Public Library",
+        "lat": 42.3493298,
+        "lon": -71.0786547,
+        "osmType": "relation",
+        "osmId": 63755,
+        "mappedName": "Boston Public Library, 700, Boylston Street, Back Bay, Boston, Suffolk County, Massachusetts, 02116, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/63755"
+      }
+    ],
+    "references": [
+      "https://www.meetboston.com/coupon/boston-250-pass/10147/print/",
+      "https://www.meetboston.com/things-to-do/sightseeing-and-tours/walking-tours/the-freedom-trail/",
+      "https://www.meetboston.com/blog/post/bostons-famous-landmarks/"
+    ]
+  },
+  {
+    "id": "city-mi",
+    "stateCode": "MI",
+    "state": "Michigan",
+    "city": "Detroit",
+    "name": "Detroit, MI \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 42.335,
+    "lon": -83.052,
+    "landmarks": [
+      {
+        "name": "Michigan Central Station",
+        "lat": 42.328721,
+        "lon": -83.0778043,
+        "osmType": "way",
+        "osmId": 805151309,
+        "mappedName": "Michigan Central Station, 2405, West Vernor Highway, Corktown, Detroit, Wayne County, Michigan, 48209, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/805151309"
+      },
+      {
+        "name": "Fox Theatre",
+        "lat": 42.3385829,
+        "lon": -83.0522455,
+        "osmType": "node",
+        "osmId": 6150469184,
+        "mappedName": "Fox Theatre, 2211, Woodward Avenue, Midtown, Detroit, Wayne County, Michigan, 48226, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/6150469184"
+      },
+      {
+        "name": "Guardian Building",
+        "lat": 42.3295213,
+        "lon": -83.046064,
+        "osmType": "way",
+        "osmId": 330839648,
+        "mappedName": "Guardian Building, 500, Griswold Street, Detroit, Wayne County, Michigan, 48224, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/330839648"
+      },
+      {
+        "name": "Eastern Market",
+        "lat": 42.3484637,
+        "lon": -83.0399929,
+        "osmType": "way",
+        "osmId": 581362401,
+        "mappedName": "Eastern Market, Midtown, Detroit, Wayne County, Michigan, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/581362401"
+      }
+    ],
+    "references": [
+      "https://visitdetroit.com/directory/eastern-market/",
+      "https://visitdetroit.com/directory/fox-theatre/",
+      "https://visitdetroit.com/directory/fox-theatre-performance-venue/"
+    ]
+  },
+  {
+    "id": "city-mn",
+    "stateCode": "MN",
+    "state": "Minnesota",
+    "city": "Minneapolis",
+    "name": "Minneapolis, MN \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 44.974,
+    "lon": -93.27,
+    "landmarks": [
+      {
+        "name": "Basilica of Saint Mary",
+        "lat": 44.9730072,
+        "lon": -93.286271,
+        "osmType": "way",
+        "osmId": 39422725,
+        "mappedName": "Basilica of Saint Mary, 88, 17th Street North, Loring Park, Central, Minneapolis, Hennepin County, Minnesota, 55403, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/39422725"
+      },
+      {
+        "name": "Walker Art Center",
+        "lat": 44.9680027,
+        "lon": -93.2887652,
+        "osmType": "way",
+        "osmId": 45530842,
+        "mappedName": "Walker Art Center, 1750, West Lyndale Avenue South, Lowry Hill, Bde Maka Ska-Isles, Minneapolis, Hennepin County, Minnesota, 55403, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/45530842"
+      },
+      {
+        "name": "Minneapolis Institute of Art",
+        "lat": 44.9584761,
+        "lon": -93.2741528,
+        "osmType": "way",
+        "osmId": 38898412,
+        "mappedName": "Minneapolis Institute of Art, 2400, 3rd Avenue South, Whittier, Eat Street, Powderhorn, Minneapolis, Hennepin County, Minnesota, 55404, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/38898412"
+      },
+      {
+        "name": "Guthrie Theater",
+        "lat": 44.9782261,
+        "lon": -93.2555191,
+        "osmType": "way",
+        "osmId": 129937715,
+        "mappedName": "Guthrie Theater, 818, South 2nd Street, Downtown East, Mill District, Central, Minneapolis, Hennepin County, Minnesota, 55415, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/129937715"
+      }
+    ],
+    "references": [
+      "https://www.minneapolis.org/calendar/downtown-events/",
+      "https://www.minneapolis.org/minneapolis-convention-center/attendees/convention-center-guide/",
+      "https://www.minneapolis.org/directory/walker-art-center/"
+    ]
+  },
+  {
+    "id": "city-ms",
+    "stateCode": "MS",
+    "state": "Mississippi",
+    "city": "Jackson",
+    "name": "Jackson, MS \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 32.302,
+    "lon": -90.183,
+    "landmarks": [
+      {
+        "name": "Mississippi State Capitol",
+        "lat": 32.3038186,
+        "lon": -90.1820767,
+        "osmType": "way",
+        "osmId": 653864604,
+        "mappedName": "Mississippi State Capitol, 100, South State Street, Jackson, Hinds County, Mississippi, 39201, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/653864604"
+      },
+      {
+        "name": "Old Capitol Museum",
+        "lat": 32.2991503,
+        "lon": -90.1799353,
+        "osmType": "node",
+        "osmId": 10266248675,
+        "mappedName": "Old Capitol Museum, 100, North State Street, Jackson, Hinds County, Mississippi, 39201, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/10266248675"
+      },
+      {
+        "name": "Smith Robertson Museum",
+        "lat": 32.3054071,
+        "lon": -90.1867736,
+        "osmType": "node",
+        "osmId": 1431242197,
+        "mappedName": "Smith Robertson Museum and Cultural Center, 528, Bloom Street, Farish Street Historic District, Jackson, Hinds County, Mississippi, 39202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/1431242197"
+      },
+      {
+        "name": "Mississippi Museum of Art",
+        "lat": 32.2963078,
+        "lon": -90.1856248,
+        "osmType": "way",
+        "osmId": 129792570,
+        "mappedName": "Mississippi Museum of Art, 201, East Pascagoula Street, Jackson, Hinds County, Mississippi, 39215, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/129792570"
+      }
+    ],
+    "references": [
+      "https://www.visitjackson.com/plan-your-trip/neighborhoods/downtown/",
+      "https://www.visitjackson.com/directory/mississippi-state-capitol/",
+      "https://www.visitjackson.com/directory/the-old-capitol-museum/"
+    ]
+  },
+  {
+    "id": "city-mo",
+    "stateCode": "MO",
+    "state": "Missouri",
+    "city": "St. Louis",
+    "name": "St. Louis, MO \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 38.635,
+    "lon": -90.215,
+    "landmarks": [
+      {
+        "name": "Union Station",
+        "lat": 38.6267525,
+        "lon": -90.2071779,
+        "osmType": "node",
+        "osmId": 8441841631,
+        "mappedName": "Union Station, South 18th Street, Downtown West, Saint Louis, Missouri, 63103, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/8441841631"
+      },
+      {
+        "name": "City Museum",
+        "lat": 38.6337006,
+        "lon": -90.2004142,
+        "osmType": "way",
+        "osmId": 202269269,
+        "mappedName": "City Museum, 750, North 16th Street, Downtown West, Saint Louis, Missouri, 63103, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/202269269"
+      },
+      {
+        "name": "Old Courthouse",
+        "lat": 38.6257274,
+        "lon": -90.1893477,
+        "osmType": "way",
+        "osmId": 42341614,
+        "mappedName": "Old Courthouse, 11, North 4th Street, Downtown, Saint Louis, Missouri, 63101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/42341614"
+      },
+      {
+        "name": "Fabulous Fox Theatre",
+        "lat": 38.6391224,
+        "lon": -90.2323843,
+        "osmType": "way",
+        "osmId": 202419428,
+        "mappedName": "The Fabulous Fox, 527, North Grand Boulevard, Covenant Blu Grand Center, Saint Louis, Missouri, 63103, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/202419428"
+      }
+    ],
+    "references": [
+      "https://explorestlouis.com/partner/landmarks-association-of-st-louis-inc/",
+      "https://explorestlouis.com/partner/old-courthouse/",
+      "https://explorestlouis.com/wp-content/uploads/2025/01/LTS-Domestic-Profile-Sheet-Jan-2025.pdf"
+    ]
+  },
+  {
+    "id": "city-mt",
+    "stateCode": "MT",
+    "state": "Montana",
+    "city": "Billings",
+    "name": "Billings, MT \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 45.783,
+    "lon": -108.506,
+    "landmarks": [
+      {
+        "name": "Moss Mansion",
+        "lat": 45.7796323,
+        "lon": -108.5158711,
+        "osmType": "way",
+        "osmId": 641316338,
+        "mappedName": "Moss Mansion, Billings, Yellowstone County, Montana, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/641316338"
+      },
+      {
+        "name": "Yellowstone Art Museum",
+        "lat": 45.7858306,
+        "lon": -108.5070662,
+        "osmType": "way",
+        "osmId": 635454777,
+        "mappedName": "Yellowstone Art Museum, 401, North 27th Street, Downtown, Billings, Yellowstone County, Montana, 59101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/635454777"
+      },
+      {
+        "name": "Billings Depot",
+        "lat": 45.7838391,
+        "lon": -108.4990953,
+        "osmType": "way",
+        "osmId": 635738593,
+        "mappedName": "Billings Depot, 2310, Montana Avenue, Billings, Yellowstone County, Montana, 59101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/635738593"
+      },
+      {
+        "name": "Alberta Bair Theater",
+        "lat": 45.7838628,
+        "lon": -108.5079804,
+        "osmType": "way",
+        "osmId": 654739232,
+        "mappedName": "Alberta Bair Theater, 2801, 3rd Avenue North, Downtown, Billings, Yellowstone County, Montana, 59101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/654739232"
+      }
+    ],
+    "references": [
+      "https://www.visitbillings.com/sites/default/files/BMT_2024_Visitor_Guide.pdf",
+      "https://www.visitbillings.com/arts-culture-nightlife/museums/",
+      "https://www.visitbillings.com/sites/default/files/BMT-ADV-10940_VisitBillingsVisitorGuide_FINAL-2020edits-V11_web.pdf"
+    ]
+  },
+  {
+    "id": "city-ne",
+    "stateCode": "NE",
+    "state": "Nebraska",
+    "city": "Omaha",
+    "name": "Omaha, NE \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 41.257,
+    "lon": -95.939,
+    "landmarks": [
+      {
+        "name": "Joslyn Art Museum",
+        "lat": 41.2604154,
+        "lon": -95.946024,
+        "osmType": "way",
+        "osmId": 256985023,
+        "mappedName": "Joslyn Art Museum, 2200, Dodge Street, Omaha, Douglas County, Nebraska, 68102, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/256985023"
+      },
+      {
+        "name": "Durham Museum",
+        "lat": 41.2513982,
+        "lon": -95.9280999,
+        "osmType": "way",
+        "osmId": 107367985,
+        "mappedName": "Durham Museum, 801, South 10th Street, Omaha, Douglas County, Nebraska, 68108, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/107367985"
+      },
+      {
+        "name": "Orpheum Theater",
+        "lat": 41.2561633,
+        "lon": -95.9362969,
+        "osmType": "way",
+        "osmId": 262614814,
+        "mappedName": "Orpheum Theater, 409, South 16th Street, Omaha, Douglas County, Nebraska, 68102, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/262614814"
+      },
+      {
+        "name": "Lewis and Clark Landing",
+        "query": "Lewis & Clark Landing",
+        "lat": 41.2618044,
+        "lon": -95.9245329,
+        "osmType": "way",
+        "osmId": 165788677,
+        "mappedName": "Lewis & Clark Landing, Omaha, Douglas County, Nebraska, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/165788677"
+      }
+    ],
+    "references": [
+      "https://www.visitomaha.com/listings/durham-museum/62308/",
+      "https://www.visitomaha.com/things-to-do/arts-and-culture/historic-sites/",
+      "https://www.visitomaha.com/things-to-do/arts-and-culture/museums/"
+    ]
+  },
+  {
+    "id": "city-nv",
+    "stateCode": "NV",
+    "state": "Nevada",
+    "city": "Las Vegas",
+    "name": "Las Vegas, NV \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 36.176,
+    "lon": -115.136,
+    "landmarks": [
+      {
+        "name": "Mob Museum",
+        "lat": 36.1724841,
+        "lon": -115.141577,
+        "osmType": "node",
+        "osmId": 13113989180,
+        "mappedName": "Mob Museum, North 3rd Street, Downtown Las Vegas, Las Vegas, Clark County, Nevada, 89101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/13113989180"
+      },
+      {
+        "name": "Neon Museum",
+        "lat": 36.1765127,
+        "lon": -115.1352767,
+        "osmType": "way",
+        "osmId": 266824889,
+        "mappedName": "Neon Museum, 770, North Las Vegas Boulevard, Downtown Las Vegas, Las Vegas, Clark County, Nevada, 89101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/266824889"
+      },
+      {
+        "name": "Old Las Vegas Mormon Fort",
+        "query": "Old Las Vegas Mormon Fort State Historic Park",
+        "lat": 36.1805569,
+        "lon": -115.1334352,
+        "osmType": "way",
+        "osmId": 129478115,
+        "mappedName": "Old Las Vegas Mormon Fort State Historic Park, 500, Downtown Las Vegas, Las Vegas, Clark County, Nevada, 89101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/129478115"
+      },
+      {
+        "name": "Downtown Container Park",
+        "lat": 36.1673883,
+        "lon": -115.1385678,
+        "osmType": "way",
+        "osmId": 255442249,
+        "mappedName": "Downtown Container Park, 707, Fremont Street, Fremont East Entertainment District, Downtown Las Vegas, Las Vegas, Clark County, Nevada, 89101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/255442249"
+      }
+    ],
+    "references": [
+      "https://www.visitlasvegas.com/experience/post/national-plan-for-vacation-day/",
+      "https://www.visitlasvegas.com/experience/post/things-to-do-downtown/",
+      "https://www.visitlasvegas.com/experience/post/budget-briendly-vegas-incredible-attractions-that-wont-break-the-bank/"
+    ]
+  },
+  {
+    "id": "city-nh",
+    "stateCode": "NH",
+    "state": "New Hampshire",
+    "city": "Manchester",
+    "name": "Manchester, NH \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 42.992,
+    "lon": -71.462,
+    "landmarks": [
+      {
+        "name": "Currier Museum of Art",
+        "lat": 42.9977038,
+        "lon": -71.455607,
+        "osmType": "way",
+        "osmId": 1014925046,
+        "mappedName": "Currier Museum of Art, 150, Ash Street, Corey Square, Downtown, East Side, Manchester, Hillsborough County, New Hampshire, 03104, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/1014925046"
+      },
+      {
+        "name": "Palace Theatre",
+        "lat": 42.9910484,
+        "lon": -71.461274,
+        "osmType": "node",
+        "osmId": 9428923480,
+        "mappedName": "The Palace Theatre, 80, Hanover Street, Downtown, East Side, Manchester, Hillsborough County, New Hampshire, 03101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/9428923480"
+      },
+      {
+        "name": "Millyard Museum",
+        "query": "200 Bedford Street",
+        "lat": 42.9897009,
+        "lon": -71.4679602,
+        "osmType": "way",
+        "osmId": 1021407142,
+        "mappedName": "SEE Science Center, 200, Bedford Street, Amoskeag Millyard, Downtown, East Side, Manchester, Hillsborough County, New Hampshire, 03101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/1021407142"
+      },
+      {
+        "name": "SNHU Arena",
+        "lat": 42.9866164,
+        "lon": -71.4617581,
+        "osmType": "way",
+        "osmId": 1046220602,
+        "mappedName": "SNHU Arena, 555, Elm Street, Gaslight District, Downtown, East Side, Manchester, Hillsborough County, New Hampshire, 03101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/1046220602"
+      }
+    ],
+    "references": [
+      "https://www.visitnh.gov/business/detail/567",
+      "https://www.visitnh.gov/business/detail/391",
+      "https://www.visitnh.gov/blog/exploring-the-summertime-charms-of-new-hampshire"
+    ]
+  },
+  {
+    "id": "city-nj",
+    "stateCode": "NJ",
+    "state": "New Jersey",
+    "city": "Newark",
+    "name": "Newark, NJ \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 40.744,
+    "lon": -74.171,
+    "landmarks": [
+      {
+        "name": "Newark Museum of Art",
+        "query": "Newark Museum",
+        "lat": 40.7431635,
+        "lon": -74.1717646,
+        "osmType": "way",
+        "osmId": 259617388,
+        "mappedName": "Newark Museum, 49, Washington Street, The Ironbound, Newark, Essex County, New Jersey, 07102, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/259617388"
+      },
+      {
+        "name": "Cathedral Basilica of the Sacred Heart",
+        "lat": 40.7550042,
+        "lon": -74.1783604,
+        "osmType": "relation",
+        "osmId": 5506232,
+        "mappedName": "Cathedral Basilica of the Sacred Heart, Clifton Avenue, Newark, Essex County, New Jersey, 07104, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/5506232"
+      },
+      {
+        "name": "New Jersey Performing Arts Center",
+        "lat": 40.7402141,
+        "lon": -74.167388,
+        "osmType": "way",
+        "osmId": 75687568,
+        "mappedName": "New Jersey Performing Arts Center, 1, Center Street, The Ironbound, Newark, Essex County, New Jersey, 07102, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/75687568"
+      },
+      {
+        "name": "Newark Penn Station",
+        "lat": 40.7351596,
+        "lon": -74.162825,
+        "osmType": "node",
+        "osmId": 3405301819,
+        "mappedName": "Newark Penn Station, Raymond Boulevard, The Ironbound, Newark, Essex County, New Jersey, 07102, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/3405301819"
+      }
+    ],
+    "references": [
+      "https://www.newarkhappening.com/plan/transportation/",
+      "https://www.newarkhappening.com/plan/accessibility/",
+      "https://www.newarkhappening.com/listing/trinity-and-st-philips-cathedral/394/"
+    ]
+  },
+  {
+    "id": "city-nm",
+    "stateCode": "NM",
+    "state": "New Mexico",
+    "city": "Albuquerque",
+    "name": "Albuquerque, NM \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 35.09,
+    "lon": -106.658,
+    "landmarks": [
+      {
+        "name": "San Felipe de Neri Church",
+        "lat": 35.0966706,
+        "lon": -106.6700564,
+        "osmType": "node",
+        "osmId": 357579800,
+        "mappedName": "San Felipe de Neri Catholic Church, 2005, North Plaza Street Northwest, Old Town, Albuquerque, Bernalillo County, New Mexico, 87104, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/357579800"
+      },
+      {
+        "name": "New Mexico Museum of Natural History",
+        "query": "1801 Mountain Road Northwest",
+        "lat": 35.0978963,
+        "lon": -106.6656466,
+        "osmType": "relation",
+        "osmId": 20827165,
+        "mappedName": "New Mexico Museum of Natural History & Science, 1801, Mountain Road Northwest, Old Town, Albuquerque, Bernalillo County, New Mexico, 87104, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/20827165"
+      },
+      {
+        "name": "KiMo Theatre",
+        "lat": 35.0848183,
+        "lon": -106.652561,
+        "osmType": "node",
+        "osmId": 366378268,
+        "mappedName": "Kimo Theater Historic Site, 423, Central Avenue Northwest, Barelas, Albuquerque, Bernalillo County, New Mexico, 87102, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/366378268"
+      },
+      {
+        "name": "Albuquerque Rail Yards",
+        "lat": 35.0733534,
+        "lon": -106.6503378,
+        "osmType": "way",
+        "osmId": 512982810,
+        "mappedName": "Albuquerque Rail Yards, Barelas, Albuquerque, Bernalillo County, New Mexico, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/512982810"
+      }
+    ],
+    "references": [
+      "https://www.visitalbuquerque.org/things-to-do/tours-sightseeing/walking/plaza-to-plaza/",
+      "https://www.visitalbuquerque.org/route-66-centennial/explore/neighborhood-guide/old-town/",
+      "https://www.visitalbuquerque.org/about-abq/neighborhoods/historic-old-town/"
+    ]
+  },
+  {
+    "id": "city-ny",
+    "stateCode": "NY",
+    "state": "New York",
+    "city": "New York",
+    "name": "New York, NY \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 40.751,
+    "lon": -73.983,
+    "landmarks": [
+      {
+        "name": "Flatiron Building",
+        "lat": 40.7410592,
+        "lon": -73.9896416,
+        "osmType": "way",
+        "osmId": 264768896,
+        "mappedName": "Flatiron Building, 175, 5th Avenue, Flatiron District, Manhattan Community Board 5, Manhattan, New York County, New York, 10010, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/264768896"
+      },
+      {
+        "name": "New York Public Library Stephen A. Schwarzman Building",
+        "query": "New York Public Library",
+        "lat": 40.7533445,
+        "lon": -73.9821524,
+        "osmType": "way",
+        "osmId": 265302076,
+        "mappedName": "Stephen A. Schwarzman Building, 476, 5th Avenue, Midtown South, Manhattan Community Board 5, Manhattan, New York County, New York, 10018, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/265302076"
+      },
+      {
+        "name": "Grand Central Terminal",
+        "lat": 40.7526944,
+        "lon": -73.977253,
+        "osmType": "way",
+        "osmId": 265947358,
+        "mappedName": "Grand Central Terminal, 89, East 42nd Street, Midtown, Manhattan Community Board 5, Manhattan, New York County, New York, 10178, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/265947358"
+      },
+      {
+        "name": "Rockefeller Center",
+        "lat": 40.7592576,
+        "lon": -73.9799569,
+        "osmType": "relation",
+        "osmId": 18351439,
+        "mappedName": "Rockefeller Center, 45, Rockefeller Plaza, Midtown, Manhattan Community Board 5, Manhattan, New York County, New York, 10111, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/18351439"
+      }
+    ],
+    "references": [
+      "https://business.nyctourism.com/press-media/press-releases/nyc-company-invites-visitors-to-see-manhattan-like-a-new-yorker",
+      "https://www.nyctourism.com/NYCTourismOVM-090924.pdf",
+      "https://www.business.nyctourism.com/press-media/press-releases/nyc-company-invites-visitors-to-see-manhattan-like-a-new-yorker"
+    ],
+    "roadOnlySnapshot": true
+  },
+  {
+    "id": "city-nc",
+    "stateCode": "NC",
+    "state": "North Carolina",
+    "city": "Charlotte",
+    "name": "Charlotte, NC \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 35.227,
+    "lon": -80.845,
+    "landmarks": [
+      {
+        "name": "NASCAR Hall of Fame",
+        "lat": 35.2211404,
+        "lon": -80.8439674,
+        "osmType": "way",
+        "osmId": 322278731,
+        "mappedName": "NASCAR Hall of Fame, 400, East Martin Luther King Jr Boulevard, Second Ward, Uptown, Charlotte, Mecklenburg County, North Carolina, 28202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/322278731"
+      },
+      {
+        "name": "Mint Museum Uptown",
+        "lat": 35.2246048,
+        "lon": -80.8484481,
+        "osmType": "way",
+        "osmId": 131139755,
+        "mappedName": "Mint Museum Uptown, 500, South Tryon Street, Uptown, Charlotte, Mecklenburg County, North Carolina, 28202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/131139755"
+      },
+      {
+        "name": "Bank of America Stadium",
+        "lat": 35.225774,
+        "lon": -80.8528276,
+        "osmType": "way",
+        "osmId": 180768146,
+        "mappedName": "Bank of America Stadium, 800, South Mint Street, Third Ward, Uptown, Charlotte, Mecklenburg County, North Carolina, 28202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/180768146"
+      },
+      {
+        "name": "Discovery Place Science",
+        "lat": 35.229618,
+        "lon": -80.8411969,
+        "osmType": "way",
+        "osmId": 174231925,
+        "mappedName": "Discovery Place Science, 301, North Tryon Street, Uptown, Charlotte, Mecklenburg County, North Carolina, 28202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/174231925"
+      }
+    ],
+    "references": [
+      "https://www.charlottesgotalot.com/things-to-do/attractions/nascar-hall-of-fame",
+      "https://www.charlottesgotalot.com/neighborhoods/uptown",
+      "https://www.charlottesgotalot.com/articles/arts-culture/charlotte-museum-guide"
+    ]
+  },
+  {
+    "id": "city-nd",
+    "stateCode": "ND",
+    "state": "North Dakota",
+    "city": "Fargo",
+    "name": "Fargo, ND \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 46.876,
+    "lon": -96.787,
+    "landmarks": [
+      {
+        "name": "Fargo Theatre",
+        "lat": 46.8796193,
+        "lon": -96.7881454,
+        "osmType": "way",
+        "osmId": 98245045,
+        "mappedName": "Fargo Theatre, 314, Roberts Alley, Downtown, Fargo, Cass County, North Dakota, 58108, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/98245045"
+      },
+      {
+        "name": "Plains Art Museum",
+        "lat": 46.8769526,
+        "lon": -96.7918307,
+        "osmType": "way",
+        "osmId": 98249907,
+        "mappedName": "Plains Art Museum, 704, 1st Avenue North, Downtown, Fargo, Cass County, North Dakota, 58102, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/98249907"
+      },
+      {
+        "name": "Fargo Civic Center",
+        "lat": 46.8784964,
+        "lon": -96.7839989,
+        "osmType": "way",
+        "osmId": 98207306,
+        "mappedName": "Fargo Civic Center, Fargo Skyway, Downtown, Fargo, Cass County, North Dakota, 58108, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/98207306"
+      },
+      {
+        "name": "Island Park",
+        "lat": 46.8701437,
+        "lon": -96.7878701,
+        "osmType": "way",
+        "osmId": 52245665,
+        "mappedName": "Island Park, Fargo, Cass County, North Dakota, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/52245665"
+      }
+    ],
+    "references": [
+      "https://www.fargomoorhead.org/listing/plains-art-museum/13383/",
+      "https://www.fargomoorhead.org/things-to-do/downtown-fargo/",
+      "https://www.fargomoorhead.org/things-to-do/downtown-fargo/?adgroup=null&campaign=null&device=c&gadid=122&keyword=walnut+crossings&network=g"
+    ]
+  },
+  {
+    "id": "city-oh",
+    "stateCode": "OH",
+    "state": "Ohio",
+    "city": "Cleveland",
+    "name": "Cleveland, OH \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 41.499,
+    "lon": -81.693,
+    "landmarks": [
+      {
+        "name": "West Side Market",
+        "lat": 41.4846588,
+        "lon": -81.7029998,
+        "osmType": "way",
+        "osmId": 93599980,
+        "mappedName": "West Side Market, 1979, West 25th Street, Ohio City, Cleveland, Cuyahoga County, Ohio, 44113, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/93599980"
+      },
+      {
+        "name": "Terminal Tower",
+        "lat": 41.4982766,
+        "lon": -81.6938117,
+        "osmType": "way",
+        "osmId": 333475727,
+        "mappedName": "Terminal Tower, 50, Rockwell Avenue, Downtown Cleveland, Cleveland, Cuyahoga County, Ohio, 44113, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/333475727"
+      },
+      {
+        "name": "Rock and Roll Hall of Fame",
+        "lat": 41.5084983,
+        "lon": -81.6954068,
+        "osmType": "relation",
+        "osmId": 10703171,
+        "mappedName": "Rock and Roll Hall of Fame, East 9th Street, Downtown Cleveland, Cleveland, Cuyahoga County, Ohio, 44114, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/10703171"
+      },
+      {
+        "name": "Playhouse Square",
+        "lat": 41.5009125,
+        "lon": -81.6818217,
+        "osmType": "node",
+        "osmId": 3713758754,
+        "mappedName": "Playhouse Square, Cleveland, Cuyahoga County, Ohio, 44115, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/3713758754"
+      }
+    ],
+    "references": [
+      "https://www.thisiscleveland.com/locations/west-side-market",
+      "https://www.thisiscleveland.com/Locations/Terminal-Tower",
+      "https://www.thisiscleveland.com/Neighborhoods/downtown-cleveland"
+    ]
+  },
+  {
+    "id": "city-ok",
+    "stateCode": "OK",
+    "state": "Oklahoma",
+    "city": "Oklahoma City",
+    "name": "Oklahoma City, OK \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 35.476,
+    "lon": -97.51,
+    "landmarks": [
+      {
+        "name": "Oklahoma City National Memorial",
+        "lat": 35.4731758,
+        "lon": -97.5170594,
+        "osmType": "way",
+        "osmId": 184955502,
+        "mappedName": "Oklahoma City National Memorial & Museum, Oklahoma City, Oklahoma County, Oklahoma, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/184955502"
+      },
+      {
+        "name": "Oklahoma State Capitol",
+        "lat": 35.4922055,
+        "lon": -97.5033333,
+        "osmType": "way",
+        "osmId": 74042499,
+        "mappedName": "Oklahoma State Capitol, 2300, North Lincoln Boulevard, Oklahoma City, Oklahoma County, Oklahoma, 73105, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/74042499"
+      },
+      {
+        "name": "Chickasaw Bricktown Ballpark",
+        "lat": 35.4650912,
+        "lon": -97.508646,
+        "osmType": "relation",
+        "osmId": 1397999,
+        "mappedName": "Chickasaw Bricktown Ballpark, 2, South Mickey Mantle Drive, Oklahoma City, Oklahoma County, Oklahoma, 73104, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/1397999"
+      },
+      {
+        "name": "Myriad Botanical Gardens",
+        "lat": 35.4653577,
+        "lon": -97.5179752,
+        "osmType": "way",
+        "osmId": 142226336,
+        "mappedName": "Myriad Botanical Gardens, Oklahoma City, Oklahoma County, Oklahoma, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/142226336"
+      }
+    ],
+    "references": [
+      "https://www.visitokc.com/faq/html/attractions/oklahoma-city-convention-center.html",
+      "https://www.visitokc.com/districts/city-center-downtown/",
+      "https://www.visitokc.com/listing/myriad-botanical-gardens-%26-crystal-bridge-conservatory/848/"
+    ]
+  },
+  {
+    "id": "city-or",
+    "stateCode": "OR",
+    "state": "Oregon",
+    "city": "Portland",
+    "name": "Portland, OR \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 45.523,
+    "lon": -122.678,
+    "landmarks": [
+      {
+        "name": "Pioneer Courthouse Square",
+        "lat": 45.5189007,
+        "lon": -122.6792966,
+        "osmType": "relation",
+        "osmId": 11590670,
+        "mappedName": "Pioneer Courthouse Square, Downtown, Portland, Multnomah County, Oregon, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/11590670"
+      },
+      {
+        "name": "Union Station",
+        "lat": 45.5290114,
+        "lon": -122.6767644,
+        "osmType": "way",
+        "osmId": 156423744,
+        "mappedName": "Portland Union Station, 800, Northwest 6th Avenue, Chinatown, Old Town, Portland, Multnomah County, Oregon, 97209, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/156423744"
+      },
+      {
+        "name": "Powells City of Books",
+        "query": "Powell\u2019s City of Books",
+        "lat": 45.5233346,
+        "lon": -122.6816396,
+        "osmType": "way",
+        "osmId": 34198762,
+        "mappedName": "Powell's City of Books, 1005, Pearl District, Portland, Multnomah County, Oregon, 97209, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/34198762"
+      },
+      {
+        "name": "Portland Art Museum",
+        "lat": 45.5165483,
+        "lon": -122.6834106,
+        "osmType": "way",
+        "osmId": 1453455016,
+        "mappedName": "Portland Art Museum, 1219, Southwest Park Avenue, University District, Downtown, Portland, Multnomah County, Oregon, 97205, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/1453455016"
+      }
+    ],
+    "references": [
+      "https://www.travelportland.com/attractions/powells/",
+      "https://www.travelportland.com/attractions/pioneer-courthouse-square/",
+      "https://www.travelportland.com/wp-content/uploads/2023/04/Walkable-Portland.pdf"
+    ]
+  },
+  {
+    "id": "city-pa",
+    "stateCode": "PA",
+    "state": "Pennsylvania",
+    "city": "Philadelphia",
+    "name": "Philadelphia, PA \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 39.955,
+    "lon": -75.164,
+    "landmarks": [
+      {
+        "name": "Philadelphia Museum of Art",
+        "lat": 39.9655661,
+        "lon": -75.1815202,
+        "osmType": "way",
+        "osmId": 28533972,
+        "mappedName": "Philadelphia Museum of Art, 2600, Benjamin Franklin Parkway, North Philadelphia, Philadelphia, Philadelphia County, Pennsylvania, 19130, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/28533972"
+      },
+      {
+        "name": "Philadelphia City Hall",
+        "lat": 39.9523995,
+        "lon": -75.1629893,
+        "osmType": "relation",
+        "osmId": 4720912,
+        "mappedName": "Philadelphia City Hall, 1, City Hall Walkways, Center City, Philadelphia, Philadelphia County, Pennsylvania, 19107, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/4720912"
+      },
+      {
+        "name": "Reading Terminal Market",
+        "lat": 39.9531441,
+        "lon": -75.1590492,
+        "osmType": "way",
+        "osmId": 42784822,
+        "mappedName": "Reading Terminal Market, 51, North 12th Street, Chinatown, Center City, Philadelphia, Philadelphia County, Pennsylvania, 19107, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/42784822"
+      },
+      {
+        "name": "Independence Hall",
+        "lat": 39.9488873,
+        "lon": -75.150026,
+        "osmType": "way",
+        "osmId": 25271595,
+        "mappedName": "Independence Hall, 520, Chestnut Street, Old City, Center City, Philadelphia, Philadelphia County, Pennsylvania, 19106, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/25271595"
+      }
+    ],
+    "references": [
+      "https://www.visitphilly.com/things-to-do/attractions/independence-hall/",
+      "https://www.visitphilly.com/wp-content/uploads/2025/04/PHLASH-PAD-MAP-2025-1.pdf",
+      "https://www.visitphilly.com/features/philly-phlash-downtown-loop/"
+    ],
+    "roadOnlySnapshot": true
+  },
+  {
+    "id": "city-ri",
+    "stateCode": "RI",
+    "state": "Rhode Island",
+    "city": "Providence",
+    "name": "Providence, RI \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 41.825,
+    "lon": -71.411,
+    "landmarks": [
+      {
+        "name": "Rhode Island State House",
+        "lat": 41.8308956,
+        "lon": -71.4149587,
+        "osmType": "way",
+        "osmId": 121496401,
+        "mappedName": "Rhode Island State Capitol Building, 82, Smith Street, Downtown, Providence, Providence County, Rhode Island, 02903, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/121496401"
+      },
+      {
+        "name": "Providence City Hall",
+        "lat": 41.8240345,
+        "lon": -71.4129047,
+        "osmType": "way",
+        "osmId": 121496393,
+        "mappedName": "Providence City Hall, 25, Dorrance Street, Downtown, Providence, Providence County, Rhode Island, 02903, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/121496393"
+      },
+      {
+        "name": "Providence Performing Arts Center",
+        "lat": 41.8210653,
+        "lon": -71.4119701,
+        "osmType": "way",
+        "osmId": 542070576,
+        "mappedName": "Providence Performing Arts Center, Page Street, Downtown, Providence, Providence County, Rhode Island, 02903, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/542070576"
+      },
+      {
+        "name": "John Brown House",
+        "lat": 41.8232315,
+        "lon": -71.4033148,
+        "osmType": "way",
+        "osmId": 309146529,
+        "mappedName": "John Brown House Museum, 52, Power Street, College Hill, Providence, Providence County, Rhode Island, 02906, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/309146529"
+      }
+    ],
+    "references": [
+      "https://www.goprovidence.com/listing/john-brown-house-museum/",
+      "https://www.goprovidence.com/articles/post/living-history-historic-sites-and-attraction/",
+      "https://www.goprovidence.com/experiences/the-museum-at-the-john-brown-house/"
+    ],
+    "roadOnlySnapshot": true
+  },
+  {
+    "id": "city-sc",
+    "stateCode": "SC",
+    "state": "South Carolina",
+    "city": "Charleston",
+    "name": "Charleston, SC \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 32.785,
+    "lon": -79.933,
+    "landmarks": [
+      {
+        "name": "Old Exchange and Provost Dungeon",
+        "query": "122 East Bay Street",
+        "lat": 32.7768504,
+        "lon": -79.9268687,
+        "osmType": "way",
+        "osmId": 491702219,
+        "mappedName": "Old Exchange & Provost Dungeon, 122, East Bay Street, French Quarter, Charleston, Charleston County, South Carolina, 29401, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/491702219"
+      },
+      {
+        "name": "Rainbow Row",
+        "lat": 32.7762381,
+        "lon": -79.9271384,
+        "osmType": "node",
+        "osmId": 12557957521,
+        "mappedName": "Rainbow Row (North End), Elliott Street, King Street Antique District, French Quarter, Charleston, Charleston County, South Carolina, 29401, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/12557957521"
+      },
+      {
+        "name": "Charleston Museum",
+        "lat": 32.7898646,
+        "lon": -79.9360246,
+        "osmType": "relation",
+        "osmId": 19379717,
+        "mappedName": "The Charleston Museum, 360, Meeting Street, King Street Design District, Wraggborough, Charleston, Charleston County, South Carolina, 29403, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/19379717"
+      },
+      {
+        "name": "Emanuel African Methodist Episcopal Church",
+        "lat": 32.7874919,
+        "lon": -79.9331069,
+        "osmType": "way",
+        "osmId": 355213464,
+        "mappedName": "Emanuel African Methodist Episcopal Church, 110, Calhoun Street, Aquarium Wharf, Wraggborough, Charleston, Charleston County, South Carolina, 29401, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/355213464"
+      }
+    ],
+    "references": [
+      "https://www.charlestoncvb.com/plan-your-trip/tours-attractions~204att..?location=charleston-downtown~445",
+      "https://www.charlestoncvb.com/lgbtq/",
+      "https://www.charlestoncvb.com/plan-your-trip/tours-attractions~204Travel/?location=charleston-downtown~445"
+    ],
+    "roadOnlySnapshot": false
+  },
+  {
+    "id": "city-sd",
+    "stateCode": "SD",
+    "state": "South Dakota",
+    "city": "Sioux Falls",
+    "name": "Sioux Falls, SD \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 43.551,
+    "lon": -96.728,
+    "landmarks": [
+      {
+        "name": "Falls Park",
+        "lat": 43.5602851,
+        "lon": -96.7221148,
+        "osmType": "relation",
+        "osmId": 15750676,
+        "mappedName": "Falls Park, Sioux Falls, Sioux Falls Township, Minnehaha County, South Dakota, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/15750676"
+      },
+      {
+        "name": "Old Courthouse Museum",
+        "lat": 43.5514715,
+        "lon": -96.7287004,
+        "osmType": "node",
+        "osmId": 4065575094,
+        "mappedName": "Old Courthouse Museum, 200, West 6th Street, Downtown, Sioux Falls, Sioux Falls Township, Minnehaha County, South Dakota, 57104, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/4065575094"
+      },
+      {
+        "name": "Washington Pavilion",
+        "lat": 43.5442578,
+        "lon": -96.7289876,
+        "osmType": "node",
+        "osmId": 4073895259,
+        "mappedName": "Washington Pavilion Discovery Store, 301, South Main Avenue, Downtown, Sioux Falls, Sioux Falls Township, Minnehaha County, South Dakota, 57104, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/4073895259",
+        "coordinateNote": "Mapped gift shop inside the Washington Pavilion at 301 South Main; building entrance reference."
+      },
+      {
+        "name": "Pettigrew Home and Museum",
+        "query": "Pettigrew Museum",
+        "lat": 43.5483761,
+        "lon": -96.7347701,
+        "osmType": "node",
+        "osmId": 4066136879,
+        "mappedName": "Pettigrew Home & Museum, 131, North Duluth Avenue, Cathedral Historic District, Sioux Falls, Sioux Falls Township, Minnehaha County, South Dakota, 57104, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/4066136879"
+      }
+    ],
+    "references": [
+      "https://www.experiencesiouxfalls.com/general-uploads/ESF.TearoffMap.10.2023.pdf",
+      "https://www.experiencesiouxfalls.com/general-uploads/2025-Sioux-Falls-Visitor-Guide.pdf",
+      "https://www.experiencesiouxfalls.com/general-uploads/ESF.TearoffMap.6.2024.pdf"
+    ],
+    "roadOnlySnapshot": false
+  },
+  {
+    "id": "city-tn",
+    "stateCode": "TN",
+    "state": "Tennessee",
+    "city": "Nashville",
+    "name": "Nashville, TN \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 36.162,
+    "lon": -86.783,
+    "landmarks": [
+      {
+        "name": "Tennessee State Capitol",
+        "lat": 36.165829,
+        "lon": -86.7842374,
+        "osmType": "way",
+        "osmId": 249147622,
+        "mappedName": "Tennessee State Capitol, 600, Nashville, Davidson County, Middle Tennessee, Tennessee, 37243, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/249147622"
+      },
+      {
+        "name": "Ryman Auditorium",
+        "lat": 36.1612473,
+        "lon": -86.7784951,
+        "osmType": "way",
+        "osmId": 130905906,
+        "mappedName": "Ryman Auditorium, #116, Rep. John Lewis Way North, Downtown Nashville, East Nashville, Nashville, Davidson County, Middle Tennessee, Tennessee, 37219, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/130905906"
+      },
+      {
+        "name": "Country Music Hall of Fame",
+        "query": "Country Music Hall of Fame and Museum",
+        "lat": 36.1581728,
+        "lon": -86.7760929,
+        "osmType": "way",
+        "osmId": 130905919,
+        "mappedName": "Country Music Hall of Fame and Museum, 222, Rep. John Lewis Way South, Downtown Nashville, East Nashville, Nashville, Davidson County, Middle Tennessee, Tennessee, 37203, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/130905919"
+      },
+      {
+        "name": "Union Station Hotel",
+        "lat": 36.15722,
+        "lon": -86.7847295,
+        "osmType": "way",
+        "osmId": 130905896,
+        "mappedName": "Union Station Hotel, Autograph Collection, Broadway, Downtown Nashville, Nashville, Davidson County, Middle Tennessee, Tennessee, 37203, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/130905896"
+      }
+    ],
+    "references": [
+      "https://www.visitmusiccity.com/nashville-businesses/ajs-good-time-bar/6387",
+      "https://www.visitmusiccity.com/sites/default/files/2025-06/2025-July4_Map_General-FA.pdf",
+      "https://www.visitmusiccity.com/nashville-businesses/ryman-auditorium/7672"
+    ],
+    "roadOnlySnapshot": false
+  },
+  {
+    "id": "city-tx",
+    "stateCode": "TX",
+    "state": "Texas",
+    "city": "San Antonio",
+    "name": "San Antonio, TX \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 29.424,
+    "lon": -98.492,
+    "landmarks": [
+      {
+        "name": "The Alamo",
+        "lat": 29.425728866666663,
+        "lon": -98.48613837777778,
+        "osmType": "way",
+        "osmId": 92060042,
+        "mappedName": "Alamo Church",
+        "coordinateSource": "https://www.openstreetmap.org/way/92060042"
+      },
+      {
+        "name": "San Fernando Cathedral",
+        "lat": 29.424559,
+        "lon": -98.4942042,
+        "osmType": "way",
+        "osmId": 80647022,
+        "mappedName": "San Fernando Cathedral, 115, Trevino Street, Downtown, San Antonio, Bexar County, Texas, 78205, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/80647022"
+      },
+      {
+        "name": "Spanish Governors Palace",
+        "query": "Spanish Governor\u2019s Palace",
+        "lat": 29.4248225,
+        "lon": -98.4959872,
+        "osmType": "way",
+        "osmId": 78601534,
+        "mappedName": "Spanish Governor's Palace, Calder, Downtown, San Antonio, Bexar County, Texas, 78205, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/78601534"
+      },
+      {
+        "name": "Tower of the Americas",
+        "lat": 29.4190825,
+        "lon": -98.4835734,
+        "osmType": "way",
+        "osmId": 78485919,
+        "mappedName": "Tower of the Americas, 739, East Durango Boulevard, Hemisfair, Downtown, San Antonio, Bexar County, Texas, 78205, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/78485919"
+      }
+    ],
+    "references": [
+      "https://www.visitsanantonio.com/plan-your-trip/neighborhood-guide/downtown/",
+      "https://www.visitsanantonio.com/media/media-kit/san-antonios-legendary-attractions/",
+      "https://www.visitsanantonio.com/welcome-international-travelers/bienvenido/"
+    ]
+  },
+  {
+    "id": "city-ut",
+    "stateCode": "UT",
+    "state": "Utah",
+    "city": "Salt Lake City",
+    "name": "Salt Lake City, UT \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 40.764,
+    "lon": -111.89,
+    "landmarks": [
+      {
+        "name": "Utah State Capitol",
+        "lat": 40.7773958,
+        "lon": -111.8882173,
+        "osmType": "way",
+        "osmId": 32920861,
+        "mappedName": "Utah State Capitol Building, 350, State Street, Capitol Hill, Salt Lake City, Salt Lake County, Utah, 84103, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/32920861",
+        "query": "Utah State Capitol Building"
+      },
+      {
+        "name": "Temple Square",
+        "lat": 40.7690175,
+        "lon": -111.8912642,
+        "osmType": "node",
+        "osmId": 2328491006,
+        "mappedName": "Temple Square, Main Street, Downtown, Salt Lake City, Salt Lake County, Utah, 84133, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/2328491006"
+      },
+      {
+        "name": "Union Pacific Depot",
+        "lat": 40.7693869,
+        "lon": -111.9029672,
+        "osmType": "relation",
+        "osmId": 19669121,
+        "mappedName": "Asher Adams, Autograph Collection, 400 West, Salt Lake City, Salt Lake County, Utah, 84180, United States",
+        "coordinateSource": "https://www.openstreetmap.org/relation/19669121"
+      },
+      {
+        "name": "Salt Lake City and County Building",
+        "lat": 40.7595344,
+        "lon": -111.8867969,
+        "osmType": "way",
+        "osmId": 33155164,
+        "mappedName": "Salt Lake City and County Building, 451, State Street, Central City, Salt Lake City, Salt Lake County, Utah, 84111, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/33155164"
+      }
+    ],
+    "references": [
+      "https://www.visitsaltlake.com/plan-your-visit/trip-ideas-itineraries/salt-lake-and-beyond/",
+      "https://www.visitsaltlake.com/blog/stories/post/temple-square-renovation-update/",
+      "https://www.visitsaltlake.com/plan-your-visit/trip-ideas-itineraries/a-quick-guide-to-fun-in-salt-lake/"
+    ],
+    "roadOnlySnapshot": false
+  },
+  {
+    "id": "city-vt",
+    "stateCode": "VT",
+    "state": "Vermont",
+    "city": "Burlington",
+    "name": "Burlington, VT \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 44.477,
+    "lon": -73.211,
+    "landmarks": [
+      {
+        "name": "Burlington City Hall",
+        "lat": 44.4761767,
+        "lon": -73.2128553,
+        "osmType": "way",
+        "osmId": 28160084,
+        "mappedName": "Burlington City Hall, 149, Church Street, Downtown, Burlington, Chittenden County, Vermont, 05401, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/28160084"
+      },
+      {
+        "name": "ECHO Leahy Center",
+        "lat": 44.4765649,
+        "lon": -73.2210177,
+        "osmType": "way",
+        "osmId": 97338103,
+        "mappedName": "ECHO Leahy Center for Lake Champlain, 1, College Street, Waterfront, Burlington, Chittenden County, Vermont, 05401, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/97338103"
+      },
+      {
+        "name": "Flynn Center",
+        "query": "Flynn Theatre",
+        "lat": 44.4757614,
+        "lon": -73.2131204,
+        "osmType": "node",
+        "osmId": 366667624,
+        "mappedName": "Flynn Theatre, 153, Main Street, Downtown, Burlington, Chittenden County, Vermont, 05401, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/366667624"
+      },
+      {
+        "name": "Waterman Building",
+        "lat": 44.4782757,
+        "lon": -73.2011724,
+        "osmType": "way",
+        "osmId": 235381120,
+        "mappedName": "Waterman Building, 85, South Prospect Street, North Hill Section, Burlington, Chittenden County, Vermont, 05401, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/235381120"
+      }
+    ],
+    "references": [
+      "https://www.helloburlingtonvt.com/things-to-do/arts-culture/",
+      "https://www.helloburlingtonvt.com/listing/flynn-theater/467/",
+      "https://www.helloburlingtonvt.com/things-to-do/outdoors-recreation/parks-gardens/"
+    ],
+    "roadOnlySnapshot": false
+  },
+  {
+    "id": "city-va",
+    "stateCode": "VA",
+    "state": "Virginia",
+    "city": "Richmond",
+    "name": "Richmond, VA \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 37.542,
+    "lon": -77.436,
+    "landmarks": [
+      {
+        "name": "Virginia State Capitol",
+        "lat": 37.5388175,
+        "lon": -77.4335577,
+        "osmType": "way",
+        "osmId": 45088494,
+        "mappedName": "Virginia State Capitol, 1000, Bank Street, Shockoe Slip, Richmond, Virginia, 23219, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/45088494"
+      },
+      {
+        "name": "Main Street Station",
+        "lat": 37.5350573,
+        "lon": -77.4287107,
+        "osmType": "way",
+        "osmId": 113030476,
+        "mappedName": "Main Street Station, 1520, East Main Street, Shockoe Slip, Richmond, Virginia, 23219, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/113030476"
+      },
+      {
+        "name": "Poe Museum",
+        "lat": 37.5321579,
+        "lon": -77.4260748,
+        "osmType": "node",
+        "osmId": 13352676244,
+        "mappedName": "Edgar Allan Poe Museum, East Main Street, Shockoe Bottom, Richmond, Virginia, 23298, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/13352676244"
+      },
+      {
+        "name": "Virginia Museum of Fine Arts",
+        "lat": 37.5560585,
+        "lon": -77.4748956,
+        "osmType": "way",
+        "osmId": 146689449,
+        "mappedName": "Virginia Museum of Fine Arts, 200, North Arthur Ashe Boulevard, Museum District, Richmond, Virginia, 23220, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/146689449"
+      }
+    ],
+    "references": [
+      "https://www.visitrichmondva.com/listing/main-street-station/1097/",
+      "https://www.visitrichmondva.com/listing/main-street-station/40/",
+      "https://www.visitrichmondva.com/listing/main-street-station/4535/"
+    ],
+    "roadOnlySnapshot": false
+  },
+  {
+    "id": "city-wa",
+    "stateCode": "WA",
+    "state": "Washington",
+    "city": "Seattle",
+    "name": "Seattle, WA \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 47.608,
+    "lon": -122.337,
+    "landmarks": [
+      {
+        "name": "Space Needle",
+        "lat": 47.6205131,
+        "lon": -122.3493036,
+        "osmType": "way",
+        "osmId": 12903132,
+        "mappedName": "Space Needle, 400, Broad Street, South Lake Union, Cascade, Belltown, Seattle, King County, Washington, 98109, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/12903132"
+      },
+      {
+        "name": "Pike Place Market",
+        "lat": 47.6093968,
+        "lon": -122.3414102,
+        "osmType": "way",
+        "osmId": 363400641,
+        "mappedName": "Pike Place Market, 85, Belltown, Seattle, King County, Washington, 98101, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/363400641"
+      },
+      {
+        "name": "Smith Tower",
+        "lat": 47.6020094,
+        "lon": -122.3317853,
+        "osmType": "way",
+        "osmId": 52781661,
+        "mappedName": "Smith Tower, 506, 2nd Avenue, West Edge, First Hill, Seattle, King County, Washington, 98104, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/52781661"
+      },
+      {
+        "name": "King Street Station",
+        "lat": 47.5984461,
+        "lon": -122.3298978,
+        "osmType": "way",
+        "osmId": 4725281,
+        "mappedName": "King Street Station, 303, South Jackson Street, Yesler Terrace, Seattle, King County, Washington, 98104, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/4725281"
+      }
+    ],
+    "references": [
+      "https://visitseattle.org/things-to-do/sightseeing/pike-place-market/",
+      "https://visitseattle.org/things-to-do/sightseeing/sights-in-the-city/",
+      "https://visitseattle.org/things-to-do/cruises/pre-post-cruise-activities/"
+    ],
+    "roadOnlySnapshot": false
+  },
+  {
+    "id": "city-wv",
+    "stateCode": "WV",
+    "state": "West Virginia",
+    "city": "Charleston",
+    "name": "Charleston, WV \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 38.347,
+    "lon": -81.626,
+    "landmarks": [
+      {
+        "name": "West Virginia State Capitol",
+        "lat": 38.3363062,
+        "lon": -81.6122744,
+        "osmType": "way",
+        "osmId": 113058175,
+        "mappedName": "West Virginia State Capitol, 1900, Kanawha Boulevard East, East End, Charleston, Kanawha County, West Virginia, 25305, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/113058175"
+      },
+      {
+        "name": "Clay Center",
+        "lat": 38.3481027,
+        "lon": -81.6293868,
+        "osmType": "way",
+        "osmId": 334634498,
+        "mappedName": "Clay Center, Washington Street East, East Side, Charleston, Kanawha County, West Virginia, 25311, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/334634498"
+      },
+      {
+        "name": "Capitol Market",
+        "lat": 38.3520585,
+        "lon": -81.6276222,
+        "osmType": "way",
+        "osmId": 334629973,
+        "mappedName": "Capitol Market (Permanent Stores), Smith Street, Charleston, Kanawha County, West Virginia, 25301, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/334629973"
+      },
+      {
+        "name": "Haddad Riverfront Park",
+        "lat": 38.3494802,
+        "lon": -81.6385339,
+        "osmType": "way",
+        "osmId": 334641649,
+        "mappedName": "Haddad Riverfront Park, East Side, Charleston, Kanawha County, West Virginia, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/334641649"
+      }
+    ],
+    "references": [
+      "https://events.charlestonwv.com/",
+      "https://events.charlestonwv.com/calendar/upcoming",
+      "https://events.charlestonwv.com/capitol_market_228"
+    ],
+    "roadOnlySnapshot": false
+  },
+  {
+    "id": "city-wi",
+    "stateCode": "WI",
+    "state": "Wisconsin",
+    "city": "Milwaukee",
+    "name": "Milwaukee, WI \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 43.038,
+    "lon": -87.911,
+    "landmarks": [
+      {
+        "name": "Milwaukee City Hall",
+        "lat": 43.0417052,
+        "lon": -87.9097516,
+        "osmType": "way",
+        "osmId": 66709384,
+        "mappedName": "Milwaukee City Hall, 200, East Wells Street, Historic Financial District, Juneautown, Downtown, Milwaukee, Milwaukee County, Wisconsin, 53202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/66709384"
+      },
+      {
+        "name": "Pabst Theater",
+        "lat": 43.0410477,
+        "lon": -87.9103101,
+        "osmType": "node",
+        "osmId": 5660100889,
+        "mappedName": "Pabst Theater, East Wells Street, Theater District, Juneautown, Downtown, Milwaukee, Milwaukee County, Wisconsin, 53203, United States",
+        "coordinateSource": "https://www.openstreetmap.org/node/5660100889"
+      },
+      {
+        "name": "Milwaukee Art Museum",
+        "lat": 43.0398098,
+        "lon": -87.8970583,
+        "osmType": "way",
+        "osmId": 51865486,
+        "mappedName": "Milwaukee Art Museum, 700, North Art Museum Drive, Juneautown, Downtown, Milwaukee, Milwaukee County, Wisconsin, 53202, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/51865486"
+      },
+      {
+        "name": "Harley Davidson Museum",
+        "lat": 43.0318315,
+        "lon": -87.9163866,
+        "osmType": "way",
+        "osmId": 184577081,
+        "mappedName": "Harley-Davidson Museum, 400, West Canal Street, Menomonee River Valley, Milwaukee, Milwaukee County, Wisconsin, 53201, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/184577081"
+      }
+    ],
+    "references": [
+      "https://www.visitmilwaukee.org/listing/pabst-mansion/517/",
+      "https://www.visitmilwaukee.org/things-to-do/museums/",
+      "https://www.visitmilwaukee.org/things-to-do/attractions/milwaukee-art-museum/"
+    ],
+    "roadOnlySnapshot": false
+  },
+  {
+    "id": "city-wy",
+    "stateCode": "WY",
+    "state": "Wyoming",
+    "city": "Cheyenne",
+    "name": "Cheyenne, WY \u2014 Landmark Run",
+    "kind": "city",
+    "lat": 41.14,
+    "lon": -104.814,
+    "landmarks": [
+      {
+        "name": "Wyoming State Capitol",
+        "lat": 41.1402683,
+        "lon": -104.8202289,
+        "osmType": "way",
+        "osmId": 112916176,
+        "mappedName": "Wyoming State Capitol, 200, West 24th Street, Cheyenne, Laramie County, Wyoming, 82001, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/112916176"
+      },
+      {
+        "name": "Historic Governors Mansion",
+        "query": "300 East 21st Street",
+        "lat": 41.138543,
+        "lon": -104.8147,
+        "osmType": "way",
+        "osmId": 229367420,
+        "mappedName": "300, East 21st Street, Cheyenne, Laramie County, Wyoming, 82001, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/229367420"
+      },
+      {
+        "name": "Cheyenne Depot Museum",
+        "lat": 41.1318172,
+        "lon": -104.81431,
+        "osmType": "way",
+        "osmId": 232402672,
+        "mappedName": "Cheyenne Depot Museum, 121, West 15th Street, Cheyenne, Laramie County, Wyoming, 82001, United States",
+        "coordinateSource": "https://www.openstreetmap.org/way/232402672"
+      },
+      {
+        "name": "Big Boy Steam Engine",
+        "lat": 41.13675326,
+        "lon": -104.79992698000001,
+        "osmType": "way",
+        "osmId": 547489724,
+        "query": "Union Pacific 4004, Cheyenne, Wyoming",
+        "mappedName": "Big Boy Steam Engine 4004",
+        "coordinateSource": "https://www.openstreetmap.org/way/547489724",
+        "reference": "https://www.cheyenne.org/listing/big-boy-steam-engine/116/"
+      }
+    ],
+    "references": [
+      "https://www.cheyenne.org/articles/post/the-western-experience/",
+      "https://www.cheyenne.org/plan-your-visit/about-cheyenne/visitor-resources/",
+      "https://www.cheyenne.org/groups/history-trivia/"
+    ],
+    "roadOnlySnapshot": false
+  }
+]

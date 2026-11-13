@@ -25,7 +25,12 @@ test('saved campaign roads have finite approaches, terrain and no Providence sta
  for(const name of names){
   const race=read(name),road=race.road;assert.equal(road.autoExtend,false,name);
   for(const side of ['start','finish']){
-   assert.equal(road.continuations[side].length,80,name);
+   // Straight timing-line relocation can resample/trim a finite approach.
+   // Validate its extent and ordering rather than an obsolete 80-node count.
+   const approach=road.continuations[side];assert.ok(approach.length>=2,name);
+   assert.ok(approach.every((p,i)=>Number.isFinite(p.offset)&&(!i||p.offset>approach[i-1].offset)),name);
+   assert.ok(Math.max(...approach.map(p=>Math.abs(p.offset)))>=350,name);
+   assert.ok(Math.max(...approach.map(p=>Math.abs(p.offset)))<=450,name);
    for(const p of road.continuations[side]){
     assert.ok(Number.isFinite(p.elevation));
     const cell=road.tileMap.cells[`${Math.floor(p.x/road.tileMap.cellSizeM)},${Math.floor(p.z/road.tileMap.cellSizeM)}`];assert.ok(cell,`${name}: ground below ${side}`);
