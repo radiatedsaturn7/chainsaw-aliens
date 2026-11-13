@@ -442,7 +442,9 @@
       "catalog-cicada-turbo-2015-body": "art/catalog-cicada-turbo-2015-body/document.json",
       "catalog-cicada-turbo-2015-dashboard": "art/catalog-cicada-turbo-2015-dashboard/document.json",
       "catalog-mossling-2019-body": "art/catalog-mossling-2019-body/document.json",
-      "catalog-mossling-2019-dashboard": "art/catalog-mossling-2019-dashboard/document.json"
+      "catalog-mossling-2019-dashboard": "art/catalog-mossling-2019-dashboard/document.json",
+      "catalog-quince-2014-body": "art/catalog-quince-2014-body/document.json",
+      "catalog-quince-2014-dashboard": "art/catalog-quince-2014-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -482,7 +484,8 @@
       "Marigold 1991": "cars/Marigold 1991/document.json",
       "Nettle Turbo 2017": "cars/Nettle Turbo 2017/document.json",
       "Cicada Turbo 2015": "cars/Cicada Turbo 2015/document.json",
-      "Mossling 2019": "cars/Mossling 2019/document.json"
+      "Mossling 2019": "cars/Mossling 2019/document.json",
+      "Quince 2014": "cars/Quince 2014/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
