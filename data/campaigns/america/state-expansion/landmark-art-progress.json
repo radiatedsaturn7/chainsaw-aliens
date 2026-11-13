@@ -2135,7 +2135,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": 1178.495666329629,
         "worldZ": 361.0215147975963,
@@ -2229,9 +2229,17 @@
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/WY/big-boy-desktop.png",
+        "docs/art/landmark-previews/WY/big-boy-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 60,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "notes": "Full rusted locomotive and tender are recognizable at the first bend, clear of existing sheds. GPS reference retained separately."
+      }
     },
     "landmark-city-wy-wyoming-state-capitol": {
       "raceRef": "Cheyenne, WY — Landmark Run",
@@ -2239,7 +2247,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": -521.6173682707538,
         "worldZ": -29.833640026866647,
@@ -2318,9 +2326,17 @@
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/WY/capitol-desktop.png",
+        "docs/art/landmark-previews/WY/capitol-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 85,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "notes": "Colonnade and distressed copper-gold dome are distinct in the approach."
+      }
     },
     "landmark-city-wy-cheyenne-depot-museum": {
       "raceRef": "Cheyenne, WY — Landmark Run",
@@ -2328,7 +2344,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": -25.959861961262487,
         "worldZ": 909.8871025349705,
@@ -2414,9 +2430,17 @@
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/WY/depot-desktop.png",
+        "docs/art/landmark-previews/WY/depot-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 85,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "notes": "Clock tower, sandstone arches and collapsed roof read from the road."
+      }
     },
     "landmark-city-wy-historic-governors-mansion": {
       "raceRef": "Cheyenne, WY — Landmark Run",
@@ -2424,7 +2448,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": -58.61904313660717,
         "worldZ": 162.0112319004843,
@@ -2507,9 +2531,17 @@
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
-      ]
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/WY/governors-mansion-desktop.png",
+        "docs/art/landmark-previews/WY/governors-mansion-mobile.png"
+      ],
+      "visualReview": {
+        "approachBeforeClosestRouteProjectionM": 104,
+        "desktopViewport": "960x540",
+        "mobileViewport": "390x844 handheld",
+        "notes": "Brick mansion and portico are visible by the bend; some partial overlap from a narrow streetlight at nearby angles."
+      }
     }
   }
 }
