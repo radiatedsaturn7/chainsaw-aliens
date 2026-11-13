@@ -2848,6 +2848,34 @@
       "heightM": 28,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-nc-nascar-hall-of-fame",
+      "source": "landmarks/NC/landmark-city-nc-nascar-hall-of-fame.png",
+      "heightM": 25,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nc-bank-of-america-stadium",
+      "source": "landmarks/NC/landmark-city-nc-bank-of-america-stadium.png",
+      "heightM": 34,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nc-mint-museum-uptown",
+      "source": "landmarks/NC/landmark-city-nc-mint-museum-uptown.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nc-discovery-place-science",
+      "source": "landmarks/NC/landmark-city-nc-discovery-place-science.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

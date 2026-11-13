@@ -2266,5 +2266,33 @@
     "documentSha256": "0654e4603b4a8044a6c33f840da2d665e2903fe2cd7462f311fdefb2fdf8d33b",
     "width": 512,
     "height": 341
+  },
+  "landmark-city-nc-nascar-hall-of-fame": {
+    "source": "assets/campaign-art/landmarks/NC/landmark-city-nc-nascar-hall-of-fame.png",
+    "sourceSha256": "d253529c84b133af7f433396b520fe09df387e74dea386767f0652af3839e592",
+    "documentSha256": "0d56b118afab18773d94d05067a9d9cd4b753f12b73e8165c6c75111f211d701",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nc-bank-of-america-stadium": {
+    "source": "assets/campaign-art/landmarks/NC/landmark-city-nc-bank-of-america-stadium.png",
+    "sourceSha256": "161e534e28c1e9294d80e73e041b5d8109c6dfa29284dc1f932f304534b6a232",
+    "documentSha256": "9b8cba04be910d65924ceace5799e5bb48a1d5b98f9a21aeb3b6e1c8145c6f95",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nc-mint-museum-uptown": {
+    "source": "assets/campaign-art/landmarks/NC/landmark-city-nc-mint-museum-uptown.png",
+    "sourceSha256": "de5ea0344fa53361b9167da50afd3767c8dcc329776e27c396edcb8133d46e45",
+    "documentSha256": "18a778236f49aed5f7eb3ed9361275f84d9a8c1c764efc8ab382aa2cf3ecf2c3",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-nc-discovery-place-science": {
+    "source": "assets/campaign-art/landmarks/NC/landmark-city-nc-discovery-place-science.png",
+    "sourceSha256": "120b3ed15a6c392c286dbcc47a0a54b847c3caefe1f2707367f452bb86806324",
+    "documentSha256": "9bf3f6831f93449d88d0884c04bb422cf512aeccb327c706aa5253811fd340b1",
+    "width": 512,
+    "height": 256
   }
 }

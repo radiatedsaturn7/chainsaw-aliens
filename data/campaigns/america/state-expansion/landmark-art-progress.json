@@ -7029,35 +7029,544 @@
     },
     "landmark-city-nc-nascar-hall-of-fame": {
       "raceRef": "Charlotte, NC — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 93.7934099640802,
+        "worldZ": 651.5586921357142,
+        "routeDistanceM": 1339,
+        "offsetFromRoadM": 62,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.8579041370346602,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 23.68445501725104,
+            "angularWidthDegrees": 29.609849940761116,
+            "rangeM": 94.58828050236392,
+            "occluderIds": [],
+            "score": 0.05262179930995847
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 14.969931941946554,
+            "angularWidthDegrees": 24.85971394807503,
+            "rangeM": 113.4246643316567,
+            "occluderIds": [
+              "city-nc-prop-80"
+            ],
+            "score": 0.048144326678656535
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 12.315258506091332,
+            "angularWidthDegrees": 21.309743328571358,
+            "rangeM": 132.88236683615418,
+            "occluderIds": [],
+            "score": 0.5073896597563468
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 10.712148463162949,
+            "angularWidthDegrees": 18.622058111033198,
+            "rangeM": 152.4818480075297,
+            "occluderIds": [
+              "city-nc-prop-76",
+              "city-nc-prop-78"
+            ],
+            "score": 0.06858168737681784
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.956831152908453,
+            "angularWidthDegrees": 15.638926932235892,
+            "rangeM": 182.04450935297268,
+            "occluderIds": [
+              "city-nc-prop-76",
+              "city-nc-prop-78"
+            ],
+            "score": 0.07700721046603942
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 7.346759615670993,
+            "angularWidthDegrees": 12.870766068185423,
+            "rangeM": 221.64430052081556,
+            "occluderIds": [
+              "city-nc-prop-76",
+              "city-nc-prop-78"
+            ],
+            "score": 0.08473555384477922
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 5.871995910980157,
+            "angularWidthDegrees": 10.927586590017063,
+            "rangeM": 261.3660195178511,
+            "occluderIds": [
+              "city-nc-prop-72",
+              "city-nc-prop-76",
+              "city-nc-prop-78"
+            ],
+            "score": 0.09181441962729524
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 6.748025005256919,
+            "angularWidthDegrees": 9.189339598965029,
+            "rangeM": 311.0827902584675,
+            "occluderIds": [
+              "city-nc-prop-72",
+              "city-nc-prop-76",
+              "city-nc-prop-78"
+            ],
+            "score": 0.08760947997476679
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "f470f4ebb46c81b8f027aeb951843f164db31222d6341c5bc4968a84972b3194",
+      "sourceSha256": "d253529c84b133af7f433396b520fe09df387e74dea386767f0652af3839e592",
+      "roadSha256": "e5d25a1f1ac997820de8227a0c5da117ae68fc7edb4c5d5db286ed3013253478",
+      "placementDetails": {
+        "x": 24.06323137849011,
+        "z": 825.2093589134987,
+        "yaw": -0.6963004795656036,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1458.6439054182395,
+        "trackLateral": -59.49814709414428,
+        "minimumRoadClearanceM": 24.09280830052564,
+        "checkedSegments": 4134,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NC/nascar-hall-of-fame-desktop.png",
+        "docs/art/landmark-previews/NC/nascar-hall-of-fame-mobile.png"
+      ]
     },
     "landmark-city-nc-bank-of-america-stadium": {
       "raceRef": "Charlotte, NC — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -710.9987370068442,
+        "worldZ": 136.32516836581192,
+        "routeDistanceM": 2550,
+        "offsetFromRoadM": 165,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.1499710767217985,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 5.299433274473445,
+            "angularWidthDegrees": 21.97123988652378,
+            "rangeM": 175.14951883265587,
+            "occluderIds": [],
+            "score": 0.7880226690210622
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 4.76652342211678,
+            "angularWidthDegrees": 19.77397325666721,
+            "rangeM": 195.07280102220793,
+            "occluderIds": [],
+            "score": 0.8093390631153288
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 4.817554984215767,
+            "angularWidthDegrees": 17.971892459377116,
+            "rangeM": 215.0088680592941,
+            "occluderIds": [],
+            "score": 0.8072978006313694
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.963706297378033,
+            "angularWidthDegrees": 16.47116437488196,
+            "rangeM": 234.91016491852855,
+            "occluderIds": [],
+            "score": 0.6814517481048787
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 34.86595815766439,
+            "angularWidthDegrees": 14.728054130119833,
+            "rangeM": 263.0786067772768,
+            "occluderIds": [
+              "city-nc-prop-147"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 26.863716588134242,
+            "angularWidthDegrees": 13.100168563400832,
+            "rangeM": 296.1126167196909,
+            "occluderIds": [
+              "city-nc-prop-141",
+              "city-nc-prop-143",
+              "city-nc-prop-145",
+              "city-nc-prop-147",
+              "city-nc-prop-148"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 14.66882149565323,
+            "angularWidthDegrees": 11.665525850943858,
+            "rangeM": 332.83066028949554,
+            "occluderIds": [
+              "city-nc-prop-139",
+              "city-nc-prop-141",
+              "city-nc-prop-143",
+              "city-nc-prop-147",
+              "city-nc-prop-148"
+            ],
+            "score": 0.04958965682086449
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 2.583363847987544,
+            "angularWidthDegrees": 10.22274590232174,
+            "rangeM": 380.1103783308266,
+            "occluderIds": [
+              "city-nc-prop-137",
+              "city-nc-prop-139",
+              "city-nc-prop-141",
+              "city-nc-prop-147",
+              "city-nc-prop-148"
+            ],
+            "score": 0.10759985352965978
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 20.693690521117635,
+            "angularWidthDegrees": 8.87981756384036,
+            "rangeM": 437.88189548922554,
+            "occluderIds": [
+              "city-nc-prop-134",
+              "city-nc-prop-139",
+              "city-nc-prop-141",
+              "city-nc-prop-143",
+              "city-nc-prop-147",
+              "city-nc-prop-148"
+            ],
+            "score": 0.02067028549863535
+          }
+        ],
+        "sourceDistanceShiftM": 180
+      },
+      "signature": "dce3887d7bbaee17c2f8f12aeaf1df3e1f12285911bc1103315a0944da1b3f68",
+      "sourceSha256": "161e534e28c1e9294d80e73e041b5d8109c6dfa29284dc1f932f304534b6a232",
+      "roadSha256": "e5d25a1f1ac997820de8227a0c5da117ae68fc7edb4c5d5db286ed3013253478",
+      "placementDetails": {
+        "x": -915.4309542805895,
+        "z": 484.02495191467244,
+        "yaw": -0.7793280787008261,
+        "facingApproachBeforeM": 85,
+        "trackDistance": 2729.3982894648816,
+        "trackLateral": 149.9999782825731,
+        "minimumRoadClearanceM": 98.8292063299907,
+        "checkedSegments": 4134,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NC/bank-of-america-stadium-desktop.png",
+        "docs/art/landmark-previews/NC/bank-of-america-stadium-mobile.png"
+      ]
     },
     "landmark-city-nc-mint-museum-uptown": {
       "raceRef": "Charlotte, NC — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -313.19877677367714,
+        "worldZ": 266.3344561748195,
+        "routeDistanceM": 3679,
+        "offsetFromRoadM": 30,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.5157516128180993,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 72.14854051810501,
+            "angularWidthDegrees": 16.340646326841174,
+            "rangeM": 156.8673185649066,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 21.41187555576308,
+            "angularWidthDegrees": 14.959882953240516,
+            "rangeM": 171.53555764621146,
+            "occluderIds": [],
+            "score": 0.1435249777694768
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 20.14557360564908,
+            "angularWidthDegrees": 13.508064446407849,
+            "rangeM": 190.1727059265016,
+            "occluderIds": [],
+            "score": 0.19417705577403677
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 18.054023182396566,
+            "angularWidthDegrees": 12.29738965275252,
+            "rangeM": 209.06188206170089,
+            "occluderIds": [
+              "city-nc-prop-209"
+            ],
+            "score": 0.03334068872449648
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 15.589750415529824,
+            "angularWidthDegrees": 10.821167290353996,
+            "rangeM": 237.78898070070397,
+            "occluderIds": [
+              "city-nc-prop-209",
+              "city-nc-prop-213"
+            ],
+            "score": 0.045169198005456844
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 13.361826671070935,
+            "angularWidthDegrees": 9.312476657901984,
+            "rangeM": 276.5264824139535,
+            "occluderIds": [
+              "city-nc-prop-207",
+              "city-nc-prop-209",
+              "city-nc-prop-212",
+              "city-nc-prop-213"
+            ],
+            "score": 0.055863231978859514
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 13.592710234814701,
+            "angularWidthDegrees": 8.164234375436175,
+            "rangeM": 315.57914894244306,
+            "occluderIds": [
+              "city-nc-prop-205",
+              "city-nc-prop-207",
+              "city-nc-prop-209",
+              "city-nc-prop-212",
+              "city-nc-prop-213"
+            ],
+            "score": 0.05475499087288944
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 11.334632049171478,
+            "angularWidthDegrees": 7.076291068584923,
+            "rangeM": 364.25141767012514,
+            "occluderIds": [
+              "city-nc-prop-203",
+              "city-nc-prop-205",
+              "city-nc-prop-207",
+              "city-nc-prop-209",
+              "city-nc-prop-212",
+              "city-nc-prop-213"
+            ],
+            "score": 0.0655937661639769
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 9.723395098144458,
+            "angularWidthDegrees": 6.09192511077357,
+            "rangeM": 423.2485783211144,
+            "occluderIds": [
+              "city-nc-prop-199",
+              "city-nc-prop-201",
+              "city-nc-prop-205",
+              "city-nc-prop-207",
+              "city-nc-prop-212",
+              "city-nc-prop-213"
+            ],
+            "score": 0.0733277035289066
+          }
+        ],
+        "sourceDistanceShiftM": 300
+      },
+      "signature": "d9275bd2296b5f08acb24926c004def00750596169031d9f58baedd1e3bee1af",
+      "sourceSha256": "de5ea0344fa53361b9167da50afd3767c8dcc329776e27c396edcb8133d46e45",
+      "roadSha256": "e5d25a1f1ac997820de8227a0c5da117ae68fc7edb4c5d5db286ed3013253478",
+      "placementDetails": {
+        "x": -509.64632814195505,
+        "z": -85.44949033771975,
+        "yaw": -2.7491982419699186,
+        "facingApproachBeforeM": 85,
+        "trackDistance": 3978.0941114438947,
+        "trackLateral": -150,
+        "minimumRoadClearanceM": 112.62672687632971,
+        "checkedSegments": 4134,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NC/mint-museum-uptown-desktop.png",
+        "docs/art/landmark-previews/NC/mint-museum-uptown-mobile.png"
+      ]
     },
     "landmark-city-nc-discovery-place-science": {
       "raceRef": "Charlotte, NC — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 345.44423536082434,
+        "worldZ": -291.10872005198274,
+        "routeDistanceM": 5128,
+        "offsetFromRoadM": 41,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.8138079916795531,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 18.0780856458701,
+            "angularWidthDegrees": 22.906201346731297,
+            "rangeM": 108.58834527216679,
+            "occluderIds": [
+              "city-nc-prop-272"
+            ],
+            "score": 0.03322518889982351
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 15.354039787250949,
+            "angularWidthDegrees": 19.542986339043036,
+            "rangeM": 127.74532371130024,
+            "occluderIds": [],
+            "score": 0.385838408509962
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 13.29129921645617,
+            "angularWidthDegrees": 17.008948255820677,
+            "rangeM": 147.12684541110806,
+            "occluderIds": [
+              "city-nc-prop-271"
+            ],
+            "score": 0.05620176376101038
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 11.710292759018378,
+            "angularWidthDegrees": 15.04021823592395,
+            "rangeM": 166.6545872771138,
+            "occluderIds": [
+              "city-nc-prop-271"
+            ],
+            "score": 0.0637905947567118
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 9.93173163997197,
+            "angularWidthDegrees": 12.800625505729624,
+            "rangeM": 196.12475435390547,
+            "occluderIds": [
+              "city-nc-prop-271"
+            ],
+            "score": 0.07232768812813455
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 8.528067186538305,
+            "angularWidthDegrees": 10.668898255220446,
+            "rangeM": 235.61249938179756,
+            "occluderIds": [
+              "city-nc-prop-267",
+              "city-nc-prop-271"
+            ],
+            "score": 0.07906527750461613
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 7.293150725873104,
+            "angularWidthDegrees": 9.140091259461293,
+            "rangeM": 275.23420728312834,
+            "occluderIds": [
+              "city-nc-prop-265",
+              "city-nc-prop-267",
+              "city-nc-prop-269",
+              "city-nc-prop-271"
+            ],
+            "score": 0.0849928765158091
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 6.173709665940476,
+            "angularWidthDegrees": 7.747724007820063,
+            "rangeM": 324.8917563454415,
+            "occluderIds": [
+              "city-nc-prop-265",
+              "city-nc-prop-267",
+              "city-nc-prop-269",
+              "city-nc-prop-271"
+            ],
+            "score": 0.09036619360348572
+          }
+        ],
+        "sourceDistanceShiftM": -60
+      },
+      "signature": "9a026494103345f668b88ec0f8bd53517bd74a67fb5b29fe5118140ad33a4ae1",
+      "sourceSha256": "120b3ed15a6c392c286dbcc47a0a54b847c3caefe1f2707367f452bb86806324",
+      "roadSha256": "e5d25a1f1ac997820de8227a0c5da117ae68fc7edb4c5d5db286ed3013253478",
+      "placementDetails": {
+        "x": 419.07132919544205,
+        "z": -277.604129473752,
+        "yaw": 2.4849347718459622,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5067.650456318562,
+        "trackLateral": 85,
+        "minimumRoadClearanceM": 51.627696336919044,
+        "checkedSegments": 4134,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NC/discovery-place-science-desktop.png",
+        "docs/art/landmark-previews/NC/discovery-place-science-mobile.png"
+      ]
     },
     "landmark-city-nd-fargo-theatre": {
       "raceRef": "Fargo, ND — Landmark Run",

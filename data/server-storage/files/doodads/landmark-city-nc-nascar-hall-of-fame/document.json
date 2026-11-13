@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613866752,
+  "doodad": {
+    "id": "campaign-landmark-city-nc-nascar-hall-of-fame",
+    "name": "landmark-city-nc-nascar-hall-of-fame",
+    "artRef": "landmark-city-nc-nascar-hall-of-fame",
+    "widthM": 50,
+    "heightM": 25,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 42.5,
+    "hitboxHeightM": 22.5,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

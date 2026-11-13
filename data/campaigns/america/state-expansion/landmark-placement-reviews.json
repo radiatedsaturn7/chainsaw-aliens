@@ -3135,5 +3135,115 @@
       265
     ],
     "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-nc-nascar-hall-of-fame": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-nc-bank-of-america-stadium": {
+    "reason": "Optional analytical candidate only: original-side source +180m, 150m setback clears all sampled roads by 98.83m; conservative geometric views at 45/65/85/105m are promising. Native desktop/portrait facade and base review still required. Preserve source GPS and road geometry.",
+    "distanceOffsets": [
+      180
+    ],
+    "minimumSetbackM": 150,
+    "maximumSetbackM": 150,
+    "allowOppositeSide": false,
+    "facingApproachBeforeM": 85,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265,
+      325
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-nc-mint-museum-uptown": {
+    "reason": "Optional analytical candidate only: original-side source +300m, 150m setback clears all sampled roads by 112.65m. Conservative occlusion shortlist is weak (65/85m approaches only); native desktop/portrait facade and base review required, not a visual pass. Preserve source GPS and road geometry.",
+    "distanceOffsets": [
+      300
+    ],
+    "minimumSetbackM": 150,
+    "maximumSetbackM": 150,
+    "allowOppositeSide": false,
+    "facingApproachBeforeM": 85,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265,
+      325
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-nc-discovery-place-science": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
   }
 }

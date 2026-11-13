@@ -620,7 +620,11 @@
       "landmark-city-mo-old-courthouse": "art/landmark-city-mo-old-courthouse/document.json",
       "landmark-city-mo-union-station": "art/landmark-city-mo-union-station/document.json",
       "landmark-city-mo-city-museum": "art/landmark-city-mo-city-museum/document.json",
-      "landmark-city-mo-fabulous-fox-theatre": "art/landmark-city-mo-fabulous-fox-theatre/document.json"
+      "landmark-city-mo-fabulous-fox-theatre": "art/landmark-city-mo-fabulous-fox-theatre/document.json",
+      "landmark-city-nc-nascar-hall-of-fame": "art/landmark-city-nc-nascar-hall-of-fame/document.json",
+      "landmark-city-nc-bank-of-america-stadium": "art/landmark-city-nc-bank-of-america-stadium/document.json",
+      "landmark-city-nc-mint-museum-uptown": "art/landmark-city-nc-mint-museum-uptown/document.json",
+      "landmark-city-nc-discovery-place-science": "art/landmark-city-nc-discovery-place-science/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -976,7 +980,11 @@
       "landmark-city-mo-old-courthouse": "doodads/landmark-city-mo-old-courthouse/document.json",
       "landmark-city-mo-union-station": "doodads/landmark-city-mo-union-station/document.json",
       "landmark-city-mo-city-museum": "doodads/landmark-city-mo-city-museum/document.json",
-      "landmark-city-mo-fabulous-fox-theatre": "doodads/landmark-city-mo-fabulous-fox-theatre/document.json"
+      "landmark-city-mo-fabulous-fox-theatre": "doodads/landmark-city-mo-fabulous-fox-theatre/document.json",
+      "landmark-city-nc-nascar-hall-of-fame": "doodads/landmark-city-nc-nascar-hall-of-fame/document.json",
+      "landmark-city-nc-bank-of-america-stadium": "doodads/landmark-city-nc-bank-of-america-stadium/document.json",
+      "landmark-city-nc-mint-museum-uptown": "doodads/landmark-city-nc-mint-museum-uptown/document.json",
+      "landmark-city-nc-discovery-place-science": "doodads/landmark-city-nc-discovery-place-science/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",
