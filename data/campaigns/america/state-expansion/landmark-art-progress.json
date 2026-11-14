@@ -462,35 +462,493 @@
     },
     "landmark-city-al-birmingham-civil-rights-institute": {
       "raceRef": "Birmingham, AL — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -705.4643441615749,
+        "worldZ": 222.60143111987998,
+        "routeDistanceM": 1417,
+        "offsetFromRoadM": 37,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.2462424704532152,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 58.81022387648419,
+            "angularWidthDegrees": 30.61887978469785,
+            "rangeM": 87.67246951457321,
+            "occluderIds": [
+              "city-al-prop-76"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 48.910113122993586,
+            "angularWidthDegrees": 27.119005674704454,
+            "rangeM": 99.51180674048354,
+            "occluderIds": [
+              "city-al-prop-74"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 41.28912412487259,
+            "angularWidthDegrees": 23.84628038634691,
+            "rangeM": 113.66063685709968,
+            "occluderIds": [
+              "city-al-prop-74"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 35.43382012182614,
+            "angularWidthDegrees": 21.02047978786863,
+            "rangeM": 129.36337959717287,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 28.98207097647672,
+            "angularWidthDegrees": 17.62722795437019,
+            "rangeM": 154.787289112925,
+            "occluderIds": [
+              "city-al-prop-70",
+              "city-al-prop-72"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 23.150844082290376,
+            "angularWidthDegrees": 14.341304953097065,
+            "rangeM": 190.76532601921494,
+            "occluderIds": [
+              "city-al-prop-70"
+            ],
+            "score": 0.008875948405006197
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 19.197276119641998,
+            "angularWidthDegrees": 12.013456039522985,
+            "rangeM": 228.0871018528774,
+            "occluderIds": [],
+            "score": 0.23210895521432007
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 15.779673576273138,
+            "angularWidthDegrees": 9.94675077937884,
+            "rangeM": 275.7972769669306,
+            "occluderIds": [
+              "city-al-prop-66"
+            ],
+            "score": 0.04425756683388894
+          }
+        ],
+        "sourceDistanceShiftM": -30
+      },
+      "signature": "b8c51bbe5537ebc3da8e497d407aeff6d39d7cc0749634a53e915734165cd8f9",
+      "sourceSha256": "8a2d4d412dd777496b87794b3e0e6e9f02ae98b508b9750035e98b04dc5ba619",
+      "roadSha256": "499e2c4bf5a7c6f3c2384b0a927cb986908a9765f664883afe0da5df20949745",
+      "placementDetails": {
+        "x": -753.1788761077063,
+        "z": 215.1673917663,
+        "yaw": -0.10433647661888842,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1386.5967579749408,
+        "trackLateral": 75.00000000000001,
+        "minimumRoadClearanceM": 40.650043327588946,
+        "checkedSegments": 6978,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-al-alabama-theatre": {
       "raceRef": "Birmingham, AL — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -196.94189765001445,
+        "worldZ": 348.69665210475216,
+        "routeDistanceM": 2080,
+        "offsetFromRoadM": 37,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.4363054755195583,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 44.579224701553244,
+            "angularWidthDegrees": 20.284240912946206,
+            "rangeM": 64.11216923093369,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 34.42234522736125,
+            "angularWidthDegrees": 16.396398481108083,
+            "rangeM": 79.60533403465392,
+            "occluderIds": [
+              "city-al-prop-125"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 27.712782573373936,
+            "angularWidthDegrees": 13.518386159951616,
+            "rangeM": 96.7659603893663,
+            "occluderIds": [
+              "city-al-prop-125"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 23.067716451184605,
+            "angularWidthDegrees": 11.40523046858959,
+            "rangeM": 114.84901346297458,
+            "occluderIds": [],
+            "score": 0.07729134195261578
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 18.350523634374007,
+            "angularWidthDegrees": 9.174919337626427,
+            "rangeM": 142.93449049650917,
+            "occluderIds": [],
+            "score": 0.2659790546250398
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 14.368360252465854,
+            "angularWidthDegrees": 7.237709488293651,
+            "rangeM": 181.33829077276738,
+            "occluderIds": [
+              "city-al-prop-121"
+            ],
+            "score": 0.0510318707881639
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 11.785996215520353,
+            "angularWidthDegrees": 5.959926124958561,
+            "rangeM": 220.31090419545572,
+            "occluderIds": [
+              "city-al-prop-119",
+              "city-al-prop-121"
+            ],
+            "score": 0.06300358909633723
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 9.61382010318665,
+            "angularWidthDegrees": 4.874473347168208,
+            "rangeM": 269.4504767882248,
+            "occluderIds": [
+              "city-al-prop-117",
+              "city-al-prop-119",
+              "city-al-prop-121"
+            ],
+            "score": 0.059999619057401574
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "dd0a507459211a83d67f8fd644fd486352f238ae43e8aadb5d12eeb20d983b82",
+      "sourceSha256": "1656ad325e5433cf34869e02dfda495b8da84ba9ad0f5b3c60d124138f0833d4",
+      "roadSha256": "499e2c4bf5a7c6f3c2384b0a927cb986908a9765f664883afe0da5df20949745",
+      "placementDetails": {
+        "x": -10.543475054939872,
+        "z": 252.32916716273104,
+        "yaw": 1.6852493415357435,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2289.3342291006484,
+        "trackLateral": 44.99999999999997,
+        "minimumRoadClearanceM": 25.713627475553515,
+        "checkedSegments": 6978,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-al-sloss-furnaces": {
       "raceRef": "Birmingham, AL — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1506.627766154661,
+        "worldZ": -463.6834845740552,
+        "routeDistanceM": 4170,
+        "offsetFromRoadM": 58,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.05196872489755014,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 58.36600700211664,
+            "angularWidthDegrees": 39.389070599237165,
+            "rangeM": 88.08855839402412,
+            "occluderIds": [
+              "city-al-prop-233"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 48.56549742514074,
+            "angularWidthDegrees": 34.98836197336885,
+            "rangeM": 100.03832100798556,
+            "occluderIds": [
+              "city-al-prop-233"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 41.02496589349664,
+            "angularWidthDegrees": 30.85393835795945,
+            "rangeM": 114.26171773735356,
+            "occluderIds": [
+              "city-al-prop-233"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 35.22984809574236,
+            "angularWidthDegrees": 27.264046353904494,
+            "rangeM": 130.01468198060962,
+            "occluderIds": [
+              "city-al-prop-231",
+              "city-al-prop-233"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 28.839527639744784,
+            "angularWidthDegrees": 22.926941860651592,
+            "rangeM": 155.48613793816654,
+            "occluderIds": [
+              "city-al-prop-229"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 23.056935293057382,
+            "angularWidthDegrees": 18.699943203799087,
+            "rangeM": 191.4996380978068,
+            "occluderIds": [
+              "city-al-prop-227",
+              "city-al-prop-229"
+            ],
+            "score": 0.009326710593324567
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 19.131549909206363,
+            "angularWidthDegrees": 15.690158625515169,
+            "rangeM": 228.84120121252988,
+            "occluderIds": [
+              "city-al-prop-225",
+              "city-al-prop-227",
+              "city-al-prop-229"
+            ],
+            "score": 0.028168560435809453
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 15.734697110746643,
+            "angularWidthDegrees": 13.008229460599033,
+            "rangeM": 276.5656192905971,
+            "occluderIds": [
+              "city-al-prop-225",
+              "city-al-prop-227"
+            ],
+            "score": 0.04447345386841611
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "912e1e3fabfce3e2f43162411ccec124c8050c6395c0e47bb6b252cd16190c2e",
+      "sourceSha256": "597eb06de946375d845d46e9959399960bd7f6ffa05debadcb81958a61875885",
+      "roadSha256": "499e2c4bf5a7c6f3c2384b0a927cb986908a9765f664883afe0da5df20949745",
+      "placementDetails": {
+        "x": 1496.9172453424835,
+        "z": -477.29830519915015,
+        "yaw": 2.7051673413426442,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4168.79841638423,
+        "trackLateral": -75.00000000000001,
+        "minimumRoadClearanceM": 28.397417626861554,
+        "checkedSegments": 6978,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-al-vulcan-park": {
       "raceRef": "Birmingham, AL — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1123.8036434156118,
+        "worldZ": 3013.397793836588,
+        "routeDistanceM": 10272,
+        "offsetFromRoadM": 23,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.8570597996823641,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 19.251811943390237,
+            "angularWidthDegrees": 23.687634828630436,
+            "rangeM": 76.2216394503404,
+            "occluderIds": [],
+            "score": 0.2299275222643905
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 2.62873828473978,
+            "angularWidthDegrees": 18.90674454666189,
+            "rangeM": 95.99872021090316,
+            "occluderIds": [],
+            "score": 0.8948504686104088
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 13.362622763391844,
+            "angularWidthDegrees": 15.74272538314503,
+            "rangeM": 115.61762374020118,
+            "occluderIds": [],
+            "score": 0.4654950894643263
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 14.974201961760073,
+            "angularWidthDegrees": 13.49332839871512,
+            "rangeM": 135.11869856213568,
+            "occluderIds": [],
+            "score": 0.4010319215295971
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 23.801083788824766,
+            "angularWidthDegrees": 11.216703915515428,
+            "rangeM": 162.7769417065297,
+            "occluderIds": [
+              "city-al-prop-560",
+              "city-al-prop-561",
+              "city-al-prop-564"
+            ],
+            "score": 0.00575479781364113
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 30.26117371563298,
+            "angularWidthDegrees": 9.19163476977639,
+            "rangeM": 198.84868003487728,
+            "occluderIds": [
+              "city-al-prop-558",
+              "city-al-prop-560",
+              "city-al-prop-563",
+              "city-al-prop-564"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 39.62687708264127,
+            "angularWidthDegrees": 7.907109214957014,
+            "rangeM": 231.28129340339834,
+            "occluderIds": [
+              "city-al-prop-558",
+              "city-al-prop-560",
+              "city-al-prop-563",
+              "city-al-prop-564",
+              "city-al-prop-566"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 42.337444407162096,
+            "angularWidthDegrees": 6.873127203191759,
+            "rangeM": 266.1783164522255,
+            "occluderIds": [
+              "city-al-prop-554",
+              "city-al-prop-563",
+              "city-al-prop-564",
+              "city-al-prop-566",
+              "city-al-prop-568",
+              "city-al-prop-570",
+              "city-al-prop-574"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "b8a1835d69587ea4ef31164aaa31c160f7aa7a8c0aa437f06e9898bf25a49ace",
+      "sourceSha256": "979cb31196a683fac79784d5563a079d651bda91eb234729d1243de10c0861fd",
+      "roadSha256": "499e2c4bf5a7c6f3c2384b0a927cb986908a9765f664883afe0da5df20949745",
+      "placementDetails": {
+        "x": 1054.1269268684825,
+        "z": 2947.027309981618,
+        "yaw": -2.1668700048174045,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 10332.294054848451,
+        "trackLateral": 54.99999879878036,
+        "minimumRoadClearanceM": 30.285476874381388,
+        "checkedSegments": 6978,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ar-clinton-presidential-library": {
       "raceRef": "Little Rock, AR — Landmark Run",

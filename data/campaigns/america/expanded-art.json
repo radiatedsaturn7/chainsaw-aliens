@@ -3184,6 +3184,34 @@
       "heightM": 20,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-al-birmingham-civil-rights-institute",
+      "source": "landmarks/AL/landmark-city-al-birmingham-civil-rights-institute.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-al-alabama-theatre",
+      "source": "landmarks/AL/landmark-city-al-alabama-theatre.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-al-sloss-furnaces",
+      "source": "landmarks/AL/landmark-city-al-sloss-furnaces.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-al-vulcan-park",
+      "source": "landmarks/AL/landmark-city-al-vulcan-park.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

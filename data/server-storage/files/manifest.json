@@ -668,7 +668,11 @@
       "landmark-city-ak-anchorage-museum": "art/landmark-city-ak-anchorage-museum/document.json",
       "landmark-city-ak-town-square-park": "art/landmark-city-ak-town-square-park/document.json",
       "landmark-city-ak-oscar-anderson-house": "art/landmark-city-ak-oscar-anderson-house/document.json",
-      "landmark-city-ak-alaska-railroad-depot": "art/landmark-city-ak-alaska-railroad-depot/document.json"
+      "landmark-city-ak-alaska-railroad-depot": "art/landmark-city-ak-alaska-railroad-depot/document.json",
+      "landmark-city-al-birmingham-civil-rights-institute": "art/landmark-city-al-birmingham-civil-rights-institute/document.json",
+      "landmark-city-al-alabama-theatre": "art/landmark-city-al-alabama-theatre/document.json",
+      "landmark-city-al-sloss-furnaces": "art/landmark-city-al-sloss-furnaces/document.json",
+      "landmark-city-al-vulcan-park": "art/landmark-city-al-vulcan-park/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1072,7 +1076,11 @@
       "landmark-city-ak-anchorage-museum": "doodads/landmark-city-ak-anchorage-museum/document.json",
       "landmark-city-ak-town-square-park": "doodads/landmark-city-ak-town-square-park/document.json",
       "landmark-city-ak-oscar-anderson-house": "doodads/landmark-city-ak-oscar-anderson-house/document.json",
-      "landmark-city-ak-alaska-railroad-depot": "doodads/landmark-city-ak-alaska-railroad-depot/document.json"
+      "landmark-city-ak-alaska-railroad-depot": "doodads/landmark-city-ak-alaska-railroad-depot/document.json",
+      "landmark-city-al-birmingham-civil-rights-institute": "doodads/landmark-city-al-birmingham-civil-rights-institute/document.json",
+      "landmark-city-al-alabama-theatre": "doodads/landmark-city-al-alabama-theatre/document.json",
+      "landmark-city-al-sloss-furnaces": "doodads/landmark-city-al-sloss-furnaces/document.json",
+      "landmark-city-al-vulcan-park": "doodads/landmark-city-al-vulcan-park/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

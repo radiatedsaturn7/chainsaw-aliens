@@ -2602,5 +2602,33 @@
     "documentSha256": "a5d721e91adcd64c1c5eda8167b72222d84ae43a59df86f04177cf8c05e88b27",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-al-birmingham-civil-rights-institute": {
+    "source": "assets/campaign-art/landmarks/AL/landmark-city-al-birmingham-civil-rights-institute.png",
+    "sourceSha256": "8a2d4d412dd777496b87794b3e0e6e9f02ae98b508b9750035e98b04dc5ba619",
+    "documentSha256": "a9f26c8a60caef583b2368a89cce4457220900ef2e42d2374e8141ae16b20355",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-al-alabama-theatre": {
+    "source": "assets/campaign-art/landmarks/AL/landmark-city-al-alabama-theatre.png",
+    "sourceSha256": "1656ad325e5433cf34869e02dfda495b8da84ba9ad0f5b3c60d124138f0833d4",
+    "documentSha256": "63157abca5a8cbad0277182212b270ef5f7704cec1a62706a711c439e63e4fff",
+    "width": 367,
+    "height": 512
+  },
+  "landmark-city-al-sloss-furnaces": {
+    "source": "assets/campaign-art/landmarks/AL/landmark-city-al-sloss-furnaces.png",
+    "sourceSha256": "597eb06de946375d845d46e9959399960bd7f6ffa05debadcb81958a61875885",
+    "documentSha256": "17ae073daca33ef43a861a1ce85dd49b469743c4eef7726cb58b9b73ca1873b3",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-al-vulcan-park": {
+    "source": "assets/campaign-art/landmarks/AL/landmark-city-al-vulcan-park.png",
+    "sourceSha256": "979cb31196a683fac79784d5563a079d651bda91eb234729d1243de10c0861fd",
+    "documentSha256": "af1dc57b977677a9d7f4b896f7c1db8963855cf33fef97c623e12859c52538c6",
+    "width": 341,
+    "height": 512
   }
 }
