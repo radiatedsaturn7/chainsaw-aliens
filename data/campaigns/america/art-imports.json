@@ -2434,5 +2434,33 @@
     "documentSha256": "32f8cff0d0f5c10b742d65dbbb76f6518b632a9bb363e2ef584643b7eb7c3f25",
     "width": 512,
     "height": 171
+  },
+  "landmark-city-sc-charleston-museum": {
+    "source": "assets/campaign-art/landmarks/SC/landmark-city-sc-charleston-museum.png",
+    "sourceSha256": "f687dd17ca45f516b96128d9d9e0d1692cd5f54b9c9a89eebc225dbbef960d3c",
+    "documentSha256": "a2fe2ed049d45a2fce7eb1ee2f813660a77a6b8a1c059bd2c018e3394880d601",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-sc-old-exchange-and-provost-dungeon": {
+    "source": "assets/campaign-art/landmarks/SC/landmark-city-sc-old-exchange-and-provost-dungeon.png",
+    "sourceSha256": "6ddd15246420d541137419b93bed190b9bcdc334b659c3c2e5385f1820725716",
+    "documentSha256": "0197aa2dc66e989531621a21f18d4592b672e5f6df86f9e0e181f79677be684d",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-sc-rainbow-row": {
+    "source": "assets/campaign-art/landmarks/SC/landmark-city-sc-rainbow-row.png",
+    "sourceSha256": "17f84399d3c779268e11fc056c38ae81d36fe7dab84f3c3e4dc6ef361769d03b",
+    "documentSha256": "62f36d547d822ee82868d7880c1ee44e192acfc3dee0615177948b9433e4bb36",
+    "width": 512,
+    "height": 205
+  },
+  "landmark-city-sc-emanuel-african-methodist-episcopal-church": {
+    "source": "assets/campaign-art/landmarks/SC/landmark-city-sc-emanuel-african-methodist-episcopal-church.png",
+    "sourceSha256": "7f24688acac2eb620dc3914d85e14bed3cc92f1dd5ea0bfff4ebfd733e96f810",
+    "documentSha256": "6a95e3286b866d9c58878d27437954692435969c2f1714e58ff69def77f325d0",
+    "width": 512,
+    "height": 402
   }
 }

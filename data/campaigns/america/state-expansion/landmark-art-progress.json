@@ -13502,35 +13502,464 @@
     },
     "landmark-city-sc-charleston-museum": {
       "raceRef": "Charleston, SC — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -282.74758470273395,
+        "worldZ": -540.9195873045746,
+        "routeDistanceM": 1092,
+        "offsetFromRoadM": 28,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 4.452554161436277,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 51.024199092669626,
+            "angularWidthDegrees": 25.36839562328019,
+            "rangeM": 71.089012312145,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 118.7396676849451,
+            "angularWidthDegrees": 23.400336368475124,
+            "rangeM": 77.25993555909957,
+            "occluderIds": [
+              "city-sc-prop-42"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 115.57292957653256,
+            "angularWidthDegrees": 26.99476364437769,
+            "rangeM": 66.6582149660843,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.259237222343182,
+            "angularWidthDegrees": 25.900650191452762,
+            "rangeM": 69.5787785052951,
+            "occluderIds": [],
+            "score": 0.7096305111062727
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.6669699433624635,
+            "angularWidthDegrees": 18.25738492720913,
+            "rangeM": 99.57201718250764,
+            "occluderIds": [],
+            "score": 0.9733212022655015
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.4758235811545067,
+            "angularWidthDegrees": 13.079408356195302,
+            "rangeM": 139.57022891741525,
+            "occluderIds": [],
+            "score": 0.9809670567538198
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.3698321661464895,
+            "angularWidthDegrees": 10.183454720258146,
+            "rangeM": 179.56930201381041,
+            "occluderIds": [],
+            "score": 0.9852067133541405
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.2892830510864477,
+            "angularWidthDegrees": 7.973670267021311,
+            "rangeM": 229.5686687615912,
+            "occluderIds": [],
+            "score": 0.9884286779565421
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "badf81c01ce68a21748224a80e82405b0b58cf5d18214b0ad373b7a8067522a0",
+      "sourceSha256": "f687dd17ca45f516b96128d9d9e0d1692cd5f54b9c9a89eebc225dbbef960d3c",
+      "roadSha256": "0e7cf1c005f1065220d9b0030d9affae522acb725c240380a37723548b5afc90",
+      "placementDetails": {
+        "x": -447.2377178342936,
+        "z": -456.8565201340362,
+        "yaw": 1.8813766327861319,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 881.9596520437433,
+        "trackLateral": 55.00000000000004,
+        "minimumRoadClearanceM": 30.26669555172593,
+        "checkedSegments": 4042,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/SC/charleston-museum-desktop.png",
+        "docs/art/landmark-previews/SC/charleston-museum-mobile.png"
+      ]
     },
     "landmark-city-sc-old-exchange-and-provost-dungeon": {
       "raceRef": "Charleston, SC — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 573.1700939284691,
+        "worldZ": 906.1954258707407,
+        "routeDistanceM": 3023,
+        "offsetFromRoadM": 16,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 7.738327667792097,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 0.33239156834495204,
+            "angularWidthDegrees": 19.717690270779038,
+            "rangeM": 86.39649719447156,
+            "occluderIds": [],
+            "score": 0.9867043372662019
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 0.2699098867008319,
+            "angularWidthDegrees": 16.065095139871016,
+            "rangeM": 106.39629650220677,
+            "occluderIds": [],
+            "score": 0.9892036045319668
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.22720133518620392,
+            "angularWidthDegrees": 13.548893708734674,
+            "rangeM": 126.3961822965665,
+            "occluderIds": [],
+            "score": 0.9909119465925519
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.19616204576714902,
+            "angularWidthDegrees": 11.711776338532905,
+            "rangeM": 146.39611913148104,
+            "occluderIds": [],
+            "score": 0.9921535181693141
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.16280035484945504,
+            "angularWidthDegrees": 9.730467276296698,
+            "rangeM": 176.39608210755657,
+            "occluderIds": [],
+            "score": 0.9934879858060218
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.13270725474828207,
+            "angularWidthDegrees": 7.9382230745731155,
+            "rangeM": 216.39609567924546,
+            "occluderIds": [],
+            "score": 0.9946917098100687
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.11200372694128982,
+            "angularWidthDegrees": 6.702873156767413,
+            "rangeM": 256.3961503200622,
+            "occluderIds": [],
+            "score": 0.9955198509223484
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.09372607775588326,
+            "angularWidthDegrees": 5.610964034215994,
+            "rangeM": 306.39625187045687,
+            "occluderIds": [],
+            "score": 0.9316547146936229
+          }
+        ],
+        "sourceDistanceShiftM": -60
+      },
+      "signature": "070a2c596ea1ca02d7dc1a5454fa46f5979f6b97ea74cb643834f56e762e5547",
+      "sourceSha256": "6ddd15246420d541137419b93bed190b9bcdc334b659c3c2e5385f1820725716",
+      "roadSha256": "0e7cf1c005f1065220d9b0030d9affae522acb725c240380a37723548b5afc90",
+      "placementDetails": {
+        "x": 498.6247095071883,
+        "z": 956.1781870493843,
+        "yaw": 0.15140216180001217,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2961.693249430626,
+        "trackLateral": 44.66652515000894,
+        "minimumRoadClearanceM": 21.282814857263492,
+        "checkedSegments": 4042,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/SC/old-exchange-and-provost-dungeon-desktop.png",
+        "docs/art/landmark-previews/SC/old-exchange-and-provost-dungeon-mobile.png"
+      ]
     },
     "landmark-city-sc-rainbow-row": {
       "raceRef": "Charleston, SC — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 547.9578266548654,
+        "worldZ": 974.2801734977586,
+        "routeDistanceM": 3087,
+        "offsetFromRoadM": 6,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.481555351475307,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 16.617205298604134,
+            "angularWidthDegrees": 18.742778779708498,
+            "rangeM": 151.3343738904387,
+            "occluderIds": [],
+            "score": 0.3353117880558346
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 14.737943968856584,
+            "angularWidthDegrees": 16.658594544349313,
+            "rangeM": 170.59087852925958,
+            "occluderIds": [],
+            "score": 0.4104822412457366
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 13.203452279745278,
+            "angularWidthDegrees": 14.977171465707649,
+            "rangeM": 190.00107568592497,
+            "occluderIds": [
+              "city-sc-prop-165"
+            ],
+            "score": 0.05662342905722266
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 9.724587409596325,
+            "angularWidthDegrees": 13.593395741903375,
+            "rangeM": 209.5544779502396,
+            "occluderIds": [],
+            "score": 0.611016503616147
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 84.89856439035957,
+            "angularWidthDegrees": 12.16586261769934,
+            "rangeM": 234.36340688011123,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 78.76835454693983,
+            "angularWidthDegrees": 11.944258148014539,
+            "rangeM": 238.74414948762075,
+            "occluderIds": [
+              "city-sc-prop-157",
+              "city-sc-prop-162",
+              "city-sc-prop-164",
+              "city-landmark-landmark-city-sc-old-exchange-and-provost-dungeon"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 11.511281622130426,
+            "angularWidthDegrees": 10.613178541413447,
+            "rangeM": 268.89267682980267,
+            "occluderIds": [
+              "city-sc-prop-162",
+              "city-sc-prop-164",
+              "city-landmark-landmark-city-sc-old-exchange-and-provost-dungeon"
+            ],
+            "score": 0.06474584821377395
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 9.713428898626633,
+            "angularWidthDegrees": 8.980315432119186,
+            "rangeM": 318.0436873521492,
+            "occluderIds": [
+              "city-sc-prop-155",
+              "city-sc-prop-157",
+              "city-sc-prop-162",
+              "city-sc-prop-164",
+              "city-landmark-landmark-city-sc-old-exchange-and-provost-dungeon"
+            ],
+            "score": 0.07337554128659216
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "8611458e3b9f9fa705a628e8e11881172bfd87761be557a7310195fbc9426401",
+      "sourceSha256": "17f84399d3c779268e11fc056c38ae81d36fe7dab84f3c3e4dc6ef361769d03b",
+      "roadSha256": "0e7cf1c005f1065220d9b0030d9affae522acb725c240380a37723548b5afc90",
+      "placementDetails": {
+        "x": 581.7832100687983,
+        "z": 1137.7648615888745,
+        "yaw": 0.11393716531109088,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3146.842537303598,
+        "trackLateral": 129.99999999999991,
+        "minimumRoadClearanceM": 94.4772808612306,
+        "checkedSegments": 4042,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/SC/rainbow-row-desktop.png",
+        "docs/art/landmark-previews/SC/rainbow-row-mobile.png"
+      ]
     },
     "landmark-city-sc-emanuel-african-methodist-episcopal-church": {
       "raceRef": "Charleston, SC — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -9.993293923973654,
+        "worldZ": -277.08702043422363,
+        "routeDistanceM": 5001,
+        "offsetFromRoadM": 27,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.5917817030892603,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 62.42141090935028,
+            "angularWidthDegrees": 23.994031216057607,
+            "rangeM": 95.89602828826857,
+            "occluderIds": [
+              "city-sc-prop-264"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 52.85219027062958,
+            "angularWidthDegrees": 21.636904893872416,
+            "rangeM": 106.63919145537713,
+            "occluderIds": [
+              "city-sc-prop-264"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 45.148645781913096,
+            "angularWidthDegrees": 19.310152352131738,
+            "rangeM": 119.78226861643167,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 9.355457422768492,
+            "angularWidthDegrees": 17.049108377718483,
+            "rangeM": 135.95453084834332,
+            "occluderIds": [],
+            "score": 0.6257817030892603
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 57.78039377684812,
+            "angularWidthDegrees": 14.961030908918984,
+            "rangeM": 155.19492020426586,
+            "occluderIds": [
+              "city-sc-prop-260"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 48.040719637464896,
+            "angularWidthDegrees": 12.983714443489223,
+            "rangeM": 179.08264717184954,
+            "occluderIds": [
+              "city-sc-prop-264"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 39.817591381645734,
+            "angularWidthDegrees": 11.192884092463844,
+            "rangeM": 207.96501232494992,
+            "occluderIds": [
+              "city-sc-prop-256",
+              "city-sc-prop-264"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 32.41311282462613,
+            "angularWidthDegrees": 9.378248014554936,
+            "rangeM": 248.44122808427662,
+            "occluderIds": [
+              "city-sc-prop-254",
+              "city-sc-prop-256",
+              "city-sc-prop-264",
+              "city-sc-prop-265"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "fe63157a7bfc6d9089bb7638ca88bc98382a0d7a7a3b7e525b1e445f5beb2c4d",
+      "sourceSha256": "7f24688acac2eb620dc3914d85e14bed3cc92f1dd5ea0bfff4ebfd733e96f810",
+      "roadSha256": "0e7cf1c005f1065220d9b0030d9affae522acb725c240380a37723548b5afc90",
+      "placementDetails": {
+        "x": -37.06761908261835,
+        "z": -328.27287340564965,
+        "yaw": -1.7920209714473638,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5001.603672087356,
+        "trackLateral": 85.00000000000003,
+        "minimumRoadClearanceM": 51.803851050954414,
+        "checkedSegments": 4042,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-sd-falls-park": {
       "raceRef": "Sioux Falls, SD — Landmark Run",

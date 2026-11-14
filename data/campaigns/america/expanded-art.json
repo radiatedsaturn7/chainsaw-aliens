@@ -3016,6 +3016,34 @@
       "heightM": 16,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-sc-charleston-museum",
+      "source": "landmarks/SC/landmark-city-sc-charleston-museum.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-sc-old-exchange-and-provost-dungeon",
+      "source": "landmarks/SC/landmark-city-sc-old-exchange-and-provost-dungeon.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-sc-rainbow-row",
+      "source": "landmarks/SC/landmark-city-sc-rainbow-row.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-sc-emanuel-african-methodist-episcopal-church",
+      "source": "landmarks/SC/landmark-city-sc-emanuel-african-methodist-episcopal-church.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
