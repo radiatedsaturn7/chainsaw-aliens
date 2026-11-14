@@ -2,6 +2,35 @@ import unittest,copy,json,subprocess
 from pathlib import Path
 import audit_race_lines as a
 class RaceLinesTests(unittest.TestCase):
+ def test_landmark_timed_annotations_keep_signed_continuation_reference(self):
+  marks=[{'name':'before','routeDistanceM':0,'worldX':11,'worldZ':22},
+         {'name':'after','routeDistanceM':150,'worldX':33,'worldZ':44},
+         {'name':'inside','routeDistanceM':70,'worldX':55,'worldZ':66}]
+  r={'source':{'landmarks':copy.deepcopy(marks)}}
+  a.shift_calls(r,43,100)
+  before,after,inside=r['source']['landmarks']
+  self.assertEqual((before['routeDistanceM'],before['routeMiles'],before['signedRouteDistanceM']),(0,0,-43))
+  self.assertEqual((after['routeDistanceM'],after['signedRouteDistanceM']),(100,107))
+  self.assertEqual(inside['routeDistanceM'],27);self.assertNotIn('signedRouteDistanceM',inside)
+  self.assertEqual([(m['worldX'],m['worldZ']) for m in r['source']['landmarks']],[(m['worldX'],m['worldZ']) for m in marks])
+  a.shift_calls(r,10,80)
+  self.assertEqual((before['routeDistanceM'],before['signedRouteDistanceM']),(0,-53))
+  self.assertEqual((after['routeDistanceM'],after['signedRouteDistanceM']),(80,97))
+  self.assertEqual(inside['routeDistanceM'],17)
+  a.shift_calls(r,-60,200)
+  self.assertEqual((before['routeDistanceM'],before['signedRouteDistanceM']),(7,7))
+  self.assertEqual((after['routeDistanceM'],after['signedRouteDistanceM']),(157,157))
+  a.shift_calls(r,20,100,True)
+  self.assertEqual(before['routeDistanceM'],87);self.assertNotIn('signedRouteDistanceM',before)
+  self.assertEqual(after['routeDistanceM'],37);self.assertNotIn('signedRouteDistanceM',after)
+ def test_chicago_landmark_annotation_matches_saved_source_without_relocating(self):
+  notes=a.read(Path('data/campaigns/america/state-expansion/landmarks/IL.json'))
+  manifest=a.read(a.ROOT/'manifest.json')
+  doc=a.read(a.ROOT/manifest['folders']['races'][notes['raceRef']])
+  self.assertEqual(notes['landmarks'],doc['race']['source']['landmarks'])
+  pier=notes['landmarks'][0]
+  self.assertEqual((pier['name'],pier['routeDistanceM'],pier['routeMiles'],pier['signedRouteDistanceM']),('Navy Pier',0,0,-43))
+  self.assertEqual((pier['worldX'],pier['worldZ']),(1974.818557798633,-756.1154260804785))
  def test_applied_documents_match_report_and_keep_road_geometry(self):
   report=a.read(Path('data/campaigns/america/line-placement-audit.json'))
   manifest=a.read(a.ROOT/'manifest.json');checked=0

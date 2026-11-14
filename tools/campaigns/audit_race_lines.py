@@ -56,7 +56,17 @@ def shift_calls(r,start,length,circuit=False):
  # Coordinates stay in place. Only distance-based annotations move with the line.
  for landmark in r.get('source',{}).get('landmarks',[]):
   if isinstance(landmark.get('routeDistanceM'),(int,float)):
-   landmark['routeDistanceM']=round((landmark['routeDistanceM']-start)%length if circuit else landmark['routeDistanceM']-start)
+   # Projection on untimed road may be signed. Keep that reference separately;
+   # routeDistanceM/routeMiles describe only the bounded timed route annotation.
+   raw=landmark.get('signedRouteDistanceM',landmark['routeDistanceM'])-start
+   if circuit:
+    landmark['routeDistanceM']=round(raw%length)
+    landmark.pop('signedRouteDistanceM',None)
+   else:
+    raw=round(raw)
+    if raw<0 or raw>length or 'signedRouteDistanceM' in landmark:
+     landmark['signedRouteDistanceM']=raw
+    landmark['routeDistanceM']=min(length,max(0,raw))
    landmark['routeMiles']=round(landmark['routeDistanceM']/1609.344,2)
  for collection in ['scenery','decals','hazards']:
   for obj in r.get(collection,[]):

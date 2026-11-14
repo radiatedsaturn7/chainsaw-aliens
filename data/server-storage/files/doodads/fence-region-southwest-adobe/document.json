@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "selectedDoodadId": "fence-region-southwest-adobe",
+  "doodad": {
+    "id": "fence-region-southwest-adobe",
+    "name": "Southwest ruined adobe street [solid fence]",
+    "artRef": "fence-region-southwest-adobe",
+    "isFence": true,
+    "fenceMirrorRepeat": false,
+    "fenceThicknessM": 1,
+    "itemType": "scenery",
+    "model": null,
+    "widthM": 24,
+    "heightM": 8,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 24,
+    "hitboxHeightM": 8,
+    "weightKg": 10000,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 45,
+      "damage": {
+        "panels": 14,
+        "suspension": 6,
+        "engine": 3.5
+      }
+    },
+    "rules": []
+  },
+  "regionalFence": {
+    "region": "Southwest",
+    "collision": "Continuous solid fence; transparent art is not an opening.",
+    "source": "regional-fences/fence-southwest-adobe.png"
+  }
+}

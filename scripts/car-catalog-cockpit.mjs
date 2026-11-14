@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'silverleaf-200-2018':{wheelOpening:true,size:[1983,793],cluster:[220,490,460,185],wheel:[455,705,250]},
  'glowmoth-sc-1988':{wheelOpening:true,size:[1983,793],cluster:[250,555,550,160],wheel:[525,755,250]},
  'wispwing-1993':{wheelOpening:true,size:[1983,793],cluster:[1245,455,420,180],wheel:[1455,665,250]},
  'buckwheat-1997':{wheelOpening:true,size:[1983,793],cluster:[245,500,430,185],wheel:[460,715,250]},
