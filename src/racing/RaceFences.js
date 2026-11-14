@@ -52,7 +52,7 @@ export function flareRoadsideFenceEnds(points,{project,pose,roadWidthM=7,validPo
   const half=Number(road?.segment?.roadWidthM||road?.roadWidthM||roadWidthM)/2;
   const dx=neighbor.x-p.x,dz=neighbor.z-p.z,n=Math.hypot(dx,dz);
   const aligned=road&&!road.segment?.bridge&&!road.segment?.isBridge&&Math.abs((dx*Math.sin(road.yaw)+dz*Math.cos(road.yaw))/Math.max(.001,n))>.94;
-  ends.push(q&&aligned&&Math.abs(q.lateral)>half+.5&&Math.abs(q.lateral)<half+16?{x:Math.cos(road.yaw)*Math.sign(q.lateral),z:-Math.sin(road.yaw)*Math.sign(q.lateral)}:null);
+  ends.push(q&&aligned&&Math.abs(q.lateral)>half+.5&&Math.abs(q.lateral)<half+16?{x:-Math.cos(road.yaw)*Math.sign(q.lateral),z:Math.sin(road.yaw)*Math.sign(q.lateral)}:null);
  }
  if(!ends.some(Boolean))return {points:original,changed:false};
  const samples=[...new Set([...distances,...Array.from({length:Math.ceil(span/2)+1},(_,i)=>Math.min(span,i*2)),...Array.from({length:Math.ceil(span/2)+1},(_,i)=>length-Math.min(span,i*2))])].sort((a,b)=>a-b);

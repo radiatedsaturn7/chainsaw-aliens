@@ -82,3 +82,22 @@ test('hairpins require a compact reversal; broad U bends and long spirals stay n
  assert.equal(recceTurnShape(120,35,12),null);
  assert.equal(recceTurnShape(300,85,9),null);
 });
+
+test('drive-through foliage and non-solid scenery never request do not cut',()=>{
+ const editor=fixture(bend(200,80,1.4)),note=analyzeRaceRecce(editor)[0],p=editor.getRaceWorldPoseAtDistance(note.apexAt);
+ const inside={id:'inside',presetId:'doodad',x:p.x+Math.cos(p.yaw)*5,z:p.z-Math.sin(p.yaw)*5};
+ for(const definition of [
+  {name:'grass clump',defaultRule:{behavior:'collide'}},
+  {name:'bush',defaultRule:{behavior:'flatten',speedDrainPercent:18,damage:{panels:2.5}}},
+  {name:'loose litter',defaultRule:{behavior:'fly-off',speedDrainPercent:16,damage:{panels:4.5}}},
+  {name:'decoration'},
+  {name:'pickup',itemType:'mix-tape',defaultRule:{behavior:'collide'}}
+ ]){
+  editor.selectedRace.scenery=[{...inside,previewDoodad:{widthM:2,...definition}}];
+  assert.deepEqual(analyzeRaceRecce(editor)[0].hazardIds,[],definition.name);
+ }
+ editor.selectedRace.scenery=[{...inside,solid:false,previewDoodad:{widthM:2,defaultRule:{behavior:'collide'}}}];
+ assert.deepEqual(analyzeRaceRecce(editor)[0].hazardIds,[]);
+ editor.selectedRace.scenery=[{...inside,previewDoodad:{widthM:2,isFence:true}}];
+ assert.ok(analyzeRaceRecce(editor)[0].modifiers.includes("don't cut"));
+});

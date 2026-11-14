@@ -286,7 +286,8 @@ test('managed authoring edits, asset revisions, array replacements and sessions 
  e.addRaceThreeDoodads(renderer);assert.notEqual(renderer.dynamicDoodadGroup,rotated);
  assert.equal(e.getRaceDoodadForScenery(sprites[0]).heightM,9,'explicit edits invalidate normalized definitions too');
  const edited=renderer.dynamicDoodadGroup;
- art='two';e.addRaceThreeDoodads(renderer);assert.notEqual(renderer.dynamicDoodadGroup,edited);
+ const oldMesh=edited.children[0].children[0];
+ art='two';e.addRaceThreeDoodads(renderer);assert.equal(renderer.dynamicDoodadGroup,edited);assert.notEqual(edited.children[0].children[0],oldMesh);
  const asset=renderer.dynamicDoodadGroup;
  e.playtestSession.worldBake.surfaceRevision='new';e.addRaceThreeDoodads(renderer);
  assert.notEqual(renderer.dynamicDoodadGroup,asset);
@@ -337,7 +338,7 @@ test('managed models retain fitting, root lighting and animation, and refresh af
   assert.equal(instance.time,1);
   const before=renderer.dynamicDoodadGroup;
   modelAssets.adopt(ref,{data:structuredClone(model)});e.addRaceThreeDoodads(renderer);
-  assert.notEqual(renderer.dynamicDoodadGroup,before);
+  assert.equal(renderer.dynamicDoodadGroup,before);
   assert.equal(instance.root,null,'a changed model releases the old instance');
   const treeGroup=renderer.dynamicDoodadChunks.get('2,0').dynamicDoodadGroup;
   const replacement=renderer.dynamicDoodadChunks.get('0,0').dynamicDoodadGroup.children[0].userData.modelInstance;
@@ -481,8 +482,33 @@ test('deferred artwork arriving after a placeholder rebuilds the managed scenery
  const sprites=[{id:'pending-tree',presetId:'doodad',x:0,z:0,yaw:0,previewDoodad:{artRef:'tree',widthM:2,heightM:4}}];
  const {e,renderer}=managedSceneryEditor(sprites);let canvas=null;
  e.getRaceArtSpriteCanvas=()=>canvas;
- e.addRaceThreeDoodads(renderer);const pending=renderer.dynamicDoodadGroup;
+ e.addRaceThreeDoodads(renderer);const pending=renderer.dynamicDoodadGroup,oldMesh=pending.children[0].children[0];
  canvas={__raceArtCacheKey:'prepared:tree:1:0'};
- e.addRaceThreeDoodads(renderer);assert.notEqual(renderer.dynamicDoodadGroup,pending);
+ e.addRaceThreeDoodads(renderer);assert.equal(renderer.dynamicDoodadGroup,pending);assert.notEqual(pending.children[0].children[0],oldMesh);
  const loaded=renderer.dynamicDoodadGroup;e.addRaceThreeDoodads(renderer);assert.equal(renderer.dynamicDoodadGroup,loaded);
+});
+
+
+test('art arrival rebuilds only that art, even among other trees in the same chunk',()=>{
+ const sprites=[{id:'tree',presetId:'doodad',x:0,z:0,previewDoodad:{artRef:'tree',widthM:2,heightM:4}},
+ {id:'light',presetId:'doodad',x:10,z:0,previewDoodad:{artRef:'light',widthM:2,heightM:4}},
+ {id:'far-tree',presetId:'doodad',x:260,z:0,previewDoodad:{artRef:'tree',widthM:2,heightM:4}}];
+ const {e,renderer}=managedSceneryEditor(sprites);let light=null;
+ e.getRaceArtSpriteCanvas=ref=>ref==='light'?light:{__raceArtCacheKey:'tree'};
+ const material=new THREE.MeshBasicMaterial();e.getRaceThreeDoodadMaterial=(owner,ref)=>ref==='light'&&!light?null:material;
+ e.addRaceThreeDoodads(renderer);
+ const near=renderer.dynamicDoodadChunks.get('0,0').dynamicDoodadGroup,tree=near.children[0],far=renderer.dynamicDoodadChunks.get('2,0').dynamicDoodadGroup;
+ let queries=0;e.getRaceSurfaceModel=()=>({sampleWorld:()=>{queries++;return {elevation:0};}});
+ light={__raceArtCacheKey:'light-1'};const stats={};e.addRaceThreeDoodads(renderer,{stats});
+ assert.equal(stats.dynamicDoodadRebuiltPlacements,1);assert.equal(stats.dynamicDoodadChunkRebuilds,1);
+ assert.ok(queries<=5);assert.equal(near.children[0],tree);assert.equal(near.children.length,2);
+ assert.equal(renderer.dynamicDoodadChunks.get('2,0').dynamicDoodadGroup,far);
+ const unchanged={};e.addRaceThreeDoodads(renderer,{stats:unchanged});assert.equal(unchanged.dynamicDoodadCacheHits,1);
+ for(let i=2;i<12;i++){
+  const old=near.children.find(m=>m.userData.sceneryArtRef==='light');let disposed=0;old.geometry.addEventListener('dispose',()=>disposed++);
+  light={__raceArtCacheKey:`light-${i}`};e.addRaceThreeDoodads(renderer);
+  assert.equal(disposed,1);assert.equal(near.children.length,2);assert.equal(near.children[0],tree);
+  assert.equal(renderer.dynamicDoodadDrawCalls,3);
+ }
+ e.playtestSession.removedSceneryIds.push('light');e.addRaceThreeDoodads(renderer);assert.equal(renderer.dynamicDoodadCount,2);
 });

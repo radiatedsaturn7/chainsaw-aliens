@@ -55,6 +55,7 @@ export function repairRoadsideInfrastructure(race,h){
      const q=valid(p,d,width);if(!q||!clear(p,kind==='pylon'?width/2:1))continue;
      const hitbox=kind==='pylon'?width*.65:kind==='marker'?.2:.4;
      const entry={id:`infrastructure-v1-${kind}-${d}`,presetId:'doodad',doodadRef:ref,...p,widthM:width,heightM:height,trackDistance:q.distance,trackLateral:q.lateral,groundOffsetM:0,previewDoodad:{...def,hitboxWidthM:hitbox,hitboxHeightM:height},state:'standing'};
+     if(kind==='light')entry.flipX=q.lateral<0;
      kept.push(entry);insert(entry);report.placedInfrastructure++;report.refs[ref]=(report.refs[ref]||0)+1;placed=true;break;
     }
     if(!placed)report.rejected++;

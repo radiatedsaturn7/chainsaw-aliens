@@ -36706,6 +36706,7 @@ export default class RaceEditor {
     renderer.dynamicDoodadCount = 0;
     renderer.dynamicDoodadChunks = null;
     renderer.dynamicDoodadManagedState = null;
+    renderer.dynamicDoodadAssetSnapshot = null;
     renderer.dynamicDoodadManagedGeneration = null;
     renderer.dynamicDoodadVisibilityRevision = null;
   }
@@ -36766,12 +36767,13 @@ export default class RaceEditor {
           || record.x !== sprite.x || record.z !== sprite.z || record.yaw !== sprite.yaw
           || record.width !== sprite.widthM || record.height !== sprite.heightM
           || record.definition !== sprite.previewDoodad || record.ref !== sprite.doodadRef
-          || record.art !== sprite.artRef || record.hitbox !== sprite.previewHitbox) {
+          || record.art !== sprite.artRef || record.hitbox !== sprite.previewHitbox || record.flipX !== sprite.flipX) {
           unchanged = false;
           break;
         }
       }
     }
+    const geometryUnchanged=unchanged;
     if (unchanged) {
       for (const [ref, key] of previous.artKeys) {
         if ((ref ? this.getRaceArtSpriteCanvas(ref)?.__raceArtCacheKey || '' : '') !== key) {
@@ -36789,6 +36791,14 @@ export default class RaceEditor {
       }
     }
     if (unchanged) return previous.key;
+    if (geometryUnchanged && managedVersion !== null) {
+      const artKeys=new Map(),modelKeys=new Map();
+      for(const ref of previous.artKeys.keys())artKeys.set(ref,ref?this.getRaceArtSpriteCanvas(ref)?.__raceArtCacheKey||'':'');
+      for(const ref of previous.modelKeys.keys())modelKeys.set(ref,modelAssets.entries.get(ref)?.revision||0);
+      const key=`${surfaceRevision}::managed-assets::${this.raceDoodadAssetRevision=(this.raceDoodadAssetRevision||0)+1}`;
+      this.raceDoodadSceneSnapshot={...previous,key,artKeys,modelKeys};
+      return key;
+    }
     const artKeys = new Map(), modelKeys = new Map();
     const doodads = sprites.map((sprite) => {
       const doodad = this.getRaceDoodadForScenery(sprite);
@@ -36813,7 +36823,7 @@ export default class RaceEditor {
         Math.round(Number(doodad?.groundOffsetM ?? sprite?.groundOffsetM ?? 0) * 1000),
         Math.round(Number(doodad?.hitboxWidthM ?? sprite?.hitboxWidthM ?? 0) * 1000),
         Math.round(Number(doodad?.hitboxHeightM ?? sprite?.hitboxHeightM ?? 0) * 1000),
-        sprite?.previewHitbox ? 1 : 0
+        sprite?.previewHitbox ? 1 : 0, sprite?.flipX ? 1 : 0
       ].join(',');
     }).join(';');
     const key = `${surfaceRevision}::three-doodads::${doodads}`;
@@ -36822,7 +36832,7 @@ export default class RaceEditor {
       source: sprites, count: sprites.length, managedVersion,
       sprites: managedVersion !== null ? null : sprites.map(sprite => ({sprite, state:sprite.state, x:sprite.x, z:sprite.z, yaw:sprite.yaw,
         width:sprite.widthM, height:sprite.heightM, definition:sprite.previewDoodad,
-        ref:sprite.doodadRef, art:sprite.artRef, hitbox:sprite.previewHitbox}))
+        ref:sprite.doodadRef, art:sprite.artRef, hitbox:sprite.previewHitbox, flipX:sprite.flipX}))
     };
     return key;
   }
@@ -37243,7 +37253,8 @@ export default class RaceEditor {
     const leftElevation = leftGround.elevation;
     const rightElevation = rightGround.elevation;
     const heightElevation = heightM / RACE_THREE_ELEVATION_M;
-    const u0 = Number(sprite.fenceU0) || visual.u0, u1 = Number.isFinite(sprite.fenceU1) ? sprite.fenceU1 : visual.u1;
+    let u0 = Number(sprite.fenceU0) || visual.u0, u1 = Number.isFinite(sprite.fenceU1) ? sprite.fenceU1 : visual.u1;
+    if (sprite.flipX === true) [u0, u1] = [u1, u0];
     const bottomLeft = { ...leftGround, u: u0, v: visual.v0 };
     const bottomRight = { ...rightGround, u: u1, v: visual.v0 };
     const topRight = { ...rightGround, elevation: rightElevation + heightElevation, u: u1, v: visual.v1 };
@@ -37477,7 +37488,7 @@ export default class RaceEditor {
       if (sprite.fenceId || staticScenery) {
         const key = `${sprite.fenceId || 'scenery'}:${doodad.artRef || sprite.artRef}:${Math.floor(sprite.x / 128)},${Math.floor(sprite.z / 128)}`;
         let batch = fenceBatches.get(key);
-        if (!batch) { batch = { material, positions: [], uvs: [] }; fenceBatches.set(key, batch); }
+        if (!batch) { batch = { material, artRef: doodad.artRef || sprite.artRef || '', positions: [], uvs: [] }; fenceBatches.set(key, batch); }
         for (const point of vertices) {
           batch.positions.push(Number(point.x || 0), this.getRaceThreeElevationM(point), Number(point.z || 0));
           batch.uvs.push(Number(point.u || 0), Number(point.v || 0));
@@ -37506,6 +37517,7 @@ export default class RaceEditor {
       mesh.renderOrder = 7;
       mesh.userData.spriteId = sprite.id || '';
       mesh.userData.doodadRef = sprite.doodadRef || '';
+      mesh.userData.sceneryArtRef = doodad.artRef || sprite.artRef || '';
       group.add(mesh);
       this.addRaceThreeDoodadHitboxMeshes(resourceRenderer, group, sprite, { stats });
     });
@@ -37515,7 +37527,7 @@ export default class RaceEditor {
       geometry.setAttribute('uv', new THREE.Float32BufferAttribute(batch.uvs, 2));
       geometry.computeVertexNormals(); geometry.computeBoundingSphere();
       const mesh = new THREE.Mesh(geometry, batch.material);
-      mesh.name = `raceFence:${key}`; mesh.renderOrder = 7; group.add(mesh);
+      mesh.name = `raceFence:${key}`; mesh.renderOrder = 7; mesh.userData.sceneryArtRef = batch.artRef; group.add(mesh);
     }
     if (!group.children.length) return false;
     renderer.scene.add(group);
@@ -40628,8 +40640,11 @@ export default class RaceEditor {
       const y = groundY - height;
       if (x > bounds.x + bounds.w || x + width < bounds.x) return;
       if (artCanvas && typeof ctx.drawImage === 'function') {
+        ctx.save();
+        if (sprite.flipX === true) { ctx.translate(2*x+width,0); ctx.scale(-1,1); }
         if (visual.crop) { const c=visual.crop; ctx.drawImage(artCanvas,c.x,c.y,c.width,c.height,x,y,width,height); }
         else ctx.drawImage(artCanvas, x, y, width, height);
+        ctx.restore();
         return;
       }
       ctx.fillStyle = preset.colors?.[1] || '#1f3d22';
