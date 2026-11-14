@@ -1,0 +1,62 @@
+{
+  "referenceVehicle": "2018 US Kia Stinger GT RWD 3.3L twin-turbo V6 8AT, standard19-inch staggered tires",
+  "sources": [
+    {
+      "url": "https://www.kiamedia.com/us/en/models/stinger/2018/specifications",
+      "fields": [
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.engineDisplacementL",
+        "transmissions.automatic.gearRatios",
+        "transmissions.automatic.reverseRatio",
+        "transmissions.automatic.gearFinalDrive",
+        "dimensions",
+        "setup.tireSizeByAxle",
+        "tuning.weightKg",
+        "tuning.physics.bodyProfile.overallHeightM"
+      ],
+      "access": "Official search-indexed specification table read2026-11-14. Direct page access returned403; no claim of full-page download. GT column and minimumRWD mass row, not maximumAWD."
+    },
+    {
+      "url": "https://forza.net/en-GB/fh5cars",
+      "fields": [
+        "selectionContext"
+      ],
+      "access": "Official current list identifies2023 KIA EV6 GT (already Volt-Hound); no Stinger entry found. This is an independently selected missing real production car, not claimed FH5 inclusion."
+    }
+  ],
+  "verifiedFacts": {
+    "power": {
+      "value": 365,
+      "unit": "hp",
+      "rpm": 6000
+    },
+    "torque": {
+      "value": 376,
+      "unit": "lb-ft",
+      "rpmRange": [
+        1300,
+        4500
+      ]
+    },
+    "minimumRwdMass": {
+      "value": 3829,
+      "unit": "lb",
+      "qualifier": "Manufacturer table minimum RWD, not a measured individual GT"
+    },
+    "engineDisplacement": {
+      "value": 3342,
+      "unit": "cm3"
+    },
+    "frontTires": "225/40R19",
+    "rearTires": "255/35R19"
+  },
+  "estimates": [
+    "3829lb minimum RWD mass used as representative GT simulation mass; optional equipment and individual curb mass unverified. No AWD maximum mass or GT2 equipment assumed.",
+    "750idle,6500redline,6800limiter and torque interpolation except376lb-ft1300–4500 and365hp6000 anchors are modeled.167mph/5sec0–60 display are unvalidated design estimates, not measured game performance.",
+    ".32drag,52%front mass,.52mCG,.13mclearance,overhang split and collider sections, suspension/brakes/alignment/aero,tire grip and36psi pressures are game estimates.15:1 steering is a constant approximation of OEM variable steering; not a verified ratio.",
+    "Open rear differential approximation; optional LSD calibration is not claimed.8AT shift/launch/lockup/converter behavior and86%drivetrain efficiency are simulation parameters, not factory maps.",
+    "Front.3313m/rear.33055m radii are unloaded geometry from225/40R19 and255/35R19, not measured rolling radii. Existing axle-size path preserves individual contact radii; legacy powertrain uses driven rear radius. Average track63.25in used by body rig.",
+    "Original logo-free2994 pixels are fictional styling, not Kia design or film livery. Individual wheel anchors are artistic measurements with straight-view centers inferred behind shell. Shared wheel/tire/surface-smoke assets reused."
+  ]
+}

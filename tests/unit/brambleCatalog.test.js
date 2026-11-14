@@ -9,3 +9,21 @@ test('Bramble preserves UK base specs and equivalent dual-final gear reductions'
  const raw=[3.538,2.238,1.535,1.162,1.081,.902];raw.forEach((r,i)=>assert.ok(Math.abs(c.transmissions.manual.gearRatios[i]*t.gearFinalDrive-r*(i<4?3.941:3.350))<1e-10));assert.ok(Math.abs(t.reverseRatio*t.gearFinalDrive-3.831*3.350)<1e-10);assert.equal(c.setup.tireSize.widthMm,225);assert.equal(t.frontDifferentialAccel,0);assert.equal(t.rearDifferentialAccel,0);
  for(const car of [c,doc.car])for(const [slot,layer]of Object.entries(car.art.angleLayers))assert.equal(layer.tires.tireMode,'auto',slot);
 });
+
+test('Bramble defaults to automatic assist while retaining selectable sourced manual gearing',()=>{
+ for(const car of [cfg.car,doc.car]){
+  assert.equal(car.defaultTransmissionType,'automatic');
+  const {type,label,shiftMode,...assist}=car.transmissions.automatic;
+  const {type:manualType,label:manualLabel,shiftMode:manualMode,...manual}=car.transmissions.manual;
+  assert.equal(type,'automatic');assert.equal(shiftMode,'automatic');assert.equal(label,'Auto Assist (6MT)');
+  assert.equal(manualType,'manual');assert.equal(manualMode,'manual');assert.equal(manualLabel,'6MT');
+  assert.deepEqual(assist,manual);
+ }
+ const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});
+ e.applyLoadedCarDocument(structuredClone(doc),{name:doc.car.name});
+ const car=e.serializeSelectedCarDocument().car;
+ assert.equal(car.defaultTransmissionType,'automatic');
+ assert.equal(e.getRaceCarTuning(car,{transmissionType:'automatic'}).shiftMode,'automatic');
+ assert.equal(e.getRaceCarTuning(car,{transmissionType:'manual'}).shiftMode,'manual');
+ assert.deepEqual(car.transmissions,cfg.car.transmissions);
+});

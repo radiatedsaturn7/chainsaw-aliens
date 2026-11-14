@@ -1,0 +1,59 @@
+{
+  "vehicle": "2024 US Subaru Forester Base, standard equipment, naturally aspirated 2.5L AWD Lineartronic CVT",
+  "sources": [
+    {
+      "url": "https://s3.amazonaws.com/subarumedia.iconicweb.com/mediasite/attachments/24MY_Forester_Specs_-_FINAL.pdf",
+      "fields": [
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.weightKg",
+        "tuning.engineDisplacementL",
+        "dimensions",
+        "tuning.physics.bodyProfile.overallHeightM",
+        "tuning.physics.bodyProfile.groundClearanceM",
+        "tuning.steeringRatio",
+        "setup.tireSize"
+      ],
+      "access": "Full manufacturer specification PDF read 2026-11-14; base-trim columns used."
+    },
+    {
+      "url": "https://www.subaru.com/owners/vehicle-resources.html?model=2024-FOR-RFA",
+      "fields": [
+        "transmissions.automatic.cvt",
+        "setup.tireSize",
+        "tuning.drivetrain"
+      ],
+      "access": "Official base-trim equipment page read 2026-11-14; continuous CVT with no driver-selectable stepped manual mode."
+    }
+  ],
+  "verifiedFacts": {
+    "power": {
+      "value": 182,
+      "unit": "hp",
+      "rpm": 5800
+    },
+    "torque": {
+      "value": 176,
+      "unit": "lb-ft",
+      "rpm": 4400
+    },
+    "curbMass": {
+      "value": 3454,
+      "unit": "lb"
+    },
+    "engineDisplacement": {
+      "value": 2498,
+      "unit": "cm3"
+    },
+    "tireSize": "225/60 R17",
+    "steeringRatio": 13.5
+  },
+  "estimates": [
+    "CVT range .556–3.601, reverse3.689 and final3.700 use the published non-Wilderness higher-trim table as simulation assumptions, NOT verified Base continuous endpoints/reverse/final. The Base uses continuously variable operation, not seven physical gears or an invented manual trim.",
+    "CVT target cruise1800/power5800 RPM, ratio slew1/sec, converter slip/multiplication, launch and shift timing and84% efficiency are game control estimates, not factory calibration.",
+    "750 idle,6200 redline,6500 limiter and interpolated torque curve are estimates except176 lb-ft at4400 and the182hp at5800 anchor. 118mph and9sec0–60 display are unvalidated design estimates, not measured performance.",
+    ".34 drag,58% front weight,.64m CG,40% rear torque share, open axle differential approximation, suspension/brakes/alignment/aero, tire grip and33/32psi pressure are game-tuned estimates; active OEM AWD and brake torque-vectoring logic not reproduced.",
+    "Nominal tire radius.3509m calculated from225/60R17 is not loaded rolling radius. One track uses mean61.7in. Overhang split and detailed collider sections are modeled; source overall envelope, wheelbase and clearance retained.",
+    "Original fictional logo-free2994 art is not a factory replica: decorative roof rails do not change the source standard-equipment Base mass/envelope. Wheel anchors are artistic measurements, front/rear centers inferred behind shell. Existing shared steering wheel, tire art and surface-sensitive smoke reused."
+  ]
+}
