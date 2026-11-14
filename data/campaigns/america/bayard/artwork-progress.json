@@ -1,0 +1,82 @@
+{
+  "baseCommit": "8f300e1fb4deaba78dff9293e6070d7bfe25909b",
+  "raceId": "detour-bayard",
+  "lighting": "Existing day/noon brightness 1, native sun, weather and sky offset retained",
+  "completedImports": [
+    {
+      "artRef": "skybox-bayard-noon-2994",
+      "status": "Native desktop and handheld reviewed",
+      "notes": "Weather-neutral prairie noon panorama; no baked sun, clouds, weather or geographically misoriented Chimney Rock. Original skybox-route-66 untouched."
+    },
+    {
+      "artRef": "landmark-bayard-community-bible-church",
+      "status": "Native desktop visible; handheld small on approach",
+      "notes": "Retained mapped position and width. Dedicated low roof church art replaces only its placeholder; height corrected to 8m. No text or snow."
+    },
+    {
+      "artRef": "landmark-bayard-city-park-water-tower",
+      "status": "Imported; native visibility pending",
+      "notes": "Retained mapped position and dimensions. Correct bulb/stem form replaces generic tower. Current road ends roughly 176m before tower; native desktop/handheld identification not verified. Do not relocate or claim a visual pass."
+    },
+    {
+      "artRef": "bayard-city-park-playground-ruin",
+      "status": "Imported; native desktop and handheld reviewed, identification pending",
+      "notes": "Approximately 88m from nearest road endpoint, ~14m gap from closest existing prop. No exact equipment survey claimed. Actual native finish frames do not show identifiable playground equipment; keep pending rather than relocating real park."
+    },
+    {
+      "artRef": "bayard-sage-sandstone-cluster",
+      "status": "Two safe accents imported; desktop ground clusters visible, individual handheld identification pending",
+      "notes": "Only two additive 3m patches. At least 13.8m clear of road edge, at least 2.1m from closest existing prop. Native approach frames inspected; small ground vegetation blends with original props and handheld reduction prevents confident individual identification."
+    }
+  ],
+  "remaining": [
+    "Public Schools, Assumption Greek Orthodox Church, Sacred Heart Catholic Church, Chimney Rock Public Power retain original placeholders pending reliable facade references",
+    "Generic sugar factory and grain bins prepared separately but not transplanted onto this route",
+    "Chimney Rock is distant southwest and not embedded into repeating sky or roadside"
+  ],
+  "invariants": [
+    "All 5520 existing prop identities preserved; three additive scenery accents",
+    "All original prop positions and widths preserved",
+    "Road nodes, segments, terrain, weather, lighting and other races unchanged",
+    "Existing saved assets untouched"
+  ],
+  "validation": {
+    "skyAndBoundsUnitTests": 25,
+    "bayardRegistrationAndClearanceTests": 2,
+    "failedTests": 0,
+    "nearestRoadEdgeClearanceChurchM": 12.66,
+    "nearestRoadEdgeClearanceTowerM": 167.86,
+    "remoteChanges": false,
+    "accentClearances": [
+      {
+        "id": "bayard-art-park-playground",
+        "clearanceM": 80.6402789306343,
+        "otherPropGapM": 13.987589170884338,
+        "x": -320.17925638566044,
+        "z": -277.3316496104358,
+        "trackDistance": 5401.652369880831
+      },
+      {
+        "id": "bayard-art-canal-sage-1",
+        "clearanceM": 27.06412311225685,
+        "otherPropGapM": 2.1383286068187757,
+        "x": 2830.4851450959695,
+        "z": 1738.9836571145502,
+        "trackDistance": 449.92887919875085
+      },
+      {
+        "id": "bayard-art-canal-sage-2",
+        "clearanceM": 13.813447534182917,
+        "otherPropGapM": 5.308620071260904,
+        "x": 2792.048438808462,
+        "z": 1738.670457638586,
+        "trackDistance": 523.1992887556239
+      }
+    ],
+    "originalSceneComparison": "All 5520 original IDs and fields preserved except scoped church/tower art refs and church height; road and native scene settings identical."
+  },
+  "references": [
+    "https://www.cityofbayard.net/vnews/display.v/SEC/Live%20Here%7CBayard%20History",
+    "https://www.cityofbayard.net/vnews/display.v/ART/5f7500d002ad9"
+  ]
+}

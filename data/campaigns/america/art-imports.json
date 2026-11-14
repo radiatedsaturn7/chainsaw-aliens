@@ -1587,5 +1587,40 @@
     "documentSha256": "914e73efe0631cc6ed50ebd5019792f24938093fef1e26b09a5542fc2e607f27",
     "width": 512,
     "height": 171
+  },
+  "skybox-bayard-noon-2994": {
+    "source": "assets/campaign-art/skyboxes/bayard-noon-2994.png",
+    "sourceSha256": "403583e3de4f710d859ad1dee597006daabdd4abe3609b890831d591b10653b2",
+    "documentSha256": "2777ea5a8423f9ac3a4973dc476c6787741d95fa33d7c014e37437750d256a59",
+    "width": 1024,
+    "height": 341
+  },
+  "landmark-bayard-community-bible-church": {
+    "source": "assets/campaign-art/bayard/landmark-bayard-community-bible-church.png",
+    "sourceSha256": "086f39b4acec469a21550a07078fb17a1daf2a0f776cf0a26152bd44931be6e4",
+    "documentSha256": "aa3e5dc2bfd242ef3e2338e5c1cd17e500e41f2808ec5056a9fa69d44b25a4cb",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-bayard-city-park-water-tower": {
+    "source": "assets/campaign-art/bayard/landmark-bayard-city-park-water-tower.png",
+    "sourceSha256": "2265417eba957daf2e44deac5af85be06e3900b63b8d70fca670425064f659b6",
+    "documentSha256": "fdcc25039b47986e8e477191e0f19b72da0c18e5ffc4908e11412e0eaf028622",
+    "width": 341,
+    "height": 512
+  },
+  "bayard-city-park-playground-ruin": {
+    "source": "assets/campaign-art/bayard/bayard-city-park-playground-ruin.png",
+    "sourceSha256": "078edc5447730cbd1594c6f727dc83dfae70bc68d58f5fa4f7d3e62bc355eca6",
+    "documentSha256": "5e4de8c95289458f1b52d3052f88ee954a9546859b84f8ccb716b99fbdeebb57",
+    "width": 512,
+    "height": 341
+  },
+  "bayard-sage-sandstone-cluster": {
+    "source": "assets/campaign-art/bayard/bayard-sage-sandstone-cluster.png",
+    "sourceSha256": "e66a75974a6466827a8c6a0f19f5531d0e0253093b2e9fa612904282cce09c39",
+    "documentSha256": "dfb764ab0fb4ef3f7fc0cc9d6a73b6031484bce090f84bdeefdb590c91a086ae",
+    "width": 512,
+    "height": 341
   }
 }

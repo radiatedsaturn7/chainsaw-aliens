@@ -1,0 +1,56 @@
+{
+  "notes": "Additive accents; playground is approximate mapped park area, not a surveyed equipment position. Native visibility tracked separately. Canal accents selected in clear gaps, never replacing original props.",
+  "scenery": [
+    {
+      "id": "bayard-art-park-playground",
+      "presetId": "doodad",
+      "definitionId": "campaign-bayard-city-park-playground-ruin",
+      "doodadRef": "bayard-city-park-playground-ruin",
+      "artRef": "bayard-city-park-playground-ruin",
+      "x": -320.17925638566044,
+      "z": -277.3316496104358,
+      "yaw": 0,
+      "trackDistance": 5401.652369880831,
+      "trackLateral": 31.800470766345956,
+      "widthM": 8,
+      "heightM": 5.333,
+      "groundOffsetM": 0,
+      "behavior": "collide",
+      "state": "standing"
+    },
+    {
+      "id": "bayard-art-canal-sage-1",
+      "presetId": "doodad",
+      "definitionId": "campaign-bayard-sage-sandstone-cluster",
+      "doodadRef": "bayard-sage-sandstone-cluster",
+      "artRef": "bayard-sage-sandstone-cluster",
+      "x": 2830.4851450959695,
+      "z": 1738.9836571145502,
+      "yaw": 0,
+      "trackDistance": 449.92887919875085,
+      "trackLateral": -32.064123112256844,
+      "widthM": 3,
+      "heightM": 2,
+      "groundOffsetM": 0,
+      "behavior": "flatten",
+      "state": "standing"
+    },
+    {
+      "id": "bayard-art-canal-sage-2",
+      "presetId": "doodad",
+      "definitionId": "campaign-bayard-sage-sandstone-cluster",
+      "doodadRef": "bayard-sage-sandstone-cluster",
+      "artRef": "bayard-sage-sandstone-cluster",
+      "x": 2792.048438808462,
+      "z": 1738.670457638586,
+      "yaw": 0,
+      "trackDistance": 523.1992887556239,
+      "trackLateral": -18.813447534182917,
+      "widthM": 3,
+      "heightM": 2,
+      "groundOffsetM": 0,
+      "behavior": "flatten",
+      "state": "standing"
+    }
+  ]
+}

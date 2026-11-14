@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794370809223,
+  "doodad": {
+    "id": "campaign-bayard-sage-sandstone-cluster",
+    "name": "bayard-sage-sandstone-cluster",
+    "artRef": "bayard-sage-sandstone-cluster",
+    "widthM": 3,
+    "heightM": 2,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 2.55,
+    "hitboxHeightM": 1.8,
+    "weightKg": 5,
+    "defaultRule": {
+      "behavior": "flatten",
+      "speedDrainPercent": 1,
+      "damage": {
+        "panels": 0,
+        "suspension": 0,
+        "engine": 0
+      }
+    },
+    "rules": []
+  }
+}

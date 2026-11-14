@@ -32,10 +32,11 @@
       "reference": "https://www.openstreetmap.org/node/357777863",
       "placeholderRef": "expanded-abandoned-church",
       "widthM": 16,
-      "heightM": 12,
+      "heightM": 8,
       "suggestedArtRef": "landmark-bayard-community-bible-church",
-      "artStatus": "Generic placeholder; dedicated likeness needed",
-      "artBrief": "Research the road-facing appearance of Community Bible Church in Bayard, Nebraska. Match existing pixel-art perspective; abandoned 2994 setting, transparent background, grounded bottom edge. No baked text/UI. Dimensions are provisional, not surveyed."
+      "artStatus": "Desktop visible; native handheld small but discernible on approach",
+      "artBrief": "Research the road-facing appearance of Community Bible Church in Bayard, Nebraska. Match existing pixel-art perspective; abandoned 2994 setting, transparent background, grounded bottom edge. No baked text/UI. Dimensions are provisional, not surveyed.",
+      "artRef": "landmark-bayard-community-bible-church"
     },
     {
       "name": "Sacred Heart Catholic Church",
@@ -70,8 +71,9 @@
       "widthM": 10,
       "heightM": 30,
       "suggestedArtRef": "landmark-bayard-city-park-water-tower",
-      "artStatus": "Generic placeholder; dedicated likeness needed",
-      "artBrief": "Research the road-facing appearance of City Park Water Tower in Bayard, Nebraska. Match existing pixel-art perspective; abandoned 2994 setting, transparent background, grounded bottom edge. No baked text/UI. Dimensions are provisional, not surveyed."
+      "artStatus": "Imported; native desktop/handheld visibility pending at retained mapped position",
+      "artBrief": "Research the road-facing appearance of City Park Water Tower in Bayard, Nebraska. Match existing pixel-art perspective; abandoned 2994 setting, transparent background, grounded bottom edge. No baked text/UI. Dimensions are provisional, not surveyed.",
+      "artRef": "landmark-bayard-city-park-water-tower"
     }
   ],
   "pending": [
