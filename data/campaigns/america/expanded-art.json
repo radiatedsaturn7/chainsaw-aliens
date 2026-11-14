@@ -2092,6 +2092,12 @@
         }
       ],
       "groundOffsetM": 0.2549
+    },
+    {
+      "name": "providence",
+      "source": "skyboxes/providence-2994.png",
+      "kind": "skybox",
+      "maxEdge": 512
     }
   ]
 }

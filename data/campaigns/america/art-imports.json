@@ -1510,5 +1510,12 @@
     "documentSha256": "93a763c5d3cf1ca08e6f65d5dedadc769fa94c6c1c6993c931025efacae7b172",
     "width": 512,
     "height": 512
+  },
+  "providence": {
+    "source": "assets/campaign-art/skyboxes/providence-2994.png",
+    "sourceSha256": "8424f3c05748016dab2753c0112ca015501014c189de555e23cee5ac9b178ac9",
+    "documentSha256": "195cec215c42681b041cc1dbd8209944cca7469b8d7fa3fec16b903f4f0aa772",
+    "width": 512,
+    "height": 171
   }
 }
