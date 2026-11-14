@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617165342,
+  "doodad": {
+    "id": "campaign-landmark-city-tx-spanish-governors-palace",
+    "name": "landmark-city-tx-spanish-governors-palace",
+    "artRef": "landmark-city-tx-spanish-governors-palace",
+    "widthM": 27.82608695652174,
+    "heightM": 10,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 23.652173913043477,
+    "hitboxHeightM": 9,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "defaultIntent": "campaign-placement",
+  "editorAssets": {
+    "fence-region-new-england-stonewall": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-new-england-stonewall.png",
+      "reason": "Reviewed regional fence kit: import-only editor library; campaign placement is not required."
+    },
+    "fence-region-appalachian-splitrail": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-appalachian-splitrail.png",
+      "reason": "Reviewed regional fence kit: import-only editor library; campaign placement is not required."
+    },
+    "fence-region-new-england-hardwoods": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-new-england-hardwoods.png",
+      "reason": "Reviewed regional fence kit: import-only editor library; campaign placement is not required."
+    },
+    "fence-region-new-england-rowhouses": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-new-england-rowhouses.png",
+      "reason": "Reviewed regional fence kit: import-only editor library; campaign placement is not required."
+    },
+    "fence-region-southwest-adobe": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-southwest-adobe.png",
+      "reason": "Reviewed regional fence kit: import-only editor library; campaign placement is not required."
+    },
+    "fence-region-pnw-conifers": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-pnw-conifers.png",
+      "reason": "Reviewed regional fence kit: import-only editor library; campaign placement is not required."
+    },
+    "fence-region-plains-shelterbelt": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-plains-shelterbelt.png",
+      "reason": "Reviewed regional fence kit: import-only editor library; campaign placement is not required."
+    },
+    "fence-region-southwest-scrub": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-southwest-scrub.png",
+      "reason": "Reviewed regional fence kit: import-only editor library; campaign placement is not required."
+    },
+    "fence-region-plains-farm": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-plains-farm.png",
+      "reason": "Reviewed regional fence kit: import-only editor library; campaign placement is not required."
+    },
+    "fence-region-industrial-cityblock": {
+      "kind": "doodad",
+      "source": "assets/campaign-art/regional-fences/fence-industrial-cityblock.png",
+      "reason": "Reviewed regional fence kit: import-only editor library; campaign placement is not required."
+    },
+    "providence": {
+      "kind": "skybox",
+      "source": "assets/campaign-art/skyboxes/providence-2994.png",
+      "reason": "Editor skybox used by Studio Sprint and other saved editor courses."
+    }
+  },
+  "configuredUnused": {
+    "road-snow-patchy": {
+      "raceRef": "Pikes Peak Highway",
+      "surface": "snow",
+      "reason": "Retained configured snow ribbon; current route has only asphalt. Report visibly until a real segment uses it or configuration is deliberately removed."
+    }
+  }
+}

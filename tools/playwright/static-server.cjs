@@ -34,11 +34,14 @@ function sendJson(res, status, payload) {
 }
 
 function normalizeName(value) {
+  // Curated landmark IDs must round-trip exactly; other filenames retain the legacy cap.
+  const raw = String(value || '');
+  const limit = raw.length <= 80 && /^landmark-city-[a-z]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(raw) ? 80 : 64;
   return String(value || '')
     .trim()
     .replace(/\s+/g, ' ')
     .replace(/[\\/:*?"<>|]/g, '')
-    .slice(0, 64);
+    .slice(0, limit);
 }
 
 function isValidStorageFolder(folder) {

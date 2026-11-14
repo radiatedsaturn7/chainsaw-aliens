@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617016214,
+  "doodad": {
+    "id": "campaign-landmark-city-me-portland-city-hall",
+    "name": "landmark-city-me-portland-city-hall",
+    "artRef": "landmark-city-me-portland-city-hall",
+    "widthM": 57.05571847507331,
+    "heightM": 38,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 48.49736070381231,
+    "hitboxHeightM": 34.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

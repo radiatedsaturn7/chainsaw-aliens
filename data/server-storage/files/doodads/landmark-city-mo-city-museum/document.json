@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613708992,
+  "doodad": {
+    "id": "campaign-landmark-city-mo-city-museum",
+    "name": "landmark-city-mo-city-museum",
+    "artRef": "landmark-city-mo-city-museum",
+    "widthM": 45.043988269794724,
+    "heightM": 30,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 38.287390029325515,
+    "hitboxHeightM": 27,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

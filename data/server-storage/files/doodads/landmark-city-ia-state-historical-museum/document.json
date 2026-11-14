@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794616858320,
+  "doodad": {
+    "id": "campaign-landmark-city-ia-state-historical-museum",
+    "name": "landmark-city-ia-state-historical-museum",
+    "artRef": "landmark-city-ia-state-historical-museum",
+    "widthM": 65.87134502923976,
+    "heightM": 22,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 55.990643274853795,
+    "hitboxHeightM": 19.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

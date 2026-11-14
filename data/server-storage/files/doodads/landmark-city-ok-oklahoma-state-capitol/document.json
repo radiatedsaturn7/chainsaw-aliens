@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794615091934,
+  "doodad": {
+    "id": "campaign-landmark-city-ok-oklahoma-state-capitol",
+    "name": "landmark-city-ok-oklahoma-state-capitol",
+    "artRef": "landmark-city-ok-oklahoma-state-capitol",
+    "widthM": 91.34272300469483,
+    "heightM": 38,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 77.64131455399061,
+    "hitboxHeightM": 34.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

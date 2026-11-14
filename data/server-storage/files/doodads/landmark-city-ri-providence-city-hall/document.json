@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794605333691,
+  "doodad": {
+    "id": "campaign-landmark-city-ri-providence-city-hall",
+    "name": "landmark-city-ri-providence-city-hall",
+    "artRef": "landmark-city-ri-providence-city-hall",
+    "widthM": 39.111111111111114,
+    "heightM": 22,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 33.24444444444445,
+    "hitboxHeightM": 19.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

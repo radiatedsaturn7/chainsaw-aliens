@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794610827032,
+  "doodad": {
+    "id": "campaign-landmark-city-mn-guthrie-theater",
+    "name": "landmark-city-mn-guthrie-theater",
+    "artRef": "landmark-city-mn-guthrie-theater",
+    "widthM": 69.93170731707318,
+    "heightM": 28,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 59.4419512195122,
+    "hitboxHeightM": 25.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

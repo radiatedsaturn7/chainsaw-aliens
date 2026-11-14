@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794606320570,
+  "doodad": {
+    "id": "campaign-landmark-city-id-idaho-state-capitol",
+    "name": "landmark-city-id-idaho-state-capitol",
+    "artRef": "landmark-city-id-idaho-state-capitol",
+    "widthM": 70,
+    "heightM": 35,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 59.5,
+    "hitboxHeightM": 31.5,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

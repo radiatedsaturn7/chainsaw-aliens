@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617443430,
+  "doodad": {
+    "id": "campaign-landmark-city-wa-pike-place-market",
+    "name": "landmark-city-wa-pike-place-market",
+    "artRef": "landmark-city-wa-pike-place-market",
+    "widthM": 30,
+    "heightM": 15,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 25.5,
+    "hitboxHeightM": 13.5,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

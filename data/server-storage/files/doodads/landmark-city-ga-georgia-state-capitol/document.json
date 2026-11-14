@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794612412001,
+  "doodad": {
+    "id": "campaign-landmark-city-ga-georgia-state-capitol",
+    "name": "landmark-city-ga-georgia-state-capitol",
+    "artRef": "landmark-city-ga-georgia-state-capitol",
+    "widthM": 76,
+    "heightM": 38,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 64.6,
+    "hitboxHeightM": 34.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

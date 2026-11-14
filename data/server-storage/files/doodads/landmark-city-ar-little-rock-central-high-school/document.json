@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613960425,
+  "doodad": {
+    "id": "campaign-landmark-city-ar-little-rock-central-high-school",
+    "name": "landmark-city-ar-little-rock-central-high-school",
+    "artRef": "landmark-city-ar-little-rock-central-high-school",
+    "widthM": 77.84795321637426,
+    "heightM": 26,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 66.17076023391812,
+    "hitboxHeightM": 23.400000000000002,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

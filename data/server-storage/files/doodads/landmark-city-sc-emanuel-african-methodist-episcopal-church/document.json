@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794615194653,
+  "doodad": {
+    "id": "campaign-landmark-city-sc-emanuel-african-methodist-episcopal-church",
+    "name": "landmark-city-sc-emanuel-african-methodist-episcopal-church",
+    "artRef": "landmark-city-sc-emanuel-african-methodist-episcopal-church",
+    "widthM": 40.756218905472636,
+    "heightM": 32,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 34.64278606965174,
+    "hitboxHeightM": 28.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617165342,
+  "doodad": {
+    "id": "campaign-landmark-city-tx-tower-of-the-americas",
+    "name": "landmark-city-tx-tower-of-the-americas",
+    "artRef": "landmark-city-tx-tower-of-the-americas",
+    "widthM": 46.62109375,
+    "heightM": 70,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 39.6279296875,
+    "hitboxHeightM": 63,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

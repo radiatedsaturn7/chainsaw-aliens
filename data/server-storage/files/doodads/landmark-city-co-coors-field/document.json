@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794609519056,
+  "doodad": {
+    "id": "campaign-landmark-city-co-coors-field",
+    "name": "landmark-city-co-coors-field",
+    "artRef": "landmark-city-co-coors-field",
+    "widthM": 46,
+    "heightM": 23,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 39.1,
+    "hitboxHeightM": 20.7,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

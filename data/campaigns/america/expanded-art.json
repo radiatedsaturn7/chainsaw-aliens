@@ -2137,6 +2137,1406 @@
       "maxEdge": 512,
       "heightM": 2,
       "placements": []
+    },
+    {
+      "name": "landmark-city-ri-rhode-island-state-house",
+      "source": "landmarks/RI/landmark-city-ri-rhode-island-state-house.png",
+      "heightM": 35,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ri-john-brown-house",
+      "source": "landmarks/RI/landmark-city-ri-john-brown-house.png",
+      "heightM": 13,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ri-providence-city-hall",
+      "source": "landmarks/RI/landmark-city-ri-providence-city-hall.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ri-providence-performing-arts-center",
+      "source": "landmarks/RI/landmark-city-ri-providence-performing-arts-center.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-id-idaho-state-capitol",
+      "source": "landmarks/ID/landmark-city-id-idaho-state-capitol.png",
+      "heightM": 35,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-id-basque-block",
+      "source": "landmarks/ID/landmark-city-id-basque-block.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-id-egyptian-theatre",
+      "source": "landmarks/ID/landmark-city-id-egyptian-theatre.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-id-boise-depot",
+      "source": "landmarks/ID/landmark-city-id-boise-depot.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wy-big-boy-steam-engine",
+      "source": "landmarks/WY/landmark-city-wy-big-boy-steam-engine.png",
+      "heightM": 7,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wy-wyoming-state-capitol",
+      "source": "landmarks/WY/landmark-city-wy-wyoming-state-capitol.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wy-cheyenne-depot-museum",
+      "source": "landmarks/WY/landmark-city-wy-cheyenne-depot-museum.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wy-historic-governors-mansion",
+      "source": "landmarks/WY/landmark-city-wy-historic-governors-mansion.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ma-old-north-church",
+      "source": "landmarks/MA/landmark-city-ma-old-north-church.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ma-old-state-house",
+      "source": "landmarks/MA/landmark-city-ma-old-state-house.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ma-massachusetts-state-house",
+      "source": "landmarks/MA/landmark-city-ma-massachusetts-state-house.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ma-boston-public-library",
+      "source": "landmarks/MA/landmark-city-ma-boston-public-library.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ct-mark-twain-house",
+      "source": "landmarks/CT/landmark-city-ct-mark-twain-house.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ct-connecticut-state-capitol",
+      "source": "landmarks/CT/landmark-city-ct-connecticut-state-capitol.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ct-wadsworth-atheneum",
+      "source": "landmarks/CT/landmark-city-ct-wadsworth-atheneum.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ct-bushnell-park",
+      "source": "landmarks/CT/landmark-city-ct-bushnell-park.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-fl-historymiami-museum",
+      "source": "landmarks/FL/landmark-city-fl-historymiami-museum.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-fl-olympia-theater",
+      "source": "landmarks/FL/landmark-city-fl-olympia-theater.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-fl-adrienne-arsht-center",
+      "source": "landmarks/FL/landmark-city-fl-adrienne-arsht-center.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-fl-freedom-tower",
+      "source": "landmarks/FL/landmark-city-fl-freedom-tower.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-oh-rock-and-roll-hall-of-fame",
+      "source": "landmarks/OH/landmark-city-oh-rock-and-roll-hall-of-fame.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-oh-playhouse-square",
+      "source": "landmarks/OH/landmark-city-oh-playhouse-square.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-oh-terminal-tower",
+      "source": "landmarks/OH/landmark-city-oh-terminal-tower.png",
+      "heightM": 60,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-oh-west-side-market",
+      "source": "landmarks/OH/landmark-city-oh-west-side-market.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ny-flatiron-building",
+      "source": "landmarks/NY/landmark-city-ny-flatiron-building.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ny-grand-central-terminal",
+      "source": "landmarks/NY/landmark-city-ny-grand-central-terminal.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building",
+      "source": "landmarks/NY/landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ny-rockefeller-center",
+      "source": "landmarks/NY/landmark-city-ny-rockefeller-center.png",
+      "heightM": 70,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-la-jackson-square",
+      "source": "landmarks/LA/landmark-city-la-jackson-square.png",
+      "heightM": 8,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-la-new-orleans-jazz-museum",
+      "source": "landmarks/LA/landmark-city-la-new-orleans-jazz-museum.png",
+      "heightM": 17,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-la-saint-louis-cemetery-no-1",
+      "source": "landmarks/LA/landmark-city-la-saint-louis-cemetery-no-1.png",
+      "heightM": 5,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-la-saenger-theatre",
+      "source": "landmarks/LA/landmark-city-la-saenger-theatre.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-co-coors-field",
+      "source": "landmarks/CO/landmark-city-co-coors-field.png",
+      "heightM": 23,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-co-union-station",
+      "source": "landmarks/CO/landmark-city-co-union-station.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-co-colorado-state-capitol",
+      "source": "landmarks/CO/landmark-city-co-colorado-state-capitol.png",
+      "heightM": 45,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-co-denver-art-museum",
+      "source": "landmarks/CO/landmark-city-co-denver-art-museum.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-az-chase-field",
+      "source": "landmarks/AZ/landmark-city-az-chase-field.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-az-heritage-square",
+      "source": "landmarks/AZ/landmark-city-az-heritage-square.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-az-orpheum-theatre",
+      "source": "landmarks/AZ/landmark-city-az-orpheum-theatre.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-az-arizona-state-capitol",
+      "source": "landmarks/AZ/landmark-city-az-arizona-state-capitol.png",
+      "heightM": 29,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-pa-philadelphia-museum-of-art",
+      "source": "landmarks/PA/landmark-city-pa-philadelphia-museum-of-art.png",
+      "heightM": 27,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-pa-philadelphia-city-hall",
+      "source": "landmarks/PA/landmark-city-pa-philadelphia-city-hall.png",
+      "heightM": 60,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-pa-reading-terminal-market",
+      "source": "landmarks/PA/landmark-city-pa-reading-terminal-market.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-pa-independence-hall",
+      "source": "landmarks/PA/landmark-city-pa-independence-hall.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ks-old-cowtown-museum",
+      "source": "landmarks/KS/landmark-city-ks-old-cowtown-museum.png",
+      "heightM": 13,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ks-exploration-place",
+      "source": "landmarks/KS/landmark-city-ks-exploration-place.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ks-orpheum-theatre",
+      "source": "landmarks/KS/landmark-city-ks-orpheum-theatre.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ks-union-station",
+      "source": "landmarks/KS/landmark-city-ks-union-station.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mn-minneapolis-institute-of-art",
+      "source": "landmarks/MN/landmark-city-mn-minneapolis-institute-of-art.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mn-walker-art-center",
+      "source": "landmarks/MN/landmark-city-mn-walker-art-center.png",
+      "heightM": 25,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mn-basilica-of-saint-mary",
+      "source": "landmarks/MN/landmark-city-mn-basilica-of-saint-mary.png",
+      "heightM": 40,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mn-guthrie-theater",
+      "source": "landmarks/MN/landmark-city-mn-guthrie-theater.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-va-virginia-museum-of-fine-arts",
+      "source": "landmarks/VA/landmark-city-va-virginia-museum-of-fine-arts.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-va-virginia-state-capitol",
+      "source": "landmarks/VA/landmark-city-va-virginia-state-capitol.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-va-main-street-station",
+      "source": "landmarks/VA/landmark-city-va-main-street-station.png",
+      "heightM": 34,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-va-poe-museum",
+      "source": "landmarks/VA/landmark-city-va-poe-museum.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-or-pioneer-courthouse-square",
+      "source": "landmarks/OR/landmark-city-or-pioneer-courthouse-square.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-or-union-station",
+      "source": "landmarks/OR/landmark-city-or-union-station.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-or-powells-city-of-books",
+      "source": "landmarks/OR/landmark-city-or-powells-city-of-books.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-or-portland-art-museum",
+      "source": "landmarks/OR/landmark-city-or-portland-art-museum.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mi-eastern-market",
+      "source": "landmarks/MI/landmark-city-mi-eastern-market.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mi-fox-theatre",
+      "source": "landmarks/MI/landmark-city-mi-fox-theatre.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mi-guardian-building",
+      "source": "landmarks/MI/landmark-city-mi-guardian-building.png",
+      "heightM": 55,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mi-michigan-central-station",
+      "source": "landmarks/MI/landmark-city-mi-michigan-central-station.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ga-fox-theatre",
+      "source": "landmarks/GA/landmark-city-ga-fox-theatre.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ga-centennial-olympic-park",
+      "source": "landmarks/GA/landmark-city-ga-centennial-olympic-park.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ga-georgia-state-capitol",
+      "source": "landmarks/GA/landmark-city-ga-georgia-state-capitol.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ga-ebenezer-baptist-church",
+      "source": "landmarks/GA/landmark-city-ga-ebenezer-baptist-church.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nv-mob-museum",
+      "source": "landmarks/NV/landmark-city-nv-mob-museum.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nv-neon-museum",
+      "source": "landmarks/NV/landmark-city-nv-neon-museum.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nv-downtown-container-park",
+      "source": "landmarks/NV/landmark-city-nv-downtown-container-park.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nv-old-las-vegas-mormon-fort",
+      "source": "landmarks/NV/landmark-city-nv-old-las-vegas-mormon-fort.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ne-joslyn-art-museum",
+      "source": "landmarks/NE/landmark-city-ne-joslyn-art-museum.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ne-lewis-and-clark-landing",
+      "source": "landmarks/NE/landmark-city-ne-lewis-and-clark-landing.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ne-durham-museum",
+      "source": "landmarks/NE/landmark-city-ne-durham-museum.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ne-orpheum-theater",
+      "source": "landmarks/NE/landmark-city-ne-orpheum-theater.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-vt-waterman-building",
+      "source": "landmarks/VT/landmark-city-vt-waterman-building.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-vt-burlington-city-hall",
+      "source": "landmarks/VT/landmark-city-vt-burlington-city-hall.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-vt-flynn-center",
+      "source": "landmarks/VT/landmark-city-vt-flynn-center.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-vt-echo-leahy-center",
+      "source": "landmarks/VT/landmark-city-vt-echo-leahy-center.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wi-pabst-theater",
+      "source": "landmarks/WI/landmark-city-wi-pabst-theater.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wi-milwaukee-art-museum",
+      "source": "landmarks/WI/landmark-city-wi-milwaukee-art-museum.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wi-milwaukee-city-hall",
+      "source": "landmarks/WI/landmark-city-wi-milwaukee-city-hall.png",
+      "heightM": 55,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wi-harley-davidson-museum",
+      "source": "landmarks/WI/landmark-city-wi-harley-davidson-museum.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-in-soldiers-and-sailors-monument",
+      "source": "landmarks/IN/landmark-city-in-soldiers-and-sailors-monument.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-in-indiana-statehouse",
+      "source": "landmarks/IN/landmark-city-in-indiana-statehouse.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-in-lucas-oil-stadium",
+      "source": "landmarks/IN/landmark-city-in-lucas-oil-stadium.png",
+      "heightM": 34,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-in-scottish-rite-cathedral",
+      "source": "landmarks/IN/landmark-city-in-scottish-rite-cathedral.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ms-mississippi-state-capitol",
+      "source": "landmarks/MS/landmark-city-ms-mississippi-state-capitol.png",
+      "heightM": 36,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ms-old-capitol-museum",
+      "source": "landmarks/MS/landmark-city-ms-old-capitol-museum.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ms-smith-robertson-museum",
+      "source": "landmarks/MS/landmark-city-ms-smith-robertson-museum.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ms-mississippi-museum-of-art",
+      "source": "landmarks/MS/landmark-city-ms-mississippi-museum-of-art.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nd-fargo-theatre",
+      "source": "landmarks/ND/landmark-city-nd-fargo-theatre.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nd-plains-art-museum",
+      "source": "landmarks/ND/landmark-city-nd-plains-art-museum.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nd-island-park",
+      "source": "landmarks/ND/landmark-city-nd-island-park.png",
+      "heightM": 9,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nd-fargo-civic-center",
+      "source": "landmarks/ND/landmark-city-nd-fargo-civic-center.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-de-chase-center-on-the-riverfront",
+      "source": "landmarks/DE/landmark-city-de-chase-center-on-the-riverfront.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-de-grand-opera-house",
+      "source": "landmarks/DE/landmark-city-de-grand-opera-house.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-de-delaware-history-museum",
+      "source": "landmarks/DE/landmark-city-de-delaware-history-museum.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-de-rodney-square",
+      "source": "landmarks/DE/landmark-city-de-rodney-square.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mo-old-courthouse",
+      "source": "landmarks/MO/landmark-city-mo-old-courthouse.png",
+      "heightM": 40,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mo-union-station",
+      "source": "landmarks/MO/landmark-city-mo-union-station.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mo-city-museum",
+      "source": "landmarks/MO/landmark-city-mo-city-museum.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mo-fabulous-fox-theatre",
+      "source": "landmarks/MO/landmark-city-mo-fabulous-fox-theatre.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nc-nascar-hall-of-fame",
+      "source": "landmarks/NC/landmark-city-nc-nascar-hall-of-fame.png",
+      "heightM": 25,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nc-bank-of-america-stadium",
+      "source": "landmarks/NC/landmark-city-nc-bank-of-america-stadium.png",
+      "heightM": 34,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nc-mint-museum-uptown",
+      "source": "landmarks/NC/landmark-city-nc-mint-museum-uptown.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nc-discovery-place-science",
+      "source": "landmarks/NC/landmark-city-nc-discovery-place-science.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ar-clinton-presidential-library",
+      "source": "landmarks/AR/landmark-city-ar-clinton-presidential-library.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ar-old-state-house-museum",
+      "source": "landmarks/AR/landmark-city-ar-old-state-house-museum.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ar-arkansas-state-capitol",
+      "source": "landmarks/AR/landmark-city-ar-arkansas-state-capitol.png",
+      "heightM": 40,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ar-little-rock-central-high-school",
+      "source": "landmarks/AR/landmark-city-ar-little-rock-central-high-school.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-md-oriole-park-at-camden-yards",
+      "source": "landmarks/MD/landmark-city-md-oriole-park-at-camden-yards.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-md-lexington-market",
+      "source": "landmarks/MD/landmark-city-md-lexington-market.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-md-washington-monument",
+      "source": "landmarks/MD/landmark-city-md-washington-monument.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-md-national-aquarium",
+      "source": "landmarks/MD/landmark-city-md-national-aquarium.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mt-moss-mansion",
+      "source": "landmarks/MT/landmark-city-mt-moss-mansion.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mt-alberta-bair-theater",
+      "source": "landmarks/MT/landmark-city-mt-alberta-bair-theater.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mt-yellowstone-art-museum",
+      "source": "landmarks/MT/landmark-city-mt-yellowstone-art-museum.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mt-billings-depot",
+      "source": "landmarks/MT/landmark-city-mt-billings-depot.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nh-currier-museum-of-art",
+      "source": "landmarks/NH/landmark-city-nh-currier-museum-of-art.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nh-palace-theatre",
+      "source": "landmarks/NH/landmark-city-nh-palace-theatre.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nh-snhu-arena",
+      "source": "landmarks/NH/landmark-city-nh-snhu-arena.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nh-millyard-museum",
+      "source": "landmarks/NH/landmark-city-nh-millyard-museum.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ok-oklahoma-state-capitol",
+      "source": "landmarks/OK/landmark-city-ok-oklahoma-state-capitol.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ok-oklahoma-city-national-memorial",
+      "source": "landmarks/OK/landmark-city-ok-oklahoma-city-national-memorial.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ok-chickasaw-bricktown-ballpark",
+      "source": "landmarks/OK/landmark-city-ok-chickasaw-bricktown-ballpark.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ok-myriad-botanical-gardens",
+      "source": "landmarks/OK/landmark-city-ok-myriad-botanical-gardens.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-sc-charleston-museum",
+      "source": "landmarks/SC/landmark-city-sc-charleston-museum.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-sc-old-exchange-and-provost-dungeon",
+      "source": "landmarks/SC/landmark-city-sc-old-exchange-and-provost-dungeon.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-sc-rainbow-row",
+      "source": "landmarks/SC/landmark-city-sc-rainbow-row.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-sc-emanuel-african-methodist-episcopal-church",
+      "source": "landmarks/SC/landmark-city-sc-emanuel-african-methodist-episcopal-church.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nj-cathedral-basilica-of-the-sacred-heart",
+      "source": "landmarks/NJ/landmark-city-nj-cathedral-basilica-of-the-sacred-heart.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nj-newark-museum-of-art",
+      "source": "landmarks/NJ/landmark-city-nj-newark-museum-of-art.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nj-new-jersey-performing-arts-center",
+      "source": "landmarks/NJ/landmark-city-nj-new-jersey-performing-arts-center.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nj-newark-penn-station",
+      "source": "landmarks/NJ/landmark-city-nj-newark-penn-station.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tn-tennessee-state-capitol",
+      "source": "landmarks/TN/landmark-city-tn-tennessee-state-capitol.png",
+      "heightM": 40,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tn-ryman-auditorium",
+      "source": "landmarks/TN/landmark-city-tn-ryman-auditorium.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tn-union-station-hotel",
+      "source": "landmarks/TN/landmark-city-tn-union-station-hotel.png",
+      "heightM": 44,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tn-country-music-hall-of-fame",
+      "source": "landmarks/TN/landmark-city-tn-country-music-hall-of-fame.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ky-louisville-slugger-field",
+      "source": "landmarks/KY/landmark-city-ky-louisville-slugger-field.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ky-louisville-palace",
+      "source": "landmarks/KY/landmark-city-ky-louisville-palace.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ky-muhammad-ali-center",
+      "source": "landmarks/KY/landmark-city-ky-muhammad-ali-center.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ky-louisville-slugger-museum",
+      "source": "landmarks/KY/landmark-city-ky-louisville-slugger-museum.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-hi-hawaii-state-capitol",
+      "source": "landmarks/HI/landmark-city-hi-hawaii-state-capitol.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-hi-iolani-palace",
+      "source": "landmarks/HI/landmark-city-hi-iolani-palace.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-hi-aloha-tower",
+      "source": "landmarks/HI/landmark-city-hi-aloha-tower.png",
+      "heightM": 55,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-hi-honolulu-museum-of-art",
+      "source": "landmarks/HI/landmark-city-hi-honolulu-museum-of-art.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ak-anchorage-museum",
+      "source": "landmarks/AK/landmark-city-ak-anchorage-museum.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ak-town-square-park",
+      "source": "landmarks/AK/landmark-city-ak-town-square-park.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ak-oscar-anderson-house",
+      "source": "landmarks/AK/landmark-city-ak-oscar-anderson-house.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ak-alaska-railroad-depot",
+      "source": "landmarks/AK/landmark-city-ak-alaska-railroad-depot.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-al-birmingham-civil-rights-institute",
+      "source": "landmarks/AL/landmark-city-al-birmingham-civil-rights-institute.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-al-alabama-theatre",
+      "source": "landmarks/AL/landmark-city-al-alabama-theatre.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-al-sloss-furnaces",
+      "source": "landmarks/AL/landmark-city-al-sloss-furnaces.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-al-vulcan-park",
+      "source": "landmarks/AL/landmark-city-al-vulcan-park.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ia-pappajohn-sculpture-park",
+      "source": "landmarks/IA/landmark-city-ia-pappajohn-sculpture-park.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ia-principal-park",
+      "source": "landmarks/IA/landmark-city-ia-principal-park.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ia-state-historical-museum",
+      "source": "landmarks/IA/landmark-city-ia-state-historical-museum.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ia-iowa-state-capitol",
+      "source": "landmarks/IA/landmark-city-ia-iowa-state-capitol.png",
+      "heightM": 52,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-il-navy-pier",
+      "source": "landmarks/IL/landmark-city-il-navy-pier.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-il-wrigley-building",
+      "source": "landmarks/IL/landmark-city-il-wrigley-building.png",
+      "heightM": 65,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-il-art-institute-of-chicago",
+      "source": "landmarks/IL/landmark-city-il-art-institute-of-chicago.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-il-union-station",
+      "source": "landmarks/IL/landmark-city-il-union-station.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-me-portland-museum-of-art",
+      "source": "landmarks/ME/landmark-city-me-portland-museum-of-art.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-me-portland-city-hall",
+      "source": "landmarks/ME/landmark-city-me-portland-city-hall.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-me-victoria-mansion",
+      "source": "landmarks/ME/landmark-city-me-victoria-mansion.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-me-portland-observatory",
+      "source": "landmarks/ME/landmark-city-me-portland-observatory.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nm-new-mexico-museum-of-natural-history",
+      "source": "landmarks/NM/landmark-city-nm-new-mexico-museum-of-natural-history.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nm-san-felipe-de-neri-church",
+      "source": "landmarks/NM/landmark-city-nm-san-felipe-de-neri-church.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nm-kimo-theatre",
+      "source": "landmarks/NM/landmark-city-nm-kimo-theatre.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nm-albuquerque-rail-yards",
+      "source": "landmarks/NM/landmark-city-nm-albuquerque-rail-yards.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tx-the-alamo",
+      "source": "landmarks/TX/landmark-city-tx-the-alamo.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tx-tower-of-the-americas",
+      "source": "landmarks/TX/landmark-city-tx-tower-of-the-americas.png",
+      "heightM": 70,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tx-san-fernando-cathedral",
+      "source": "landmarks/TX/landmark-city-tx-san-fernando-cathedral.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tx-spanish-governors-palace",
+      "source": "landmarks/TX/landmark-city-tx-spanish-governors-palace.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ca-crypto-com-arena",
+      "source": "landmarks/CA/landmark-city-ca-crypto-com-arena.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ca-walt-disney-concert-hall",
+      "source": "landmarks/CA/landmark-city-ca-walt-disney-concert-hall.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ca-los-angeles-city-hall",
+      "source": "landmarks/CA/landmark-city-ca-los-angeles-city-hall.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ca-union-station",
+      "source": "landmarks/CA/landmark-city-ca-union-station.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-sd-falls-park",
+      "source": "landmarks/SD/landmark-city-sd-falls-park.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-sd-old-courthouse-museum",
+      "source": "landmarks/SD/landmark-city-sd-old-courthouse-museum.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-sd-pettigrew-home-and-museum",
+      "source": "landmarks/SD/landmark-city-sd-pettigrew-home-and-museum.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-sd-washington-pavilion",
+      "source": "landmarks/SD/landmark-city-sd-washington-pavilion.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ut-union-pacific-depot",
+      "source": "landmarks/UT/landmark-city-ut-union-pacific-depot.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ut-utah-state-capitol",
+      "source": "landmarks/UT/landmark-city-ut-utah-state-capitol.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ut-temple-square",
+      "source": "landmarks/UT/landmark-city-ut-temple-square.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ut-salt-lake-city-and-county-building",
+      "source": "landmarks/UT/landmark-city-ut-salt-lake-city-and-county-building.png",
+      "heightM": 34,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wa-space-needle",
+      "source": "landmarks/WA/landmark-city-wa-space-needle.png",
+      "heightM": 44,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wa-smith-tower",
+      "source": "landmarks/WA/landmark-city-wa-smith-tower.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wa-pike-place-market",
+      "source": "landmarks/WA/landmark-city-wa-pike-place-market.png",
+      "heightM": 15,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wa-king-street-station",
+      "source": "landmarks/WA/landmark-city-wa-king-street-station.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wv-west-virginia-state-capitol",
+      "source": "landmarks/WV/landmark-city-wv-west-virginia-state-capitol.png",
+      "heightM": 34,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wv-clay-center",
+      "source": "landmarks/WV/landmark-city-wv-clay-center.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wv-haddad-riverfront-park",
+      "source": "landmarks/WV/landmark-city-wv-haddad-riverfront-park.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wv-capitol-market",
+      "source": "landmarks/WV/landmark-city-wv-capitol-market.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794606943563,
+  "doodad": {
+    "id": "campaign-landmark-city-ma-old-north-church",
+    "name": "landmark-city-ma-old-north-church",
+    "artRef": "landmark-city-ma-old-north-church",
+    "widthM": 19.98046875,
+    "heightM": 30,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 16.9833984375,
+    "hitboxHeightM": 27,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

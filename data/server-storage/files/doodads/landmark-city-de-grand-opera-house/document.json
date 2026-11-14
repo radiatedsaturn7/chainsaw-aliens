@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613606929,
+  "doodad": {
+    "id": "campaign-landmark-city-de-grand-opera-house",
+    "name": "landmark-city-de-grand-opera-house",
+    "artRef": "landmark-city-de-grand-opera-house",
+    "widthM": 30.462242562929063,
+    "heightM": 26,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 25.892906178489703,
+    "hitboxHeightM": 23.400000000000002,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

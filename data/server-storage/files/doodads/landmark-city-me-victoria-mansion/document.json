@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617016214,
+  "doodad": {
+    "id": "campaign-landmark-city-me-victoria-mansion",
+    "name": "landmark-city-me-victoria-mansion",
+    "artRef": "landmark-city-me-victoria-mansion",
+    "widthM": 33.03225806451613,
+    "heightM": 22,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 28.077419354838707,
+    "hitboxHeightM": 19.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

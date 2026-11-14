@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794616929397,
+  "doodad": {
+    "id": "campaign-landmark-city-il-wrigley-building",
+    "name": "landmark-city-il-wrigley-building",
+    "artRef": "landmark-city-il-wrigley-building",
+    "widthM": 71.11111111111111,
+    "heightM": 65,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 60.44444444444444,
+    "hitboxHeightM": 58.5,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794609519056,
+  "doodad": {
+    "id": "campaign-landmark-city-co-denver-art-museum",
+    "name": "landmark-city-co-denver-art-museum",
+    "artRef": "landmark-city-co-denver-art-museum",
+    "widthM": 36.03519061583578,
+    "heightM": 24,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 30.629912023460413,
+    "hitboxHeightM": 21.6,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

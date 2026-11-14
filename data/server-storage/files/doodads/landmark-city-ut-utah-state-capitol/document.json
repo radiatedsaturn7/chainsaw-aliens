@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617370668,
+  "doodad": {
+    "id": "campaign-landmark-city-ut-utah-state-capitol",
+    "name": "landmark-city-ut-utah-state-capitol",
+    "artRef": "landmark-city-ut-utah-state-capitol",
+    "widthM": 64,
+    "heightM": 32,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 54.4,
+    "hitboxHeightM": 28.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

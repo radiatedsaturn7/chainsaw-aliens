@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794612412001,
+  "doodad": {
+    "id": "campaign-landmark-city-ga-centennial-olympic-park",
+    "name": "landmark-city-ga-centennial-olympic-park",
+    "artRef": "landmark-city-ga-centennial-olympic-park",
+    "widthM": 14.65234375,
+    "heightM": 22,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 12.4544921875,
+    "hitboxHeightM": 19.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

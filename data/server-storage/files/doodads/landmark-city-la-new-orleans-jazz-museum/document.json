@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794609301168,
+  "doodad": {
+    "id": "campaign-landmark-city-la-new-orleans-jazz-museum",
+    "name": "landmark-city-la-new-orleans-jazz-museum",
+    "artRef": "landmark-city-la-new-orleans-jazz-museum",
+    "widthM": 34,
+    "heightM": 17,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 28.9,
+    "hitboxHeightM": 15.3,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613310013,
+  "doodad": {
+    "id": "campaign-landmark-city-in-scottish-rite-cathedral",
+    "name": "landmark-city-in-scottish-rite-cathedral",
+    "artRef": "landmark-city-in-scottish-rite-cathedral",
+    "widthM": 63.06158357771261,
+    "heightM": 42,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 53.60234604105572,
+    "hitboxHeightM": 37.800000000000004,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613203277,
+  "doodad": {
+    "id": "campaign-landmark-city-wi-milwaukee-city-hall",
+    "name": "landmark-city-wi-milwaukee-city-hall",
+    "artRef": "landmark-city-wi-milwaukee-city-hall",
+    "widthM": 40.068359375,
+    "heightM": 55,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 34.05810546875,
+    "hitboxHeightM": 49.5,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}
