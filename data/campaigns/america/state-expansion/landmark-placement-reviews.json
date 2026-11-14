@@ -5070,5 +5070,145 @@
       265
     ],
     "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-me-portland-museum-of-art": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-me-portland-city-hall": {
+    "reason": "Authored reference falls in dense crossing geometry; extend bounded search to find safe approach without moving any prior scenery and retain source coordinates.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210,
+      -240,
+      240,
+      -270,
+      270,
+      -300,
+      300
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      30,
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265,
+      325
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-me-victoria-mansion": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-me-portland-observatory": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
   }
 }

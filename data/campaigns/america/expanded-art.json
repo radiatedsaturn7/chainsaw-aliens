@@ -3268,6 +3268,34 @@
       "heightM": 30,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-me-portland-museum-of-art",
+      "source": "landmarks/ME/landmark-city-me-portland-museum-of-art.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-me-portland-city-hall",
+      "source": "landmarks/ME/landmark-city-me-portland-city-hall.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-me-victoria-mansion",
+      "source": "landmarks/ME/landmark-city-me-victoria-mansion.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-me-portland-observatory",
+      "source": "landmarks/ME/landmark-city-me-portland-observatory.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

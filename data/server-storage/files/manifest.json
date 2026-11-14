@@ -680,7 +680,11 @@
       "landmark-city-il-navy-pier": "art/landmark-city-il-navy-pier/document.json",
       "landmark-city-il-wrigley-building": "art/landmark-city-il-wrigley-building/document.json",
       "landmark-city-il-art-institute-of-chicago": "art/landmark-city-il-art-institute-of-chicago/document.json",
-      "landmark-city-il-union-station": "art/landmark-city-il-union-station/document.json"
+      "landmark-city-il-union-station": "art/landmark-city-il-union-station/document.json",
+      "landmark-city-me-portland-museum-of-art": "art/landmark-city-me-portland-museum-of-art/document.json",
+      "landmark-city-me-portland-city-hall": "art/landmark-city-me-portland-city-hall/document.json",
+      "landmark-city-me-victoria-mansion": "art/landmark-city-me-victoria-mansion/document.json",
+      "landmark-city-me-portland-observatory": "art/landmark-city-me-portland-observatory/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1096,7 +1100,11 @@
       "landmark-city-il-navy-pier": "doodads/landmark-city-il-navy-pier/document.json",
       "landmark-city-il-wrigley-building": "doodads/landmark-city-il-wrigley-building/document.json",
       "landmark-city-il-art-institute-of-chicago": "doodads/landmark-city-il-art-institute-of-chicago/document.json",
-      "landmark-city-il-union-station": "doodads/landmark-city-il-union-station/document.json"
+      "landmark-city-il-union-station": "doodads/landmark-city-il-union-station/document.json",
+      "landmark-city-me-portland-museum-of-art": "doodads/landmark-city-me-portland-museum-of-art/document.json",
+      "landmark-city-me-portland-city-hall": "doodads/landmark-city-me-portland-city-hall/document.json",
+      "landmark-city-me-victoria-mansion": "doodads/landmark-city-me-victoria-mansion/document.json",
+      "landmark-city-me-portland-observatory": "doodads/landmark-city-me-portland-observatory/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

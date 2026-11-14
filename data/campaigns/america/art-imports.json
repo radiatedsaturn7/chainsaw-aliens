@@ -2686,5 +2686,33 @@
     "documentSha256": "e81e3659c6b74f073e9970cdea5ffacd7d49d01ea7b0afea4646c3d40edbc41a",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-me-portland-museum-of-art": {
+    "source": "assets/campaign-art/landmarks/ME/landmark-city-me-portland-museum-of-art.png",
+    "sourceSha256": "c9aeb0fdf45cfbef7519cd4c7732ba43e3d031b1899da02408c1e6c31fe072dc",
+    "documentSha256": "5226f287906668d6232cfc4c96c6af03ccef8a6d7bfc508afb10c91291c7eeee",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-me-portland-city-hall": {
+    "source": "assets/campaign-art/landmarks/ME/landmark-city-me-portland-city-hall.png",
+    "sourceSha256": "66484065d39f85cf65a75ff85d53e721ac1e2c3a80f343f2366ba3b82924dc3b",
+    "documentSha256": "dc2f5f9dc0ed3298b20ba120ddf4ce28a31528679298b6d92adbadd3dce7a8ce",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-me-victoria-mansion": {
+    "source": "assets/campaign-art/landmarks/ME/landmark-city-me-victoria-mansion.png",
+    "sourceSha256": "3c310c9b725b58a5c3186e178e79ac1e18e55cc9ca2ab28203a289cbc6dba3d2",
+    "documentSha256": "9c293016b25813017eb31c858f79ee45de5ad66f6ce70c96d559b090b78eb873",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-me-portland-observatory": {
+    "source": "assets/campaign-art/landmarks/ME/landmark-city-me-portland-observatory.png",
+    "sourceSha256": "95585a357f68b503ae22f2801fb43ed91c94f4acfd483f987201089c512d4578",
+    "documentSha256": "48fe02a5519af5017880437668967a344ba127cfabb8873667b1bafa4d24a4e2",
+    "width": 341,
+    "height": 512
   }
 }
