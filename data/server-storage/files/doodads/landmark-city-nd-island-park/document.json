@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613509555,
+  "doodad": {
+    "id": "campaign-landmark-city-nd-island-park",
+    "name": "landmark-city-nd-island-park",
+    "artRef": "landmark-city-nd-island-park",
+    "widthM": 13.513196480938417,
+    "heightM": 9,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 11.486217008797654,
+    "hitboxHeightM": 8.1,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

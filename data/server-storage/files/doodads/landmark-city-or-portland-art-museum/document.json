@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794611308153,
+  "doodad": {
+    "id": "campaign-landmark-city-or-portland-art-museum",
+    "name": "landmark-city-or-portland-art-museum",
+    "artRef": "landmark-city-or-portland-art-museum",
+    "widthM": 40,
+    "heightM": 20,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 34,
+    "hitboxHeightM": 18,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794615303888,
+  "doodad": {
+    "id": "campaign-landmark-city-nj-cathedral-basilica-of-the-sacred-heart",
+    "name": "landmark-city-nj-cathedral-basilica-of-the-sacred-heart",
+    "artRef": "landmark-city-nj-cathedral-basilica-of-the-sacred-heart",
+    "widthM": 72.07038123167156,
+    "heightM": 48,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 61.259824046920826,
+    "hitboxHeightM": 43.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

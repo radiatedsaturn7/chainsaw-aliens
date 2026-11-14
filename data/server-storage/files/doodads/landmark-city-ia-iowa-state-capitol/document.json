@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794616858320,
+  "doodad": {
+    "id": "campaign-landmark-city-ia-iowa-state-capitol",
+    "name": "landmark-city-ia-iowa-state-capitol",
+    "artRef": "landmark-city-ia-iowa-state-capitol",
+    "widthM": 78.07624633431085,
+    "heightM": 52,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 66.36480938416422,
+    "hitboxHeightM": 46.800000000000004,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794611308153,
+  "doodad": {
+    "id": "campaign-landmark-city-or-union-station",
+    "name": "landmark-city-or-union-station",
+    "artRef": "landmark-city-or-union-station",
+    "widthM": 64,
+    "heightM": 32,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 54.4,
+    "hitboxHeightM": 28.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794614903503,
+  "doodad": {
+    "id": "campaign-landmark-city-mt-moss-mansion",
+    "name": "landmark-city-mt-moss-mansion",
+    "artRef": "landmark-city-mt-moss-mansion",
+    "widthM": 27.026392961876834,
+    "heightM": 18,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 22.972434017595308,
+    "hitboxHeightM": 16.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794614064056,
+  "doodad": {
+    "id": "campaign-landmark-city-md-oriole-park-at-camden-yards",
+    "name": "landmark-city-md-oriole-park-at-camden-yards",
+    "artRef": "landmark-city-md-oriole-park-at-camden-yards",
+    "widthM": 56,
+    "heightM": 28,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 47.6,
+    "hitboxHeightM": 25.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

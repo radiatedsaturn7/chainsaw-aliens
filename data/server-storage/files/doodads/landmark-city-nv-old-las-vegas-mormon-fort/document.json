@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794612625423,
+  "doodad": {
+    "id": "campaign-landmark-city-nv-old-las-vegas-mormon-fort",
+    "name": "landmark-city-nv-old-las-vegas-mormon-fort",
+    "artRef": "landmark-city-nv-old-las-vegas-mormon-fort",
+    "widthM": 29.941520467836256,
+    "heightM": 10,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 25.450292397660817,
+    "hitboxHeightM": 9,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

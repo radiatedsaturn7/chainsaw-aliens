@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617306920,
+  "doodad": {
+    "id": "campaign-landmark-city-sd-falls-park",
+    "name": "landmark-city-sd-falls-park",
+    "artRef": "landmark-city-sd-falls-park",
+    "widthM": 29.941520467836256,
+    "heightM": 10,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 25.450292397660817,
+    "hitboxHeightM": 9,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

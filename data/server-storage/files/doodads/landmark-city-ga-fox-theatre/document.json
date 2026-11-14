@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794612412001,
+  "doodad": {
+    "id": "campaign-landmark-city-ga-fox-theatre",
+    "name": "landmark-city-ga-fox-theatre",
+    "artRef": "landmark-city-ga-fox-theatre",
+    "widthM": 45.043988269794724,
+    "heightM": 30,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 38.287390029325515,
+    "hitboxHeightM": 27,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1510,5 +1510,1405 @@
     "documentSha256": "93a763c5d3cf1ca08e6f65d5dedadc769fa94c6c1c6993c931025efacae7b172",
     "width": 512,
     "height": 512
+  },
+  "landmark-city-ak-anchorage-museum": {
+    "source": "assets/campaign-art/landmarks/AK/landmark-city-ak-anchorage-museum.png",
+    "sourceSha256": "02132b9a7702b5bc0d865e74eceb88497456ddc3e4cb0a11f5125f8ec74f1c61",
+    "documentSha256": "8976518b18a159215bc8001b9dc6cd4ac7b147934ebe33c333e11b79e90ffea9",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ak-town-square-park": {
+    "source": "assets/campaign-art/landmarks/AK/landmark-city-ak-town-square-park.png",
+    "sourceSha256": "069ab4cfd9c297a363b02e51a4031f5adbde1ac6c669da46a9d323a042156144",
+    "documentSha256": "2a9b21fbdb71aaf7b2da7fc9fe985a0625cc29b29f910cf2c0c7b75925f37835",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ak-oscar-anderson-house": {
+    "source": "assets/campaign-art/landmarks/AK/landmark-city-ak-oscar-anderson-house.png",
+    "sourceSha256": "dc85e8e859f0fed87ac87d5949a7d4905206a5cfd5570f9c30cc1a912df01bc4",
+    "documentSha256": "1627517d05e20f1d0cbe2ebfd9ac6b07c026455575fb53d56b628538dc29b603",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ak-alaska-railroad-depot": {
+    "source": "assets/campaign-art/landmarks/AK/landmark-city-ak-alaska-railroad-depot.png",
+    "sourceSha256": "a39e610b59bd0eabf612bd2132ca596c0eb9e0dad04b8327765cb5070e2e2675",
+    "documentSha256": "a5d721e91adcd64c1c5eda8167b72222d84ae43a59df86f04177cf8c05e88b27",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-al-birmingham-civil-rights-institute": {
+    "source": "assets/campaign-art/landmarks/AL/landmark-city-al-birmingham-civil-rights-institute.png",
+    "sourceSha256": "8a2d4d412dd777496b87794b3e0e6e9f02ae98b508b9750035e98b04dc5ba619",
+    "documentSha256": "a9f26c8a60caef583b2368a89cce4457220900ef2e42d2374e8141ae16b20355",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-al-alabama-theatre": {
+    "source": "assets/campaign-art/landmarks/AL/landmark-city-al-alabama-theatre.png",
+    "sourceSha256": "1656ad325e5433cf34869e02dfda495b8da84ba9ad0f5b3c60d124138f0833d4",
+    "documentSha256": "63157abca5a8cbad0277182212b270ef5f7704cec1a62706a711c439e63e4fff",
+    "width": 367,
+    "height": 512
+  },
+  "landmark-city-al-sloss-furnaces": {
+    "source": "assets/campaign-art/landmarks/AL/landmark-city-al-sloss-furnaces.png",
+    "sourceSha256": "597eb06de946375d845d46e9959399960bd7f6ffa05debadcb81958a61875885",
+    "documentSha256": "17ae073daca33ef43a861a1ce85dd49b469743c4eef7726cb58b9b73ca1873b3",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-al-vulcan-park": {
+    "source": "assets/campaign-art/landmarks/AL/landmark-city-al-vulcan-park.png",
+    "sourceSha256": "979cb31196a683fac79784d5563a079d651bda91eb234729d1243de10c0861fd",
+    "documentSha256": "af1dc57b977677a9d7f4b896f7c1db8963855cf33fef97c623e12859c52538c6",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-ar-clinton-presidential-library": {
+    "source": "assets/campaign-art/landmarks/AR/landmark-city-ar-clinton-presidential-library.png",
+    "sourceSha256": "ca945170c7b694c3d7b93228c307dc4866b3077b31865b9feb293d3e4dffad46",
+    "documentSha256": "dbd53364755055178347bfefdeb19ce55629b4e8f2eef7f73b7d5b9cec2fb208",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ar-old-state-house-museum": {
+    "source": "assets/campaign-art/landmarks/AR/landmark-city-ar-old-state-house-museum.png",
+    "sourceSha256": "8cc7cf42916cd952f1ec55921aff6b2efa09f07afe6d9da791a79fcc5eaad3ad",
+    "documentSha256": "3eb429523c63dce67b64bda20aa111b41e9a3a2729fb61e2730b8ca615427e57",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ar-arkansas-state-capitol": {
+    "source": "assets/campaign-art/landmarks/AR/landmark-city-ar-arkansas-state-capitol.png",
+    "sourceSha256": "9f554d834f50c348430a71ebc9d86b70b0a71c0ac304bf3441285c3b32db30f1",
+    "documentSha256": "e7aee4912ef6fb872c4440b9f85e296cf23e938e69c3d4707e73b4614c35cd85",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ar-little-rock-central-high-school": {
+    "source": "assets/campaign-art/landmarks/AR/landmark-city-ar-little-rock-central-high-school.png",
+    "sourceSha256": "257b53db7ec72b46a21cfbb42c03892c7501bcdb2bb04d2d3d7ccfb2963c99c6",
+    "documentSha256": "5d63c59a65b525033178e712b2152cd41caaf1fe38b38a5a8d91ec27a177d98a",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-az-chase-field": {
+    "source": "assets/campaign-art/landmarks/AZ/landmark-city-az-chase-field.png",
+    "sourceSha256": "bf07f68ae3c2f74e92b7c7aee9771698b8e1eb0e320c32335b0e3a35a7ad7c46",
+    "documentSha256": "8b417f52fc9ca232623fc12f515565903e67302933596671c1efb86c041506d3",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-az-heritage-square": {
+    "source": "assets/campaign-art/landmarks/AZ/landmark-city-az-heritage-square.png",
+    "sourceSha256": "9a30da2f01e88a9f63057ce35f96142740214e1239b246426bdad8de30c699b5",
+    "documentSha256": "93f9daff6e10914d1d15ebc92d90b23bbc5f1f8ba1ae005942e9066f239b1bc7",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-az-orpheum-theatre": {
+    "source": "assets/campaign-art/landmarks/AZ/landmark-city-az-orpheum-theatre.png",
+    "sourceSha256": "e1cbaa3db3bffd7caa77ff5d33ff2c864948329c77597426084bd4018d730cc3",
+    "documentSha256": "197ec5ed8b3d58db1eeb3da610dbded235486b43a21576cc7ef05913f3b6f1a5",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-az-arizona-state-capitol": {
+    "source": "assets/campaign-art/landmarks/AZ/landmark-city-az-arizona-state-capitol.png",
+    "sourceSha256": "ba1126b87f3aab40e3d32c451f8a778d0ddd77ccfa66023edce5a3b661e4ca71",
+    "documentSha256": "435c618232cdec7b22d14e1433b18ebf4646293bfde24edc9fa04d7b17db3235",
+    "width": 512,
+    "height": 207
+  },
+  "landmark-city-ca-crypto-com-arena": {
+    "source": "assets/campaign-art/landmarks/CA/landmark-city-ca-crypto-com-arena.png",
+    "sourceSha256": "9f02063e7f6a6dd4d0823a94724226567e766b3bdb6cb2584decb31927ca291a",
+    "documentSha256": "d9ddc728da25b610ccfa29780a4fd16625239f618ebff68939cf503751c48019",
+    "width": 512,
+    "height": 226
+  },
+  "landmark-city-ca-walt-disney-concert-hall": {
+    "source": "assets/campaign-art/landmarks/CA/landmark-city-ca-walt-disney-concert-hall.png",
+    "sourceSha256": "0d6ff4ca92046fe1b757df41c04db3aa76bf04fa7a060e8a516a2101a56d93ee",
+    "documentSha256": "2e3d85590925d4417628b54bbd7396ab9ca49d4c3a1dff9d2c9ef86225507e0f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ca-los-angeles-city-hall": {
+    "source": "assets/campaign-art/landmarks/CA/landmark-city-ca-los-angeles-city-hall.png",
+    "sourceSha256": "1920ac30262182fc27c25171e7fccaaef40051aec3d5c1a1d780df26c5aa6454",
+    "documentSha256": "8f1d28a92ddc60350c11bc70474a6be8cb54d1d392e2ad99dd779e917c9c13b5",
+    "width": 485,
+    "height": 512
+  },
+  "landmark-city-ca-union-station": {
+    "source": "assets/campaign-art/landmarks/CA/landmark-city-ca-union-station.png",
+    "sourceSha256": "bf83a2ebdf30a45574d1b7e1a51169377e4d38fa832f60d2abde1c17825c28d8",
+    "documentSha256": "317e5c6f52c66de97b13294bcb8518dc2e76cb824e6981e9012d81f0b84a6499",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-co-coors-field": {
+    "source": "assets/campaign-art/landmarks/CO/landmark-city-co-coors-field.png",
+    "sourceSha256": "8cf73e1b10b5b986d7a79fc992063083cc4f4ba76b53a61c3e233368d9df0d02",
+    "documentSha256": "d47f07b862e338c3347bb3d93c078e7af5e915f9830dbd19fbda33f17f70878d",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-co-union-station": {
+    "source": "assets/campaign-art/landmarks/CO/landmark-city-co-union-station.png",
+    "sourceSha256": "77fad7ab09baf69fb620756941febd8124968bf85a0949792d6483ca740c0845",
+    "documentSha256": "eb0d124a9fc4fefbaa43d1dcdcd5ef2ce43883d7efa0f8075f4b1b41382746f1",
+    "width": 512,
+    "height": 174
+  },
+  "landmark-city-co-colorado-state-capitol": {
+    "source": "assets/campaign-art/landmarks/CO/landmark-city-co-colorado-state-capitol.png",
+    "sourceSha256": "4295191297a0447b7a2a28b2dff8311d084bdc1e2cdc214272a965f2f7c2d358",
+    "documentSha256": "33d1937f519c6ff7f29d04eb6cc6df586d7036177ca16d5762a1bc367c0d97da",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-co-denver-art-museum": {
+    "source": "assets/campaign-art/landmarks/CO/landmark-city-co-denver-art-museum.png",
+    "sourceSha256": "dfdaab44c272fb04220ef99f8d76dfc2f1268847f154310565b9bc0d26ad1363",
+    "documentSha256": "507b630e43456b9018075a2e37d9a33c9d081b3550fc81ca3e67f1a5ad780494",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ct-mark-twain-house": {
+    "source": "assets/campaign-art/landmarks/CT/landmark-city-ct-mark-twain-house.png",
+    "sourceSha256": "a4452ec2b47060d4b6b1fdbf1e321eb7bc2457f41690d4419301bd3cd218e3d4",
+    "documentSha256": "7946066843ec2af315dd360bf96b1382fe03966268491d33e5e83403292d5f6f",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ct-connecticut-state-capitol": {
+    "source": "assets/campaign-art/landmarks/CT/landmark-city-ct-connecticut-state-capitol.png",
+    "sourceSha256": "747a5fa71d75afc6d8e7f8a22fc8956fa2080e935eede669dc34591591e9cdf5",
+    "documentSha256": "df8a3340fe378eef53be54490cfced68b8ce4dfa43d45bb9e0e54828771673c0",
+    "width": 512,
+    "height": 285
+  },
+  "landmark-city-ct-wadsworth-atheneum": {
+    "source": "assets/campaign-art/landmarks/CT/landmark-city-ct-wadsworth-atheneum.png",
+    "sourceSha256": "ee9f4f35c20198b926c7684632ffc1445149d8c2a43fdafaa5040929e10d41f7",
+    "documentSha256": "fcc903bcd5e40ce8af4b9b8bab3815f3d35067b1cb07dcf3be27d2498723bde1",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ct-bushnell-park": {
+    "source": "assets/campaign-art/landmarks/CT/landmark-city-ct-bushnell-park.png",
+    "sourceSha256": "f7b5d16b84e68bc2c1830b43de9ee4d020168014487a3ec5922fd55c91b10099",
+    "documentSha256": "0056cd091de6c85def334f74ab311615ecf69a05697ee3dc9630b5ce7365ce2b",
+    "width": 512,
+    "height": 450
+  },
+  "landmark-city-de-chase-center-on-the-riverfront": {
+    "source": "assets/campaign-art/landmarks/DE/landmark-city-de-chase-center-on-the-riverfront.png",
+    "sourceSha256": "fb57e32aaca4e6d99c1c1c9551f1ce9f90aaa737fa3af43c0db28b7f09031d51",
+    "documentSha256": "e66f638aa5dc7f65905f1bbc0afda84ba66ef6cc91fd3c7053982c54cdd54612",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-de-grand-opera-house": {
+    "source": "assets/campaign-art/landmarks/DE/landmark-city-de-grand-opera-house.png",
+    "sourceSha256": "e0a47a9597e022e452ed0d45130057d93bc3258f93d79868a3c2c1804765c375",
+    "documentSha256": "5ca9b00c2d9b7cffc163f5605f586306cc3511b477a3d1259d87de1a9f5d80fe",
+    "width": 512,
+    "height": 437
+  },
+  "landmark-city-de-delaware-history-museum": {
+    "source": "assets/campaign-art/landmarks/DE/landmark-city-de-delaware-history-museum.png",
+    "sourceSha256": "a73a4c836d943752994b28d3d9c272b0a15f5019e34c2d9f8be23f74876bc966",
+    "documentSha256": "9df4224055413f246def45221e179287546cf85892739195e2f64898b45a76df",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-de-rodney-square": {
+    "source": "assets/campaign-art/landmarks/DE/landmark-city-de-rodney-square.png",
+    "sourceSha256": "0784f890f99daaa94937a514e7e02edefa1ed59229557b3d6e477d8bfa0534d5",
+    "documentSha256": "323be512a985a7ba3352e2c57565ae02169b4418b9e67d26d260d1887100cb2c",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-fl-historymiami-museum": {
+    "source": "assets/campaign-art/landmarks/FL/landmark-city-fl-historymiami-museum.png",
+    "sourceSha256": "924db36931a40229f15219a2b9c44e8541bd05b6035fdb482ef50e569b8f3672",
+    "documentSha256": "3c2d58bfa31db425ac7a550008e711e8b804a4fa6a54fc78c85dcb1015b4580e",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-fl-olympia-theater": {
+    "source": "assets/campaign-art/landmarks/FL/landmark-city-fl-olympia-theater.png",
+    "sourceSha256": "98dc36f62c65dd5433fbca781dd16341cb66d22691ab5bccf56ce37574b5e4f8",
+    "documentSha256": "d7b2802960aa68d3479e38a794b8e9598117003a47d972b6b36a1cae00a33da1",
+    "width": 468,
+    "height": 512
+  },
+  "landmark-city-fl-adrienne-arsht-center": {
+    "source": "assets/campaign-art/landmarks/FL/landmark-city-fl-adrienne-arsht-center.png",
+    "sourceSha256": "391293111d4b65c908fedcd551a3e63da6998b1a9c1fa777349ed90be1295b43",
+    "documentSha256": "65e7d2d8ee80896c0ee2887ced6ed5fb6a4bca2458f365ae07f742800d2d6d7c",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-fl-freedom-tower": {
+    "source": "assets/campaign-art/landmarks/FL/landmark-city-fl-freedom-tower.png",
+    "sourceSha256": "6519f44495b6926973f4e221f673f213eafaa44d29249548ac4b23ab0097dde6",
+    "documentSha256": "1cf6f1ac5451cb7446b92e9d1c379551ec900cd512805df6934807679f4ae5e2",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-ga-fox-theatre": {
+    "source": "assets/campaign-art/landmarks/GA/landmark-city-ga-fox-theatre.png",
+    "sourceSha256": "e44f25b46f5aa0cf7a0cb28167303e54471ad2a9920b3e57e59e35a9cfecf6c5",
+    "documentSha256": "1463c50360984154dbf2c01664ad295e328e10f598b2ae59930cdaf80618a141",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ga-centennial-olympic-park": {
+    "source": "assets/campaign-art/landmarks/GA/landmark-city-ga-centennial-olympic-park.png",
+    "sourceSha256": "23157c4677b3ed2e2d7eafd79ae4362bbdf44b8352ec4f9ed2c544a591ef391a",
+    "documentSha256": "6fd353530465408886814917257f275766954f18e823d98fd392f9aa34fe7f0b",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-ga-georgia-state-capitol": {
+    "source": "assets/campaign-art/landmarks/GA/landmark-city-ga-georgia-state-capitol.png",
+    "sourceSha256": "68baa72e0bd4a3325e536cfec9f12c8cb3d9c5ff1b7163048c2ebfc71013f8a9",
+    "documentSha256": "43c012580142113cca6f9e013876ba3f6de158150b403cd790ffbe36097dc8ce",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ga-ebenezer-baptist-church": {
+    "source": "assets/campaign-art/landmarks/GA/landmark-city-ga-ebenezer-baptist-church.png",
+    "sourceSha256": "8baa61c685f228c739e2ab6128c431930d250df99544ba47f013627b9983b7b3",
+    "documentSha256": "675318bb3abc6ea7c372ee57d35376cd328739c1f2711a0d4a65e5fa856ed2df",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-hi-hawaii-state-capitol": {
+    "source": "assets/campaign-art/landmarks/HI/landmark-city-hi-hawaii-state-capitol.png",
+    "sourceSha256": "e7c7e94f6a60814df63a1ad66fbb3d48f48afd749635a70dfb267096f5db4ade",
+    "documentSha256": "2d512a5500025562abb9f41c9816316195b5f23b6b0a131d388279fe2d2da6bd",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-hi-iolani-palace": {
+    "source": "assets/campaign-art/landmarks/HI/landmark-city-hi-iolani-palace.png",
+    "sourceSha256": "0997f49957d80588e2287e6740312e1a8562c9d243f25795b03ca0fe115c6d6b",
+    "documentSha256": "b3583f30f18808a19f38b416cad90b2292ffd9e4107e7f20231f8fd73f85d57d",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-hi-aloha-tower": {
+    "source": "assets/campaign-art/landmarks/HI/landmark-city-hi-aloha-tower.png",
+    "sourceSha256": "d437cc23244957990432048341d5f30f7b85bf6a6a8e24e74d475ac8014b85d2",
+    "documentSha256": "8c6ef94786b5081eee59d9d453b6a5abf62d9cc6f6275d50dd78bdcb658fda8d",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-hi-honolulu-museum-of-art": {
+    "source": "assets/campaign-art/landmarks/HI/landmark-city-hi-honolulu-museum-of-art.png",
+    "sourceSha256": "ec60531043dacd681f1152ad65393314b71d422688a8462c54776f73751948f5",
+    "documentSha256": "abb259a6375a03aada896cbc9eadcaaa1f29a7e355ba7d3a3301a2eea9d3446c",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ia-pappajohn-sculpture-park": {
+    "source": "assets/campaign-art/landmarks/IA/landmark-city-ia-pappajohn-sculpture-park.png",
+    "sourceSha256": "371b33cb3c49427b04945605ef9d3a4837ec407ea121e066254e7e07da500056",
+    "documentSha256": "b623f5da403dab7d9c061e622cdd6ba0c397edc097e4f5f5e5c80522654d452d",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-ia-principal-park": {
+    "source": "assets/campaign-art/landmarks/IA/landmark-city-ia-principal-park.png",
+    "sourceSha256": "79ea2d20a53fd6b213cadcf5ab6c726e21112f4624c09cf2e918e704550d75e3",
+    "documentSha256": "08739083fa51b833a39b6c35284508d2806edcb682e8dca56327922a598a9222",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ia-state-historical-museum": {
+    "source": "assets/campaign-art/landmarks/IA/landmark-city-ia-state-historical-museum.png",
+    "sourceSha256": "644aa095b0eb690f46bcad8afcfc82759f849f44930d8e0ca4acbdde930b7b11",
+    "documentSha256": "b1e1ca3356c50eb479d9e859bf9ed4c8f9ce16f379b7076a8f03e0b1d10635d7",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ia-iowa-state-capitol": {
+    "source": "assets/campaign-art/landmarks/IA/landmark-city-ia-iowa-state-capitol.png",
+    "sourceSha256": "1a7a393041cfe18be590e752d6ded194911c512c4927795f7fe59bf9539a04ba",
+    "documentSha256": "33f07fba8100113108b9e18927c0d743e70ba138a19d67cfa211b61dc88723b0",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-id-idaho-state-capitol": {
+    "source": "assets/campaign-art/landmarks/ID/landmark-city-id-idaho-state-capitol.png",
+    "sourceSha256": "8856e22577ecfc9bf6473324da1272b20300d2c213c373d7ff79de2327bec73e",
+    "documentSha256": "4ec24dab50aae46bbcf6a2674fbf4532285055a4f36810d0fe2a10e11e350e1d",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-id-basque-block": {
+    "source": "assets/campaign-art/landmarks/ID/landmark-city-id-basque-block.png",
+    "sourceSha256": "3d056ca380a61d1daae01efabc960c73d3bbdd1e86eccd5ee5fcf40f078aff9b",
+    "documentSha256": "8f469ef2d6a721159b8364a01f54dcbe17bb869327fc03107aa38d1ec9acaae7",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-id-egyptian-theatre": {
+    "source": "assets/campaign-art/landmarks/ID/landmark-city-id-egyptian-theatre.png",
+    "sourceSha256": "a7b593cedf93917af945eacef2826118c6b60e7563b0fe9ef7409f0708f94f3f",
+    "documentSha256": "821e88291a6c04d6fbf0329725a128f1cb9fb05e8c38035d70d345e51a6cdf2b",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-id-boise-depot": {
+    "source": "assets/campaign-art/landmarks/ID/landmark-city-id-boise-depot.png",
+    "sourceSha256": "303b0cc3e46fcd8a354f39a2200ff52f286c263a23ce9f032fc3a6371efa34df",
+    "documentSha256": "6d0d6237a4bc01df07374665817bda3c5b9256bbb7b302a98403a3ca85ef7f98",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-il-navy-pier": {
+    "source": "assets/campaign-art/landmarks/IL/landmark-city-il-navy-pier.png",
+    "sourceSha256": "e45ef862d50768fd1b2b9fe1f44ddbf365031c1371a92ae7c4cdbc2d96d84f66",
+    "documentSha256": "92372fc677bf45188dc7ec3feba3eb02359558d0fb31f36f3a3e33a09dc8f5ab",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-il-wrigley-building": {
+    "source": "assets/campaign-art/landmarks/IL/landmark-city-il-wrigley-building.png",
+    "sourceSha256": "ad5da46455231ad486128ee431f5d857fcaab968b0e05d2f35dbc810222e7196",
+    "documentSha256": "1d7ee3d39b9b5ef1cdd9d840cabc9394e6bb3b1d1c8f8afbe8a60e125a206963",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-il-art-institute-of-chicago": {
+    "source": "assets/campaign-art/landmarks/IL/landmark-city-il-art-institute-of-chicago.png",
+    "sourceSha256": "a07177f599a36508df13d4346778c4745e50d5c0de9aec3353039426ef01d01d",
+    "documentSha256": "d55352f1f7d2b091d77958165d9b1cba1c2d62543954fc5deda705e1aaed73ec",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-il-union-station": {
+    "source": "assets/campaign-art/landmarks/IL/landmark-city-il-union-station.png",
+    "sourceSha256": "fb2557d2e05622a5fb4741176a3d98aa333c0864253ea00ff4c8b01ef07f1faf",
+    "documentSha256": "e81e3659c6b74f073e9970cdea5ffacd7d49d01ea7b0afea4646c3d40edbc41a",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-in-soldiers-and-sailors-monument": {
+    "source": "assets/campaign-art/landmarks/IN/landmark-city-in-soldiers-and-sailors-monument.png",
+    "sourceSha256": "af0db14432f3f91ed92a010491270b5b9d5404e7d097ac551e15c3f64c80d162",
+    "documentSha256": "fbb79a6523d2a57768611ae3144da09989f20f216b758d55e1c6f0e3184add34",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-in-indiana-statehouse": {
+    "source": "assets/campaign-art/landmarks/IN/landmark-city-in-indiana-statehouse.png",
+    "sourceSha256": "eb60064ce89f4dee00d293960510051273f45b16abab90d1b1ee07ea8beba411",
+    "documentSha256": "b2d580b281928b7f195ce6024e68fbe0b68e53f1bb8462a3db52acdf886aa135",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-in-lucas-oil-stadium": {
+    "source": "assets/campaign-art/landmarks/IN/landmark-city-in-lucas-oil-stadium.png",
+    "sourceSha256": "55b054f5797809efeb1c27c9cec8b8cb7bbcdda9a35c62a6fd6c08fb41f1e218",
+    "documentSha256": "1666aad97dd8f77a0189c231e78fe248e340d9b09c5f3d4427f4275cf6a6b65c",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-in-scottish-rite-cathedral": {
+    "source": "assets/campaign-art/landmarks/IN/landmark-city-in-scottish-rite-cathedral.png",
+    "sourceSha256": "ea138877be0507a56511895bcf080f3cd98ab0ddfeefabf5949ab99bf0f440e9",
+    "documentSha256": "3d7aa231a449cc4f68e00927f5cffc4049a878714c47c77cc3da8c6b6d334ee6",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ks-old-cowtown-museum": {
+    "source": "assets/campaign-art/landmarks/KS/landmark-city-ks-old-cowtown-museum.png",
+    "sourceSha256": "520e5a60edf1124c3cf88dade1813a8e568a318d21c0dde763312db182e77b86",
+    "documentSha256": "408a2de0b436a7177b61e3a275aca95de11ecd29fefc4b70da09300c7be0aac1",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ks-exploration-place": {
+    "source": "assets/campaign-art/landmarks/KS/landmark-city-ks-exploration-place.png",
+    "sourceSha256": "3659e0dddcbc0c9d4fdc7347043bb75a558b5fad60d3205b69d330bb0b985d7f",
+    "documentSha256": "e4387a74170d45a201a004d3859c307dc55af95ebbdcbfd49dc28765355c8e8f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ks-orpheum-theatre": {
+    "source": "assets/campaign-art/landmarks/KS/landmark-city-ks-orpheum-theatre.png",
+    "sourceSha256": "ed2c085081b65b2f9c1924fb8bc81a448f4f0c083ca0ec4ebff5715e89c6d7ec",
+    "documentSha256": "5999ced92d1c4d00930642b2e7f23455a475f658f3d6bce02dec8dda6b07bbec",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ks-union-station": {
+    "source": "assets/campaign-art/landmarks/KS/landmark-city-ks-union-station.png",
+    "sourceSha256": "133995ec4a603d5cd30ec703eb5e8af32007ff01466fd2c17591009c676b8922",
+    "documentSha256": "d1bd51e7776252eee4045c9ce73482dd58915849b60a9eac32aea61fd470abb4",
+    "width": 512,
+    "height": 213
+  },
+  "landmark-city-ky-louisville-slugger-field": {
+    "source": "assets/campaign-art/landmarks/KY/landmark-city-ky-louisville-slugger-field.png",
+    "sourceSha256": "3c2cec2fdcfd95b2771e39b3f472fdccbee307c0e2ce98cf44b40e028ba42c9a",
+    "documentSha256": "7d0de0737196a1cfd099b7cfd1ad4af3d7b1ce546869b3f6a77ecf37f7aee886",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ky-louisville-palace": {
+    "source": "assets/campaign-art/landmarks/KY/landmark-city-ky-louisville-palace.png",
+    "sourceSha256": "655e4d6ed32b1d0326aeedf235ea7f64250c51dc5d829c8a08fbf7150a44a91f",
+    "documentSha256": "a455c1da60d24c5f8761836e88cbb7bd215219ee34419dc71af3914670c57bad",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ky-muhammad-ali-center": {
+    "source": "assets/campaign-art/landmarks/KY/landmark-city-ky-muhammad-ali-center.png",
+    "sourceSha256": "632d52aa02982133a1ec643b54d8a2973c2ebf9670817be0692006a89a72b25b",
+    "documentSha256": "0c49b1572fa422a458a01d27ff7593dc37743f922e2698dc3110edae033fdda6",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ky-louisville-slugger-museum": {
+    "source": "assets/campaign-art/landmarks/KY/landmark-city-ky-louisville-slugger-museum.png",
+    "sourceSha256": "18b48aa254c59436684a5a679f8baf64e4d09467c1f37cce87912f9432c350f6",
+    "documentSha256": "02a89eed78c6d810504674bc31a070cf6e2035ae286631e33baa5fe2b3f687bd",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-la-jackson-square": {
+    "source": "assets/campaign-art/landmarks/LA/landmark-city-la-jackson-square.png",
+    "sourceSha256": "d32a4b53a463afa736d25c7a549ee113260f36294ea7e13fad0ea53f1b638ed6",
+    "documentSha256": "69cf34f140381cb15bad982282e501c9ce936a8c0364ad601e29a4bdb78306b8",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-la-new-orleans-jazz-museum": {
+    "source": "assets/campaign-art/landmarks/LA/landmark-city-la-new-orleans-jazz-museum.png",
+    "sourceSha256": "483f74177dad5b779614a8e0eda9565ed2e478877d4cfe709e775215b88eb78d",
+    "documentSha256": "7c30527bf18f9f7151e36e5df0bba92edbd474f2d3f9b7715edb3859d798046f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-la-saint-louis-cemetery-no-1": {
+    "source": "assets/campaign-art/landmarks/LA/landmark-city-la-saint-louis-cemetery-no-1.png",
+    "sourceSha256": "419b8e5e85912315a848f759430facd7463da897eb133e4f07499ed70d0a0b29",
+    "documentSha256": "8ab778c752af57efb3f2996381c4722f563f6e00415f1f654952fc8e634dd8f4",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-la-saenger-theatre": {
+    "source": "assets/campaign-art/landmarks/LA/landmark-city-la-saenger-theatre.png",
+    "sourceSha256": "f182298311acacdd72bf7909d26b526e00ac5795390ee3435eff1cbbc2636d9e",
+    "documentSha256": "9206f045c89b8b95148951edf38157cd622d5405b988b4b963a5aa2fd89895e5",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ma-old-north-church": {
+    "source": "assets/campaign-art/landmarks/MA/landmark-city-ma-old-north-church.png",
+    "sourceSha256": "630a092c5cd7a06e8892a8f8cb9bf16468ac990d382d63ae57715c2d782e3cee",
+    "documentSha256": "10a0bcff8dd3b56ebe159da6ac077eecd0fbdaa5ed4b41f3cfa987b088b2f81b",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-ma-old-state-house": {
+    "source": "assets/campaign-art/landmarks/MA/landmark-city-ma-old-state-house.png",
+    "sourceSha256": "0b049f766890497da657c3e15f16cbcede61f1a556393c9b9db1be16409bae3f",
+    "documentSha256": "a06cbf945ed65891406d48d72d00a52f8be4d1783a1f773ef37236e40fade8db",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-ma-massachusetts-state-house": {
+    "source": "assets/campaign-art/landmarks/MA/landmark-city-ma-massachusetts-state-house.png",
+    "sourceSha256": "41425abd7400f9b529481f6b433593e7459b653399938455952103481626234c",
+    "documentSha256": "90470e2ad9dc96dc26301beef359c4e5c2654bd2a4e8941c5f1091ffb726ab01",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ma-boston-public-library": {
+    "source": "assets/campaign-art/landmarks/MA/landmark-city-ma-boston-public-library.png",
+    "sourceSha256": "c35b90a0f13176101cd67b7b6e1e8d4dba455a2374c550980bf562e23ee4acc0",
+    "documentSha256": "18529234e32114c15e2ab71b47f84776b6f6020c684115d14b7e1367c533fbdb",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-md-oriole-park-at-camden-yards": {
+    "source": "assets/campaign-art/landmarks/MD/landmark-city-md-oriole-park-at-camden-yards.png",
+    "sourceSha256": "f1dd8d5c8b85ec2379798304d207d05344f26e0b9a07eb8d51a0d84610fbb043",
+    "documentSha256": "26fa0f178101f8456bb8e597d3c2700a80d1dc7e6ba9bc64954c61f08dd52a1f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-md-lexington-market": {
+    "source": "assets/campaign-art/landmarks/MD/landmark-city-md-lexington-market.png",
+    "sourceSha256": "94d4a0bf568a44c60130792ecac372dc88f02a8f18394b65d88db965ba4c468e",
+    "documentSha256": "5ce9aff22dd71e0c88fab078716361dd03b328ee8f73af3a7ab556f6f23c2418",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-md-washington-monument": {
+    "source": "assets/campaign-art/landmarks/MD/landmark-city-md-washington-monument.png",
+    "sourceSha256": "affdfbc6c090cbf77cb0764198a8abc180c40ae89f64dedb64a638354a7b47cc",
+    "documentSha256": "0e0e789a1c9ef965f6bb09c1a13bb4222ef62880d180b7ec28c99170e03067af",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-md-national-aquarium": {
+    "source": "assets/campaign-art/landmarks/MD/landmark-city-md-national-aquarium.png",
+    "sourceSha256": "dc9f2fd004bb1047bdc3eadebde713ff17e576abb9bfd1f6fd5878a54228f3a6",
+    "documentSha256": "833e057dc785e084268d700f85672a8548279cdd925ec3e0682460405a1bf96e",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-me-portland-museum-of-art": {
+    "source": "assets/campaign-art/landmarks/ME/landmark-city-me-portland-museum-of-art.png",
+    "sourceSha256": "c9aeb0fdf45cfbef7519cd4c7732ba43e3d031b1899da02408c1e6c31fe072dc",
+    "documentSha256": "5226f287906668d6232cfc4c96c6af03ccef8a6d7bfc508afb10c91291c7eeee",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-me-portland-city-hall": {
+    "source": "assets/campaign-art/landmarks/ME/landmark-city-me-portland-city-hall.png",
+    "sourceSha256": "66484065d39f85cf65a75ff85d53e721ac1e2c3a80f343f2366ba3b82924dc3b",
+    "documentSha256": "dc2f5f9dc0ed3298b20ba120ddf4ce28a31528679298b6d92adbadd3dce7a8ce",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-me-victoria-mansion": {
+    "source": "assets/campaign-art/landmarks/ME/landmark-city-me-victoria-mansion.png",
+    "sourceSha256": "3c310c9b725b58a5c3186e178e79ac1e18e55cc9ca2ab28203a289cbc6dba3d2",
+    "documentSha256": "9c293016b25813017eb31c858f79ee45de5ad66f6ce70c96d559b090b78eb873",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-me-portland-observatory": {
+    "source": "assets/campaign-art/landmarks/ME/landmark-city-me-portland-observatory.png",
+    "sourceSha256": "95585a357f68b503ae22f2801fb43ed91c94f4acfd483f987201089c512d4578",
+    "documentSha256": "48fe02a5519af5017880437668967a344ba127cfabb8873667b1bafa4d24a4e2",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-mi-eastern-market": {
+    "source": "assets/campaign-art/landmarks/MI/landmark-city-mi-eastern-market.png",
+    "sourceSha256": "78ff132054a65b3543ca0542970d474498c2e62041eba059dce24cf4442f96da",
+    "documentSha256": "f9a1ef1731de2514dade971cc457c33aa3021993572de0cf9372102f2e6041b8",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-mi-fox-theatre": {
+    "source": "assets/campaign-art/landmarks/MI/landmark-city-mi-fox-theatre.png",
+    "sourceSha256": "8dfe7351f50075e56854ed201f0b9334195e706fcdf7a0186baad894683e02cd",
+    "documentSha256": "8066dd76e2e39dd05ca510b50921bfedb3e898a03d4a17243f22a6315d743e84",
+    "width": 493,
+    "height": 512
+  },
+  "landmark-city-mi-guardian-building": {
+    "source": "assets/campaign-art/landmarks/MI/landmark-city-mi-guardian-building.png",
+    "sourceSha256": "896beb5a96c9261b8964217de7f5360dd6bf83d5e013ead5a5be6e54b86c2b63",
+    "documentSha256": "ee379ec0d0973555ffdd4f2a5c59894bc3be2f54ae81159c4535115f0b8a685c",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-mi-michigan-central-station": {
+    "source": "assets/campaign-art/landmarks/MI/landmark-city-mi-michigan-central-station.png",
+    "sourceSha256": "ffde2b50c7262c54012cf278714ad92fa3fa485c86b2478f7e87a9961ce81b8b",
+    "documentSha256": "f6c3d773dc1a0262ce0e3aa7b205c3b2d75ad40872c8f4012ba5ff6dbd60cdcd",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-mn-minneapolis-institute-of-art": {
+    "source": "assets/campaign-art/landmarks/MN/landmark-city-mn-minneapolis-institute-of-art.png",
+    "sourceSha256": "21cb08b2af7ff7ece6ca298c22b2f33e55fa74a0072a3f14a654a57f1b31b59a",
+    "documentSha256": "a03c4c41d2898b01ce0348db40606f6a6af5c1481d4a1bc0a45d98b9485a864c",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-mn-walker-art-center": {
+    "source": "assets/campaign-art/landmarks/MN/landmark-city-mn-walker-art-center.png",
+    "sourceSha256": "16b75d4dbc0b26feb5ead9101eb067d6cd74a5cdfc29c3e3fa18fbaf4a591dcd",
+    "documentSha256": "bbc0eb372bb53db036a03aea989bef27a705cc6b2518b2feb1cf75a540fc5ff5",
+    "width": 512,
+    "height": 218
+  },
+  "landmark-city-mn-basilica-of-saint-mary": {
+    "source": "assets/campaign-art/landmarks/MN/landmark-city-mn-basilica-of-saint-mary.png",
+    "sourceSha256": "877e6820362d3fca43c3a84663d27dc5c98df6fe20c2bce044d1290718832bc1",
+    "documentSha256": "97912017f6a9e43b3e75dde97c957a959b5eb17810151bf9c4a0e794e517440d",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-mn-guthrie-theater": {
+    "source": "assets/campaign-art/landmarks/MN/landmark-city-mn-guthrie-theater.png",
+    "sourceSha256": "057a018a7d9dc423935078692f2fc67da7bea954707e7487b69f8bfb438f664d",
+    "documentSha256": "95b06984157542d645610a112b344a9459e30e7c6e8c6a57054f725b48e9d017",
+    "width": 512,
+    "height": 205
+  },
+  "landmark-city-mo-old-courthouse": {
+    "source": "assets/campaign-art/landmarks/MO/landmark-city-mo-old-courthouse.png",
+    "sourceSha256": "b996b4d0d088dcec02d293ecf0a0a3ed03a90b6cec80c95d6d0bee43debd6663",
+    "documentSha256": "3d631f0c5def7ce3e0b1cce9b38fa4dd6b49fc252e393f37a5d7b4e37b631454",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-mo-union-station": {
+    "source": "assets/campaign-art/landmarks/MO/landmark-city-mo-union-station.png",
+    "sourceSha256": "efca31a22d0e249930908be4fe5bec537d6639f0b1b51c6ccff561a1b44834b2",
+    "documentSha256": "8a0d4633d2b0247e031383652c74b201cb6775a399f517837f77bc7b3322110c",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-mo-city-museum": {
+    "source": "assets/campaign-art/landmarks/MO/landmark-city-mo-city-museum.png",
+    "sourceSha256": "1048e817e4a2bfb4e055cda68ce9bb6326d0ddde24a0dd0dd40efae10af27b7c",
+    "documentSha256": "32e67a77822db51217f76cd20fc191ad11da969e532d04728a2d6020df8403dd",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-mo-fabulous-fox-theatre": {
+    "source": "assets/campaign-art/landmarks/MO/landmark-city-mo-fabulous-fox-theatre.png",
+    "sourceSha256": "7def86a2cc0a31894819cfd553d7f8863603e7066a9a8b528477169010f70c2b",
+    "documentSha256": "0654e4603b4a8044a6c33f840da2d665e2903fe2cd7462f311fdefb2fdf8d33b",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ms-mississippi-state-capitol": {
+    "source": "assets/campaign-art/landmarks/MS/landmark-city-ms-mississippi-state-capitol.png",
+    "sourceSha256": "9a737d40520a761760bb840bf889b2fbdfb92d66a0f176210c50e987770d9aee",
+    "documentSha256": "c3f7b8cd4fd32eaa6b88caa78d2601922749fc0906dd5b0a970ad168f8c26a87",
+    "width": 512,
+    "height": 205
+  },
+  "landmark-city-ms-old-capitol-museum": {
+    "source": "assets/campaign-art/landmarks/MS/landmark-city-ms-old-capitol-museum.png",
+    "sourceSha256": "b7f5b55429f50564cc5b5c137ef7fe47d52b7cb7eaf0235c812496041e9a1cf2",
+    "documentSha256": "fddb19fbfda9d660a7b7a05adeb97bcff12de5210d4bfa46e84c7bf442d54606",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ms-smith-robertson-museum": {
+    "source": "assets/campaign-art/landmarks/MS/landmark-city-ms-smith-robertson-museum.png",
+    "sourceSha256": "b5eefe804bdec9038a0a45c8aca0ff9b0ab098fd1c8e893a935d4076da3532d8",
+    "documentSha256": "18f9919baa428b7366c09c30ca66257a3650ce8d743260406ed5cd5a24cea0cc",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ms-mississippi-museum-of-art": {
+    "source": "assets/campaign-art/landmarks/MS/landmark-city-ms-mississippi-museum-of-art.png",
+    "sourceSha256": "26676887f4a3c6bd0eac2c4cd962d6d1e7c4f08d1cd8b665800d57f4258edf0b",
+    "documentSha256": "aff4c1b9636b4076391ed017fcef03aa097f8f05ad4f56b0d7ab9d6928aa7d02",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-mt-moss-mansion": {
+    "source": "assets/campaign-art/landmarks/MT/landmark-city-mt-moss-mansion.png",
+    "sourceSha256": "70dfab284df44164567a51383dee2fb431c10a1d6589185f34e3282e8035b593",
+    "documentSha256": "7501539f9172c235adb4bb4b21d661645f85b36bb970dfe5484630ce67af8703",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-mt-alberta-bair-theater": {
+    "source": "assets/campaign-art/landmarks/MT/landmark-city-mt-alberta-bair-theater.png",
+    "sourceSha256": "aa39dd3c8d3a8909c8221fb293fc036090f77a57a8d85a556bc0643658efa3be",
+    "documentSha256": "4bbb8043f5ef869772767b075d68b70c03a6aff1cd4075b7c5de7734fb729bed",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-mt-yellowstone-art-museum": {
+    "source": "assets/campaign-art/landmarks/MT/landmark-city-mt-yellowstone-art-museum.png",
+    "sourceSha256": "9915c5c3918d375e5b09bef0b4440b8065e63a695b6323f197e5971c0edb2524",
+    "documentSha256": "aa9e0b5987cb812aedd7d3490661c510abfc83ef99873b680b4c92949fcb8b1b",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-mt-billings-depot": {
+    "source": "assets/campaign-art/landmarks/MT/landmark-city-mt-billings-depot.png",
+    "sourceSha256": "0b25e31a76ea8692fbd588b85da1cfd92a0a9d08cb9d1c1f867e280e219b6f2f",
+    "documentSha256": "84c03b11940cebd45e3b1614a95f1a9a1a81d78b27572debebce77ba4e529439",
+    "width": 512,
+    "height": 174
+  },
+  "landmark-city-nc-nascar-hall-of-fame": {
+    "source": "assets/campaign-art/landmarks/NC/landmark-city-nc-nascar-hall-of-fame.png",
+    "sourceSha256": "d253529c84b133af7f433396b520fe09df387e74dea386767f0652af3839e592",
+    "documentSha256": "0d56b118afab18773d94d05067a9d9cd4b753f12b73e8165c6c75111f211d701",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nc-bank-of-america-stadium": {
+    "source": "assets/campaign-art/landmarks/NC/landmark-city-nc-bank-of-america-stadium.png",
+    "sourceSha256": "161e534e28c1e9294d80e73e041b5d8109c6dfa29284dc1f932f304534b6a232",
+    "documentSha256": "9b8cba04be910d65924ceace5799e5bb48a1d5b98f9a21aeb3b6e1c8145c6f95",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nc-mint-museum-uptown": {
+    "source": "assets/campaign-art/landmarks/NC/landmark-city-nc-mint-museum-uptown.png",
+    "sourceSha256": "de5ea0344fa53361b9167da50afd3767c8dcc329776e27c396edcb8133d46e45",
+    "documentSha256": "18a778236f49aed5f7eb3ed9361275f84d9a8c1c764efc8ab382aa2cf3ecf2c3",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-nc-discovery-place-science": {
+    "source": "assets/campaign-art/landmarks/NC/landmark-city-nc-discovery-place-science.png",
+    "sourceSha256": "120b3ed15a6c392c286dbcc47a0a54b847c3caefe1f2707367f452bb86806324",
+    "documentSha256": "9bf3f6831f93449d88d0884c04bb422cf512aeccb327c706aa5253811fd340b1",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nd-fargo-theatre": {
+    "source": "assets/campaign-art/landmarks/ND/landmark-city-nd-fargo-theatre.png",
+    "sourceSha256": "43440fbe982aa89c7ff1ded218bec2f01fd472619e9557ca5d5438a1fbccb5f5",
+    "documentSha256": "d259f96be6a0e06c4fa3d6e3df7770a257b9825dbbd2be8a5250df82d3e8d546",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-nd-plains-art-museum": {
+    "source": "assets/campaign-art/landmarks/ND/landmark-city-nd-plains-art-museum.png",
+    "sourceSha256": "eaaaed49369983a1589bf692f89d6fe38899680939858be8148f6bc7e245de24",
+    "documentSha256": "66e9ca7f3f5eccc1a68a983f4b0b7bac023cc66d86db3c92cfee62aa9e7d391a",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nd-island-park": {
+    "source": "assets/campaign-art/landmarks/ND/landmark-city-nd-island-park.png",
+    "sourceSha256": "c86f5bc0a86230547e748bad458d813d570441b2487dc5d3304e5495bb10867c",
+    "documentSha256": "25329c549c5533f915b9081e01b801e65bc2ce674aa5548f7020c06b6a4cbb64",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-nd-fargo-civic-center": {
+    "source": "assets/campaign-art/landmarks/ND/landmark-city-nd-fargo-civic-center.png",
+    "sourceSha256": "d2533c4d3e95a2aea5274e633dd9bc3b0206bd9bcfa3869ec884f602b34c6377",
+    "documentSha256": "ee9a8d9ba2e86ddb79e5cca607a55c6fe2eb13b111abe4c724d50493776597e0",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ne-joslyn-art-museum": {
+    "source": "assets/campaign-art/landmarks/NE/landmark-city-ne-joslyn-art-museum.png",
+    "sourceSha256": "a4fb6b0f418a1d18e5b00bd8fe40cbfdc340e7b749c5c54cd149de763b50c90d",
+    "documentSha256": "d8e589d4033d2aab9520c19e1ff632381058b1cf8da6eeb24ac81bddfc7a8572",
+    "width": 512,
+    "height": 205
+  },
+  "landmark-city-ne-lewis-and-clark-landing": {
+    "source": "assets/campaign-art/landmarks/NE/landmark-city-ne-lewis-and-clark-landing.png",
+    "sourceSha256": "f74d1eab2ee20639fba9dd17294a48b4f1c56e4649ddccbdbedd76dd02dd1243",
+    "documentSha256": "22eb08e7a272024665fa943d3658a6affee65a8624fb5216773a7047664cf5f5",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ne-durham-museum": {
+    "source": "assets/campaign-art/landmarks/NE/landmark-city-ne-durham-museum.png",
+    "sourceSha256": "4425a4333c5e7ef5ac5179c4a3d29951f844795c7528ee17c6059d7a5e5a65fe",
+    "documentSha256": "4bdf5889013df6897270741a3f39818af78b7e1dc024c551782c5d1c7e24f634",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ne-orpheum-theater": {
+    "source": "assets/campaign-art/landmarks/NE/landmark-city-ne-orpheum-theater.png",
+    "sourceSha256": "8d02c9b130b22fb6b38fc71e14f6cc47a0adb1c8a51a1ee9eac8cfb394f0bfb7",
+    "documentSha256": "f5557be90eaa44a406fef5117d0c3a5a13823d7f13d53a621686e11242026594",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-nh-currier-museum-of-art": {
+    "source": "assets/campaign-art/landmarks/NH/landmark-city-nh-currier-museum-of-art.png",
+    "sourceSha256": "0c5a15d1204a912fccf57e0a16270a30b6bcdfc1dae15287106ef6335f43e014",
+    "documentSha256": "4f508cf9ac54eeae0ebb7c0abba32334435b23bf33af35039acdbe60e07a304f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nh-palace-theatre": {
+    "source": "assets/campaign-art/landmarks/NH/landmark-city-nh-palace-theatre.png",
+    "sourceSha256": "b2d96f1dff15e094da7d6a48ad5b04adfabe0d8f0a60464f5092093f3f79842d",
+    "documentSha256": "8290740d93e7b5a68767475296c30fab6fdd229c63fac12b08550b63407048b7",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-nh-snhu-arena": {
+    "source": "assets/campaign-art/landmarks/NH/landmark-city-nh-snhu-arena.png",
+    "sourceSha256": "275ac0727feba8cfbe09ded60e76d727c825a5990ff012d7ec08a3477fd0744c",
+    "documentSha256": "cd44c24060641276b01fd2da84bb7c5162abbccd8c97725e0026524e220beacb",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nh-millyard-museum": {
+    "source": "assets/campaign-art/landmarks/NH/landmark-city-nh-millyard-museum.png",
+    "sourceSha256": "2f019ac268f22f14bea704753f7427cc55e4c69237aae222313f475525a16bca",
+    "documentSha256": "a0177b74762abfb4b853384486e97f3ca8bb9f4a9fc56bfab6a3da00d49c37a4",
+    "width": 512,
+    "height": 213
+  },
+  "landmark-city-nj-cathedral-basilica-of-the-sacred-heart": {
+    "source": "assets/campaign-art/landmarks/NJ/landmark-city-nj-cathedral-basilica-of-the-sacred-heart.png",
+    "sourceSha256": "9bd2acc297251a6e0409a9e7085db96bf7c1d0602c87fade9d7f85c42f1d898f",
+    "documentSha256": "64dcd66c7ed7a9ec7c61a18a6294c8e6cd695a2ae2a1456b2e4f7c2f5bdb5a2f",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-nj-newark-museum-of-art": {
+    "source": "assets/campaign-art/landmarks/NJ/landmark-city-nj-newark-museum-of-art.png",
+    "sourceSha256": "afeb5106a3a40e425a07c6e375546dc480c5a873969be7d619a652eb030964af",
+    "documentSha256": "87199d2420d125a653cfbeb2bd5459efa672e5fc3d616aeefb4136b04b0855dd",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nj-new-jersey-performing-arts-center": {
+    "source": "assets/campaign-art/landmarks/NJ/landmark-city-nj-new-jersey-performing-arts-center.png",
+    "sourceSha256": "b188baefb7bdde2067b797174f09bba84c520bf909482e3250fe218b42ac9cbf",
+    "documentSha256": "c2205738f7ea21546107025df8a440df210c31e060d76de6a28663673b311800",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nj-newark-penn-station": {
+    "source": "assets/campaign-art/landmarks/NJ/landmark-city-nj-newark-penn-station.png",
+    "sourceSha256": "148b83e3d38b51284e2d6871b51eb105ba9b0ca613b5515642b3adca934c758e",
+    "documentSha256": "de15321dc0dd6c270fc178155c68c2370233d4ab67beefdc9d58c151f9d55f2e",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nm-new-mexico-museum-of-natural-history": {
+    "source": "assets/campaign-art/landmarks/NM/landmark-city-nm-new-mexico-museum-of-natural-history.png",
+    "sourceSha256": "251f2e50495393e13dfce5f03057911e2f76bae527b5aa76cfb23a3c865cbb4c",
+    "documentSha256": "98869add5289f71ea131f1a6f00cd7e9bae6c7d04d867df6640835e659f6c5f3",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-nm-san-felipe-de-neri-church": {
+    "source": "assets/campaign-art/landmarks/NM/landmark-city-nm-san-felipe-de-neri-church.png",
+    "sourceSha256": "f3c61d55d9af3d9db89d95540eb6dcdbb4423bcb24d3094a555cc156dc82deb3",
+    "documentSha256": "b66c7057826648b799dd5ca5850ec1659f016f2d948361a40fd724e913d0ecd5",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-nm-kimo-theatre": {
+    "source": "assets/campaign-art/landmarks/NM/landmark-city-nm-kimo-theatre.png",
+    "sourceSha256": "e99780e28ee4f6119f026dd4fe2e5aaa4ab7be7131c9c905f57ae39b3454c5dd",
+    "documentSha256": "8e99140f0ba0ef0fe1b52f3da2cfca8e3c4e680fd1e80cce24cb1c96ba97b803",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nm-albuquerque-rail-yards": {
+    "source": "assets/campaign-art/landmarks/NM/landmark-city-nm-albuquerque-rail-yards.png",
+    "sourceSha256": "4849a2258db844095f49d48690a677b01df65dfdc8797ea2a40e71a7b23b5ff9",
+    "documentSha256": "6148a16c59099720399d1f3db3702da9d3584aca9f3a4354203e6edc380d3c6c",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-nv-mob-museum": {
+    "source": "assets/campaign-art/landmarks/NV/landmark-city-nv-mob-museum.png",
+    "sourceSha256": "e93ffde79ccdac2adeadda6a97c40b87c3789fdbdb44dc29ed9482c2d15428d1",
+    "documentSha256": "cbdfafaa602bf1206023d1e6d3c3f89588338bede785d2426e9b8e7781917383",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nv-neon-museum": {
+    "source": "assets/campaign-art/landmarks/NV/landmark-city-nv-neon-museum.png",
+    "sourceSha256": "59fd0b91e8b5832231158460cdbd8706e9c93da6b35e79015259865a1efdeff8",
+    "documentSha256": "01e5e2d95dd2e0ad86c45b31f253c5f9be0e374862a3aabeb9a33d30bc7e1d10",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nv-downtown-container-park": {
+    "source": "assets/campaign-art/landmarks/NV/landmark-city-nv-downtown-container-park.png",
+    "sourceSha256": "ce53e1783c595f9611364a7743342f6fd18eb60367c9763ab6d8a9449b7f4177",
+    "documentSha256": "a319a5af21851164ba60001701806a5711d633513b59f51a1b7cb65c709db526",
+    "width": 512,
+    "height": 262
+  },
+  "landmark-city-nv-old-las-vegas-mormon-fort": {
+    "source": "assets/campaign-art/landmarks/NV/landmark-city-nv-old-las-vegas-mormon-fort.png",
+    "sourceSha256": "6d2f45f599c4bda4e35fb4147f47b9f2510f90364f6e54b589032dd194db6163",
+    "documentSha256": "b91614983ef247ce963af34a5cb3759bb15e0bbbabc9c99bf8f82509eef1d016",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ny-flatiron-building": {
+    "source": "assets/campaign-art/landmarks/NY/landmark-city-ny-flatiron-building.png",
+    "sourceSha256": "7242bf26e744899817b8eb4583861f7d445e2fdde1c0d6ea1523570a426c0f28",
+    "documentSha256": "5ce2804f24927b666a172807590ffc2cee9f2759cb7de0a2804224e702f84d66",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-ny-grand-central-terminal": {
+    "source": "assets/campaign-art/landmarks/NY/landmark-city-ny-grand-central-terminal.png",
+    "sourceSha256": "e3da312ece229f2a80463d6a823431380f592e4361e8d42768bcb78bbbeafb6f",
+    "documentSha256": "2b6e6a1987faa3fc58dc3dc31a0c5494c2d0d62dfd68961bbf8d6de3a8921292",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building": {
+    "source": "assets/campaign-art/landmarks/NY/landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building.png",
+    "sourceSha256": "a4dde17201f7d0d36fd46d1e6285afa650d984bf993c5e5f69ba159663dbdbd0",
+    "documentSha256": "78e145f7d167bc2ec16fef1ad04a6d32a7eecd1ac9a61928d9bb570324695b14",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ny-rockefeller-center": {
+    "source": "assets/campaign-art/landmarks/NY/landmark-city-ny-rockefeller-center.png",
+    "sourceSha256": "dafa543bb3e09d48c32ccfd21487cc0ca34ffc8ee6ad64a5b1056fec9b48c068",
+    "documentSha256": "077c392f25839666203cce2f0b2a2608723fc3eb82d1bf536b586a6ca77da354",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-oh-rock-and-roll-hall-of-fame": {
+    "source": "assets/campaign-art/landmarks/OH/landmark-city-oh-rock-and-roll-hall-of-fame.png",
+    "sourceSha256": "8d31ac6cb4c9ef587f36393f0c8c1325c669bfdf3c0a7e6d435b0f4b0c9266f3",
+    "documentSha256": "0b80bb71e87688f37366d51c3f85e16e0fc533b94774c95700bb773b199e3591",
+    "width": 512,
+    "height": 228
+  },
+  "landmark-city-oh-playhouse-square": {
+    "source": "assets/campaign-art/landmarks/OH/landmark-city-oh-playhouse-square.png",
+    "sourceSha256": "b8dc353dffda0d219b5a4f81dc6cd2be25fd160508360f4df9d1cea157cf3739",
+    "documentSha256": "4093335100f10df4044304a2447997ef4d231b658eb21ad4fb5dda3c704d0b98",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-oh-terminal-tower": {
+    "source": "assets/campaign-art/landmarks/OH/landmark-city-oh-terminal-tower.png",
+    "sourceSha256": "b15122de08722572decda2334776316078b98bc6fff6c622a01fabaae9150105",
+    "documentSha256": "db59b0025595ae07edbb766243c4ff9e202c76701cf12f20d6a20173a85969f2",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-oh-west-side-market": {
+    "source": "assets/campaign-art/landmarks/OH/landmark-city-oh-west-side-market.png",
+    "sourceSha256": "6af3bc518ea8f67e06375570db522bb7057a14b279c9bedf7489b26a7b64042e",
+    "documentSha256": "2bf861817a5fc4f8b1fe2ce4e1166e0b9913a1903c576e6545c44d88e1167a53",
+    "width": 512,
+    "height": 213
+  },
+  "landmark-city-ok-oklahoma-state-capitol": {
+    "source": "assets/campaign-art/landmarks/OK/landmark-city-ok-oklahoma-state-capitol.png",
+    "sourceSha256": "076d4cdcd4965598bda444299ad9d4d09d4958f93d52dd56bab46fb2c3753902",
+    "documentSha256": "10030fb0627d56957a53e22c5c0e1cd21be55a8c828e7fec470f92d6e87369b5",
+    "width": 512,
+    "height": 213
+  },
+  "landmark-city-ok-oklahoma-city-national-memorial": {
+    "source": "assets/campaign-art/landmarks/OK/landmark-city-ok-oklahoma-city-national-memorial.png",
+    "sourceSha256": "fb9afeff5cc2914119d7b6b091a40eb10255b739ee80c8f95f100c0e62776792",
+    "documentSha256": "9a53ae43026055c692bfeb40663b1c9ee3de585ba5f9e47ebe0fdd7c489b7789",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ok-chickasaw-bricktown-ballpark": {
+    "source": "assets/campaign-art/landmarks/OK/landmark-city-ok-chickasaw-bricktown-ballpark.png",
+    "sourceSha256": "cd85961d2ade7f4146b1dfdbdbcdeafa81b152759809de7851b0f870faa7ec7d",
+    "documentSha256": "08573e89431b7f657c6ea258bd084646431f1516e095b89fa64d4ee4b7f41e33",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ok-myriad-botanical-gardens": {
+    "source": "assets/campaign-art/landmarks/OK/landmark-city-ok-myriad-botanical-gardens.png",
+    "sourceSha256": "a066f710edda6ee79adf7653a0f465930722747039ab2397390774a9df83c6f2",
+    "documentSha256": "32f8cff0d0f5c10b742d65dbbb76f6518b632a9bb363e2ef584643b7eb7c3f25",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-or-pioneer-courthouse-square": {
+    "source": "assets/campaign-art/landmarks/OR/landmark-city-or-pioneer-courthouse-square.png",
+    "sourceSha256": "c15907d59cb9f5304a78800de9480d72c3fe9c5888934cb6c9773fc233c40845",
+    "documentSha256": "509acb990ef42c9bf81cb2b904454bd6a52336edfadb5c8c7f300a2bb100ab9b",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-or-union-station": {
+    "source": "assets/campaign-art/landmarks/OR/landmark-city-or-union-station.png",
+    "sourceSha256": "d8978a05c0cb38e69fd677e120e209992455ebc8608f61048d0630c3265fd6ea",
+    "documentSha256": "22b02a58997abf32786b31dff90c55331c68e8b1eb4524a128e914ab5958bfdc",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-or-powells-city-of-books": {
+    "source": "assets/campaign-art/landmarks/OR/landmark-city-or-powells-city-of-books.png",
+    "sourceSha256": "30e783508f24347d9a8ce0c9c5c0f7136e535be389f2f455062aa2b799b05ce8",
+    "documentSha256": "c5d4daf326590502f505128d865395d0acf91bb774f2491b3c96d9286bc54163",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-or-portland-art-museum": {
+    "source": "assets/campaign-art/landmarks/OR/landmark-city-or-portland-art-museum.png",
+    "sourceSha256": "9cdf11c0f6132012dd0e04cc097a2d24bf333c846c8598d6e4e6626a99f1b045",
+    "documentSha256": "c9f91adc6205163168b9861c4e323dcd7565941bf27b2815b4c2aa51dba1af19",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-pa-philadelphia-museum-of-art": {
+    "source": "assets/campaign-art/landmarks/PA/landmark-city-pa-philadelphia-museum-of-art.png",
+    "sourceSha256": "9fab6eb645995a1b9a29e2684ba25dba5843eb56cb226501e4fa3abf5f409600",
+    "documentSha256": "6a56fb2dcf3e348d4a3e461497a5c3b9e05a61ba9220deb58674e28770aa1f8a",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-pa-philadelphia-city-hall": {
+    "source": "assets/campaign-art/landmarks/PA/landmark-city-pa-philadelphia-city-hall.png",
+    "sourceSha256": "5a993b6e5c91c772d9ffc303f23e2e2bb7d7d57f53425de8aaed80aa92de98de",
+    "documentSha256": "c88298727e888c1eb68248e08fc42f69c6f73cce7ff968050ae4576ce4bcd568",
+    "width": 512,
+    "height": 384
+  },
+  "landmark-city-pa-reading-terminal-market": {
+    "source": "assets/campaign-art/landmarks/PA/landmark-city-pa-reading-terminal-market.png",
+    "sourceSha256": "c8090bcce070c90736032fcc50c2d9fb18dc1fa81a332f0ceeb187341babafe3",
+    "documentSha256": "7fec499b0e37e8cc1061c1edbc9d7af43a97aad985e84095b128225239f5c556",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-pa-independence-hall": {
+    "source": "assets/campaign-art/landmarks/PA/landmark-city-pa-independence-hall.png",
+    "sourceSha256": "9eaf1d3bcdf4c424f32285409717bebc2f8a0af4218fe47220300399f74a9d42",
+    "documentSha256": "83143ebe341e5fe3afc8107e4ec499e6cd4e4f3f436435114a4c4a970355336e",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ri-rhode-island-state-house": {
+    "source": "assets/campaign-art/landmarks/RI/landmark-city-ri-rhode-island-state-house.png",
+    "sourceSha256": "0b2152921c949a16619df3ad4be56fea82a469c05b164d873a4936138f9648fb",
+    "documentSha256": "3ff9c98409d62c329cd94db34fafffeee9bea06a82bd95f959d332fd5c584975",
+    "width": 512,
+    "height": 288
+  },
+  "landmark-city-ri-john-brown-house": {
+    "source": "assets/campaign-art/landmarks/RI/landmark-city-ri-john-brown-house.png",
+    "sourceSha256": "9202d8400ca3b5cb2b16f44f5cfec87e5e773cb764832bf506944465fae667b7",
+    "documentSha256": "9e40c3ec517c715c860cff135c38bba950ac2616ca03096483b6f4fc168fdd1e",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ri-providence-city-hall": {
+    "source": "assets/campaign-art/landmarks/RI/landmark-city-ri-providence-city-hall.png",
+    "sourceSha256": "c682241401b42dbea51080d4f81a2d4191394d5d78d44901fa9d81f4469b8d4b",
+    "documentSha256": "b8a1d3c7f2caeff42317c5714a4459413bad398ce4c1f1f2a402cfab30208fcb",
+    "width": 512,
+    "height": 288
+  },
+  "landmark-city-ri-providence-performing-arts-center": {
+    "source": "assets/campaign-art/landmarks/RI/landmark-city-ri-providence-performing-arts-center.png",
+    "sourceSha256": "6a8a6646d2035a49c761d5aff29a7ce34becf18206b118d6ad43a5af531002cd",
+    "documentSha256": "c4dbde7ac2e353096beaea2408d72dc22d38e16c5c3a6fdc1455a69314e71061",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-sc-charleston-museum": {
+    "source": "assets/campaign-art/landmarks/SC/landmark-city-sc-charleston-museum.png",
+    "sourceSha256": "f687dd17ca45f516b96128d9d9e0d1692cd5f54b9c9a89eebc225dbbef960d3c",
+    "documentSha256": "a2fe2ed049d45a2fce7eb1ee2f813660a77a6b8a1c059bd2c018e3394880d601",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-sc-old-exchange-and-provost-dungeon": {
+    "source": "assets/campaign-art/landmarks/SC/landmark-city-sc-old-exchange-and-provost-dungeon.png",
+    "sourceSha256": "6ddd15246420d541137419b93bed190b9bcdc334b659c3c2e5385f1820725716",
+    "documentSha256": "0197aa2dc66e989531621a21f18d4592b672e5f6df86f9e0e181f79677be684d",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-sc-rainbow-row": {
+    "source": "assets/campaign-art/landmarks/SC/landmark-city-sc-rainbow-row.png",
+    "sourceSha256": "17f84399d3c779268e11fc056c38ae81d36fe7dab84f3c3e4dc6ef361769d03b",
+    "documentSha256": "62f36d547d822ee82868d7880c1ee44e192acfc3dee0615177948b9433e4bb36",
+    "width": 512,
+    "height": 205
+  },
+  "landmark-city-sc-emanuel-african-methodist-episcopal-church": {
+    "source": "assets/campaign-art/landmarks/SC/landmark-city-sc-emanuel-african-methodist-episcopal-church.png",
+    "sourceSha256": "7f24688acac2eb620dc3914d85e14bed3cc92f1dd5ea0bfff4ebfd733e96f810",
+    "documentSha256": "6a95e3286b866d9c58878d27437954692435969c2f1714e58ff69def77f325d0",
+    "width": 512,
+    "height": 402
+  },
+  "landmark-city-sd-falls-park": {
+    "source": "assets/campaign-art/landmarks/SD/landmark-city-sd-falls-park.png",
+    "sourceSha256": "5a4190126440fc819d9ca6e85413e4ebb5b3be49f30ccdcd38a0e9b3db715027",
+    "documentSha256": "429dbbc43a39880abdc560e4c88c739174c6fd7a5cb4e74cfaab1f362505089d",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-sd-old-courthouse-museum": {
+    "source": "assets/campaign-art/landmarks/SD/landmark-city-sd-old-courthouse-museum.png",
+    "sourceSha256": "5c16b6f131ca59fda39788220c05cd4402c21dd9862d35c757c223b9a293b1e1",
+    "documentSha256": "de29d6c9baedb6b67addf842ff4c2beac6bf5b4ddcdc73475beaa5dc01264f76",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-sd-pettigrew-home-and-museum": {
+    "source": "assets/campaign-art/landmarks/SD/landmark-city-sd-pettigrew-home-and-museum.png",
+    "sourceSha256": "e716934123a806c6163817b955fa5d548317df13dd8065f54c442e7f8ca8c0ae",
+    "documentSha256": "d26d6a3e471707eba28453db93b1c90469ef98aa96dcbd4b6729acc78e0c0abb",
+    "width": 512,
+    "height": 368
+  },
+  "landmark-city-sd-washington-pavilion": {
+    "source": "assets/campaign-art/landmarks/SD/landmark-city-sd-washington-pavilion.png",
+    "sourceSha256": "b3c36f1dc7b5ccb2ecb526ef4dc7b5ea9f2536ddf67bc2d74e8328a7b0496315",
+    "documentSha256": "5f1cf53441dfad9b5bdbbe9e4c8c216a1aa924348ebd8742d01fad781f954b3a",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-tn-tennessee-state-capitol": {
+    "source": "assets/campaign-art/landmarks/TN/landmark-city-tn-tennessee-state-capitol.png",
+    "sourceSha256": "675b9c24ed1015eb70e3b7eb8ff54f700e560b7a057f92aa591de52813e4aa30",
+    "documentSha256": "7d743e328388e3fb89dfb6bb19b967679348fd17269ee6042245012494beb17b",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-tn-ryman-auditorium": {
+    "source": "assets/campaign-art/landmarks/TN/landmark-city-tn-ryman-auditorium.png",
+    "sourceSha256": "37a52382657b30e4769be04593b0455f07017a538c14ce23b4fc7aab6f0a73f9",
+    "documentSha256": "920a56a2a1b2ae66901138fd37502464e8ee2d47c120a5f19cef683cf50d8dad",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-tn-union-station-hotel": {
+    "source": "assets/campaign-art/landmarks/TN/landmark-city-tn-union-station-hotel.png",
+    "sourceSha256": "28793798f3546410e179a0f32920e1fb7352aa460b5a4c9d2853f44832dfe19c",
+    "documentSha256": "7630cb78d44e65cc4db2f7d483c532898e5134a392f3306d234f38008146f468",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-tn-country-music-hall-of-fame": {
+    "source": "assets/campaign-art/landmarks/TN/landmark-city-tn-country-music-hall-of-fame.png",
+    "sourceSha256": "2e1730125b74d18eaeb431fbaa5b24b6267b2d468cc67b60c3383e4dba989697",
+    "documentSha256": "7d1d33ffe81cbfee1d8aef233e6ca6509df6228c9cf030f17ff14d3a965681e0",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-tx-the-alamo": {
+    "source": "assets/campaign-art/landmarks/TX/landmark-city-tx-the-alamo.png",
+    "sourceSha256": "70f367aa15121ce15557a8ed8bcf967b1a09ecfd84b657922aa407bcb7314d12",
+    "documentSha256": "4906c959a752c142645b33870f830c19874bf89879cd0340c63f1cbc7dd7a4e4",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-tx-tower-of-the-americas": {
+    "source": "assets/campaign-art/landmarks/TX/landmark-city-tx-tower-of-the-americas.png",
+    "sourceSha256": "b5aedd5ce21b4affacfa1840dd364f31bf492312aa215f28e47f3f47bc4a62b3",
+    "documentSha256": "ec6f10cb7cfc4b65d3ebb7e19d58173aad7d2dad91e14ad616b3a450afa88b65",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-tx-san-fernando-cathedral": {
+    "source": "assets/campaign-art/landmarks/TX/landmark-city-tx-san-fernando-cathedral.png",
+    "sourceSha256": "1c348b2e7c5b15f1942bde60aa655e227faa2036fbe60c02743184b08cc6a354",
+    "documentSha256": "586c58c24460c66f8b050b49a9977ba9f0ad10a0751feebffe737637af84d286",
+    "width": 512,
+    "height": 417
+  },
+  "landmark-city-tx-spanish-governors-palace": {
+    "source": "assets/campaign-art/landmarks/TX/landmark-city-tx-spanish-governors-palace.png",
+    "sourceSha256": "d335f22a01e290541ae5a72ec49be81e0236839d10da332579b4db1b3af9f356",
+    "documentSha256": "c64f10182b40509f47206ae4f25dd5d4133eecc085ded85ba18ed4322cfb5221",
+    "width": 512,
+    "height": 184
+  },
+  "landmark-city-ut-union-pacific-depot": {
+    "source": "assets/campaign-art/landmarks/UT/landmark-city-ut-union-pacific-depot.png",
+    "sourceSha256": "84eda22035d56f13c414b348ac42cfc3da860215ae5f2edde0741cfef10e3113",
+    "documentSha256": "a49769d2589126f4bce93120ac252aa4a8e236646c42955ee812dc4d55dea8b8",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ut-utah-state-capitol": {
+    "source": "assets/campaign-art/landmarks/UT/landmark-city-ut-utah-state-capitol.png",
+    "sourceSha256": "aec50e87f3180130ed7fabfaa77b43fddbddac55390d160e528e999e5fbabdaf",
+    "documentSha256": "99af747967b43849bc15a689738c5feb3160b4736468162926f0d00f1bdfd24c",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ut-temple-square": {
+    "source": "assets/campaign-art/landmarks/UT/landmark-city-ut-temple-square.png",
+    "sourceSha256": "358282f5e3b9cc0b22ff01f54e44fb666f93587e253b562237e47abb5b96d8b8",
+    "documentSha256": "e632946a1830bb1c747edd43bd81e9b00c3ffce2014d4fc01e3a55452499a962",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-ut-salt-lake-city-and-county-building": {
+    "source": "assets/campaign-art/landmarks/UT/landmark-city-ut-salt-lake-city-and-county-building.png",
+    "sourceSha256": "4751307fdaa37079b4453e95988f10a5f46fbad85ccb280781c3f1436f95144d",
+    "documentSha256": "715bf7d5e6337556a30fcba75c8716707ac409b06f9a4a501a6a0bcf1799cae2",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-va-virginia-museum-of-fine-arts": {
+    "source": "assets/campaign-art/landmarks/VA/landmark-city-va-virginia-museum-of-fine-arts.png",
+    "sourceSha256": "6758478fec5c586a3a1c0430a71505822594761b4e71f5ccfb2e23cb462152d1",
+    "documentSha256": "e10686752603bfa0c2ebe4725feddc5eb0ca5fdf74fa179f3954947379df8107",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-va-virginia-state-capitol": {
+    "source": "assets/campaign-art/landmarks/VA/landmark-city-va-virginia-state-capitol.png",
+    "sourceSha256": "e52e0514630e546fc0e5f8fdd230176a9ea60aa69469f3cb8ebed51371398060",
+    "documentSha256": "f85cf84f51119b2136a49c91661782cb732b8e17821ebc8caff4d265ebb4b4a9",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-va-main-street-station": {
+    "source": "assets/campaign-art/landmarks/VA/landmark-city-va-main-street-station.png",
+    "sourceSha256": "57d760598a95cd3cb13d740876051f9e259d62931c26e0fe1c0b4b2cd1bf4246",
+    "documentSha256": "fcc66b30ea5bebf5141b9a3daf280fbacf587efede9374cb613ad5901b4869d9",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-va-poe-museum": {
+    "source": "assets/campaign-art/landmarks/VA/landmark-city-va-poe-museum.png",
+    "sourceSha256": "2eec19caecba5e54ba60e568bcdb14f086269a540d00ade74f130ded0dff8a7f",
+    "documentSha256": "ad9ae5a4d2dc0b365d3405a5fc0c484730d3f99365109da23384141d881b17d4",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-vt-waterman-building": {
+    "source": "assets/campaign-art/landmarks/VT/landmark-city-vt-waterman-building.png",
+    "sourceSha256": "bdf209293b6f2750b5527e6b5d930f44b2e18b366f9d45536259d9854ee180b0",
+    "documentSha256": "d77fd2cd14d6e84100382198faa9ab1834b6a64c6621ffe5ff5c1fdf8655666e",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-vt-burlington-city-hall": {
+    "source": "assets/campaign-art/landmarks/VT/landmark-city-vt-burlington-city-hall.png",
+    "sourceSha256": "896133c137da35a70fff4f6a2e26984c49ae4314cd4cb1102f146f5a85669b3f",
+    "documentSha256": "34958eda698fa69340d84e2539bc8c27295d33e6484660e61476717f41dda96d",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-vt-flynn-center": {
+    "source": "assets/campaign-art/landmarks/VT/landmark-city-vt-flynn-center.png",
+    "sourceSha256": "1419db54dec4cbb1295c1add705b06de23b6c488c55d75e06a921d0016dc3e5a",
+    "documentSha256": "d8d86c324d4e08bc9748f905f08315002aadf69f65db5037fc2c54d89edd7433",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-vt-echo-leahy-center": {
+    "source": "assets/campaign-art/landmarks/VT/landmark-city-vt-echo-leahy-center.png",
+    "sourceSha256": "fb01e7a2e5356aef2fdb6c758b019a9058e609c20e9767dd6ca0f9c789734a0c",
+    "documentSha256": "ed077f496cef8d36b3ba5be364cfc97a8d6b8cbb348956282c8bbfb175942885",
+    "width": 512,
+    "height": 262
+  },
+  "landmark-city-wa-space-needle": {
+    "source": "assets/campaign-art/landmarks/WA/landmark-city-wa-space-needle.png",
+    "sourceSha256": "a9376b78c7d7d77f74b02517465e66710719fff0771a18304e6a27643911f241",
+    "documentSha256": "7a3ba30d42eade8fe565765f349c5df4e9441b51bae5c4e24b35be4a281a8a27",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-wa-smith-tower": {
+    "source": "assets/campaign-art/landmarks/WA/landmark-city-wa-smith-tower.png",
+    "sourceSha256": "594e746ef1b8d811c20cd90d6f00709888bee28d5521b3d5d10b005367a91189",
+    "documentSha256": "19670452ae18e837d6ba34c3b07e9375852383f838168c560eebb2403dcbbd5e",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-wa-pike-place-market": {
+    "source": "assets/campaign-art/landmarks/WA/landmark-city-wa-pike-place-market.png",
+    "sourceSha256": "823716aa2643e235fafbc4f56ee926be410477140f13cbbd5d3aa4a870a09962",
+    "documentSha256": "db9047135dd9cf87f50932591a597abbd94ae109b75f164dac8f8fcb0c37c6d6",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wa-king-street-station": {
+    "source": "assets/campaign-art/landmarks/WA/landmark-city-wa-king-street-station.png",
+    "sourceSha256": "03f6161bf9ab03e5a2d6bc806159a8cc8a5e7457cda5396722bcca4498dcef44",
+    "documentSha256": "2cf249b708e6537e51f855d6189caed2a12280f27b5cfa8b25ea2a0e07c72c08",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-wi-pabst-theater": {
+    "source": "assets/campaign-art/landmarks/WI/landmark-city-wi-pabst-theater.png",
+    "sourceSha256": "bef5aa6be7f0a282f892963f6c2e25227c0ff322edbe8e24682ad4aa20593bd8",
+    "documentSha256": "e4512034b046aad653df81784865e13592a5231bf16b815087e51f676c3d39e6",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-wi-milwaukee-art-museum": {
+    "source": "assets/campaign-art/landmarks/WI/landmark-city-wi-milwaukee-art-museum.png",
+    "sourceSha256": "0890c9d5efaee0d1712f808935bb1a099a1ee7e7800125e04033e13248d0b287",
+    "documentSha256": "92db2a79670ef868f892a2af7e76405594c6b7f622477a80613d268f3faeb3a3",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wi-milwaukee-city-hall": {
+    "source": "assets/campaign-art/landmarks/WI/landmark-city-wi-milwaukee-city-hall.png",
+    "sourceSha256": "682e07f4d08caf47e03203e88abc5dab7a19fca72d42156dbd5d91bb44e7f944",
+    "documentSha256": "02b6b5a96f675fdd450f84362d3f3b7d00b23da8c071167e53f1c1bb6de5b750",
+    "width": 373,
+    "height": 512
+  },
+  "landmark-city-wi-harley-davidson-museum": {
+    "source": "assets/campaign-art/landmarks/WI/landmark-city-wi-harley-davidson-museum.png",
+    "sourceSha256": "dcd8d68a3b477913c00c7a24a76b47484b4ddf86863fb71d7f86cfe117fd6a4d",
+    "documentSha256": "ccf4e634d846d9cba311c3cf84005a830d32a417e1cd5aafed5b805fb4fcdb7f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wv-west-virginia-state-capitol": {
+    "source": "assets/campaign-art/landmarks/WV/landmark-city-wv-west-virginia-state-capitol.png",
+    "sourceSha256": "ccb0e5ab56f3a66fb489ec91862d7b2e5ebebd6554d554feef78138aabe7c26d",
+    "documentSha256": "1562af2dd49906f4ad354adf85bb407b79ea5706bd3b2690388164986f77d609",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wv-clay-center": {
+    "source": "assets/campaign-art/landmarks/WV/landmark-city-wv-clay-center.png",
+    "sourceSha256": "b07176b4f595926641534eae8c4d3a5b45bca1059a6832a48737bfea53c96a87",
+    "documentSha256": "6646808d7101d8c7fd593a82e969c7ca3915e3831749d7de4b6c607238077f1f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wv-haddad-riverfront-park": {
+    "source": "assets/campaign-art/landmarks/WV/landmark-city-wv-haddad-riverfront-park.png",
+    "sourceSha256": "041cc272a4d417a80c1501eeaabbdfc92248407072471142d9d4400c415b8e5e",
+    "documentSha256": "f85edf9e94d87cd5712ac672fc886f1fe6cb9e77d44ed4dcccb96dd2f93e79dd",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wv-capitol-market": {
+    "source": "assets/campaign-art/landmarks/WV/landmark-city-wv-capitol-market.png",
+    "sourceSha256": "1ef57c109bee4b1b548ef9189eef9b2bd41371825b1eb9f9ff78452bfe42662e",
+    "documentSha256": "f01ac4f04d3ee77c56271a3798471471285970c50a30a78510dd6826e59544b0",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-wy-big-boy-steam-engine": {
+    "source": "assets/campaign-art/landmarks/WY/landmark-city-wy-big-boy-steam-engine.png",
+    "sourceSha256": "7c7a9c075c3ee3bdc363d9998151952b150427fda88c82061980cb0ad64a29cc",
+    "documentSha256": "74a30461bbbbe9b4ad478fd241e7280eee862476a377105dd68975bf1736b2c3",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-wy-wyoming-state-capitol": {
+    "source": "assets/campaign-art/landmarks/WY/landmark-city-wy-wyoming-state-capitol.png",
+    "sourceSha256": "fe154c8592ea76791c99efb3ba632537ea8537616efde165bc022867aa26468d",
+    "documentSha256": "913c0a7d00d60c7bc99b3162b4924a668f7bb047099b1efd7858873cacbb4b2c",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wy-cheyenne-depot-museum": {
+    "source": "assets/campaign-art/landmarks/WY/landmark-city-wy-cheyenne-depot-museum.png",
+    "sourceSha256": "01192c2bed0fdcc24cbd1b4c1990c11f9f01d41d5a7118ee42ecfe57a40fd84b",
+    "documentSha256": "36d4d644ef0583409ea7ce345ba9e34a87300ed5d5245b8f0546c9acd5c8109b",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wy-historic-governors-mansion": {
+    "source": "assets/campaign-art/landmarks/WY/landmark-city-wy-historic-governors-mansion.png",
+    "sourceSha256": "ab335f918e9a97dc2455b2d47b15e97321340e51a1d8c760fbbb1c591ed0a9b3",
+    "documentSha256": "bbf535c7d68fc848cbc005cfa7e5715884f29d6ffbf87c7554ca4a116dc15ab5",
+    "width": 512,
+    "height": 341
   }
 }

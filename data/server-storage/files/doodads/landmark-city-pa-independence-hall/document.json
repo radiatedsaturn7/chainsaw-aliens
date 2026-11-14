@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794610433373,
+  "doodad": {
+    "id": "campaign-landmark-city-pa-independence-hall",
+    "name": "landmark-city-pa-independence-hall",
+    "artRef": "landmark-city-pa-independence-hall",
+    "widthM": 48.04692082111437,
+    "heightM": 32,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 40.83988269794721,
+    "hitboxHeightM": 28.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

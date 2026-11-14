@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794612819558,
+  "doodad": {
+    "id": "campaign-landmark-city-ne-orpheum-theater",
+    "name": "landmark-city-ne-orpheum-theater",
+    "artRef": "landmark-city-ne-orpheum-theater",
+    "widthM": 30.632478632478634,
+    "heightM": 28,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 26.037606837606837,
+    "hitboxHeightM": 25.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

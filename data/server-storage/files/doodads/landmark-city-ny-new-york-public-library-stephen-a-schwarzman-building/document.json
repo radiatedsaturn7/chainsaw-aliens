@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794608911198,
+  "doodad": {
+    "id": "campaign-landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building",
+    "name": "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building",
+    "artRef": "landmark-city-ny-new-york-public-library-stephen-a-schwarzman-building",
+    "widthM": 36,
+    "heightM": 18,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 30.599999999999998,
+    "hitboxHeightM": 16.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

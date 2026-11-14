@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613606929,
+  "doodad": {
+    "id": "campaign-landmark-city-de-rodney-square",
+    "name": "landmark-city-de-rodney-square",
+    "artRef": "landmark-city-de-rodney-square",
+    "widthM": 41.91812865497076,
+    "heightM": 14,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 35.630409356725146,
+    "hitboxHeightM": 12.6,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

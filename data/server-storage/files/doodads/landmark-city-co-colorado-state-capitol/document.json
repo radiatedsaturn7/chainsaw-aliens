@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794609519056,
+  "doodad": {
+    "id": "campaign-landmark-city-co-colorado-state-capitol",
+    "name": "landmark-city-co-colorado-state-capitol",
+    "artRef": "landmark-city-co-colorado-state-capitol",
+    "widthM": 67.56598240469208,
+    "heightM": 45,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 57.43108504398827,
+    "hitboxHeightM": 40.5,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

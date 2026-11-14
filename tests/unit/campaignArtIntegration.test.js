@@ -98,6 +98,15 @@ test('all delivered art has an actual campaign use, including ground decals and 
   for(const segment of r.road.segments){used.add(roadTextureForSegment(settings,segment).artRef);if(r.margin?.shoulderMode==='on')used.add((settings.surfaceShoulders[segment.surface]||settings.shoulder).artRef);}
   for(const p of r.scenery.filter(p=>p.fenceId?.startsWith('campaign-complete'))){assert.equal(p.previewDoodad.isFence,true);assert.equal(p.previewDoodad.defaultRule.behavior,'collide');assert.ok(p.previewDoodad.fenceThicknessM>0);}
  }
+ // City landmark art belongs to the expansion races, outside the main campaign catalog.
+ for(const city of read('AI/last-on-the-grid/state-expansion-landmark-artwork.json').cities){
+  const r=read(root+manifest.folders.races[city.raceRef]).race;
+  for(const mark of city.landmarks){
+   const prop=r.scenery.find(p=>p.id===`city-landmark-${mark.suggestedArtRef}`);
+   assert.equal(prop?.artRef,mark.suggestedArtRef);
+   used.add(prop.artRef);
+  }
+ }
  const deferred=new Set(expanded.filter(a=>a.deferredReason).map(a=>a.name));
  assert.deepEqual(Object.keys(imports).filter(name=>name!=='ground-snow-dead-grass'&&!deferred.has(name)&&!used.has(name)),[]);
 });

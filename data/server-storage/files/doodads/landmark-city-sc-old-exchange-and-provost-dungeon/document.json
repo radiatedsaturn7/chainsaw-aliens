@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794615194653,
+  "doodad": {
+    "id": "campaign-landmark-city-sc-old-exchange-and-provost-dungeon",
+    "name": "landmark-city-sc-old-exchange-and-provost-dungeon",
+    "artRef": "landmark-city-sc-old-exchange-and-provost-dungeon",
+    "widthM": 30.029325513196483,
+    "heightM": 20,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 25.52492668621701,
+    "hitboxHeightM": 18,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

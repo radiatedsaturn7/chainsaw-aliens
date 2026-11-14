@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794616787159,
+  "doodad": {
+    "id": "campaign-landmark-city-al-sloss-furnaces",
+    "name": "landmark-city-al-sloss-furnaces",
+    "artRef": "landmark-city-al-sloss-furnaces",
+    "widthM": 63.06158357771261,
+    "heightM": 42,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 53.60234604105572,
+    "hitboxHeightM": 37.800000000000004,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

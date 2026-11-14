@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794606943563,
+  "doodad": {
+    "id": "campaign-landmark-city-ma-massachusetts-state-house",
+    "name": "landmark-city-ma-massachusetts-state-house",
+    "artRef": "landmark-city-ma-massachusetts-state-house",
+    "widthM": 60,
+    "heightM": 30,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 51,
+    "hitboxHeightM": 27,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

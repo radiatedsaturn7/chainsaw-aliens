@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613310013,
+  "doodad": {
+    "id": "campaign-landmark-city-in-indiana-statehouse",
+    "name": "landmark-city-in-indiana-statehouse",
+    "artRef": "landmark-city-in-indiana-statehouse",
+    "widthM": 76,
+    "heightM": 38,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 64.6,
+    "hitboxHeightM": 34.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

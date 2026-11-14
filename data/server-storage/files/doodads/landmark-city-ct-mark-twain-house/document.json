@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794607106742,
+  "doodad": {
+    "id": "campaign-landmark-city-ct-mark-twain-house",
+    "name": "landmark-city-ct-mark-twain-house",
+    "artRef": "landmark-city-ct-mark-twain-house",
+    "widthM": 24.023460410557185,
+    "heightM": 16,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 20.419941348973605,
+    "hitboxHeightM": 14.4,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

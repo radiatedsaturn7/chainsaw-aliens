@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794610433373,
+  "doodad": {
+    "id": "campaign-landmark-city-pa-philadelphia-museum-of-art",
+    "name": "landmark-city-pa-philadelphia-museum-of-art",
+    "artRef": "landmark-city-pa-philadelphia-museum-of-art",
+    "widthM": 80.84210526315789,
+    "heightM": 27,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 68.71578947368421,
+    "hitboxHeightM": 24.3,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

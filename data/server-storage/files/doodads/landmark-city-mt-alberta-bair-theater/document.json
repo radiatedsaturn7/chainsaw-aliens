@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794614903503,
+  "doodad": {
+    "id": "campaign-landmark-city-mt-alberta-bair-theater",
+    "name": "landmark-city-mt-alberta-bair-theater",
+    "artRef": "landmark-city-mt-alberta-bair-theater",
+    "widthM": 28,
+    "heightM": 14,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 23.8,
+    "hitboxHeightM": 12.6,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617443430,
+  "doodad": {
+    "id": "campaign-landmark-city-wa-smith-tower",
+    "name": "landmark-city-wa-smith-tower",
+    "artRef": "landmark-city-wa-smith-tower",
+    "widthM": 27.97265625,
+    "heightM": 42,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 23.776757812499998,
+    "hitboxHeightM": 37.800000000000004,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}
