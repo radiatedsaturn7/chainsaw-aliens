@@ -11,7 +11,7 @@
     1
   ],
   "wheelFit": "cover",
-  "preservedDocumentSha256": "8afcdb6abb8852058c85dffbc1ed6a72fdb175799b63baf6dc5c5fecc723e3f0",
+  "preservedDocumentSha256": "e725807ede4342f0fcebf9c672697127b27bfdce84e362c772cead49b9749259",
   "authoredWheelAnchors": {
     "front": [
       {
@@ -125,5 +125,8 @@
         "radius": 37
       }
     ]
-  }
+  },
+  "originalRedrawPreservedDocumentSha256": "8afcdb6abb8852058c85dffbc1ed6a72fdb175799b63baf6dc5c5fecc723e3f0",
+  "preservedDocumentBaselineCommit": "f0e7c58f1f87301bc8d7550306764e8cecc6c05d",
+  "preservedDocumentBaselineNote": "Preserve the subsequent owner vehicle-setting edits shipped in 8f300e1. The original redraw hash is retained separately; this exact snapshot includes current FX/gauges and savedAt, with only exterior body/tire placement fields excluded as before."
 }

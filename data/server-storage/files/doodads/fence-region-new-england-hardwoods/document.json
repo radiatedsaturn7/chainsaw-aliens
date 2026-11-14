@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "selectedDoodadId": "fence-region-new-england-hardwoods",
+  "doodad": {
+    "id": "fence-region-new-england-hardwoods",
+    "name": "New England ruined hardwood tree line [solid fence]",
+    "artRef": "fence-region-new-england-hardwoods",
+    "isFence": true,
+    "fenceMirrorRepeat": true,
+    "fenceThicknessM": 1,
+    "itemType": "scenery",
+    "model": null,
+    "widthM": 28,
+    "heightM": 9,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 28,
+    "hitboxHeightM": 9,
+    "weightKg": 10000,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 45,
+      "damage": {
+        "panels": 14,
+        "suspension": 6,
+        "engine": 3.5
+      }
+    },
+    "rules": []
+  },
+  "regionalFence": {
+    "region": "New England",
+    "collision": "Continuous solid fence; transparent art is not an opening.",
+    "source": "regional-fences/fence-new-england-hardwoods.png"
+  }
+}

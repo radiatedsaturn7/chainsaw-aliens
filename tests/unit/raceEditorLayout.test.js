@@ -12524,7 +12524,7 @@ test('Race WebGL Track builds road paint meshes for lane dashes', () => {
     routeLength: 200
   });
 
-  const checkerMeshes = meshes.filter((mesh) => mesh.color === '#f1f4ef' || mesh.color === '#050807');
+  const checkerMeshes = meshes.filter((mesh) => mesh.color === '#dedbc9' || mesh.color === '#292d2b');
   const dashMeshes = meshes.filter((mesh) => mesh.color === editor.getRaceRoadSurfacePalette('asphalt').lane);
   const marginMarkerMeshes = meshes.filter((mesh) => mesh.color === 'rgba(242,212,92,0.76)');
 
@@ -12633,7 +12633,7 @@ test('Race WebGL Track renders start and finish checkers as world-space meshes',
     slices
   });
 
-  const checkerMeshes = meshes.filter((mesh) => mesh.color === '#f1f4ef' || mesh.color === '#050807');
+  const checkerMeshes = meshes.filter((mesh) => mesh.color === '#dedbc9' || mesh.color === '#292d2b');
   assert.equal(checkerMeshes.length >= 20, true);
   assert.equal(checkerMeshes.every((mesh) => mesh.source === 'road-checker'), true);
   assert.equal(checkerMeshes.every((mesh) => !mesh.projectedPolygon), true);

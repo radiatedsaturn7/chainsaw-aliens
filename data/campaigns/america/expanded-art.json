@@ -2092,6 +2092,51 @@
         }
       ],
       "groundOffsetM": 0.2549
+    },
+    {
+      "name": "providence",
+      "source": "skyboxes/providence-2994.png",
+      "kind": "skybox",
+      "maxEdge": 512
+    },
+    {
+      "name": "skybox-bayard-noon-2994",
+      "source": "skyboxes/bayard-noon-2994.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "landmark-bayard-community-bible-church",
+      "source": "bayard/landmark-bayard-community-bible-church.png",
+      "kind": "landmark",
+      "maxEdge": 512,
+      "placements": [],
+      "heightM": 8
+    },
+    {
+      "name": "landmark-bayard-city-park-water-tower",
+      "source": "bayard/landmark-bayard-city-park-water-tower.png",
+      "kind": "landmark",
+      "maxEdge": 512,
+      "placements": [],
+      "heightM": 30
+    },
+    {
+      "name": "bayard-city-park-playground-ruin",
+      "source": "bayard/bayard-city-park-playground-ruin.png",
+      "kind": "sprite",
+      "maxEdge": 512,
+      "heightM": 5.333,
+      "placements": []
+    },
+    {
+      "name": "bayard-sage-sandstone-cluster",
+      "source": "bayard/bayard-sage-sandstone-cluster.png",
+      "kind": "sprite",
+      "maxEdge": 512,
+      "heightM": 2,
+      "placements": []
     }
   ]
 }

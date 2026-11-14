@@ -1,3 +1,4 @@
+import {withLegacyGaugeDefaults} from '../helpers/catalogRoundtrip.js';
 import {createVehicleRenderStateFromRunner} from '../../src/racing/simulation/VehicleRenderState.js';
 import {axleTireGeometry} from '../../src/racing/TireSizes.js';
 import test from 'node:test';
@@ -6,7 +7,7 @@ import fs from 'node:fs';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 const d=JSON.parse(fs.readFileSync(new URL('../../data/server-storage/files/cars/Starwort 2005/document.json',import.meta.url)));
 const c=JSON.parse(fs.readFileSync(new URL('../../assets/car-catalog/starwort-2005/import.json',import.meta.url)));
-test('Starwort native editor roundtrip retains fixedrear, dashboard gauges and tire visibility',()=>{const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(structuredClone(d),{name:d.car.name});assert.deepEqual(e.serializeSelectedCarDocument().car,d.car);assert.equal(d.car.camera.trackingMode,'fixed-rear');assert.equal(d.car.art.interior.steeringWheel.artRef,'steeringwheel');assert.equal(d.car.art.gauges.interior.coordinateSpace,'wheel-opening');for(const l of Object.values(d.car.art.angleLayers))assert.equal(l.tires.tireMode,'auto');assert.deepEqual(c.mapping,[0,7,2,3,4,5,6,1]);});
+test('Starwort native editor roundtrip retains fixedrear, dashboard gauges and tire visibility',()=>{const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(structuredClone(d),{name:d.car.name});assert.deepEqual(e.serializeSelectedCarDocument().car,withLegacyGaugeDefaults(d.car));assert.equal(d.car.camera.trackingMode,'fixed-rear');assert.equal(d.car.art.interior.steeringWheel.artRef,'steeringwheel');assert.equal(d.car.art.gauges.interior.coordinateSpace,'wheel-opening');for(const l of Object.values(d.car.art.angleLayers))assert.equal(l.tires.tireMode,'auto');assert.deepEqual(c.mapping,[0,7,2,3,4,5,6,1]);});
 
 test('Starwort production editor preview launches on tire support, not an occluding body box',()=>{
  assert.equal(c.car.tuning.physics.bodyProfile.wheelWellAware,true);
