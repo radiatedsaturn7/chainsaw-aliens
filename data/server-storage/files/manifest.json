@@ -688,7 +688,11 @@
       "landmark-city-nm-new-mexico-museum-of-natural-history": "art/landmark-city-nm-new-mexico-museum-of-natural-history/document.json",
       "landmark-city-nm-san-felipe-de-neri-church": "art/landmark-city-nm-san-felipe-de-neri-church/document.json",
       "landmark-city-nm-kimo-theatre": "art/landmark-city-nm-kimo-theatre/document.json",
-      "landmark-city-nm-albuquerque-rail-yards": "art/landmark-city-nm-albuquerque-rail-yards/document.json"
+      "landmark-city-nm-albuquerque-rail-yards": "art/landmark-city-nm-albuquerque-rail-yards/document.json",
+      "landmark-city-tx-the-alamo": "art/landmark-city-tx-the-alamo/document.json",
+      "landmark-city-tx-tower-of-the-americas": "art/landmark-city-tx-tower-of-the-americas/document.json",
+      "landmark-city-tx-san-fernando-cathedral": "art/landmark-city-tx-san-fernando-cathedral/document.json",
+      "landmark-city-tx-spanish-governors-palace": "art/landmark-city-tx-spanish-governors-palace/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1112,7 +1116,11 @@
       "landmark-city-nm-new-mexico-museum-of-natural-history": "doodads/landmark-city-nm-new-mexico-museum-of-natural-history/document.json",
       "landmark-city-nm-san-felipe-de-neri-church": "doodads/landmark-city-nm-san-felipe-de-neri-church/document.json",
       "landmark-city-nm-kimo-theatre": "doodads/landmark-city-nm-kimo-theatre/document.json",
-      "landmark-city-nm-albuquerque-rail-yards": "doodads/landmark-city-nm-albuquerque-rail-yards/document.json"
+      "landmark-city-nm-albuquerque-rail-yards": "doodads/landmark-city-nm-albuquerque-rail-yards/document.json",
+      "landmark-city-tx-the-alamo": "doodads/landmark-city-tx-the-alamo/document.json",
+      "landmark-city-tx-tower-of-the-americas": "doodads/landmark-city-tx-tower-of-the-americas/document.json",
+      "landmark-city-tx-san-fernando-cathedral": "doodads/landmark-city-tx-san-fernando-cathedral/document.json",
+      "landmark-city-tx-spanish-governors-palace": "doodads/landmark-city-tx-spanish-governors-palace/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

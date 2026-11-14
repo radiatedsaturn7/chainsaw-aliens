@@ -2742,5 +2742,33 @@
     "documentSha256": "6148a16c59099720399d1f3db3702da9d3584aca9f3a4354203e6edc380d3c6c",
     "width": 512,
     "height": 171
+  },
+  "landmark-city-tx-the-alamo": {
+    "source": "assets/campaign-art/landmarks/TX/landmark-city-tx-the-alamo.png",
+    "sourceSha256": "70f367aa15121ce15557a8ed8bcf967b1a09ecfd84b657922aa407bcb7314d12",
+    "documentSha256": "4906c959a752c142645b33870f830c19874bf89879cd0340c63f1cbc7dd7a4e4",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-tx-tower-of-the-americas": {
+    "source": "assets/campaign-art/landmarks/TX/landmark-city-tx-tower-of-the-americas.png",
+    "sourceSha256": "b5aedd5ce21b4affacfa1840dd364f31bf492312aa215f28e47f3f47bc4a62b3",
+    "documentSha256": "ec6f10cb7cfc4b65d3ebb7e19d58173aad7d2dad91e14ad616b3a450afa88b65",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-tx-san-fernando-cathedral": {
+    "source": "assets/campaign-art/landmarks/TX/landmark-city-tx-san-fernando-cathedral.png",
+    "sourceSha256": "1c348b2e7c5b15f1942bde60aa655e227faa2036fbe60c02743184b08cc6a354",
+    "documentSha256": "586c58c24460c66f8b050b49a9977ba9f0ad10a0751feebffe737637af84d286",
+    "width": 512,
+    "height": 417
+  },
+  "landmark-city-tx-spanish-governors-palace": {
+    "source": "assets/campaign-art/landmarks/TX/landmark-city-tx-spanish-governors-palace.png",
+    "sourceSha256": "d335f22a01e290541ae5a72ec49be81e0236839d10da332579b4db1b3af9f356",
+    "documentSha256": "c64f10182b40509f47206ae4f25dd5d4133eecc085ded85ba18ed4322cfb5221",
+    "width": 512,
+    "height": 184
   }
 }

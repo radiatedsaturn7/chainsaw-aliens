@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617165342,
+  "doodad": {
+    "id": "campaign-landmark-city-tx-san-fernando-cathedral",
+    "name": "landmark-city-tx-san-fernando-cathedral",
+    "artRef": "landmark-city-tx-san-fernando-cathedral",
+    "widthM": 39.29016786570743,
+    "heightM": 32,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 33.39664268585132,
+    "hitboxHeightM": 28.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

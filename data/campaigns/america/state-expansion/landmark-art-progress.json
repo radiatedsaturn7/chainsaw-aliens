@@ -18457,35 +18457,467 @@
     },
     "landmark-city-tx-the-alamo": {
       "raceRef": "San Antonio, TX — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 567.7087578973782,
+        "worldZ": -192.2414677127529,
+        "routeDistanceM": 1470,
+        "offsetFromRoadM": 77,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.8074847003585125,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 75.35505349998262,
+            "angularWidthDegrees": 11.65489848707899,
+            "rangeM": 102.98088084503097,
+            "occluderIds": [
+              "city-tx-prop-87"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 83.74348431921663,
+            "angularWidthDegrees": 11.334260317337282,
+            "rangeM": 105.91404663472099,
+            "occluderIds": [
+              "city-tx-prop-85"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 82.154151337287,
+            "angularWidthDegrees": 11.131211642527497,
+            "rangeM": 107.85861011076273,
+            "occluderIds": [
+              "city-tx-prop-85"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.058581898451491844,
+            "angularWidthDegrees": 10.331618381152404,
+            "rangeM": 116.25693759539308,
+            "occluderIds": [],
+            "score": 0.9976567240619403
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 33.515068030756346,
+            "angularWidthDegrees": 8.261829184379158,
+            "rangeM": 145.52466828305964,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 31.57524909155242,
+            "angularWidthDegrees": 6.752502036264957,
+            "rangeM": 178.15517560997026,
+            "occluderIds": [
+              "city-tx-prop-83"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 22.595221784220772,
+            "angularWidthDegrees": 5.628365344423072,
+            "rangeM": 213.81321033775154,
+            "occluderIds": [
+              "city-tx-prop-80",
+              "city-tx-prop-83"
+            ],
+            "score": 0.010827976296572278
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 138.51067859272996,
+            "angularWidthDegrees": 5.536677359739262,
+            "rangeM": 217.35963515109358,
+            "occluderIds": [],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "f492d98b4ab78b827edaeb34542d3d7b97b0b509bc6b577b46063fd9d7c7dd26",
+      "sourceSha256": "70f367aa15121ce15557a8ed8bcf967b1a09ecfd84b657922aa407bcb7314d12",
+      "roadSha256": "d5975e5eb32b1a9a72e6d7b5a5de616b716064a42eb616ba471a8859d81c7256",
+      "placementDetails": {
+        "x": 789.3824553818254,
+        "z": -308.8125508742646,
+        "yaw": 2.020282631700622,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1681.2313465419825,
+        "trackLateral": -94.99038066694128,
+        "minimumRoadClearanceM": 72.05618654256179,
+        "checkedSegments": 4091,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-tx-tower-of-the-americas": {
       "raceRef": "San Antonio, TX — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 816.1315140989336,
+        "worldZ": 546.8018070485359,
+        "routeDistanceM": 2700,
+        "offsetFromRoadM": 254,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 6.205162118673957,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 7.3981831796011015,
+            "angularWidthDegrees": 19.723685514267743,
+            "rangeM": 134.09060281711237,
+            "occluderIds": [],
+            "score": 0.7040726728159559
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 6.513658789324687,
+            "angularWidthDegrees": 17.221074713838018,
+            "rangeM": 153.9423183906436,
+            "occluderIds": [],
+            "score": 0.7394536484270124
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 5.512230951510757,
+            "angularWidthDegrees": 15.275731216111167,
+            "rangeM": 173.8280361622037,
+            "occluderIds": [],
+            "score": 0.7795107619395697
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.427578421427708,
+            "angularWidthDegrees": 13.717516526755054,
+            "rangeM": 193.79749367180392,
+            "occluderIds": [],
+            "score": 0.9428968631428917
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 1.5494345924418382,
+            "angularWidthDegrees": 11.893481504168047,
+            "rangeM": 223.78588555113376,
+            "occluderIds": [],
+            "score": 0.9380226163023264
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.222879622823344,
+            "angularWidthDegrees": 10.103393786186643,
+            "rangeM": 263.7001653956681,
+            "occluderIds": [],
+            "score": 0.7910848150870662
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.535589121453627,
+            "angularWidthDegrees": 8.782432723914164,
+            "rangeM": 303.5559581084828,
+            "occluderIds": [],
+            "score": 0.818576435141855
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 11.386392354567997,
+            "angularWidthDegrees": 7.554263962273857,
+            "rangeM": 353.0881669291417,
+            "occluderIds": [],
+            "score": 0.5445443058172801
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "ddf7ed644324f4119ab35419ab516c0f0b5bfa96f3331b11247a09dd6293afb4",
+      "sourceSha256": "b5aedd5ce21b4affacfa1840dd364f31bf492312aa215f28e47f3f47bc4a62b3",
+      "roadSha256": "d5975e5eb32b1a9a72e6d7b5a5de616b716064a42eb616ba471a8859d81c7256",
+      "placementDetails": {
+        "x": 1070.4438286436346,
+        "z": 665.3460730902095,
+        "yaw": -0.046315220399064425,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2729.448473983056,
+        "trackLateral": 109.99646733229737,
+        "minimumRoadClearanceM": 76.15000477584677,
+        "checkedSegments": 4091,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/TX/tower-of-the-americas-desktop.png",
+        "docs/art/landmark-previews/TX/tower-of-the-americas-mobile.png"
+      ]
     },
     "landmark-city-tx-san-fernando-cathedral": {
       "raceRef": "San Antonio, TX — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -213.4807731909243,
+        "worldZ": -62.15804985044348,
+        "routeDistanceM": 4592,
+        "offsetFromRoadM": 62,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.220945235694882,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 41.69492309752861,
+            "angularWidthDegrees": 36.183124493174006,
+            "rangeM": 60.13419715577795,
+            "occluderIds": [
+              "city-tx-prop-243"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 32.88756446859775,
+            "angularWidthDegrees": 28.899446848133913,
+            "rangeM": 76.23781736325958,
+            "occluderIds": [
+              "city-tx-prop-243"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 27.747766530770996,
+            "angularWidthDegrees": 23.726498314781804,
+            "rangeM": 93.519858020006,
+            "occluderIds": [
+              "city-tx-prop-243"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 22.977149527553628,
+            "angularWidthDegrees": 19.96596662059513,
+            "rangeM": 111.6066270954409,
+            "occluderIds": [
+              "city-tx-prop-241",
+              "city-tx-prop-243"
+            ],
+            "score": 0.009709682267742586
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 18.169076798809503,
+            "angularWidthDegrees": 16.007223990131436,
+            "rangeM": 139.71812478917033,
+            "occluderIds": [
+              "city-tx-prop-241",
+              "city-tx-prop-243"
+            ],
+            "score": 0.03278843136571439
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 13.862413540174403,
+            "angularWidthDegrees": 12.58470820611772,
+            "rangeM": 178.16091589075765,
+            "occluderIds": [
+              "city-tx-prop-239",
+              "city-tx-prop-241",
+              "city-tx-prop-243"
+            ],
+            "score": 0.05346041500716286
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 10.12057353906049,
+            "angularWidthDegrees": 10.330419337721088,
+            "rangeM": 217.32506832295428,
+            "occluderIds": [
+              "city-tx-prop-235",
+              "city-tx-prop-237",
+              "city-tx-prop-239",
+              "city-tx-prop-241",
+              "city-tx-prop-243"
+            ],
+            "score": 0.07142124701250964
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 8.632195824634879,
+            "angularWidthDegrees": 8.427143985259677,
+            "rangeM": 266.65037004247387,
+            "occluderIds": [
+              "city-tx-prop-233",
+              "city-tx-prop-235",
+              "city-tx-prop-237",
+              "city-tx-prop-239",
+              "city-tx-prop-241",
+              "city-tx-prop-243"
+            ],
+            "score": 0.07856546004175256
+          }
+        ],
+        "sourceDistanceShiftM": -30
+      },
+      "signature": "9eec3a729bb8c59a302ab23b7acbdfa5d488e4bd773d428be929e0e071c96e31",
+      "sourceSha256": "1c348b2e7c5b15f1942bde60aa655e227faa2036fbe60c02743184b08cc6a354",
+      "roadSha256": "d5975e5eb32b1a9a72e6d7b5a5de616b716064a42eb616ba471a8859d81c7256",
+      "placementDetails": {
+        "x": -180.32502002442942,
+        "z": -78.09469329720457,
+        "yaw": -1.4460797788509523,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4561.831881003958,
+        "trackLateral": -39.99911474875283,
+        "minimumRoadClearanceM": 9.284122236723253,
+        "checkedSegments": 4091,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/TX/san-fernando-cathedral-desktop.png",
+        "docs/art/landmark-previews/TX/san-fernando-cathedral-mobile.png"
+      ]
     },
     "landmark-city-tx-spanish-governors-palace": {
       "raceRef": "San Antonio, TX — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -386.16756141390755,
+        "worldZ": -91.4579534922726,
+        "routeDistanceM": 4777,
+        "offsetFromRoadM": 36,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 6.516333147352632,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 5.274006944526733,
+            "angularWidthDegrees": 11.663422963985496,
+            "rangeM": 136.22141603079086,
+            "occluderIds": [],
+            "score": 0.7890397222189307
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 4.599428744344497,
+            "angularWidthDegrees": 10.183431147678784,
+            "rangeM": 156.14758250165613,
+            "occluderIds": [],
+            "score": 0.8160228502262201
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 4.07758827951131,
+            "angularWidthDegrees": 9.035195855367562,
+            "rangeM": 176.09049376295562,
+            "occluderIds": [],
+            "score": 0.8368964688195476
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 3.661950550223838,
+            "angularWidthDegrees": 8.118791419675686,
+            "rangeM": 196.04503973103596,
+            "occluderIds": [],
+            "score": 0.8535219779910465
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 3.1761582868972966,
+            "angularWidthDegrees": 7.045860693327857,
+            "rangeM": 225.99193160157253,
+            "occluderIds": [],
+            "score": 0.8729536685241082
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.7429062564587413,
+            "angularWidthDegrees": 5.989398530745097,
+            "rangeM": 265.94744763344954,
+            "occluderIds": [],
+            "score": 0.9685693441847474
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.811096665581761,
+            "angularWidthDegrees": 5.207572511549812,
+            "rangeM": 305.9428653088105,
+            "occluderIds": [],
+            "score": 0.8397697872590134
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.6564622687378404,
+            "angularWidthDegrees": 4.4769129459517565,
+            "rangeM": 355.9385946222432,
+            "occluderIds": [],
+            "score": 0.7265593281290175
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "701ee291868b6f925d957fb1e48cb389f2056da7aa631545756d053a9d7c3f14",
+      "sourceSha256": "d335f22a01e290541ae5a72ec49be81e0236839d10da332579b4db1b3af9f356",
+      "roadSha256": "d5975e5eb32b1a9a72e6d7b5a5de616b716064a42eb616ba471a8859d81c7256",
+      "placementDetails": {
+        "x": -626.4949215253171,
+        "z": -123.14399451110063,
+        "yaw": -1.5405090039638758,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4927.287762321097,
+        "trackLateral": 104.99984415777745,
+        "minimumRoadClearanceM": 82.77523159406086,
+        "checkedSegments": 4091,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ut-union-pacific-depot": {
       "raceRef": "Salt Lake City, UT — Landmark Run",

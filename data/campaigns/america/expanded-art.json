@@ -3324,6 +3324,34 @@
       "heightM": 24,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-tx-the-alamo",
+      "source": "landmarks/TX/landmark-city-tx-the-alamo.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tx-tower-of-the-americas",
+      "source": "landmarks/TX/landmark-city-tx-tower-of-the-americas.png",
+      "heightM": 70,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tx-san-fernando-cathedral",
+      "source": "landmarks/TX/landmark-city-tx-san-fernando-cathedral.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tx-spanish-governors-palace",
+      "source": "landmarks/TX/landmark-city-tx-spanish-governors-palace.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
