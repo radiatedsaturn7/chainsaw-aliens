@@ -2490,5 +2490,33 @@
     "documentSha256": "de15321dc0dd6c270fc178155c68c2370233d4ab67beefdc9d58c151f9d55f2e",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-tn-tennessee-state-capitol": {
+    "source": "assets/campaign-art/landmarks/TN/landmark-city-tn-tennessee-state-capitol.png",
+    "sourceSha256": "675b9c24ed1015eb70e3b7eb8ff54f700e560b7a057f92aa591de52813e4aa30",
+    "documentSha256": "7d743e328388e3fb89dfb6bb19b967679348fd17269ee6042245012494beb17b",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-tn-ryman-auditorium": {
+    "source": "assets/campaign-art/landmarks/TN/landmark-city-tn-ryman-auditorium.png",
+    "sourceSha256": "37a52382657b30e4769be04593b0455f07017a538c14ce23b4fc7aab6f0a73f9",
+    "documentSha256": "920a56a2a1b2ae66901138fd37502464e8ee2d47c120a5f19cef683cf50d8dad",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-tn-union-station-hotel": {
+    "source": "assets/campaign-art/landmarks/TN/landmark-city-tn-union-station-hotel.png",
+    "sourceSha256": "28793798f3546410e179a0f32920e1fb7352aa460b5a4c9d2853f44832dfe19c",
+    "documentSha256": "7630cb78d44e65cc4db2f7d483c532898e5134a392f3306d234f38008146f468",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-tn-country-music-hall-of-fame": {
+    "source": "assets/campaign-art/landmarks/TN/landmark-city-tn-country-music-hall-of-fame.png",
+    "sourceSha256": "2e1730125b74d18eaeb431fbaa5b24b6267b2d468cc67b60c3383e4dba989697",
+    "documentSha256": "7d1d33ffe81cbfee1d8aef233e6ca6509df6228c9cf030f17ff14d3a965681e0",
+    "width": 512,
+    "height": 256
   }
 }

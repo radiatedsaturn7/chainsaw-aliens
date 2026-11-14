@@ -14450,35 +14450,489 @@
     },
     "landmark-city-tn-tennessee-state-capitol": {
       "raceRef": "Nashville, TN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -111.08579390120114,
+        "worldZ": -425.76596221455236,
+        "routeDistanceM": 2199,
+        "offsetFromRoadM": 115,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.3405936430432058,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 16.134476263113143,
+            "angularWidthDegrees": 28.98026406028646,
+            "rangeM": 116.19734070169471,
+            "occluderIds": [
+              "city-tn-prop-122"
+            ],
+            "score": 0.04255451393705691
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 14.066282242815575,
+            "angularWidthDegrees": 24.992423775134352,
+            "rangeM": 135.49592770238027,
+            "occluderIds": [
+              "city-tn-prop-122"
+            ],
+            "score": 0.052481845234485236
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 12.212720831550623,
+            "angularWidthDegrees": 21.93282124015527,
+            "rangeM": 154.97248420836436,
+            "occluderIds": [
+              "city-tn-prop-122"
+            ],
+            "score": 0.06137894000855701
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 10.535145419693395,
+            "angularWidthDegrees": 19.520083218851564,
+            "rangeM": 174.57705791103686,
+            "occluderIds": [
+              "city-tn-prop-120",
+              "city-tn-prop-122"
+            ],
+            "score": 0.0694313019854717
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.97971952387332,
+            "angularWidthDegrees": 16.73604293290474,
+            "rangeM": 204.14655797412243,
+            "occluderIds": [
+              "city-tn-prop-120",
+              "city-tn-prop-122"
+            ],
+            "score": 0.07689734628540806
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 7.322980084952747,
+            "angularWidthDegrees": 14.047366817868872,
+            "rangeM": 243.7362805255429,
+            "occluderIds": [
+              "city-tn-prop-118",
+              "city-tn-prop-120",
+              "city-tn-prop-122"
+            ],
+            "score": 0.08484969559222681
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 77.2522156631011,
+            "angularWidthDegrees": 12.89425911875533,
+            "rangeM": 265.7439756087346,
+            "occluderIds": [
+              "city-tn-prop-115",
+              "city-tn-prop-117",
+              "city-tn-prop-122"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 66.73948601887223,
+            "angularWidthDegrees": 12.192443287395914,
+            "rangeM": 281.16694904020136,
+            "occluderIds": [
+              "city-tn-prop-109",
+              "city-tn-prop-121",
+              "city-tn-prop-122"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "be385257baa1a5a71d4fb35ffc211ac3b095025ba7bfddf40352e58235937f7c",
+      "sourceSha256": "675b9c24ed1015eb70e3b7eb8ff54f700e560b7a057f92aa591de52813e4aa30",
+      "roadSha256": "f046f1c7ada7c6f54ebc6cda455cdc0aa536bbbad5564675e706bc11ecdc17e1",
+      "placementDetails": {
+        "x": -31.36277761926302,
+        "z": -467.24750344670895,
+        "yaw": -2.835706992174873,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2228.614556929054,
+        "trackLateral": -94.99999999145793,
+        "minimumRoadClearanceM": 51.32035781119014,
+        "checkedSegments": 4133,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-tn-ryman-auditorium": {
       "raceRef": "Nashville, TN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 404.4208767966086,
+        "worldZ": 83.69653689173646,
+        "routeDistanceM": 3203,
+        "offsetFromRoadM": 78,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.736169121598641,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 13.494860335941292,
+            "angularWidthDegrees": 17.7022137720068,
+            "rangeM": 125.34583084653893,
+            "occluderIds": [
+              "city-tn-prop-170"
+            ],
+            "score": 0.0552246703874818
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 10.043048832911433,
+            "angularWidthDegrees": 15.335375820848377,
+            "rangeM": 144.98183192014054,
+            "occluderIds": [],
+            "score": 0.5982780466835427
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.824539862700917,
+            "angularWidthDegrees": 13.516492407948768,
+            "rangeM": 164.71261838436226,
+            "occluderIds": [],
+            "score": 0.6470184054919633
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.326667405097844,
+            "angularWidthDegrees": 12.078123990676056,
+            "rangeM": 184.50138677837938,
+            "occluderIds": [],
+            "score": 0.6669333037960863
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.584770809981705,
+            "angularWidthDegrees": 10.41502051503116,
+            "rangeM": 214.16735274800814,
+            "occluderIds": [],
+            "score": 0.6566091676007317
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 7.236649335352239,
+            "angularWidthDegrees": 8.795972809295804,
+            "rangeM": 253.78944482943913,
+            "occluderIds": [
+              "city-tn-prop-168"
+            ],
+            "score": 0.08526408319030924
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 5.971915745745477,
+            "angularWidthDegrees": 7.609062181734503,
+            "rangeM": 293.52255470501336,
+            "occluderIds": [
+              "city-tn-prop-162",
+              "city-tn-prop-166",
+              "city-tn-prop-168"
+            ],
+            "score": 0.09133480442042172
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 5.102783327478399,
+            "angularWidthDegrees": 6.508518825862161,
+            "rangeM": 343.29070099989553,
+            "occluderIds": [
+              "city-tn-prop-162",
+              "city-tn-prop-164",
+              "city-tn-prop-166",
+              "city-tn-prop-168",
+              "city-tn-prop-172"
+            ],
+            "score": 0.09550664002810368
+          }
+        ],
+        "sourceDistanceShiftM": -60
+      },
+      "signature": "76a61a8a1114b22b0bb44b1c836614f77a9d24d70d883fb2e1934ce148d54008",
+      "sourceSha256": "37a52382657b30e4769be04593b0455f07017a538c14ce23b4fc7aab6f0a73f9",
+      "roadSha256": "f046f1c7ada7c6f54ebc6cda455cdc0aa536bbbad5564675e706bc11ecdc17e1",
+      "placementDetails": {
+        "x": 544.4361988434989,
+        "z": 215.64387583251943,
+        "yaw": 0.32198901735852675,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3142.6085591061715,
+        "trackLateral": -105,
+        "minimumRoadClearanceM": 69.63649662615244,
+        "checkedSegments": 4133,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-tn-union-station-hotel": {
       "raceRef": "Nashville, TN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -155.26335910188726,
+        "worldZ": 531.5124835159177,
+        "routeDistanceM": 3892,
+        "offsetFromRoadM": 59,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 4.297542638660876,
+        "views": [
+          {
+            "beforeM": 25,
+            "angleDegrees": 59.08006902060455,
+            "angularWidthDegrees": 40.428605399966784,
+            "rangeM": 89.70993687131295,
+            "occluderIds": [
+              "city-tn-prop-208"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 35,
+            "angleDegrees": 7.656665296242488,
+            "angularWidthDegrees": 37.30484182591438,
+            "rangeM": 97.85711035040924,
+            "occluderIds": [
+              "city-tn-prop-208"
+            ],
+            "score": 0.08324800657803606
+          },
+          {
+            "beforeM": 45,
+            "angleDegrees": 1.4099308189599098,
+            "angularWidthDegrees": 34.05794450217399,
+            "rangeM": 107.84856923304106,
+            "occluderIds": [
+              "city-tn-prop-208"
+            ],
+            "score": 0.11323233206899243
+          },
+          {
+            "beforeM": 55,
+            "angleDegrees": 1.2064400006820464,
+            "angularWidthDegrees": 31.316317835771084,
+            "rangeM": 117.84628763351061,
+            "occluderIds": [
+              "city-tn-prop-208"
+            ],
+            "score": 0.11420908799672617
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 1.4446057035877038,
+            "angularWidthDegrees": 28.97433859743026,
+            "rangeM": 127.84436292768696,
+            "occluderIds": [
+              "city-tn-prop-208"
+            ],
+            "score": 0.11306589262277902
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 1.6009441356426621,
+            "angularWidthDegrees": 25.190312106840565,
+            "rangeM": 147.83653544033774,
+            "occluderIds": [
+              "city-tn-prop-208"
+            ],
+            "score": 0.11231546814891522
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.410186579085485,
+            "angularWidthDegrees": 22.269282104621993,
+            "rangeM": 167.829658694048,
+            "occluderIds": [],
+            "score": 0.9435925368365806
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 1.196723040406131,
+            "angularWidthDegrees": 18.959548726635667,
+            "rangeM": 197.8219503161821,
+            "occluderIds": [],
+            "score": 0.9521310783837548
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 1.1853738348921834,
+            "angularWidthDegrees": 15.815549407745873,
+            "rangeM": 237.81361586671306,
+            "occluderIds": [],
+            "score": 0.9525850466043126
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 1.0959202644805206,
+            "angularWidthDegrees": 13.561752769801704,
+            "rangeM": 277.8054628939338,
+            "occluderIds": [],
+            "score": 0.9561631894207792
+          }
+        ],
+        "sourceDistanceShiftM": -30
+      },
+      "signature": "ef712890054bde8c32bdfbc8c6cf38cdb8a5ab23db2ee1afeb889e5078289db8",
+      "sourceSha256": "28793798f3546410e179a0f32920e1fb7352aa460b5a4c9d2853f44832dfe19c",
+      "roadSha256": "f046f1c7ada7c6f54ebc6cda455cdc0aa536bbbad5564675e706bc11ecdc17e1",
+      "placementDetails": {
+        "x": -199.13360948187028,
+        "z": 486.7500623723478,
+        "yaw": -1.1210821769079942,
+        "facingApproachBeforeM": 65,
+        "trackDistance": 3863.3603135676526,
+        "trackLateral": 84.89331846843983,
+        "minimumRoadClearanceM": 34.698694485067946,
+        "checkedSegments": 4133,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-tn-country-music-hall-of-fame": {
       "raceRef": "Nashville, TN — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 620.0749046869223,
+        "worldZ": 425.5658110693732,
+        "routeDistanceM": 4874,
+        "offsetFromRoadM": 61,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 6.81370494954753,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 4.829954166376292,
+            "angularWidthDegrees": 19.752725203557407,
+            "rangeM": 172.3119381650511,
+            "occluderIds": [],
+            "score": 0.8068018333449483
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 4.3280722164239425,
+            "angularWidthDegrees": 17.738744084288314,
+            "rangeM": 192.24829312738126,
+            "occluderIds": [],
+            "score": 0.8268771113430423
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 3.9205262709846114,
+            "angularWidthDegrees": 16.094097657270947,
+            "rangeM": 212.1966267087825,
+            "occluderIds": [],
+            "score": 0.8431789491606155
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 3.5830354027196933,
+            "angularWidthDegrees": 14.726443561246858,
+            "rangeM": 232.15385106170606,
+            "occluderIds": [],
+            "score": 0.8566785838912123
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 3.0325236912072184,
+            "angularWidthDegrees": 13.059237378873524,
+            "rangeM": 262.1019149626208,
+            "occluderIds": [],
+            "score": 0.8786990523517113
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 2.1342229398838533,
+            "angularWidthDegrees": 11.343663086411693,
+            "rangeM": 302.06381020545723,
+            "occluderIds": [],
+            "score": 0.9146310824046459
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 1.8846918322610964,
+            "angularWidthDegrees": 10.025081168261115,
+            "rangeM": 342.0393070957434,
+            "occluderIds": [],
+            "score": 0.9246123267095562
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 1.64434974145505,
+            "angularWidthDegrees": 8.75235142270615,
+            "rangeM": 392.01570797853145,
+            "occluderIds": [],
+            "score": 0.934226010341798
+          }
+        ],
+        "sourceDistanceShiftM": -60
+      },
+      "signature": "3dfa62c26de4f1b787ad1d1b628d9399dc8792aba0d5b436c08137e239e13532",
+      "sourceSha256": "2e1730125b74d18eaeb431fbaa5b24b6267b2d468cc67b60c3383e4dba989697",
+      "roadSha256": "f046f1c7ada7c6f54ebc6cda455cdc0aa536bbbad5564675e706bc11ecdc17e1",
+      "placementDetails": {
+        "x": 765.2307105311359,
+        "z": 280.19401012445877,
+        "yaw": 2.0057943131349454,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4812.121730217631,
+        "trackLateral": -134.98929253255358,
+        "minimumRoadClearanceM": 90.22684669203969,
+        "checkedSegments": 4133,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-tx-the-alamo": {
       "raceRef": "San Antonio, TX — Landmark Run",

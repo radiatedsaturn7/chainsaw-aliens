@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794615408205,
+  "doodad": {
+    "id": "campaign-landmark-city-tn-tennessee-state-capitol",
+    "name": "landmark-city-tn-tennessee-state-capitol",
+    "artRef": "landmark-city-tn-tennessee-state-capitol",
+    "widthM": 60.058651026392965,
+    "heightM": 40,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 51.04985337243402,
+    "hitboxHeightM": 36,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

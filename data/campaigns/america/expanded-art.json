@@ -3072,6 +3072,34 @@
       "heightM": 26,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-tn-tennessee-state-capitol",
+      "source": "landmarks/TN/landmark-city-tn-tennessee-state-capitol.png",
+      "heightM": 40,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tn-ryman-auditorium",
+      "source": "landmarks/TN/landmark-city-tn-ryman-auditorium.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tn-union-station-hotel",
+      "source": "landmarks/TN/landmark-city-tn-union-station-hotel.png",
+      "heightM": 44,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-tn-country-music-hall-of-fame",
+      "source": "landmarks/TN/landmark-city-tn-country-music-hall-of-fame.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

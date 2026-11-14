@@ -652,7 +652,11 @@
       "landmark-city-nj-cathedral-basilica-of-the-sacred-heart": "art/landmark-city-nj-cathedral-basilica-of-the-sacred-heart/document.json",
       "landmark-city-nj-newark-museum-of-art": "art/landmark-city-nj-newark-museum-of-art/document.json",
       "landmark-city-nj-new-jersey-performing-arts-center": "art/landmark-city-nj-new-jersey-performing-arts-center/document.json",
-      "landmark-city-nj-newark-penn-station": "art/landmark-city-nj-newark-penn-station/document.json"
+      "landmark-city-nj-newark-penn-station": "art/landmark-city-nj-newark-penn-station/document.json",
+      "landmark-city-tn-tennessee-state-capitol": "art/landmark-city-tn-tennessee-state-capitol/document.json",
+      "landmark-city-tn-ryman-auditorium": "art/landmark-city-tn-ryman-auditorium/document.json",
+      "landmark-city-tn-union-station-hotel": "art/landmark-city-tn-union-station-hotel/document.json",
+      "landmark-city-tn-country-music-hall-of-fame": "art/landmark-city-tn-country-music-hall-of-fame/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1040,7 +1044,11 @@
       "landmark-city-nj-cathedral-basilica-of-the-sacred-heart": "doodads/landmark-city-nj-cathedral-basilica-of-the-sacred-heart/document.json",
       "landmark-city-nj-newark-museum-of-art": "doodads/landmark-city-nj-newark-museum-of-art/document.json",
       "landmark-city-nj-new-jersey-performing-arts-center": "doodads/landmark-city-nj-new-jersey-performing-arts-center/document.json",
-      "landmark-city-nj-newark-penn-station": "doodads/landmark-city-nj-newark-penn-station/document.json"
+      "landmark-city-nj-newark-penn-station": "doodads/landmark-city-nj-newark-penn-station/document.json",
+      "landmark-city-tn-tennessee-state-capitol": "doodads/landmark-city-tn-tennessee-state-capitol/document.json",
+      "landmark-city-tn-ryman-auditorium": "doodads/landmark-city-tn-ryman-auditorium/document.json",
+      "landmark-city-tn-union-station-hotel": "doodads/landmark-city-tn-union-station-hotel/document.json",
+      "landmark-city-tn-country-music-hall-of-fame": "doodads/landmark-city-tn-country-music-hall-of-fame/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

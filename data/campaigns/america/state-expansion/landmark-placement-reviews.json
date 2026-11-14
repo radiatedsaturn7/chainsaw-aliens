@@ -4159,5 +4159,127 @@
       215
     ],
     "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-tn-tennessee-state-capitol": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-tn-ryman-auditorium": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-tn-union-station-hotel": {
+    "reason": "Search the measured same-side native night approach for a nearer collision-clear candidate. Keep original GPS reference and authored scene; low-beam and paired framing remain unverified.",
+    "distanceOffsets": [
+      -30
+    ],
+    "minimumSetbackM": 60,
+    "maximumSetbackM": 85,
+    "allowOppositeSide": false,
+    "facingApproachBeforeM": 65,
+    "approachOffsetsM": [
+      25,
+      35,
+      45,
+      55,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-tn-country-music-hall-of-fame": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
   }
 }
