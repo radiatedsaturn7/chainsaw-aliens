@@ -1,7 +1,7 @@
 import {buildRaceFencePlacements} from '../../src/racing/RaceFences.js';
 const angle=x=>Math.atan2(Math.sin(x),Math.cos(x));
 const natural=/tree|pine|bush|scrub|grass|fern|rock|boulder|vegetation|stump/i;
-const excluded=/sign|warning|marker|pole|fence|guardrail|barrier|mailbox|landmark|tower|church|station|school|summit/i;
+const excluded=/streetlight|utility|pylon|power|sign|warning|marker|pole|fence|guardrail|barrier|mailbox|landmark|tower|church|station|school|summit/i;
 export function enrichRaceScenery(race,{length,pose,project,ground,definition,hasGround}){
  const original=(race.scenery||[]).filter(p=>!p.id?.startsWith('coverage-v1-'));
  let seed=2166136261;for(const ch of race.id||race.name)seed=Math.imul(seed^ch.charCodeAt(0),16777619)>>>0;

@@ -1,6 +1,6 @@
 const angle=x=>Math.atan2(Math.sin(x),Math.cos(x));
 const natural=/grass|fern|bush|scrub|tree|pine|spruce|oak|birch|rock|boulder|vegetation/i;
-const forbidden=/fence|sign|warning|marker|tower|station|building|landmark|rail/i;
+const forbidden=/streetlight|utility|pylon|power|pole|fence|sign|warning|marker|tower|station|building|landmark|rail/i;
 export function layerRoadside(race,{length,pose,project,ground,hasGround,definition}){
  const base=(race.scenery||[]).filter(p=>!p.id?.startsWith('ecology-v2-'));
  const baseline=base.length,target=baseline*4;

@@ -1,0 +1,3415 @@
+[
+  {
+    "name": "Col de Turini",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 50,
+    "placedInfrastructure": 158,
+    "relocatedSmallProps": 0,
+    "fenceSections": 22,
+    "railPanels": 1907,
+    "rejected": 15,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 158,
+      "fenceguardrail": 565
+    }
+  },
+  {
+    "name": "Daytona Tri-Oval",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 8,
+    "railPanels": 81,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-broken": 65,
+      "roadside-wooden-fence-intact": 96,
+      "expanded-farm-fence-loop": 93
+    }
+  },
+  {
+    "name": "Demo Track",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "Mount Washington Auto Road — point-to-point",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 1,
+    "placedInfrastructure": 5,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 1567,
+    "rejected": 0,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 5,
+      "pikes-peak-snow-fence": 31
+    }
+  },
+  {
+    "name": "Mount Washington Auto Road — point-to-point Copy",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 1567,
+    "rejected": 0,
+    "refs": {
+      "pikes-peak-snow-fence": 31
+    }
+  },
+  {
+    "name": "Nurburgring Nordschleife",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 30,
+    "railPanels": 1996,
+    "rejected": 2,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 968
+    }
+  },
+  {
+    "name": "Ouninpohja",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 31,
+    "railPanels": 1910,
+    "rejected": 0,
+    "refs": {
+      "expanded-farm-fence-loop": 186,
+      "roadside-wooden-fence-broken": 304,
+      "roadside-wooden-fence-intact": 461
+    }
+  },
+  {
+    "name": "Studio Sprint",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "Studio Sprint Copy",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "Studio Sprint2",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "Tower Hill Road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 473,
+    "rejected": 1,
+    "refs": {}
+  },
+  {
+    "name": "WeatherTech Raceway Laguna Seca",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 529,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "buse1",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 0,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "p1",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "p2loadtest",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "Laurel Highlands Scenic Byway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 1689,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-intact": 29
+    }
+  },
+  {
+    "name": "Ohio River Crossing",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1589,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Ozark Backroads",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 5,
+    "railPanels": 1611,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-broken": 66,
+      "roadside-wooden-fence-intact": 66,
+      "expanded-farm-fence-loop": 32
+    }
+  },
+  {
+    "name": "Data Center City",
+    "version": 1,
+    "replacedVegetation": 902,
+    "removedInfrastructure": 7,
+    "placedInfrastructure": 42,
+    "relocatedSmallProps": 1,
+    "fenceSections": 1,
+    "railPanels": 873,
+    "rejected": 1,
+    "refs": {
+      "roadside-streetlight": 41,
+      "expanded-high-tension-power-pylon": 1,
+      "fencebushes": 32
+    }
+  },
+  {
+    "name": "Historic Route 66",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 1,
+    "placedInfrastructure": 5,
+    "relocatedSmallProps": 1,
+    "fenceSections": 0,
+    "railPanels": 1843,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-utility-pole": 5
+    }
+  },
+  {
+    "name": "Pikes Peak Highway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 1,
+    "fenceSections": 2,
+    "railPanels": 1102,
+    "rejected": 1,
+    "refs": {
+      "pikes-peak-snow-fence": 54
+    }
+  },
+  {
+    "name": "Moki Dugway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 2,
+    "fenceSections": 0,
+    "railPanels": 1513,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Oak Creek Canyon",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1435,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Angeles Crest Highway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1428,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "RI 116 — North Smithfield Scituate",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 12,
+    "railPanels": 1127,
+    "rejected": 0,
+    "refs": {
+      "fenceguardrail": 353
+    }
+  },
+  {
+    "name": "Thompson Speedway — 1.7-mile road course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 3,
+    "railPanels": 375,
+    "rejected": 0,
+    "refs": {
+      "fenceguardrail": 88
+    }
+  },
+  {
+    "name": "I-95 — Attleboro to Warwick curves",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 23,
+    "railPanels": 1920,
+    "rejected": 0,
+    "refs": {
+      "fenceguardrail": 706
+    }
+  },
+  {
+    "name": "RI 102 — Victory Highway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 18,
+    "railPanels": 1204,
+    "rejected": 0,
+    "refs": {
+      "fenceguardrail": 529
+    }
+  },
+  {
+    "name": "Pachaug State Forest — public gravel access roads",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 6,
+    "railPanels": 594,
+    "rejected": 0,
+    "refs": {
+      "fenceguardrail": 153
+    }
+  },
+  {
+    "name": "Seekonk Speedway — oval",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 91,
+    "rejected": 0,
+    "refs": {
+      "fenceguardrail": 33
+    }
+  },
+  {
+    "name": "RI 44 — Putnam Pike Glocester",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 16,
+    "railPanels": 1281,
+    "rejected": 0,
+    "refs": {
+      "fenceguardrail": 445
+    }
+  },
+  {
+    "name": "Lime Rock Park — Connecticut",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 2,
+    "railPanels": 356,
+    "rejected": 0,
+    "refs": {
+      "fenceguardrail": 64
+    }
+  },
+  {
+    "name": "Palmer Motorsports Park — Massachusetts",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 529,
+    "rejected": 2,
+    "refs": {
+      "fenceguardrail": 32
+    }
+  },
+  {
+    "name": "Kancamagus Highway — NH 112",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 24,
+    "placedInfrastructure": 81,
+    "relocatedSmallProps": 0,
+    "fenceSections": 14,
+    "railPanels": 1057,
+    "rejected": 7,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 81,
+      "fenceguardrail": 372
+    }
+  },
+  {
+    "name": "Bear Notch Road — Bartlett",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 26,
+    "placedInfrastructure": 94,
+    "relocatedSmallProps": 0,
+    "fenceSections": 14,
+    "railPanels": 989,
+    "rejected": 7,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 94,
+      "fenceguardrail": 409
+    }
+  },
+  {
+    "name": "Hurricane Mountain Road — Conway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 27,
+    "placedInfrastructure": 66,
+    "relocatedSmallProps": 0,
+    "fenceSections": 13,
+    "railPanels": 795,
+    "rejected": 10,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 66,
+      "fenceguardrail": 390
+    }
+  },
+  {
+    "name": "Crawford Notch — US 302",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 31,
+    "placedInfrastructure": 100,
+    "relocatedSmallProps": 0,
+    "fenceSections": 18,
+    "railPanels": 1282,
+    "rejected": 4,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 100,
+      "fenceguardrail": 530
+    }
+  },
+  {
+    "name": "Pinkham Notch — NH 16",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 33,
+    "placedInfrastructure": 133,
+    "relocatedSmallProps": 0,
+    "fenceSections": 15,
+    "railPanels": 1285,
+    "rejected": 9,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 133,
+      "fenceguardrail": 404
+    }
+  },
+  {
+    "name": "Club Motorsports — Tamworth",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 13,
+    "placedInfrastructure": 35,
+    "relocatedSmallProps": 0,
+    "fenceSections": 2,
+    "railPanels": 447,
+    "rejected": 9,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 35,
+      "fenceguardrail": 50
+    }
+  },
+  {
+    "name": "Team O’Neil-inspired Rally Stage (2994)",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 10,
+    "placedInfrastructure": 27,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 412,
+    "rejected": 10,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 27,
+      "fenceguardrail": 32
+    }
+  },
+  {
+    "name": "New Hampshire Motor Speedway — Loudon",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 9,
+    "placedInfrastructure": 30,
+    "relocatedSmallProps": 0,
+    "fenceSections": 4,
+    "railPanels": 355,
+    "rejected": 2,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 30,
+      "fenceguardrail": 106
+    }
+  },
+  {
+    "name": "New England Dragway — Epping",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 1,
+    "placedInfrastructure": 5,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 0,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 5,
+      "fenceguardrail": 18
+    }
+  },
+  {
+    "name": "PA 381 — Ohiopyle approach",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 17,
+    "railPanels": 1293,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 541
+    }
+  },
+  {
+    "name": "PA 711 — Normalville Champion",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 16,
+    "railPanels": 1283,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 511
+    }
+  },
+  {
+    "name": "US 40 — Chalk Hill Summit",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 17,
+    "railPanels": 1372,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 543
+    }
+  },
+  {
+    "name": "PA 31 — Donegal to Laurel Ridge",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 11,
+    "railPanels": 1359,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 320,
+      "roadside-wooden-fence-intact": 32
+    }
+  },
+  {
+    "name": "County Line Road — Seven Springs",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 14,
+    "railPanels": 1136,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 445
+    }
+  },
+  {
+    "name": "Forbes State Forest — designated gravel roads",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 3,
+    "railPanels": 718,
+    "rejected": 2,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 96
+    }
+  },
+  {
+    "name": "Jennerstown Speedway — oval",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 2,
+    "railPanels": 177,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 68
+    }
+  },
+  {
+    "name": "Keystone Motorsports Park — New Alexandria",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 0,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Pittsburgh International Race Complex — Wampum",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 609,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 27
+    }
+  },
+  {
+    "name": "OH 26 — Covered Bridge Scenic Byway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 837,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "OH 555 — Triple Nickel",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 804,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "OH 550 — Barlow approach",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1295,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "OH 536 — Ohio River hills",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 621,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "OH 676 — Western county hills",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 623,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Marietta–Williamstown — I-77 river bridge",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1518,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Washington County western covered-bridge gravel loop",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 676,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Ohio Valley Speedway — Washington, West Virginia",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 97,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Mid-Ohio Sports Car Course — Lexington",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 521,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "MO 19 — Eminence Current River",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 13,
+    "railPanels": 1132,
+    "rejected": 1,
+    "refs": {
+      "roadside-wooden-fence-intact": 60,
+      "expanded-farm-fence-loop": 198,
+      "roadside-wooden-fence-broken": 153
+    }
+  },
+  {
+    "name": "MO 106 — Alley Spring approach",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 16,
+    "railPanels": 1205,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-intact": 281,
+      "expanded-farm-fence-loop": 96,
+      "roadside-wooden-fence-broken": 124
+    }
+  },
+  {
+    "name": "MO 106 — Powder Mill approach",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 17,
+    "railPanels": 1135,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-broken": 216,
+      "expanded-farm-fence-loop": 187,
+      "roadside-wooden-fence-intact": 122
+    }
+  },
+  {
+    "name": "MO V — Two Rivers access",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 5,
+    "railPanels": 550,
+    "rejected": 7,
+    "refs": {
+      "expanded-farm-fence-loop": 32,
+      "roadside-wooden-fence-broken": 98,
+      "roadside-wooden-fence-intact": 32
+    }
+  },
+  {
+    "name": "MO H NN — Roberts Field access",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 18,
+    "railPanels": 1216,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-intact": 190,
+      "roadside-wooden-fence-broken": 194,
+      "expanded-farm-fence-loop": 193
+    }
+  },
+  {
+    "name": "Jerktail Landing gravel road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 5,
+    "railPanels": 410,
+    "rejected": 8,
+    "refs": {
+      "expanded-farm-fence-loop": 70,
+      "roadside-wooden-fence-intact": 64,
+      "roadside-wooden-fence-broken": 34
+    }
+  },
+  {
+    "name": "US 60 — Winona Van Buren",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 22,
+    "railPanels": 1521,
+    "rejected": 0,
+    "refs": {
+      "expanded-farm-fence-loop": 255,
+      "roadside-wooden-fence-intact": 251,
+      "roadside-wooden-fence-broken": 191
+    }
+  },
+  {
+    "name": "Glade Top Trail — Mark Twain National Forest",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 10,
+    "railPanels": 757,
+    "rejected": 2,
+    "refs": {
+      "roadside-wooden-fence-intact": 91,
+      "expanded-farm-fence-loop": 123,
+      "roadside-wooden-fence-broken": 94
+    }
+  },
+  {
+    "name": "Ozarks International Raceway — Gravois Mills",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 12,
+    "railPanels": 857,
+    "rejected": 2,
+    "refs": {
+      "roadside-wooden-fence-broken": 30,
+      "roadside-wooden-fence-intact": 176,
+      "expanded-farm-fence-loop": 161
+    }
+  },
+  {
+    "name": "World Wide Technology Raceway — road course",
+    "version": 1,
+    "replacedVegetation": 366,
+    "removedInfrastructure": 7,
+    "placedInfrastructure": 19,
+    "relocatedSmallProps": 1,
+    "fenceSections": 3,
+    "railPanels": 368,
+    "rejected": 2,
+    "refs": {
+      "roadside-streetlight": 18,
+      "expanded-high-tension-power-pylon": 1,
+      "roadside-concrete-barrier-clean": 64,
+      "roadside-concrete-barrier-damaged": 32
+    }
+  },
+  {
+    "name": "World Wide Technology Raceway — oval",
+    "version": 1,
+    "replacedVegetation": 246,
+    "removedInfrastructure": 8,
+    "placedInfrastructure": 22,
+    "relocatedSmallProps": 0,
+    "fenceSections": 3,
+    "railPanels": 167,
+    "rejected": 0,
+    "refs": {
+      "roadside-streetlight": 19,
+      "expanded-high-tension-power-pylon": 3,
+      "roadside-concrete-barrier-damaged": 61,
+      "roadside-concrete-barrier-clean": 32
+    }
+  },
+  {
+    "name": "World Wide Technology Raceway — drag strip",
+    "version": 1,
+    "replacedVegetation": 51,
+    "removedInfrastructure": 1,
+    "placedInfrastructure": 6,
+    "relocatedSmallProps": 1,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 0,
+    "refs": {
+      "roadside-streetlight": 6,
+      "roadside-concrete-barrier-damaged": 32
+    }
+  },
+  {
+    "name": "I-64 — St. Louis downtown approaches",
+    "version": 1,
+    "replacedVegetation": 1370,
+    "removedInfrastructure": 28,
+    "placedInfrastructure": 56,
+    "relocatedSmallProps": 6,
+    "fenceSections": 21,
+    "railPanels": 1210,
+    "rejected": 6,
+    "refs": {
+      "expanded-high-tension-power-pylon": 12,
+      "roadside-streetlight": 44,
+      "roadside-concrete-barrier-clean": 381,
+      "roadside-concrete-barrier-damaged": 287
+    }
+  },
+  {
+    "name": "I-70 — Stan Musial Veterans Memorial Bridge",
+    "version": 1,
+    "replacedVegetation": 1359,
+    "removedInfrastructure": 30,
+    "placedInfrastructure": 82,
+    "relocatedSmallProps": 8,
+    "fenceSections": 10,
+    "railPanels": 1043,
+    "rejected": 9,
+    "refs": {
+      "roadside-streetlight": 72,
+      "expanded-high-tension-power-pylon": 10,
+      "roadside-concrete-barrier-damaged": 160,
+      "roadside-concrete-barrier-clean": 159
+    }
+  },
+  {
+    "name": "IL 100 — Great River Road bluffs",
+    "version": 1,
+    "replacedVegetation": 1559,
+    "removedInfrastructure": 25,
+    "placedInfrastructure": 75,
+    "relocatedSmallProps": 5,
+    "fenceSections": 8,
+    "railPanels": 247,
+    "rejected": 41,
+    "refs": {
+      "roadside-streetlight": 72,
+      "expanded-high-tension-power-pylon": 3,
+      "roadside-concrete-barrier-damaged": 128,
+      "roadside-concrete-barrier-clean": 127
+    }
+  },
+  {
+    "name": "MO 94 — Defiance Augusta",
+    "version": 1,
+    "replacedVegetation": 1330,
+    "removedInfrastructure": 35,
+    "placedInfrastructure": 111,
+    "relocatedSmallProps": 13,
+    "fenceSections": 18,
+    "railPanels": 721,
+    "rejected": 7,
+    "refs": {
+      "roadside-streetlight": 99,
+      "expanded-high-tension-power-pylon": 12,
+      "roadside-concrete-barrier-clean": 222,
+      "roadside-concrete-barrier-damaged": 352
+    }
+  },
+  {
+    "name": "Gateway Kartplex — WWT complex",
+    "version": 1,
+    "replacedVegetation": 150,
+    "removedInfrastructure": 2,
+    "placedInfrastructure": 6,
+    "relocatedSmallProps": 1,
+    "fenceSections": 1,
+    "railPanels": 199,
+    "rejected": 2,
+    "refs": {
+      "roadside-streetlight": 6,
+      "roadside-concrete-barrier-damaged": 41
+    }
+  },
+  {
+    "name": "Federated Auto Parts Raceway at I-55 — Pevely",
+    "version": 1,
+    "replacedVegetation": 95,
+    "removedInfrastructure": 1,
+    "placedInfrastructure": 5,
+    "relocatedSmallProps": 1,
+    "fenceSections": 0,
+    "railPanels": 99,
+    "rejected": 1,
+    "refs": {
+      "roadside-streetlight": 5
+    }
+  },
+  {
+    "name": "Old Route 66 — Shamrock McLean",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 18,
+    "placedInfrastructure": 70,
+    "relocatedSmallProps": 22,
+    "fenceSections": 14,
+    "railPanels": 400,
+    "rejected": 2,
+    "refs": {
+      "roadside-wooden-utility-pole": 70,
+      "expanded-oil-pipeline-loop": 445
+    }
+  },
+  {
+    "name": "Old Route 66 — Groom Conway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 23,
+    "placedInfrastructure": 91,
+    "relocatedSmallProps": 22,
+    "fenceSections": 17,
+    "railPanels": 480,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-utility-pole": 91,
+      "expanded-oil-pipeline-loop": 442
+    }
+  },
+  {
+    "name": "Amarillo — Historic 6th Avenue alignment",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 8,
+    "placedInfrastructure": 37,
+    "relocatedSmallProps": 8,
+    "fenceSections": 8,
+    "railPanels": 327,
+    "rejected": 1,
+    "refs": {
+      "roadside-wooden-utility-pole": 37,
+      "expanded-oil-pipeline-loop": 208
+    }
+  },
+  {
+    "name": "Old Route 66 — Vega Adrian",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 14,
+    "placedInfrastructure": 43,
+    "relocatedSmallProps": 31,
+    "fenceSections": 20,
+    "railPanels": 176,
+    "rejected": 20,
+    "refs": {
+      "roadside-wooden-utility-pole": 43,
+      "expanded-oil-pipeline-loop": 635
+    }
+  },
+  {
+    "name": "Old Route 66 — Adrian Glenrio",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 32,
+    "placedInfrastructure": 103,
+    "relocatedSmallProps": 34,
+    "fenceSections": 17,
+    "railPanels": 1600,
+    "rejected": 6,
+    "refs": {
+      "roadside-wooden-utility-pole": 103,
+      "expanded-oil-pipeline-loop": 442
+    }
+  },
+  {
+    "name": "Palo Duro Canyon — Park Road 5",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 15,
+    "placedInfrastructure": 38,
+    "relocatedSmallProps": 10,
+    "fenceSections": 5,
+    "railPanels": 755,
+    "rejected": 20,
+    "refs": {
+      "roadside-wooden-utility-pole": 38,
+      "expanded-oil-pipeline-loop": 148
+    }
+  },
+  {
+    "name": "Amarillo Dragway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 1,
+    "placedInfrastructure": 4,
+    "relocatedSmallProps": 1,
+    "fenceSections": 0,
+    "railPanels": 0,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-utility-pole": 4
+    }
+  },
+  {
+    "name": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 38,
+    "placedInfrastructure": 110,
+    "relocatedSmallProps": 23,
+    "fenceSections": 14,
+    "railPanels": 1459,
+    "rejected": 12,
+    "refs": {
+      "roadside-wooden-utility-pole": 110,
+      "expanded-oil-pipeline-loop": 436
+    }
+  },
+  {
+    "name": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 6,
+    "placedInfrastructure": 24,
+    "relocatedSmallProps": 6,
+    "fenceSections": 3,
+    "railPanels": 462,
+    "rejected": 2,
+    "refs": {
+      "roadside-wooden-utility-pole": 24,
+      "expanded-oil-pipeline-loop": 94
+    }
+  },
+  {
+    "name": "Gold Camp Road — Colorado Springs",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 14,
+    "fenceSections": 7,
+    "railPanels": 653,
+    "rejected": 19,
+    "refs": {
+      "pikes-peak-snow-fence": 231
+    }
+  },
+  {
+    "name": "Phantom Canyon Road — Gold Belt Tour",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 16,
+    "fenceSections": 7,
+    "railPanels": 345,
+    "rejected": 3,
+    "refs": {
+      "pikes-peak-snow-fence": 232
+    }
+  },
+  {
+    "name": "Shelf Road — Gold Belt Tour",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 13,
+    "fenceSections": 5,
+    "railPanels": 310,
+    "rejected": 9,
+    "refs": {
+      "pikes-peak-snow-fence": 151
+    }
+  },
+  {
+    "name": "Skyline Drive — Cañon City",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 16,
+    "fenceSections": 5,
+    "railPanels": 488,
+    "rejected": 14,
+    "refs": {
+      "pikes-peak-snow-fence": 153
+    }
+  },
+  {
+    "name": "US 24 — Ute Pass Woodland Park",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 36,
+    "fenceSections": 19,
+    "railPanels": 1115,
+    "rejected": 11,
+    "refs": {
+      "pikes-peak-snow-fence": 591
+    }
+  },
+  {
+    "name": "CO 67 — Woodland Park Cripple Creek",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 31,
+    "fenceSections": 16,
+    "railPanels": 804,
+    "rejected": 6,
+    "refs": {
+      "pikes-peak-snow-fence": 490
+    }
+  },
+  {
+    "name": "Garden of the Gods — paved park road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 21,
+    "fenceSections": 5,
+    "railPanels": 521,
+    "rejected": 8,
+    "refs": {
+      "pikes-peak-snow-fence": 144
+    }
+  },
+  {
+    "name": "Pikes Peak International Raceway — Fountain",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 10,
+    "fenceSections": 4,
+    "railPanels": 377,
+    "rejected": 0,
+    "refs": {
+      "pikes-peak-snow-fence": 118
+    }
+  },
+  {
+    "name": "Pueblo Motorsports Park — road course or drag strip",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 13,
+    "fenceSections": 7,
+    "railPanels": 456,
+    "rejected": 0,
+    "refs": {
+      "pikes-peak-snow-fence": 236
+    }
+  },
+  {
+    "name": "Valley of the Gods Road — San Juan CR 242",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 26,
+    "fenceSections": 8,
+    "railPanels": 488,
+    "rejected": 4,
+    "refs": {
+      "roadside-metal-guardrail-intact": 161,
+      "roadside-metal-guardrail-damaged": 94
+    }
+  },
+  {
+    "name": "Muley Point Road — CR 241",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 30,
+    "fenceSections": 9,
+    "railPanels": 668,
+    "rejected": 10,
+    "refs": {
+      "roadside-metal-guardrail-intact": 159,
+      "roadside-metal-guardrail-damaged": 128
+    }
+  },
+  {
+    "name": "UT 316 — Goosenecks State Park Road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 27,
+    "fenceSections": 11,
+    "railPanels": 627,
+    "rejected": 17,
+    "refs": {
+      "roadside-metal-guardrail-damaged": 123,
+      "roadside-metal-guardrail-intact": 222
+    }
+  },
+  {
+    "name": "US 163 — Mexican Hat Monument Valley approach",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 84,
+    "fenceSections": 27,
+    "railPanels": 1521,
+    "rejected": 14,
+    "refs": {
+      "roadside-metal-guardrail-intact": 417,
+      "roadside-metal-guardrail-damaged": 441
+    }
+  },
+  {
+    "name": "UT 95 — Comb Ridge Cedar Mesa",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 65,
+    "fenceSections": 30,
+    "railPanels": 1523,
+    "rejected": 9,
+    "refs": {
+      "roadside-metal-guardrail-damaged": 476,
+      "roadside-metal-guardrail-intact": 478
+    }
+  },
+  {
+    "name": "UT 276 — Halls Crossing approach",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 71,
+    "fenceSections": 27,
+    "railPanels": 1443,
+    "rejected": 11,
+    "refs": {
+      "roadside-metal-guardrail-damaged": 412,
+      "roadside-metal-guardrail-intact": 435
+    }
+  },
+  {
+    "name": "US 191 — Bluff Blanding",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 79,
+    "fenceSections": 27,
+    "railPanels": 1599,
+    "rejected": 6,
+    "refs": {
+      "roadside-metal-guardrail-intact": 535,
+      "roadside-metal-guardrail-damaged": 318
+    }
+  },
+  {
+    "name": "Shafer Trail — Canyonlands National Park",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 16,
+    "fenceSections": 2,
+    "railPanels": 409,
+    "rejected": 17,
+    "refs": {
+      "roadside-metal-guardrail-intact": 21,
+      "roadside-metal-guardrail-damaged": 40
+    }
+  },
+  {
+    "name": "Burr Trail switchbacks — Capitol Reef",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 9,
+    "fenceSections": 5,
+    "railPanels": 331,
+    "rejected": 12,
+    "refs": {
+      "roadside-metal-guardrail-damaged": 64,
+      "roadside-metal-guardrail-intact": 83
+    }
+  },
+  {
+    "name": "SR 179 — Red Rock Scenic Byway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 952,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Upper Lower Red Rock Loop Road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 686,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Page Springs Road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 960,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Beaverhead Flat Road — CR 78",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1206,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Boynton Pass Road FR 525 loop",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 589,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Schnebly Hill Road — Sedona",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 454,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "SR 89A — Mingus Mountain Jerome",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 712,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Podium Club at Attesa — Casa Grande",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 538,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Firebird Motorsports Park — Chandler",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 0,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Angeles Forest Highway — County N3",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 887,
+    "rejected": 1,
+    "refs": {}
+  },
+  {
+    "name": "Upper Big Tujunga Canyon Road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 995,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Big Tujunga Canyon Road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 806,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Glendora Mountain Road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 541,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Glendora Ridge Road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 501,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "San Gabriel Canyon Road — SR 39",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 727,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Little Tujunga Canyon Road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 593,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Willow Springs — Horse Thief Mile",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 214,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "In-N-Out Burger Pomona Dragstrip",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 0,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Old Staples Road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 250,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Watkins Glen — Long Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 5,
+    "railPanels": 690,
+    "rejected": 2,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 156
+    }
+  },
+  {
+    "name": "Watkins Glen — Short Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 4,
+    "railPanels": 513,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 127
+    }
+  },
+  {
+    "name": "Watkins Glen — Long — No Inner Loop",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 4,
+    "railPanels": 689,
+    "rejected": 1,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 132
+    }
+  },
+  {
+    "name": "Watkins Glen — Short — No Inner Loop",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 3,
+    "railPanels": 516,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 93
+    }
+  },
+  {
+    "name": "Road America — Full Course",
+    "version": 1,
+    "replacedVegetation": 849,
+    "removedInfrastructure": 18,
+    "placedInfrastructure": 50,
+    "relocatedSmallProps": 10,
+    "fenceSections": 11,
+    "railPanels": 906,
+    "rejected": 8,
+    "refs": {
+      "expanded-high-tension-power-pylon": 6,
+      "roadside-streetlight": 44,
+      "roadside-concrete-barrier-damaged": 282,
+      "roadside-concrete-barrier-clean": 63
+    }
+  },
+  {
+    "name": "Road America — The Bend",
+    "version": 1,
+    "replacedVegetation": 930,
+    "removedInfrastructure": 15,
+    "placedInfrastructure": 52,
+    "relocatedSmallProps": 12,
+    "fenceSections": 12,
+    "railPanels": 900,
+    "rejected": 6,
+    "refs": {
+      "roadside-streetlight": 50,
+      "expanded-high-tension-power-pylon": 2,
+      "roadside-concrete-barrier-damaged": 258,
+      "roadside-concrete-barrier-clean": 127
+    }
+  },
+  {
+    "name": "Road Atlanta — Grand Prix",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 499,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Road Atlanta — Short Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 413,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Road Atlanta — Club Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 274,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Virginia International Raceway — Full Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 717,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Virginia International Raceway — North Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 554,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Virginia International Raceway — South Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 332,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Virginia International Raceway — Grand Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 877,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Sebring International Raceway — Full Circuit",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 12,
+    "railPanels": 830,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-intact": 183,
+      "expanded-farm-fence-loop": 99,
+      "roadside-wooden-fence-broken": 90
+    }
+  },
+  {
+    "name": "Sebring International Raceway — Short Circuit",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 4,
+    "railPanels": 454,
+    "rejected": 0,
+    "refs": {
+      "expanded-farm-fence-loop": 64,
+      "roadside-wooden-fence-intact": 64
+    }
+  },
+  {
+    "name": "Sebring International Raceway — Club Circuit",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 5,
+    "railPanels": 376,
+    "rejected": 0,
+    "refs": {
+      "expanded-farm-fence-loop": 170
+    }
+  },
+  {
+    "name": "Indianapolis Motor Speedway — Oval",
+    "version": 1,
+    "replacedVegetation": 328,
+    "removedInfrastructure": 9,
+    "placedInfrastructure": 25,
+    "relocatedSmallProps": 10,
+    "fenceSections": 8,
+    "railPanels": 0,
+    "rejected": 1,
+    "refs": {
+      "expanded-high-tension-power-pylon": 5,
+      "roadside-streetlight": 20,
+      "roadside-concrete-barrier-clean": 95,
+      "roadside-concrete-barrier-damaged": 159
+    }
+  },
+  {
+    "name": "Indianapolis Motor Speedway — Grand Prix Road Course",
+    "version": 1,
+    "replacedVegetation": 513,
+    "removedInfrastructure": 15,
+    "placedInfrastructure": 43,
+    "relocatedSmallProps": 4,
+    "fenceSections": 4,
+    "railPanels": 548,
+    "rejected": 6,
+    "refs": {
+      "roadside-streetlight": 40,
+      "expanded-high-tension-power-pylon": 3,
+      "roadside-concrete-barrier-clean": 32,
+      "roadside-concrete-barrier-damaged": 97
+    }
+  },
+  {
+    "name": "Homestead-Miami Speedway — Oval",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 3,
+    "railPanels": 335,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-intact": 60,
+      "roadside-wooden-fence-broken": 35
+    }
+  },
+  {
+    "name": "Homestead-Miami Speedway — Road Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 6,
+    "railPanels": 571,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-broken": 57,
+      "roadside-wooden-fence-intact": 54,
+      "expanded-farm-fence-loop": 68
+    }
+  },
+  {
+    "name": "Homestead-Miami Speedway — Modified Road Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 8,
+    "railPanels": 564,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-broken": 95,
+      "expanded-farm-fence-loop": 141,
+      "roadside-wooden-fence-intact": 32
+    }
+  },
+  {
+    "name": "Daytona International Speedway — Sports Car Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 8,
+    "railPanels": 547,
+    "rejected": 0,
+    "refs": {
+      "expanded-farm-fence-loop": 163,
+      "roadside-wooden-fence-broken": 64,
+      "roadside-wooden-fence-intact": 32
+    }
+  },
+  {
+    "name": "Daytona International Speedway — Stock Car Road Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 12,
+    "railPanels": 641,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-intact": 94,
+      "roadside-wooden-fence-broken": 127,
+      "expanded-farm-fence-loop": 169
+    }
+  },
+  {
+    "name": "Willow Springs — Big Willow",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 510,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Willow Springs — Streets of Willow",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 373,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Willow Springs — Streets — Short",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 277,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Lime Rock Park — West Chicane",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 4,
+    "railPanels": 354,
+    "rejected": 0,
+    "refs": {
+      "fenceguardrail": 118
+    }
+  },
+  {
+    "name": "Lime Rock Park — Both Chicanes",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 2,
+    "railPanels": 358,
+    "rejected": 0,
+    "refs": {
+      "fenceguardrail": 51
+    }
+  },
+  {
+    "name": "Mid-Ohio Sports Car Course — Chicane Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 535,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Mid-Ohio Sports Car Course — Short Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 372,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Hatcher Pass — Palmer-Fishhook Climb",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 891,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Pig Trail — Arkansas 23",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 22,
+    "railPanels": 1593,
+    "rejected": 0,
+    "refs": {
+      "expanded-farm-fence-loop": 221,
+      "roadside-wooden-fence-broken": 245,
+      "roadside-wooden-fence-intact": 222
+    }
+  },
+  {
+    "name": "Brandywine Valley — Montchanin Road",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 9,
+    "railPanels": 917,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 285
+    }
+  },
+  {
+    "name": "Hana Highway — Rainforest Bends",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 948,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Grafton Notch — Maine 26",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 41,
+    "placedInfrastructure": 152,
+    "relocatedSmallProps": 0,
+    "fenceSections": 24,
+    "railPanels": 1041,
+    "rejected": 6,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 152,
+      "fenceguardrail": 713
+    }
+  },
+  {
+    "name": "National Road — Sideling Hill",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 9,
+    "railPanels": 884,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 288
+    }
+  },
+  {
+    "name": "Natchez Trace — Tishomingo",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 24,
+    "railPanels": 1599,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-intact": 317,
+      "expanded-farm-fence-loop": 256,
+      "roadside-wooden-fence-broken": 188
+    }
+  },
+  {
+    "name": "Beartooth Highway — Rock Creek Climb",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 57,
+    "fenceSections": 22,
+    "railPanels": 1412,
+    "rejected": 12,
+    "refs": {
+      "pikes-peak-snow-fence": 679
+    }
+  },
+  {
+    "name": "Barber Motorsports Park",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 5,
+    "railPanels": 535,
+    "rejected": 2,
+    "refs": {
+      "roadside-wooden-fence-broken": 93,
+      "roadside-wooden-fence-intact": 70
+    }
+  },
+  {
+    "name": "Raceway Park of the Midlands",
+    "version": 1,
+    "replacedVegetation": 420,
+    "removedInfrastructure": 8,
+    "placedInfrastructure": 21,
+    "relocatedSmallProps": 2,
+    "fenceSections": 7,
+    "railPanels": 543,
+    "rejected": 1,
+    "refs": {
+      "expanded-high-tension-power-pylon": 7,
+      "roadside-streetlight": 14,
+      "roadside-concrete-barrier-clean": 158,
+      "roadside-concrete-barrier-damaged": 64
+    }
+  },
+  {
+    "name": "Heartland Motorsports Park",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 7,
+    "railPanels": 558,
+    "rejected": 0,
+    "refs": {
+      "expanded-farm-fence-loop": 128,
+      "roadside-wooden-fence-intact": 56,
+      "roadside-wooden-fence-broken": 32
+    }
+  },
+  {
+    "name": "NCM Motorsports Park",
+    "version": 1,
+    "replacedVegetation": 584,
+    "removedInfrastructure": 8,
+    "placedInfrastructure": 22,
+    "relocatedSmallProps": 3,
+    "fenceSections": 9,
+    "railPanels": 744,
+    "rejected": 4,
+    "refs": {
+      "expanded-high-tension-power-pylon": 4,
+      "roadside-streetlight": 18,
+      "roadside-concrete-barrier-clean": 164,
+      "roadside-concrete-barrier-damaged": 128
+    }
+  },
+  {
+    "name": "NOLA Motorsports Park",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 9,
+    "railPanels": 644,
+    "rejected": 0,
+    "refs": {
+      "expanded-farm-fence-loop": 131,
+      "roadside-wooden-fence-intact": 148
+    }
+  },
+  {
+    "name": "GingerMan Raceway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 459,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Brainerd — Competition Course",
+    "version": 1,
+    "replacedVegetation": 563,
+    "removedInfrastructure": 16,
+    "placedInfrastructure": 43,
+    "relocatedSmallProps": 4,
+    "fenceSections": 6,
+    "railPanels": 537,
+    "rejected": 2,
+    "refs": {
+      "expanded-high-tension-power-pylon": 4,
+      "roadside-streetlight": 39,
+      "roadside-concrete-barrier-damaged": 148,
+      "roadside-concrete-barrier-clean": 29
+    }
+  },
+  {
+    "name": "Spring Mountain — North South",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 477,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "NJMP — Thunderbolt",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 4,
+    "railPanels": 454,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 131
+    }
+  },
+  {
+    "name": "Sandia Speedway — Road Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 7,
+    "fenceSections": 6,
+    "railPanels": 395,
+    "rejected": 0,
+    "refs": {
+      "roadside-metal-guardrail-damaged": 60,
+      "roadside-metal-guardrail-intact": 125
+    }
+  },
+  {
+    "name": "NCCAR — Road Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 4,
+    "railPanels": 457,
+    "rejected": 0,
+    "refs": {
+      "expanded-stacked-new-england-stone-wall-loop": 125
+    }
+  },
+  {
+    "name": "Theodore Roosevelt — North Unit Drive",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 38,
+    "fenceSections": 13,
+    "railPanels": 973,
+    "rejected": 9,
+    "refs": {
+      "pikes-peak-snow-fence": 402
+    }
+  },
+  {
+    "name": "Needles Highway — Granite Gates",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 42,
+    "fenceSections": 22,
+    "railPanels": 1139,
+    "rejected": 7,
+    "refs": {
+      "pikes-peak-snow-fence": 663
+    }
+  },
+  {
+    "name": "Smugglers Notch — Vermont 108",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 36,
+    "placedInfrastructure": 129,
+    "relocatedSmallProps": 0,
+    "fenceSections": 21,
+    "railPanels": 1551,
+    "rejected": 14,
+    "refs": {
+      "roadside-snow-depth-marker-pole": 129,
+      "fenceguardrail": 580
+    }
+  },
+  {
+    "name": "Wind River Canyon — Canyon Walls",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 39,
+    "fenceSections": 21,
+    "railPanels": 1150,
+    "rejected": 5,
+    "refs": {
+      "pikes-peak-snow-fence": 656
+    }
+  },
+  {
+    "name": "Motorsport Park Hastings",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 13,
+    "fenceSections": 7,
+    "railPanels": 453,
+    "rejected": 0,
+    "refs": {
+      "pikes-peak-snow-fence": 206
+    }
+  },
+  {
+    "name": "Portland International Raceway",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 467,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Carolina Motorsports Park",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 565,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Pacific Raceways",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 518,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Ponderosa Pine — Idaho 21",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 41,
+    "fenceSections": 15,
+    "railPanels": 668,
+    "rejected": 11,
+    "refs": {
+      "roadside-metal-guardrail-damaged": 223,
+      "roadside-metal-guardrail-intact": 247
+    }
+  },
+  {
+    "name": "Birmingham, AL — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 1080,
+    "removedInfrastructure": 95,
+    "placedInfrastructure": 223,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 560,
+    "rejected": 30,
+    "refs": {
+      "roadside-streetlight": 223,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Phoenix, AZ — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 534,
+    "removedInfrastructure": 63,
+    "placedInfrastructure": 156,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 8,
+    "refs": {
+      "roadside-streetlight": 156,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Los Angeles, CA — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 507,
+    "removedInfrastructure": 62,
+    "placedInfrastructure": 128,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 19,
+    "refs": {
+      "roadside-streetlight": 128,
+      "fencebushes": 31
+    }
+  },
+  {
+    "name": "Hartford, CT — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 511,
+    "removedInfrastructure": 68,
+    "placedInfrastructure": 150,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 8,
+    "refs": {
+      "roadside-streetlight": 150,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Wilmington, DE — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 540,
+    "removedInfrastructure": 69,
+    "placedInfrastructure": 153,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 90,
+    "rejected": 6,
+    "refs": {
+      "roadside-streetlight": 153,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Miami, FL — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 513,
+    "removedInfrastructure": 59,
+    "placedInfrastructure": 145,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 9,
+    "refs": {
+      "roadside-streetlight": 145,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Atlanta, GA — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 695,
+    "removedInfrastructure": 80,
+    "placedInfrastructure": 175,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 74,
+    "rejected": 11,
+    "refs": {
+      "roadside-streetlight": 175,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Chicago, IL — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 427,
+    "removedInfrastructure": 53,
+    "placedInfrastructure": 127,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 6,
+    "refs": {
+      "roadside-streetlight": 127,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Des Moines, IA — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 625,
+    "removedInfrastructure": 64,
+    "placedInfrastructure": 137,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 160,
+    "rejected": 15,
+    "refs": {
+      "roadside-streetlight": 137,
+      "fencebushes": 32
+    }
+  },
+  {
+    "name": "Louisville, KY — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 463,
+    "removedInfrastructure": 63,
+    "placedInfrastructure": 141,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 5,
+    "refs": {
+      "roadside-streetlight": 141,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Baltimore, MD — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 572,
+    "removedInfrastructure": 66,
+    "placedInfrastructure": 154,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 80,
+    "rejected": 5,
+    "refs": {
+      "roadside-streetlight": 154,
+      "fencebushes": 28
+    }
+  },
+  {
+    "name": "Detroit, MI — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 649,
+    "removedInfrastructure": 68,
+    "placedInfrastructure": 173,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 10,
+    "refs": {
+      "roadside-streetlight": 173,
+      "fencebushes": 29
+    }
+  },
+  {
+    "name": "Anchorage, AK — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 588,
+    "removedInfrastructure": 61,
+    "placedInfrastructure": 133,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 73,
+    "rejected": 22,
+    "refs": {
+      "roadside-streetlight": 133,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Little Rock, AR — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 789,
+    "removedInfrastructure": 86,
+    "placedInfrastructure": 201,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 79,
+    "rejected": 20,
+    "refs": {
+      "roadside-streetlight": 201,
+      "fencebushes": 28
+    }
+  },
+  {
+    "name": "Boise, ID — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 546,
+    "removedInfrastructure": 50,
+    "placedInfrastructure": 155,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 91,
+    "rejected": 11,
+    "refs": {
+      "roadside-streetlight": 155,
+      "fencebushes": 32
+    }
+  },
+  {
+    "name": "Wichita, KS — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 638,
+    "removedInfrastructure": 60,
+    "placedInfrastructure": 146,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 159,
+    "rejected": 20,
+    "refs": {
+      "roadside-streetlight": 146
+    }
+  },
+  {
+    "name": "Portland, ME — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 462,
+    "removedInfrastructure": 55,
+    "placedInfrastructure": 132,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 11,
+    "refs": {
+      "roadside-streetlight": 132,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Honolulu, HI — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 520,
+    "removedInfrastructure": 68,
+    "placedInfrastructure": 142,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 75,
+    "rejected": 6,
+    "refs": {
+      "roadside-streetlight": 142,
+      "fencebushes": 23
+    }
+  },
+  {
+    "name": "Indianapolis, IN — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 474,
+    "removedInfrastructure": 54,
+    "placedInfrastructure": 148,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 9,
+    "refs": {
+      "roadside-streetlight": 148,
+      "fencebushes": 32
+    }
+  },
+  {
+    "name": "New Orleans, LA — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 506,
+    "removedInfrastructure": 55,
+    "placedInfrastructure": 154,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 1,
+    "refs": {
+      "roadside-streetlight": 154,
+      "fencebushes": 30
+    }
+  },
+  {
+    "name": "Boston, MA — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 939,
+    "removedInfrastructure": 90,
+    "placedInfrastructure": 213,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 157,
+    "rejected": 22,
+    "refs": {
+      "roadside-streetlight": 213,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Minneapolis, MN — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 817,
+    "removedInfrastructure": 72,
+    "placedInfrastructure": 192,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 243,
+    "rejected": 17,
+    "refs": {
+      "roadside-streetlight": 192,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Jackson, MS — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 496,
+    "removedInfrastructure": 46,
+    "placedInfrastructure": 126,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 5,
+    "refs": {
+      "roadside-streetlight": 126,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "St. Louis, MO — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 540,
+    "removedInfrastructure": 56,
+    "placedInfrastructure": 152,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 4,
+    "refs": {
+      "roadside-streetlight": 152,
+      "fencebushes": 30
+    }
+  },
+  {
+    "name": "Billings, MT — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 542,
+    "removedInfrastructure": 56,
+    "placedInfrastructure": 136,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 8,
+    "refs": {
+      "roadside-streetlight": 136,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Las Vegas, NV — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 464,
+    "removedInfrastructure": 62,
+    "placedInfrastructure": 145,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 6,
+    "refs": {
+      "roadside-streetlight": 145,
+      "fencebushes": 25
+    }
+  },
+  {
+    "name": "Manchester, NH — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 600,
+    "removedInfrastructure": 59,
+    "placedInfrastructure": 140,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 166,
+    "rejected": 13,
+    "refs": {
+      "roadside-streetlight": 140,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Newark, NJ — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 532,
+    "removedInfrastructure": 68,
+    "placedInfrastructure": 158,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 5,
+    "refs": {
+      "roadside-streetlight": 158,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Albuquerque, NM — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 518,
+    "removedInfrastructure": 58,
+    "placedInfrastructure": 147,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 11,
+    "refs": {
+      "roadside-streetlight": 147,
+      "fencebushes": 21
+    }
+  },
+  {
+    "name": "Charlotte, NC — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 533,
+    "removedInfrastructure": 48,
+    "placedInfrastructure": 129,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 80,
+    "rejected": 5,
+    "refs": {
+      "roadside-streetlight": 129,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Fargo, ND — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 531,
+    "removedInfrastructure": 56,
+    "placedInfrastructure": 141,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 80,
+    "rejected": 5,
+    "refs": {
+      "roadside-streetlight": 141,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Cleveland, OH — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 715,
+    "removedInfrastructure": 65,
+    "placedInfrastructure": 157,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 480,
+    "rejected": 15,
+    "refs": {
+      "roadside-streetlight": 157,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Denver, CO — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 555,
+    "removedInfrastructure": 52,
+    "placedInfrastructure": 144,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 173,
+    "rejected": 8,
+    "refs": {
+      "roadside-streetlight": 144,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Omaha, NE — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 431,
+    "removedInfrastructure": 56,
+    "placedInfrastructure": 115,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 14,
+    "refs": {
+      "roadside-streetlight": 115,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "New York, NY — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 505,
+    "removedInfrastructure": 51,
+    "placedInfrastructure": 112,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 86,
+    "rejected": 7,
+    "refs": {
+      "roadside-streetlight": 112,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Oklahoma City, OK — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 534,
+    "removedInfrastructure": 65,
+    "placedInfrastructure": 156,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 9,
+    "refs": {
+      "roadside-streetlight": 156,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "San Antonio, TX — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 507,
+    "removedInfrastructure": 54,
+    "placedInfrastructure": 141,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 5,
+    "refs": {
+      "roadside-streetlight": 141,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Portland, OR — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 495,
+    "removedInfrastructure": 54,
+    "placedInfrastructure": 140,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 163,
+    "rejected": 8,
+    "refs": {
+      "roadside-streetlight": 140,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Providence, RI — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 597,
+    "removedInfrastructure": 52,
+    "placedInfrastructure": 121,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 253,
+    "rejected": 19,
+    "refs": {
+      "roadside-streetlight": 121,
+      "fencebushes": 32
+    }
+  },
+  {
+    "name": "Philadelphia, PA — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 439,
+    "removedInfrastructure": 37,
+    "placedInfrastructure": 99,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 168,
+    "rejected": 5,
+    "refs": {
+      "roadside-streetlight": 99,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Charleston, SC — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 489,
+    "removedInfrastructure": 60,
+    "placedInfrastructure": 140,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 6,
+    "refs": {
+      "roadside-streetlight": 140,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Sioux Falls, SD — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 502,
+    "removedInfrastructure": 52,
+    "placedInfrastructure": 130,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 80,
+    "rejected": 11,
+    "refs": {
+      "roadside-streetlight": 130
+    }
+  },
+  {
+    "name": "Nashville, TN — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 450,
+    "removedInfrastructure": 35,
+    "placedInfrastructure": 121,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 80,
+    "rejected": 11,
+    "refs": {
+      "roadside-streetlight": 121
+    }
+  },
+  {
+    "name": "Salt Lake City, UT — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 565,
+    "removedInfrastructure": 71,
+    "placedInfrastructure": 140,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 16,
+    "refs": {
+      "roadside-streetlight": 140,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Burlington, VT — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 484,
+    "removedInfrastructure": 61,
+    "placedInfrastructure": 127,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 15,
+    "refs": {
+      "roadside-streetlight": 127,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Richmond, VA — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 715,
+    "removedInfrastructure": 65,
+    "placedInfrastructure": 167,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 398,
+    "rejected": 15,
+    "refs": {
+      "roadside-streetlight": 167,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Flatrock Motorclub — Club Course",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 807,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Seattle, WA — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 678,
+    "removedInfrastructure": 59,
+    "placedInfrastructure": 144,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 407,
+    "rejected": 19,
+    "refs": {
+      "roadside-streetlight": 144,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Charleston, WV — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 492,
+    "removedInfrastructure": 55,
+    "placedInfrastructure": 131,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 90,
+    "rejected": 8,
+    "refs": {
+      "roadside-streetlight": 131,
+      "fencebushes": 18
+    }
+  },
+  {
+    "name": "Milwaukee, WI — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 507,
+    "removedInfrastructure": 47,
+    "placedInfrastructure": 120,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 18,
+    "refs": {
+      "roadside-streetlight": 120,
+      "fencebushes": 25
+    }
+  },
+  {
+    "name": "Cheyenne, WY — Landmark Run",
+    "version": 1,
+    "replacedVegetation": 294,
+    "removedInfrastructure": 32,
+    "placedInfrastructure": 81,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 0,
+    "rejected": 12,
+    "refs": {
+      "roadside-streetlight": 81,
+      "fencebushes": 19
+    }
+  },
+  {
+    "name": "Thompson Pass — Snowline Climb",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 1691,
+    "rejected": 0,
+    "refs": {
+      "pikes-peak-snow-fence": 32
+    }
+  },
+  {
+    "name": "Denali Highway — Tundra Gravel",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 962,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Skalkaho Pass — Forest Rally",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 1,
+    "railPanels": 995,
+    "rejected": 0,
+    "refs": {
+      "roadside-wooden-fence-intact": 29
+    }
+  },
+  {
+    "name": "Magruder Corridor — Wilderness Ridge",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 877,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Chief Joseph — Dead Indian Pass",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1623,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Tantalus — Honolulu Heights",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1090,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Haleakala — Volcano Ascent",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1210,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Maunakea — Cinder Summit",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1266,
+    "rejected": 1,
+    "refs": {}
+  },
+  {
+    "name": "Sandhills Journey — Open Prairie",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 3,
+    "railPanels": 1519,
+    "rejected": 0,
+    "refs": {
+      "expanded-farm-fence-loop": 32,
+      "roadside-wooden-fence-intact": 32,
+      "roadside-wooden-fence-broken": 30
+    }
+  },
+  {
+    "name": "Grand Canyon — Desert View Drive",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1967,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Grand Canyon — Diamond Creek Descent",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 0,
+    "railPanels": 1305,
+    "rejected": 0,
+    "refs": {}
+  },
+  {
+    "name": "Bayard — Road 77 to City Park",
+    "version": 1,
+    "replacedVegetation": 0,
+    "removedInfrastructure": 0,
+    "placedInfrastructure": 0,
+    "relocatedSmallProps": 0,
+    "fenceSections": 3,
+    "railPanels": 678,
+    "rejected": 0,
+    "refs": {
+      "expanded-farm-fence-loop": 31,
+      "roadside-wooden-fence-intact": 30,
+      "roadside-wooden-fence-broken": 32
+    }
+  }
+]
