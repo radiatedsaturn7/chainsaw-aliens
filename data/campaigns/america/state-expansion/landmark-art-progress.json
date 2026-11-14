@@ -1899,35 +1899,478 @@
     },
     "landmark-city-ca-crypto-com-arena": {
       "raceRef": "Los Angeles, CA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -1762.8959168014017,
+        "worldZ": 1000.9892317698931,
+        "routeDistanceM": 969,
+        "offsetFromRoadM": 92,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.13870614573508586,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 57.21774826645132,
+            "angularWidthDegrees": 36.16533504848647,
+            "rangeM": 83.26046797762612,
+            "occluderIds": [
+              "city-ca-prop-60"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 47.06377612974384,
+            "angularWidthDegrees": 31.754686436222215,
+            "rangeM": 95.58006856011566,
+            "occluderIds": [
+              "city-ca-prop-60"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 39.41841339814648,
+            "angularWidthDegrees": 27.719904033355668,
+            "rangeM": 110.18308909169394,
+            "occluderIds": [
+              "city-ca-prop-58",
+              "city-ca-prop-60"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 33.64632352035972,
+            "angularWidthDegrees": 24.299808151750884,
+            "rangeM": 126.27391179441604,
+            "occluderIds": [
+              "city-ca-prop-58"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 27.37477027861441,
+            "angularWidthDegrees": 20.260025724577293,
+            "rangeM": 152.15874052113352,
+            "occluderIds": [
+              "city-ca-prop-56",
+              "city-ca-prop-58"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 21.772232732951593,
+            "angularWidthDegrees": 16.406671296432496,
+            "rangeM": 188.57889532409848,
+            "occluderIds": [],
+            "score": 0.12911069068193626
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 18.010545808835857,
+            "angularWidthDegrees": 13.705671377824462,
+            "rangeM": 226.2128359843657,
+            "occluderIds": [
+              "city-ca-prop-54"
+            ],
+            "score": 0.03354938011758789
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 14.782067721757983,
+            "angularWidthDegrees": 11.32435418295348,
+            "rangeM": 274.1984099968629,
+            "occluderIds": [
+              "city-ca-prop-48",
+              "city-ca-prop-50",
+              "city-ca-prop-52",
+              "city-ca-prop-54"
+            ],
+            "score": 0.04904607493556168
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "7683d27a66be4a65f64f6ab9a072ec38463ae7e00b7407fc90f33443656b930b",
+      "sourceSha256": "9f02063e7f6a6dd4d0823a94724226567e766b3bdb6cb2584decb31927ca291a",
+      "roadSha256": "ff9745a0db3b2dd4a2a0180147386e67052147edcd36c2854dabfce946fa3d6f",
+      "placementDetails": {
+        "x": -1654.641009044907,
+        "z": 895.006272870431,
+        "yaw": 3.078160682065414,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1118.9189005474211,
+        "trackLateral": -69.99999999999994,
+        "minimumRoadClearanceM": 25.420403061339613,
+        "checkedSegments": 4052,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ca-walt-disney-concert-hall": {
       "raceRef": "Los Angeles, CA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -176.20483352514938,
+        "worldZ": -381.29904962860604,
+        "routeDistanceM": 3215,
+        "offsetFromRoadM": 55,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.366725665712836,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 12.401328671828185,
+            "angularWidthDegrees": 31.38558097242971,
+            "rangeM": 92.54264450248488,
+            "occluderIds": [],
+            "score": 0.5039468531268726
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 10.206620082449286,
+            "angularWidthDegrees": 26.103015874477084,
+            "rangeM": 112.15826333946164,
+            "occluderIds": [],
+            "score": 0.5917351967020286
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.549884505561305,
+            "angularWidthDegrees": 22.304001667578465,
+            "rangeM": 131.88938933490695,
+            "occluderIds": [],
+            "score": 0.6580046197775478
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 6.699601308978614,
+            "angularWidthDegrees": 19.44920796193709,
+            "rangeM": 151.7139620883283,
+            "occluderIds": [],
+            "score": 0.7320159476408554
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 19.161864903014123,
+            "angularWidthDegrees": 16.407901324489753,
+            "rangeM": 180.3394163590373,
+            "occluderIds": [
+              "city-ca-prop-180",
+              "city-ca-prop-181"
+            ],
+            "score": 0.028023048465532212
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 28.054476613991373,
+            "angularWidthDegrees": 13.70942155622337,
+            "rangeM": 216.28573016928473,
+            "occluderIds": [
+              "city-ca-prop-180",
+              "city-ca-prop-181"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 37.64961468860107,
+            "angularWidthDegrees": 11.913322131734914,
+            "rangeM": 249.1864711847369,
+            "occluderIds": [
+              "city-ca-prop-172",
+              "city-ca-prop-180",
+              "city-ca-prop-181"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 31.61230663465909,
+            "angularWidthDegrees": 10.232814624811096,
+            "rangeM": 290.3851069176312,
+            "occluderIds": [
+              "city-ca-prop-168",
+              "city-ca-prop-170",
+              "city-ca-prop-180",
+              "city-ca-prop-181"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 90
+      },
+      "signature": "06fb796f29c5d4e66e745e654ba58f50b31e3eca1bdff78de38d9b029e5c4ed3",
+      "sourceSha256": "0d6ff4ca92046fe1b757df41c04db3aa76bf04fa7a060e8a516a2101a56d93ee",
+      "roadSha256": "ff9745a0db3b2dd4a2a0180147386e67052147edcd36c2854dabfce946fa3d6f",
+      "placementDetails": {
+        "x": -156.06395272888847,
+        "z": -534.5017764700278,
+        "yaw": 2.6375679124409914,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3304.650506218719,
+        "trackLateral": -49.99919720932107,
+        "minimumRoadClearanceM": 9.40240521137844,
+        "checkedSegments": 4052,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/CA/walt-disney-concert-hall-desktop.png",
+        "docs/art/landmark-previews/CA/walt-disney-concert-hall-mobile.png"
+      ]
     },
     "landmark-city-ca-los-angeles-city-hall": {
       "raceRef": "Los Angeles, CA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 467.9018657900564,
+        "worldZ": -188.59797558451248,
+        "routeDistanceM": 4334,
+        "offsetFromRoadM": 62,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.343079038253235,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 23.13716552542341,
+            "angularWidthDegrees": 17.588445319950534,
+            "rangeM": 128.58399567059857,
+            "occluderIds": [
+              "city-ca-prop-223"
+            ],
+            "score": 0.008941605477967638
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 20.68026930340126,
+            "angularWidthDegrees": 15.4028447086027,
+            "rangeM": 147.10117814004388,
+            "occluderIds": [],
+            "score": 0.17278922786394957
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 18.241136583899152,
+            "angularWidthDegrees": 13.669915479221418,
+            "rangeM": 165.9628551145147,
+            "occluderIds": [],
+            "score": 0.27035453664403386
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 16.30256445232125,
+            "angularWidthDegrees": 12.270381864530917,
+            "rangeM": 185.06372401238968,
+            "occluderIds": [],
+            "score": 0.34789742190715
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 14.047533882360604,
+            "angularWidthDegrees": 10.620300168010978,
+            "rangeM": 214.0232486126048,
+            "occluderIds": [],
+            "score": 0.4380986447055758
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 11.848340221554439,
+            "angularWidthDegrees": 8.990994125736464,
+            "rangeM": 253.01339150692854,
+            "occluderIds": [
+              "city-ca-prop-218",
+              "city-ca-prop-220"
+            ],
+            "score": 0.0631279669365387
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 10.238136118545665,
+            "angularWidthDegrees": 7.787183874345981,
+            "rangeM": 292.2765841065336,
+            "occluderIds": [
+              "city-ca-prop-218",
+              "city-ca-prop-220",
+              "city-ca-prop-225"
+            ],
+            "score": 0.0708569466309808
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 8.747356648533643,
+            "angularWidthDegrees": 6.6656208940652,
+            "rangeM": 341.59608207049973,
+            "occluderIds": [
+              "city-ca-prop-218",
+              "city-ca-prop-220",
+              "city-ca-prop-225"
+            ],
+            "score": 0.07801268808703851
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "42e11cca964e992e81d4455499cc4cb203b3c0e7fcb139151983e8ed948d7d9f",
+      "sourceSha256": "1920ac30262182fc27c25171e7fccaaef40051aec3d5c1a1d780df26c5aa6454",
+      "roadSha256": "ff9745a0db3b2dd4a2a0180147386e67052147edcd36c2854dabfce946fa3d6f",
+      "placementDetails": {
+        "x": 510.04812122306936,
+        "z": -463.87419879387346,
+        "yaw": 2.1992488908102787,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4123.874463184784,
+        "trackLateral": -110.00000000000006,
+        "minimumRoadClearanceM": 74.18749929129986,
+        "checkedSegments": 4052,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/CA/los-angeles-city-hall-desktop.png",
+        "docs/art/landmark-previews/CA/los-angeles-city-hall-mobile.png"
+      ]
     },
     "landmark-city-ca-union-station": {
       "raceRef": "Los Angeles, CA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1115.1040803230435,
+        "worldZ": -451.18515755591585,
+        "routeDistanceM": 5455,
+        "offsetFromRoadM": 147,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.1524866546337322,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 63.54217895466078,
+            "angularWidthDegrees": 30.633205160579394,
+            "rangeM": 94.93190547173799,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 56.55057293631217,
+            "angularWidthDegrees": 27.76465852139189,
+            "rangeM": 105.20024872553348,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 51.053113032872496,
+            "angularWidthDegrees": 25.05946016131593,
+            "rangeM": 116.99110626739481,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 131.62317966713618,
+            "angularWidthDegrees": 25.493903781168886,
+            "rangeM": 114.93187111619433,
+            "occluderIds": [
+              "city-ca-prop-279"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 116.77966090311381,
+            "angularWidthDegrees": 29.896196425244042,
+            "rangeM": 97.38610704098284,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 91.5410664401321,
+            "angularWidthDegrees": 33.02617018287566,
+            "rangeM": 87.7009745009347,
+            "occluderIds": [
+              "city-ca-prop-277"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 9.608881545174695,
+            "angularWidthDegrees": 26.05156623515001,
+            "rangeM": 112.38761066462916,
+            "occluderIds": [],
+            "score": 0.6156447381930121
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 6.653952088981993,
+            "angularWidthDegrees": 18.2466463170018,
+            "rangeM": 161.90138429155698,
+            "occluderIds": [],
+            "score": 0.7338419164407203
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "d252c39ab20d2c5413d25020ddfd33d31442c6ca0a5f83ab52341b3e90cadd87",
+      "sourceSha256": "bf83a2ebdf30a45574d1b7e1a51169377e4d38fa832f60d2abde1c17825c28d8",
+      "roadSha256": "ff9745a0db3b2dd4a2a0180147386e67052147edcd36c2854dabfce946fa3d6f",
+      "placementDetails": {
+        "x": 762.5664287650538,
+        "z": -438.0291834390953,
+        "yaw": -3.1175517530856487,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5245.593013068932,
+        "trackLateral": -84.99623660120966,
+        "minimumRoadClearanceM": 46.64211687276428,
+        "checkedSegments": 4052,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-co-coors-field": {
       "raceRef": "Denver, CO — Landmark Run",

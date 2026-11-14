@@ -3352,6 +3352,34 @@
       "heightM": 10,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ca-crypto-com-arena",
+      "source": "landmarks/CA/landmark-city-ca-crypto-com-arena.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ca-walt-disney-concert-hall",
+      "source": "landmarks/CA/landmark-city-ca-walt-disney-concert-hall.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ca-los-angeles-city-hall",
+      "source": "landmarks/CA/landmark-city-ca-los-angeles-city-hall.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ca-union-station",
+      "source": "landmarks/CA/landmark-city-ca-union-station.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

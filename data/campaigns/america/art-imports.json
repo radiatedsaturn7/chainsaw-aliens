@@ -2770,5 +2770,33 @@
     "documentSha256": "c64f10182b40509f47206ae4f25dd5d4133eecc085ded85ba18ed4322cfb5221",
     "width": 512,
     "height": 184
+  },
+  "landmark-city-ca-crypto-com-arena": {
+    "source": "assets/campaign-art/landmarks/CA/landmark-city-ca-crypto-com-arena.png",
+    "sourceSha256": "9f02063e7f6a6dd4d0823a94724226567e766b3bdb6cb2584decb31927ca291a",
+    "documentSha256": "d9ddc728da25b610ccfa29780a4fd16625239f618ebff68939cf503751c48019",
+    "width": 512,
+    "height": 226
+  },
+  "landmark-city-ca-walt-disney-concert-hall": {
+    "source": "assets/campaign-art/landmarks/CA/landmark-city-ca-walt-disney-concert-hall.png",
+    "sourceSha256": "0d6ff4ca92046fe1b757df41c04db3aa76bf04fa7a060e8a516a2101a56d93ee",
+    "documentSha256": "2e3d85590925d4417628b54bbd7396ab9ca49d4c3a1dff9d2c9ef86225507e0f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ca-los-angeles-city-hall": {
+    "source": "assets/campaign-art/landmarks/CA/landmark-city-ca-los-angeles-city-hall.png",
+    "sourceSha256": "1920ac30262182fc27c25171e7fccaaef40051aec3d5c1a1d780df26c5aa6454",
+    "documentSha256": "8f1d28a92ddc60350c11bc70474a6be8cb54d1d392e2ad99dd779e917c9c13b5",
+    "width": 485,
+    "height": 512
+  },
+  "landmark-city-ca-union-station": {
+    "source": "assets/campaign-art/landmarks/CA/landmark-city-ca-union-station.png",
+    "sourceSha256": "bf83a2ebdf30a45574d1b7e1a51169377e4d38fa832f60d2abde1c17825c28d8",
+    "documentSha256": "317e5c6f52c66de97b13294bcb8518dc2e76cb824e6981e9012d81f0b84a6499",
+    "width": 512,
+    "height": 256
   }
 }

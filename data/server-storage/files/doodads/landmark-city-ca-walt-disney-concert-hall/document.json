@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617231355,
+  "doodad": {
+    "id": "campaign-landmark-city-ca-walt-disney-concert-hall",
+    "name": "landmark-city-ca-walt-disney-concert-hall",
+    "artRef": "landmark-city-ca-walt-disney-concert-hall",
+    "widthM": 52,
+    "heightM": 26,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 44.199999999999996,
+    "hitboxHeightM": 23.400000000000002,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}
