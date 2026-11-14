@@ -28,7 +28,7 @@ def prepare(row):
   if len(gps)<4:raise ValueError('Four verified landmarks required')
   # Include an ordinary street perimeter for routing; never use motorways.
   bounds=(min(p[0] for p in gps)-.008,min(p[1] for p in gps)-.010,max(p[0] for p in gps)+.008,max(p[1] for p in gps)+.010)
- elif row['kind']=='road':bounds=(row['lat']-.035,row['lon']-.045,row['lat']+.035,row['lon']+.045)
+ elif row['kind']=='road':bounds=row.get('bounds') or (row['lat']-.035,row['lon']-.045,row['lat']+.035,row['lon']+.045)
  else:bounds=None
  def enough_city_roads(ways):
   if row['kind']!='city':return False
@@ -54,8 +54,9 @@ def prepare(row):
  print(row['id'],'snapshot',len(ways),'ways',flush=True)
 
 if __name__=='__main__':
- ap=argparse.ArgumentParser();ap.add_argument('--cities',action='store_true');ap.add_argument('--only',nargs='*');ap.add_argument('--geocode-only',action='store_true');ap.add_argument('--snapshots-only',action='store_true');args=ap.parse_args()
- path=Path('tools/campaigns/city_run_sources.json' if args.cities else 'tools/campaigns/state_gap_sources.json');rows=json.loads(path.read_text())
+ ap=argparse.ArgumentParser();ap.add_argument('--sources');ap.add_argument('--output-root');ap.add_argument('--cities',action='store_true');ap.add_argument('--only',nargs='*');ap.add_argument('--geocode-only',action='store_true');ap.add_argument('--snapshots-only',action='store_true');args=ap.parse_args()
+ if args.output_root:ROOT=Path(args.output_root)
+ path=Path(args.sources or ('tools/campaigns/city_run_sources.json' if args.cities else 'tools/campaigns/state_gap_sources.json'));rows=json.loads(path.read_text())
  for row in rows:
   if args.only and row['id'] not in args.only:continue
   try:

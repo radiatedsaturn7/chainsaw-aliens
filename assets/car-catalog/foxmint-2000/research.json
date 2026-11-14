@@ -1,0 +1,126 @@
+{
+  "fictionalName": "Foxmint 1.7 2000",
+  "reference": "UK September 2000 Ford Puma standard 1.7i 16V VCT coupe, FWD five-speed manual, RHD; not Racing Puma, Puma Black, 1.4/1.6 or modern Puma SUV",
+  "status": "Source-ready with explicit mass-convention and workshop-coverage qualifications; simulation parameters remain estimates",
+  "duplicateCheck": "No Puma or Racing Puma reference found in current catalog research or shared car-next JSON/Markdown packets before selection.",
+  "sources": [
+    {
+      "url": "https://www.guide-autosport.com/wp-content/uploads/2013/10/2001_Ford_Puma_brochure_AR_96_212010_19010.pdf",
+      "type": "OEM UK sales brochure hosted by independent archive",
+      "local": "oem-brochure.pdf",
+      "verification": "Actual pages 14, 15 and 20 rendered and visually inspected. Final page identifies Ford Motor Company Limited, FA1260/14, 09.2000. Archive filename 2001 does not override actual September 2000 publication date.",
+      "evidence": [
+        "page-14.png",
+        "page-15.png",
+        "page-20.png"
+      ]
+    },
+    {
+      "url": "https://workshop-manuals.com/ford/puma_1998_06.1997-12.2001/mechanical_repairs/3_powertrain/303_engine/303-01a_engine_1.7l/specifications/",
+      "type": "OEM workshop material mirrored as HTML, coverage June 1997\u2013December 2001",
+      "verification": "Read engine table; corroborates brochure output and displacement. No exact serial-number breakpoint independently checked."
+    },
+    {
+      "url": "https://workshop-manuals.com/ford/puma_1998_06.1997-12.2001/mechanical_repairs/3_powertrain/308_manual_transmission-transaxle_clutch_and_transfer_case/308-03_manual_transmission-transaxle/specifications/",
+      "type": "OEM workshop material mirrored as HTML, coverage June 1997\u2013December 2001",
+      "verification": "Read 1.7-specific ratio column, not 1.4 column. Published precision is two decimal places; do not invent tooth-exact extra digits."
+    }
+  ],
+  "engine": {
+    "layout": "Naturally aspirated gasoline inline four, DOHC 16-valve VCT",
+    "code": "MHA / Zetec-S VCT",
+    "displacementCc": 1679,
+    "boreMm": 80,
+    "strokeMm": 83.5,
+    "compressionRatio": 10.3,
+    "powerKw": 92,
+    "powerPs": 125,
+    "powerHpDerivedFromKw": 123.37403224274257,
+    "powerRpm": 6300,
+    "torqueNm": 157,
+    "torqueRpm": 4500,
+    "testStandard": "ISO 1585 per brochure",
+    "fuelRon": 95,
+    "redlineRpm": null,
+    "fuelCutRpm": null,
+    "idleRpm": null,
+    "note": "125 PS is metric horsepower, not 125 mechanical hp. The workshop oil-pressure test at 850 rpm does not verify idle speed."
+  },
+  "drivetrain": {
+    "drive": "FWD",
+    "transmission": "5MT",
+    "forwardRatios": [
+      3.15,
+      1.93,
+      1.41,
+      1.11,
+      0.88
+    ],
+    "reverseRatio": 3.62,
+    "finalDrive": 3.82,
+    "ratioStatus": "Physical gearbox/final values published to two decimals in 1.7-specific OEM workshop mirror covering the selected date; exact tooth counts and finer precision not verified.",
+    "differential": "Not verified; do not claim LSD."
+  },
+  "mass": {
+    "kg": 1038,
+    "sourceLabel": "Lightest kerb weight",
+    "convention": "OEM footnote: Represents the lightest kerbweight assuming full fluid levels, subject to manufacturing tolerances and options, etc., fitted.",
+    "driverConvention": "Not explicitly specified. Do not add or subtract 75 kg or substitute a secondary 1109 kg figure.",
+    "grossVehicleMassKg": 1400
+  },
+  "dimensions": {
+    "lengthMm": 3984,
+    "widthExcludingMirrorsMm": 1674,
+    "widthIncludingMirrorsMm": 1837,
+    "heightMm": 1344,
+    "wheelbaseMm": 2446,
+    "turningDiameterKerbM": 10,
+    "turningDiameterWallM": 10.4,
+    "trackFrontMm": null,
+    "trackRearMm": null,
+    "overhangFrontMm": null,
+    "overhangRearMm": null
+  },
+  "wheels": {
+    "standard": "6x15 nine-spoke alloy",
+    "tiresFront": "195/50 VR15",
+    "tiresRear": "195/50 VR15",
+    "nominalRadiusM": 0.288,
+    "radiusDerivation": "(195 mm * 0.50 + 15 in * 25.4 mm/in / 2) / 1000. Geometric unloaded radius, not measured loaded rolling radius.",
+    "avoid": "Puma Black F1-style wheel design and aftermarket sizes are not selected."
+  },
+  "chassis": {
+    "frontSuspension": "MacPherson strut",
+    "rearSuspension": "Twist beam / semi-trailing arms with coil springs, brochure wording",
+    "frontBrakes": "Disc",
+    "rearBrakes": "Drum",
+    "assists": "ABS with EBD and low-speed traction control listed standard; precise control behavior not verified."
+  },
+  "fuelTankLitres": 40,
+  "publishedPerformance": {
+    "zeroTo100KmhSeconds": 9.2,
+    "topSpeedKmh": 203,
+    "source": "Actual September 2000 brochure page 14; retain source rather than replacing with earlier or secondary performance claims."
+  },
+  "unknownSimulationFields": [
+    "Full torque curve",
+    "VCT schedule",
+    "Idle, redline and fuel-cut speeds",
+    "Front/rear static mass split",
+    "CG location and height",
+    "Moments of inertia",
+    "Drag coefficient and frontal area",
+    "Track widths",
+    "Front/rear overhang split",
+    "Spring and damper rates",
+    "Detailed differential behavior",
+    "Loaded rolling radius",
+    "Exact traction-control calibration"
+  ],
+  "implementationNotes": [
+    "Supported conventional ICE FWD manual model; no hybrid or selectable-drive mechanism needed.",
+    "All unknown physics fields must be explicitly marked estimates and launch-tested, not represented as OEM facts.",
+    "Original fictional artwork, no Ford/Puma badges or copied design; RHD cockpit consistent with selected UK market.",
+    "Source-only packet: no repository, maps, artwork or implementation changed."
+  ]
+}

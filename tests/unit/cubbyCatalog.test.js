@@ -1,3 +1,4 @@
+import {withLegacyGaugeDefaults} from '../helpers/catalogRoundtrip.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -15,7 +16,7 @@ test('Cubby preserves height discrepancy, consistent inches and documented runti
  assert.equal(p.overallHeightM,65*.0254);assert.equal(car.dimensions.wheelbaseM,99.6*.0254);assert.equal(car.dimensions.trackFrontM,58.1*.0254);assert.equal(car.dimensions.trackRearM,58.3*.0254);assert.equal(p.groundClearanceM,6.3*.0254);assert.equal(t.frontWeightDistribution,1644/2798);assert.equal(t.dragCoefficient,.35);assert.equal(t.revLimitRpm,6400);
  const notes=c.provenance.estimates.join(' ');assert.match(notes,/1680|1.680/);assert.match(notes,/not verified fuel-cut|not OEM fuel-cut/);assert.match(notes,/brake-based/);assert.equal(c.provenance.sources.length,3);assert.equal(t.frontDifferentialAccel,0);
 });
-test('Cubby native editor roundtrip retains fixedrear, dashboard gauges and tire visibility',()=>{const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(structuredClone(d),{name:d.car.name});assert.deepEqual(e.serializeSelectedCarDocument().car,d.car);assert.equal(d.car.camera.trackingMode,'fixed-rear');assert.equal(d.car.art.interior.steeringWheel.artRef,'steeringwheel');assert.equal(d.car.art.gauges.interior.coordinateSpace,'wheel-opening');for(const l of Object.values(d.car.art.angleLayers))assert.equal(l.tires.tireMode,'auto');assert.deepEqual(c.mapping,[0,7,2,3,4,5,6,1]);});
+test('Cubby native editor roundtrip retains fixedrear, dashboard gauges and tire visibility',()=>{const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(structuredClone(d),{name:d.car.name});assert.deepEqual(e.serializeSelectedCarDocument().car,withLegacyGaugeDefaults(d.car));assert.equal(d.car.camera.trackingMode,'fixed-rear');assert.equal(d.car.art.interior.steeringWheel.artRef,'steeringwheel');assert.equal(d.car.art.gauges.interior.coordinateSpace,'wheel-opening');for(const l of Object.values(d.car.art.angleLayers))assert.equal(l.tires.tireMode,'auto');assert.deepEqual(c.mapping,[0,7,2,3,4,5,6,1]);});
 
 test('Cubby production editor preview launches on tire support, not an occluding body box',()=>{
  assert.equal(c.car.tuning.physics.bodyProfile.wheelWellAware,true);

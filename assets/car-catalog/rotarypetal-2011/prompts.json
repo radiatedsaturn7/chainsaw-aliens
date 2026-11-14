@@ -1,0 +1,19 @@
+{
+  "tool": "native image_gen",
+  "body": "Use case: stylized-concept. Asset: original 2994 salvage racing videogame eight-angle car BODY SHELL sprite sheet. Reference is style and precise eight-view layout only, replace the vehicle entirely with Rotarypetal: low rounded early-2010s naturally aspirated rotary four-seat sports coupe, long sculpted front fenders, short rounded rear deck, compact rear-hinged half-door seams, low curved roof, 2.70m wheelbase and 4.47m body. Fictional design SIMILAR NOT SAME as an RX8, NOT exact; original angular inset headlights, split rectangular tail lamps, no logos/badges/license text. Muted petrol teal paint with worn copper repair patches and charcoal lower cladding, scratched salvaged hand-painted realistic game illustration matching reference. EXACT eight views in four columns and two rows: top row straight FRONT, front-quarter nose pointing LEFT, full side nose LEFT, rear-quarter nose RIGHT; bottom row straight REAR, rear-quarter nose LEFT, full side nose RIGHT, front-quarter nose RIGHT. Consistent same car in every view. Equal cells with ample gaps, each full shell unclipped. Wide approximately3:1 canvas. Crucially NO wheels, tires, rims, brake discs or suspension: wheel arches are genuine transparent empty cutouts completely open below, runtime adds wheels. Genuine transparent background all around each shell and inside wheel wells, no shadows, no checkerboard pixels. Opaque dark windows. No labels, no ground, no scenery.",
+  "dashboard": "Use case: stylized-concept. Asset type: transparent driving-game cockpit DASHBOARD OVERLAY for fictional Rotarypetal2011, a low early2010s four-seat rotary sports coupe, LEFT HAND DRIVE. Use attached accepted dashboard for overall camera framing/blank instrument panel and 2994 salvage illustration texture only; make a DIFFERENT rounded early2010s dashboard design. Muted petrol teal painted trim with copper repair plates, charcoal black textured worn polymer, rounded center console with three rotary climate controls and rounded vents. Wide 2.5:1 canvas approximately1983x793. Driver eye perspective, complete dashboard spans full canvas width in LOWER HALF, upper half is genuine transparent windshield opening with NO scene or opaque windshield fill. Only narrow pillars at extreme far edges. CRITICAL: an opaque unmarked BLACK instrument binnacle on LEFT, a broad horizontal black recessed opening at x240..805 y550..730 in a1983x793 canvas; adequate black area for runtime dials behind steering wheel, no painted gauges, no marks, no digits. No steering wheel, no wheel column, no hands, no racing scenery, no logo, no badge, no lettering. Keep the dashboard bottom continuous and opaque; genuine alpha only above dashboard. Runtime will overlay shared steering wheel and gauges. Finish: original handpainted weathered repaired2994 game prop, readable silhouette and precise edges, not a photoreal interior photo.",
+  "references": [
+    "assets/car-catalog/glowmoth-sc-1988/body.png",
+    "assets/car-catalog/glowmoth-sc-1988/dashboard.png"
+  ],
+  "outputs": {
+    "body": [
+      2172,
+      724
+    ],
+    "dashboard": [
+      1983,
+      793
+    ]
+  }
+}

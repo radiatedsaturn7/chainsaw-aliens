@@ -1,3 +1,4 @@
+import {createRaceJunctionClipper} from './RaceAtGradeJunctions.js';
 const pointZ = (point = {}) => Number(point.z ?? point.y ?? 0);
 
 const normalize3 = (vector = {}) => {
@@ -170,12 +171,17 @@ export function buildRaceCanonicalSurfaceMesh({
   };
 
   const sections = Array.isArray(surfaceBake?.sections) ? surfaceBake.sections : [];
+  const clipJunction=createRaceJunctionClipper(sections,surfaceBake?.junctions);
   const pairCount = runtimeType === 'circuit' ? sections.length : Math.max(0, sections.length - 1);
   for (let index = 0; index < pairCount; index += 1) {
+    const emit=(a,b,c,metadata)=>{
+      for(const polygon of clipJunction([a,b,c],index,metadata.region))
+        for(let i=1;i<polygon.length-1;i++)pushTriangle(polygon[0],polygon[i],polygon[i+1],metadata);
+    };
     const near = sections[index];
     const far = sections[(index + 1) % sections.length];
     const segment = near?.center?.segment || far?.center?.segment || null;
-    pushQuad(pushTriangle, [near?.left, far?.left, far?.right, near?.right], {
+    pushQuad(emit, [near?.left, far?.left, far?.right, near?.right], {
       region: 'road',
       source: 'road',
       segment,
@@ -186,7 +192,7 @@ export function buildRaceCanonicalSurfaceMesh({
     const nearMarginRight = near?.marginRight || near?.right;
     const farMarginRight = far?.marginRight || far?.right;
     if (nearMarginLeft !== near?.left || farMarginLeft !== far?.left) {
-      pushQuad(pushTriangle, [nearMarginLeft, farMarginLeft, far?.left, near?.left], {
+      pushQuad(emit, [nearMarginLeft, farMarginLeft, far?.left, near?.left], {
         region: 'margin',
         source: 'margin-left',
         segment,
@@ -194,7 +200,7 @@ export function buildRaceCanonicalSurfaceMesh({
       });
     }
     if (nearMarginRight !== near?.right || farMarginRight !== far?.right) {
-      pushQuad(pushTriangle, [near?.right, far?.right, farMarginRight, nearMarginRight], {
+      pushQuad(emit, [near?.right, far?.right, farMarginRight, nearMarginRight], {
         region: 'margin',
         source: 'margin-right',
         segment,
@@ -206,14 +212,14 @@ export function buildRaceCanonicalSurfaceMesh({
     const nearShoulderRight = near?.shoulderRight || nearMarginRight;
     const farShoulderRight = far?.shoulderRight || farMarginRight;
     if (nearShoulderLeft !== nearMarginLeft || farShoulderLeft !== farMarginLeft) {
-      pushQuad(pushTriangle, [nearShoulderLeft, farShoulderLeft, farMarginLeft, nearMarginLeft], {
+      pushQuad(emit, [nearShoulderLeft, farShoulderLeft, farMarginLeft, nearMarginLeft], {
         region: 'shoulder',
         source: 'shoulder-left',
         segment
       });
     }
     if (nearShoulderRight !== nearMarginRight || farShoulderRight !== farMarginRight) {
-      pushQuad(pushTriangle, [nearMarginRight, farMarginRight, farShoulderRight, nearShoulderRight], {
+      pushQuad(emit, [nearMarginRight, farMarginRight, farShoulderRight, nearShoulderRight], {
         region: 'shoulder',
         source: 'shoulder-right',
         segment

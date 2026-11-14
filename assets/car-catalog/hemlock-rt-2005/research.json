@@ -1,0 +1,78 @@
+{
+  "status": "Implemented draft; exact-tree CI and visual QA pending",
+  "duplicateCheck": "Read all50 current assets/car-catalog research packets and base data/vehicle-catalog/research.json on origin/staging; no Cadillac/CTS or Dodge Magnum match. Current62 include pending RX8/205. Recheck live runtime roster before import.",
+  "simulationEstimates": [
+    "Full torque curve between/away from published anchors",
+    "Idle speed, shift timings, launch and clutch or converter parameters",
+    "CG height, inertia, tire grip/pressure, dynamic brake bias, damping and springs unless specified",
+    "Differential details and control behavior unless verified; do not claim electronic stability/ABS/cylinder-deactivation fidelity"
+  ],
+  "artConstraints": "Original fictional logo-free art, eight exterior views, separate existing steering wheel, gauges visible through upper wheel opening; fixed rear camera. Do not copy OEM artwork.",
+  "candidateId": "hemlock-rt-2005",
+  "fictionalName": "Hemlock RT 2005",
+  "reference": "US2005 Dodge Magnum RT RWD5AT LHD standard18in wheels, no optional self-leveling suspension/tow package; not AWD/SRT8",
+  "sources": [
+    {
+      "url": "https://s3.amazonaws.com/chryslermedia.iconicweb.com/mediasite/attachments/magnum_specs.pdf",
+      "type": "OEM Dodge Brand Product Information2005, official Chrysler media asset",
+      "inspection": "Seven-page PDF downloaded. Actual pages3/4/6 rendered and personally viewed for engine,transmission,dimensions,mass,tires; whole technical text read.",
+      "fields": [
+        "Seven-page PDF downloaded. Actual pages3/4/6 rendered and personally viewed for engine,transmission,dimensions,mass,tires; whole technical text read."
+      ]
+    }
+  ],
+  "facts": {
+    "engine": "Naturally aspirated gasoline5.7L OHV V8 with OEM multi-displacement cylinder deactivation",
+    "displacementCc": 5654,
+    "compression": 9.6,
+    "powerHp": 340,
+    "powerRpm": 5000,
+    "torqueLbFt": 390,
+    "torqueNmConverted": 528.7689998369999,
+    "torqueRpm": 4000,
+    "maxEngineRpmElectronicallyLimited": 5800,
+    "drive": "RWD",
+    "transmission": "5-speed automatic with torque-converter clutch and AutoStick",
+    "gears": [
+      3.59,
+      2.19,
+      1.41,
+      1,
+      0.83
+    ],
+    "reverse": 3.17,
+    "finalDrive": 2.82,
+    "massKg": 1895,
+    "massLbPublished": 4179,
+    "frontWeightFraction": 0.52,
+    "lengthM": 5.021,
+    "widthM": 1.881,
+    "heightM": 1.481,
+    "wheelbaseM": 3.048,
+    "trackFrontM": 1.6,
+    "trackRearM": 1.603,
+    "clearanceM": 0.143,
+    "frontalAreaM2": 2.36,
+    "dragCoefficient": 0.355,
+    "fuelTankL": 72,
+    "tires": "P225/60R18 standard all-season touring",
+    "wheelInches": [
+      18,
+      7.5
+    ],
+    "nominalTireRadiusM": 0.3636,
+    "steeringRatio": 16.1,
+    "steeringLockTurns": 2.75,
+    "turningDiameterM": 11.9,
+    "frontBrakeDiscMm": 345,
+    "rearBrakeDiscMm": 320,
+    "frontSuspension": "independent SLA coil over shock",
+    "rearSuspension": "independent five-link coil spring"
+  },
+  "cautions": [
+    "OEM PDF pairs390lbft with525Nm, which are not exact equivalents; preserve primary imperial390 and use528.769Nm converted, disclose discrepancy.",
+    "OEM dimensions rounded pairs differ slightly: metric1481mmheight vs58.4in implies1483.36mm; use printedmetric consistently, not silent averaging.",
+    "Cylinder deactivation and adaptive converter strategy are not demonstrated supported by game; standard combustion torque and generic automatic are explicit approximations, not hybrid.",
+    "Do not use4AT, AWDfinal3.07 or AWDmass1992kg. Differential locking is not established by source; do not invent LSD."
+  ]
+}

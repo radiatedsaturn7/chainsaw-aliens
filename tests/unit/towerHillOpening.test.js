@@ -18,7 +18,11 @@ test('Tower Hill opening retains GPS, finite runouts, Providence terrain and den
  assert.equal(race.timeOfDay,'night');assert.equal(race.weather,'snow');
  assert.ok(race.scenery.length>2000);
  for(const ref of ['tree','frozenrock','frozenbush'])assert.ok(race.scenery.filter(s=>s.doodadRef===ref).length>100);
- assert.ok(race.scenery.filter(s=>!s.fenceId).every(s=>Math.abs(s.trackLateral)>=9+s.widthM/2));
+ const editor=new RaceEditor({});editor.applyLoadedRaceDocument(race);
+ editor.withRaceGeometryReadCache(()=>{for(const sprite of race.scenery.filter(s=>!s.fenceId)){
+  const projection=editor.getRaceRouteProjectionForWorldPoint(sprite);
+  assert.ok(Math.abs(projection.lateral)>=editor.getRaceRoadHalfWidthWorld(projection.segment)+sprite.widthM/2+.25-1e-6,sprite.id);
+ }});
  const state=applyMechanicalMission(createMechanicalState(),race.mechanicalMission);
  assert.ok(Math.abs(state.fuel-.153)<1e-12);assert.ok(state.fuel>.15,'starts above low fuel lamp threshold');assert.equal(state.headlights,true);
 });
@@ -50,7 +54,7 @@ test('opening fuel allowance crosses the actual warning threshold at half a mile
 
 test('six outside guardrails have connected editable fence paths clear of the road',()=>{
  const e=new RaceEditor({});e.applyLoadedRaceDocument(race);
- const fences=race.scenery.filter(s=>s.fencePath);
+ const fences=race.scenery.filter(s=>s.fencePath&&s.fenceId.startsWith('tower-guardrail-'));
  assert.equal(fences.length,6);
  for(const fence of fences){
   assert.equal(fence.doodadRef,'fenceguardrail');assert.ok(fence.fencePath.points.length>20);

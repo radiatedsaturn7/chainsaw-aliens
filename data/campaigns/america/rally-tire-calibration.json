@@ -1,0 +1,34 @@
+{
+  "intent": "Mixed-surface game compromise, not a measured reproduction of a particular rally tire.",
+  "surfaceGripChanges": {
+    "asphalt": [
+      0.78,
+      0.94
+    ],
+    "wet-asphalt": [
+      0.75,
+      0.88
+    ],
+    "snow": [
+      0.58,
+      0.78
+    ],
+    "slush": [
+      0.66,
+      0.76
+    ]
+  },
+  "unchanged": [
+    "dirt/gravel/mud grip",
+    "surface base friction",
+    "snow depth/condition physics",
+    "water evacuation",
+    "steering and assists"
+  ],
+  "references": [
+    "https://www.hankook-motorsports.com/en/tech-in-motion/race-beyond-limits.html",
+    "https://michelinmedia.com/pages/blog/detail/article/c0/a1359/"
+  ],
+  "researchLimit": "Manufacturer sources support surface-specific tire tradeoffs, not these numerical coefficients. Values are gameplay calibration validated against relative specialist tire roles.",
+  "validation": "Production contact-environment tests and smooth condition blending pass. Unrelated garage graphics equality assertion fails against existing dedicated tire artwork."
+}

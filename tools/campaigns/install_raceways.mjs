@@ -1,3 +1,5 @@
+import {addBayardLandmarks} from './bayard_landmarks.mjs';
+import {wildernessParent,addWildernessDistantScenery} from './wilderness_dressing.mjs';
 // Reuse the side-event dressing and native menu system for reviewed circuit imports.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -8,7 +10,7 @@ import {dressImportedRace} from './dress_imported_race.mjs';
 import {createCampaignHubMenus} from '../../src/menus/CampaignHubMenus.js';
 const root='data/server-storage/files',base='data/campaigns/america/raceways';
 const expansion=process.argv.includes('--state-expansion');
-const reportBase=expansion?'data/campaigns/america/state-expansion':base;
+const reportBase=process.argv.find(a=>a.startsWith('--report-root='))?.slice(14)|| (expansion?'data/campaigns/america/state-expansion':base);
 const read=p=>{const d=JSON.parse(fs.readFileSync(p));return d.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(d.data,'base64'))):d;};
 const write=(p,d)=>{fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,JSON.stringify(d,null,2)+'\n');};
 const encode=d=>({__chainsawStorage:'compact-v1',encoding:'json-gzip-base64',data:zlib.gzipSync(Buffer.from(JSON.stringify(d)),{level:9,mtime:0}).toString('base64')});
@@ -24,7 +26,8 @@ for(const row of read(`${reportBase}/report.json`)){
  if(row.city){row.name=`${row.city}, ${row.stateCode} — Landmark Run`;row.displayName=`${row.city}, ${row.stateCode}`;}
  const race=read(row.generatedPath);if(row.city)race.name=row.name;
  const hub=main.find(h=>h.stage===(row.hubStage||row.artHubStage||3));
- const parent=read(`${root}/${manifest.folders.races[hub.name]}`).race;
+ const artHub=main.find(h=>h.stage===(row.artHubStage||hub.stage));
+ const parent=wildernessParent(read(`${root}/${manifest.folders.races[artHub.name]}`).race,row,manifest,read);
  if(row.city){
   const urban=[['expanded-abandoned-business-building',18,12],['expanded-unfinished-human-building',20,18],['expanded-robot-building',17,15],['data-center-city-server-building',23,16],['ohio-river-crossing-riverside-building',14,11],['roadside-streetlight',2,8],['data-center-city-shipping-container',6,3]];
   parent.scenery=urban.filter(([ref])=>manifest.folders.doodads[ref]).map(([doodadRef,widthM,heightM])=>({doodadRef,widthM,heightM,groundOffsetM:0}));
@@ -34,6 +37,8 @@ for(const row of read(`${reportBase}/report.json`)){
  const prior=priorPath?read(`${root}/${priorPath}`).race:null;
  if(prior)race.id=prior.id;
  const {lightingPreset}=dressImportedRace(race,{...row,hubStage:hub.stage},parent,manifest,editor);
+ addWildernessDistantScenery(race,row,manifest,read,editor);
+ addBayardLandmarks(race,manifest,read,editor);
  if(prior?.competition)race.competition=structuredClone(prior.competition);
  if(prior?.campaign?.scoring&&race.campaign)race.campaign.scoring=prior.campaign.scoring;
  if(row.existingSideId&&race.campaign)race.campaign.sideEventId=row.existingSideId;

@@ -1,3 +1,7 @@
+import fs from 'node:fs';
+import zlib from 'node:zlib';
+import {repairRoadsideInfrastructure} from './roadside_infrastructure.mjs';
+import {applyWildernessConditions} from './wilderness_dressing.mjs';
 // Shared regional dressing for imported side events and raceway layouts.
 import {applySideRaceLighting} from './side_race_lighting.mjs';
 import {authorRaceContinuations} from './author_continuations.mjs';
@@ -27,6 +31,7 @@ export function dressImportedRace(race,row,parent,manifest,editor){
   for(const [i,segment] of race.road.segments.entries())if(i%5===3){segment.surface='gravel';segment.bumpiness=.09;}
   race.source.campaignConditions='Fictional 2994 damage exposes gravel in intermittent sections of the mapped paved NN access road; geometry is unchanged.';
  }
+ applyWildernessConditions(race,row);
  race.source.elevationSmoothingRadiusM=45;
  Object.assign(race.source,{shoulderFlatJoinM:8,shoulderBlendWidthM:32,shoulderMaxSlope:.22});
  if(race.type==='destination')authorRaceContinuations(race);
@@ -57,6 +62,20 @@ export function dressImportedRace(race,row,parent,manifest,editor){
   race.decals.push({...structuredClone(decal),id:`${race.id}-decal-${race.decals.length}`,x:pose.x,z:pose.z,rotation:pose.yaw});
  }
  });
+ // Convert inherited infrastructure seeds into coherent roadside runs before
+ // recce; these are not part of the vegetation scatter on the saved track.
+ const definitions=new Map();
+ const infrastructure=editor.withRaceGeometryReadCache(()=>repairRoadsideInfrastructure(race,{
+  length,pose:d=>editor.getRaceWorldPoseAtDistance(d),project:p=>editor.getRaceRouteProjectionForWorldPoint(p),
+  ground:(p,h)=>editor.getRaceRawGroundElevationAtWorldPoint(p,h),
+  hasGround:(x,z)=>{const tile=race.road.tileMap,cell=tile.cells?.[`${Math.floor(x/tile.cellSizeM)},${Math.floor(z/tile.cellSizeM)}`];return Boolean(cell)&&!/water|river|lake/.test(cell.tileId||tile.defaultTileId||'');},
+  definition:ref=>{if(!definitions.has(ref)){
+   const file=manifest.folders.doodads?.[ref];let doc=file?JSON.parse(fs.readFileSync('data/server-storage/files/'+file)):null;
+   if(doc?.__chainsawStorage)doc=JSON.parse(zlib.gunzipSync(Buffer.from(doc.data,'base64')));
+   definitions.set(ref,doc?.doodad||null);
+  }return definitions.get(ref);}
+ }));
+ race.source.roadsideInfrastructure={version:1,...infrastructure};
  editor.applyLoadedRaceDocument(race);
  race.codriver={enabled:false,spoken:false,calls:racePaceNotes(race,analyzeRaceDrivingRoute(editor))};
  race.drivingGuide={line:true};

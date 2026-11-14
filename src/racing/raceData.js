@@ -75,7 +75,9 @@ export const RACE_TIRE_COMPOUNDS = [
   {
     id: 'dirt',
     label: 'Rally',
-    surfaceGrip: { asphalt: 0.78, 'wet-asphalt': 0.75, dirt: 1.16, gravel: 1.2, mud: 1.0, 'wet-gravel': 1.08, snow: 0.58, slush: 0.66 },
+    // Mixed-surface game calibration, not measured tire coefficients.
+    // Keep specialist pavement/winter tires ahead without making transfers punishing.
+    surfaceGrip: { asphalt: 0.94, 'wet-asphalt': 0.88, dirt: 1.16, gravel: 1.2, mud: 1.0, 'wet-gravel': 1.08, snow: 0.78, slush: 0.76 },
     wetEvacuationFactor: 1.08,
     treadDepthMm: 10,
     wearRate: 1.18

@@ -3,7 +3,17 @@
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const angle=v=>Math.atan2(Math.sin(v),Math.cos(v));
 const DEG=180/Math.PI;
-export const RECCE_VERSION='steering-recce-v5';
+export const RECCE_VERSION='steering-recce-v6';
+// Cutting warnings describe a collision hazard, not a small speed penalty for
+// driving through foliage. Missing collision evidence must not invent danger.
+export function isRecceCutHazard(sprite,definition) {
+  if(sprite.solid===false||['removed','flattened'].includes(sprite.state))return false;
+  if(definition.itemType&&definition.itemType!=='scenery')return false;
+  const label=`${definition.name||''} ${sprite.doodadRef||''} ${definition.artRef||''}`.toLowerCase();
+  if(/grass|fern|flower|groundcover|leaf-litter/.test(label)&&!definition.isFence)return false;
+  const behavior=definition.defaultRule?.behavior||definition.behavior||sprite.behavior;
+  return definition.isFence===true||Boolean(sprite.fenceId)||behavior==='collide'||behavior==='indestructible';
+}
 export function steeringSeverity(steerDegrees) {
   return steerDegrees < .65 ? 6 : steerDegrees < 1.25 ? 5 : steerDegrees < 2.3 ? 4 : steerDegrees < 4 ? 3 : steerDegrees < 7 ? 2 : 1;
 }
@@ -84,7 +94,21 @@ function buildRecce(editor) {
   }
   const obs=i=>observations[((i%(count-1))+(count-1))%(count-1)];
   const scenery=(editor.selectedRace?.scenery||[]).filter(s=>s&&s.visible!==false&&(s.presetId==='doodad'||s.doodadRef||s.previewDoodad));
-  const hazards=scenery.map(s=>({sprite:s,definition:editor.getRaceDoodadForScenery?.(s)||s.previewDoodad||s}));
+  const hazardBuckets=new Map();let maximumHazardHalf=1;
+  for(const sprite of scenery){
+    const definition=editor.getRaceDoodadForScenery?.(sprite)||sprite.previewDoodad||sprite;
+    if(!isRecceCutHazard(sprite,definition))continue;
+    maximumHazardHalf=Math.max(maximumHazardHalf,Number(definition.hitboxWidthM||definition.widthM||sprite.widthM||1.5)/2);
+    const key=`${Math.floor(Number(sprite.x)/64)},${Math.floor(Number(sprite.z??sprite.y)/64)}`;
+    if(!hazardBuckets.has(key))hazardBuckets.set(key,[]);
+    hazardBuckets.get(key).push({sprite,definition});
+  }
+  const nearbyHazards=pose=>{
+    const result=[],reach=Math.ceil((30+maximumHazardHalf+editor.getRaceRoadHalfWidthWorld(pose.segment))/64);
+    const x=Math.floor(pose.x/64),z=Math.floor(pose.z/64);
+    for(let dx=-reach;dx<=reach;dx++)for(let dz=-reach;dz<=reach;dz++)result.push(...(hazardBuckets.get(`${x+dx},${z+dz}`)||[]));
+    return result;
+  };
   const calls=[];
   for(const g of groups) {
     const samples=[];for(let i=g.start;i<=g.end;i++)samples.push(i<count?observations[i]:obs(i));
@@ -110,9 +134,7 @@ function buildRecce(editor) {
     // object width; an outside tree, distant building or harmless grass is not
     // evidence for "don't cut". Do not invent a safe "cut" from missing data.
     const hazardIds=[],hazardKinds=new Set();let obstructsRoad=false;
-    for(const {sprite:s,definition:def} of hazards) {
-      const rule=def.defaultRule||{};
-      if(rule.behavior==='flatten'&&Number(rule.speedDrainPercent||0)<=0&&!Object.values(rule.damage||{}).some(v=>v>0))continue;
+    for(const {sprite:s,definition:def} of nearbyHazards(apex.pose)) {
       const p=apex.pose,dx=Number(s.x)-p.x,dz=Number(s.z??s.y)-p.z;
       const along=dx*Math.sin(p.yaw)+dz*Math.cos(p.yaw);
       const lateral=(dx*Math.cos(p.yaw)-dz*Math.sin(p.yaw))*g.sign;

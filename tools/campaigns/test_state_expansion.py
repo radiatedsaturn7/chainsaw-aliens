@@ -60,6 +60,28 @@ class StateExpansion(unittest.TestCase):
     self.assertEqual(len(edges),len(set(edges)))
     self.assertEqual(len(source['landmarkPlan']),4)
     self.assertGreater(source['estimatedDrivingSeconds'],0)
+ def test_bayard_follows_ordered_roads_and_finishes_at_park(self):
+  import race_track_import as track
+  row=json.loads(Path('tools/campaigns/bayard_sources.json').read_text())[0]
+  ways=json.loads(Path('data/campaigns/america/bayard/sources/detour-bayard.json').read_text())
+  ways=[w for w in ways if w['tags']['highway'] not in ('service','track','motorway','motorway_link') or w['id'] in row.get('allowedServiceWayIds',[])]
+  origin=(row['lat'],row['lon'])
+  anchors=[dict(zip(('x','y'),track.metric(p['lat'],p['lon'],origin))) for p in row['waypoints']]
+  points=route.trace(ways,origin,anchors,max_snap=10,avoid_repeated_edges=True)
+  names=[p['tags'].get('name') for p in points]
+  self.assertEqual(names[0],'Road 104')
+  ids=[p['tags']['osmWayId'] for p in points]
+  self.assertIn(164980742,ids)
+  self.assertNotIn(823179391,ids,'Northern Road 77 is the wrong approach')
+  self.assertLess(ids.index(164980742),names.index('Canal Street'))
+  self.assertLess(names.index('Canal Street'),names.index('Avenue C'))
+  self.assertEqual(names[-1],'11th Street East')
+  total=loose=0
+  for a,b in zip(points,points[1:]):
+   d=math.hypot(b['x']-a['x'],b['y']-a['y']);total+=d
+   if a['tags'].get('surface')=='unpaved':loose+=d
+  self.assertGreater(loose/total,.6)
+  self.assertLess(math.hypot(*track.metric(points[-1]['lat'],points[-1]['lon'],(41.762288,-103.322445))),40)
  def test_all_missing_states_have_reviewed_non_oval_sources(self):
   specs=json.loads(Path('tools/campaigns/state_gap_sources.json').read_text());self.assertEqual(len(specs),29)
   report={r['id']:r for r in json.loads(Path('data/campaigns/america/state-expansion/report.json').read_text())}

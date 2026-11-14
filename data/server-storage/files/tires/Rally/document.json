@@ -7,14 +7,14 @@
     "id": "dirt",
     "label": "Rally",
     "surfaceGrip": {
-      "asphalt": 0.78,
-      "wet-asphalt": 0.75,
+      "asphalt": 0.94,
+      "wet-asphalt": 0.88,
       "dirt": 1.16,
       "gravel": 1.2,
       "mud": 1,
       "wet-gravel": 1.08,
-      "snow": 0.58,
-      "slush": 0.66
+      "snow": 0.78,
+      "slush": 0.76
     },
     "wetEvacuationFactor": 1.08,
     "treadDepthMm": 10,

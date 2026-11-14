@@ -411,9 +411,11 @@ for(const mobile of [false,true])test(`${mobile?'portrait':'desktop'} cheat code
   if(index<5)await pressKey(page,'ArrowRight');
  }
  await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.parameters.cheatCode)).toBe('NOLOVE');
+ await pressKey(page,'ArrowRight');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.widgetStates.get('code')?.index)).toBe(6);
  await page.screenshot({path:`test-results/menu-cheats-${mobile?'portrait':'desktop'}.png`});
  await pressKey(page,'Enter');
- await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.message)).toContain('1,000,000 scrap added');
+ await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.message)).toBe('Activated.');
  expect(await page.evaluate(()=>Number(window.__game.player?.credits)||0)).toBe(before);
  await pressKey(page,'Escape');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('settings');
 });

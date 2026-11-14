@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "race-track",
-  "savedAt": 1794194670514,
+  "savedAt": 1794622902895,
   "selectedRaceId": "drawing-34f46410-dd4a-49bf-8e30-02d3d14a8800",
   "race": {
     "id": "drawing-34f46410-dd4a-49bf-8e30-02d3d14a8800",
@@ -1254,6 +1254,19 @@
     },
     "visualFx": {
       "skyBrightness": 1
+    },
+    "source": {
+      "roadsideInfrastructure": {
+        "version": 1,
+        "replacedVegetation": 0,
+        "removedInfrastructure": 0,
+        "placedInfrastructure": 0,
+        "relocatedSmallProps": 0,
+        "fenceSections": 0,
+        "railPanels": 0,
+        "rejected": 0,
+        "refs": {}
+      }
     }
   }
 }

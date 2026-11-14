@@ -400,7 +400,7 @@
     {
       "id": "rally-tires",
       "name": "Rally Tires",
-      "description": "Rally Tires. These should give us a better bite on gravel. You know, for when the pavement gives up.",
+      "description": "Rally Tires. A good compromise when pavement turns to dirt or light snow. Specialist tires still have the edge on their own surface.",
       "effects": [],
       "carPart": {
         "slot": "tires",

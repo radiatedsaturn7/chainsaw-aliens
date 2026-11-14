@@ -205,3 +205,24 @@ test('map zoom reaches 20x and panning can reach the enlarged track',()=>{
  e.panRaceMapBy(5000,-5000);assert.equal(e.raceMapPan.x,5000);assert.equal(e.raceMapPan.y,-5000);
  e.updateRaceMapZoomFromSliderX(10);assert.equal(e.raceMapZoom,.5);assert.equal(e.getRaceMapZoomRatio(),0);
 });
+
+test('organic mirrored fence repeats preserve identical join UVs and serialize opt-in', () => {
+  const e = makeEditor();
+  const mirrored = {...definition, fenceMirrorRepeat:true};
+  assert.equal(normalizeRaceDoodadDocument(serializeRaceDoodadDocument(mirrored)).fenceMirrorRepeat,true);
+  assert.equal(normalizeRaceDoodadDocument(definition).fenceMirrorRepeat,false);
+  e.selectedRace.scenery = buildRaceFencePlacements(points,mirrored);
+  const quads = e.getRaceDoodadWorldMeshes();
+  assert.ok(e.selectedRace.scenery.some(p=>p.fenceU0>p.fenceU1));
+  for(let i=1;i<quads.length;i++) {
+    assert.ok(Math.abs(quads[i-1].points[2].u-quads[i].points[3].u)<1e-8);
+  }
+  for(const p of e.selectedRace.scenery) {
+    assert.equal(p.solid,true);
+    assert.equal(p.previewDoodad.isFence,true);
+    assert.ok(p.fenceU0>=0&&p.fenceU0<=1&&p.fenceU1>=0&&p.fenceU1<=1);
+  }
+  const other=makeEditor();
+  other.applyLoadedRaceDocument(JSON.parse(JSON.stringify(e.serializeSelectedRaceDocument())));
+  assert.deepEqual(other.selectedRace.scenery,e.selectedRace.scenery);
+});

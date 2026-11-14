@@ -1,8 +1,32 @@
 {
-  "applied": false,
+  "applied": true,
   "windowM": 80,
   "thresholdDegrees": 10,
   "races": [
+    {
+      "name": "Albuquerque, NM \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7413.87,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        7.51,
+        8.78
+      ],
+      "trimStartM": 48.94,
+      "trimFinishM": 155.4,
+      "status": "adjusted",
+      "afterDegrees": [
+        7.51,
+        8.78
+      ],
+      "lengthAfterM": 7209.53
+    },
     {
       "name": "Amarillo Dragway",
       "beforeDegrees": [
@@ -14,8 +38,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Amarillo \u2014 Historic 6th Avenue alignment",
@@ -28,54 +55,152 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.03,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
-      "name": "Angeles Crest Highway",
+      "name": "Anchorage, AK \u2014 Landmark Run",
       "beforeDegrees": [
-        39.1,
-        10.12
+        0.0,
+        0.0
       ],
-      "lengthBeforeM": 12144.4,
+      "lengthBeforeM": 7449.44,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 370.85,
-      "trimFinishM": 254.58,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Angeles Crest Highway",
+      "beforeDegrees": [
         6.49,
         8.58
       ],
-      "lengthAfterM": 11518.97,
-      "geometrySignature": "1d924bc793bd9f10b15b40172ad33d73775e0420cba92d5e74018e9f502eee33"
+      "lengthBeforeM": 11518.97,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        6.49,
+        0.0
+      ],
+      "trimStartM": 39.83,
+      "trimFinishM": 196.76,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 11282.39
     },
     {
       "name": "Angeles Forest Highway \u2014 County N3",
       "beforeDegrees": [
         7.8,
-        19.66
+        0.0
       ],
-      "lengthBeforeM": 7679.76,
+      "lengthBeforeM": 7616.35,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        7.8,
+        4.7
+      ],
       "trimStartM": 0,
-      "trimFinishM": 63.41,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 148.31,
+      "status": "adjusted",
       "afterDegrees": [
         7.8,
         0.0
       ],
-      "lengthAfterM": 7616.35,
-      "geometrySignature": "fecb0dc1db3f8da3ee1724315e7fca5c2294b653e08347901f3613543736e8d5"
+      "lengthAfterM": 7468.04
+    },
+    {
+      "name": "Atlanta, GA \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        2.19
+      ],
+      "lengthBeforeM": 8883.44,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        2.19
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Baltimore, MD \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7393.56,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 48.5,
+      "trimFinishM": 42.05,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7303.01
+    },
+    {
+      "name": "Barber Motorsports Park",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3715.36,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.1
+    },
+    {
+      "name": "Bayard \u2014 Road 77 to City Park",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 5584.59,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        6.47
+      ],
+      "trimStartM": 37.93,
+      "trimFinishM": 145.01,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 5401.65
     },
     {
       "name": "Bear Notch Road \u2014 Bartlett",
@@ -88,8 +213,28 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        6.01,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Beartooth Highway \u2014 Rock Creek Climb",
+      "beforeDegrees": [
+        6.21,
+        8.44
+      ],
+      "lengthBeforeM": 11775.4,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        6.21,
+        8.44
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Beaverhead Flat Road \u2014 CR 78",
@@ -102,31 +247,117 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        4.99,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Big Tujunga Canyon Road",
       "beforeDegrees": [
         3.85,
-        25.95
+        4.77
       ],
-      "lengthBeforeM": 6965.03,
+      "lengthBeforeM": 6831.82,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        3.85,
+        4.9
+      ],
       "trimStartM": 0,
-      "trimFinishM": 133.21,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 231.41,
+      "status": "adjusted",
       "afterDegrees": [
         3.85,
-        4.77
+        4.9
       ],
-      "lengthAfterM": 6831.82,
-      "geometrySignature": "6f4719f94ba8fe9cd4a4df9129168428658137e53b931f89053b1af2b7068b8f"
+      "lengthAfterM": 6600.41
+    },
+    {
+      "name": "Billings, MT \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7274.44,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 45.83,
+      "trimFinishM": 276.55,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 6952.06
+    },
+    {
+      "name": "Birmingham, AL \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        6.85
+      ],
+      "lengthBeforeM": 12545.74,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        6.85
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Boise, ID \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7653.44,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Boston, MA \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 12623.59,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 43.9,
+      "trimFinishM": 47.21,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 12532.48
     },
     {
       "name": "Boynton Pass Road FR 525 loop",
@@ -139,74 +370,311 @@
         80,
         40
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
-    },
-    {
-      "name": "Burr Trail switchbacks \u2014 Capitol Reef",
-      "beforeDegrees": [
-        30.06,
-        50.09
-      ],
-      "lengthBeforeM": 3859.06,
-      "lineWindowsM": [
-        80,
-        40
-      ],
-      "trimStartM": 109.6,
-      "trimFinishM": 67.52,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        7.67,
+      "corridorDegrees": [
+        0.0,
         0.0
       ],
-      "lengthAfterM": 3681.94,
-      "geometrySignature": "a42e10931a8d7fc839683d100c7e13eff5f5dc37045d6212a187fa916504a804"
+      "status": "already-straight"
     },
     {
-      "name": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "name": "Brainerd \u2014 Competition Course",
       "beforeDegrees": [
-        20.99,
-        12.95
+        0.0,
+        0.0
       ],
-      "lengthBeforeM": 7249.33,
+      "lengthBeforeM": 3891.87,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Brandywine Valley \u2014 Montchanin Road",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 8604.37,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 101.62,
-      "trimFinishM": 70.93,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "corridorDegrees": [
         0.0,
-        5.15
+        0.0
       ],
-      "lengthAfterM": 7076.79,
-      "geometrySignature": "98fa24e1095481655a0b5bdfcd230faa265a5a7de733a4d69cb631430bdfb171"
+      "status": "already-straight"
     },
     {
-      "name": "Club Motorsports \u2014 Tamworth",
+      "name": "Burlington, VT \u2014 Landmark Run",
       "beforeDegrees": [
-        87.46,
-        33.45
+        0.61,
+        0.72
       ],
-      "lengthBeforeM": 3601.52,
-      "gridWindowM": 80,
-      "rotatedM": 201.48,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "lengthBeforeM": 7316.67,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        1.35,
+        0.09
+      ],
+      "trimStartM": 40.72,
+      "trimFinishM": 181.67,
+      "status": "adjusted",
+      "afterDegrees": [
+        1.35,
+        0.09
+      ],
+      "lengthAfterM": 7094.28
+    },
+    {
+      "name": "Burr Trail switchbacks \u2014 Capitol Reef",
+      "beforeDegrees": [
+        7.67,
+        30.55
+      ],
+      "lengthBeforeM": 3681.94,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 70.0,
+      "trimFinishM": 418.64,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 3601.52,
-      "geometrySignature": "e8eabfdfe9d949ac6bc9876d7df4f0a3dd342c8218677d59eacb213494717177"
+      "lengthAfterM": 3193.3
+    },
+    {
+      "name": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "beforeDegrees": [
+        0.0,
+        5.15
+      ],
+      "lengthBeforeM": 7076.79,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        2.85,
+        5.15
+      ],
+      "trimStartM": 47.09,
+      "trimFinishM": 54.65,
+      "status": "adjusted",
+      "afterDegrees": [
+        2.85,
+        0.0
+      ],
+      "lengthAfterM": 6975.05
+    },
+    {
+      "name": "Carolina Motorsports Park",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3672.64,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Charleston, SC \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7461.64,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 49.31,
+      "trimFinishM": 45.72,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7366.61
+    },
+    {
+      "name": "Charleston, WV \u2014 Landmark Run",
+      "beforeDegrees": [
+        1.67,
+        0.0
+      ],
+      "lengthBeforeM": 7421.92,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        1.67,
+        0.0
+      ],
+      "trimStartM": 39.81,
+      "trimFinishM": 48.24,
+      "status": "adjusted",
+      "afterDegrees": [
+        1.67,
+        0.0
+      ],
+      "lengthAfterM": 7333.87
+    },
+    {
+      "name": "Charlotte, NC \u2014 Landmark Run",
+      "beforeDegrees": [
+        2.94,
+        0.0
+      ],
+      "lengthBeforeM": 7322.59,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        2.94,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Cheyenne, WY \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 4636.49,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Chicago, IL \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.08
+      ],
+      "lengthBeforeM": 6831.24,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.08
+      ],
+      "trimStartM": 42.97,
+      "trimFinishM": 55.88,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 6732.39
+    },
+    {
+      "name": "Chief Joseph \u2014 Dead Indian Pass",
+      "beforeDegrees": [
+        3.92,
+        0.0
+      ],
+      "lengthBeforeM": 14192.09,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        3.92,
+        4.79
+      ],
+      "trimStartM": 36.76,
+      "trimFinishM": 180.22,
+      "status": "adjusted",
+      "afterDegrees": [
+        3.92,
+        0.0
+      ],
+      "lengthAfterM": 13975.11
+    },
+    {
+      "name": "Cleveland, OH \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 8567.66,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 49.48,
+      "trimFinishM": 46.07,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 8472.12
+    },
+    {
+      "name": "Club Motorsports \u2014 Tamworth",
+      "beforeDegrees": [
+        0.0,
+        15.36
+      ],
+      "lengthBeforeM": 3601.52,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Col de Turini",
+      "beforeDegrees": [
+        9.16,
+        0.0
+      ],
+      "lengthBeforeM": 15065.82,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "corridorDegrees": [
+        9.16,
+        0.0
+      ],
+      "trimStartM": 39.14,
+      "trimFinishM": 49.38,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 14977.29
     },
     {
       "name": "County Line Road \u2014 Seven Springs",
@@ -219,8 +687,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        4.08,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Crawford Notch \u2014 US 302",
@@ -233,8 +704,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Data Center City",
@@ -247,28 +721,165 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        5.94,
+        6.84
+      ],
+      "status": "already-straight"
     },
     {
-      "name": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+      "name": "Daytona International Speedway \u2014 Sports Car Course",
       "beforeDegrees": [
-        314.08,
-        33.73
+        0.5,
+        8.84
       ],
-      "lengthBeforeM": 525.49,
+      "lengthBeforeM": 5756.71,
       "gridWindowM": 80,
-      "rotatedM": 336.23,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Daytona International Speedway \u2014 Stock Car Road Course",
+      "beforeDegrees": [
+        0.5,
+        8.84
+      ],
+      "lengthBeforeM": 5770.63,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Daytona Tri-Oval",
+      "beforeDegrees": [
+        5.87,
+        0.0
+      ],
+      "lengthBeforeM": 4016.45,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 2.78
+    },
+    {
+      "name": "Demo Track",
+      "status": "too-short"
+    },
+    {
+      "name": "Denali Highway \u2014 Tundra Gravel",
+      "beforeDegrees": [
+        0.0,
+        6.09
+      ],
+      "lengthBeforeM": 12197.88,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        6.15,
+        4.25
+      ],
+      "trimStartM": 60.24,
+      "trimFinishM": 132.34,
+      "status": "adjusted",
+      "afterDegrees": [
+        6.15,
+        0.0
+      ],
+      "lengthAfterM": 12005.3
+    },
+    {
+      "name": "Denver, CO \u2014 Landmark Run",
+      "beforeDegrees": [
+        3.53,
+        0.0
+      ],
+      "lengthBeforeM": 7559.24,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        3.67,
+        0.0
+      ],
+      "trimStartM": 36.53,
+      "trimFinishM": 48.9,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.14,
+        0.0
+      ],
+      "lengthAfterM": 7473.82
+    },
+    {
+      "name": "Des Moines, IA \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        4.51
+      ],
+      "lengthBeforeM": 7486.73,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        8.44,
+        4.51
+      ],
+      "trimStartM": 155.08,
+      "trimFinishM": 57.84,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 525.49,
-      "geometrySignature": "895f43823f793dc0f5af5ada4b7160d30128b61571c4aa7ec1e09702db0752f1"
+      "lengthAfterM": 7273.81
+    },
+    {
+      "name": "Detroit, MI \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 8663.01,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Fargo, ND \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7324.19,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+      "beforeDegrees": [
+        165.51,
+        0.0
+      ],
+      "lengthBeforeM": 525.49,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Firebird Motorsports Park \u2014 Chandler",
@@ -281,8 +892,22 @@
         80,
         80
       ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Flatrock Motorclub \u2014 Club Course",
+      "beforeDegrees": [
+        0.0,
+        4.66
+      ],
+      "lengthBeforeM": 5625.84,
+      "gridWindowM": 80,
       "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "seamDegrees": 0.0
     },
     {
       "name": "Forbes State Forest \u2014 designated gravel roads",
@@ -295,51 +920,57 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        1.65
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Garden of the Gods \u2014 paved park road",
       "beforeDegrees": [
         9.68,
-        126.92
+        18.07
       ],
-      "lengthBeforeM": 4558.9,
+      "lengthBeforeM": 4433.21,
       "lineWindowsM": [
         80,
         40
       ],
+      "corridorDegrees": [
+        9.68,
+        1.73
+      ],
       "trimStartM": 0,
-      "trimFinishM": 125.7,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 498.04,
+      "status": "adjusted",
       "afterDegrees": [
         9.68,
-        0.0
+        1.73
       ],
-      "lengthAfterM": 4433.21,
-      "geometrySignature": "1aefa77aee52d00c4296f812453cb3654c56d019014f062447d08e48103c9a2e"
+      "lengthAfterM": 3935.17
     },
     {
       "name": "Gateway Kartplex \u2014 WWT complex",
       "beforeDegrees": [
-        25.56,
-        47.82
+        2.48,
+        31.77
       ],
       "lengthBeforeM": 1241.94,
       "gridWindowM": 80,
-      "rotatedM": 698.97,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "GingerMan Raceway",
+      "beforeDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 1241.94,
-      "geometrySignature": "6e6d5824661c4105e6f7b50c50465767359770c95902d48c0b0f7e0033765956"
+      "lengthBeforeM": 3437.25,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Glade Top Trail \u2014 Mark Twain National Forest",
@@ -352,97 +983,254 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        9.59,
+        4.17
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Glendora Mountain Road",
       "beforeDegrees": [
-        76.98,
-        25.04
+        40.01,
+        24.5
       ],
-      "lengthBeforeM": 4343.81,
+      "lengthBeforeM": 4173.3,
       "lineWindowsM": [
-        40,
-        40
+        80,
+        80
       ],
-      "trimStartM": 137.28,
-      "trimFinishM": 33.23,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        9.81,
-        0.0
+      "corridorDegrees": [
+        74.6,
+        36.54
       ],
-      "lengthAfterM": 4173.3,
-      "geometrySignature": "554a5279599590e1bdbc9190791a001128e3c73f2cad3b87c2551c043da76dfa"
+      "status": "manual-review",
+      "reason": "No nearby straight with 35 m grid approach and 40 m finish runout; original geography retained."
     },
     {
       "name": "Glendora Ridge Road",
       "beforeDegrees": [
-        19.23,
-        36.25
+        0.0,
+        0.0
       ],
-      "lengthBeforeM": 4921.5,
+      "lengthBeforeM": 4316.55,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 267.66,
-      "trimFinishM": 337.29,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 47.12,
+      "trimFinishM": 41.12,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 4316.55,
-      "geometrySignature": "66e5162c25701cfd08c651550d65018c1f646395015ecdb27aa230377e388f2f"
+      "lengthAfterM": 4228.31
     },
     {
       "name": "Gold Camp Road \u2014 Colorado Springs",
       "beforeDegrees": [
-        35.07,
+        8.56,
         9.65
       ],
-      "lengthBeforeM": 5350.62,
+      "lengthBeforeM": 5293.56,
+      "lineWindowsM": [
+        40,
+        80
+      ],
+      "corridorDegrees": [
+        6.89,
+        9.65
+      ],
+      "trimStartM": 42.48,
+      "trimFinishM": 0.0,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        9.65
+      ],
+      "lengthAfterM": 5251.08
+    },
+    {
+      "name": "Grafton Notch \u2014 Maine 26",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 13985.21,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 57.06,
-      "trimFinishM": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        8.56,
-        9.65
+      "corridorDegrees": [
+        0.0,
+        0.0
       ],
-      "lengthAfterM": 5293.56,
-      "geometrySignature": "31ae657ab58d0d5e202c960c17f87b70e444b654551e4cedc915c3bf59734262"
+      "status": "already-straight"
     },
     {
-      "name": "Hallett Motor Racing Circuit \u2014 Jennings, Oklahoma",
+      "name": "Grand Canyon \u2014 Desert View Drive",
       "beforeDegrees": [
-        76.77,
-        36.23
+        7.18,
+        7.08
       ],
-      "lengthBeforeM": 2830.23,
-      "gridWindowM": 80,
-      "rotatedM": 2736.33,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "lengthBeforeM": 18503.91,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        7.96,
+        8.98
+      ],
+      "trimStartM": 148.96,
+      "trimFinishM": 95.78,
+      "status": "adjusted",
+      "afterDegrees": [
+        7.96,
+        5.43
+      ],
+      "lengthAfterM": 18259.18
+    },
+    {
+      "name": "Grand Canyon \u2014 Diamond Creek Descent",
+      "beforeDegrees": [
+        0.0,
+        9.01
+      ],
+      "lengthBeforeM": 11006.42,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        7.35,
+        8.64
+      ],
+      "trimStartM": 335.88,
+      "trimFinishM": 136.37,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 2830.23,
-      "geometrySignature": "947cf0f0d5895dace9465fc3793198da8dae5f8026dde2726bd6a954af691b9f"
+      "lengthAfterM": 10534.18
+    },
+    {
+      "name": "Haleakala \u2014 Volcano Ascent",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 10205.01,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        0.0,
+        6.42
+      ],
+      "trimStartM": 37.92,
+      "trimFinishM": 520.58,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        6.42
+      ],
+      "lengthAfterM": 9646.51
+    },
+    {
+      "name": "Hallett Motor Racing Circuit \u2014 Jennings, Oklahoma",
+      "beforeDegrees": [
+        36.23,
+        0.0
+      ],
+      "lengthBeforeM": 2830.23,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Hana Highway \u2014 Rainforest Bends",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7330.37,
+      "lineWindowsM": [
+        40,
+        80
+      ],
+      "corridorDegrees": [
+        6.61,
+        51.62
+      ],
+      "status": "manual-review",
+      "reason": "No nearby straight with 35 m grid approach and 40 m finish runout; original geography retained."
+    },
+    {
+      "name": "Hartford, CT \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7337.57,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 46.31,
+      "trimFinishM": 47.26,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7244.0
+    },
+    {
+      "name": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+      "beforeDegrees": [
+        4.6,
+        0.0
+      ],
+      "lengthBeforeM": 7531.96,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        4.6,
+        3.24
+      ],
+      "trimStartM": 42.75,
+      "trimFinishM": 67.5,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        3.24
+      ],
+      "lengthAfterM": 7421.71
+    },
+    {
+      "name": "Heartland Motorsports Park",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3967.58,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Historic Route 66",
@@ -455,31 +1243,92 @@
         80,
         80
       ],
+      "corridorDegrees": [
+        0.0,
+        0.1
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Homestead-Miami Speedway \u2014 Modified Road Course",
+      "beforeDegrees": [
+        38.2,
+        0.0
+      ],
+      "lengthBeforeM": 3521.51,
+      "gridWindowM": 80,
       "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Homestead-Miami Speedway \u2014 Oval",
+      "beforeDegrees": [
+        5.0,
+        0.0
+      ],
+      "lengthBeforeM": 2416.72,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 4.92
+    },
+    {
+      "name": "Homestead-Miami Speedway \u2014 Road Course",
+      "beforeDegrees": [
+        38.2,
+        0.0
+      ],
+      "lengthBeforeM": 3664.43,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Honolulu, HI \u2014 Landmark Run",
+      "beforeDegrees": [
+        4.68,
+        0.0
+      ],
+      "lengthBeforeM": 7445.77,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        4.68,
+        0.0
+      ],
+      "trimStartM": 37.91,
+      "trimFinishM": 47.67,
+      "status": "adjusted",
+      "afterDegrees": [
+        4.68,
+        0.0
+      ],
+      "lengthAfterM": 7360.19
     },
     {
       "name": "Hurricane Mountain Road \u2014 Conway",
       "beforeDegrees": [
         7.06,
-        27.44
+        8.76
       ],
-      "lengthBeforeM": 6832.08,
+      "lengthBeforeM": 6673.35,
       "lineWindowsM": [
         80,
-        80
+        40
       ],
-      "trimStartM": 0,
-      "trimFinishM": 158.73,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "corridorDegrees": [
         7.06,
         8.76
       ],
-      "lengthAfterM": 6673.35,
-      "geometrySignature": "ae53238e74da200086269ea3057a1685f07d48ccee8545c9324c4c10a79b400f"
+      "trimStartM": 0,
+      "trimFinishM": 48.28,
+      "status": "adjusted",
+      "afterDegrees": [
+        7.06,
+        0.0
+      ],
+      "lengthAfterM": 6625.07
     },
     {
       "name": "I-64 \u2014 St. Louis downtown approaches",
@@ -492,8 +1341,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        4.55,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "I-70 \u2014 Stan Musial Veterans Memorial Bridge",
@@ -506,8 +1358,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "I-95 \u2014 Attleboro to Warwick curves",
@@ -520,8 +1375,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "IL 100 \u2014 Great River Road bluffs",
@@ -534,8 +1392,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "In-N-Out Burger Pomona Dragstrip",
@@ -548,51 +1409,116 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
-    },
-    {
-      "name": "Jennerstown Speedway \u2014 oval",
-      "beforeDegrees": [
-        40.0,
-        11.46
-      ],
-      "lengthBeforeM": 825.03,
-      "gridWindowM": 80,
-      "rotatedM": 260.13,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "corridorDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 825.03,
-      "geometrySignature": "43e5645fd0c9c7b283993de92e8baa952250630db21ccf8beca4ce66c994011e"
+      "status": "already-straight"
     },
     {
-      "name": "Jerktail Landing gravel road",
+      "name": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
       "beforeDegrees": [
-        44.09,
-        50.61
+        0.0,
+        0.0
       ],
-      "lengthBeforeM": 4168.24,
+      "lengthBeforeM": 3906.87,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Indianapolis Motor Speedway \u2014 Oval",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 4069.96,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.23
+    },
+    {
+      "name": "Indianapolis, IN \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.67,
+        0.0
+      ],
+      "lengthBeforeM": 7613.49,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 139.21,
-      "trimFinishM": 146.15,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "corridorDegrees": [
+        0.67,
+        0.0
+      ],
+      "trimStartM": 36.36,
+      "trimFinishM": 49.22,
+      "status": "adjusted",
       "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7527.91
+    },
+    {
+      "name": "Jackson, MS \u2014 Landmark Run",
+      "beforeDegrees": [
+        2.19,
+        0.0
+      ],
+      "lengthBeforeM": 7323.39,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        2.19,
+        0.0
+      ],
+      "trimStartM": 48.98,
+      "trimFinishM": 49.85,
+      "status": "adjusted",
+      "afterDegrees": [
+        2.19,
+        0.0
+      ],
+      "lengthAfterM": 7224.56
+    },
+    {
+      "name": "Jennerstown Speedway \u2014 oval",
+      "beforeDegrees": [
+        0.0,
+        40.94
+      ],
+      "lengthBeforeM": 825.03,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Jerktail Landing gravel road",
+      "beforeDegrees": [
         7.53,
         0.0
       ],
-      "lengthAfterM": 3882.88,
-      "geometrySignature": "84ba976328bff9b6abc0cdb3b645c0af4d4aceaa5c3e97be70cdd3989c8c9b19"
+      "lengthBeforeM": 3882.88,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 337.24,
+      "trimFinishM": 44.71,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 3500.94
     },
     {
       "name": "Kancamagus Highway \u2014 NH 112",
@@ -605,8 +1531,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        6.99,
+        9.79
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Keystone Motorsports Park \u2014 New Alexandria",
@@ -619,31 +1548,70 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
-      "name": "Laurel Highlands Scenic Byway",
+      "name": "Las Vegas, NV \u2014 Landmark Run",
       "beforeDegrees": [
-        21.75,
-        9.44
+        0.0,
+        0.0
       ],
-      "lengthBeforeM": 14461.63,
+      "lengthBeforeM": 7322.09,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 99.92,
-      "trimFinishM": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "corridorDegrees": [
+        1.73,
+        0.0
+      ],
+      "trimStartM": 43.65,
+      "trimFinishM": 48.73,
+      "status": "adjusted",
       "afterDegrees": [
+        1.73,
+        0.0
+      ],
+      "lengthAfterM": 7229.71
+    },
+    {
+      "name": "Laurel Highlands Scenic Byway",
+      "beforeDegrees": [
         9.44,
         9.44
       ],
-      "lengthAfterM": 14361.72,
-      "geometrySignature": "b088ac3e5064ba23611a1e0c7286a054c205e9cc753acfc426609a0d2b759bf2"
+      "lengthBeforeM": 14361.72,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        4.41,
+        9.44
+      ],
+      "trimStartM": 96.43,
+      "trimFinishM": 0.0,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        9.44
+      ],
+      "lengthAfterM": 14265.29
+    },
+    {
+      "name": "Lime Rock Park \u2014 Both Chicanes",
+      "beforeDegrees": [
+        0.0,
+        17.75
+      ],
+      "lengthBeforeM": 2402.73,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Lime Rock Park \u2014 Connecticut",
@@ -657,27 +1625,91 @@
       "seamDegrees": 0.0
     },
     {
-      "name": "Little Tujunga Canyon Road",
+      "name": "Lime Rock Park \u2014 West Chicane",
       "beforeDegrees": [
-        37.2,
-        67.59
+        0.0,
+        1.32
       ],
-      "lengthBeforeM": 4464.31,
+      "lengthBeforeM": 2410.23,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Little Rock, AR \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 10702.87,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 45.58,
-      "trimFinishM": 176.09,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Little Tujunga Canyon Road",
+      "beforeDegrees": [
         5.39,
         9.22
       ],
-      "lengthAfterM": 4242.63,
-      "geometrySignature": "2c8d103982b8b538a4583ddd331bde43b1984fa62d51d05de5988f6b9129149b"
+      "lengthBeforeM": 4242.63,
+      "lineWindowsM": [
+        40,
+        80
+      ],
+      "corridorDegrees": [
+        5.39,
+        83.25
+      ],
+      "status": "manual-review",
+      "reason": "No nearby straight with 35 m grid approach and 40 m finish runout; original geography retained."
+    },
+    {
+      "name": "Los Angeles, CA \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7034.26,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Louisville, KY \u2014 Landmark Run",
+      "beforeDegrees": [
+        4.14,
+        0.0
+      ],
+      "lengthBeforeM": 7287.04,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        4.14,
+        0.0
+      ],
+      "trimStartM": 44.68,
+      "trimFinishM": 49.83,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7192.53
     },
     {
       "name": "MO 106 \u2014 Alley Spring approach",
@@ -690,77 +1722,83 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        8.05
+      ],
+      "status": "already-straight"
     },
     {
       "name": "MO 106 \u2014 Powder Mill approach",
       "beforeDegrees": [
         0.0,
-        13.39
+        4.03
       ],
-      "lengthBeforeM": 9507.72,
+      "lengthBeforeM": 9428.38,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 0,
-      "trimFinishM": 79.34,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "corridorDegrees": [
         0.0,
         4.03
       ],
-      "lengthAfterM": 9428.38,
-      "geometrySignature": "0c2d356dfed57a3a5d0dade0333726249718031a02af19aa06c3eca350b95cd4"
+      "trimStartM": 0,
+      "trimFinishM": 55.62,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 9372.77
     },
     {
       "name": "MO 19 \u2014 Eminence Current River",
       "beforeDegrees": [
         8.68,
-        11.46
+        0.0
       ],
-      "lengthBeforeM": 9558.58,
+      "lengthBeforeM": 9507.17,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        8.68,
+        9.25
+      ],
       "trimStartM": 0,
-      "trimFinishM": 51.41,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 273.84,
+      "status": "adjusted",
       "afterDegrees": [
         8.68,
-        0.0
+        3.34
       ],
-      "lengthAfterM": 9507.17,
-      "geometrySignature": "4b6df1abc7f58354571eae72e8727fcd918b0de0bf333d70b235baa55f515ee7"
+      "lengthAfterM": 9233.32
     },
     {
       "name": "MO 94 \u2014 Defiance Augusta",
       "beforeDegrees": [
         5.49,
-        55.9
+        4.96
       ],
-      "lengthBeforeM": 10322.46,
+      "lengthBeforeM": 10144.32,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        5.49,
+        0.0
+      ],
       "trimStartM": 0,
-      "trimFinishM": 178.14,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 68.97,
+      "status": "adjusted",
       "afterDegrees": [
         5.49,
-        4.96
+        0.0
       ],
-      "lengthAfterM": 10144.32,
-      "geometrySignature": "2c4fbf177c6e78b348592c26b74dc398d845cff0e60e728f4f5a011cd6597dd3"
+      "lengthAfterM": 10075.36
     },
     {
       "name": "MO H NN \u2014 Roberts Field access",
@@ -773,31 +1811,76 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "MO V \u2014 Two Rivers access",
       "beforeDegrees": [
         5.1,
-        14.6
+        0.0
       ],
-      "lengthBeforeM": 4723.03,
+      "lengthBeforeM": 4697.51,
       "lineWindowsM": [
         80,
-        80
+        40
+      ],
+      "corridorDegrees": [
+        5.1,
+        0.0
       ],
       "trimStartM": 0,
-      "trimFinishM": 25.51,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 46.0,
+      "status": "adjusted",
       "afterDegrees": [
         5.1,
         0.0
       ],
-      "lengthAfterM": 4697.51,
-      "geometrySignature": "1df0f2008178cce1b3519b7c459f897ffdac830cbf298b17a28f587fe8fbcd57"
+      "lengthAfterM": 4651.51
+    },
+    {
+      "name": "Magruder Corridor \u2014 Wilderness Ridge",
+      "beforeDegrees": [
+        7.34,
+        6.2
+      ],
+      "lengthBeforeM": 7263.3,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "corridorDegrees": [
+        7.34,
+        6.01
+      ],
+      "trimStartM": 36.58,
+      "trimFinishM": 858.24,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 6368.48
+    },
+    {
+      "name": "Manchester, NH \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7677.35,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Marietta\u2013Williamstown \u2014 I-77 river bridge",
@@ -810,8 +1893,70 @@
         80,
         80
       ],
+      "corridorDegrees": [
+        0.0,
+        4.09
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Maunakea \u2014 Cinder Summit",
+      "beforeDegrees": [
+        0.0,
+        4.12
+      ],
+      "lengthBeforeM": 10454.54,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        0.0,
+        4.12
+      ],
+      "trimStartM": 36.7,
+      "trimFinishM": 73.12,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 10344.72
+    },
+    {
+      "name": "Miami, FL \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7490.83,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 47.5,
+      "trimFinishM": 47.06,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7396.27
+    },
+    {
+      "name": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+      "beforeDegrees": [
+        0.0,
+        30.22
+      ],
+      "lengthBeforeM": 3642.68,
+      "gridWindowM": 80,
       "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "seamDegrees": 0.0
     },
     {
       "name": "Mid-Ohio Sports Car Course \u2014 Lexington",
@@ -825,6 +1970,51 @@
       "seamDegrees": 2.28
     },
     {
+      "name": "Mid-Ohio Sports Car Course \u2014 Short Course",
+      "beforeDegrees": [
+        30.94,
+        0.0
+      ],
+      "lengthBeforeM": 2727.78,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Milwaukee, WI \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7519.14,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Minneapolis, MN \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 10146.2,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
       "name": "Moki Dugway",
       "beforeDegrees": [
         0.0,
@@ -835,8 +2025,22 @@
         80,
         80
       ],
+      "corridorDegrees": [
+        0.0,
+        5.48
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Motorsport Park Hastings",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3365.52,
+      "gridWindowM": 80,
       "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "seamDegrees": 0.0
     },
     {
       "name": "Mount Washington Auto Road \u2014 point-to-point",
@@ -849,27 +2053,164 @@
       "reason": "Keep the authored cold-open staging or existing mountain summit finish."
     },
     {
+      "name": "Mount Washington Auto Road \u2014 point-to-point Copy",
+      "beforeDegrees": [
+        13.49,
+        172.82
+      ],
+      "lengthBeforeM": 12117.07,
+      "status": "preserved-authored-stage",
+      "reason": "Keep the authored cold-open staging or existing mountain summit finish."
+    },
+    {
       "name": "Muley Point Road \u2014 CR 241",
       "beforeDegrees": [
         9.46,
-        155.59
+        0.0
       ],
-      "lengthBeforeM": 5663.7,
+      "lengthBeforeM": 5468.98,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        9.46,
+        0.0
+      ],
       "trimStartM": 0,
-      "trimFinishM": 194.73,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 42.04,
+      "status": "adjusted",
       "afterDegrees": [
         9.46,
         0.0
       ],
-      "lengthAfterM": 5468.98,
-      "geometrySignature": "54c1d4461a2103a315111d6fe0ffd0e9ebf2f4a55b9d8e6bc5d65e13d9357b86"
+      "lengthAfterM": 5426.94
+    },
+    {
+      "name": "NCCAR \u2014 Road Course",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3269.05,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "NCM Motorsports Park",
+      "beforeDegrees": [
+        16.41,
+        0.0
+      ],
+      "lengthBeforeM": 5046.27,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 6.48
+    },
+    {
+      "name": "NJMP \u2014 Thunderbolt",
+      "beforeDegrees": [
+        5.83,
+        0.0
+      ],
+      "lengthBeforeM": 3495.21,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "NOLA Motorsports Park",
+      "beforeDegrees": [
+        0.0,
+        20.81
+      ],
+      "lengthBeforeM": 4422.28,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Nashville, TN \u2014 Landmark Run",
+      "beforeDegrees": [
+        1.43,
+        0.0
+      ],
+      "lengthBeforeM": 7592.83,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        2.6,
+        0.0
+      ],
+      "trimStartM": 51.71,
+      "trimFinishM": 48.69,
+      "status": "adjusted",
+      "afterDegrees": [
+        1.17,
+        0.0
+      ],
+      "lengthAfterM": 7492.44
+    },
+    {
+      "name": "Natchez Trace \u2014 Tishomingo",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 13611.02,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "National Road \u2014 Sideling Hill",
+      "beforeDegrees": [
+        0.0,
+        2.52
+      ],
+      "lengthBeforeM": 8619.58,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        2.52
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Needles Highway \u2014 Granite Gates",
+      "beforeDegrees": [
+        5.76,
+        9.2
+      ],
+      "lengthBeforeM": 10457.12,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        3.31
+      ],
+      "trimStartM": 267.68,
+      "trimFinishM": 426.01,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        3.31
+      ],
+      "lengthAfterM": 9763.43
     },
     {
       "name": "New England Dragway \u2014 Epping",
@@ -882,28 +2223,91 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "New Hampshire Motor Speedway \u2014 Loudon",
       "beforeDegrees": [
-        30.88,
-        9.89
+        1.13,
+        0.0
       ],
       "lengthBeforeM": 2571.66,
       "gridWindowM": 80,
-      "rotatedM": 2186.29,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "New Orleans, LA \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7728.91,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "New York, NY \u2014 Landmark Run",
+      "beforeDegrees": [
+        7.88,
+        0.0
+      ],
+      "lengthBeforeM": 7479.68,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 57.17,
+      "trimFinishM": 48.08,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 2571.66,
-      "geometrySignature": "9bd4b8cf0900431c76c9284e50962df8b4b0b75b76354169753974b439861a0a"
+      "lengthAfterM": 7374.42
+    },
+    {
+      "name": "Newark, NJ \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.2,
+        0.0
+      ],
+      "lengthBeforeM": 7456.59,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.2,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Nurburgring Nordschleife",
+      "beforeDegrees": [
+        12.52,
+        4.57
+      ],
+      "lengthBeforeM": 20729.17,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "OH 26 \u2014 Covered Bridge Scenic Byway",
@@ -916,166 +2320,183 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        7.27
+      ],
+      "status": "already-straight"
     },
     {
       "name": "OH 536 \u2014 Ohio River hills",
       "beforeDegrees": [
-        29.15,
-        79.66
+        9.6,
+        45.37
       ],
-      "lengthBeforeM": 5379.13,
+      "lengthBeforeM": 5167.62,
       "lineWindowsM": [
         80,
         40
       ],
-      "trimStartM": 131.9,
-      "trimFinishM": 79.61,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "corridorDegrees": [
+        7.97,
+        5.27
+      ],
+      "trimStartM": 223.54,
+      "trimFinishM": 509.32,
+      "status": "adjusted",
       "afterDegrees": [
-        9.6,
+        0.0,
         0.0
       ],
-      "lengthAfterM": 5167.62,
-      "geometrySignature": "c8646ec37929362ec6f7a7ee7bdde1b4eaeee3060124ad36586af8b507925076"
+      "lengthAfterM": 4434.77
     },
     {
       "name": "OH 550 \u2014 Barlow approach",
       "beforeDegrees": [
-        15.95,
-        17.17
+        3.96,
+        9.5
       ],
-      "lengthBeforeM": 11544.04,
+      "lengthBeforeM": 11425.59,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 95.91,
-      "trimFinishM": 22.55,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        3.96,
-        9.5
+      "corridorDegrees": [
+        0.0,
+        0.0
       ],
-      "lengthAfterM": 11425.59,
-      "geometrySignature": "61b45476e32ffd5986f596565e61a2a636dd74549fc2a97cc8e4e1e09b175c4a"
+      "trimStartM": 67.76,
+      "trimFinishM": 197.72,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 11160.1
     },
     {
       "name": "OH 555 \u2014 Triple Nickel",
       "beforeDegrees": [
-        72.3,
-        47.36
+        9.22,
+        0.0
       ],
-      "lengthBeforeM": 7030.47,
+      "lengthBeforeM": 6891.01,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 71.89,
-      "trimFinishM": 67.57,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "corridorDegrees": [
         9.22,
+        3.62
+      ],
+      "trimStartM": 36.25,
+      "trimFinishM": 189.63,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
         0.0
       ],
-      "lengthAfterM": 6891.01,
-      "geometrySignature": "039e5d4e303563f0c3c156258d773055463177b16bdf79780339f57d58491288"
+      "lengthAfterM": 6665.13
     },
     {
       "name": "OH 676 \u2014 Western county hills",
       "beforeDegrees": [
-        63.08,
-        46.51
-      ],
-      "lengthBeforeM": 5919.88,
-      "lineWindowsM": [
-        80,
-        80
-      ],
-      "trimStartM": 372.25,
-      "trimFinishM": 61.52,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
         3.71,
         6.37
       ],
-      "lengthAfterM": 5486.11,
-      "geometrySignature": "a36a6a61c30b493317b4b865b72380dff2106656f529a3239c8526cbc2ea8cbb"
+      "lengthBeforeM": 5486.11,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "corridorDegrees": [
+        3.71,
+        0.0
+      ],
+      "trimStartM": 44.1,
+      "trimFinishM": 316.69,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 5125.32
     },
     {
       "name": "Oak Creek Canyon",
       "beforeDegrees": [
-        29.69,
-        17.57
+        9.17,
+        7.3
       ],
-      "lengthBeforeM": 12861.86,
+      "lengthBeforeM": 12605.7,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 178.83,
-      "trimFinishM": 77.33,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "corridorDegrees": [
         9.17,
-        7.3
+        9.64
       ],
-      "lengthAfterM": 12605.7,
-      "geometrySignature": "64198061bf7c298b93b47671aa7ad88b912521ab95dd1a025b003dc90aea5a9c"
+      "trimStartM": 40.45,
+      "trimFinishM": 307.26,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        4.36
+      ],
+      "lengthAfterM": 12257.99
     },
     {
       "name": "Ohio River Crossing",
       "beforeDegrees": [
         7.57,
-        25.52
+        6.5
       ],
-      "lengthBeforeM": 13252.97,
+      "lengthBeforeM": 13153.46,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 0,
-      "trimFinishM": 99.51,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "corridorDegrees": [
         7.57,
         6.5
       ],
-      "lengthAfterM": 13153.46,
-      "geometrySignature": "cbf6bfba4d0faba344f74c645c44e27f64f1b773a2a3c92bebbeae09dc9082dd"
+      "trimStartM": 0,
+      "trimFinishM": 41.24,
+      "status": "adjusted",
+      "afterDegrees": [
+        7.57,
+        0.0
+      ],
+      "lengthAfterM": 13112.22
     },
     {
       "name": "Ohio Valley Speedway \u2014 Washington, West Virginia",
       "beforeDegrees": [
-        125.07,
-        0.0
+        46.55,
+        17.36
       ],
       "lengthBeforeM": 452.42,
       "gridWindowM": 80,
-      "rotatedM": 402.48,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Oklahoma City, OK \u2014 Landmark Run",
+      "beforeDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 452.42,
-      "geometrySignature": "2e4f27be4796eb358063ea9016a9c5a9c131e17e3230f56e745cf22826904c04"
+      "lengthBeforeM": 8222.88,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Old Route 66 \u2014 Adrian Glenrio",
@@ -1088,8 +2509,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Old Route 66 \u2014 Groom Conway",
@@ -1102,31 +2526,35 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Old Route 66 \u2014 Shamrock McLean",
       "beforeDegrees": [
         0.0,
-        23.13
+        6.06
       ],
-      "lengthBeforeM": 9613.43,
+      "lengthBeforeM": 9521.4,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
       "trimStartM": 0,
-      "trimFinishM": 92.04,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 75.41,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
-        6.06
+        0.0
       ],
-      "lengthAfterM": 9521.4,
-      "geometrySignature": "a4f81adf9c2faaafb04016405e08d24add77950bb87ccdbbde52de331c95d128"
+      "lengthAfterM": 9445.99
     },
     {
       "name": "Old Route 66 \u2014 Vega Adrian",
@@ -1139,51 +2567,118 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Old Staples Road",
+      "beforeDegrees": [
+        36.8,
+        27.32
+      ],
+      "lengthBeforeM": 2367.67,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "corridorDegrees": [
+        4.5,
+        0.0
+      ],
+      "trimStartM": 211.01,
+      "trimFinishM": 153.99,
+      "status": "adjusted",
+      "afterDegrees": [
+        4.5,
+        0.0
+      ],
+      "lengthAfterM": 2002.68
+    },
+    {
+      "name": "Omaha, NE \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7316.36,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        7.83
+      ],
+      "trimStartM": 48.2,
+      "trimFinishM": 488.63,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 6779.53
+    },
+    {
+      "name": "Ouninpohja",
+      "beforeDegrees": [
+        6.78,
+        6.58
+      ],
+      "lengthBeforeM": 17224.96,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        3.05,
+        6.58
+      ],
+      "trimStartM": 129.7,
+      "trimFinishM": 78.62,
+      "status": "adjusted",
+      "afterDegrees": [
+        3.05,
+        0.0
+      ],
+      "lengthAfterM": 17016.65
     },
     {
       "name": "Ozark Backroads",
       "beforeDegrees": [
         3.77,
-        11.41
+        5.99
       ],
-      "lengthBeforeM": 13929.32,
+      "lengthBeforeM": 13701.11,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        3.77,
+        0.0
+      ],
       "trimStartM": 0,
-      "trimFinishM": 228.21,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 111.14,
+      "status": "adjusted",
       "afterDegrees": [
         3.77,
-        5.99
+        0.0
       ],
-      "lengthAfterM": 13701.11,
-      "geometrySignature": "f85da7b0f8cca043bc5fb307aa17b60c382b24f0a8266526fe7e97860729eaa0"
+      "lengthAfterM": 13589.97
     },
     {
       "name": "Ozarks International Raceway \u2014 Gravois Mills",
       "beforeDegrees": [
-        68.41,
-        71.0
+        13.49,
+        6.8
       ],
       "lengthBeforeM": 6399.97,
       "gridWindowM": 80,
-      "rotatedM": 6019.66,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        0.0,
-        0.0
-      ],
-      "lengthAfterM": 6399.97,
-      "geometrySignature": "f4b52c8487f70166e7b6cf983910939054a89b769c2f86ad57929a6de26f8c68"
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "PA 31 \u2014 Donegal to Laurel Ridge",
@@ -1196,31 +2691,35 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        5.39,
+        5.61
+      ],
+      "status": "already-straight"
     },
     {
       "name": "PA 381 \u2014 Ohiopyle approach",
       "beforeDegrees": [
-        14.56,
+        9.39,
         5.43
       ],
-      "lengthBeforeM": 11193.04,
+      "lengthBeforeM": 11133.26,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 59.78,
-      "trimFinishM": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        9.39,
+      "corridorDegrees": [
+        0.0,
         5.43
       ],
-      "lengthAfterM": 11133.26,
-      "geometrySignature": "d465454467e62d769610adc7f2c02d1d0dcf0446f8b579fdd08edfe0eb79b32e"
+      "trimStartM": 192.8,
+      "trimFinishM": 0.0,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        5.43
+      ],
+      "lengthAfterM": 10940.46
     },
     {
       "name": "PA 711 \u2014 Normalville Champion",
@@ -1233,31 +2732,46 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        9.19,
+        6.43
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Pachaug State Forest \u2014 public gravel access roads",
       "beforeDegrees": [
         6.43,
-        41.55
+        0.0
       ],
-      "lengthBeforeM": 4947.42,
+      "lengthBeforeM": 4754.48,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        6.43,
+        0.0
+      ],
       "trimStartM": 0,
-      "trimFinishM": 192.94,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 254.9,
+      "status": "adjusted",
       "afterDegrees": [
         6.43,
         0.0
       ],
-      "lengthAfterM": 4754.48,
-      "geometrySignature": "cb17149abcc4f71de18b5f9ba2dda1721512bc968d3274a33aeb3115053c2f47"
+      "lengthAfterM": 4499.57
+    },
+    {
+      "name": "Pacific Raceways",
+      "beforeDegrees": [
+        10.63,
+        10.36
+      ],
+      "lengthBeforeM": 3620.99,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Page Springs Road",
@@ -1270,117 +2784,163 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        6.37
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Palmer Motorsports Park \u2014 Massachusetts",
       "beforeDegrees": [
-        47.15,
-        22.85
+        17.53,
+        0.0
       ],
       "lengthBeforeM": 3659.85,
       "gridWindowM": 80,
-      "rotatedM": 172.07,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        0.0,
-        0.0
-      ],
-      "lengthAfterM": 3659.85,
-      "geometrySignature": "806e5a06ef73920c251e06c2c934950f1bd57bea336f58f735bbce6fc77294b8"
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Palo Duro Canyon \u2014 Park Road 5",
       "beforeDegrees": [
-        55.67,
-        23.22
-      ],
-      "lengthBeforeM": 6711.63,
-      "lineWindowsM": [
-        80,
-        80
-      ],
-      "trimStartM": 204.96,
-      "trimFinishM": 262.52,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
         6.76,
         7.51
       ],
-      "lengthAfterM": 6244.15,
-      "geometrySignature": "f21b56b0982070b3a9cbb8e7b1a0d0357d7f33754115bdbe8a74acfd4685fdf2"
+      "lengthBeforeM": 6244.15,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        9.74,
+        7.0
+      ],
+      "trimStartM": 131.27,
+      "trimFinishM": 89.51,
+      "status": "adjusted",
+      "afterDegrees": [
+        9.74,
+        0.0
+      ],
+      "lengthAfterM": 6023.37
     },
     {
       "name": "Phantom Canyon Road \u2014 Gold Belt Tour",
       "beforeDegrees": [
-        70.65,
+        9.49,
         8.07
       ],
-      "lengthBeforeM": 3320.54,
+      "lengthBeforeM": 3002.15,
       "lineWindowsM": [
         40,
         80
       ],
-      "trimStartM": 318.39,
-      "trimFinishM": 0.0,
-      "status": "already-reviewed",
+      "corridorDegrees": [
+        9.49,
+        0.0
+      ],
+      "trimStartM": 53.54,
+      "trimFinishM": 145.61,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
-        8.07
+        0.0
       ],
-      "lengthAfterM": 3002.15,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "geometrySignature": "a76bf363e3d74b6982cb63108af3127d884d89fda54864eb85159c9d704bb7d6"
+      "lengthAfterM": 2803.0
     },
     {
-      "name": "Pikes Peak Highway",
+      "name": "Philadelphia, PA \u2014 Landmark Run",
       "beforeDegrees": [
-        159.5,
-        66.7
+        0.0,
+        0.0
       ],
-      "lengthBeforeM": 10424.16,
+      "lengthBeforeM": 6495.28,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 210.04,
-      "trimFinishM": 268.5,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "corridorDegrees": [
+        0.0,
+        0.2
+      ],
+      "trimStartM": 49.21,
+      "trimFinishM": 156.56,
+      "status": "adjusted",
       "afterDegrees": [
+        0.0,
+        0.2
+      ],
+      "lengthAfterM": 6289.51
+    },
+    {
+      "name": "Phoenix, AZ \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7482.49,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Pig Trail \u2014 Arkansas 23",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 12790.64,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Pikes Peak Highway",
+      "beforeDegrees": [
         5.83,
         0.0
       ],
-      "lengthAfterM": 9945.62,
-      "geometrySignature": "00f8b7ff57cc8313640f93cde75f8411bb412fe2a5a10153551262f50b02f03d"
-    },
-    {
-      "name": "Pikes Peak International Raceway \u2014 Fountain",
-      "beforeDegrees": [
-        33.75,
-        32.6
+      "lengthBeforeM": 9945.62,
+      "lineWindowsM": [
+        40,
+        80
       ],
-      "lengthBeforeM": 2113.15,
-      "gridWindowM": 80,
-      "rotatedM": 261.59,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "corridorDegrees": [
+        7.41,
+        0.0
+      ],
+      "trimStartM": 471.52,
+      "trimFinishM": 289.35,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 2113.15,
-      "geometrySignature": "bab486655b117edcd6cac7b3ba5b0ef8d9dd112116713f3e75661d37500c2040"
+      "lengthAfterM": 9184.75
+    },
+    {
+      "name": "Pikes Peak International Raceway \u2014 Fountain",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 2113.15,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Pinkham Notch \u2014 NH 16",
@@ -1393,68 +2953,144 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        8.88,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Pittsburgh International Race Complex \u2014 Wampum",
       "beforeDegrees": [
-        169.86,
-        93.76
+        0.0,
+        46.45
       ],
       "lengthBeforeM": 4471.43,
       "gridWindowM": 80,
-      "rotatedM": 4132.24,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        0.0,
-        0.0
-      ],
-      "lengthAfterM": 4471.43,
-      "geometrySignature": "d60b4e5fadb95765b68af0769cbcd8fcf711f9bdbe8ac6ebae3153c41e7678fe"
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Podium Club at Attesa \u2014 Casa Grande",
       "beforeDegrees": [
-        7.69,
-        17.74
+        0.0,
+        0.0
       ],
       "lengthBeforeM": 3724.7,
       "gridWindowM": 80,
-      "rotatedM": 2990.86,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Ponderosa Pine \u2014 Idaho 21",
+      "beforeDegrees": [
+        0.0,
+        9.93
+      ],
+      "lengthBeforeM": 7504.15,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        9.93
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Portland International Raceway",
+      "beforeDegrees": [
+        33.44,
+        0.0
+      ],
+      "lengthBeforeM": 3156.88,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Portland, ME \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        9.32
+      ],
+      "lengthBeforeM": 7009.97,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 43.8,
+      "trimFinishM": 59.62,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 3724.7,
-      "geometrySignature": "31f2d1b4b0f0d40aeb68fab9b537b647512a58ffd137e01879385de47ab3ace1"
+      "lengthAfterM": 6906.55
+    },
+    {
+      "name": "Portland, OR \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7330.4,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.85,
+        0.0
+      ],
+      "trimStartM": 45.44,
+      "trimFinishM": 148.66,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.85,
+        0.0
+      ],
+      "lengthAfterM": 7136.29
+    },
+    {
+      "name": "Providence, RI \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7560.14,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 167.51,
+      "trimFinishM": 44.37,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7348.25
     },
     {
       "name": "Pueblo Motorsports Park \u2014 road course or drag strip",
       "beforeDegrees": [
-        59.88,
-        15.26
+        0.0,
+        49.13
       ],
       "lengthBeforeM": 3509.56,
       "gridWindowM": 80,
-      "rotatedM": 796.17,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        0.0,
-        0.0
-      ],
-      "lengthAfterM": 3509.56,
-      "geometrySignature": "9b67a422967d4e922012f20e5e152edc9b21d41609fb4857d30a222e41bc4ed4"
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "RI 102 \u2014 Victory Highway",
@@ -1467,31 +3103,35 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        5.37
+      ],
+      "status": "already-straight"
     },
     {
       "name": "RI 116 \u2014 North Smithfield Scituate",
       "beforeDegrees": [
-        26.92,
+        7.81,
         9.07
       ],
-      "lengthBeforeM": 9373.98,
+      "lengthBeforeM": 9233.03,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 140.95,
-      "trimFinishM": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "corridorDegrees": [
         7.81,
         9.07
       ],
-      "lengthAfterM": 9233.03,
-      "geometrySignature": "77bf3aa41fa458e43dff445ee24fbc5ca81065b1e3def794c7ae45ccac3b57f4"
+      "trimStartM": 51.21,
+      "trimFinishM": 0.0,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        9.07
+      ],
+      "lengthAfterM": 9181.83
     },
     {
       "name": "RI 44 \u2014 Putnam Pike Glocester",
@@ -1504,8 +3144,94 @@
         80,
         80
       ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Raceway Park of the Midlands",
+      "beforeDegrees": [
+        19.71,
+        0.0
+      ],
+      "lengthBeforeM": 3572.07,
+      "gridWindowM": 80,
       "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Richmond, VA \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 8623.77,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Road America \u2014 Full Course",
+      "beforeDegrees": [
+        9.31,
+        0.0
+      ],
+      "lengthBeforeM": 6434.48,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Road America \u2014 The Bend",
+      "beforeDegrees": [
+        5.88,
+        4.0
+      ],
+      "lengthBeforeM": 6489.51,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 5.15
+    },
+    {
+      "name": "Road Atlanta \u2014 Club Course",
+      "beforeDegrees": [
+        3.78,
+        6.38
+      ],
+      "lengthBeforeM": 1447.33,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Road Atlanta \u2014 Grand Prix",
+      "beforeDegrees": [
+        4.01,
+        0.0
+      ],
+      "lengthBeforeM": 4086.48,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Road Atlanta \u2014 Short Course",
+      "beforeDegrees": [
+        0.0,
+        4.13
+      ],
+      "lengthBeforeM": 2852.21,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Route 66 \u2014 Bridgeport Pony Bridge, Oklahoma",
@@ -1518,189 +3244,445 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        4.73
+      ],
+      "status": "already-straight"
     },
     {
       "name": "SR 179 \u2014 Red Rock Scenic Byway",
       "beforeDegrees": [
-        166.48,
+        6.28,
         0.0
       ],
-      "lengthBeforeM": 7880.67,
+      "lengthBeforeM": 7821.55,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 59.12,
-      "trimFinishM": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        6.28,
+      "corridorDegrees": [
+        0.0,
         0.0
       ],
-      "lengthAfterM": 7821.55,
-      "geometrySignature": "9922aa4084481d666275f1d681fa9e72386169b180e871c894cca8c8391ff2c8"
+      "trimStartM": 58.99,
+      "trimFinishM": 0.0,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7762.56
     },
     {
       "name": "SR 89A \u2014 Mingus Mountain Jerome",
       "beforeDegrees": [
         7.34,
-        13.2
+        9.07
       ],
-      "lengthBeforeM": 6159.93,
+      "lengthBeforeM": 6112.06,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        7.34,
+        0.0
+      ],
       "trimStartM": 0,
-      "trimFinishM": 47.87,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 306.08,
+      "status": "adjusted",
       "afterDegrees": [
         7.34,
-        9.07
+        0.0
       ],
-      "lengthAfterM": 6112.06,
-      "geometrySignature": "38ac72795d6f3cecfbd6fbfd77930ec5daeaa80533bde1b0001f72fb04c48c9a"
+      "lengthAfterM": 5805.98
+    },
+    {
+      "name": "Salt Lake City, UT \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7692.59,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 47.25,
+      "trimFinishM": 253.92,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7391.43
+    },
+    {
+      "name": "San Antonio, TX \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7270.28,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "San Gabriel Canyon Road \u2014 SR 39",
       "beforeDegrees": [
-        11.65,
-        44.51
+        0.0,
+        6.32
       ],
-      "lengthBeforeM": 6771.95,
+      "lengthBeforeM": 6424.49,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 165.1,
-      "trimFinishM": 182.37,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "corridorDegrees": [
+        0.0,
+        9.48
+      ],
+      "trimStartM": 47.07,
+      "trimFinishM": 395.26,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
-        6.32
+        0.0
       ],
-      "lengthAfterM": 6424.49,
-      "geometrySignature": "9198415dae3edcab6ce5efcf55e9aaabaadb9ae5c1c3e4f32312efc18e13f3e8"
+      "lengthAfterM": 5982.16
+    },
+    {
+      "name": "Sandhills Journey \u2014 Open Prairie",
+      "beforeDegrees": [
+        0.0,
+        2.93
+      ],
+      "lengthBeforeM": 26280.94,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        2.93
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Sandia Speedway \u2014 Road Course",
+      "beforeDegrees": [
+        11.51,
+        0.0
+      ],
+      "lengthBeforeM": 2638.15,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 2.39
     },
     {
       "name": "Schnebly Hill Road \u2014 Sedona",
       "beforeDegrees": [
-        107.74,
+        11.37,
         41.68
       ],
-      "lengthBeforeM": 3944.48,
+      "lengthBeforeM": 3744.53,
       "lineWindowsM": [
         40,
         40
       ],
-      "trimStartM": 199.95,
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 557.07,
       "trimFinishM": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 3744.53,
-      "geometrySignature": "9a9ed0a2b07bf394941dcf6d3a69b0083d01abbcc47e4e3ae04f61f0ca717bb8"
+      "lengthAfterM": 3187.47
+    },
+    {
+      "name": "Seattle, WA \u2014 Landmark Run",
+      "beforeDegrees": [
+        6.87,
+        2.65
+      ],
+      "lengthBeforeM": 7563.35,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        6.87,
+        2.65
+      ],
+      "trimStartM": 48.44,
+      "trimFinishM": 54.38,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7460.53
+    },
+    {
+      "name": "Sebring International Raceway \u2014 Club Circuit",
+      "beforeDegrees": [
+        32.53,
+        0.0
+      ],
+      "lengthBeforeM": 2685.89,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 2.21
+    },
+    {
+      "name": "Sebring International Raceway \u2014 Full Circuit",
+      "beforeDegrees": [
+        0.0,
+        2.84
+      ],
+      "lengthBeforeM": 5862.05,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 7.74
+    },
+    {
+      "name": "Sebring International Raceway \u2014 Short Circuit",
+      "beforeDegrees": [
+        21.25,
+        0.0
+      ],
+      "lengthBeforeM": 3116.93,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Seekonk Speedway \u2014 oval",
       "beforeDegrees": [
-        56.44,
-        81.28
+        46.58,
+        67.32
       ],
       "lengthBeforeM": 448.76,
       "gridWindowM": 40,
-      "rotatedM": 41.7,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        0.0,
-        0.0
-      ],
-      "lengthAfterM": 448.76,
-      "geometrySignature": "208f7187577283a2a2954e3dca73f47c02c598c198b362adecfc6b2443e5c166"
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Shafer Trail \u2014 Canyonlands National Park",
       "beforeDegrees": [
-        97.76,
+        8.06,
         20.6
       ],
-      "lengthBeforeM": 3537.95,
-      "lineWindowsM": [
-        80,
-        40
-      ],
-      "trimStartM": 136.15,
-      "trimFinishM": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        8.06,
-        0.0
-      ],
-      "lengthAfterM": 3401.8,
-      "geometrySignature": "fbdcce58201bfd6e4f03eee76f682ed67d75836dae671169163016355e51b97a"
-    },
-    {
-      "name": "Shelf Road \u2014 Gold Belt Tour",
-      "beforeDegrees": [
-        92.05,
-        19.37
-      ],
-      "lengthBeforeM": 3665.56,
+      "lengthBeforeM": 3401.8,
       "lineWindowsM": [
         40,
         40
       ],
-      "trimStartM": 67.03,
-      "trimFinishM": 19.96,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 256.09,
+      "trimFinishM": 0.0,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 3578.58,
-      "geometrySignature": "46357202409651cba3089c26236fd938d6540a0ea38b6131a7bafd68119c2ad1"
+      "lengthAfterM": 3145.71
+    },
+    {
+      "name": "Shelf Road \u2014 Gold Belt Tour",
+      "beforeDegrees": [
+        53.03,
+        11.44
+      ],
+      "lengthBeforeM": 3578.58,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "corridorDegrees": [
+        0.0,
+        5.21
+      ],
+      "trimStartM": 294.3,
+      "trimFinishM": 487.03,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 2797.25
+    },
+    {
+      "name": "Sioux Falls, SD \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        8.3
+      ],
+      "lengthBeforeM": 7438.9,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        8.5,
+        1.1
+      ],
+      "trimStartM": 40.37,
+      "trimFinishM": 154.77,
+      "status": "adjusted",
+      "afterDegrees": [
+        8.5,
+        1.1
+      ],
+      "lengthAfterM": 7243.76
+    },
+    {
+      "name": "Skalkaho Pass \u2014 Forest Rally",
+      "beforeDegrees": [
+        0.0,
+        26.78
+      ],
+      "lengthBeforeM": 8719.42,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        9.07,
+        7.96
+      ],
+      "trimStartM": 35.56,
+      "trimFinishM": 624.11,
+      "status": "adjusted",
+      "afterDegrees": [
+        9.07,
+        0.0
+      ],
+      "lengthAfterM": 8059.75
     },
     {
       "name": "Skyline Drive \u2014 Ca\u00f1on City",
       "beforeDegrees": [
         2.13,
-        11.32
+        0.0
       ],
-      "lengthBeforeM": 4136.58,
+      "lengthBeforeM": 4026.13,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        2.13,
+        0.0
+      ],
       "trimStartM": 0,
-      "trimFinishM": 110.46,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 45.27,
+      "status": "adjusted",
       "afterDegrees": [
         2.13,
         0.0
       ],
-      "lengthAfterM": 4026.13,
-      "geometrySignature": "776fdbf88ff40e76c7f6be7b01db26ef3bd2a3ba140b3476e31aa1f243f933b1"
+      "lengthAfterM": 3980.86
+    },
+    {
+      "name": "Smugglers Notch \u2014 Vermont 108",
+      "beforeDegrees": [
+        0.0,
+        4.73
+      ],
+      "lengthBeforeM": 12756.32,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        4.73
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Spring Mountain \u2014 North South",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3498.76,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "St. Louis, MO \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 8324.98,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Studio Sprint",
+      "status": "too-short"
+    },
+    {
+      "name": "Studio Sprint Copy",
+      "status": "too-short"
+    },
+    {
+      "name": "Studio Sprint2",
+      "status": "too-short"
+    },
+    {
+      "name": "Tantalus \u2014 Honolulu Heights",
+      "beforeDegrees": [
+        0.0,
+        9.1
+      ],
+      "lengthBeforeM": 8657.9,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        9.78,
+        4.58
+      ],
+      "trimStartM": 234.72,
+      "trimFinishM": 557.41,
+      "status": "adjusted",
+      "afterDegrees": [
+        9.78,
+        0.0
+      ],
+      "lengthAfterM": 7865.77
     },
     {
       "name": "Team O\u2019Neil-inspired Rally Stage (2994)",
@@ -1713,28 +3695,63 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
-      "name": "Thompson Speedway \u2014 1.7-mile road course",
+      "name": "Theodore Roosevelt \u2014 North Unit Drive",
       "beforeDegrees": [
-        48.72,
-        45.15
+        9.66,
+        2.58
       ],
-      "lengthBeforeM": 2415.51,
-      "gridWindowM": 80,
-      "rotatedM": 1442.19,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "lengthBeforeM": 8036.96,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        2.58
+      ],
+      "trimStartM": 71.28,
+      "trimFinishM": 59.32,
+      "status": "adjusted",
       "afterDegrees": [
         0.0,
         0.0
       ],
-      "lengthAfterM": 2415.51,
-      "geometrySignature": "833923abf21c419f9eb338403ce6befd10f8ea2795afab60ff6778488f0258cf"
+      "lengthAfterM": 7906.37
+    },
+    {
+      "name": "Thompson Pass \u2014 Snowline Climb",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 14020.97,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Thompson Speedway \u2014 1.7-mile road course",
+      "beforeDegrees": [
+        40.33,
+        0.0
+      ],
+      "lengthBeforeM": 2415.51,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Tower Hill Road",
@@ -1757,8 +3774,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "US 191 \u2014 Bluff Blanding",
@@ -1771,8 +3791,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "US 24 \u2014 Ute Pass Woodland Park",
@@ -1785,8 +3808,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "US 40 \u2014 Chalk Hill Summit",
@@ -1799,8 +3825,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "US 60 \u2014 Winona Van Buren",
@@ -1813,8 +3842,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "UT 276 \u2014 Halls Crossing approach",
@@ -1827,31 +3859,35 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "UT 316 \u2014 Goosenecks State Park Road",
       "beforeDegrees": [
-        26.67,
-        13.71
+        7.79,
+        0.0
       ],
-      "lengthBeforeM": 5673.56,
+      "lengthBeforeM": 5578.33,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 78.48,
-      "trimFinishM": 16.75,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
-        7.79,
+      "corridorDegrees": [
+        0.0,
         0.0
       ],
-      "lengthAfterM": 5578.33,
-      "geometrySignature": "436ccf2f66f4cf2c053a99f2e0e36c9d0865041aafd8587266de7babe5e4b9b7"
+      "trimStartM": 79.6,
+      "trimFinishM": 44.6,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 5454.13
     },
     {
       "name": "UT 95 \u2014 Comb Ridge Cedar Mesa",
@@ -1864,100 +3900,234 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "Upper Big Tujunga Canyon Road",
       "beforeDegrees": [
         7.31,
-        56.19
+        0.0
       ],
-      "lengthBeforeM": 8223.0,
+      "lengthBeforeM": 8170.57,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        7.31,
+        0.0
+      ],
       "trimStartM": 0,
-      "trimFinishM": 52.43,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 41.08,
+      "status": "adjusted",
       "afterDegrees": [
         7.31,
         0.0
       ],
-      "lengthAfterM": 8170.57,
-      "geometrySignature": "5c03bef489b0018ec34889ac3fed11dfcbc743b029c8ed27d274e7ab9ba5faec"
+      "lengthAfterM": 8129.49
     },
     {
       "name": "Upper Lower Red Rock Loop Road",
       "beforeDegrees": [
-        42.99,
-        18.29
-      ],
-      "lengthBeforeM": 6045.03,
-      "lineWindowsM": [
-        80,
-        80
-      ],
-      "trimStartM": 98.93,
-      "trimFinishM": 37.2,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
         5.26,
         10.0
       ],
-      "lengthAfterM": 5908.91,
-      "geometrySignature": "2d3e20c4a75970f7c9004dd4c645c49cd4ab6751930c87f90842ab7d7af952fe"
+      "lengthBeforeM": 5908.91,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "corridorDegrees": [
+        5.26,
+        7.95
+      ],
+      "trimStartM": 39.5,
+      "trimFinishM": 640.14,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 5229.27
     },
     {
       "name": "Valley of the Gods Road \u2014 San Juan CR 242",
       "beforeDegrees": [
-        23.05,
-        48.16
+        9.81,
+        33.0
       ],
-      "lengthBeforeM": 4253.53,
+      "lengthBeforeM": 4093.56,
       "lineWindowsM": [
         80,
         40
       ],
-      "trimStartM": 123.48,
-      "trimFinishM": 36.5,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "corridorDegrees": [
+        7.74,
+        8.32
+      ],
+      "trimStartM": 121.84,
+      "trimFinishM": 456.92,
+      "status": "adjusted",
       "afterDegrees": [
-        9.81,
+        3.23,
         0.0
       ],
-      "lengthAfterM": 4093.56,
-      "geometrySignature": "3a22df94799d13095be42ff97cd670d5a7a6866ec4242a85c746e592d77a44b2"
+      "lengthAfterM": 3514.81
+    },
+    {
+      "name": "Virginia International Raceway \u2014 Full Course",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 5258.24,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 2.37
+    },
+    {
+      "name": "Virginia International Raceway \u2014 Grand Course",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 6639.78,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 2.37
+    },
+    {
+      "name": "Virginia International Raceway \u2014 North Course",
+      "beforeDegrees": [
+        46.48,
+        0.0
+      ],
+      "lengthBeforeM": 3664.19,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Virginia International Raceway \u2014 South Course",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 2622.6,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Washington County western covered-bridge gravel loop",
       "beforeDegrees": [
         9.07,
-        21.62
+        6.85
       ],
-      "lengthBeforeM": 5515.78,
+      "lengthBeforeM": 5479.66,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        9.07,
+        0.0
+      ],
       "trimStartM": 0,
-      "trimFinishM": 36.12,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
+      "trimFinishM": 217.31,
+      "status": "adjusted",
       "afterDegrees": [
         9.07,
-        6.85
+        0.0
       ],
-      "lengthAfterM": 5479.66,
-      "geometrySignature": "8115ed377d416999053bf66921d3f1c8f3164dade7b77b70475deeb11df2f219"
+      "lengthAfterM": 5262.35
+    },
+    {
+      "name": "Watkins Glen \u2014 Long Course",
+      "beforeDegrees": [
+        23.85,
+        0.0
+      ],
+      "lengthBeforeM": 5469.89,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+      "beforeDegrees": [
+        23.85,
+        0.0
+      ],
+      "lengthBeforeM": 5448.81,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Watkins Glen \u2014 Short Course",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3933.21,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3912.13,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "WeatherTech Raceway Laguna Seca",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3596.07,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Wichita, KS \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 8622.18,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Willow Springs \u2014 Big Willow",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 3939.74,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
     },
     {
       "name": "Willow Springs \u2014 Horse Thief Mile",
@@ -1971,6 +4141,69 @@
       "seamDegrees": 0.0
     },
     {
+      "name": "Willow Springs \u2014 Streets of Willow",
+      "beforeDegrees": [
+        27.98,
+        61.52
+      ],
+      "lengthBeforeM": 2570.83,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Willow Springs \u2014 Streets \u2014 Short",
+      "beforeDegrees": [
+        3.45,
+        55.33
+      ],
+      "lengthBeforeM": 1969.31,
+      "gridWindowM": 80,
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "Wilmington, DE \u2014 Landmark Run",
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7604.94,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
+    },
+    {
+      "name": "Wind River Canyon \u2014 Canyon Walls",
+      "beforeDegrees": [
+        0.0,
+        4.29
+      ],
+      "lengthBeforeM": 10957.91,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        9.63
+      ],
+      "trimStartM": 37.55,
+      "trimFinishM": 40.27,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        5.34
+      ],
+      "lengthAfterM": 10880.09
+    },
+    {
       "name": "World Wide Technology Raceway \u2014 drag strip",
       "beforeDegrees": [
         0.0,
@@ -1981,8 +4214,11 @@
         80,
         80
       ],
-      "status": "already-straight",
-      "reason": "Existing line fits the checked window."
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "status": "already-straight"
     },
     {
       "name": "World Wide Technology Raceway \u2014 oval",
@@ -1999,21 +4235,32 @@
       "name": "World Wide Technology Raceway \u2014 road course",
       "beforeDegrees": [
         0.0,
-        52.56
+        44.43
       ],
       "lengthBeforeM": 2807.45,
       "gridWindowM": 80,
-      "rotatedM": 2535.38,
-      "seamDegrees": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false,
-      "status": "already-reviewed",
-      "afterDegrees": [
+      "status": "already-straight",
+      "seamDegrees": 0.0
+    },
+    {
+      "name": "buse1",
+      "beforeDegrees": [
         0.0,
-        0.0
+        189.13
       ],
-      "lengthAfterM": 2807.45,
-      "geometrySignature": "3347655606a7e0bc47588210cc1ec341871b0ed06670b33213f9e1e062e786c7"
+      "lengthBeforeM": 1500.0,
+      "gridWindowM": 40,
+      "status": "manual-review",
+      "reason": "No verified 80 m straight grid window in saved geometry.",
+      "bestSeamDegrees": 10.62
+    },
+    {
+      "name": "p1",
+      "status": "too-short"
+    },
+    {
+      "name": "p2loadtest",
+      "status": "too-short"
     }
   ]
 }

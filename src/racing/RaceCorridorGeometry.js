@@ -1,3 +1,4 @@
+import {joinRaceAtGradeCrossings} from './RaceAtGradeJunctions.js';
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export function getRaceSurfaceBakeKey({
@@ -49,7 +50,9 @@ export function buildRaceSurfaceBake({
   const sections = meshSamples.map((sample) => adapter.createSurfaceSectionFromSample?.(sample, {
     distance: Number(sample.distance || 0)
   })).filter(Boolean);
+  const junctions=joinRaceAtGradeCrossings(sections,{runtimeType});
   return {
+    junctions,
     profile,
     routeLength: routeEnd,
     runtimeType,

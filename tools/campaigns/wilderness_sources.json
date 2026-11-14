@@ -1,0 +1,288 @@
+[
+  {
+    "id": "detour-thompson",
+    "name": "Thompson Pass \u2014 Snowline Climb",
+    "state": "Alaska",
+    "stateCode": "AK",
+    "kind": "road",
+    "lat": 61.13,
+    "lon": -145.82,
+    "selection": "Richardson|AK 4",
+    "bounds": [
+      61.02,
+      -145.96,
+      61.23,
+      -145.64
+    ],
+    "references": [
+      "https://dot.alaska.gov/highways/richardson/"
+    ],
+    "targetSeconds": 660,
+    "paceCapMps": 25,
+    "artHubStage": 2,
+    "weather": "snow",
+    "palette": "alaska",
+    "defaultWidthM": 7,
+    "reverse": true
+  },
+  {
+    "id": "detour-denali",
+    "name": "Denali Highway \u2014 Tundra Gravel",
+    "state": "Alaska",
+    "stateCode": "AK",
+    "kind": "road",
+    "lat": 63.07,
+    "lon": -146.7,
+    "selection": "Denali|AK 8",
+    "bounds": [
+      63.0,
+      -147.05,
+      63.2,
+      -146.45
+    ],
+    "references": [
+      "https://www.blm.gov/visit/denali-highway"
+    ],
+    "targetSeconds": 660,
+    "paceCapMps": 25,
+    "artHubStage": 2,
+    "weather": "snow",
+    "palette": "tundra",
+    "defaultWidthM": 7,
+    "sourceSurface": "gravel",
+    "surfaceNote": "BLM Denali Highway guide identifies the central highway beyond the eastern paved 21 miles as graded gravel; correct inconsistent OSM asphalt tags for this western extract."
+  },
+  {
+    "id": "detour-skalkaho",
+    "name": "Skalkaho Pass \u2014 Forest Rally",
+    "state": "Montana",
+    "stateCode": "MT",
+    "kind": "road",
+    "lat": 46.252,
+    "lon": -113.79,
+    "selection": "Skalkaho|MT 38",
+    "bounds": [
+      46.17,
+      -114.01,
+      46.35,
+      -113.6
+    ],
+    "references": [
+      "https://visitmt.com/listing/skalkaho-pass-12543"
+    ],
+    "targetSeconds": 660,
+    "paceCapMps": 25,
+    "artHubStage": 3,
+    "weather": "clear",
+    "palette": "forest",
+    "defaultWidthM": 5.5,
+    "sourceSurface": "gravel",
+    "surfaceNote": "Montana tourism describes the pass approach as gravel; normalize generic OSM unpaved tags on this selected mountain section.",
+    "excludeName": "Rye"
+  },
+  {
+    "id": "detour-magruder",
+    "name": "Magruder Corridor \u2014 Wilderness Ridge",
+    "state": "Idaho",
+    "stateCode": "ID",
+    "kind": "road",
+    "lat": 45.7,
+    "lon": -115.0,
+    "selection": "Magruder|Nez Perce|468",
+    "bounds": [
+      45.61,
+      -115.21,
+      45.8,
+      -114.83
+    ],
+    "references": [
+      "https://www.fs.usda.gov/media/45002"
+    ],
+    "targetSeconds": 660,
+    "paceCapMps": 22,
+    "artHubStage": 3,
+    "weather": "clear",
+    "palette": "forest",
+    "defaultWidthM": 4.5,
+    "excludeName": "Burnt Knob"
+  },
+  {
+    "id": "detour-chief-joseph",
+    "name": "Chief Joseph \u2014 Dead Indian Pass",
+    "state": "Wyoming",
+    "stateCode": "WY",
+    "kind": "road",
+    "lat": 44.75,
+    "lon": -109.39,
+    "selection": "Chief Joseph|WY 296",
+    "bounds": [
+      44.66,
+      -109.59,
+      44.86,
+      -109.23
+    ],
+    "references": [
+      "https://www.dot.state.wy.us/files/live/sites/wydot/files/shared/Planning/Buffalo%20Bill%20-%20Yellowstone%20Country%20Scenic%20Byway.pdf"
+    ],
+    "targetSeconds": 660,
+    "paceCapMps": 40,
+    "artHubStage": 8,
+    "weather": "clear",
+    "palette": "alpine",
+    "defaultWidthM": 7
+  },
+  {
+    "id": "detour-sandhills",
+    "name": "Sandhills Journey \u2014 Open Prairie",
+    "state": "Nebraska",
+    "stateCode": "NE",
+    "kind": "road",
+    "lat": 42.045,
+    "lon": -101.34,
+    "selection": "N-2|NE 2|Nebraska Highway 2|Sandhills",
+    "bounds": [
+      41.96,
+      -101.85,
+      42.12,
+      -101.04
+    ],
+    "references": [
+      "https://visitnebraska.com/sandhills-journey-scenic-byway"
+    ],
+    "targetSeconds": 660,
+    "paceCapMps": 50,
+    "artHubStage": 7,
+    "weather": "clear",
+    "palette": "prairie",
+    "defaultWidthM": 7,
+    "excludeName": "Old"
+  },
+  {
+    "id": "detour-tantalus",
+    "name": "Tantalus \u2014 Honolulu Heights",
+    "state": "Hawaii",
+    "stateCode": "HI",
+    "kind": "road",
+    "lat": 21.327,
+    "lon": -157.821,
+    "selection": "Tantalus|Round Top",
+    "bounds": [
+      21.305,
+      -157.84,
+      21.35,
+      -157.805
+    ],
+    "references": [
+      "https://dlnr.hawaii.gov/dofaw/files/2025/02/Final-TRTD-CMP-2019-12-11-with-Appendices.pdf"
+    ],
+    "targetSeconds": 660,
+    "paceCapMps": 25,
+    "artHubStage": 3,
+    "weather": "rain",
+    "palette": "tropical",
+    "defaultWidthM": 5.8
+  },
+  {
+    "id": "detour-haleakala",
+    "name": "Haleakala \u2014 Volcano Ascent",
+    "state": "Hawaii",
+    "stateCode": "HI",
+    "kind": "road",
+    "lat": 20.745,
+    "lon": -156.245,
+    "selection": "Crater|Haleakala|Haleakal|378",
+    "bounds": [
+      20.7,
+      -156.33,
+      20.81,
+      -156.2
+    ],
+    "references": [
+      "https://www.nps.gov/hale/planyourvisit/directions.htm"
+    ],
+    "targetSeconds": 660,
+    "paceCapMps": 30,
+    "artHubStage": 8,
+    "weather": "clear",
+    "palette": "volcano",
+    "finishElevation": "highest",
+    "defaultWidthM": 7
+  },
+  {
+    "id": "detour-maunakea",
+    "name": "Maunakea \u2014 Cinder Summit",
+    "state": "Hawaii",
+    "stateCode": "HI",
+    "kind": "road",
+    "lat": 19.79,
+    "lon": -155.46,
+    "selection": "Mauna Kea|Maunakea|Summit Access",
+    "bounds": [
+      19.745,
+      -155.49,
+      19.835,
+      -155.425
+    ],
+    "references": [
+      "https://hilo.hawaii.edu/maunakea/visitor-information/public-safety"
+    ],
+    "targetSeconds": 660,
+    "paceCapMps": 22,
+    "artHubStage": 8,
+    "weather": "snow",
+    "palette": "volcano-snow",
+    "finishElevation": "highest",
+    "defaultWidthM": 5.5
+  },
+  {
+    "id": "detour-desert-view",
+    "name": "Grand Canyon \u2014 Desert View Drive",
+    "state": "Arizona",
+    "stateCode": "AZ",
+    "kind": "road",
+    "lat": 35.995,
+    "lon": -111.97,
+    "selection": "Desert View|AZ 64",
+    "bounds": [
+      35.94,
+      -112.15,
+      36.07,
+      -111.8
+    ],
+    "references": [
+      "https://www.nps.gov/grca/planyourvisit/desert-view-drive.htm"
+    ],
+    "targetSeconds": 660,
+    "paceCapMps": 40,
+    "artHubStage": 9,
+    "weather": "clear",
+    "palette": "canyon",
+    "defaultWidthM": 7
+  },
+  {
+    "id": "detour-diamond-creek",
+    "name": "Grand Canyon \u2014 Diamond Creek Descent",
+    "state": "Arizona",
+    "stateCode": "AZ",
+    "kind": "road",
+    "lat": 35.665,
+    "lon": -113.37,
+    "selection": "Diamond Creek|Hualapai Route 6|H6|N6",
+    "bounds": [
+      35.57,
+      -113.48,
+      35.79,
+      -113.24
+    ],
+    "references": [
+      "https://www.arizonahighways.com/diamond-creek-road"
+    ],
+    "targetSeconds": 660,
+    "paceCapMps": 22,
+    "artHubStage": 9,
+    "weather": "clear",
+    "palette": "canyon",
+    "finishElevation": "lowest",
+    "defaultWidthM": 5
+  }
+]

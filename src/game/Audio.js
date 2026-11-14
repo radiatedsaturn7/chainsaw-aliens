@@ -2894,11 +2894,11 @@ export default class AudioSystem {
       const now = this.ctx.currentTime;
       const slipAmount = Math.max(0, Math.min(1, Number(slip) || 0));
       const speed = Math.max(0, Number(speedMps) || 0);
-      const isDirt = material === 'dirt';
-      const baseFreq = isDirt ? 420 : 1320;
+      const isDirt = material === 'dirt',isSnow=material==='snow',isWet=material==='wet';
+      const baseFreq = isSnow?220:isWet?700:isDirt ? 420 : 1320;
       const freq = baseFreq + slipAmount * (isDirt ? 560 : 2400) + Math.min(speed, 72) * (isDirt ? 3 : 9);
-      const q = isDirt ? 0.48 : 4.2;
-      const gain = (isDirt ? 0.024 : 0.026) + slipAmount * (isDirt ? 0.066 : 0.085);
+      const q = isSnow?.35:isWet?.7:isDirt ? 0.48 : 4.2;
+      const gain = ((isDirt ? 0.024 : 0.026) + slipAmount * (isDirt ? 0.066 : 0.085))*(isSnow?.5:isWet?.75:1);
       this.tireScreechFilter?.frequency.setTargetAtTime(freq, now, 0.024);
       this.tireScreechFilter?.Q.setTargetAtTime(q, now, 0.04);
       this.tireScreechGain?.gain.setTargetAtTime(Math.max(0.0001, gain), now, 0.028);

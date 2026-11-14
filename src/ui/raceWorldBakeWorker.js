@@ -1,3 +1,5 @@
+import {hydrateSceneryDefinitions,collectSceneryArtRefs} from '../racing/RaceSceneryAssets.js';
+import {timingLineArtRefs} from '../racing/RaceTimingLines.js';
 import {hydrateProjectFile} from './serverStorage.js';
 import {extendCarEditorDefaultTrack} from '../racing/raceData.js';
 import {
@@ -146,6 +148,7 @@ export function prepareRaceSurfaceBakeForTransfer(surfaceBake = null) {
   return {
     key: surfaceBake.key,
     edgeId: surfaceBake.edgeId,
+    junctions: surfaceBake.junctions || [],
     ...(surfaceBake.paths ? { paths: surfaceBake.paths.map(prepareRaceSurfaceBakeForTransfer) } : {}),
     routeLength: Number(surfaceBake.routeLength || 0),
     runtimeType: surfaceBake.runtimeType,
@@ -195,6 +198,7 @@ export async function buildRaceTransferPackage(sourceRace = null, {
   })) {
     throw new Error('Race document could not be loaded');
   }
+  await hydrateSceneryDefinitions(editor.selectedRace, ref => hydrateProjectFile('doodads', ref));
   if (carEditorDefaultTrack) extendCarEditorDefaultTrack(editor.selectedRace);
   if (!options) {
     editor.playtestSession = {
@@ -244,8 +248,8 @@ export async function buildRaceTransferPackage(sourceRace = null, {
     surfaceBake: compactSurfaceBake,
     builtMs: bake.builtMs,
     // Network road/junction triangles cannot be reconstructed as one strip.
-    mesh: bake.terrainTopology === 'route-network' ? {
-      layered: true, triangles: bake.mesh.triangles.filter(t => t.region === 'road')
+    mesh: bake.terrainTopology === 'route-network' || bake.surfaceBake?.junctions?.length ? {
+      layered: bake.terrainTopology === 'route-network', triangles: bake.mesh.triangles.filter(t => ['road','margin','shoulder'].includes(t.region)&&!t.terrainCell)
     } : null,
     staticColliders: bake.staticColliders || [],
     structureMeshes: bake.structureMeshes || [],
@@ -275,6 +279,12 @@ export async function buildRaceTransferPackage(sourceRace = null, {
     addCritical(entry?.artRef);addCritical(entry?.roughArtRef);
   }
   (editor.selectedRace?.decals||[]).forEach(decal=>addCritical(decal.artRef));
+  timingLineArtRefs(editor.selectedRace).forEach(addCritical);
+  // Scenery visible at the start must be ready before releasing the loading
+  // screen. Farther scenery can continue through the existing deferred stream.
+  const start=editor.getRaceWorldPoseAtDistance(0);
+  const nearStart=(editor.selectedRace?.scenery||[]).filter(p=>Math.hypot(Number(p.x)-start.x,Number(p.z)-start.z)<250);
+  collectSceneryArtRefs({scenery:nearStart},ref=>editor.loadRaceDoodadDocument(ref)).forEach(addCritical);
   (editor.selectedRace?.road?.segments || []).forEach((segment) => {
     addCritical(segment?.artRef);
     addCritical(segment?.boundaryArtRef);

@@ -1,3 +1,4 @@
+import {collectSceneryArtRefs} from '../../src/racing/RaceSceneryAssets.js';
 // Exercise the real worker preparation and transfer pipeline in an isolated,
 // deliberately small-stack process per saved stage (keeps memory bounded too).
 import fs from 'node:fs';
@@ -11,9 +12,10 @@ import path from 'node:path';
 const skipped=new Set((process.argv.find(a=>a.startsWith('--skip='))?.slice(7)||'').split(','));
 const sideRaces=process.argv.includes('--side-races');
 const expansion=process.argv.includes('--state-expansion');
-const raceways=process.argv.includes('--raceways')||expansion;
+const wilderness=process.argv.includes('--wilderness');
+const raceways=process.argv.includes('--raceways')||expansion||wilderness;
 const catalog=JSON.parse(fs.readFileSync(new URL(raceways?'../../data/campaigns/america/raceways/catalog.json':sideRaces?'../../data/campaigns/america/side-races/catalog.json':'../../data/campaigns/america/catalog.json',import.meta.url)))
- .filter(stage=>(!expansion||/^(city|state)-/.test(stage.id))&&(!sideRaces||stage.status==='installed')&&!skipped.has(stage.id)).map(stage=>({...stage,name:stage.name||stage.raceRef}));
+ .filter(stage=>(!wilderness||stage.id.startsWith('detour-'))&&(!expansion||/^(city|state)-/.test(stage.id))&&(!sideRaces||stage.status==='installed')&&!skipped.has(stage.id)).map(stage=>({...stage,name:stage.name||stage.raceRef}));
 
 const auditEdges=process.argv.includes('--audit-edges');
 const stageTimeoutMs=Math.max(1000,Number(process.argv.find(a=>a.startsWith('--timeout-ms='))?.slice(13))||360000);
@@ -33,6 +35,8 @@ if(id){
   assert.ok(p.packedSampler.positions.length>0,'physics triangles');
   assert.ok(p.packedTerrain.positions.length>0,'render triangles');
   assert.ok(p.header.routeLength>0,'timed route');
+  const plannedArt=new Set([...(p.artPlan?.criticalRefs||[]),...(p.artPlan?.deferredRefs||[])]);
+  for(const ref of collectSceneryArtRefs(p.raceDocument))assert.ok(plannedArt.has(ref),`Missing transferred scenery art: ${ref}`);
   const copy=structuredClone(p,{transfer:[...new Set([...p.physicsTransferables,...p.terrainTransferables,...p.raceTileMapTransferables])]});
   assert.ok(copy.packedSampler.positions.length>0,'transferred physics');
   assert.ok(copy.packedTerrain.positions.every(Number.isFinite),'finite render geometry');

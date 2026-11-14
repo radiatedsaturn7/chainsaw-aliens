@@ -54,8 +54,8 @@
       "lat": 39.8430562,
       "lon": -79.5194493
     },
-    "lengthM": 14361.717892325662,
-    "estimatedDrivingSeconds": 659,
+    "lengthM": 14265.290897076115,
+    "estimatedDrivingSeconds": 655,
     "durationRangeSeconds": [
       531,
       863
@@ -63,8 +63,8 @@
     "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
     "segmentDescription": "PA 381 through the wooded Ohiopyle / Mill Run hills, including the gorge approaches.",
     "startGps": {
-      "lat": 39.8792335,
-      "lon": -79.4811649
+      "lat": 39.8788309,
+      "lon": -79.482162
     },
     "finishGps": {
       "lat": 39.789282098061676,
@@ -85,18 +85,29 @@
     "conditionsAuthored": true,
     "linePlacement": {
       "beforeDegrees": [
-        21.75,
+        9.44,
         9.44
       ],
-      "lengthBeforeM": 14461.63,
+      "lengthBeforeM": 14361.72,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 99.92,
+      "corridorDegrees": [
+        4.41,
+        9.44
+      ],
+      "trimStartM": 96.43,
       "trimFinishM": 0.0,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        9.44
+      ],
+      "lengthAfterM": 14265.29,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "ef398351e8af778bf87b28b7154532ca76c938269e236ebfad9a8b3f6e0b9fcd"
     }
   },
   {
@@ -110,8 +121,8 @@
       "lat": 39.4460693,
       "lon": -81.342806
     },
-    "lengthM": 13153.459351413096,
-    "estimatedDrivingSeconds": 657,
+    "lengthM": 13112.215476371692,
+    "estimatedDrivingSeconds": 655,
     "durationRangeSeconds": [
       530,
       860
@@ -123,8 +134,8 @@
       "lon": -81.38146488267053
     },
     "finishGps": {
-      "lat": 39.4816114,
-      "lon": -81.2900007
+      "lat": 39.48138,
+      "lon": -81.290376
     },
     "weather": "storm",
     "surface": "wet-asphalt",
@@ -142,17 +153,28 @@
     "linePlacement": {
       "beforeDegrees": [
         7.57,
-        25.52
+        6.5
       ],
-      "lengthBeforeM": 13252.97,
+      "lengthBeforeM": 13153.46,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        7.57,
+        6.5
+      ],
       "trimStartM": 0,
-      "trimFinishM": 99.51,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false
+      "trimFinishM": 41.24,
+      "status": "adjusted",
+      "afterDegrees": [
+        7.57,
+        0.0
+      ],
+      "lengthAfterM": 13112.22,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "9512de402cf8e3c38be5f96b81f7e6e13a52ed5bca2f69011e09169623c15570"
     }
   },
   {
@@ -166,8 +188,8 @@
       "lat": 37.3089267,
       "lon": -91.4130785
     },
-    "lengthM": 13701.106505701651,
-    "estimatedDrivingSeconds": 654,
+    "lengthM": 13589.970369342771,
+    "estimatedDrivingSeconds": 649,
     "durationRangeSeconds": [
       532,
       864
@@ -179,8 +201,8 @@
       "lon": -91.4012082
     },
     "finishGps": {
-      "lat": 37.3588053,
-      "lon": -91.4227299
+      "lat": 37.35797507142857,
+      "lon": -91.42342584285714
     },
     "weather": "clear",
     "surface": "dirt / gravel",
@@ -198,17 +220,28 @@
     "linePlacement": {
       "beforeDegrees": [
         3.77,
-        11.41
+        5.99
       ],
-      "lengthBeforeM": 13929.32,
+      "lengthBeforeM": 13701.11,
       "lineWindowsM": [
         80,
         80
       ],
+      "corridorDegrees": [
+        3.77,
+        0.0
+      ],
       "trimStartM": 0,
-      "trimFinishM": 228.21,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false
+      "trimFinishM": 111.14,
+      "status": "adjusted",
+      "afterDegrees": [
+        3.77,
+        0.0
+      ],
+      "lengthAfterM": 13589.97,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "0d5d6ea63e2f7d4aadebcd59d7e0c3fafc57b86782510eb16e8f1404dbad9801"
     }
   },
   {
@@ -304,8 +337,8 @@
       "lat": 38.8669027,
       "lon": -105.0630189
     },
-    "lengthM": 9945.622241683406,
-    "estimatedDrivingSeconds": 630,
+    "lengthM": 9184.748573593817,
+    "estimatedDrivingSeconds": 582,
     "durationRangeSeconds": [
       529,
       859
@@ -313,12 +346,12 @@
     "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
     "segmentDescription": "Upper Pikes Peak Highway: technical alpine hairpins and high-altitude climbs.",
     "startGps": {
-      "lat": 38.8872234,
-      "lon": -105.0714256
+      "lat": 38.8832431,
+      "lon": -105.0714257
     },
     "finishGps": {
-      "lat": 38.8471991,
-      "lon": -105.0546601
+      "lat": 38.848686199999996,
+      "lon": -105.054035
     },
     "weather": "clear",
     "surface": "asphalt / snow",
@@ -335,18 +368,29 @@
     "conditionsAuthored": true,
     "linePlacement": {
       "beforeDegrees": [
-        159.5,
-        66.7
+        5.83,
+        0.0
       ],
-      "lengthBeforeM": 10424.16,
+      "lengthBeforeM": 9945.62,
       "lineWindowsM": [
-        80,
+        40,
         80
       ],
-      "trimStartM": 210.04,
-      "trimFinishM": 268.5,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false
+      "corridorDegrees": [
+        7.41,
+        0.0
+      ],
+      "trimStartM": 471.52,
+      "trimFinishM": 289.35,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 9184.75,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "aee0fd80ef7452bbcc4a0f680dea5fdde60f4c439c29638f373c24d6202a4ad6"
     }
   },
   {
@@ -402,8 +446,8 @@
       "lat": 35.0234889,
       "lon": -111.7361826
     },
-    "lengthM": 12605.7038216061,
-    "estimatedDrivingSeconds": 650,
+    "lengthM": 12257.992882318538,
+    "estimatedDrivingSeconds": 632,
     "durationRangeSeconds": [
       531,
       864
@@ -411,12 +455,12 @@
     "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
     "segmentDescription": "Arizona 89A through the upper Oak Creek Canyon and the Oak Creek Vista switchbacks.",
     "startGps": {
-      "lat": 35.0296231,
-      "lon": -111.7350021
+      "lat": 35.0295629,
+      "lon": -111.7354401
     },
     "finishGps": {
-      "lat": 34.9553255,
-      "lon": -111.7546584
+      "lat": 34.9579645,
+      "lon": -111.7539382
     },
     "weather": "clear",
     "surface": "asphalt / wet-asphalt",
@@ -433,18 +477,29 @@
     "conditionsAuthored": true,
     "linePlacement": {
       "beforeDegrees": [
-        29.69,
-        17.57
+        9.17,
+        7.3
       ],
-      "lengthBeforeM": 12861.86,
+      "lengthBeforeM": 12605.7,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 178.83,
-      "trimFinishM": 77.33,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false
+      "corridorDegrees": [
+        9.17,
+        9.64
+      ],
+      "trimStartM": 40.45,
+      "trimFinishM": 307.26,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        4.36
+      ],
+      "lengthAfterM": 12257.99,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "663ffc996b84312101b1a1b78d49f7bbe4b32472686ca2b3cfa63cfd44897a58"
     }
   },
   {
@@ -458,8 +513,8 @@
       "lat": 34.2585694,
       "lon": -118.1045935
     },
-    "lengthM": 11518.973877376411,
-    "estimatedDrivingSeconds": 628,
+    "lengthM": 11282.385262061853,
+    "estimatedDrivingSeconds": 615,
     "durationRangeSeconds": [
       530,
       862
@@ -467,12 +522,12 @@
     "durationMethod": "Original geometry-based planning estimate; mission weather and damaged-road sections change actual pace. No measured lap time.",
     "segmentDescription": "California 2 in the San Gabriel Mountains: sustained sweeping bends, ridge exposure and steep wooded slopes.",
     "startGps": {
-      "lat": 34.2677799,
-      "lon": -118.1378067
+      "lat": 34.2675849,
+      "lon": -118.137443
     },
     "finishGps": {
-      "lat": 34.2713954,
-      "lon": -118.0550284
+      "lat": 34.27140143333333,
+      "lon": -118.05702813333333
     },
     "weather": "clear",
     "surface": "asphalt",
@@ -490,18 +545,29 @@
     "conditionsAuthored": true,
     "linePlacement": {
       "beforeDegrees": [
-        39.1,
-        10.12
+        6.49,
+        8.58
       ],
-      "lengthBeforeM": 12144.4,
+      "lengthBeforeM": 11518.97,
       "lineWindowsM": [
         80,
         80
       ],
-      "trimStartM": 370.85,
-      "trimFinishM": 254.58,
-      "method": "existing-road-straight-v1",
-      "surveyedStartLine": false
+      "corridorDegrees": [
+        6.49,
+        0.0
+      ],
+      "trimStartM": 39.83,
+      "trimFinishM": 196.76,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 11282.39,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "2a85a2919cf4966710f8c0edc923de9a42bd62898c47f79fab0c6a2c47d97778"
     }
   }
 ]

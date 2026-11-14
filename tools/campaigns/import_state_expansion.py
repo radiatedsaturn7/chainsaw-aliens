@@ -126,8 +126,10 @@ def circuit_layout(row,ways):
 
 def build(row):
  snapshot=ROOT/'sources'/f"{row['id']}.json";raw=snapshot.read_bytes();snapshot_hash=hashlib.sha256(raw).hexdigest();ways=json.loads(raw)
+ if row.get('excludeName'):ways=[w for w in ways if not re.search(row['excludeName'],w.get('tags',{}).get('name',''),re.I)]
  for w in ways:
-  tags=w.setdefault('tags',{});tags['width']=str(mapped_road_width(tags,11 if row['kind']=='circuit' else 7))
+  tags=w.setdefault('tags',{});tags['width']=str(mapped_road_width(tags,11 if row['kind']=='circuit' else row.get('defaultWidthM',7)))
+  if row.get('sourceSurface'):tags['surface']=row['sourceSurface']
   if tags.get('surface') in ('fine_gravel','pebblestone','rock'):tags['surface']='gravel'
  if row['kind']=='city':
   cached_path=OUT/f"{row['id']}.json"
@@ -137,21 +139,36 @@ def build(row):
    points=route.trace(ways,(row['lat'],row['lon']),reference['waypoints'],max_snap=500,avoid_repeated_edges=True)
   else:points,reference=city_route(row,ways)
  elif row['kind']=='circuit':points,reference=circuit_layout(row,ways)
+ elif row.get('waypoints'):
+  selected=[w for w in ways if w.get('tags',{}).get('highway') not in ('service','track','motorway','motorway_link') or w['id'] in row.get('allowedServiceWayIds',[])]
+  origin=(row['lat'],row['lon'])
+  anchors=[dict(zip(('x','y'),track.metric(p['lat'],p['lon'],origin))) for p in row['waypoints']]
+  points=route.trace(selected,origin,anchors,max_snap=10,avoid_repeated_edges=True)
+  reference={'routing':'Ordered GPS waypoints on connected public OSM roads; no repeated edges; service roads require explicit reviewed way IDs.', 'waypoints':row['waypoints'],'allowedServiceWayIds':row.get('allowedServiceWayIds',[])}
  else:
   points=america.longest_connected_trace(ways,(row['lat'],row['lon']))
   # These are interesting named-road sections, not artificially lengthened tours.
-  if america.profile(points)[0][-1]>14000:
+  if row.get('finishElevation'):
+   rising=terrain_tiles.elevation(points[-1]['lat'],points[-1]['lon'])>terrain_tiles.elevation(points[0]['lat'],points[0]['lon'])
+   if rising!=(row['finishElevation']=='highest'):points=[{**p,'tags':points[max(0,i-1)].get('tags',{})} for i,p in reversed(list(enumerate(points)))]
+   _,times,_=america.profile(points,row.get('paceCapMps',28))
+   first=next((i for i,t in enumerate(times) if times[-1]-t<=row.get('targetSeconds',660)),0)
+   points=points[first:]
+  elif row.get('targetSeconds'):
+   america.TARGET_SECONDS=row['targetSeconds'];points=america.select_section(points,row)
+  elif america.profile(points)[0][-1]>14000:
    distances=america.profile(points)[0]
    options=[(right_angle_turns(points[i:j]),i,j) for i in range(0,len(points),20) for j in [next((j for j in range(i+1,len(points)) if distances[j]-distances[i]>=11000),len(points)-1)] if distances[j]-distances[i]>=7500]
    if not options:raise ValueError('No suitable contiguous road segment')
    _,i,j=max(options);points=points[i:j+1]
   reference={'routing':'Longest connected named-road section, bounded to a practical contiguous driving stage.'}
+  if row.get('targetSeconds'):reference.update(targetSeconds=row['targetSeconds'],paceCapMps=row.get('paceCapMps',28),finishElevation=row.get('finishElevation'),excludeName=row.get('excludeName'),sourceSurface=row.get('sourceSurface'))
  if row.get('reverse'):
   points=[{**p,'tags':points[i-1].get('tags',{})} for i,p in reversed(list(enumerate(points)))];reference['direction']='Reverse of mapped source traversal, selected for uphill progression.'
  length=america.profile(points)[0][-1]
  if length<1500:raise ValueError(f'Only {length:.0f} m of mapped road; expand the extract')
  layout={'name':row['name'],'displayName':row['name'],'place':{'name':row['name'],'lat':row['lat'],'lon':row['lon'],'country':'us'},'points':points,'lengthM':length,'open':row['kind']!='circuit'}
- race=track.build(layout,width=11 if row['kind']=='circuit' else 7,fetch=terrain_tiles.importer_fetch,max_segment_length_m=25 if row['kind']=='city' else 40,max_control_points=1200)['race']
+ race=track.build(layout,width=11 if row['kind']=='circuit' else row.get('defaultWidthM',7),fetch=terrain_tiles.importer_fetch,max_segment_length_m=25 if row['kind']=='city' else 40,max_control_points=1200)['race']
  if any('unavailable' in w or 'flat editable' in w for w in race['source']['warnings']):raise ValueError('DEM missing; do not install flat substitute')
  sampled=track.densify(track.simplify(points),25 if row['kind']=='city' else 40)
  if len(sampled)!=len(race['road']['nodes']):raise ValueError('Control-point sampling changed')
@@ -186,10 +203,11 @@ def build(row):
   race['source']['warnings'].append(f'{len(missing_terrain)} terrain-only DEM no-data cells use sea level; coastal/bathymetric terrain is approximate. Road elevations have no sea-level fallback.')
  race['id']=row['id'];race['name']=row['name'];race['road']['autoExtend']=False
  race['source'].update(provider='OpenStreetMap / Mapzen Terrain Tiles',elevationProvider='Mapzen / Tilezen Terrarium DEM zoom 12',sourceSnapshot=str(snapshot),sourceSnapshotSha256=snapshot_hash,state=row['state'],stateCode=row['stateCode'],city=row.get('city'),references=row['references'],routeReference=reference,layoutGeometrySha256=hashlib.sha256(json.dumps(points,sort_keys=True).encode()).hexdigest(),terrainSampling='DEM at every terrain cell and road control point; not surveyed road-deck heights')
+ if row.get('surfaceNote'):race['source']['surfaceVerification']=row['surfaceNote']
  race['source']['warnings']=[w.replace('USGS 3DEP','Mapzen DEM').replace('USGS','DEM') for w in race['source']['warnings']]
  race['source']['linePlacement']=place(race)
  race['laps']=3 if row['kind']=='circuit' else 1
- _,times,_=america.profile(points,45 if row['kind']=='city' else 65)
+ _,times,_=america.profile(points,row.get('paceCapMps',45 if row['kind']=='city' else 65),row.get('paceSettings'))
  race['source']['estimatedDrivingSeconds']=round(times[-1]*race['laps'])
  race['source']['durationModel']='Curvature-limited reference pace; traffic-free closed roads; car, weather and driver change the result.'
  hubs=json.loads(Path('data/campaigns/america/catalog.json').read_text())
@@ -198,11 +216,13 @@ def build(row):
  race['description']=f"{row['state']}: {row['name']}. Real mapped roads adapted as a closed-road event in the frozen 2994 setting."
  if row['kind']=='city':race['source']['landmarkPlan']=row['landmarks']
  OUT.mkdir(parents=True,exist_ok=True);out=OUT/f"{row['id']}.json";out.write_text(json.dumps(race,separators=(',',':'))+'\n')
- return {'id':row['id'],'name':row['name'],'displayName':row['name'],'status':'imported','state':row['state'],'stateCode':row['stateCode'],'location':{'lat':row['lat'],'lon':row['lon']},'city':row.get('city'),'kind':row['kind'],'event_type':race['campaign']['eventType'],'import_kind':'circuit' if row['kind']=='circuit' else 'road','venueKey':row['id'] if row['kind']=='circuit' else None,'venueName':row['name'] if row['kind']=='circuit' else None,'layoutLabel':'Road Course' if row['kind']=='circuit' else None,'hubStage':hub['stage'],'lengthM':length,'estimatedDrivingSeconds':race['source']['estimatedDrivingSeconds'],'laps':race['laps'],'surface':sorted({s['surface'] for s in race['road']['segments']}),'generatedPath':str(out),'references':row['references'],'routeReference':reference}
+ return {'id':row['id'],'name':row['name'],'displayName':row['name'],'status':'imported','state':row['state'],'stateCode':row['stateCode'],'location':{'lat':row['lat'],'lon':row['lon']},'city':row.get('city'),'kind':row['kind'],'event_type':race['campaign']['eventType'],'import_kind':'circuit' if row['kind']=='circuit' else 'road','venueKey':row['id'] if row['kind']=='circuit' else None,'venueName':row['name'] if row['kind']=='circuit' else None,'layoutLabel':'Road Course' if row['kind']=='circuit' else None,'hubStage':hub['stage'],'lengthM':length,'estimatedDrivingSeconds':race['source']['estimatedDrivingSeconds'],'laps':race['laps'],'surface':sorted({s['surface'] for s in race['road']['segments']}),'generatedPath':str(out),'references':row['references'],'routeReference':reference,**{k:row[k] for k in ['artHubStage','weather','palette','uphill','targetSeconds','paceCapMps'] if k in row}}
 
 if __name__=='__main__':
- ap=argparse.ArgumentParser();ap.add_argument('--cities',action='store_true');ap.add_argument('--only',nargs='*');args=ap.parse_args()
- rows=json.loads(Path('tools/campaigns/city_run_sources.json' if args.cities else 'tools/campaigns/state_gap_sources.json').read_text())
+ ap=argparse.ArgumentParser();ap.add_argument('--sources');ap.add_argument('--output-root');ap.add_argument('--cities',action='store_true');ap.add_argument('--only',nargs='*');args=ap.parse_args()
+ if args.output_root:ROOT=Path(args.output_root);OUT=Path('artifacts/campaign-import')/ROOT.name
+ ROOT.mkdir(parents=True,exist_ok=True)
+ rows=json.loads(Path(args.sources or ('tools/campaigns/city_run_sources.json' if args.cities else 'tools/campaigns/state_gap_sources.json')).read_text())
  p=ROOT/'report.json';report={r['id']:r for r in json.loads(p.read_text())} if p.exists() else {}
  failures=[]
  for row in rows:

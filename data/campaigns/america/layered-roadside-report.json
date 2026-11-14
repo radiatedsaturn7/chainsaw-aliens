@@ -1,0 +1,4415 @@
+[
+  {
+    "name": "Col de Turini",
+    "baseline": 3851,
+    "target": 15404,
+    "after": 15404,
+    "added": 11553,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 6872,
+      "shrub": 3338,
+      "canopy": 1342,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 7079.813628118662,
+        "kind": "rock in",
+        "ref": "alpine-rock-outcrop-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 1863
+  },
+  {
+    "name": "Daytona Tri-Oval",
+    "baseline": 729,
+    "target": 2916,
+    "after": 2916,
+    "added": 2187,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1215,
+      "shrub": 668,
+      "canopy": 304,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 53
+  },
+  {
+    "name": "Demo Track",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "Mount Washington Auto Road — point-to-point",
+    "baseline": 21510,
+    "target": 86040,
+    "after": 86040,
+    "added": 64530,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 40764,
+      "shrub": 16210,
+      "canopy": 7556,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 16884
+  },
+  {
+    "name": "Mount Washington Auto Road — point-to-point Copy",
+    "baseline": 22602,
+    "target": 90408,
+    "after": 90408,
+    "added": 67806,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 48701,
+      "shrub": 14926,
+      "canopy": 4179,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 32805
+  },
+  {
+    "name": "Nurburgring Nordschleife",
+    "baseline": 4761,
+    "target": 19044,
+    "after": 19044,
+    "added": 14283,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 8126,
+      "shrub": 4292,
+      "canopy": 1865,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 498
+  },
+  {
+    "name": "Ouninpohja",
+    "baseline": 4264,
+    "target": 17056,
+    "after": 17056,
+    "added": 12792,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 7230,
+      "shrub": 3879,
+      "canopy": 1680,
+      "apex-hazard": 3
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 9356.38417055446,
+        "kind": "rock in",
+        "ref": "expanded-rock-chert-cluster-01",
+        "paceNoteVerified": true
+      },
+      {
+        "id": "ecology-v2-hazard-1",
+        "distance": 6099.514055340526,
+        "kind": "tree in",
+        "ref": "dead-broken-tree-02",
+        "paceNoteVerified": true
+      },
+      {
+        "id": "ecology-v2-hazard-2",
+        "distance": 3763.6553689599195,
+        "kind": "rock in",
+        "ref": "expanded-rock-chert-cluster-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 425
+  },
+  {
+    "name": "Studio Sprint",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "Studio Sprint Copy",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "Studio Sprint2",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "Tower Hill Road",
+    "baseline": 3941,
+    "target": 15764,
+    "after": 15764,
+    "added": 11823,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 7834,
+      "shrub": 2425,
+      "canopy": 1564,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 3950
+  },
+  {
+    "name": "WeatherTech Raceway Laguna Seca",
+    "baseline": 758,
+    "target": 3032,
+    "after": 3032,
+    "added": 2274,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1341,
+      "shrub": 677,
+      "canopy": 256,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 154
+  },
+  {
+    "name": "buse1",
+    "baseline": 0,
+    "target": 0,
+    "after": 0,
+    "added": 0,
+    "status": "no-regional-palette",
+    "hazards": []
+  },
+  {
+    "name": "p1",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "p2loadtest",
+    "status": "no-mapped-route"
+  },
+  {
+    "name": "Laurel Highlands Scenic Byway",
+    "baseline": 4040,
+    "target": 16160,
+    "after": 16160,
+    "added": 12120,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 6750,
+      "shrub": 3700,
+      "canopy": 1670,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 538
+  },
+  {
+    "name": "Ohio River Crossing",
+    "baseline": 3437,
+    "target": 13748,
+    "after": 13748,
+    "added": 10311,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 5847,
+      "shrub": 3083,
+      "canopy": 1381,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 521
+  },
+  {
+    "name": "Ozark Backroads",
+    "baseline": 3955,
+    "target": 15820,
+    "after": 15820,
+    "added": 11865,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 6722,
+      "shrub": 3532,
+      "canopy": 1609,
+      "apex-hazard": 2
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 13066.782427158178,
+        "kind": "rock in",
+        "ref": "gray-boulder-03",
+        "paceNoteVerified": true
+      },
+      {
+        "id": "ecology-v2-hazard-1",
+        "distance": 9663.12159104913,
+        "kind": "rock in",
+        "ref": "gray-boulder-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 551
+  },
+  {
+    "name": "Data Center City",
+    "baseline": 2302,
+    "target": 9208,
+    "after": 9208,
+    "added": 6906,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4020,
+      "shrub": 2013,
+      "canopy": 873,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 356
+  },
+  {
+    "name": "Historic Route 66",
+    "baseline": 3109,
+    "target": 12436,
+    "after": 12436,
+    "added": 9327,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 5251,
+      "shrub": 2834,
+      "canopy": 1242,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 188
+  },
+  {
+    "name": "Pikes Peak Highway",
+    "baseline": 2464,
+    "target": 9856,
+    "after": 9856,
+    "added": 7392,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4322,
+      "shrub": 2109,
+      "canopy": 961,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 657
+  },
+  {
+    "name": "Moki Dugway",
+    "baseline": 2496,
+    "target": 9984,
+    "after": 9984,
+    "added": 7488,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4206,
+      "shrub": 2251,
+      "canopy": 1029,
+      "apex-hazard": 2
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 8220.549183937259,
+        "kind": "rock in",
+        "ref": "expanded-red-rock-arch-background",
+        "paceNoteVerified": true
+      },
+      {
+        "id": "ecology-v2-hazard-1",
+        "distance": 11536.96178924037,
+        "kind": "rock in",
+        "ref": "red-sandstone-boulder-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 431
+  },
+  {
+    "name": "Oak Creek Canyon",
+    "baseline": 2730,
+    "target": 10920,
+    "after": 10920,
+    "added": 8190,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4746,
+      "shrub": 2440,
+      "canopy": 1004,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 599
+  },
+  {
+    "name": "Angeles Crest Highway",
+    "baseline": 2453,
+    "target": 9812,
+    "after": 9812,
+    "added": 7359,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4136,
+      "shrub": 2282,
+      "canopy": 941,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 309
+  },
+  {
+    "name": "RI 116 — North Smithfield Scituate",
+    "baseline": 2444,
+    "target": 9776,
+    "after": 9776,
+    "added": 7332,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4246,
+      "shrub": 2090,
+      "canopy": 996,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 299
+  },
+  {
+    "name": "Thompson Speedway — 1.7-mile road course",
+    "baseline": 684,
+    "target": 2736,
+    "after": 2736,
+    "added": 2052,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1199,
+      "shrub": 621,
+      "canopy": 232,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 241
+  },
+  {
+    "name": "I-95 — Attleboro to Warwick curves",
+    "baseline": 4441,
+    "target": 17764,
+    "after": 17764,
+    "added": 13323,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 7469,
+      "shrub": 4013,
+      "canopy": 1841,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 454
+  },
+  {
+    "name": "RI 102 — Victory Highway",
+    "baseline": 2711,
+    "target": 10844,
+    "after": 10844,
+    "added": 8133,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4571,
+      "shrub": 2500,
+      "canopy": 1062,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 344
+  },
+  {
+    "name": "Pachaug State Forest — public gravel access roads",
+    "baseline": 1213,
+    "target": 4852,
+    "after": 4852,
+    "added": 3639,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2031,
+      "shrub": 1131,
+      "canopy": 476,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 1566.476300450422,
+        "kind": "rock in",
+        "ref": "frozenrock",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 168
+  },
+  {
+    "name": "Seekonk Speedway — oval",
+    "baseline": 140,
+    "target": 560,
+    "after": 560,
+    "added": 420,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 273,
+      "shrub": 107,
+      "canopy": 40,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 47
+  },
+  {
+    "name": "RI 44 — Putnam Pike Glocester",
+    "baseline": 2856,
+    "target": 11424,
+    "after": 11424,
+    "added": 8568,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4961,
+      "shrub": 2497,
+      "canopy": 1110,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 339
+  },
+  {
+    "name": "Lime Rock Park — Connecticut",
+    "baseline": 648,
+    "target": 2592,
+    "after": 2592,
+    "added": 1944,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1139,
+      "shrub": 591,
+      "canopy": 214,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 144
+  },
+  {
+    "name": "Palmer Motorsports Park — Massachusetts",
+    "baseline": 978,
+    "target": 3912,
+    "after": 3912,
+    "added": 2934,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1724,
+      "shrub": 878,
+      "canopy": 332,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 321
+  },
+  {
+    "name": "Kancamagus Highway — NH 112",
+    "baseline": 2252,
+    "target": 9008,
+    "after": 9008,
+    "added": 6756,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3867,
+      "shrub": 2007,
+      "canopy": 882,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 361
+  },
+  {
+    "name": "Bear Notch Road — Bartlett",
+    "baseline": 2050,
+    "target": 8200,
+    "after": 8200,
+    "added": 6150,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3508,
+      "shrub": 1836,
+      "canopy": 806,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 281
+  },
+  {
+    "name": "Hurricane Mountain Road — Conway",
+    "baseline": 1725,
+    "target": 6900,
+    "after": 6900,
+    "added": 5175,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2965,
+      "shrub": 1511,
+      "canopy": 699,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 313
+  },
+  {
+    "name": "Crawford Notch — US 302",
+    "baseline": 2737,
+    "target": 10948,
+    "after": 10948,
+    "added": 8211,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4714,
+      "shrub": 2473,
+      "canopy": 1024,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 395
+  },
+  {
+    "name": "Pinkham Notch — NH 16",
+    "baseline": 2800,
+    "target": 11200,
+    "after": 11200,
+    "added": 8400,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4748,
+      "shrub": 2547,
+      "canopy": 1105,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 395
+  },
+  {
+    "name": "Club Motorsports — Tamworth",
+    "baseline": 916,
+    "target": 3664,
+    "after": 3664,
+    "added": 2748,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1662,
+      "shrub": 818,
+      "canopy": 268,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 307
+  },
+  {
+    "name": "Team O’Neil-inspired Rally Stage (2994)",
+    "baseline": 800,
+    "target": 3200,
+    "after": 3200,
+    "added": 2400,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1381,
+      "shrub": 710,
+      "canopy": 308,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 2254.0792634745067,
+        "kind": "tree in",
+        "ref": "snow-covered-pine-03",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 181
+  },
+  {
+    "name": "New Hampshire Motor Speedway — Loudon",
+    "baseline": 670,
+    "target": 2680,
+    "after": 2680,
+    "added": 2010,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1204,
+      "shrub": 574,
+      "canopy": 232,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 171
+  },
+  {
+    "name": "New England Dragway — Epping",
+    "baseline": 69,
+    "target": 276,
+    "after": 276,
+    "added": 207,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 114,
+      "shrub": 63,
+      "canopy": 30,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 5
+  },
+  {
+    "name": "PA 381 — Ohiopyle approach",
+    "baseline": 2716,
+    "target": 10864,
+    "after": 10864,
+    "added": 8148,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4581,
+      "shrub": 2447,
+      "canopy": 1120,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 290
+  },
+  {
+    "name": "PA 711 — Normalville Champion",
+    "baseline": 2922,
+    "target": 11688,
+    "after": 11688,
+    "added": 8766,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4916,
+      "shrub": 2600,
+      "canopy": 1250,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 222
+  },
+  {
+    "name": "US 40 — Chalk Hill Summit",
+    "baseline": 2929,
+    "target": 11716,
+    "after": 11716,
+    "added": 8787,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4985,
+      "shrub": 2601,
+      "canopy": 1201,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 314
+  },
+  {
+    "name": "PA 31 — Donegal to Laurel Ridge",
+    "baseline": 2861,
+    "target": 11444,
+    "after": 11444,
+    "added": 8583,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4830,
+      "shrub": 2560,
+      "canopy": 1193,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 254
+  },
+  {
+    "name": "County Line Road — Seven Springs",
+    "baseline": 2314,
+    "target": 9256,
+    "after": 9256,
+    "added": 6942,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3941,
+      "shrub": 2085,
+      "canopy": 916,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 234
+  },
+  {
+    "name": "Forbes State Forest — designated gravel roads",
+    "baseline": 1442,
+    "target": 5768,
+    "after": 5768,
+    "added": 4326,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2420,
+      "shrub": 1307,
+      "canopy": 598,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 396.1282642130703,
+        "kind": "tree in",
+        "ref": "leafless-tree-03",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 142
+  },
+  {
+    "name": "Jennerstown Speedway — oval",
+    "baseline": 253,
+    "target": 1012,
+    "after": 1012,
+    "added": 759,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 457,
+      "shrub": 232,
+      "canopy": 70,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 49
+  },
+  {
+    "name": "Keystone Motorsports Park — New Alexandria",
+    "baseline": 64,
+    "target": 256,
+    "after": 256,
+    "added": 192,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 103,
+      "shrub": 61,
+      "canopy": 28,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 5
+  },
+  {
+    "name": "Pittsburgh International Race Complex — Wampum",
+    "baseline": 1136,
+    "target": 4544,
+    "after": 4544,
+    "added": 3408,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1864,
+      "shrub": 1068,
+      "canopy": 476,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 173
+  },
+  {
+    "name": "OH 26 — Covered Bridge Scenic Byway",
+    "baseline": 1710,
+    "target": 6840,
+    "after": 6840,
+    "added": 5130,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2946,
+      "shrub": 1522,
+      "canopy": 662,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 223
+  },
+  {
+    "name": "OH 555 — Triple Nickel",
+    "baseline": 1698,
+    "target": 6792,
+    "after": 6792,
+    "added": 5094,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2877,
+      "shrub": 1508,
+      "canopy": 708,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 5526.233767633734,
+        "kind": "tree in",
+        "ref": "expanded-tree-river-birch-young-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 138
+  },
+  {
+    "name": "OH 550 — Barlow approach",
+    "baseline": 2808,
+    "target": 11232,
+    "after": 11232,
+    "added": 8424,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4752,
+      "shrub": 2487,
+      "canopy": 1185,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 221
+  },
+  {
+    "name": "OH 536 — Ohio River hills",
+    "baseline": 1197,
+    "target": 4788,
+    "after": 4788,
+    "added": 3591,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1992,
+      "shrub": 1101,
+      "canopy": 498,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 195
+  },
+  {
+    "name": "OH 676 — Western county hills",
+    "baseline": 1347,
+    "target": 5388,
+    "after": 5388,
+    "added": 4041,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2286,
+      "shrub": 1232,
+      "canopy": 523,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 166
+  },
+  {
+    "name": "Marietta–Williamstown — I-77 river bridge",
+    "baseline": 3319,
+    "target": 13276,
+    "after": 13276,
+    "added": 9957,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 5623,
+      "shrub": 2953,
+      "canopy": 1381,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 308
+  },
+  {
+    "name": "Washington County western covered-bridge gravel loop",
+    "baseline": 1374,
+    "target": 5496,
+    "after": 5496,
+    "added": 4122,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2310,
+      "shrub": 1270,
+      "canopy": 541,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 1219.5133826752942,
+        "kind": "tree in",
+        "ref": "leafless-tree-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 159
+  },
+  {
+    "name": "Ohio Valley Speedway — Washington, West Virginia",
+    "baseline": 142,
+    "target": 568,
+    "after": 568,
+    "added": 426,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 249,
+      "shrub": 137,
+      "canopy": 40,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 47
+  },
+  {
+    "name": "Mid-Ohio Sports Car Course — Lexington",
+    "baseline": 967,
+    "target": 3868,
+    "after": 3868,
+    "added": 2901,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1675,
+      "shrub": 887,
+      "canopy": 339,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 234
+  },
+  {
+    "name": "MO 19 — Eminence Current River",
+    "baseline": 2374,
+    "target": 9496,
+    "after": 9496,
+    "added": 7122,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3968,
+      "shrub": 2180,
+      "canopy": 974,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 150
+  },
+  {
+    "name": "MO 106 — Alley Spring approach",
+    "baseline": 2533,
+    "target": 10132,
+    "after": 10132,
+    "added": 7599,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4204,
+      "shrub": 2356,
+      "canopy": 1038,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 7150.1365642102855,
+        "kind": "tree in",
+        "ref": "expanded-tree-shortleaf-pine-young-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 267
+  },
+  {
+    "name": "MO 106 — Powder Mill approach",
+    "baseline": 2394,
+    "target": 9576,
+    "after": 9576,
+    "added": 7182,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4012,
+      "shrub": 2199,
+      "canopy": 971,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 211
+  },
+  {
+    "name": "MO V — Two Rivers access",
+    "baseline": 1186,
+    "target": 4744,
+    "after": 4744,
+    "added": 3558,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2007,
+      "shrub": 1079,
+      "canopy": 472,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 165
+  },
+  {
+    "name": "MO H NN — Roberts Field access",
+    "baseline": 2579,
+    "target": 10316,
+    "after": 10316,
+    "added": 7737,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4376,
+      "shrub": 2334,
+      "canopy": 1025,
+      "apex-hazard": 2
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 2668.102469966395,
+        "kind": "tree in",
+        "ref": "expanded-tree-hickory-young-01",
+        "paceNoteVerified": true
+      },
+      {
+        "id": "ecology-v2-hazard-1",
+        "distance": 675.858302617427,
+        "kind": "rock in",
+        "ref": "gray-boulder-02",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 249
+  },
+  {
+    "name": "Jerktail Landing gravel road",
+    "baseline": 900,
+    "target": 3600,
+    "after": 3600,
+    "added": 2700,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1502,
+      "shrub": 833,
+      "canopy": 364,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 1439.878124064095,
+        "kind": "tree in",
+        "ref": "dead-broken-tree-02",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 70
+  },
+  {
+    "name": "US 60 — Winona Van Buren",
+    "baseline": 3267,
+    "target": 13068,
+    "after": 13068,
+    "added": 9801,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 5399,
+      "shrub": 3015,
+      "canopy": 1387,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 265
+  },
+  {
+    "name": "Glade Top Trail — Mark Twain National Forest",
+    "baseline": 1566,
+    "target": 6264,
+    "after": 6264,
+    "added": 4698,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2574,
+      "shrub": 1487,
+      "canopy": 636,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 4110.112541897022,
+        "kind": "rock in",
+        "ref": "gray-boulder-03",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 215
+  },
+  {
+    "name": "Ozarks International Raceway — Gravois Mills",
+    "baseline": 1672,
+    "target": 6688,
+    "after": 6688,
+    "added": 5016,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2845,
+      "shrub": 1547,
+      "canopy": 624,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 387
+  },
+  {
+    "name": "World Wide Technology Raceway — road course",
+    "baseline": 762,
+    "target": 3048,
+    "after": 3048,
+    "added": 2286,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1327,
+      "shrub": 679,
+      "canopy": 280,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 193
+  },
+  {
+    "name": "World Wide Technology Raceway — oval",
+    "baseline": 507,
+    "target": 2028,
+    "after": 2028,
+    "added": 1521,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 922,
+      "shrub": 426,
+      "canopy": 173,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 81
+  },
+  {
+    "name": "World Wide Technology Raceway — drag strip",
+    "baseline": 74,
+    "target": 296,
+    "after": 296,
+    "added": 222,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 113,
+      "shrub": 74,
+      "canopy": 35,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 3
+  },
+  {
+    "name": "I-64 — St. Louis downtown approaches",
+    "baseline": 2830,
+    "target": 11320,
+    "after": 11320,
+    "added": 8490,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4841,
+      "shrub": 2501,
+      "canopy": 1148,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 262
+  },
+  {
+    "name": "I-70 — Stan Musial Veterans Memorial Bridge",
+    "baseline": 2506,
+    "target": 10024,
+    "after": 10024,
+    "added": 7518,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4268,
+      "shrub": 2213,
+      "canopy": 1037,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 194
+  },
+  {
+    "name": "IL 100 — Great River Road bluffs",
+    "baseline": 2463,
+    "target": 9852,
+    "after": 9852,
+    "added": 7389,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3794,
+      "shrub": 2414,
+      "canopy": 1181,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 1795
+  },
+  {
+    "name": "MO 94 — Defiance Augusta",
+    "baseline": 2449,
+    "target": 9796,
+    "after": 9796,
+    "added": 7347,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4182,
+      "shrub": 2189,
+      "canopy": 976,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 220
+  },
+  {
+    "name": "Gateway Kartplex — WWT complex",
+    "baseline": 357,
+    "target": 1428,
+    "after": 1428,
+    "added": 1071,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 637,
+      "shrub": 329,
+      "canopy": 105,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 150
+  },
+  {
+    "name": "Federated Auto Parts Raceway at I-55 — Pevely",
+    "baseline": 159,
+    "target": 636,
+    "after": 636,
+    "added": 477,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 308,
+      "shrub": 106,
+      "canopy": 63,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 162
+  },
+  {
+    "name": "Old Route 66 — Shamrock McLean",
+    "baseline": 1412,
+    "target": 5648,
+    "after": 5648,
+    "added": 4236,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2442,
+      "shrub": 1222,
+      "canopy": 572,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 98
+  },
+  {
+    "name": "Old Route 66 — Groom Conway",
+    "baseline": 1928,
+    "target": 7712,
+    "after": 7712,
+    "added": 5784,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3279,
+      "shrub": 1694,
+      "canopy": 811,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 59
+  },
+  {
+    "name": "Amarillo — Historic 6th Avenue alignment",
+    "baseline": 841,
+    "target": 3364,
+    "after": 3364,
+    "added": 2523,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1410,
+      "shrub": 758,
+      "canopy": 355,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 24
+  },
+  {
+    "name": "Old Route 66 — Vega Adrian",
+    "baseline": 1592,
+    "target": 6368,
+    "after": 6368,
+    "added": 4776,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2747,
+      "shrub": 1386,
+      "canopy": 643,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 240
+  },
+  {
+    "name": "Old Route 66 — Adrian Glenrio",
+    "baseline": 2883,
+    "target": 11532,
+    "after": 11532,
+    "added": 8649,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4746,
+      "shrub": 2659,
+      "canopy": 1244,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 152
+  },
+  {
+    "name": "Palo Duro Canyon — Park Road 5",
+    "baseline": 1355,
+    "target": 5420,
+    "after": 5420,
+    "added": 4065,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2269,
+      "shrub": 1193,
+      "canopy": 603,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 194
+  },
+  {
+    "name": "Amarillo Dragway",
+    "baseline": 42,
+    "target": 168,
+    "after": 168,
+    "added": 126,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 75,
+      "shrub": 38,
+      "canopy": 13,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 1
+  },
+  {
+    "name": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+    "baseline": 2668,
+    "target": 10672,
+    "after": 10672,
+    "added": 8004,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4522,
+      "shrub": 2341,
+      "canopy": 1141,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 346
+  },
+  {
+    "name": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+    "baseline": 661,
+    "target": 2644,
+    "after": 2644,
+    "added": 1983,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1125,
+      "shrub": 600,
+      "canopy": 258,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 105
+  },
+  {
+    "name": "Gold Camp Road — Colorado Springs",
+    "baseline": 1361,
+    "target": 5444,
+    "after": 5444,
+    "added": 4083,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2345,
+      "shrub": 1179,
+      "canopy": 558,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 2768.134704405959,
+        "kind": "tree in",
+        "ref": "pikes-peak-alpine-vegetation",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 341
+  },
+  {
+    "name": "Phantom Canyon Road — Gold Belt Tour",
+    "baseline": 761,
+    "target": 3044,
+    "after": 3044,
+    "added": 2283,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1338,
+      "shrub": 670,
+      "canopy": 274,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 2259.199446313079,
+        "kind": "tree in",
+        "ref": "alpine-rock-outcrop-02",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 186
+  },
+  {
+    "name": "Shelf Road — Gold Belt Tour",
+    "baseline": 730,
+    "target": 2920,
+    "after": 2920,
+    "added": 2190,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1260,
+      "shrub": 688,
+      "canopy": 241,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 1857.7948800719316,
+        "kind": "rock in",
+        "ref": "alpine-rock-outcrop-02",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 219
+  },
+  {
+    "name": "Skyline Drive — Cañon City",
+    "baseline": 1046,
+    "target": 4184,
+    "after": 4184,
+    "added": 3138,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1846,
+      "shrub": 902,
+      "canopy": 390,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 310
+  },
+  {
+    "name": "US 24 — Ute Pass Woodland Park",
+    "baseline": 2464,
+    "target": 9856,
+    "after": 9856,
+    "added": 7392,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4214,
+      "shrub": 2184,
+      "canopy": 994,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 329
+  },
+  {
+    "name": "CO 67 — Woodland Park Cripple Creek",
+    "baseline": 1786,
+    "target": 7144,
+    "after": 7144,
+    "added": 5358,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3026,
+      "shrub": 1687,
+      "canopy": 645,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 296
+  },
+  {
+    "name": "Garden of the Gods — paved park road",
+    "baseline": 1053,
+    "target": 4212,
+    "after": 4212,
+    "added": 3159,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1878,
+      "shrub": 900,
+      "canopy": 380,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 1095.8318728365598,
+        "kind": "rock in",
+        "ref": "alpine-rock-outcrop-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 274
+  },
+  {
+    "name": "Pikes Peak International Raceway — Fountain",
+    "baseline": 631,
+    "target": 2524,
+    "after": 2524,
+    "added": 1893,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1108,
+      "shrub": 566,
+      "canopy": 219,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 161
+  },
+  {
+    "name": "Pueblo Motorsports Park — road course or drag strip",
+    "baseline": 922,
+    "target": 3688,
+    "after": 3688,
+    "added": 2766,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1564,
+      "shrub": 872,
+      "canopy": 330,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 186
+  },
+  {
+    "name": "Valley of the Gods Road — San Juan CR 242",
+    "baseline": 776,
+    "target": 3104,
+    "after": 3104,
+    "added": 2328,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1286,
+      "shrub": 706,
+      "canopy": 335,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 3070.0751720937333,
+        "kind": "rock in",
+        "ref": "red-sandstone-boulder-02",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 96
+  },
+  {
+    "name": "Muley Point Road — CR 241",
+    "baseline": 1101,
+    "target": 4404,
+    "after": 4404,
+    "added": 3303,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1857,
+      "shrub": 1010,
+      "canopy": 435,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 3603.217229374716,
+        "kind": "rock in",
+        "ref": "red-sandstone-boulder-02",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 82
+  },
+  {
+    "name": "UT 316 — Goosenecks State Park Road",
+    "baseline": 1122,
+    "target": 4488,
+    "after": 4488,
+    "added": 3366,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1926,
+      "shrub": 985,
+      "canopy": 455,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 136
+  },
+  {
+    "name": "US 163 — Mexican Hat Monument Valley approach",
+    "baseline": 2625,
+    "target": 10500,
+    "after": 10500,
+    "added": 7875,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4405,
+      "shrub": 2376,
+      "canopy": 1094,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 177
+  },
+  {
+    "name": "UT 95 — Comb Ridge Cedar Mesa",
+    "baseline": 2649,
+    "target": 10596,
+    "after": 10596,
+    "added": 7947,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4472,
+      "shrub": 2383,
+      "canopy": 1092,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 236
+  },
+  {
+    "name": "UT 276 — Halls Crossing approach",
+    "baseline": 2450,
+    "target": 9800,
+    "after": 9800,
+    "added": 7350,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4133,
+      "shrub": 2213,
+      "canopy": 1004,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 131
+  },
+  {
+    "name": "US 191 — Bluff Blanding",
+    "baseline": 2761,
+    "target": 11044,
+    "after": 11044,
+    "added": 8283,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4603,
+      "shrub": 2490,
+      "canopy": 1190,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 201
+  },
+  {
+    "name": "Shafer Trail — Canyonlands National Park",
+    "baseline": 651,
+    "target": 2604,
+    "after": 2604,
+    "added": 1953,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1185,
+      "shrub": 566,
+      "canopy": 201,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 507.90928682696455,
+        "kind": "rock in",
+        "ref": "red-sandstone-boulder-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 378
+  },
+  {
+    "name": "Burr Trail switchbacks — Capitol Reef",
+    "baseline": 619,
+    "target": 2476,
+    "after": 2476,
+    "added": 1857,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1072,
+      "shrub": 536,
+      "canopy": 248,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 1853.8249678586437,
+        "kind": "rock in",
+        "ref": "red-sandstone-boulder-03",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 186
+  },
+  {
+    "name": "SR 179 — Red Rock Scenic Byway",
+    "baseline": 1461,
+    "target": 5844,
+    "after": 5844,
+    "added": 4383,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2505,
+      "shrub": 1296,
+      "canopy": 582,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 122
+  },
+  {
+    "name": "Upper Lower Red Rock Loop Road",
+    "baseline": 1032,
+    "target": 4128,
+    "after": 4128,
+    "added": 3096,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1742,
+      "shrub": 907,
+      "canopy": 447,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 120
+  },
+  {
+    "name": "Page Springs Road",
+    "baseline": 1517,
+    "target": 6068,
+    "after": 6068,
+    "added": 4551,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2632,
+      "shrub": 1362,
+      "canopy": 557,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 136
+  },
+  {
+    "name": "Beaverhead Flat Road — CR 78",
+    "baseline": 1832,
+    "target": 7328,
+    "after": 7328,
+    "added": 5496,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3112,
+      "shrub": 1627,
+      "canopy": 757,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 176
+  },
+  {
+    "name": "Boynton Pass Road FR 525 loop",
+    "baseline": 882,
+    "target": 3528,
+    "after": 3528,
+    "added": 2646,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1521,
+      "shrub": 764,
+      "canopy": 360,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 3217.3331541911443,
+        "kind": "tree in",
+        "ref": "oak-creek-canyon-cabin",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 110
+  },
+  {
+    "name": "Schnebly Hill Road — Sedona",
+    "baseline": 649,
+    "target": 2596,
+    "after": 2596,
+    "added": 1947,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1141,
+      "shrub": 565,
+      "canopy": 240,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 1167.5050148903747,
+        "kind": "tree in",
+        "ref": "mostly-bare-pine-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 193
+  },
+  {
+    "name": "SR 89A — Mingus Mountain Jerome",
+    "baseline": 1075,
+    "target": 4300,
+    "after": 4300,
+    "added": 3225,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1829,
+      "shrub": 953,
+      "canopy": 443,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 166
+  },
+  {
+    "name": "Podium Club at Attesa — Casa Grande",
+    "baseline": 753,
+    "target": 3012,
+    "after": 3012,
+    "added": 2259,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1302,
+      "shrub": 687,
+      "canopy": 270,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 312
+  },
+  {
+    "name": "Firebird Motorsports Park — Chandler",
+    "baseline": 65,
+    "target": 260,
+    "after": 260,
+    "added": 195,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 114,
+      "shrub": 60,
+      "canopy": 21,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 3
+  },
+  {
+    "name": "Angeles Forest Highway — County N3",
+    "baseline": 1445,
+    "target": 5780,
+    "after": 5780,
+    "added": 4335,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2492,
+      "shrub": 1275,
+      "canopy": 568,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 159
+  },
+  {
+    "name": "Upper Big Tujunga Canyon Road",
+    "baseline": 1873,
+    "target": 7492,
+    "after": 7492,
+    "added": 5619,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3208,
+      "shrub": 1682,
+      "canopy": 729,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 264
+  },
+  {
+    "name": "Big Tujunga Canyon Road",
+    "baseline": 1579,
+    "target": 6316,
+    "after": 6316,
+    "added": 4737,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2632,
+      "shrub": 1436,
+      "canopy": 669,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 212
+  },
+  {
+    "name": "Glendora Mountain Road",
+    "baseline": 897,
+    "target": 3588,
+    "after": 3588,
+    "added": 2691,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1537,
+      "shrub": 810,
+      "canopy": 344,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 191
+  },
+  {
+    "name": "Glendora Ridge Road",
+    "baseline": 1051,
+    "target": 4204,
+    "after": 4204,
+    "added": 3153,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1738,
+      "shrub": 981,
+      "canopy": 434,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 211
+  },
+  {
+    "name": "San Gabriel Canyon Road — SR 39",
+    "baseline": 1370,
+    "target": 5480,
+    "after": 5480,
+    "added": 4110,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2335,
+      "shrub": 1217,
+      "canopy": 558,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 205
+  },
+  {
+    "name": "Little Tujunga Canyon Road",
+    "baseline": 1036,
+    "target": 4144,
+    "after": 4144,
+    "added": 3108,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1716,
+      "shrub": 939,
+      "canopy": 453,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 188
+  },
+  {
+    "name": "Willow Springs — Horse Thief Mile",
+    "baseline": 374,
+    "target": 1496,
+    "after": 1496,
+    "added": 1122,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 681,
+      "shrub": 321,
+      "canopy": 120,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 174
+  },
+  {
+    "name": "In-N-Out Burger Pomona Dragstrip",
+    "baseline": 65,
+    "target": 260,
+    "after": 260,
+    "added": 195,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 110,
+      "shrub": 48,
+      "canopy": 37,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 1
+  },
+  {
+    "name": "Old Staples Road",
+    "baseline": 172,
+    "target": 688,
+    "after": 688,
+    "added": 516,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 286,
+      "shrub": 170,
+      "canopy": 59,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 1159.4381539580484,
+        "kind": "tree in",
+        "ref": "mostly-bare-pine-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 21
+  },
+  {
+    "name": "Watkins Glen — Long Course",
+    "baseline": 1360,
+    "target": 5440,
+    "after": 5440,
+    "added": 4080,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2323,
+      "shrub": 1266,
+      "canopy": 491,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 208
+  },
+  {
+    "name": "Watkins Glen — Short Course",
+    "baseline": 990,
+    "target": 3960,
+    "after": 3960,
+    "added": 2970,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1703,
+      "shrub": 923,
+      "canopy": 344,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 154
+  },
+  {
+    "name": "Watkins Glen — Long — No Inner Loop",
+    "baseline": 1363,
+    "target": 5452,
+    "after": 5452,
+    "added": 4089,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2344,
+      "shrub": 1210,
+      "canopy": 535,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 232
+  },
+  {
+    "name": "Watkins Glen — Short — No Inner Loop",
+    "baseline": 981,
+    "target": 3924,
+    "after": 3924,
+    "added": 2943,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1721,
+      "shrub": 876,
+      "canopy": 346,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 136
+  },
+  {
+    "name": "Road America — Full Course",
+    "baseline": 1841,
+    "target": 7364,
+    "after": 7364,
+    "added": 5523,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3154,
+      "shrub": 1673,
+      "canopy": 696,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 289
+  },
+  {
+    "name": "Road America — The Bend",
+    "baseline": 1855,
+    "target": 7420,
+    "after": 7420,
+    "added": 5565,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3205,
+      "shrub": 1639,
+      "canopy": 721,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 984
+  },
+  {
+    "name": "Road Atlanta — Grand Prix",
+    "baseline": 1035,
+    "target": 4140,
+    "after": 4140,
+    "added": 3105,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1765,
+      "shrub": 960,
+      "canopy": 380,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 210
+  },
+  {
+    "name": "Road Atlanta — Short Course",
+    "baseline": 773,
+    "target": 3092,
+    "after": 3092,
+    "added": 2319,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1319,
+      "shrub": 719,
+      "canopy": 281,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 149
+  },
+  {
+    "name": "Road Atlanta — Club Course",
+    "baseline": 431,
+    "target": 1724,
+    "after": 1724,
+    "added": 1293,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 800,
+      "shrub": 383,
+      "canopy": 110,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 141
+  },
+  {
+    "name": "Virginia International Raceway — Full Course",
+    "baseline": 1363,
+    "target": 5452,
+    "after": 5452,
+    "added": 4089,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2294,
+      "shrub": 1249,
+      "canopy": 546,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 183
+  },
+  {
+    "name": "Virginia International Raceway — North Course",
+    "baseline": 992,
+    "target": 3968,
+    "after": 3968,
+    "added": 2976,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1702,
+      "shrub": 913,
+      "canopy": 361,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 149
+  },
+  {
+    "name": "Virginia International Raceway — South Course",
+    "baseline": 664,
+    "target": 2656,
+    "after": 2656,
+    "added": 1992,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1152,
+      "shrub": 607,
+      "canopy": 233,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 155
+  },
+  {
+    "name": "Virginia International Raceway — Grand Course",
+    "baseline": 1710,
+    "target": 6840,
+    "after": 6840,
+    "added": 5130,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2936,
+      "shrub": 1543,
+      "canopy": 651,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 290
+  },
+  {
+    "name": "Sebring International Raceway — Full Circuit",
+    "baseline": 1563,
+    "target": 6252,
+    "after": 6252,
+    "added": 4689,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2658,
+      "shrub": 1451,
+      "canopy": 580,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 194
+  },
+  {
+    "name": "Sebring International Raceway — Short Circuit",
+    "baseline": 828,
+    "target": 3312,
+    "after": 3312,
+    "added": 2484,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1401,
+      "shrub": 772,
+      "canopy": 311,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 137
+  },
+  {
+    "name": "Sebring International Raceway — Club Circuit",
+    "baseline": 701,
+    "target": 2804,
+    "after": 2804,
+    "added": 2103,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1172,
+      "shrub": 669,
+      "canopy": 262,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 113
+  },
+  {
+    "name": "Indianapolis Motor Speedway — Oval",
+    "baseline": 774,
+    "target": 3096,
+    "after": 3096,
+    "added": 2322,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1344,
+      "shrub": 743,
+      "canopy": 235,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 138
+  },
+  {
+    "name": "Indianapolis Motor Speedway — Grand Prix Road Course",
+    "baseline": 1133,
+    "target": 4532,
+    "after": 4532,
+    "added": 3399,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1976,
+      "shrub": 1034,
+      "canopy": 389,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 180
+  },
+  {
+    "name": "Homestead-Miami Speedway — Oval",
+    "baseline": 643,
+    "target": 2572,
+    "after": 2572,
+    "added": 1929,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1100,
+      "shrub": 576,
+      "canopy": 253,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 85
+  },
+  {
+    "name": "Homestead-Miami Speedway — Road Course",
+    "baseline": 1004,
+    "target": 4016,
+    "after": 4016,
+    "added": 3012,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1730,
+      "shrub": 962,
+      "canopy": 320,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 222
+  },
+  {
+    "name": "Homestead-Miami Speedway — Modified Road Course",
+    "baseline": 984,
+    "target": 3936,
+    "after": 3936,
+    "added": 2952,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1696,
+      "shrub": 892,
+      "canopy": 364,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 197
+  },
+  {
+    "name": "Daytona International Speedway — Sports Car Course",
+    "baseline": 1331,
+    "target": 5324,
+    "after": 5324,
+    "added": 3993,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2228,
+      "shrub": 1255,
+      "canopy": 510,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 159
+  },
+  {
+    "name": "Daytona International Speedway — Stock Car Road Course",
+    "baseline": 1411,
+    "target": 5644,
+    "after": 5644,
+    "added": 4233,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2360,
+      "shrub": 1303,
+      "canopy": 570,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 145
+  },
+  {
+    "name": "Willow Springs — Big Willow",
+    "baseline": 898,
+    "target": 3592,
+    "after": 3592,
+    "added": 2694,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1509,
+      "shrub": 823,
+      "canopy": 362,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 107
+  },
+  {
+    "name": "Willow Springs — Streets of Willow",
+    "baseline": 500,
+    "target": 2000,
+    "after": 2000,
+    "added": 1500,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 867,
+      "shrub": 447,
+      "canopy": 186,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 90
+  },
+  {
+    "name": "Willow Springs — Streets — Short",
+    "baseline": 476,
+    "target": 1904,
+    "after": 1904,
+    "added": 1428,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 848,
+      "shrub": 421,
+      "canopy": 159,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 117
+  },
+  {
+    "name": "Lime Rock Park — West Chicane",
+    "baseline": 656,
+    "target": 2624,
+    "after": 2624,
+    "added": 1968,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1169,
+      "shrub": 584,
+      "canopy": 215,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 129
+  },
+  {
+    "name": "Lime Rock Park — Both Chicanes",
+    "baseline": 668,
+    "target": 2672,
+    "after": 2672,
+    "added": 2004,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1157,
+      "shrub": 616,
+      "canopy": 231,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 180
+  },
+  {
+    "name": "Mid-Ohio Sports Car Course — Chicane Course",
+    "baseline": 972,
+    "target": 3888,
+    "after": 3888,
+    "added": 2916,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1683,
+      "shrub": 905,
+      "canopy": 328,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 206
+  },
+  {
+    "name": "Mid-Ohio Sports Car Course — Short Course",
+    "baseline": 711,
+    "target": 2844,
+    "after": 2844,
+    "added": 2133,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1267,
+      "shrub": 632,
+      "canopy": 234,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 128
+  },
+  {
+    "name": "Hatcher Pass — Palmer-Fishhook Climb",
+    "baseline": 1541,
+    "target": 6164,
+    "after": 6164,
+    "added": 4623,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2628,
+      "shrub": 1375,
+      "canopy": 620,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 211
+  },
+  {
+    "name": "Pig Trail — Arkansas 23",
+    "baseline": 3259,
+    "target": 13036,
+    "after": 13036,
+    "added": 9777,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 5485,
+      "shrub": 2915,
+      "canopy": 1376,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 10117.857865239086,
+        "kind": "tree in",
+        "ref": "expanded-tree-shortleaf-pine-young-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 379
+  },
+  {
+    "name": "Brandywine Valley — Montchanin Road",
+    "baseline": 2057,
+    "target": 8228,
+    "after": 8228,
+    "added": 6171,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3469,
+      "shrub": 1860,
+      "canopy": 841,
+      "apex-hazard": 1
+    },
+    "hazards": [],
+    "rejected": 237
+  },
+  {
+    "name": "Hana Highway — Rainforest Bends",
+    "baseline": 1586,
+    "target": 6344,
+    "after": 6344,
+    "added": 4758,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2738,
+      "shrub": 1450,
+      "canopy": 570,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 481
+  },
+  {
+    "name": "Grafton Notch — Maine 26",
+    "baseline": 3157,
+    "target": 12628,
+    "after": 12628,
+    "added": 9471,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 5381,
+      "shrub": 2826,
+      "canopy": 1264,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 400
+  },
+  {
+    "name": "National Road — Sideling Hill",
+    "baseline": 2035,
+    "target": 8140,
+    "after": 8140,
+    "added": 6105,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3441,
+      "shrub": 1824,
+      "canopy": 840,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 198
+  },
+  {
+    "name": "Natchez Trace — Tishomingo",
+    "baseline": 3468,
+    "target": 13872,
+    "after": 13872,
+    "added": 10404,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 5826,
+      "shrub": 3124,
+      "canopy": 1454,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 347
+  },
+  {
+    "name": "Beartooth Highway — Rock Creek Climb",
+    "baseline": 3029,
+    "target": 12116,
+    "after": 12116,
+    "added": 9087,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 5307,
+      "shrub": 2600,
+      "canopy": 1180,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 677
+  },
+  {
+    "name": "Barber Motorsports Park",
+    "baseline": 986,
+    "target": 3944,
+    "after": 3944,
+    "added": 2958,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1713,
+      "shrub": 892,
+      "canopy": 353,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 187
+  },
+  {
+    "name": "Raceway Park of the Midlands",
+    "baseline": 1054,
+    "target": 4216,
+    "after": 4216,
+    "added": 3162,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1904,
+      "shrub": 903,
+      "canopy": 355,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 180
+  },
+  {
+    "name": "Heartland Motorsports Park",
+    "baseline": 1052,
+    "target": 4208,
+    "after": 4208,
+    "added": 3156,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1807,
+      "shrub": 954,
+      "canopy": 395,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 160
+  },
+  {
+    "name": "NCM Motorsports Park",
+    "baseline": 1434,
+    "target": 5736,
+    "after": 5736,
+    "added": 4302,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2452,
+      "shrub": 1352,
+      "canopy": 498,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 341
+  },
+  {
+    "name": "NOLA Motorsports Park",
+    "baseline": 1192,
+    "target": 4768,
+    "after": 4768,
+    "added": 3576,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2074,
+      "shrub": 1090,
+      "canopy": 412,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 177
+  },
+  {
+    "name": "GingerMan Raceway",
+    "baseline": 899,
+    "target": 3596,
+    "after": 3596,
+    "added": 2697,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1593,
+      "shrub": 781,
+      "canopy": 323,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 256
+  },
+  {
+    "name": "Brainerd — Competition Course",
+    "baseline": 1101,
+    "target": 4404,
+    "after": 4404,
+    "added": 3303,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1869,
+      "shrub": 1013,
+      "canopy": 421,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 188
+  },
+  {
+    "name": "Spring Mountain — North South",
+    "baseline": 846,
+    "target": 3384,
+    "after": 3384,
+    "added": 2538,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1443,
+      "shrub": 795,
+      "canopy": 300,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 160
+  },
+  {
+    "name": "NJMP — Thunderbolt",
+    "baseline": 879,
+    "target": 3516,
+    "after": 3516,
+    "added": 2637,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1551,
+      "shrub": 789,
+      "canopy": 297,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 132
+  },
+  {
+    "name": "Sandia Speedway — Road Course",
+    "baseline": 547,
+    "target": 2188,
+    "after": 2188,
+    "added": 1641,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1016,
+      "shrub": 449,
+      "canopy": 176,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 158
+  },
+  {
+    "name": "NCCAR — Road Course",
+    "baseline": 847,
+    "target": 3388,
+    "after": 3388,
+    "added": 2541,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1490,
+      "shrub": 779,
+      "canopy": 272,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 180
+  },
+  {
+    "name": "Theodore Roosevelt — North Unit Drive",
+    "baseline": 2047,
+    "target": 8188,
+    "after": 8188,
+    "added": 6141,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3493,
+      "shrub": 1763,
+      "canopy": 885,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 358
+  },
+  {
+    "name": "Needles Highway — Granite Gates",
+    "baseline": 2510,
+    "target": 10040,
+    "after": 10040,
+    "added": 7530,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4367,
+      "shrub": 2238,
+      "canopy": 925,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 595
+  },
+  {
+    "name": "Smugglers Notch — Vermont 108",
+    "baseline": 3270,
+    "target": 13080,
+    "after": 13080,
+    "added": 9810,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 5634,
+      "shrub": 2928,
+      "canopy": 1248,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 559
+  },
+  {
+    "name": "Wind River Canyon — Canyon Walls",
+    "baseline": 2703,
+    "target": 10812,
+    "after": 10812,
+    "added": 8109,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4669,
+      "shrub": 2338,
+      "canopy": 1102,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 369
+  },
+  {
+    "name": "Motorsport Park Hastings",
+    "baseline": 886,
+    "target": 3544,
+    "after": 3544,
+    "added": 2658,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1551,
+      "shrub": 812,
+      "canopy": 295,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 224
+  },
+  {
+    "name": "Portland International Raceway",
+    "baseline": 819,
+    "target": 3276,
+    "after": 3276,
+    "added": 2457,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1425,
+      "shrub": 732,
+      "canopy": 300,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 108
+  },
+  {
+    "name": "Carolina Motorsports Park",
+    "baseline": 998,
+    "target": 3992,
+    "after": 3992,
+    "added": 2994,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1769,
+      "shrub": 883,
+      "canopy": 342,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 201
+  },
+  {
+    "name": "Pacific Raceways",
+    "baseline": 950,
+    "target": 3800,
+    "after": 3800,
+    "added": 2850,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1650,
+      "shrub": 894,
+      "canopy": 306,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 213
+  },
+  {
+    "name": "Ponderosa Pine — Idaho 21",
+    "baseline": 1328,
+    "target": 5312,
+    "after": 5312,
+    "added": 3984,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2274,
+      "shrub": 1189,
+      "canopy": 520,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 1383.8520149084304,
+        "kind": "rock in",
+        "ref": "red-sandstone-boulder-02",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 152
+  },
+  {
+    "name": "Birmingham, AL — Landmark Run",
+    "baseline": 2001,
+    "target": 8004,
+    "after": 8004,
+    "added": 6003,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3462,
+      "shrub": 1705,
+      "canopy": 836,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 553
+  },
+  {
+    "name": "Phoenix, AZ — Landmark Run",
+    "baseline": 947,
+    "target": 3788,
+    "after": 3788,
+    "added": 2841,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1662,
+      "shrub": 771,
+      "canopy": 408,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 195
+  },
+  {
+    "name": "Los Angeles, CA — Landmark Run",
+    "baseline": 889,
+    "target": 3556,
+    "after": 3556,
+    "added": 2667,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1550,
+      "shrub": 727,
+      "canopy": 390,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 218
+  },
+  {
+    "name": "Hartford, CT — Landmark Run",
+    "baseline": 924,
+    "target": 3696,
+    "after": 3696,
+    "added": 2772,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1659,
+      "shrub": 730,
+      "canopy": 383,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 249
+  },
+  {
+    "name": "Wilmington, DE — Landmark Run",
+    "baseline": 1022,
+    "target": 4088,
+    "after": 4088,
+    "added": 3066,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1799,
+      "shrub": 868,
+      "canopy": 399,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 272
+  },
+  {
+    "name": "Miami, FL — Landmark Run",
+    "baseline": 933,
+    "target": 3732,
+    "after": 3732,
+    "added": 2799,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1643,
+      "shrub": 758,
+      "canopy": 398,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 328
+  },
+  {
+    "name": "Atlanta, GA — Landmark Run",
+    "baseline": 1183,
+    "target": 4732,
+    "after": 4732,
+    "added": 3549,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2059,
+      "shrub": 941,
+      "canopy": 549,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 291
+  },
+  {
+    "name": "Chicago, IL — Landmark Run",
+    "baseline": 857,
+    "target": 3428,
+    "after": 3428,
+    "added": 2571,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1522,
+      "shrub": 724,
+      "canopy": 325,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 269
+  },
+  {
+    "name": "Des Moines, IA — Landmark Run",
+    "baseline": 1058,
+    "target": 4232,
+    "after": 4232,
+    "added": 3174,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1767,
+      "shrub": 911,
+      "canopy": 496,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 403
+  },
+  {
+    "name": "Louisville, KY — Landmark Run",
+    "baseline": 910,
+    "target": 3640,
+    "after": 3640,
+    "added": 2730,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1625,
+      "shrub": 760,
+      "canopy": 345,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 243
+  },
+  {
+    "name": "Baltimore, MD — Landmark Run",
+    "baseline": 1006,
+    "target": 4024,
+    "after": 4024,
+    "added": 3018,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1762,
+      "shrub": 841,
+      "canopy": 415,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 230
+  },
+  {
+    "name": "Detroit, MI — Landmark Run",
+    "baseline": 1107,
+    "target": 4428,
+    "after": 4428,
+    "added": 3321,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1956,
+      "shrub": 862,
+      "canopy": 503,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 248
+  },
+  {
+    "name": "Anchorage, AK — Landmark Run",
+    "baseline": 994,
+    "target": 3976,
+    "after": 3976,
+    "added": 2982,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1790,
+      "shrub": 793,
+      "canopy": 399,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 322
+  },
+  {
+    "name": "Little Rock, AR — Landmark Run",
+    "baseline": 1415,
+    "target": 5660,
+    "after": 5660,
+    "added": 4245,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2435,
+      "shrub": 1227,
+      "canopy": 583,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 314
+  },
+  {
+    "name": "Boise, ID — Landmark Run",
+    "baseline": 1056,
+    "target": 4224,
+    "after": 4224,
+    "added": 3168,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1847,
+      "shrub": 870,
+      "canopy": 451,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 231
+  },
+  {
+    "name": "Wichita, KS — Landmark Run",
+    "baseline": 1209,
+    "target": 4836,
+    "after": 4836,
+    "added": 3627,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2065,
+      "shrub": 1057,
+      "canopy": 505,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 607
+  },
+  {
+    "name": "Portland, ME — Landmark Run",
+    "baseline": 873,
+    "target": 3492,
+    "after": 3492,
+    "added": 2619,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1575,
+      "shrub": 713,
+      "canopy": 331,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 235
+  },
+  {
+    "name": "Honolulu, HI — Landmark Run",
+    "baseline": 994,
+    "target": 3976,
+    "after": 3976,
+    "added": 2982,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1764,
+      "shrub": 830,
+      "canopy": 388,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 286
+  },
+  {
+    "name": "Indianapolis, IN — Landmark Run",
+    "baseline": 948,
+    "target": 3792,
+    "after": 3792,
+    "added": 2844,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1651,
+      "shrub": 813,
+      "canopy": 380,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 273
+  },
+  {
+    "name": "New Orleans, LA — Landmark Run",
+    "baseline": 975,
+    "target": 3900,
+    "after": 3900,
+    "added": 2925,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1722,
+      "shrub": 826,
+      "canopy": 377,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 268
+  },
+  {
+    "name": "Boston, MA — Landmark Run",
+    "baseline": 1711,
+    "target": 6844,
+    "after": 6844,
+    "added": 5133,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2959,
+      "shrub": 1422,
+      "canopy": 752,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 495
+  },
+  {
+    "name": "Minneapolis, MN — Landmark Run",
+    "baseline": 1496,
+    "target": 5984,
+    "after": 5984,
+    "added": 4488,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2638,
+      "shrub": 1211,
+      "canopy": 639,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 372
+  },
+  {
+    "name": "Jackson, MS — Landmark Run",
+    "baseline": 927,
+    "target": 3708,
+    "after": 3708,
+    "added": 2781,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1620,
+      "shrub": 756,
+      "canopy": 405,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 237
+  },
+  {
+    "name": "St. Louis, MO — Landmark Run",
+    "baseline": 1061,
+    "target": 4244,
+    "after": 4244,
+    "added": 3183,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1822,
+      "shrub": 926,
+      "canopy": 435,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 236
+  },
+  {
+    "name": "Billings, MT — Landmark Run",
+    "baseline": 913,
+    "target": 3652,
+    "after": 3652,
+    "added": 2739,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1571,
+      "shrub": 774,
+      "canopy": 394,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 244
+  },
+  {
+    "name": "Las Vegas, NV — Landmark Run",
+    "baseline": 918,
+    "target": 3672,
+    "after": 3672,
+    "added": 2754,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1642,
+      "shrub": 751,
+      "canopy": 361,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 264
+  },
+  {
+    "name": "Manchester, NH — Landmark Run",
+    "baseline": 1104,
+    "target": 4416,
+    "after": 4416,
+    "added": 3312,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1956,
+      "shrub": 909,
+      "canopy": 447,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 271
+  },
+  {
+    "name": "Newark, NJ — Landmark Run",
+    "baseline": 955,
+    "target": 3820,
+    "after": 3820,
+    "added": 2865,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1684,
+      "shrub": 794,
+      "canopy": 387,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 249
+  },
+  {
+    "name": "Albuquerque, NM — Landmark Run",
+    "baseline": 925,
+    "target": 3700,
+    "after": 3700,
+    "added": 2775,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1588,
+      "shrub": 796,
+      "canopy": 391,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 249
+  },
+  {
+    "name": "Charlotte, NC — Landmark Run",
+    "baseline": 1000,
+    "target": 4000,
+    "after": 4000,
+    "added": 3000,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1760,
+      "shrub": 826,
+      "canopy": 414,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 274
+  },
+  {
+    "name": "Fargo, ND — Landmark Run",
+    "baseline": 988,
+    "target": 3952,
+    "after": 3952,
+    "added": 2964,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1750,
+      "shrub": 806,
+      "canopy": 408,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 260
+  },
+  {
+    "name": "Cleveland, OH — Landmark Run",
+    "baseline": 1449,
+    "target": 5796,
+    "after": 5796,
+    "added": 4347,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2537,
+      "shrub": 1236,
+      "canopy": 574,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 412
+  },
+  {
+    "name": "Denver, CO — Landmark Run",
+    "baseline": 1078,
+    "target": 4312,
+    "after": 4312,
+    "added": 3234,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1894,
+      "shrub": 883,
+      "canopy": 457,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 246
+  },
+  {
+    "name": "Omaha, NE — Landmark Run",
+    "baseline": 876,
+    "target": 3504,
+    "after": 3504,
+    "added": 2628,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1584,
+      "shrub": 715,
+      "canopy": 329,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 355
+  },
+  {
+    "name": "New York, NY — Landmark Run",
+    "baseline": 1011,
+    "target": 4044,
+    "after": 4044,
+    "added": 3033,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1784,
+      "shrub": 837,
+      "canopy": 412,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 247
+  },
+  {
+    "name": "Oklahoma City, OK — Landmark Run",
+    "baseline": 1038,
+    "target": 4152,
+    "after": 4152,
+    "added": 3114,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1838,
+      "shrub": 849,
+      "canopy": 427,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 243
+  },
+  {
+    "name": "San Antonio, TX — Landmark Run",
+    "baseline": 934,
+    "target": 3736,
+    "after": 3736,
+    "added": 2802,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1615,
+      "shrub": 779,
+      "canopy": 408,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 216
+  },
+  {
+    "name": "Portland, OR — Landmark Run",
+    "baseline": 1030,
+    "target": 4120,
+    "after": 4120,
+    "added": 3090,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1871,
+      "shrub": 841,
+      "canopy": 378,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 286
+  },
+  {
+    "name": "Providence, RI — Landmark Run",
+    "baseline": 1114,
+    "target": 4456,
+    "after": 4456,
+    "added": 3342,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1977,
+      "shrub": 919,
+      "canopy": 446,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 348
+  },
+  {
+    "name": "Philadelphia, PA — Landmark Run",
+    "baseline": 927,
+    "target": 3708,
+    "after": 3708,
+    "added": 2781,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1656,
+      "shrub": 764,
+      "canopy": 361,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 261
+  },
+  {
+    "name": "Charleston, SC — Landmark Run",
+    "baseline": 943,
+    "target": 3772,
+    "after": 3772,
+    "added": 2829,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1643,
+      "shrub": 817,
+      "canopy": 369,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 243
+  },
+  {
+    "name": "Sioux Falls, SD — Landmark Run",
+    "baseline": 991,
+    "target": 3964,
+    "after": 3964,
+    "added": 2973,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1782,
+      "shrub": 790,
+      "canopy": 401,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 251
+  },
+  {
+    "name": "Nashville, TN — Landmark Run",
+    "baseline": 1013,
+    "target": 4052,
+    "after": 4052,
+    "added": 3039,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1854,
+      "shrub": 829,
+      "canopy": 356,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 308
+  },
+  {
+    "name": "Salt Lake City, UT — Landmark Run",
+    "baseline": 964,
+    "target": 3856,
+    "after": 3856,
+    "added": 2892,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1679,
+      "shrub": 817,
+      "canopy": 396,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 313
+  },
+  {
+    "name": "Burlington, VT — Landmark Run",
+    "baseline": 916,
+    "target": 3664,
+    "after": 3664,
+    "added": 2748,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1636,
+      "shrub": 758,
+      "canopy": 354,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 279
+  },
+  {
+    "name": "Richmond, VA — Landmark Run",
+    "baseline": 1387,
+    "target": 5548,
+    "after": 5548,
+    "added": 4161,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2443,
+      "shrub": 1156,
+      "canopy": 562,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 317
+  },
+  {
+    "name": "Flatrock Motorclub — Club Course",
+    "baseline": 1494,
+    "target": 5976,
+    "after": 5976,
+    "added": 4482,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2500,
+      "shrub": 1474,
+      "canopy": 508,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 292
+  },
+  {
+    "name": "Seattle, WA — Landmark Run",
+    "baseline": 1259,
+    "target": 5036,
+    "after": 5036,
+    "added": 3777,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2244,
+      "shrub": 1027,
+      "canopy": 506,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 431
+  },
+  {
+    "name": "Charleston, WV — Landmark Run",
+    "baseline": 996,
+    "target": 3984,
+    "after": 3984,
+    "added": 2988,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1782,
+      "shrub": 828,
+      "canopy": 378,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 281
+  },
+  {
+    "name": "Milwaukee, WI — Landmark Run",
+    "baseline": 949,
+    "target": 3796,
+    "after": 3796,
+    "added": 2847,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1596,
+      "shrub": 856,
+      "canopy": 395,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 392
+  },
+  {
+    "name": "Cheyenne, WY — Landmark Run",
+    "baseline": 575,
+    "target": 2300,
+    "after": 2300,
+    "added": 1725,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 1056,
+      "shrub": 463,
+      "canopy": 206,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 252
+  },
+  {
+    "name": "Thompson Pass — Snowline Climb",
+    "baseline": 3587,
+    "target": 14348,
+    "after": 14348,
+    "added": 10761,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 6132,
+      "shrub": 3154,
+      "canopy": 1474,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 12190.129093673566,
+        "kind": "rock in",
+        "ref": "alpine-rock-outcrop-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 562
+  },
+  {
+    "name": "Denali Highway — Tundra Gravel",
+    "baseline": 2709,
+    "target": 10836,
+    "after": 10836,
+    "added": 8127,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4525,
+      "shrub": 2481,
+      "canopy": 1119,
+      "apex-hazard": 2
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 5444.1235861177265,
+        "kind": "tree in",
+        "ref": "alpine-rock-outcrop-02",
+        "paceNoteVerified": true
+      },
+      {
+        "id": "ecology-v2-hazard-1",
+        "distance": 9910.932767327355,
+        "kind": "tree in",
+        "ref": "alpine-rock-outcrop-02",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 207
+  },
+  {
+    "name": "Skalkaho Pass — Forest Rally",
+    "baseline": 2098,
+    "target": 8392,
+    "after": 8392,
+    "added": 6294,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3557,
+      "shrub": 1911,
+      "canopy": 824,
+      "apex-hazard": 2
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 3142.1233201311456,
+        "kind": "rock in",
+        "ref": "expanded-rock-granite-moss-01",
+        "paceNoteVerified": true
+      },
+      {
+        "id": "ecology-v2-hazard-1",
+        "distance": 7000.7630509751425,
+        "kind": "rock in",
+        "ref": "expanded-rock-granite-moss-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 366
+  },
+  {
+    "name": "Magruder Corridor — Wilderness Ridge",
+    "baseline": 1787,
+    "target": 7148,
+    "after": 7148,
+    "added": 5361,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3061,
+      "shrub": 1592,
+      "canopy": 707,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 2294.7718663441487,
+        "kind": "tree in",
+        "ref": "expanded-tree-shortleaf-pine-young-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 347
+  },
+  {
+    "name": "Chief Joseph — Dead Indian Pass",
+    "baseline": 3382,
+    "target": 13528,
+    "after": 13528,
+    "added": 10146,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 5819,
+      "shrub": 3033,
+      "canopy": 1294,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 841
+  },
+  {
+    "name": "Tantalus — Honolulu Heights",
+    "baseline": 2044,
+    "target": 8176,
+    "after": 8176,
+    "added": 6132,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3701,
+      "shrub": 1824,
+      "canopy": 606,
+      "apex-hazard": 1
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 5457.068987384066,
+        "kind": "tree in",
+        "ref": "tree",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 955
+  },
+  {
+    "name": "Haleakala — Volcano Ascent",
+    "baseline": 2446,
+    "target": 9784,
+    "after": 9784,
+    "added": 7338,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4260,
+      "shrub": 2140,
+      "canopy": 938,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 370
+  },
+  {
+    "name": "Maunakea — Cinder Summit",
+    "baseline": 2540,
+    "target": 10160,
+    "after": 10160,
+    "added": 7620,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 4374,
+      "shrub": 2249,
+      "canopy": 995,
+      "apex-hazard": 2
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 8770.91022418558,
+        "kind": "tree in",
+        "ref": "alpine-rock-outcrop-01",
+        "paceNoteVerified": true
+      },
+      {
+        "id": "ecology-v2-hazard-1",
+        "distance": 5715.219612795154,
+        "kind": "rock in",
+        "ref": "alpine-rock-outcrop-01",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 396
+  },
+  {
+    "name": "Sandhills Journey — Open Prairie",
+    "baseline": 5361,
+    "target": 21444,
+    "after": 21444,
+    "added": 16083,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 10459,
+      "shrub": 5624,
+      "canopy": 0,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 261
+  },
+  {
+    "name": "Grand Canyon — Desert View Drive",
+    "baseline": 3226,
+    "target": 12904,
+    "after": 12904,
+    "added": 9678,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 5416,
+      "shrub": 2957,
+      "canopy": 1305,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 304
+  },
+  {
+    "name": "Grand Canyon — Diamond Creek Descent",
+    "baseline": 2003,
+    "target": 8012,
+    "after": 8012,
+    "added": 6009,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 3446,
+      "shrub": 1840,
+      "canopy": 720,
+      "apex-hazard": 3
+    },
+    "hazards": [
+      {
+        "id": "ecology-v2-hazard-0",
+        "distance": 1735.7816358748923,
+        "kind": "rock in",
+        "ref": "oak-creek-red-rock-formation",
+        "paceNoteVerified": true
+      },
+      {
+        "id": "ecology-v2-hazard-1",
+        "distance": 10190.766067119757,
+        "kind": "tree in",
+        "ref": "oak-creek-red-rock-formation",
+        "paceNoteVerified": true
+      },
+      {
+        "id": "ecology-v2-hazard-2",
+        "distance": 3907.1931929185093,
+        "kind": "rock in",
+        "ref": "oak-creek-red-rock-formation",
+        "paceNoteVerified": true
+      }
+    ],
+    "rejected": 364
+  },
+  {
+    "name": "Bayard — Road 77 to City Park",
+    "baseline": 1380,
+    "target": 5520,
+    "after": 5520,
+    "added": 4140,
+    "multiplier": 4,
+    "status": "target-met",
+    "layers": {
+      "verge": 2661,
+      "shrub": 1479,
+      "canopy": 0,
+      "apex-hazard": 0
+    },
+    "hazards": [],
+    "rejected": 134
+  }
+]

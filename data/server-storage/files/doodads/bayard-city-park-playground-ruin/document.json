@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794360760115,
+  "doodad": {
+    "id": "campaign-bayard-city-park-playground-ruin",
+    "name": "bayard-city-park-playground-ruin",
+    "artRef": "bayard-city-park-playground-ruin",
+    "widthM": 8,
+    "heightM": 5.333,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 6.8,
+    "hitboxHeightM": 4.7997000000000005,
+    "weightKg": 100000,
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    },
+    "rules": []
+  }
+}

@@ -10,7 +10,7 @@ test('catalog Rally tread and wheel use two distinct opaque fitted frames withou
   assert.equal(tire.baseCompound,'dirt');
   assert.deepEqual(tire.size,{widthMm:245,aspectRatio:40,wheelDiameterIn:18});
   assert.equal(tire.pressurePsi,32);
-  assert.deepEqual(tire.compound,{id:'dirt',label:'Rally',surfaceGrip:{asphalt:0.78,'wet-asphalt':0.75,dirt:1.16,gravel:1.2,mud:1,'wet-gravel':1.08,snow:0.58,slush:0.66},wetEvacuationFactor:1.08,treadDepthMm:10,wearRate:1.18});
+  assert.deepEqual(tire.compound,{id:'dirt',label:'Rally',surfaceGrip:{asphalt:0.94,'wet-asphalt':0.88,dirt:1.16,gravel:1.2,mud:1,'wet-gravel':1.08,snow:0.78,slush:0.76},wetEvacuationFactor:1.08,treadDepthMm:10,wearRate:1.18});
   const ref='catalog-rally-gravel';
   const packed=read(`data/server-storage/files/art/${ref}/document.json`);
   const art=JSON.parse(zlib.gunzipSync(Buffer.from(packed.data,'base64')));

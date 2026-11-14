@@ -6,6 +6,14 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'silverleaf-200-2018':{wheelOpening:true,size:[1983,793],cluster:[220,490,460,185],wheel:[455,705,250]},
+ 'glowmoth-sc-1988':{wheelOpening:true,size:[1983,793],cluster:[250,555,550,160],wheel:[525,755,250]},
+ 'wispwing-1993':{wheelOpening:true,size:[1983,793],cluster:[1245,455,420,180],wheel:[1455,665,250]},
+ 'buckwheat-1997':{wheelOpening:true,size:[1983,793],cluster:[245,500,430,185],wheel:[460,715,250]},
+ 'moonpetal-2000':{wheelOpening:true,size:[1983,793],cluster:[235,495,410,180],wheel:[440,700,250]},
+ 'foxmint-2000':{wheelOpening:true,size:[1983,793],cluster:[1240,440,420,175],wheel:[1450,655,250]},
+ 'hazel-2011':{wheelOpening:true,size:[1983,793],cluster:[245,500,430,185],wheel:[460,715,250]},
+ 'primrose-st-2005':{wheelOpening:true,size:[1983,793],cluster:[245,500,430,185],wheel:[460,715,250]},
  'bluebell-gt-2006':{wheelOpening:true,size:[1983,793],cluster:[265,510,420,175],wheel:[475,715,250]},
  'chicory-gt-2008':{wheelOpening:true,size:[1983,793],cluster:[275,510,420,175],wheel:[485,715,250]},
  'mallow-s-2006':{wheelOpening:true,size:[1983,793],cluster:[275,510,420,175],wheel:[485,715,250]},

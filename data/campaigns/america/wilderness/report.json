@@ -1,0 +1,432 @@
+[
+  {
+    "id": "detour-thompson",
+    "name": "Thompson Pass \u2014 Snowline Climb",
+    "displayName": "Thompson Pass \u2014 Snowline Climb",
+    "status": "imported",
+    "state": "Alaska",
+    "stateCode": "AK",
+    "location": {
+      "lat": 61.13,
+      "lon": -145.82
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 14020.968640879493,
+    "estimatedDrivingSeconds": 664,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-thompson.json",
+    "references": [
+      "https://dot.alaska.gov/highways/richardson/"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage.",
+      "direction": "Reverse of mapped source traversal, selected for uphill progression."
+    },
+    "artHubStage": 2,
+    "weather": "snow",
+    "palette": "alaska",
+    "targetSeconds": 660,
+    "paceCapMps": 25
+  },
+  {
+    "id": "detour-denali",
+    "name": "Denali Highway \u2014 Tundra Gravel",
+    "displayName": "Denali Highway \u2014 Tundra Gravel",
+    "status": "imported",
+    "state": "Alaska",
+    "stateCode": "AK",
+    "location": {
+      "lat": 63.07,
+      "lon": -146.7
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 12270.273464463444,
+    "estimatedDrivingSeconds": 664,
+    "laps": 1,
+    "surface": [
+      "gravel"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-denali.json",
+    "references": [
+      "https://www.blm.gov/visit/denali-highway"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 2,
+    "weather": "snow",
+    "palette": "tundra",
+    "targetSeconds": 660,
+    "paceCapMps": 25
+  },
+  {
+    "id": "detour-skalkaho",
+    "name": "Skalkaho Pass \u2014 Forest Rally",
+    "displayName": "Skalkaho Pass \u2014 Forest Rally",
+    "status": "imported",
+    "state": "Montana",
+    "stateCode": "MT",
+    "location": {
+      "lat": 46.252,
+      "lon": -113.79
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 9,
+    "lengthM": 8980.59632623756,
+    "estimatedDrivingSeconds": 663,
+    "laps": 1,
+    "surface": [
+      "gravel"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-skalkaho.json",
+    "references": [
+      "https://visitmt.com/listing/skalkaho-pass-12543"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 3,
+    "weather": "clear",
+    "palette": "forest",
+    "targetSeconds": 660,
+    "paceCapMps": 25
+  },
+  {
+    "id": "detour-magruder",
+    "name": "Magruder Corridor \u2014 Wilderness Ridge",
+    "displayName": "Magruder Corridor \u2014 Wilderness Ridge",
+    "status": "imported",
+    "state": "Idaho",
+    "stateCode": "ID",
+    "location": {
+      "lat": 45.7,
+      "lon": -115.0
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 9,
+    "lengthM": 7718.753304396327,
+    "estimatedDrivingSeconds": 663,
+    "laps": 1,
+    "surface": [
+      "dirt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-magruder.json",
+    "references": [
+      "https://www.fs.usda.gov/media/45002"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 3,
+    "weather": "clear",
+    "palette": "forest",
+    "targetSeconds": 660,
+    "paceCapMps": 22
+  },
+  {
+    "id": "detour-chief-joseph",
+    "name": "Chief Joseph \u2014 Dead Indian Pass",
+    "displayName": "Chief Joseph \u2014 Dead Indian Pass",
+    "status": "imported",
+    "state": "Wyoming",
+    "stateCode": "WY",
+    "location": {
+      "lat": 44.75,
+      "lon": -109.39
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 14461.673148944987,
+    "estimatedDrivingSeconds": 662,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-chief-joseph.json",
+    "references": [
+      "https://www.dot.state.wy.us/files/live/sites/wydot/files/shared/Planning/Buffalo%20Bill%20-%20Yellowstone%20Country%20Scenic%20Byway.pdf"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 8,
+    "weather": "clear",
+    "palette": "alpine",
+    "targetSeconds": 660,
+    "paceCapMps": 40
+  },
+  {
+    "id": "detour-tantalus",
+    "name": "Tantalus \u2014 Honolulu Heights",
+    "displayName": "Tantalus \u2014 Honolulu Heights",
+    "status": "imported",
+    "state": "Hawaii",
+    "stateCode": "HI",
+    "location": {
+      "lat": 21.327,
+      "lon": -157.821
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 8927.204766904317,
+    "estimatedDrivingSeconds": 653,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-tantalus.json",
+    "references": [
+      "https://dlnr.hawaii.gov/dofaw/files/2025/02/Final-TRTD-CMP-2019-12-11-with-Appendices.pdf"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 3,
+    "weather": "rain",
+    "palette": "tropical",
+    "targetSeconds": 660,
+    "paceCapMps": 25
+  },
+  {
+    "id": "detour-haleakala",
+    "name": "Haleakala \u2014 Volcano Ascent",
+    "displayName": "Haleakala \u2014 Volcano Ascent",
+    "status": "imported",
+    "state": "Hawaii",
+    "stateCode": "HI",
+    "location": {
+      "lat": 20.745,
+      "lon": -156.245
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 10546.516189014143,
+    "estimatedDrivingSeconds": 660,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-haleakala.json",
+    "references": [
+      "https://www.nps.gov/hale/planyourvisit/directions.htm"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 8,
+    "weather": "clear",
+    "palette": "volcano",
+    "targetSeconds": 660,
+    "paceCapMps": 30
+  },
+  {
+    "id": "detour-maunakea",
+    "name": "Maunakea \u2014 Cinder Summit",
+    "displayName": "Maunakea \u2014 Cinder Summit",
+    "status": "imported",
+    "state": "Hawaii",
+    "stateCode": "HI",
+    "location": {
+      "lat": 19.79,
+      "lon": -155.46
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 10674.77015923045,
+    "estimatedDrivingSeconds": 663,
+    "laps": 1,
+    "surface": [
+      "asphalt",
+      "gravel"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-maunakea.json",
+    "references": [
+      "https://hilo.hawaii.edu/maunakea/visitor-information/public-safety"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 8,
+    "weather": "snow",
+    "palette": "volcano-snow",
+    "targetSeconds": 660,
+    "paceCapMps": 22
+  },
+  {
+    "id": "detour-sandhills",
+    "name": "Sandhills Journey \u2014 Open Prairie",
+    "displayName": "Sandhills Journey \u2014 Open Prairie",
+    "status": "imported",
+    "state": "Nebraska",
+    "stateCode": "NE",
+    "location": {
+      "lat": 42.045,
+      "lon": -101.34
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 26280.945676893592,
+    "estimatedDrivingSeconds": 670,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-sandhills.json",
+    "references": [
+      "https://visitnebraska.com/sandhills-journey-scenic-byway"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 7,
+    "weather": "clear",
+    "palette": "prairie",
+    "targetSeconds": 660,
+    "paceCapMps": 50
+  },
+  {
+    "id": "detour-desert-view",
+    "name": "Grand Canyon \u2014 Desert View Drive",
+    "displayName": "Grand Canyon \u2014 Desert View Drive",
+    "status": "imported",
+    "state": "Arizona",
+    "stateCode": "AZ",
+    "location": {
+      "lat": 35.995,
+      "lon": -111.97
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 10,
+    "lengthM": 18538.185090761453,
+    "estimatedDrivingSeconds": 667,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-desert-view.json",
+    "references": [
+      "https://www.nps.gov/grca/planyourvisit/desert-view-drive.htm"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage.",
+      "targetSeconds": 660,
+      "paceCapMps": 40,
+      "finishElevation": null,
+      "excludeName": null,
+      "sourceSurface": null
+    },
+    "artHubStage": 9,
+    "weather": "clear",
+    "palette": "canyon",
+    "targetSeconds": 660,
+    "paceCapMps": 40
+  },
+  {
+    "id": "detour-diamond-creek",
+    "name": "Grand Canyon \u2014 Diamond Creek Descent",
+    "displayName": "Grand Canyon \u2014 Diamond Creek Descent",
+    "status": "imported",
+    "state": "Arizona",
+    "stateCode": "AZ",
+    "location": {
+      "lat": 35.665,
+      "lon": -113.37
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 10,
+    "lengthM": 11101.661381102163,
+    "estimatedDrivingSeconds": 658,
+    "laps": 1,
+    "surface": [
+      "dirt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-diamond-creek.json",
+    "references": [
+      "https://www.arizonahighways.com/diamond-creek-road"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage.",
+      "targetSeconds": 660,
+      "paceCapMps": 22,
+      "finishElevation": "lowest",
+      "excludeName": null,
+      "sourceSurface": null
+    },
+    "artHubStage": 9,
+    "weather": "clear",
+    "palette": "canyon",
+    "targetSeconds": 660,
+    "paceCapMps": 22
+  }
+]
