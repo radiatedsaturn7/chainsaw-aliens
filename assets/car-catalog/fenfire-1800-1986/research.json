@@ -1,0 +1,84 @@
+{
+  "referenceVehicle": "1986 Ford RS200 stock 1.8 road homologation coupe, LHD five-speed manual; factory-delivered AWD, not S/Evolution/race car",
+  "sources": [
+    {
+      "url": "https://www.rs200.org/downloads/RS200_Manual.pdf",
+      "fields": [
+        "dimensions",
+        "tuning.weightKg",
+        "tuning.frontWeightDistribution",
+        "tuning.engineDisplacementL",
+        "tuning.revLimitRpm",
+        "transmissions",
+        "setup.tireSize",
+        "setup.tirePressurePsi",
+        "tuning.wheelRadiusM",
+        "tuning.centerDifferentialBalance",
+        "tuning.camberFront",
+        "tuning.camberRear",
+        "tuning.toeFront",
+        "tuning.toeRear",
+        "tuning.casterFront",
+        "tuning.physics.bodyProfile"
+      ],
+      "access": "Ford owner manual Issue 1 archived by owners club. Visually read PDF pages 16-19, printed 01-3 to 01-6. Road specification, not subsequent competition-change chapters."
+    },
+    {
+      "url": "https://historicdb.fia.com/node/67469",
+      "fields": [
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "selectionContext"
+      ],
+      "access": "FIA road-car narrative confirms 250 hp at 6500 rpm, 215 lb-ft at 4500 rpm; distinguishes later Evolution and competition cars."
+    },
+    {
+      "url": "https://historicdb.fia.com/sites/default/files/car_attachment/1601077501/ford_rs_200_homologation_280_group_b_-_full_copy.pdf",
+      "fields": [
+        "transmissions",
+        "tuning.engineDisplacementL"
+      ],
+      "access": "Original Ford FIA B-280 base form pages 2,6,7,8 visually read. Gearbox/transfer/axle corroboration only. Do not substitute competition dimensions/variants for road manual."
+    }
+  ],
+  "verifiedFacts": {
+    "engineCm3": 1803.5,
+    "massKg": 1180,
+    "massCondition": "Kerb with full fuel, liquids, tools and spare",
+    "frontAxleKg": 545,
+    "rearAxleKg": 635,
+    "powerHp": 250,
+    "powerRpm": 6500,
+    "torqueLbFt": 215,
+    "torqueRpm": 4500,
+    "maxEngineRpm": 7400,
+    "primaryTransferRatio": 1.043,
+    "axleFinalDrive": 4.375,
+    "gearRatios": [
+      2.692,
+      1.824,
+      1.318,
+      1.043,
+      0.786
+    ],
+    "reverseRatio": 3.083,
+    "overallRatios": [
+      12.289,
+      8.326,
+      6.016,
+      4.76,
+      3.587
+    ],
+    "rearTorqueShare": 0.63,
+    "rollingRadiusM": 0.3088
+  },
+  "estimates": [
+    "Engine maximum 7400 rpm is sourced; visual redline 7000 and idle 1000 are estimates. Owner manual power row has unclear DIN/PS label 187(250); use FIA explicit 250 hp corroboration, not 187 PS. Torque/power plateaus modeled from manual 4000-5000/6500-7000 ranges, other curve points are estimates.",
+    "Game has one final-drive scalar: axle 4.375 multiplied once by primary transfer 1.043 = 4.563125. Published overall gear reductions agree within source rounding. Raw gear ratios retained. No competition close-ratio or later Evolution parts.",
+    "Auto Assist automates the stock 5MT for gameplay; not a factory automatic. Shift/clutch/launch timing and 84% driveline efficiency are estimates.",
+    "Road manual width 1764mm takes precedence over homologation 1785mm. Manual front overhang 788mm plus rear692+wheelbase2530 totals4010 rather than stated4000; rig uses FIA base778mm front to close envelope, explicitly cross-source reconciliation.",
+    "Factory 37/63 torque split retained, Ferguson viscous limited-slip simplified to estimated game locking values. No RWD selector, center lock or exact thermal-viscous behavior simulated.",
+    ".38drag,.46mCG,13:1 steering ratio (manual only gives2.6turns), collider sections, tire grip, springs/damping/brake balance/aero are gameplay estimates.140mph and6.1sec display targets unvalidated; no performance calibration claim.",
+    "Owner manual nominal rolling radius .3088m used rather than unloaded geometric .3157m. Alignment source retained; rear toe .25 degrees interpreted as axle setting in game. Original teal/ivory 2994 art deliberately differs from original white road-car paint. Shared tires, wheel and surface smoke assets retained."
+  ]
+}

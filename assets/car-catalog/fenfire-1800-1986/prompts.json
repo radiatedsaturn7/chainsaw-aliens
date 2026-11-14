@@ -1,0 +1,22 @@
+{
+  "tool": "image_gen",
+  "body": {
+    "source": "/workspace/generated_images/exec-11395f30-693c-4c5c-acd1-cfff938b35b3.png",
+    "brief": "Original badge-free Fenfire 1800 1986 stock RS200-proportioned road coupe; petrol teal/ivory/ochre salvage panels; no competition livery; eight whole-body directions in 4x2 grid; transparent wheel openings, no wheels/shadows/text."
+  },
+  "dashboard": {
+    "source": "/workspace/generated_images/exec-d8d0f858-2267-46e7-87e3-55b2ca0584a4.png",
+    "brief": "Original teal/charcoal/ivory 2994 dashboard; LHD blank left binnacle; no baked gauges, text or wheel; transparent windshield; shared wheel and runtime instruments applied in game."
+  },
+  "mapping": [
+    "front",
+    "frontRight",
+    "right",
+    "rearRight",
+    "rear",
+    "rearLeft",
+    "left",
+    "frontLeft"
+  ],
+  "sourceBitmapEdits": "None; original PNG bytes preserved. Native importer handles its normal alpha preparation."
+}
