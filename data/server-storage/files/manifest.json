@@ -648,7 +648,11 @@
       "landmark-city-sc-charleston-museum": "art/landmark-city-sc-charleston-museum/document.json",
       "landmark-city-sc-old-exchange-and-provost-dungeon": "art/landmark-city-sc-old-exchange-and-provost-dungeon/document.json",
       "landmark-city-sc-rainbow-row": "art/landmark-city-sc-rainbow-row/document.json",
-      "landmark-city-sc-emanuel-african-methodist-episcopal-church": "art/landmark-city-sc-emanuel-african-methodist-episcopal-church/document.json"
+      "landmark-city-sc-emanuel-african-methodist-episcopal-church": "art/landmark-city-sc-emanuel-african-methodist-episcopal-church/document.json",
+      "landmark-city-nj-cathedral-basilica-of-the-sacred-heart": "art/landmark-city-nj-cathedral-basilica-of-the-sacred-heart/document.json",
+      "landmark-city-nj-newark-museum-of-art": "art/landmark-city-nj-newark-museum-of-art/document.json",
+      "landmark-city-nj-new-jersey-performing-arts-center": "art/landmark-city-nj-new-jersey-performing-arts-center/document.json",
+      "landmark-city-nj-newark-penn-station": "art/landmark-city-nj-newark-penn-station/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1032,7 +1036,11 @@
       "landmark-city-sc-charleston-museum": "doodads/landmark-city-sc-charleston-museum/document.json",
       "landmark-city-sc-old-exchange-and-provost-dungeon": "doodads/landmark-city-sc-old-exchange-and-provost-dungeon/document.json",
       "landmark-city-sc-rainbow-row": "doodads/landmark-city-sc-rainbow-row/document.json",
-      "landmark-city-sc-emanuel-african-methodist-episcopal-church": "doodads/landmark-city-sc-emanuel-african-methodist-episcopal-church/document.json"
+      "landmark-city-sc-emanuel-african-methodist-episcopal-church": "doodads/landmark-city-sc-emanuel-african-methodist-episcopal-church/document.json",
+      "landmark-city-nj-cathedral-basilica-of-the-sacred-heart": "doodads/landmark-city-nj-cathedral-basilica-of-the-sacred-heart/document.json",
+      "landmark-city-nj-newark-museum-of-art": "doodads/landmark-city-nj-newark-museum-of-art/document.json",
+      "landmark-city-nj-new-jersey-performing-arts-center": "doodads/landmark-city-nj-new-jersey-performing-arts-center/document.json",
+      "landmark-city-nj-newark-penn-station": "doodads/landmark-city-nj-newark-penn-station/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

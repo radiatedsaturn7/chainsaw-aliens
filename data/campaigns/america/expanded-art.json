@@ -3044,6 +3044,34 @@
       "heightM": 32,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-nj-cathedral-basilica-of-the-sacred-heart",
+      "source": "landmarks/NJ/landmark-city-nj-cathedral-basilica-of-the-sacred-heart.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nj-newark-museum-of-art",
+      "source": "landmarks/NJ/landmark-city-nj-newark-museum-of-art.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nj-new-jersey-performing-arts-center",
+      "source": "landmarks/NJ/landmark-city-nj-new-jersey-performing-arts-center.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nj-newark-penn-station",
+      "source": "landmarks/NJ/landmark-city-nj-newark-penn-station.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

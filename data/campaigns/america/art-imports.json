@@ -2462,5 +2462,33 @@
     "documentSha256": "6a95e3286b866d9c58878d27437954692435969c2f1714e58ff69def77f325d0",
     "width": 512,
     "height": 402
+  },
+  "landmark-city-nj-cathedral-basilica-of-the-sacred-heart": {
+    "source": "assets/campaign-art/landmarks/NJ/landmark-city-nj-cathedral-basilica-of-the-sacred-heart.png",
+    "sourceSha256": "9bd2acc297251a6e0409a9e7085db96bf7c1d0602c87fade9d7f85c42f1d898f",
+    "documentSha256": "64dcd66c7ed7a9ec7c61a18a6294c8e6cd695a2ae2a1456b2e4f7c2f5bdb5a2f",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-nj-newark-museum-of-art": {
+    "source": "assets/campaign-art/landmarks/NJ/landmark-city-nj-newark-museum-of-art.png",
+    "sourceSha256": "afeb5106a3a40e425a07c6e375546dc480c5a873969be7d619a652eb030964af",
+    "documentSha256": "87199d2420d125a653cfbeb2bd5459efa672e5fc3d616aeefb4136b04b0855dd",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nj-new-jersey-performing-arts-center": {
+    "source": "assets/campaign-art/landmarks/NJ/landmark-city-nj-new-jersey-performing-arts-center.png",
+    "sourceSha256": "b188baefb7bdde2067b797174f09bba84c520bf909482e3250fe218b42ac9cbf",
+    "documentSha256": "c2205738f7ea21546107025df8a440df210c31e060d76de6a28663673b311800",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nj-newark-penn-station": {
+    "source": "assets/campaign-art/landmarks/NJ/landmark-city-nj-newark-penn-station.png",
+    "sourceSha256": "148b83e3d38b51284e2d6871b51eb105ba9b0ca613b5515642b3adca934c758e",
+    "documentSha256": "de15321dc0dd6c270fc178155c68c2370233d4ab67beefdc9d58c151f9d55f2e",
+    "width": 512,
+    "height": 256
   }
 }
