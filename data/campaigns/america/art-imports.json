@@ -2826,5 +2826,33 @@
     "documentSha256": "5f1cf53441dfad9b5bdbbe9e4c8c216a1aa924348ebd8742d01fad781f954b3a",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-ut-union-pacific-depot": {
+    "source": "assets/campaign-art/landmarks/UT/landmark-city-ut-union-pacific-depot.png",
+    "sourceSha256": "84eda22035d56f13c414b348ac42cfc3da860215ae5f2edde0741cfef10e3113",
+    "documentSha256": "a49769d2589126f4bce93120ac252aa4a8e236646c42955ee812dc4d55dea8b8",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ut-utah-state-capitol": {
+    "source": "assets/campaign-art/landmarks/UT/landmark-city-ut-utah-state-capitol.png",
+    "sourceSha256": "aec50e87f3180130ed7fabfaa77b43fddbddac55390d160e528e999e5fbabdaf",
+    "documentSha256": "99af747967b43849bc15a689738c5feb3160b4736468162926f0d00f1bdfd24c",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ut-temple-square": {
+    "source": "assets/campaign-art/landmarks/UT/landmark-city-ut-temple-square.png",
+    "sourceSha256": "358282f5e3b9cc0b22ff01f54e44fb666f93587e253b562237e47abb5b96d8b8",
+    "documentSha256": "e632946a1830bb1c747edd43bd81e9b00c3ffce2014d4fc01e3a55452499a962",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-ut-salt-lake-city-and-county-building": {
+    "source": "assets/campaign-art/landmarks/UT/landmark-city-ut-salt-lake-city-and-county-building.png",
+    "sourceSha256": "4751307fdaa37079b4453e95988f10a5f46fbad85ccb280781c3f1436f95144d",
+    "documentSha256": "715bf7d5e6337556a30fcba75c8716707ac409b06f9a4a501a6a0bcf1799cae2",
+    "width": 512,
+    "height": 341
   }
 }

@@ -19831,35 +19831,470 @@
     },
     "landmark-city-ut-union-pacific-depot": {
       "raceRef": "Salt Lake City, UT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -1092.0944870322332,
+        "worldZ": -598.9967777097685,
+        "routeDistanceM": 1627,
+        "offsetFromRoadM": 27,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.6995700552224305,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 6.210382525387494,
+            "angularWidthDegrees": 15.301886410394886,
+            "rangeM": 163.77144682581837,
+            "occluderIds": [
+              "city-ut-prop-90"
+            ],
+            "score": 0.09019016387814004
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 5.582746532424222,
+            "angularWidthDegrees": 13.66101917397574,
+            "rangeM": 183.6656469325505,
+            "occluderIds": [
+              "city-ut-prop-90"
+            ],
+            "score": 0.09320281664436374
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 5.754879391834699,
+            "angularWidthDegrees": 12.3355031479109,
+            "rangeM": 203.5805835870598,
+            "occluderIds": [
+              "city-ut-prop-90"
+            ],
+            "score": 0.09237657891919344
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.040356247366478,
+            "angularWidthDegrees": 11.24579457870225,
+            "rangeM": 223.45381781386715,
+            "occluderIds": [
+              "city-ut-prop-90"
+            ],
+            "score": 0.0814062900126409
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 7.3945235230698945,
+            "angularWidthDegrees": 9.933213920316033,
+            "rangeM": 253.16043804201203,
+            "occluderIds": [
+              "city-ut-prop-90"
+            ],
+            "score": 0.0845062870892645
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 3.0790620085409546,
+            "angularWidthDegrees": 8.58892846821233,
+            "rangeM": 292.9692123340188,
+            "occluderIds": [
+              "city-ut-prop-89",
+              "city-ut-prop-90"
+            ],
+            "score": 0.1052205023590034
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 2.7092893096278052,
+            "angularWidthDegrees": 7.56147463104382,
+            "rangeM": 332.9184271583388,
+            "occluderIds": [
+              "city-ut-prop-89",
+              "city-ut-prop-90"
+            ],
+            "score": 0.10699541131378654
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 2.3599989570754034,
+            "angularWidthDegrees": 6.5772875371175825,
+            "rangeM": 382.86986684720176,
+            "occluderIds": [
+              "city-ut-prop-89",
+              "city-ut-prop-90",
+              "city-ut-prop-91"
+            ],
+            "score": 0.10867200500603806
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "d440b978aea16a0303cbbe2f4f1705f42a6ea9c3c0f95c9ca80a51c0f54ab17f",
+      "sourceSha256": "84eda22035d56f13c414b348ac42cfc3da860215ae5f2edde0741cfef10e3113",
+      "roadSha256": "23b8cc6a78c07971415a28aaf3bc48f90c45c55b317125d2f6709c7086d8b7af",
+      "placementDetails": {
+        "x": -1046.1889159626255,
+        "z": -451.31525889354725,
+        "yaw": 0.08717969294997674,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1657.2247160255392,
+        "trackLateral": 134.9999002296824,
+        "minimumRoadClearanceM": 103.49102411961866,
+        "checkedSegments": 4238,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ut-utah-state-capitol": {
       "raceRef": "Salt Lake City, UT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 150.1385682367005,
+        "worldZ": -1489.547055792121,
+        "routeDistanceM": 3601,
+        "offsetFromRoadM": 150,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 7.40882744340457,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 7.171657884105731,
+            "angularWidthDegrees": 31.794591323234133,
+            "rangeM": 112.35700024915843,
+            "occluderIds": [],
+            "score": 0.7131336846357708
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 1.7710749026196273,
+            "angularWidthDegrees": 27.208243505997302,
+            "rangeM": 132.2305247840594,
+            "occluderIds": [],
+            "score": 0.9291570038952149
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 1.1662804241703255,
+            "angularWidthDegrees": 23.74387719953141,
+            "rangeM": 152.22032959691137,
+            "occluderIds": [],
+            "score": 0.9533487830331869
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.0620454385259535,
+            "angularWidthDegrees": 21.05246689398059,
+            "rangeM": 172.21645593649265,
+            "occluderIds": [],
+            "score": 0.9575181824589618
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.9044900677289842,
+            "angularWidthDegrees": 17.984936260072114,
+            "rangeM": 202.21208706358533,
+            "occluderIds": [],
+            "score": 0.9638203972908407
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.7551218698048366,
+            "angularWidthDegrees": 15.052416568742629,
+            "rangeM": 242.20795312431233,
+            "occluderIds": [],
+            "score": 0.9697951252078065
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.6480931547362008,
+            "angularWidthDegrees": 12.938586110182067,
+            "rangeM": 282.204998697379,
+            "occluderIds": [],
+            "score": 0.974076273810552
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.5505501731940805,
+            "angularWidthDegrees": 11.004291071219395,
+            "rangeM": 332.2023153091192,
+            "occluderIds": [],
+            "score": 0.9779779930722368
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "3b9b02e3bb0d3c9bc08ef18c9e202f39bf171000e8a6013bb811126d865ec044",
+      "sourceSha256": "aec50e87f3180130ed7fabfaa77b43fddbddac55390d160e528e999e5fbabdaf",
+      "roadSha256": "23b8cc6a78c07971415a28aaf3bc48f90c45c55b317125d2f6709c7086d8b7af",
+      "placementDetails": {
+        "x": 153.68242044452248,
+        "z": -1414.2724022107593,
+        "yaw": 3.119505083742556,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3601.2934068612653,
+        "trackLateral": 74.99813075071206,
+        "minimumRoadClearanceM": 32.52731875067325,
+        "checkedSegments": 4238,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ut-temple-square": {
       "raceRef": "Salt Lake City, UT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -106.47062206947523,
+        "worldZ": -557.9213150710733,
+        "routeDistanceM": 5074,
+        "offsetFromRoadM": 8,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.462074342789054,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 10.056265691213193,
+            "angularWidthDegrees": 15.093758297851599,
+            "rangeM": 156.89572706495818,
+            "occluderIds": [],
+            "score": 0.5977493723514723
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 8.921431921944231,
+            "angularWidthDegrees": 13.42437219840142,
+            "rangeM": 176.62135153387376,
+            "occluderIds": [],
+            "score": 0.6431427231222308
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 7.647422797998185,
+            "angularWidthDegrees": 12.082756625218298,
+            "rangeM": 196.40413400143828,
+            "occluderIds": [],
+            "score": 0.6941030880800726
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 6.820749075179831,
+            "angularWidthDegrees": 10.98109200115054,
+            "rangeM": 216.2482351610505,
+            "occluderIds": [],
+            "score": 0.7271700369928067
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 5.991092292016447,
+            "angularWidthDegrees": 9.657314517446517,
+            "rangeM": 246.0617285897492,
+            "occluderIds": [],
+            "score": 0.7603563083193421
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.15430373611507,
+            "angularWidthDegrees": 8.317492364238621,
+            "rangeM": 285.8737684503346,
+            "occluderIds": [
+              "city-ut-prop-258",
+              "city-ut-prop-260"
+            ],
+            "score": 0.09525934206664766
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.522193363232899,
+            "angularWidthDegrees": 7.302668709017164,
+            "rangeM": 325.7318729115652,
+            "occluderIds": [
+              "city-ut-prop-258",
+              "city-ut-prop-260"
+            ],
+            "score": 0.09829347185648209
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 79.12297931143141,
+            "angularWidthDegrees": 6.386870892220596,
+            "rangeM": 372.55651455474504,
+            "occluderIds": [
+              "city-ut-prop-258",
+              "city-ut-prop-260"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "8dbc161b06c8f62a7e91e71f90e315cf4707a69e59e442d13dc818a6a434b1f8",
+      "sourceSha256": "358282f5e3b9cc0b22ff01f54e44fb666f93587e253b562237e47abb5b96d8b8",
+      "roadSha256": "23b8cc6a78c07971415a28aaf3bc48f90c45c55b317125d2f6709c7086d8b7af",
+      "placementDetails": {
+        "x": 36.44237869935141,
+        "z": -561.890486162522,
+        "yaw": 1.4536273949696854,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5072.836758108176,
+        "trackLateral": -134.8586429362991,
+        "minimumRoadClearanceM": 106.05973532239823,
+        "checkedSegments": 4238,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/UT/temple-square-desktop.png",
+        "docs/art/landmark-previews/UT/temple-square-mobile.png"
+      ]
     },
     "landmark-city-ut-salt-lake-city-and-county-building": {
       "raceRef": "Salt Lake City, UT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 269.76431700132406,
+        "worldZ": 496.55275029121793,
+        "routeDistanceM": 6380,
+        "offsetFromRoadM": 112,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.4108792393218862,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 50.40953454315856,
+            "angularWidthDegrees": 39.40464969384799,
+            "rangeM": 71.27924211344946,
+            "occluderIds": [
+              "city-ut-prop-337"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 40.015542399292315,
+            "angularWidthDegrees": 33.27148109208078,
+            "rangeM": 85.4269891754415,
+            "occluderIds": [
+              "city-ut-prop-337"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 32.74113668839857,
+            "angularWidthDegrees": 28.215229991471386,
+            "rangeM": 101.5618613735457,
+            "occluderIds": [
+              "city-ut-prop-335",
+              "city-ut-prop-337"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 27.52046024610251,
+            "angularWidthDegrees": 24.236680825407905,
+            "rangeM": 118.87747463040536,
+            "occluderIds": [
+              "city-ut-prop-335"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 22.077607702259566,
+            "angularWidthDegrees": 19.814536024250327,
+            "rangeM": 146.1417785506673,
+            "occluderIds": [
+              "city-ut-prop-335"
+            ],
+            "score": 0.014027483029154082
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 17.283081903833022,
+            "angularWidthDegrees": 15.810485946652863,
+            "rangeM": 183.8246732955864,
+            "occluderIds": [],
+            "score": 0.3086767238466791
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 13.340208939655295,
+            "angularWidthDegrees": 13.09248930081511,
+            "rangeM": 222.43308523090542,
+            "occluderIds": [
+              "city-ut-prop-331"
+            ],
+            "score": 0.05596699708965458
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 9.956659300750312,
+            "angularWidthDegrees": 10.744563959061182,
+            "rangeM": 271.42696541833834,
+            "occluderIds": [
+              "city-ut-prop-327",
+              "city-ut-prop-331"
+            ],
+            "score": 0.0722080353563985
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "723ed82578c7fbdbdfc1f01a413a643f051b70f06edbe1612a6adf72c3999727",
+      "sourceSha256": "4751307fdaa37079b4453e95988f10a5f46fbad85ccb280781c3f1436f95144d",
+      "roadSha256": "23b8cc6a78c07971415a28aaf3bc48f90c45c55b317125d2f6709c7086d8b7af",
+      "placementDetails": {
+        "x": 329.9270594251121,
+        "z": 438.9998931562877,
+        "yaw": 1.0913368396826146,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6439.748960957904,
+        "trackLateral": 54.99999999999998,
+        "minimumRoadClearanceM": 15.616957126507007,
+        "checkedSegments": 4238,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-va-virginia-museum-of-fine-arts": {
       "raceRef": "Richmond, VA — Landmark Run",

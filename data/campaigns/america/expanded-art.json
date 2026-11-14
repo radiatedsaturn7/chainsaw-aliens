@@ -3408,6 +3408,34 @@
       "heightM": 22,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ut-union-pacific-depot",
+      "source": "landmarks/UT/landmark-city-ut-union-pacific-depot.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ut-utah-state-capitol",
+      "source": "landmarks/UT/landmark-city-ut-utah-state-capitol.png",
+      "heightM": 32,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ut-temple-square",
+      "source": "landmarks/UT/landmark-city-ut-temple-square.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ut-salt-lake-city-and-county-building",
+      "source": "landmarks/UT/landmark-city-ut-salt-lake-city-and-county-building.png",
+      "heightM": 34,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

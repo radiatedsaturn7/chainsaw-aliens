@@ -700,7 +700,11 @@
       "landmark-city-sd-falls-park": "art/landmark-city-sd-falls-park/document.json",
       "landmark-city-sd-old-courthouse-museum": "art/landmark-city-sd-old-courthouse-museum/document.json",
       "landmark-city-sd-pettigrew-home-and-museum": "art/landmark-city-sd-pettigrew-home-and-museum/document.json",
-      "landmark-city-sd-washington-pavilion": "art/landmark-city-sd-washington-pavilion/document.json"
+      "landmark-city-sd-washington-pavilion": "art/landmark-city-sd-washington-pavilion/document.json",
+      "landmark-city-ut-union-pacific-depot": "art/landmark-city-ut-union-pacific-depot/document.json",
+      "landmark-city-ut-utah-state-capitol": "art/landmark-city-ut-utah-state-capitol/document.json",
+      "landmark-city-ut-temple-square": "art/landmark-city-ut-temple-square/document.json",
+      "landmark-city-ut-salt-lake-city-and-county-building": "art/landmark-city-ut-salt-lake-city-and-county-building/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1136,7 +1140,11 @@
       "landmark-city-sd-falls-park": "doodads/landmark-city-sd-falls-park/document.json",
       "landmark-city-sd-old-courthouse-museum": "doodads/landmark-city-sd-old-courthouse-museum/document.json",
       "landmark-city-sd-pettigrew-home-and-museum": "doodads/landmark-city-sd-pettigrew-home-and-museum/document.json",
-      "landmark-city-sd-washington-pavilion": "doodads/landmark-city-sd-washington-pavilion/document.json"
+      "landmark-city-sd-washington-pavilion": "doodads/landmark-city-sd-washington-pavilion/document.json",
+      "landmark-city-ut-union-pacific-depot": "doodads/landmark-city-ut-union-pacific-depot/document.json",
+      "landmark-city-ut-utah-state-capitol": "doodads/landmark-city-ut-utah-state-capitol/document.json",
+      "landmark-city-ut-temple-square": "doodads/landmark-city-ut-temple-square/document.json",
+      "landmark-city-ut-salt-lake-city-and-county-building": "doodads/landmark-city-ut-salt-lake-city-and-county-building/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",
