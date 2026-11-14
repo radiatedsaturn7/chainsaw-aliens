@@ -2960,6 +2960,34 @@
       "heightM": 20,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-nh-currier-museum-of-art",
+      "source": "landmarks/NH/landmark-city-nh-currier-museum-of-art.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nh-palace-theatre",
+      "source": "landmarks/NH/landmark-city-nh-palace-theatre.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nh-snhu-arena",
+      "source": "landmarks/NH/landmark-city-nh-snhu-arena.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nh-millyard-museum",
+      "source": "landmarks/NH/landmark-city-nh-millyard-museum.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

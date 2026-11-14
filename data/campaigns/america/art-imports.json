@@ -2378,5 +2378,33 @@
     "documentSha256": "84c03b11940cebd45e3b1614a95f1a9a1a81d78b27572debebce77ba4e529439",
     "width": 512,
     "height": 174
+  },
+  "landmark-city-nh-currier-museum-of-art": {
+    "source": "assets/campaign-art/landmarks/NH/landmark-city-nh-currier-museum-of-art.png",
+    "sourceSha256": "0c5a15d1204a912fccf57e0a16270a30b6bcdfc1dae15287106ef6335f43e014",
+    "documentSha256": "4f508cf9ac54eeae0ebb7c0abba32334435b23bf33af35039acdbe60e07a304f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nh-palace-theatre": {
+    "source": "assets/campaign-art/landmarks/NH/landmark-city-nh-palace-theatre.png",
+    "sourceSha256": "b2d96f1dff15e094da7d6a48ad5b04adfabe0d8f0a60464f5092093f3f79842d",
+    "documentSha256": "8290740d93e7b5a68767475296c30fab6fdd229c63fac12b08550b63407048b7",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-nh-snhu-arena": {
+    "source": "assets/campaign-art/landmarks/NH/landmark-city-nh-snhu-arena.png",
+    "sourceSha256": "275ac0727feba8cfbe09ded60e76d727c825a5990ff012d7ec08a3477fd0744c",
+    "documentSha256": "cd44c24060641276b01fd2da84bb7c5162abbccd8c97725e0026524e220beacb",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nh-millyard-museum": {
+    "source": "assets/campaign-art/landmarks/NH/landmark-city-nh-millyard-museum.png",
+    "sourceSha256": "2f019ac268f22f14bea704753f7427cc55e4c69237aae222313f475525a16bca",
+    "documentSha256": "a0177b74762abfb4b853384486e97f3ca8bb9f4a9fc56bfab6a3da00d49c37a4",
+    "width": 512,
+    "height": 213
   }
 }

@@ -636,7 +636,11 @@
       "landmark-city-mt-moss-mansion": "art/landmark-city-mt-moss-mansion/document.json",
       "landmark-city-mt-alberta-bair-theater": "art/landmark-city-mt-alberta-bair-theater/document.json",
       "landmark-city-mt-yellowstone-art-museum": "art/landmark-city-mt-yellowstone-art-museum/document.json",
-      "landmark-city-mt-billings-depot": "art/landmark-city-mt-billings-depot/document.json"
+      "landmark-city-mt-billings-depot": "art/landmark-city-mt-billings-depot/document.json",
+      "landmark-city-nh-currier-museum-of-art": "art/landmark-city-nh-currier-museum-of-art/document.json",
+      "landmark-city-nh-palace-theatre": "art/landmark-city-nh-palace-theatre/document.json",
+      "landmark-city-nh-snhu-arena": "art/landmark-city-nh-snhu-arena/document.json",
+      "landmark-city-nh-millyard-museum": "art/landmark-city-nh-millyard-museum/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1008,7 +1012,11 @@
       "landmark-city-mt-moss-mansion": "doodads/landmark-city-mt-moss-mansion/document.json",
       "landmark-city-mt-alberta-bair-theater": "doodads/landmark-city-mt-alberta-bair-theater/document.json",
       "landmark-city-mt-yellowstone-art-museum": "doodads/landmark-city-mt-yellowstone-art-museum/document.json",
-      "landmark-city-mt-billings-depot": "doodads/landmark-city-mt-billings-depot/document.json"
+      "landmark-city-mt-billings-depot": "doodads/landmark-city-mt-billings-depot/document.json",
+      "landmark-city-nh-currier-museum-of-art": "doodads/landmark-city-nh-currier-museum-of-art/document.json",
+      "landmark-city-nh-palace-theatre": "doodads/landmark-city-nh-palace-theatre/document.json",
+      "landmark-city-nh-snhu-arena": "doodads/landmark-city-nh-snhu-arena/document.json",
+      "landmark-city-nh-millyard-museum": "doodads/landmark-city-nh-millyard-museum/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

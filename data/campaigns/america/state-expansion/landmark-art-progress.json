@@ -9820,35 +9820,461 @@
     },
     "landmark-city-nh-currier-museum-of-art": {
       "raceRef": "Manchester, NH — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 519.9652015571564,
+        "worldZ": -634.2344986359303,
+        "routeDistanceM": 2130,
+        "offsetFromRoadM": 40,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 6.221790926583486,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 11.05388153789032,
+            "angularWidthDegrees": 13.255610190603175,
+            "rangeM": 137.69865308416726,
+            "occluderIds": [],
+            "score": 0.5578447384843872
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 9.657652939580027,
+            "angularWidthDegrees": 11.610449173333098,
+            "rangeM": 157.37432931866488,
+            "occluderIds": [],
+            "score": 0.613693882416799
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.550145331451434,
+            "angularWidthDegrees": 10.323366132591222,
+            "rangeM": 177.12267047806387,
+            "occluderIds": [],
+            "score": 0.6579941867419427
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.1805363830690825,
+            "angularWidthDegrees": 9.28708598512117,
+            "rangeM": 196.9884776296711,
+            "occluderIds": [],
+            "score": 0.9527785446772367
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.411692434777271,
+            "angularWidthDegrees": 8.06488364195463,
+            "rangeM": 226.96381215538773,
+            "occluderIds": [],
+            "score": 0.9035323026089092
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 2.0504046785940577,
+            "angularWidthDegrees": 6.86040732458354,
+            "rangeM": 266.93369953587745,
+            "occluderIds": [],
+            "score": 0.9179838128562376
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 1.7832298828337492,
+            "angularWidthDegrees": 5.968518766539359,
+            "rangeM": 306.91143587949927,
+            "occluderIds": [],
+            "score": 0.9237981876182464
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 1.533440735273019,
+            "angularWidthDegrees": 5.133892417626258,
+            "rangeM": 356.8906255970416,
+            "occluderIds": [],
+            "score": 0.8031652711797271
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "a890a6a2962b6122668572a26065ccebc895eaa861bc95fdfbbf81ed6efcc390",
+      "sourceSha256": "0c5a15d1204a912fccf57e0a16270a30b6bcdfc1dae15287106ef6335f43e014",
+      "roadSha256": "a691e9930bec8de40c54b9446435cb6b3948e4ff3f8295118e0c6ffba525f6f5",
+      "placementDetails": {
+        "x": 472.77897513689453,
+        "z": -415.89651774140907,
+        "yaw": -1.595310384660206,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1920.290954432806,
+        "trackLateral": -114.99999999999996,
+        "minimumRoadClearanceM": 90.26669555172583,
+        "checkedSegments": 4441,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-nh-palace-theatre": {
       "raceRef": "Manchester, NH — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 59.04813645087604,
+        "worldZ": 105.81323835028513,
+        "routeDistanceM": 3532,
+        "offsetFromRoadM": 51,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.2907822438380301,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 38.09083088502707,
+            "angularWidthDegrees": 21.930451062486974,
+            "rangeM": 56.46524616796505,
+            "occluderIds": [
+              "city-nh-prop-189"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 28.394055978943115,
+            "angularWidthDegrees": 16.988544125093725,
+            "rangeM": 73.25248708835527,
+            "occluderIds": [
+              "city-nh-prop-189"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 22.41756494240776,
+            "angularWidthDegrees": 13.659599706622721,
+            "rangeM": 91.34292586689982,
+            "occluderIds": [],
+            "score": 0.10329740230368956
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 18.445126468056134,
+            "angularWidthDegrees": 11.34963113185365,
+            "rangeM": 110.0960205852048,
+            "occluderIds": [
+              "city-nh-prop-187"
+            ],
+            "score": 0.03146339295333056
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 14.52612309542534,
+            "angularWidthDegrees": 9.00829077182689,
+            "rangeM": 138.87958800926097,
+            "occluderIds": [
+              "city-nh-prop-185",
+              "city-nh-prop-187"
+            ],
+            "score": 0.05027460914195836
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 11.292862436456119,
+            "angularWidthDegrees": 7.038708130712618,
+            "rangeM": 177.8840905196935,
+            "occluderIds": [
+              "city-nh-prop-183",
+              "city-nh-prop-185",
+              "city-nh-prop-187"
+            ],
+            "score": 0.06579426030501062
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 9.226620677749311,
+            "angularWidthDegrees": 5.765651885391948,
+            "rangeM": 217.2509170528793,
+            "occluderIds": [
+              "city-nh-prop-183",
+              "city-nh-prop-185",
+              "city-nh-prop-187"
+            ],
+            "score": 0.07275505138266963
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.9893595886892669,
+            "angularWidthDegrees": 4.6957060602224665,
+            "rangeM": 266.8287683505328,
+            "occluderIds": [
+              "city-nh-prop-183",
+              "city-nh-prop-185",
+              "city-nh-prop-187"
+            ],
+            "score": 0.0901975277513714
+          }
+        ],
+        "sourceDistanceShiftM": -30
+      },
+      "signature": "397bed02b694600fe1348b201d8b1e5403b354ae1d324441776a0fdc5a128e94",
+      "sourceSha256": "b2d96f1dff15e094da7d6a48ad5b04adfabe0d8f0a60464f5092093f3f79842d",
+      "roadSha256": "a691e9930bec8de40c54b9446435cb6b3948e4ff3f8295118e0c6ffba525f6f5",
+      "placementDetails": {
+        "x": 145.44634587578332,
+        "z": 77.6800142707997,
+        "yaw": 0.3270241649716788,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3502.9131041468586,
+        "trackLateral": -34.99999544554073,
+        "minimumRoadClearanceM": 16.349018045011437,
+        "checkedSegments": 4441,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NH/palace-theatre-desktop.png",
+        "docs/art/landmark-previews/NH/palace-theatre-mobile.png"
+      ]
     },
     "landmark-city-nh-snhu-arena": {
       "raceRef": "Manchester, NH — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 19.674578798646657,
+        "worldZ": 598.62983394466,
+        "routeDistanceM": 4042,
+        "offsetFromRoadM": 68,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 4.81858604887831,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 0.25946400147623716,
+            "angularWidthDegrees": 15.214017540894618,
+            "rangeM": 164.72861778154336,
+            "occluderIds": [],
+            "score": 0.9896214399409505
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 2.2655687675310667,
+            "angularWidthDegrees": 13.583989224804363,
+            "rangeM": 184.71705493782395,
+            "occluderIds": [],
+            "score": 0.9093772492987573
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 7.229965581592283,
+            "angularWidthDegrees": 12.274843014359684,
+            "rangeM": 204.5944384384197,
+            "occluderIds": [],
+            "score": 0.7108013767363086
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 6.628348634586016,
+            "angularWidthDegrees": 11.196312147921521,
+            "rangeM": 224.44773395042654,
+            "occluderIds": [],
+            "score": 0.7348660546165593
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 5.8480254738204565,
+            "angularWidthDegrees": 9.890052801392766,
+            "rangeM": 254.27079577012353,
+            "occluderIds": [],
+            "score": 0.7660789810471818
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.053976319036199,
+            "angularWidthDegrees": 8.55629218023058,
+            "rangeM": 294.0908738154301,
+            "occluderIds": [],
+            "score": 0.797840947238552
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 80.2513481252208,
+            "angularWidthDegrees": 7.617210591684377,
+            "rangeM": 330.4753149670141,
+            "occluderIds": [
+              "city-nh-prop-221",
+              "city-nh-prop-223",
+              "city-nh-prop-227"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 83.2639823538297,
+            "angularWidthDegrees": 7.608239394949625,
+            "rangeM": 330.86614196708314,
+            "occluderIds": [
+              "city-nh-prop-212",
+              "city-nh-prop-227"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "3ce96fe717a096459cc5ab8eb77a03f16234ac92f7494f0bb9bdbe18e553cf61",
+      "sourceSha256": "275ac0727feba8cfbe09ded60e76d727c825a5990ff012d7ec08a3477fd0744c",
+      "roadSha256": "a691e9930bec8de40c54b9446435cb6b3948e4ff3f8295118e0c6ffba525f6f5",
+      "placementDetails": {
+        "x": -220.64953221570235,
+        "z": 509.76978563848917,
+        "yaw": -1.6664637015849115,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4162.248384839767,
+        "trackLateral": -134.99991194753267,
+        "minimumRoadClearanceM": 98.25411833115577,
+        "checkedSegments": 4441,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NH/snhu-arena-desktop.png",
+        "docs/art/landmark-previews/NH/snhu-arena-mobile.png"
+      ]
     },
     "landmark-city-nh-millyard-museum": {
       "raceRef": "Manchester, NH — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -484.7640535451836,
+        "worldZ": 255.64860896433512,
+        "routeDistanceM": 4901,
+        "offsetFromRoadM": 33,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.5158273858461679,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 55.96932604035377,
+            "angularWidthDegrees": 44.85220177593123,
+            "rangeM": 64.06858135055107,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 43.79437451181872,
+            "angularWidthDegrees": 37.87946522037392,
+            "rangeM": 77.05435453692442,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 42.968301671352,
+            "angularWidthDegrees": 32.09654324081958,
+            "rangeM": 91.91947296687707,
+            "occluderIds": [
+              "city-nh-prop-257"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 37.12901635656778,
+            "angularWidthDegrees": 27.73616605795724,
+            "rangeM": 107.1002024571574,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 32.22168413438982,
+            "angularWidthDegrees": 22.61175362948623,
+            "rangeM": 132.2552525889828,
+            "occluderIds": [
+              "city-nh-prop-253"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 175.41161433086316,
+            "angularWidthDegrees": 24.470830688297944,
+            "rangeM": 121.93099199946369,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 159.28155010334817,
+            "angularWidthDegrees": 34.894481184014005,
+            "rangeM": 84.13118758765923,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 8.8793153538458,
+            "angularWidthDegrees": 39.98504070406054,
+            "rangeM": 72.67643315823854,
+            "occluderIds": [],
+            "score": 0.6448273858461679
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "02876584b049f6a91132892bc91d04740d72e584c6ca9c9b92f4224f0e00f145",
+      "sourceSha256": "2f019ac268f22f14bea704753f7427cc55e4c69237aae222313f475525a16bca",
+      "roadSha256": "a691e9930bec8de40c54b9446435cb6b3948e4ff3f8295118e0c6ffba525f6f5",
+      "placementDetails": {
+        "x": -397.41451522281585,
+        "z": 237.3298342676418,
+        "yaw": 2.618280127091934,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4932.260849900692,
+        "trackLateral": 49.99999999999998,
+        "minimumRoadClearanceM": 12.71538419815733,
+        "checkedSegments": 4441,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NH/millyard-museum-desktop.png",
+        "docs/art/landmark-previews/NH/millyard-museum-mobile.png"
+      ]
     },
     "landmark-city-nj-cathedral-basilica-of-the-sacred-heart": {
       "raceRef": "Newark, NJ — Landmark Run",
