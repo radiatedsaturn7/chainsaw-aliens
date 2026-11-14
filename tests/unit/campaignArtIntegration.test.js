@@ -1,4 +1,7 @@
-import {campaignArtworkRacePaths,assertCampaignImportInventory,createSavedDoodadResolver,assertSceneryArtwork} from '../helpers/campaignArtworkValidation.mjs';
+import {assertFenceRoadClearance,fenceRoadGap,assertFencePathGeometry} from '../helpers/campaignFenceValidation.mjs';
+import {createRaceStaticColliderWorld} from '../../src/racing/RaceSimulation.js';
+import {buildRaceFencePlacements} from '../../src/racing/RaceFences.js';
+import {placedSceneryArtRefs,validateArtworkIntent,campaignArtworkRacePaths,assertCampaignImportInventory,createSavedDoodadResolver,assertSceneryArtwork} from '../helpers/campaignArtworkValidation.mjs';
 import {collectSceneryArtRefs} from '../../src/racing/RaceSceneryAssets.js';
 import {applyCampaignArtCoverage} from '../../tools/campaigns/campaign_art_coverage.mjs';
 import test from 'node:test';
@@ -13,6 +16,7 @@ const read=p=>{let d=JSON.parse(fs.readFileSync(p));return d.__chainsawStorage?J
 const manifest=read(root+'manifest.json'),imports=read('data/campaigns/america/art-imports.json');
 const expanded=read('data/campaigns/america/expanded-art.json').assets;
 const inventory=read('assets/campaign-art/inventory.json');
+const intent=read('tests/fixtures/campaign-art-intent.json');
 const regionalFences=read('data/campaigns/america/regional-fences.json').assets;
 const loadDefinition=createSavedDoodadResolver(manifest,p=>read(root+p));
 const savedEditor=()=>{const e=new RaceEditor({});e.loadRaceDoodadDocument=loadDefinition;return e;};
@@ -91,19 +95,30 @@ test('every delivered PNG is imported exactly once and decals remain surface art
  }
 });
 
-test('all delivered art has an actual campaign use, including ground decals and physical surface ribbons',()=>{
+test('delivered art satisfies explicit campaign, editor and configured-unused intent',t=>{
  const used=new Set();
  const paths=campaignArtworkRacePaths(read('data/campaigns/america/catalog.json'),read('AI/last-on-the-grid/last_on_the_grid_99_side_races.json'),[...read('data/campaigns/america/side-races/catalog.json'),...read('data/campaigns/america/raceways/catalog.json')],manifest);
  for(const path of paths){
   const r=read(root+path).race,settings=roadTextureSettings(r);
   used.add(r.skyboxArtRef);
-  collectSceneryArtRefs(r,loadDefinition).forEach(ref=>used.add(ref));
-  for(const p of [...r.scenery,...r.decals,...Object.values(r.road.tileMap.cells)])used.add(p.artRef);
+  placedSceneryArtRefs(r,loadDefinition).forEach(ref=>used.add(ref));
+  for(const p of [...r.decals,...Object.values(r.road.tileMap.cells)])used.add(p.artRef);
+  used.add(r.groundPlaneArtRef);
   for(const segment of r.road.segments){used.add(roadTextureForSegment(settings,segment).artRef);if(r.margin?.shoulderMode==='on')used.add((settings.surfaceShoulders[segment.surface]||settings.shoulder).artRef);}
   for(const p of r.scenery.filter(p=>p.fenceId?.startsWith('campaign-complete'))){assert.equal(p.previewDoodad.isFence,true);assert.equal(p.previewDoodad.defaultRule.behavior,'collide');assert.ok(p.previewDoodad.fenceThicknessM>0);}
  }
  const deferred=new Set(expanded.filter(a=>a.deferredReason).map(a=>a.name));
- assert.deepEqual(Object.keys(imports).filter(name=>name!=='ground-snow-dead-grass'&&!deferred.has(name)&&!used.has(name)),[]);
+ // Preserve pre-existing deferred scope; new editor intent must load and has browser selection coverage.
+ deferred.add('ground-snow-dead-grass');
+ const editorLoaded=new Set();
+ for(const [ref,rule] of Object.entries(intent.editorAssets)){
+  const art=read(root+manifest.folders.art[ref]);assert.ok(art.width>0&&art.height>0&&art.frames[0].some(Boolean),ref);
+  if(rule.kind==='doodad')assert.equal(loadDefinition(ref).artRef,ref);
+  editorLoaded.add(ref);
+ }
+ const snow=read(root+manifest.folders.races[intent.configuredUnused['road-snow-patchy'].raceRef]).race;
+ const configured=new Set([roadTextureSettings(snow).surfaceRoads.snow?.artRef]);
+ for(const message of validateArtworkIntent(intent,imports,used,editorLoaded,configured,deferred))t.diagnostic(message);
 });
 
 test('exposed terrain keeps material weights and the marked turnout is a usable pull-off',()=>{
@@ -187,12 +202,20 @@ test('expanded landmarks use reviewed regions and stay outside the driving corri
  for(const entry of catalog){
   const key=entry.sourceKey||(catalog.indexOf(entry)===0?'tower':'mount');
   const r=read(root+entry.documentPath).race,editor=new RaceEditor({});editor.applyLoadedRaceDocument(r);
+  const fences=new Map();
   for(const p of r.scenery.filter(p=>p.artRef?.startsWith('expanded-'))){
    const a=expanded.find(a=>a.name===p.artRef);
    assert.ok(a?.placements.some(plan=>plan.race===key),p.artRef+' in '+entry.name);
-   assert.ok(Math.abs(editor.getRaceRouteProjectionForWorldPoint(p).lateral)>=10+p.widthM/2-1e-6,p.id);
+   if(a.kind==='fence'){
+    assert.ok(p.fenceId,`Fence missing connected path: ${p.id}`);
+    fences.set(p.fenceId,r.scenery.filter(q=>q.fenceId===p.fenceId));
+   }else assert.ok(Math.abs(editor.getRaceRouteProjectionForWorldPoint(p).lateral)>=10+p.widthM/2-1e-6,p.id);
    assert.equal(p.previewDoodad.defaultRule.behavior,a.kind==='vegetation'?'flatten':a.kind==='background'?'decoration':'collide');
    if(a.kind==='fence')assert.equal(p.previewDoodad.isFence,true);
+  }
+  if(fences.size){
+   const authority={};createRaceStaticColliderWorld(editor,{authority,worldBake:{},runtimeType:editor.getSelectedRaceRuntimeType(),routeLength:editor.getRaceRouteLength()});
+   for(const panels of fences.values())assertFenceRoadClearance(editor,panels,authority.staticColliderDefinitions);
   }
  }
  for(const a of expanded.filter(a=>a.deferredReason)){assert.equal(a.placements.length,0);assert.ok(manifest.folders.art[a.name]);}
@@ -298,4 +321,42 @@ test('campaign use scope excludes unavailable events and unrelated library races
  assert.deepEqual(campaignArtworkRacePaths(catalog,research,[],m),['main.json']);
  delete m.folders.races.Side;
  assert.throws(()=>campaignArtworkRacePaths(catalog,research,installed,m),/Missing playable campaign race: Side/);
+});
+
+test('intent rejects missing campaign placement, editor load, bad provenance and broad exemptions',()=>{
+ const policy={schemaVersion:1,defaultIntent:'campaign-placement',editorAssets:{kit:{kind:'doodad',source:'kit.png',reason:'editor kit'}},configuredUnused:{'road-snow-patchy':{raceRef:'Pikes Peak Highway',surface:'snow'}}};
+ const imports={campaign:{source:'campaign.png'},kit:{source:'kit.png'},'road-snow-patchy':{source:'snow.png'}};
+ const used=new Set(['campaign']),loaded=new Set(['kit']),configured=new Set(['road-snow-patchy']);
+ assert.match(validateArtworkIntent(policy,imports,used,loaded,configured)[0],/UNUSED CONFIGURED ART/);
+ assert.throws(()=>validateArtworkIntent(policy,imports,new Set(),loaded,configured),/no actual placement/);
+ assert.throws(()=>validateArtworkIntent(policy,imports,used,new Set(),configured),/did not load/);
+ assert.throws(()=>validateArtworkIntent(policy,{...imports,kit:{source:'wrong.png'}},used,loaded,configured),/source mismatch/);
+ assert.throws(()=>validateArtworkIntent(policy,imports,used,loaded,new Set()),/mapping missing/);
+ const broad=structuredClone(policy);broad.configuredUnused.campaign={};
+ assert.throws(()=>validateArtworkIntent(broad,imports,used,loaded,configured));
+ assert.deepEqual(validateArtworkIntent(policy,imports,new Set([...used,'road-snow-patchy']),loaded,configured),[]);
+ const r={scenery:[],sceneryDefinitions:[{ref:'kit',artRef:'kit'}]};
+ assert.equal(placedSceneryArtRefs(r,()=>({artRef:'kit'})).size,0,'A registered/preloaded definition is not a placement');
+ r.scenery=[{doodadRef:'kit',state:'removed'}];assert.equal(placedSceneryArtRefs(r,()=>null).size,0);
+ r.scenery[0].state='standing';assert.deepEqual([...placedSceneryArtRefs(r,()=>null)],['kit']);
+});
+
+test('full fence validation rejects intrusion, missing panels, changed flares, bad art and continuations',()=>{
+ const def={name:'Fence',artRef:'fence-art',isFence:true,widthM:4,heightM:2,fenceThicknessM:.18};
+ const panels=buildRaceFencePlacements([{x:8,z:0},{x:8,z:20}],def,{id:'f',ref:'fence',endFlared:true});
+ const boxes=panels.map(p=>({source:`scenery:${p.id}`,center:{x:p.x,z:p.z},size:{x:p.widthM+.04,z:.18}}));
+ const route=[{x:0,z:-10,distance:0},{x:0,z:30,distance:40}];
+ const editor={selectedRace:{road:{autoExtend:false}},getRacePathSamplesCached:()=>route,getRaceRoadWidthMForSegment:()=>7};
+ assert.ok(assertFenceRoadClearance(editor,panels,boxes)>4);
+ assert.throws(()=>assertFencePathGeometry(panels.slice(1)),/Missing full fence path/);
+ assert.throws(()=>assertFencePathGeometry(panels.slice(0,-1)),/continuity/);
+ const changed=structuredClone(panels);changed[0].x+=1;assert.throws(()=>assertFencePathGeometry(changed),/path mismatch/);
+ const wrong=structuredClone(panels);wrong[1].artRef='unknown';assert.throws(()=>assertFencePathGeometry(wrong),/path mismatch/);
+ editor.selectedRace.road.continuations={finish:[{x:8,z:10,offset:40}]};
+ assert.throws(()=>assertFenceRoadClearance(editor,panels,boxes),/intrudes/);
+ // A long solid can cross the road even with its center and both ends clear.
+ const crossing={center:{x:8,z:10},size:{x:30,z:.18}};
+ assert.ok(fenceRoadGap(crossing,0,route,()=>7)<0);
+ const enclosing={center:{x:0,z:10},size:{x:100,z:100}};
+ assert.ok(fenceRoadGap(enclosing,0,route,()=>7)<0);
 });
