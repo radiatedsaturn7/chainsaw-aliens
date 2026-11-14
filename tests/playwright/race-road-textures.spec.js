@@ -95,3 +95,40 @@ test('painted terrain crossfades on the GPU and road decals remain visible above
  expect(pixels[2][2]).toBeGreaterThan(200);expect(pixels[2][0]).toBeLessThan(15);
  expect(pixels[3][1]).toBeGreaterThan(200);expect(pixels[3][0]).toBeLessThan(15);
 });
+
+test('editor-intent campaign assets select through the real picker and load renderable art',async({page})=>{
+ test.setTimeout(180000);
+ await page.goto('/index.html');await page.waitForFunction(()=>window.__gameReady);
+ const assets=await page.evaluate(async()=>{
+  const policy=await (await fetch('/tests/fixtures/campaign-art-intent.json')).json();
+  const {default:RaceEditor}=await import('/src/ui/RaceEditor.js');
+  window.__intentEditor=new RaceEditor({});
+  return Object.entries(policy.editorAssets);
+ });
+ expect(assets.length).toBeGreaterThan(0);
+ for(const [ref,intent] of assets){
+  await page.evaluate(async({ref,intent})=>{
+   const {hydrateProjectFilePayload}=await import('/src/ui/projectFiles.js');
+   const payload=await hydrateProjectFilePayload(intent.kind==='doodad'?'doodads':'art',ref);
+   if(!payload)throw Error(`Missing editor asset: ${ref}`);
+   if(intent.kind==='doodad')void window.__intentEditor.openRaceDoodadPicker();
+   else void window.__intentEditor.openRaceSkyboxArtPicker();
+  },{ref,intent});
+  await page.locator(`.project-browser-row[data-name="${ref}"]`).getByRole('button',{name:'Open',exact:true}).click();
+  await expect.poll(()=>page.evaluate(kind=>kind==='doodad'?window.__intentEditor.selectedDoodadRef:window.__intentEditor.selectedRace.skyboxArtRef,intent.kind)).toBe(ref);
+  const result=await page.evaluate(async({ref,intent})=>{
+   const e=window.__intentEditor;
+   const artRef=intent.kind==='doodad'?e.getSelectedRaceDoodad()?.artRef:e.selectedRace.skyboxArtRef;
+   const payload=await e.hydrateRaceArt(artRef);
+   const canvas=e.getRaceArtSpriteCanvas(artRef);
+   if(!canvas)throw Error(`Editor art failed to render: ${ref}`);
+   const pixels=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data;
+   let visible=false;for(let i=3;i<pixels.length;i+=4)if(pixels[i]){visible=true;break;}
+   const definition=intent.kind==='doodad'?e.getSelectedRaceDoodad():null;
+   return {artRef,loaded:Boolean(payload),visible,width:canvas.width,height:canvas.height,isFence:definition?.isFence??null};
+  },{ref,intent});
+  expect(result.artRef).toBe(ref);expect(result.loaded).toBe(true);expect(result.visible).toBe(true);
+  expect(result.width).toBeGreaterThan(0);expect(result.height).toBeGreaterThan(0);
+  if(intent.kind==='doodad')expect(result.isFence).toBe(true);
+ }
+});
