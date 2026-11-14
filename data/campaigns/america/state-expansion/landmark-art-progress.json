@@ -11670,35 +11670,468 @@
     },
     "landmark-city-ok-oklahoma-state-capitol": {
       "raceRef": "Oklahoma City, OK — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 603.6875518118159,
+        "worldZ": -1801.971872724306,
+        "routeDistanceM": 1170,
+        "offsetFromRoadM": 242,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.1850202592302437,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 11.899816661235597,
+            "angularWidthDegrees": 33.10398598750477,
+            "rangeM": 153.671715173867,
+            "occluderIds": [],
+            "score": 0.5240073335505762
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 11.310028826806363,
+            "angularWidthDegrees": 29.53887685478619,
+            "rangeM": 173.23325633724343,
+            "occluderIds": [],
+            "score": 0.5475988469277455
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 10.14482566836503,
+            "angularWidthDegrees": 26.642386014975102,
+            "rangeM": 192.88474838081942,
+            "occluderIds": [],
+            "score": 0.5942069732653987
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 9.195408570261087,
+            "angularWidthDegrees": 24.248230522102833,
+            "rangeM": 212.60124932525486,
+            "occluderIds": [],
+            "score": 0.6321836571895565
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.061528056295913,
+            "angularWidthDegrees": 21.35216256013545,
+            "rangeM": 242.26316021993426,
+            "occluderIds": [],
+            "score": 0.6775388777481635
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 6.921434277250133,
+            "angularWidthDegrees": 18.40383669136932,
+            "rangeM": 281.9236934228896,
+            "occluderIds": [
+              "city-ok-prop-61",
+              "city-ok-prop-63",
+              "city-ok-prop-66"
+            ],
+            "score": 0.08677711546919936
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 6.062801865947016,
+            "angularWidthDegrees": 16.162002416432507,
+            "rangeM": 321.66830590945267,
+            "occluderIds": [
+              "city-ok-prop-61",
+              "city-ok-prop-63",
+              "city-ok-prop-66"
+            ],
+            "score": 0.09089855104345432
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 5.248144992468851,
+            "angularWidthDegrees": 14.020047263555606,
+            "rangeM": 371.42618602957214,
+            "occluderIds": [
+              "city-ok-prop-61",
+              "city-ok-prop-63",
+              "city-ok-prop-66"
+            ],
+            "score": 0.09480890403614951
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "deb17cd3b96d6e42fac43d882bf3b3e3c8396febbcc3d28bf63f27a4c9234b3a",
+      "sourceSha256": "076d4cdcd4965598bda444299ad9d4d09d4958f93d52dd56bab46fb2c3753902",
+      "roadSha256": "61a07727367d448b8f6f986a288149a255eee100393b4aebb6c39d0db6666da6",
+      "placementDetails": {
+        "x": 677.4652190120553,
+        "z": -1651.6106499713735,
+        "yaw": -1.4158228725295947,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1200.243473750393,
+        "trackLateral": 135,
+        "minimumRoadClearanceM": 74.59929997863546,
+        "checkedSegments": 4652,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/OK/oklahoma-state-capitol-desktop.png",
+        "docs/art/landmark-previews/OK/oklahoma-state-capitol-mobile.png"
+      ]
     },
     "landmark-city-ok-oklahoma-city-national-memorial": {
       "raceRef": "Oklahoma City, OK — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -639.2475892490269,
+        "worldZ": 314.0371455954509,
+        "routeDistanceM": 4556,
+        "offsetFromRoadM": 70,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 7.028486253858377,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 0.2617182556103999,
+            "angularWidthDegrees": 15.540371114799854,
+            "rangeM": 66.02131117806617,
+            "occluderIds": [],
+            "score": 0.989531269775584
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 0.2008687106978416,
+            "angularWidthDegrees": 11.957322476385094,
+            "rangeM": 86.0211510378151,
+            "occluderIds": [],
+            "score": 0.9919652515720864
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.16297655411646741,
+            "angularWidthDegrees": 9.713715474319304,
+            "rangeM": 106.02105131562426,
+            "occluderIds": [],
+            "score": 0.9934809378353413
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.13711160120486302,
+            "angularWidthDegrees": 8.17783672724198,
+            "rangeM": 126.02098324592669,
+            "occluderIds": [],
+            "score": 0.9945155359518055
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.11074754427497227,
+            "angularWidthDegrees": 6.609288207402991,
+            "rangeM": 156.0209138627557,
+            "occluderIds": [],
+            "score": 0.9955700982290011
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.08814842265992916,
+            "angularWidthDegrees": 5.262737326130761,
+            "rangeM": 196.0208543879171,
+            "occluderIds": [],
+            "score": 0.8740302077273138
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.07320933538346083,
+            "angularWidthDegrees": 4.371780797629867,
+            "rangeM": 236.02081507224887,
+            "occluderIds": [],
+            "score": 0.7264964318274002
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.06041143382626474,
+            "angularWidthDegrees": 3.608097940437764,
+            "rangeM": 286.0207813916122,
+            "occluderIds": [],
+            "score": 0.5998965209398445
+          }
+        ],
+        "sourceDistanceShiftM": -90
+      },
+      "signature": "4a0129a1d05872e670f062951f892eda49bdb68ece6be1a42d269ba82b322069",
+      "sourceSha256": "fb9afeff5cc2914119d7b6b091a40eb10255b739ee80c8f95f100c0e62776792",
+      "roadSha256": "61a07727367d448b8f6f986a288149a255eee100393b4aebb6c39d0db6666da6",
+      "placementDetails": {
+        "x": -729.5199321641772,
+        "z": 215.1173676609638,
+        "yaw": -1.6040674018436298,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4465.927219730991,
+        "trackLateral": 24.99716706497738,
+        "minimumRoadClearanceM": 5.467857815509317,
+        "checkedSegments": 4652,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/OK/oklahoma-city-national-memorial-desktop.png",
+        "docs/art/landmark-previews/OK/oklahoma-city-national-memorial-mobile.png"
+      ]
     },
     "landmark-city-ok-chickasaw-bricktown-ballpark": {
       "raceRef": "Oklahoma City, OK — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 122.60832873170557,
+        "worldZ": 1213.004891251088,
+        "routeDistanceM": 6139,
+        "offsetFromRoadM": 46,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.652220397026331,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 10.743167516919101,
+            "angularWidthDegrees": 18.738912215003936,
+            "rangeM": 133.33230455882267,
+            "occluderIds": [],
+            "score": 0.570273299323236
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 9.472844854846667,
+            "angularWidthDegrees": 16.363047573796937,
+            "rangeM": 153.01894240940985,
+            "occluderIds": [],
+            "score": 0.6210862058061333
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.381231199327646,
+            "angularWidthDegrees": 14.512998636335807,
+            "rangeM": 172.7775738723692,
+            "occluderIds": [
+              "city-ok-prop-346"
+            ],
+            "score": 0.0797700902432273
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.513910599259413,
+            "angularWidthDegrees": 13.03382794608972,
+            "rangeM": 192.58604136943535,
+            "occluderIds": [
+              "city-ok-prop-346"
+            ],
+            "score": 0.08393322912355482
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.503025890586985,
+            "angularWidthDegrees": 11.300603308314738,
+            "rangeM": 222.3630438630509,
+            "occluderIds": [
+              "city-ok-prop-342",
+              "city-ok-prop-346"
+            ],
+            "score": 0.08878547572518247
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.512825788489248,
+            "angularWidthDegrees": 9.594393491802029,
+            "rangeM": 262.1448261368074,
+            "occluderIds": [
+              "city-ok-prop-342",
+              "city-ok-prop-344",
+              "city-ok-prop-346"
+            ],
+            "score": 0.09353843621525161
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.783718626414527,
+            "angularWidthDegrees": 8.333442429250676,
+            "rangeM": 301.9842652598841,
+            "occluderIds": [
+              "city-ok-prop-342",
+              "city-ok-prop-344",
+              "city-ok-prop-346"
+            ],
+            "score": 0.09703815059321028
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 4.6259354173884955,
+            "angularWidthDegrees": 7.156018388355171,
+            "rangeM": 351.8348045707973,
+            "occluderIds": [
+              "city-ok-prop-336",
+              "city-ok-prop-340",
+              "city-ok-prop-342",
+              "city-ok-prop-346"
+            ],
+            "score": 0.09779550999653522
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "a098bc19985c3a90fd4be268aefd3524bcca3eb6ab7af8c81372d043a7207178",
+      "sourceSha256": "cd85961d2ade7f4146b1dfdbdbcdeafa81b152759809de7851b0f870faa7ec7d",
+      "roadSha256": "61a07727367d448b8f6f986a288149a255eee100393b4aebb6c39d0db6666da6",
+      "placementDetails": {
+        "x": 45.55195887650478,
+        "z": 1416.9981281201563,
+        "yaw": -0.1619807506785041,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6259.217869628959,
+        "trackLateral": -109.99999999999994,
+        "minimumRoadClearanceM": 73.25420638362304,
+        "checkedSegments": 4652,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/OK/chickasaw-bricktown-ballpark-desktop.png",
+        "docs/art/landmark-previews/OK/chickasaw-bricktown-ballpark-mobile.png"
+      ]
     },
     "landmark-city-ok-myriad-botanical-gardens": {
       "raceRef": "Oklahoma City, OK — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -722.1757336006812,
+        "worldZ": 1183.3714023694006,
+        "routeDistanceM": 7004,
+        "offsetFromRoadM": 120,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.015230196972373,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 9.670103309834147,
+            "angularWidthDegrees": 17.096353802739326,
+            "rangeM": 159.3579874743757,
+            "occluderIds": [],
+            "score": 0.6131958676066341
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 8.595336344868425,
+            "angularWidthDegrees": 15.234863791236782,
+            "rangeM": 179.10532256455696,
+            "occluderIds": [],
+            "score": 0.656186546205263
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 7.734268537578552,
+            "angularWidthDegrees": 13.733727091658839,
+            "rangeM": 198.9031547513122,
+            "occluderIds": [],
+            "score": 0.6906292584968579
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.029223807570649,
+            "angularWidthDegrees": 12.498723500352652,
+            "rangeM": 218.73777307336493,
+            "occluderIds": [],
+            "score": 0.718831047697174
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 11.615313075838909,
+            "angularWidthDegrees": 11.009818483991323,
+            "rangeM": 248.54044826749242,
+            "occluderIds": [],
+            "score": 0.5353874769664436
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 76.69412111774221,
+            "angularWidthDegrees": 10.278504086993566,
+            "rangeM": 266.32973181504843,
+            "occluderIds": [
+              "city-ok-prop-389",
+              "city-ok-prop-395"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 68.6528953918507,
+            "angularWidthDegrees": 9.839614887851518,
+            "rangeM": 278.27177422708644,
+            "occluderIds": [
+              "city-ok-prop-387"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 60.19536221354204,
+            "angularWidthDegrees": 9.126817346692595,
+            "rangeM": 300.1078942397374,
+            "occluderIds": [],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "044d115b863bb8b5678b26bf5190882df6834814408795e9649ae281bc7a1fe0",
+      "sourceSha256": "a066f710edda6ee79adf7653a0f465930722747039ab2397390774a9df83c6f2",
+      "roadSha256": "61a07727367d448b8f6f986a288149a255eee100393b4aebb6c39d0db6666da6",
+      "placementDetails": {
+        "x": -735.0332907782248,
+        "z": 1560.1621973420401,
+        "yaw": -0.125420293202653,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 7153.892018493851,
+        "trackLateral": -135.00000000000009,
+        "minimumRoadClearanceM": 97.50628105989374,
+        "checkedSegments": 4652,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/OK/myriad-botanical-gardens-desktop.png",
+        "docs/art/landmark-previews/OK/myriad-botanical-gardens-mobile.png"
+      ]
     },
     "landmark-city-or-pioneer-courthouse-square": {
       "raceRef": "Portland, OR — Landmark Run",

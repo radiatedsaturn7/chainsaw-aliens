@@ -2988,6 +2988,34 @@
       "heightM": 22,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ok-oklahoma-state-capitol",
+      "source": "landmarks/OK/landmark-city-ok-oklahoma-state-capitol.png",
+      "heightM": 38,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ok-oklahoma-city-national-memorial",
+      "source": "landmarks/OK/landmark-city-ok-oklahoma-city-national-memorial.png",
+      "heightM": 12,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ok-chickasaw-bricktown-ballpark",
+      "source": "landmarks/OK/landmark-city-ok-chickasaw-bricktown-ballpark.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ok-myriad-botanical-gardens",
+      "source": "landmarks/OK/landmark-city-ok-myriad-botanical-gardens.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

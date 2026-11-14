@@ -640,7 +640,11 @@
       "landmark-city-nh-currier-museum-of-art": "art/landmark-city-nh-currier-museum-of-art/document.json",
       "landmark-city-nh-palace-theatre": "art/landmark-city-nh-palace-theatre/document.json",
       "landmark-city-nh-snhu-arena": "art/landmark-city-nh-snhu-arena/document.json",
-      "landmark-city-nh-millyard-museum": "art/landmark-city-nh-millyard-museum/document.json"
+      "landmark-city-nh-millyard-museum": "art/landmark-city-nh-millyard-museum/document.json",
+      "landmark-city-ok-oklahoma-state-capitol": "art/landmark-city-ok-oklahoma-state-capitol/document.json",
+      "landmark-city-ok-oklahoma-city-national-memorial": "art/landmark-city-ok-oklahoma-city-national-memorial/document.json",
+      "landmark-city-ok-chickasaw-bricktown-ballpark": "art/landmark-city-ok-chickasaw-bricktown-ballpark/document.json",
+      "landmark-city-ok-myriad-botanical-gardens": "art/landmark-city-ok-myriad-botanical-gardens/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1016,7 +1020,11 @@
       "landmark-city-nh-currier-museum-of-art": "doodads/landmark-city-nh-currier-museum-of-art/document.json",
       "landmark-city-nh-palace-theatre": "doodads/landmark-city-nh-palace-theatre/document.json",
       "landmark-city-nh-snhu-arena": "doodads/landmark-city-nh-snhu-arena/document.json",
-      "landmark-city-nh-millyard-museum": "doodads/landmark-city-nh-millyard-museum/document.json"
+      "landmark-city-nh-millyard-museum": "doodads/landmark-city-nh-millyard-museum/document.json",
+      "landmark-city-ok-oklahoma-state-capitol": "doodads/landmark-city-ok-oklahoma-state-capitol/document.json",
+      "landmark-city-ok-oklahoma-city-national-memorial": "doodads/landmark-city-ok-oklahoma-city-national-memorial/document.json",
+      "landmark-city-ok-chickasaw-bricktown-ballpark": "doodads/landmark-city-ok-chickasaw-bricktown-ballpark/document.json",
+      "landmark-city-ok-myriad-botanical-gardens": "doodads/landmark-city-ok-myriad-botanical-gardens/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

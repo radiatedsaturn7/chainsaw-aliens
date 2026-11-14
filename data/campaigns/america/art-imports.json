@@ -2406,5 +2406,33 @@
     "documentSha256": "a0177b74762abfb4b853384486e97f3ca8bb9f4a9fc56bfab6a3da00d49c37a4",
     "width": 512,
     "height": 213
+  },
+  "landmark-city-ok-oklahoma-state-capitol": {
+    "source": "assets/campaign-art/landmarks/OK/landmark-city-ok-oklahoma-state-capitol.png",
+    "sourceSha256": "076d4cdcd4965598bda444299ad9d4d09d4958f93d52dd56bab46fb2c3753902",
+    "documentSha256": "10030fb0627d56957a53e22c5c0e1cd21be55a8c828e7fec470f92d6e87369b5",
+    "width": 512,
+    "height": 213
+  },
+  "landmark-city-ok-oklahoma-city-national-memorial": {
+    "source": "assets/campaign-art/landmarks/OK/landmark-city-ok-oklahoma-city-national-memorial.png",
+    "sourceSha256": "fb9afeff5cc2914119d7b6b091a40eb10255b739ee80c8f95f100c0e62776792",
+    "documentSha256": "9a53ae43026055c692bfeb40663b1c9ee3de585ba5f9e47ebe0fdd7c489b7789",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ok-chickasaw-bricktown-ballpark": {
+    "source": "assets/campaign-art/landmarks/OK/landmark-city-ok-chickasaw-bricktown-ballpark.png",
+    "sourceSha256": "cd85961d2ade7f4146b1dfdbdbcdeafa81b152759809de7851b0f870faa7ec7d",
+    "documentSha256": "08573e89431b7f657c6ea258bd084646431f1516e095b89fa64d4ee4b7f41e33",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ok-myriad-botanical-gardens": {
+    "source": "assets/campaign-art/landmarks/OK/landmark-city-ok-myriad-botanical-gardens.png",
+    "sourceSha256": "a066f710edda6ee79adf7653a0f465930722747039ab2397390774a9df83c6f2",
+    "documentSha256": "32f8cff0d0f5c10b742d65dbbb76f6518b632a9bb363e2ef584643b7eb7c3f25",
+    "width": 512,
+    "height": 171
   }
 }
