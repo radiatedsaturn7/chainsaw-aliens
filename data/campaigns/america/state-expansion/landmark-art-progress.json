@@ -21242,7 +21242,7 @@
       "savedArtwork": "imported",
       "definition": "registered",
       "placement": "clearance-checked",
-      "visualQA": "pending",
+      "visualQA": "passed",
       "sourceReference": {
         "worldX": -922.3718835098215,
         "worldZ": -1391.3951584701772,
@@ -21357,8 +21357,10 @@
         "clearanceMarginM": 5,
         "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
       },
-      "remaining": [
-        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/WA/space-needle-desktop.png",
+        "docs/art/landmark-previews/WA/space-needle-mobile.png"
       ]
     },
     "landmark-city-wa-smith-tower": {
