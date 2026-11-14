@@ -696,7 +696,11 @@
       "landmark-city-ca-crypto-com-arena": "art/landmark-city-ca-crypto-com-arena/document.json",
       "landmark-city-ca-walt-disney-concert-hall": "art/landmark-city-ca-walt-disney-concert-hall/document.json",
       "landmark-city-ca-los-angeles-city-hall": "art/landmark-city-ca-los-angeles-city-hall/document.json",
-      "landmark-city-ca-union-station": "art/landmark-city-ca-union-station/document.json"
+      "landmark-city-ca-union-station": "art/landmark-city-ca-union-station/document.json",
+      "landmark-city-sd-falls-park": "art/landmark-city-sd-falls-park/document.json",
+      "landmark-city-sd-old-courthouse-museum": "art/landmark-city-sd-old-courthouse-museum/document.json",
+      "landmark-city-sd-pettigrew-home-and-museum": "art/landmark-city-sd-pettigrew-home-and-museum/document.json",
+      "landmark-city-sd-washington-pavilion": "art/landmark-city-sd-washington-pavilion/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1128,7 +1132,11 @@
       "landmark-city-ca-crypto-com-arena": "doodads/landmark-city-ca-crypto-com-arena/document.json",
       "landmark-city-ca-walt-disney-concert-hall": "doodads/landmark-city-ca-walt-disney-concert-hall/document.json",
       "landmark-city-ca-los-angeles-city-hall": "doodads/landmark-city-ca-los-angeles-city-hall/document.json",
-      "landmark-city-ca-union-station": "doodads/landmark-city-ca-union-station/document.json"
+      "landmark-city-ca-union-station": "doodads/landmark-city-ca-union-station/document.json",
+      "landmark-city-sd-falls-park": "doodads/landmark-city-sd-falls-park/document.json",
+      "landmark-city-sd-old-courthouse-museum": "doodads/landmark-city-sd-old-courthouse-museum/document.json",
+      "landmark-city-sd-pettigrew-home-and-museum": "doodads/landmark-city-sd-pettigrew-home-and-museum/document.json",
+      "landmark-city-sd-washington-pavilion": "doodads/landmark-city-sd-washington-pavilion/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

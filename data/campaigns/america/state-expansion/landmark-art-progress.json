@@ -18382,35 +18382,502 @@
     },
     "landmark-city-sd-falls-park": {
       "raceRef": "Sioux Falls, SD — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 474.28766978467604,
+        "worldZ": -1032.4574394763322,
+        "routeDistanceM": 2542,
+        "offsetFromRoadM": 90,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 4.351199216509819,
+        "views": [
+          {
+            "beforeM": 30,
+            "angleDegrees": 56.536532754426005,
+            "angularWidthDegrees": 31.28015569908188,
+            "rangeM": 53.4747959901225,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 45,
+            "angleDegrees": 31.884629852768118,
+            "angularWidthDegrees": 26.30656513950227,
+            "rangeM": 64.06307511558735,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 10.853676083182059,
+            "angularWidthDegrees": 20.527865894713027,
+            "rangeM": 82.67456903368947,
+            "occluderIds": [],
+            "score": 0.5658529566727177
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 1.0222056638274388,
+            "angularWidthDegrees": 16.6051705497625,
+            "rangeM": 102.58842538439336,
+            "occluderIds": [],
+            "score": 0.9591117734469025
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.1349303856458517,
+            "angularWidthDegrees": 13.925739517661325,
+            "rangeM": 122.5837445239913,
+            "occluderIds": [],
+            "score": 0.9546027845741659
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.9117949751980273,
+            "angularWidthDegrees": 11.207629011281462,
+            "rangeM": 152.57902755209844,
+            "occluderIds": [],
+            "score": 0.9635282009920789
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.722412479401141,
+            "angularWidthDegrees": 8.890453351576173,
+            "rangeM": 192.57502968859626,
+            "occluderIds": [],
+            "score": 0.9711035008239544
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 41.19031765496983,
+            "angularWidthDegrees": 7.40497039176869,
+            "rangeM": 231.3492285125252,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 38.648580304193665,
+            "angularWidthDegrees": 6.389136656721811,
+            "rangeM": 268.2278992498467,
+            "occluderIds": [
+              "city-sd-prop-116",
+              "city-sd-prop-120",
+              "city-sd-prop-126"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -150
+      },
+      "signature": "ba9c6f53eb750d2bd1c04e45434c0935c653fc1b4385798d959c991ccc87bbce",
+      "sourceSha256": "5a4190126440fc819d9ca6e85413e4ebb5b3be49f30ccdcd38a0e9b3db715027",
+      "roadSha256": "4f132bdde30f52cdda854543bce2d117aee9a8d4a36cd5203f37c7c7b21ee659",
+      "placementDetails": {
+        "x": 324.9383344765575,
+        "z": -987.4214188868278,
+        "yaw": 2.2887748453111167,
+        "facingApproachBeforeM": 65,
+        "trackDistance": 2393.1113659386947,
+        "trackLateral": -44.99999999999996,
+        "minimumRoadClearanceM": 21.50392566243354,
+        "checkedSegments": 4068,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/SD/falls-park-desktop.png",
+        "docs/art/landmark-previews/SD/falls-park-mobile.png"
+      ]
     },
     "landmark-city-sd-old-courthouse-museum": {
       "raceRef": "Sioux Falls, SD — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -56.44516480616746,
+        "worldZ": -52.428480329686366,
+        "routeDistanceM": 4321,
+        "offsetFromRoadM": 43,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.5485257990986576,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 11.829984505573366,
+            "angularWidthDegrees": 14.273322018523146,
+            "rangeM": 155.8950556815947,
+            "occluderIds": [],
+            "score": 0.5268006197770654
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 10.67758539363601,
+            "angularWidthDegrees": 12.692338973740053,
+            "rangeM": 175.5047221415971,
+            "occluderIds": [],
+            "score": 0.5728965842545597
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 9.589790635419467,
+            "angularWidthDegrees": 11.421011967202785,
+            "rangeM": 195.19361466061343,
+            "occluderIds": [
+              "city-sd-prop-239"
+            ],
+            "score": 0.07396900494998657
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.701592407008485,
+            "angularWidthDegrees": 10.377788058346518,
+            "rangeM": 214.93996258676208,
+            "occluderIds": [
+              "city-sd-prop-239"
+            ],
+            "score": 0.07823235644635927
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 7.640768621721984,
+            "angularWidthDegrees": 9.123695278602279,
+            "rangeM": 244.6367697522031,
+            "occluderIds": [
+              "city-sd-prop-239"
+            ],
+            "score": 0.08332431061573448
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 6.584302352529664,
+            "angularWidthDegrees": 7.854294192777102,
+            "rangeM": 284.33056796577466,
+            "occluderIds": [
+              "city-sd-prop-237",
+              "city-sd-prop-239",
+              "city-sd-prop-240"
+            ],
+            "score": 0.0883953487078576
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 5.773434395897051,
+            "angularWidthDegrees": 6.893016801269575,
+            "rangeM": 324.09920770993983,
+            "occluderIds": [
+              "city-sd-prop-233",
+              "city-sd-prop-235",
+              "city-sd-prop-237",
+              "city-sd-prop-239",
+              "city-sd-prop-240"
+            ],
+            "score": 0.09228751489969415
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 5.002618376427822,
+            "angularWidthDegrees": 5.977036222000119,
+            "rangeM": 373.8794331384509,
+            "occluderIds": [
+              "city-sd-prop-231",
+              "city-sd-prop-233",
+              "city-sd-prop-235",
+              "city-sd-prop-237",
+              "city-sd-prop-239",
+              "city-sd-prop-240"
+            ],
+            "score": 0.09562005944740035
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "3b6042b419813033d3daf6c22588898aa1409e20ffd18f1b46c9e1c5fff7b4a5",
+      "sourceSha256": "5c16b6f131ca59fda39788220c05cd4402c21dd9862d35c757c223b9a293b1e1",
+      "roadSha256": "4f132bdde30f52cdda854543bce2d117aee9a8d4a36cd5203f37c7c7b21ee659",
+      "placementDetails": {
+        "x": -162.67961615192996,
+        "z": 7.367020221788547,
+        "yaw": -1.4196564229589943,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4350.90057205852,
+        "trackLateral": 135,
+        "minimumRoadClearanceM": 104.43649662615243,
+        "checkedSegments": 4068,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-sd-pettigrew-home-and-museum": {
       "raceRef": "Sioux Falls, SD — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -545.6016708383091,
+        "worldZ": 291.7647710251264,
+        "routeDistanceM": 5094,
+        "offsetFromRoadM": 44,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.5111683308039371,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 11.030911982660422,
+            "angularWidthDegrees": 10.04042261900475,
+            "rangeM": 126.70664477154172,
+            "occluderIds": [
+              "city-sd-prop-280"
+            ],
+            "score": 0.06705162248322996
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 9.53294650286371,
+            "angularWidthDegrees": 8.69614840009897,
+            "rangeM": 146.38716132929292,
+            "occluderIds": [
+              "city-sd-prop-280"
+            ],
+            "score": 0.0742418567862542
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.390605330622476,
+            "angularWidthDegrees": 7.665343960553451,
+            "rangeM": 166.14400012363046,
+            "occluderIds": [
+              "city-sd-prop-279",
+              "city-sd-prop-280"
+            ],
+            "score": 0.07972509441301212
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.491345755687062,
+            "angularWidthDegrees": 6.850844282176113,
+            "rangeM": 185.95283583306437,
+            "occluderIds": [
+              "city-sd-prop-279",
+              "city-sd-prop-280",
+              "city-sd-prop-281"
+            ],
+            "score": 0.0840415403727021
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.452498019796114,
+            "angularWidthDegrees": 5.90697033416632,
+            "rangeM": 215.73224341642853,
+            "occluderIds": [
+              "city-sd-prop-279",
+              "city-sd-prop-280",
+              "city-sd-prop-281"
+            ],
+            "score": 0.08764763517596433
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.444476412962133,
+            "angularWidthDegrees": 4.988478277281922,
+            "rangeM": 255.51841659166732,
+            "occluderIds": [
+              "city-sd-prop-277",
+              "city-sd-prop-279",
+              "city-sd-prop-280"
+            ],
+            "score": 0.07804184369185012
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.708236600837818,
+            "angularWidthDegrees": 4.316225790329805,
+            "rangeM": 295.36236049050297,
+            "occluderIds": [
+              "city-sd-prop-277",
+              "city-sd-prop-279",
+              "city-sd-prop-280"
+            ],
+            "score": 0.07006706601178737
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 21.501476758047712,
+            "angularWidthDegrees": 3.6985862152513027,
+            "rangeM": 344.7292736390978,
+            "occluderIds": [
+              "city-sd-prop-277",
+              "city-sd-prop-279",
+              "city-sd-prop-280"
+            ],
+            "score": 0.010351671869136828
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "b6a2d4f411657dc8626e8cc86f9cf0af6ca0494e26669d4410dbbef17da9a8fc",
+      "sourceSha256": "e716934123a806c6163817b955fa5d548317df13dd8065f54c442e7f8ca8c0ae",
+      "roadSha256": "4f132bdde30f52cdda854543bce2d117aee9a8d4a36cd5203f37c7c7b21ee659",
+      "placementDetails": {
+        "x": -601.8231048242675,
+        "z": 292.9354102955931,
+        "yaw": -1.4308105503042403,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5094.561434926056,
+        "trackLateral": 100.00000000000003,
+        "minimumRoadClearanceM": 81.12030994902675,
+        "checkedSegments": 4068,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-sd-washington-pavilion": {
       "raceRef": "Sioux Falls, SD — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -79.59058361325397,
+        "worldZ": 749.6994699510847,
+        "routeDistanceM": 5927,
+        "offsetFromRoadM": 48,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.90117245908203,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 66.85062792204117,
+            "angularWidthDegrees": 21.80927580602922,
+            "rangeM": 114.19459763841903,
+            "occluderIds": [
+              "city-sd-prop-317"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 58.28263867739294,
+            "angularWidthDegrees": 20.211626908621398,
+            "rangeM": 123.43475240870214,
+            "occluderIds": [
+              "city-sd-prop-317"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 51.04420009063022,
+            "angularWidthDegrees": 18.508027496817736,
+            "rangeM": 135.02544455338912,
+            "occluderIds": [
+              "city-sd-prop-315"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 45.02912720076842,
+            "angularWidthDegrees": 16.863228674412593,
+            "rangeM": 148.41699314340175,
+            "occluderIds": [
+              "city-sd-prop-313",
+              "city-sd-prop-315"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 37.896938411918065,
+            "angularWidthDegrees": 14.667142186582305,
+            "rangeM": 170.94210934778735,
+            "occluderIds": [
+              "city-sd-prop-313"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 30.979172084357106,
+            "angularWidthDegrees": 12.310824762807062,
+            "rangeM": 203.99184963012482,
+            "occluderIds": [
+              "city-sd-prop-311"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 26.040805056731717,
+            "angularWidthDegrees": 10.510930750357293,
+            "rangeM": 239.17388463573866,
+            "occluderIds": [
+              "city-sd-prop-311"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.29568852294924824,
+            "angularWidthDegrees": 8.822419176339352,
+            "rangeM": 285.1860913967917,
+            "occluderIds": [],
+            "score": 0.9881724590820301
+          }
+        ],
+        "sourceDistanceShiftM": -150
+      },
+      "signature": "6323f2925b1f0af8369dfaf27f1d7e8a21d34545f695118a1345e8861d35fac9",
+      "sourceSha256": "b3c36f1dc7b5ccb2ecb526ef4dc7b5ea9f2536ddf67bc2d74e8328a7b0496315",
+      "roadSha256": "4f132bdde30f52cdda854543bce2d117aee9a8d4a36cd5203f37c7c7b21ee659",
+      "placementDetails": {
+        "x": -229.1044053395271,
+        "z": 806.8530863723201,
+        "yaw": 0.7884592855216529,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5777.106742014082,
+        "trackLateral": 104.99999999999997,
+        "minimumRoadClearanceM": 71.45420638362313,
+        "checkedSegments": 4068,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-tn-tennessee-state-capitol": {
       "raceRef": "Nashville, TN — Landmark Run",

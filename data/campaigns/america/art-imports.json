@@ -2798,5 +2798,33 @@
     "documentSha256": "317e5c6f52c66de97b13294bcb8518dc2e76cb824e6981e9012d81f0b84a6499",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-sd-falls-park": {
+    "source": "assets/campaign-art/landmarks/SD/landmark-city-sd-falls-park.png",
+    "sourceSha256": "5a4190126440fc819d9ca6e85413e4ebb5b3be49f30ccdcd38a0e9b3db715027",
+    "documentSha256": "429dbbc43a39880abdc560e4c88c739174c6fd7a5cb4e74cfaab1f362505089d",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-sd-old-courthouse-museum": {
+    "source": "assets/campaign-art/landmarks/SD/landmark-city-sd-old-courthouse-museum.png",
+    "sourceSha256": "5c16b6f131ca59fda39788220c05cd4402c21dd9862d35c757c223b9a293b1e1",
+    "documentSha256": "de29d6c9baedb6b67addf842ff4c2beac6bf5b4ddcdc73475beaa5dc01264f76",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-sd-pettigrew-home-and-museum": {
+    "source": "assets/campaign-art/landmarks/SD/landmark-city-sd-pettigrew-home-and-museum.png",
+    "sourceSha256": "e716934123a806c6163817b955fa5d548317df13dd8065f54c442e7f8ca8c0ae",
+    "documentSha256": "d26d6a3e471707eba28453db93b1c90469ef98aa96dcbd4b6729acc78e0c0abb",
+    "width": 512,
+    "height": 368
+  },
+  "landmark-city-sd-washington-pavilion": {
+    "source": "assets/campaign-art/landmarks/SD/landmark-city-sd-washington-pavilion.png",
+    "sourceSha256": "b3c36f1dc7b5ccb2ecb526ef4dc7b5ea9f2536ddf67bc2d74e8328a7b0496315",
+    "documentSha256": "5f1cf53441dfad9b5bdbbe9e4c8c216a1aa924348ebd8742d01fad781f954b3a",
+    "width": 512,
+    "height": 256
   }
 }

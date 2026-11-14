@@ -5606,5 +5606,128 @@
       265
     ],
     "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-sd-falls-park": {
+    "reason": "Test the measured original-side low masonry approach against actual night illumination without moving prior props.",
+    "distanceOffsets": [
+      -150,
+      -120,
+      -180
+    ],
+    "minimumSetbackM": 40,
+    "maximumSetbackM": 60,
+    "allowOppositeSide": false,
+    "facingApproachBeforeM": 65,
+    "approachOffsetsM": [
+      30,
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-sd-old-courthouse-museum": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-sd-pettigrew-home-and-museum": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-sd-washington-pavilion": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
   }
 }
