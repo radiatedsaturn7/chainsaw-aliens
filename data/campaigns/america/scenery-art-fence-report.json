@@ -1,0 +1,1472 @@
+[
+  {
+    "name": "Col de Turini",
+    "addedDefinitions": 0,
+    "flaredFences": 19,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Daytona Tri-Oval",
+    "addedDefinitions": 0,
+    "flaredFences": 8,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Demo Track",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Mount Washington Auto Road — point-to-point",
+    "addedDefinitions": 0,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Mount Washington Auto Road — point-to-point Copy",
+    "addedDefinitions": 0,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Nurburgring Nordschleife",
+    "addedDefinitions": 0,
+    "flaredFences": 29,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Ouninpohja",
+    "addedDefinitions": 0,
+    "flaredFences": 31,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Studio Sprint",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Studio Sprint Copy",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Studio Sprint2",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Tower Hill Road",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "WeatherTech Raceway Laguna Seca",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "buse1",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "p1",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "p2loadtest",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Laurel Highlands Scenic Byway",
+    "addedDefinitions": 0,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Ohio River Crossing",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Ozark Backroads",
+    "addedDefinitions": 0,
+    "flaredFences": 5,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Data Center City",
+    "addedDefinitions": 0,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Historic Route 66",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Pikes Peak Highway",
+    "addedDefinitions": 0,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Moki Dugway",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Oak Creek Canyon",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Angeles Crest Highway",
+    "addedDefinitions": 0,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "RI 116 — North Smithfield Scituate",
+    "addedDefinitions": 0,
+    "flaredFences": 12,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Thompson Speedway — 1.7-mile road course",
+    "addedDefinitions": 0,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "I-95 — Attleboro to Warwick curves",
+    "addedDefinitions": 0,
+    "flaredFences": 22,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "RI 102 — Victory Highway",
+    "addedDefinitions": 0,
+    "flaredFences": 18,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Pachaug State Forest — public gravel access roads",
+    "addedDefinitions": 0,
+    "flaredFences": 6,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Seekonk Speedway — oval",
+    "addedDefinitions": 0,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "RI 44 — Putnam Pike Glocester",
+    "addedDefinitions": 0,
+    "flaredFences": 16,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Lime Rock Park — Connecticut",
+    "addedDefinitions": 0,
+    "flaredFences": 2,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Palmer Motorsports Park — Massachusetts",
+    "addedDefinitions": 0,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Kancamagus Highway — NH 112",
+    "addedDefinitions": 0,
+    "flaredFences": 14,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Bear Notch Road — Bartlett",
+    "addedDefinitions": 9,
+    "flaredFences": 14,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Hurricane Mountain Road — Conway",
+    "addedDefinitions": 9,
+    "flaredFences": 12,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Crawford Notch — US 302",
+    "addedDefinitions": 9,
+    "flaredFences": 17,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Pinkham Notch — NH 16",
+    "addedDefinitions": 9,
+    "flaredFences": 15,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Club Motorsports — Tamworth",
+    "addedDefinitions": 9,
+    "flaredFences": 2,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Team O’Neil-inspired Rally Stage (2994)",
+    "addedDefinitions": 9,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "New Hampshire Motor Speedway — Loudon",
+    "addedDefinitions": 9,
+    "flaredFences": 4,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "New England Dragway — Epping",
+    "addedDefinitions": 7,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "PA 381 — Ohiopyle approach",
+    "addedDefinitions": 23,
+    "flaredFences": 16,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "PA 711 — Normalville Champion",
+    "addedDefinitions": 23,
+    "flaredFences": 16,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "US 40 — Chalk Hill Summit",
+    "addedDefinitions": 23,
+    "flaredFences": 16,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "PA 31 — Donegal to Laurel Ridge",
+    "addedDefinitions": 23,
+    "flaredFences": 11,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "County Line Road — Seven Springs",
+    "addedDefinitions": 23,
+    "flaredFences": 12,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Forbes State Forest — designated gravel roads",
+    "addedDefinitions": 23,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Jennerstown Speedway — oval",
+    "addedDefinitions": 20,
+    "flaredFences": 2,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Keystone Motorsports Park — New Alexandria",
+    "addedDefinitions": 12,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Pittsburgh International Race Complex — Wampum",
+    "addedDefinitions": 23,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "OH 26 — Covered Bridge Scenic Byway",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "OH 555 — Triple Nickel",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "OH 550 — Barlow approach",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "OH 536 — Ohio River hills",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "OH 676 — Western county hills",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Marietta–Williamstown — I-77 river bridge",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Washington County western covered-bridge gravel loop",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Ohio Valley Speedway — Washington, West Virginia",
+    "addedDefinitions": 9,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Mid-Ohio Sports Car Course — Lexington",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "MO 19 — Eminence Current River",
+    "addedDefinitions": 28,
+    "flaredFences": 13,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "MO 106 — Alley Spring approach",
+    "addedDefinitions": 28,
+    "flaredFences": 15,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "MO 106 — Powder Mill approach",
+    "addedDefinitions": 28,
+    "flaredFences": 16,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "MO V — Two Rivers access",
+    "addedDefinitions": 28,
+    "flaredFences": 5,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "MO H NN — Roberts Field access",
+    "addedDefinitions": 28,
+    "flaredFences": 17,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Jerktail Landing gravel road",
+    "addedDefinitions": 28,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "US 60 — Winona Van Buren",
+    "addedDefinitions": 28,
+    "flaredFences": 22,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Glade Top Trail — Mark Twain National Forest",
+    "addedDefinitions": 28,
+    "flaredFences": 9,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Ozarks International Raceway — Gravois Mills",
+    "addedDefinitions": 28,
+    "flaredFences": 12,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "World Wide Technology Raceway — road course",
+    "addedDefinitions": 7,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "World Wide Technology Raceway — oval",
+    "addedDefinitions": 7,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "World Wide Technology Raceway — drag strip",
+    "addedDefinitions": 5,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "I-64 — St. Louis downtown approaches",
+    "addedDefinitions": 7,
+    "flaredFences": 20,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "I-70 — Stan Musial Veterans Memorial Bridge",
+    "addedDefinitions": 7,
+    "flaredFences": 10,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "IL 100 — Great River Road bluffs",
+    "addedDefinitions": 7,
+    "flaredFences": 8,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "MO 94 — Defiance Augusta",
+    "addedDefinitions": 7,
+    "flaredFences": 18,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Gateway Kartplex — WWT complex",
+    "addedDefinitions": 9,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Federated Auto Parts Raceway at I-55 — Pevely",
+    "addedDefinitions": 5,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Old Route 66 — Shamrock McLean",
+    "addedDefinitions": 12,
+    "flaredFences": 14,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Old Route 66 — Groom Conway",
+    "addedDefinitions": 12,
+    "flaredFences": 17,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Amarillo — Historic 6th Avenue alignment",
+    "addedDefinitions": 12,
+    "flaredFences": 8,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Old Route 66 — Vega Adrian",
+    "addedDefinitions": 12,
+    "flaredFences": 20,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Old Route 66 — Adrian Glenrio",
+    "addedDefinitions": 12,
+    "flaredFences": 17,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Palo Duro Canyon — Park Road 5",
+    "addedDefinitions": 12,
+    "flaredFences": 5,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Amarillo Dragway",
+    "addedDefinitions": 10,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+    "addedDefinitions": 12,
+    "flaredFences": 13,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+    "addedDefinitions": 12,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Gold Camp Road — Colorado Springs",
+    "addedDefinitions": 7,
+    "flaredFences": 5,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Phantom Canyon Road — Gold Belt Tour",
+    "addedDefinitions": 7,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Shelf Road — Gold Belt Tour",
+    "addedDefinitions": 7,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Skyline Drive — Cañon City",
+    "addedDefinitions": 7,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "US 24 — Ute Pass Woodland Park",
+    "addedDefinitions": 7,
+    "flaredFences": 18,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "CO 67 — Woodland Park Cripple Creek",
+    "addedDefinitions": 7,
+    "flaredFences": 15,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Garden of the Gods — paved park road",
+    "addedDefinitions": 7,
+    "flaredFences": 5,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Pikes Peak International Raceway — Fountain",
+    "addedDefinitions": 7,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Pueblo Motorsports Park — road course or drag strip",
+    "addedDefinitions": 7,
+    "flaredFences": 7,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Valley of the Gods Road — San Juan CR 242",
+    "addedDefinitions": 8,
+    "flaredFences": 8,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Muley Point Road — CR 241",
+    "addedDefinitions": 8,
+    "flaredFences": 9,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "UT 316 — Goosenecks State Park Road",
+    "addedDefinitions": 8,
+    "flaredFences": 8,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "US 163 — Mexican Hat Monument Valley approach",
+    "addedDefinitions": 8,
+    "flaredFences": 27,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "UT 95 — Comb Ridge Cedar Mesa",
+    "addedDefinitions": 8,
+    "flaredFences": 30,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "UT 276 — Halls Crossing approach",
+    "addedDefinitions": 8,
+    "flaredFences": 27,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "US 191 — Bluff Blanding",
+    "addedDefinitions": 8,
+    "flaredFences": 25,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Shafer Trail — Canyonlands National Park",
+    "addedDefinitions": 8,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Burr Trail switchbacks — Capitol Reef",
+    "addedDefinitions": 8,
+    "flaredFences": 5,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "SR 179 — Red Rock Scenic Byway",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Upper Lower Red Rock Loop Road",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Page Springs Road",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Beaverhead Flat Road — CR 78",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Boynton Pass Road FR 525 loop",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Schnebly Hill Road — Sedona",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "SR 89A — Mingus Mountain Jerome",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Podium Club at Attesa — Casa Grande",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Firebird Motorsports Park — Chandler",
+    "addedDefinitions": 10,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Angeles Forest Highway — County N3",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Upper Big Tujunga Canyon Road",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Big Tujunga Canyon Road",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Glendora Mountain Road",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Glendora Ridge Road",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "San Gabriel Canyon Road — SR 39",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Little Tujunga Canyon Road",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Willow Springs — Horse Thief Mile",
+    "addedDefinitions": 14,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "In-N-Out Burger Pomona Dragstrip",
+    "addedDefinitions": 12,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Old Staples Road",
+    "addedDefinitions": 7,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Watkins Glen — Long Course",
+    "addedDefinitions": 23,
+    "flaredFences": 5,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Watkins Glen — Short Course",
+    "addedDefinitions": 23,
+    "flaredFences": 4,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Watkins Glen — Long — No Inner Loop",
+    "addedDefinitions": 23,
+    "flaredFences": 4,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Watkins Glen — Short — No Inner Loop",
+    "addedDefinitions": 23,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Road America — Full Course",
+    "addedDefinitions": 7,
+    "flaredFences": 11,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Road America — The Bend",
+    "addedDefinitions": 7,
+    "flaredFences": 12,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Road Atlanta — Grand Prix",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Road Atlanta — Short Course",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Road Atlanta — Club Course",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Virginia International Raceway — Full Course",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Virginia International Raceway — North Course",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Virginia International Raceway — South Course",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Virginia International Raceway — Grand Course",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Sebring International Raceway — Full Circuit",
+    "addedDefinitions": 28,
+    "flaredFences": 12,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Sebring International Raceway — Short Circuit",
+    "addedDefinitions": 28,
+    "flaredFences": 4,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Sebring International Raceway — Club Circuit",
+    "addedDefinitions": 26,
+    "flaredFences": 5,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Indianapolis Motor Speedway — Oval",
+    "addedDefinitions": 7,
+    "flaredFences": 8,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Indianapolis Motor Speedway — Grand Prix Road Course",
+    "addedDefinitions": 7,
+    "flaredFences": 4,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Homestead-Miami Speedway — Oval",
+    "addedDefinitions": 28,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Homestead-Miami Speedway — Road Course",
+    "addedDefinitions": 26,
+    "flaredFences": 6,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Homestead-Miami Speedway — Modified Road Course",
+    "addedDefinitions": 27,
+    "flaredFences": 8,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Daytona International Speedway — Sports Car Course",
+    "addedDefinitions": 28,
+    "flaredFences": 8,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Daytona International Speedway — Stock Car Road Course",
+    "addedDefinitions": 28,
+    "flaredFences": 12,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Willow Springs — Big Willow",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Willow Springs — Streets of Willow",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Willow Springs — Streets — Short",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Lime Rock Park — West Chicane",
+    "addedDefinitions": 16,
+    "flaredFences": 4,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Lime Rock Park — Both Chicanes",
+    "addedDefinitions": 16,
+    "flaredFences": 2,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Mid-Ohio Sports Car Course — Chicane Course",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Mid-Ohio Sports Car Course — Short Course",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Hatcher Pass — Palmer-Fishhook Climb",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Pig Trail — Arkansas 23",
+    "addedDefinitions": 28,
+    "flaredFences": 20,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Brandywine Valley — Montchanin Road",
+    "addedDefinitions": 24,
+    "flaredFences": 9,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Hana Highway — Rainforest Bends",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Grafton Notch — Maine 26",
+    "addedDefinitions": 9,
+    "flaredFences": 24,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "National Road — Sideling Hill",
+    "addedDefinitions": 23,
+    "flaredFences": 7,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Natchez Trace — Tishomingo",
+    "addedDefinitions": 28,
+    "flaredFences": 16,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Beartooth Highway — Rock Creek Climb",
+    "addedDefinitions": 7,
+    "flaredFences": 17,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Barber Motorsports Park",
+    "addedDefinitions": 27,
+    "flaredFences": 5,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Raceway Park of the Midlands",
+    "addedDefinitions": 7,
+    "flaredFences": 7,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Heartland Motorsports Park",
+    "addedDefinitions": 27,
+    "flaredFences": 6,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "NCM Motorsports Park",
+    "addedDefinitions": 7,
+    "flaredFences": 9,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "NOLA Motorsports Park",
+    "addedDefinitions": 27,
+    "flaredFences": 9,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "GingerMan Raceway",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Brainerd — Competition Course",
+    "addedDefinitions": 7,
+    "flaredFences": 6,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Spring Mountain — North South",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "NJMP — Thunderbolt",
+    "addedDefinitions": 23,
+    "flaredFences": 4,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Sandia Speedway — Road Course",
+    "addedDefinitions": 8,
+    "flaredFences": 6,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "NCCAR — Road Course",
+    "addedDefinitions": 23,
+    "flaredFences": 4,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Theodore Roosevelt — North Unit Drive",
+    "addedDefinitions": 7,
+    "flaredFences": 10,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Needles Highway — Granite Gates",
+    "addedDefinitions": 7,
+    "flaredFences": 14,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Smugglers Notch — Vermont 108",
+    "addedDefinitions": 9,
+    "flaredFences": 19,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Wind River Canyon — Canyon Walls",
+    "addedDefinitions": 7,
+    "flaredFences": 20,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Motorsport Park Hastings",
+    "addedDefinitions": 7,
+    "flaredFences": 7,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Portland International Raceway",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Carolina Motorsports Park",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Pacific Raceways",
+    "addedDefinitions": 15,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Ponderosa Pine — Idaho 21",
+    "addedDefinitions": 8,
+    "flaredFences": 15,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Birmingham, AL — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Phoenix, AZ — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Los Angeles, CA — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Hartford, CT — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Wilmington, DE — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Miami, FL — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Atlanta, GA — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Chicago, IL — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Des Moines, IA — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Louisville, KY — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Baltimore, MD — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Detroit, MI — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Anchorage, AK — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Little Rock, AR — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Boise, ID — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Wichita, KS — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Portland, ME — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Honolulu, HI — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Indianapolis, IN — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "New Orleans, LA — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Boston, MA — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Minneapolis, MN — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Jackson, MS — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "St. Louis, MO — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Billings, MT — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Las Vegas, NV — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Manchester, NH — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Newark, NJ — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Albuquerque, NM — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Charlotte, NC — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Fargo, ND — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Cleveland, OH — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Denver, CO — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Omaha, NE — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "New York, NY — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Oklahoma City, OK — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "San Antonio, TX — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Portland, OR — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Providence, RI — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Philadelphia, PA — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Charleston, SC — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Sioux Falls, SD — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Nashville, TN — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Salt Lake City, UT — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Burlington, VT — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Richmond, VA — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Flatrock Motorclub — Club Course",
+    "addedDefinitions": 21,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Seattle, WA — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Charleston, WV — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Milwaukee, WI — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Cheyenne, WY — Landmark Run",
+    "addedDefinitions": 13,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Thompson Pass — Snowline Climb",
+    "addedDefinitions": 6,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Denali Highway — Tundra Gravel",
+    "addedDefinitions": 5,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Skalkaho Pass — Forest Rally",
+    "addedDefinitions": 9,
+    "flaredFences": 1,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Magruder Corridor — Wilderness Ridge",
+    "addedDefinitions": 9,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Chief Joseph — Dead Indian Pass",
+    "addedDefinitions": 6,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Tantalus — Honolulu Heights",
+    "addedDefinitions": 9,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Haleakala — Volcano Ascent",
+    "addedDefinitions": 7,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Maunakea — Cinder Summit",
+    "addedDefinitions": 5,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Sandhills Journey — Open Prairie",
+    "addedDefinitions": 9,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Grand Canyon — Desert View Drive",
+    "addedDefinitions": 6,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Grand Canyon — Diamond Creek Descent",
+    "addedDefinitions": 6,
+    "flaredFences": 0,
+    "disconnectedLegacyFences": 0
+  },
+  {
+    "name": "Bayard — Road 77 to City Park",
+    "addedDefinitions": 13,
+    "flaredFences": 3,
+    "disconnectedLegacyFences": 0
+  }
+]

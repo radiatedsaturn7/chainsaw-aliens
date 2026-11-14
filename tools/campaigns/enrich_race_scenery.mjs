@@ -69,7 +69,7 @@ export function enrichRaceScenery(race,{length,pose,project,ground,definition,ha
    points.push({x,z});
   }
   if(!valid||!railDef)continue;
-  const panels=buildRaceFencePlacements(points,railDef,{id:`coverage-v1-rail-${selected.length}`,ref:'fenceguardrail'});
+  const panels=buildRaceFencePlacements(points,railDef,{id:`coverage-v1-rail-${selected.length}`,ref:'fenceguardrail',roadside:{project,pose,roadWidthM:race.road.width,validPoint:p=>hasGround(p.x,p.z)}});
   for(const panel of panels){const q=project(panel);panel.trackDistance=q.distance;panel.trackLateral=q.lateral;insert(panel);}
   rails.push(...panels);selected.push(c);
  }

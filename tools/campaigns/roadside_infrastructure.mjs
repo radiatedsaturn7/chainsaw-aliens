@@ -87,7 +87,7 @@ export function repairRoadsideInfrastructure(race,h){
    if(candidate.length===17){points=candidate;break search;}
   }
   if(!points){report.rejected++;continue;}used.add(key);
-  const panels=buildRaceFencePlacements(points,{...def,isFence:true,fenceThicknessM:.18},{id:`infrastructure-v1-fence-${key}`,ref});
+  const panels=buildRaceFencePlacements(points,{...def,isFence:true,fenceThicknessM:.18},{id:`infrastructure-v1-fence-${key}`,ref,roadside:{project,pose,roadWidthM:race.road.width,validPoint:(p,b)=>Boolean(valid(p,project(b).distance,.5,1))&&clear(p,.4)}});
   for(const p of panels){const q=project(p);p.trackDistance=q.distance;p.trackLateral=q.lateral;kept.push(p);insert(p);}
   report.fenceSections++;report.refs[ref]=(report.refs[ref]||0)+panels.length;
  }
@@ -113,7 +113,7 @@ export function rebuildSafetyRails(race,{definition,project}){
  for(const [id,panels] of railGroups){
   const path=panels.find(p=>p.fencePath)?.fencePath,ref='roadside-metal-guardrail-intact',def=definition(ref);
   if(!path||!def)continue;
-  const replacements=buildRaceFencePlacements(path.points,{...def,isFence:true},{id,ref});
+  const replacements=buildRaceFencePlacements(path.points,{...def,isFence:true},{id,ref,endFlared:path.endFlared});
   for(const p of replacements){const q=project(p);p.trackDistance=q.distance;p.trackLateral=q.lateral;}
   rebuilt.set(id,replacements);report.railPanels+=replacements.length;
  }

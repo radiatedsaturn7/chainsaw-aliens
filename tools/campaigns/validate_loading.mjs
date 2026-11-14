@@ -1,3 +1,4 @@
+import {collectSceneryArtRefs} from '../../src/racing/RaceSceneryAssets.js';
 // Exercise the real worker preparation and transfer pipeline in an isolated,
 // deliberately small-stack process per saved stage (keeps memory bounded too).
 import fs from 'node:fs';
@@ -34,6 +35,8 @@ if(id){
   assert.ok(p.packedSampler.positions.length>0,'physics triangles');
   assert.ok(p.packedTerrain.positions.length>0,'render triangles');
   assert.ok(p.header.routeLength>0,'timed route');
+  const plannedArt=new Set([...(p.artPlan?.criticalRefs||[]),...(p.artPlan?.deferredRefs||[])]);
+  for(const ref of collectSceneryArtRefs(p.raceDocument))assert.ok(plannedArt.has(ref),`Missing transferred scenery art: ${ref}`);
   const copy=structuredClone(p,{transfer:[...new Set([...p.physicsTransferables,...p.terrainTransferables,...p.raceTileMapTransferables])]});
   assert.ok(copy.packedSampler.positions.length>0,'transferred physics');
   assert.ok(copy.packedTerrain.positions.every(Number.isFinite),'finite render geometry');
