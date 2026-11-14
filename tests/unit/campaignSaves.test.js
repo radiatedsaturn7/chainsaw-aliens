@@ -29,7 +29,7 @@ test('three independent slots restore progress, scrap, tuning, parts and conditi
  await game.items.garage.saveCondition('RTG-001',{damage:{engine:.25}});
  await setMenuProgress(game,{[raceCompletionKey('North 01')]:true,lastCompletedRace:'North 01'});
  const first=structuredClone(saves.slots[0]);
- await saves.startNew(1);assert.equal(game.player.credits,0);assert.deepEqual(game.items.progress.garage.cars,{});
+ await saves.startNew(1);assert.equal(game.player.credits,500);assert.deepEqual(game.items.progress.garage.cars,{});
  await commitMenuCar(game,'Other Car');await setMenuProgress(game,{lastCompletedRace:'South 01'});
  assert.deepEqual(saves.slots[0],first);
  const restarted=await fixture(store);await restarted.saves.resume(0);
@@ -46,7 +46,7 @@ test('overwrite requires confirmation and failed persistence preserves the slot 
  await assert.rejects(saves.startNew(0,{overwrite:true}),/Could not save/);
  assert.deepEqual(store.get(CAMPAIGN_SAVE_KEY),original);assert.equal(game.menuProgress.selectedGameCar,'Keep Me');
  fail(false);await saves.startNew(0,{overwrite:true});assert.deepEqual(game.menuProgress,{});
- assert.equal(game.player.credits,0);assert.equal(saves.slots[1],null);
+ assert.equal(game.player.credits,500);assert.equal(saves.slots[1],null);
 });
 test('legacy car and garage migrate once into Slot 1 without deleting legacy data',async()=>{
  const legacy={selectedGameCar:'Existing',lastCompletedRace:'North 03'};
@@ -225,7 +225,7 @@ test('pre-slot HACKME and SKIPME survive new/continued slot selection and bypass
   const launches=[];player.launchRace=async ref=>launches.push(ref);
   await player.open(document);
   await player.flow.adapter.cheatCode(code);
-  assert.match(player.message,/Choose a save slot/);
+  assert.equal(player.message,'Activated.');
   await player.selectSaveSlot(mode,0);
   assert.equal(player.flow.pendingOpeningRace,'');
   assert.equal(saves.slots[0].progress[raceCompletionKey('Tower Hill Road')],true);
@@ -240,7 +240,7 @@ test('pre-slot HACKME and SKIPME survive new/continued slot selection and bypass
   assert.deepEqual(game.pendingMenuCheats,[]);
   const reload=await fixture(store);await reload.saves.resume(0);
   assert.equal(reload.game.items.progress.unlocks['cheat.skipme'],true);
-  if(code==='HACKME'){assert.equal(reload.game.items.progress.unlocks['cheat.travel'],true);assert.equal(reload.game.player.credits,1000000);}
+  if(code==='HACKME'){assert.equal(reload.game.items.progress.unlocks['cheat.travel'],true);assert.equal(reload.game.player.credits,1000500);}
   await player.selectSaveSlot('new',1);
   assert.equal(player.flow.pendingOpeningRace,'Tower Hill Road','queued cheats must not leak into another slot');
  }
@@ -259,4 +259,64 @@ test('drift side-event results save a best score without completing the parent m
  const replay={...session,campaignProgressSaved:false,campaignSaveTask:null,driftScore:{points:100}};
  await editor.saveCampaignRaceResult(replay);
  assert.equal(saves.slots[0].progress['raceScore.H11-S08'],620);
+});
+
+test('manual-only hardware defaults to automatic assistance and respects each profile',async()=>{
+ const {game,saves,store}=await fixture();await saves.startNew(0);game.raceTravelSession={};
+ const editor=new RaceEditor(game);game.raceEditor=editor;
+ const car=editor.selectedCar;
+ const physical=structuredClone(car.transmissions.manual||car.transmissions.automatic);
+ physical.shiftMode='manual';physical.gearRatios=[3.4,2.1,1.4,1,.8];
+ car.transmissions={manual:physical};car.defaultTransmissionType='manual';
+ editor.startPlaytest(car.id,{hydrateCars:false});
+ assert.equal(editor.raceInput.autoShift,true);
+ assert.equal(editor.raceInput.transmissionMode,'automatic');
+ assert.equal(editor.playtestSession.transmissionType,'manual');
+ const ratios=editor.getRaceCarTuning(car).gearRatios;
+ editor.toggleRaceTransmissionMode();await game.menuProgressSaving;
+ assert.equal(editor.raceInput.autoShift,false);
+ assert.deepEqual(editor.getRaceCarTuning(car).gearRatios,ratios);
+ editor.toggleRaceAbs();editor.toggleRaceTractionControl();await game.menuProgressSaving;
+ await saves.startNew(1);
+ editor.startPlaytest(car.id,{hydrateCars:false});
+ assert.equal(editor.raceInput.autoShift,true,'new slot does not inherit manual');
+ assert.equal(editor.raceInput.absEnabled,true);
+ assert.equal(editor.raceInput.tractionControlEnabled,true);
+ await saves.resume(0);
+ editor.startPlaytest(car.id,{hydrateCars:false});
+ assert.equal(editor.raceInput.autoShift,false);
+ assert.equal(editor.raceInput.absEnabled,false);
+ assert.equal(editor.raceInput.tractionControlEnabled,false);
+ editor.toggleRaceTransmissionMode();await game.menuProgressSaving;
+ assert.equal(editor.raceInput.autoShift,true,'manual-only car can select Auto again');
+ assert.equal(editor.playtestSession.transmissionType,'manual');
+ const reload=await fixture(store);await reload.saves.resume(0);
+ assert.equal(reload.game.menuProgress.raceTransmission,'automatic');
+ assert.equal(reload.game.menuProgress.raceAbs,false);
+});
+
+test('menu controls, audio and haptics are isolated, copied and restored with each slot',async()=>{
+ const {game,saves,store}=await fixture();
+ const player=new MenuPlayer(game);game.menuPlayer=player;
+ game.raceHaptics={settings:{enabled:true,strength:.65},setSettings(value){this.settings=structuredClone(value);}};
+ await saves.startNew(0);
+ await player.settings.set('settings.musicVolume',.2);
+ await player.settings.set('input.jump','KeyQ');
+ await player.setHaptic('strength',.3);
+ const original=structuredClone(saves.slots[0]);
+ await saves.startNew(1);
+ assert.notEqual(player.settings.values['settings.musicVolume'],.2);
+ assert.equal(game.input.actionKeymap.jump,undefined);
+ assert.equal(game.raceHaptics.settings.strength,.65);
+ await player.settings.set('settings.musicVolume',.8);
+ await saves.resume(0);
+ assert.equal(player.settings.values['settings.musicVolume'],.2);
+ assert.deepEqual(game.input.actionKeymap.jump,['KeyQ']);
+ assert.equal(game.raceHaptics.settings.strength,.3);
+ assert.deepEqual(saves.slots[0],original);
+ await saves.copySlot(0,2);await saves.resume(2);
+ assert.equal(player.settings.values['settings.musicVolume'],.2);
+ const reloaded=await fixture(store);const menu=new MenuPlayer(reloaded.game);reloaded.game.menuPlayer=menu;
+ await reloaded.saves.resume(1);await menu.settings.load();
+ assert.equal(menu.settings.values['settings.musicVolume'],.8);
 });

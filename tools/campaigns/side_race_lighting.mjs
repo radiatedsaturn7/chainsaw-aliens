@@ -10,8 +10,8 @@ export function applySideRaceLighting(race, eventId) {
   race.timeOfDay=preset.timeOfDay;
   race.brightness=preset.brightness;
   race.visualFx={...previous,...preset.visualFx,
-    // Keep sky artwork readable and avoid bringing back the unwanted blur.
-    skyBrightness:1,motionBlur:previous.motionBlur??0,speedLines:previous.speedLines??0,
+    // Match scene lighting and avoid bringing back the unwanted blur.
+    skyBrightness:preset.brightness,motionBlur:previous.motionBlur??0,speedLines:previous.speedLines??0,
     speedLineArtRef:previous.speedLineArtRef||'',speedLineArtMode:previous.speedLineArtMode||'overlay'};
   return name;
 }

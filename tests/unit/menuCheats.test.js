@@ -78,7 +78,7 @@ test('preview code redemption changes only the preview inventory',async()=>{
  await p.open(createMenuDocument(),{preview:true,screenId:'cheats'});
  p.flow.setParameter('cheatCode','NOLOVE');await p.activate(p.interactive()[0],1,{choose:true});
  assert.equal(p.resources.garage.items.game.player.credits,1000012);assert.equal(f.game.player.credits,12);assert.equal(f.saved(),undefined);
- assert.match(p.message,/preview only/);
+ assert.equal(p.message,'Activated.');
 });
 
 test('TRAVEL unlocks every campaign mission without completing races and survives reload',async()=>{
@@ -112,5 +112,25 @@ test('TRAVEL and HACKME grant nothing if saving fails',async()=>{
   assert.equal(f.game.player.credits,12);
   for(const flag of ['lonely','ignore','travel','skipme'])assert.equal(f.items.progress.unlocks['cheat.'+flag],undefined);
   assert.deepEqual(f.items.progress.garage.parts,{});
+ }
+});
+
+
+test('code picker edges reach Enter, Up returns to first letter, and Down reaches Back',async()=>{
+ for(const mode of ['keyboard','gamepad']){
+  const p=new MenuPlayer({input:{},menuProgress:{},transitionTo(){},setActiveMusicTrack(){}});
+  p.settings.load=async()=>{};p.resources.prepareGarage=async()=>{};
+  await p.open(createMenuDocument(),{preview:true,screenId:'settings'});p.flow.goTo('cheats');
+  const press=(key,pad)=>{p.update(mode==='keyboard'?{wasPressedCode:k=>k===key}:{wasGamepadPressed:k=>k===pad},.016);p.update({},.016);};
+  const index=()=>p.widgetStates.get('code')?.index||0;
+  press('ArrowLeft','dpadLeft');assert.equal(index(),6);assert.equal(p.focus,0);
+  press('ArrowUp','dpadUp');assert.equal(index(),0);assert.equal(p.flow.parameters.cheatCode,'AAAAAA');
+  for(let i=0;i<6;i++)press('ArrowRight','dpadRight');
+  assert.equal(index(),6);
+  let submitted;p.flow.adapter.cheatCode=async code=>submitted=code;
+  press('Enter','jump');await new Promise(r=>setImmediate(r));assert.equal(submitted,'AAAAAA');
+  press('ArrowDown','dpadDown');assert.equal(p.interactive()[p.focus].id,'back');
+  press('ArrowUp','dpadUp');assert.equal(p.interactive()[p.focus].id,'code');assert.equal(index(),6);
+  press('ArrowDown','dpadDown');press('Enter','jump');await new Promise(r=>setImmediate(r));assert.equal(p.flow.screenId,'settings');
  }
 });

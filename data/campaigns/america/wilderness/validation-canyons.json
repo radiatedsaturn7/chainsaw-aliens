@@ -1,0 +1,117 @@
+{
+  "checkedAt": "2026-11-13T20:39:22.332Z",
+  "stackSizeKB": 128,
+  "stageTimeoutMs": 360000,
+  "results": [
+    {
+      "id": "detour-desert-view",
+      "name": "Grand Canyon — Desert View Drive",
+      "physicsProbeMeanMs": 0.024807025834904965,
+      "ok": true,
+      "terrainStats": {
+        "constrainedRoadFirst": true,
+        "algorithm": "adaptive-ground-v3",
+        "unresolvedHeightErrors": 2,
+        "maxHeightErrorM": 1.952999999999994,
+        "leafCells": 234349,
+        "minimumCellSizeM": 0.625,
+        "refineMs": 18325,
+        "balanceMs": 4117,
+        "connectMs": 25495,
+        "reusedPolygons": 518073,
+        "unresolvedAtMinimumCellSize": 0,
+        "heightErrorExamples": [
+          {
+            "x": 11768.75,
+            "z": -4658.125,
+            "distanceToRoad": 4.144990133877507,
+            "toleranceM": 0.05,
+            "errorM": 0.05134560955013967,
+            "cellSizeM": 2.5
+          },
+          {
+            "x": 11768.75,
+            "z": -4658.125,
+            "distanceToRoad": 4.144990133877507,
+            "toleranceM": 0.05,
+            "errorM": 0.05134560955013967,
+            "cellSizeM": 2.5
+          }
+        ],
+        "conformancePasses": 2,
+        "vertices": 337872,
+        "triangles": 528053,
+        "terrainTopology": "road-origin-indexed",
+        "explicitHeightmapCells": 528053,
+        "corridorJoinCells": 0,
+        "conformingOuterJoin": false,
+        "roadOriginIndexed": true,
+        "guardDistanceM": 15360,
+        "terrainCoverageMode": "road-origin-full-domain",
+        "canonicalVertices": 281226,
+        "canonicalTriangles": 541574,
+        "rejectedDegenerateTriangles": 60489,
+        "correctedWindingTriangles": 541916,
+        "terrainBaseTriangles": 526772
+      },
+      "peakRssKB": 1131976,
+      "triangles": 541574,
+      "seconds": 76.035
+    },
+    {
+      "id": "detour-diamond-creek",
+      "name": "Grand Canyon — Diamond Creek Descent",
+      "physicsProbeMeanMs": 0.01580839636363883,
+      "ok": true,
+      "terrainStats": {
+        "constrainedRoadFirst": true,
+        "algorithm": "adaptive-ground-v3",
+        "unresolvedHeightErrors": 2,
+        "maxHeightErrorM": 1.9770000000000008,
+        "leafCells": 259860,
+        "minimumCellSizeM": 0.859375,
+        "refineMs": 18565,
+        "balanceMs": 4205,
+        "connectMs": 21562,
+        "reusedPolygons": 507551,
+        "unresolvedAtMinimumCellSize": 0,
+        "heightErrorExamples": [
+          {
+            "x": -1576.09375,
+            "z": -4785.859375,
+            "distanceToRoad": 33.388574273151086,
+            "toleranceM": 0.15,
+            "errorM": 0.1901772937248829,
+            "cellSizeM": 3.4375
+          },
+          {
+            "x": -1576.09375,
+            "z": -4785.859375,
+            "distanceToRoad": 33.388574273151086,
+            "toleranceM": 0.15,
+            "errorM": 0.1901772937248829,
+            "cellSizeM": 3.4375
+          }
+        ],
+        "conformancePasses": 2,
+        "vertices": 324185,
+        "triangles": 553800,
+        "terrainTopology": "road-origin-indexed",
+        "explicitHeightmapCells": 553800,
+        "corridorJoinCells": 0,
+        "conformingOuterJoin": false,
+        "roadOriginIndexed": true,
+        "guardDistanceM": 10560,
+        "terrainCoverageMode": "road-origin-full-domain",
+        "canonicalVertices": 289728,
+        "canonicalTriangles": 561877,
+        "rejectedDegenerateTriangles": 35913,
+        "correctedWindingTriangles": 562058,
+        "terrainBaseTriangles": 553079
+      },
+      "peakRssKB": 1119076,
+      "triangles": 561877,
+      "seconds": 59.834
+    }
+  ]
+}

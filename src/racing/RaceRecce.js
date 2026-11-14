@@ -84,7 +84,22 @@ function buildRecce(editor) {
   }
   const obs=i=>observations[((i%(count-1))+(count-1))%(count-1)];
   const scenery=(editor.selectedRace?.scenery||[]).filter(s=>s&&s.visible!==false&&(s.presetId==='doodad'||s.doodadRef||s.previewDoodad));
-  const hazards=scenery.map(s=>({sprite:s,definition:editor.getRaceDoodadForScenery?.(s)||s.previewDoodad||s}));
+  const hazardBuckets=new Map();let maximumHazardHalf=1;
+  for(const sprite of scenery){
+    const definition=editor.getRaceDoodadForScenery?.(sprite)||sprite.previewDoodad||sprite;
+    const rule=definition.defaultRule||{};
+    if(rule.behavior==='flatten'&&Number(rule.speedDrainPercent||0)<=0&&!Object.values(rule.damage||{}).some(v=>v>0))continue;
+    maximumHazardHalf=Math.max(maximumHazardHalf,Number(definition.hitboxWidthM||definition.widthM||sprite.widthM||1.5)/2);
+    const key=`${Math.floor(Number(sprite.x)/64)},${Math.floor(Number(sprite.z??sprite.y)/64)}`;
+    if(!hazardBuckets.has(key))hazardBuckets.set(key,[]);
+    hazardBuckets.get(key).push({sprite,definition});
+  }
+  const nearbyHazards=pose=>{
+    const result=[],reach=Math.ceil((30+maximumHazardHalf+editor.getRaceRoadHalfWidthWorld(pose.segment))/64);
+    const x=Math.floor(pose.x/64),z=Math.floor(pose.z/64);
+    for(let dx=-reach;dx<=reach;dx++)for(let dz=-reach;dz<=reach;dz++)result.push(...(hazardBuckets.get(`${x+dx},${z+dz}`)||[]));
+    return result;
+  };
   const calls=[];
   for(const g of groups) {
     const samples=[];for(let i=g.start;i<=g.end;i++)samples.push(i<count?observations[i]:obs(i));
@@ -110,7 +125,7 @@ function buildRecce(editor) {
     // object width; an outside tree, distant building or harmless grass is not
     // evidence for "don't cut". Do not invent a safe "cut" from missing data.
     const hazardIds=[],hazardKinds=new Set();let obstructsRoad=false;
-    for(const {sprite:s,definition:def} of hazards) {
+    for(const {sprite:s,definition:def} of nearbyHazards(apex.pose)) {
       const rule=def.defaultRule||{};
       if(rule.behavior==='flatten'&&Number(rule.speedDrainPercent||0)<=0&&!Object.values(rule.damage||{}).some(v=>v>0))continue;
       const p=apex.pose,dx=Number(s.x)-p.x,dz=Number(s.z??s.y)-p.z;

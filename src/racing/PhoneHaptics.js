@@ -11,17 +11,26 @@ export function phoneDrivingPattern(cues, minimumPulse = 16) {
     const duration = pulse(impact, 95);
     return {kind: 'impact', priority: 4, pattern: duration, interval: duration + 65};
   }
-  if (bump >= .12) {
-    const duration = pulse(bump, 45);
-    return {kind: 'bump', priority: 3, pattern: duration, interval: duration + 65};
-  }
   if (braking >= .05) {
     const duration = pulse(braking, 12);
-    return {kind: 'braking', priority: 2, pattern: [duration, 30, duration], interval: duration * 2 + 90};
+    return {kind: 'braking', priority: 3, pattern: [duration, 30, duration], interval: duration * 2 + 90};
+  }
+  // Axle slip is a cue, not a claim that every slide is unwanted.
+  if (unit(cues.rearSlip) >= .08 && unit(cues.rearSlip) > unit(cues.frontSlip) * 1.2) {
+    const duration = Math.max(35,pulse(cues.rearSlip, 25));
+    return {kind:'rear-slip',priority:2,pattern:[duration,100,duration,100,duration],interval:duration*3+330};
+  }
+  if (unit(cues.frontSlip) >= .08) {
+    const duration = 110+pulse(cues.frontSlip, 60);
+    return {kind:'front-slip',priority:2,pattern:duration,interval:duration+180};
   }
   if (slip >= .05) {
     const duration = pulse(slip, 32);
     return {kind: 'slip', priority: 1, pattern: [duration, 48, duration], interval: duration * 2 + 110};
+  }
+  if (bump >= .12) {
+    const duration = pulse(bump, 45);
+    return {kind: 'bump', priority: 0, pattern: duration, interval: duration + 65};
   }
   if (road >= .025) {
     const duration = pulse(road, 30);

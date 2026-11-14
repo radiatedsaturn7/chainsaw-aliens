@@ -44,3 +44,14 @@ test('collision bypasses output throttle and is not repeated from the controller
  assert.equal(calls.length,1);
  h.update(session,{},.016,{active:false});assert.equal(calls.at(-1),0);
 });
+
+test('phone front and rear cues stay recognizable over ordinary rough-road bumps',()=>{
+ const front=phoneDrivingPattern({frontSlip:.6,bump:.8,road:.8});
+ const rear=phoneDrivingPattern({rearSlip:.6,bump:.8,road:.8});
+ assert.equal(front.kind,'front-slip');assert.ok(front.pattern>=140);
+ assert.equal(rear.kind,'rear-slip');assert.equal(rear.pattern.length,5);
+ assert.ok(rear.pattern[1]>=100&&rear.pattern[3]>=100);
+ assert.ok(rear.pattern[0]<front.pattern/2);
+ assert.equal(phoneDrivingPattern({rearSlip:.8,impact:.5}).kind,'impact');
+ assert.equal(phoneDrivingPattern({frontSlip:.8,braking:.5}).kind,'braking');
+});

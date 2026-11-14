@@ -89,3 +89,17 @@ test('wheel surface sampling forwards local moisture and snow depths instead of 
   const wetSnow=sample();cell.moistureDepthMm=0;
   assert.ok(Math.abs(sample()-wetSnow*2)<1e-9,'dry snow and slush should use their separate saved tire values');
 });
+
+test('mixed-surface rally grip varies continuously through wet pavement and thin snow',()=>{
+ const compound=RACE_TIRE_COMPOUNDS.find(c=>c.id==='dirt');
+ for(const field of ['moistureDepthMm','snowDepthMm']){
+  const maximum=field==='snowDepthMm'?35:1;
+  let previous=resolveCompoundSurfaceGrip(compound,{baseSurfaceId:'asphalt'});
+  for(let i=1;i<=100;i++){
+   const grip=resolveCompoundSurfaceGrip(compound,{baseSurfaceId:'asphalt',[field]:maximum*i/100});
+   assert.ok(grip<=previous+1e-10,'coverage must not add grip');
+   assert.ok(Math.abs(grip-previous)<.01,'no abrupt coverage threshold');
+   previous=grip;
+  }
+ }
+});

@@ -1,3 +1,4 @@
+import {getAuthoritativeChassisState} from './simulation/VehicleState.js';
 import {turnSignalLit} from './TurnSignals.js';
 import {MECHANICAL_COMPONENTS} from './simulation/MechanicalModel.js';
 
@@ -25,7 +26,7 @@ export function mechanicalLamp(source,s){
 export function mechanicalLampVisible(value,mechanical){return value===1||value===2&&Math.floor((Number(mechanical?.tick)||0)/3)%2===0;}
 
 // Driver-selected assist settings are distinct from mechanical failures.
-export const CONTROL_LAMPS={absofflight:'ABS Off',tractioncontrolofflight:'Traction Control Off',handbrakelight:'Handbrake / E-brake',lowfuellight:'Low fuel',headlightslight:'Headlights on',highbeamslight:'High beams',auxlightslight:'AUX lights',leftsignallight:'Left turn signal',rightsignallight:'Right turn signal'};
+export const CONTROL_LAMPS={absofflight:'ABS Off',tractioncontrolofflight:'Traction control (steady off / flashing intervention)',handbrakelight:'Handbrake / E-brake',lowfuellight:'Low fuel',headlightslight:'Headlights on',highbeamslight:'High beams',auxlightslight:'AUX lights',leftsignallight:'Left turn signal',rightsignallight:'Right turn signal'};
 export function controlLamp(source,session={}){
  switch(source){
  case 'leftsignallight':return Number(turnSignalLit(session,'left'));
@@ -35,7 +36,13 @@ export function controlLamp(source,session={}){
  case 'auxlightslight':return Number(session.mechanical?.auxLights===true);
  case 'headlightslight':return Number(session.mechanical?.headlights===true);
  case 'absofflight':return Number(session.absEnabled===false);
- case 'tractioncontrolofflight':return Number(session.tractionControlEnabled===false);
+ case 'tractioncontrolofflight':{
+  if(session.tractionControlEnabled===false)return 1;
+  const power=getAuthoritativeChassisState(session)?.powertrainState;
+  const cut=Number(power?.tractionTorqueScale??session.tireSlip?.engineDrive?.tractionControlCut??1);
+  const launch=power?.launchControl;
+  return Number(cut<.95&&!['armed','launching'].includes(launch?.phase)&&Math.floor((Number(session.elapsedMs)||0)/125)%2===0);
+ }
  // Includes the authoritative timed handbrake pulse, not merely the input button.
  case 'handbrakelight':return Number(session.authoritativeHandbrakeActive??session.handbrakeCommandState?.active??false);
  default:return 0;

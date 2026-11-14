@@ -1,3 +1,4 @@
+import {HAPTIC_DEFAULTS} from '../racing/RaceHaptics.js';
 import {normalizeCarCondition,repairRows,repairConditionSummary} from '../garage/GarageRepairs.js';
 import {loadServerPreferenceAsync, saveServerPreference} from '../ui/serverPreferences.js';
 import {normalizeMenuVariables} from './MenuProgress.js';
@@ -63,6 +64,8 @@ export class CampaignSaves {
     for(const key of Object.keys(stats))if(Number.isFinite(this.game.player?.[key]))stats[key]=this.game.player[key];
     const params=this.game.menuPlayer?.flow?.parameters||{};
     return {savedAt:this.now(),playTimeSeconds:this.playSeconds(this.activeSlot),progress:copy(this.game.menuProgress||{}),
+      settings:copy(this.game.menuPlayer?.settings?.parameters?.()||{}),
+      haptics:copy(this.game.raceHaptics?.settings||HAPTIC_DEFAULTS),
       items:{...copy(items?.progress||normalizeItemProgress()),stats},
       parameters:Object.fromEntries(['carRef','raceRef','difficulty'].filter(k=>params[k]!==undefined).map(k=>[k,copy(params[k])]))};
   }
@@ -76,12 +79,12 @@ export class CampaignSaves {
       await this.persist(slots);this.slots=slots;return {ok:true};
     });
   }
-  async settle(){await this.game.campaignSavePending?.catch(()=>{});await this.game.menuProgressSaving?.catch(()=>{});await this.game.items?.queue;await this.queue;}
+  async settle(){await this.game.campaignSavePending?.catch(()=>{});await this.game.menuProgressSaving?.catch(()=>{});await this.game.menuPlayer?.settings?.persist;await this.game.menuPlayer?.hapticSave;await this.game.items?.queue;await this.queue;}
   async startNew(index,{overwrite=false}={}){
     if(!validSlot(index))throw Error('Choose a save slot.');
     await this.load();await this.settle();
     if(this.slots[index]&&!overwrite)throw Error('Confirm before overwriting this save slot.');
-    const snapshot={savedAt:this.now(),playTimeSeconds:0,progress:{},items:{...normalizeItemProgress(),stats:freshStats()},parameters:{}};
+    const snapshot={savedAt:this.now(),playTimeSeconds:0,progress:{},items:{...normalizeItemProgress(),stats:{...freshStats(),credits:500}},parameters:{}};
     const slots=this.slots.slice();slots[index]=snapshot;
     await this.persist(slots);this.slots=slots;this.activeSlot=index;this.playTimes.set(index,0);this.restore(snapshot);return copy(snapshot);
   }
@@ -114,6 +117,8 @@ export class CampaignSaves {
   restore(snapshot){
     const game=this.game,items=game.items;
     game.menuProgress=normalizeMenuVariables(snapshot.progress);game.menuProgressLoading=Promise.resolve(game.menuProgress);
+    game.menuPlayer?.settings?.restore(snapshot.settings||{});
+    game.raceHaptics?.setSettings(snapshot.haptics||HAPTIC_DEFAULTS);
     if(!items)return;
     items.progress=normalizeItemProgress(snapshot.items);items.savedStats={...freshStats(),...snapshot.items.stats};
     items.events=[];items.revision=0;items.selectedItemId='';items.sessionCollected.clear();items.pending.clear();items.retryAt.clear();

@@ -2,9 +2,9 @@
   {
     "id": "raceway-watkins-long",
     "status": "installed",
-    "name": "Watkins Glen — Long Course",
-    "raceRef": "Watkins Glen — Long Course",
-    "displayName": "Watkins Glen — Long Course",
+    "name": "Watkins Glen \u2014 Long Course",
+    "raceRef": "Watkins Glen \u2014 Long Course",
+    "displayName": "Watkins Glen \u2014 Long Course",
     "venueKey": "watkins",
     "venueName": "Watkins Glen",
     "layoutLabel": "Long Course",
@@ -20,7 +20,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -36,9 +36,9 @@
   {
     "id": "raceway-watkins-short",
     "status": "installed",
-    "name": "Watkins Glen — Short Course",
-    "raceRef": "Watkins Glen — Short Course",
-    "displayName": "Watkins Glen — Short Course",
+    "name": "Watkins Glen \u2014 Short Course",
+    "raceRef": "Watkins Glen \u2014 Short Course",
+    "displayName": "Watkins Glen \u2014 Short Course",
     "venueKey": "watkins",
     "venueName": "Watkins Glen",
     "layoutLabel": "Short Course",
@@ -54,7 +54,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -70,12 +70,12 @@
   {
     "id": "raceway-watkins-long-no-loop",
     "status": "installed",
-    "name": "Watkins Glen — Long — No Inner Loop",
-    "raceRef": "Watkins Glen — Long — No Inner Loop",
-    "displayName": "Watkins Glen — Long — No Inner Loop",
+    "name": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+    "raceRef": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+    "displayName": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
     "venueKey": "watkins",
     "venueName": "Watkins Glen",
-    "layoutLabel": "Long — No Inner Loop",
+    "layoutLabel": "Long \u2014 No Inner Loop",
     "hubStage": 3,
     "import_kind": "circuit",
     "event_type": "Circuit race",
@@ -88,7 +88,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -104,12 +104,12 @@
   {
     "id": "raceway-watkins-short-no-loop",
     "status": "installed",
-    "name": "Watkins Glen — Short — No Inner Loop",
-    "raceRef": "Watkins Glen — Short — No Inner Loop",
-    "displayName": "Watkins Glen — Short — No Inner Loop",
+    "name": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+    "raceRef": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+    "displayName": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
     "venueKey": "watkins",
     "venueName": "Watkins Glen",
-    "layoutLabel": "Short — No Inner Loop",
+    "layoutLabel": "Short \u2014 No Inner Loop",
     "hubStage": 3,
     "import_kind": "circuit",
     "event_type": "Circuit race",
@@ -122,7 +122,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -138,9 +138,9 @@
   {
     "id": "raceway-road-america-full",
     "status": "installed",
-    "name": "Road America — Full Course",
-    "raceRef": "Road America — Full Course",
-    "displayName": "Road America — Full Course",
+    "name": "Road America \u2014 Full Course",
+    "raceRef": "Road America \u2014 Full Course",
+    "displayName": "Road America \u2014 Full Course",
     "venueKey": "road-america",
     "venueName": "Road America",
     "layoutLabel": "Full Course",
@@ -156,7 +156,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -172,9 +172,9 @@
   {
     "id": "raceway-road-america-bend",
     "status": "installed",
-    "name": "Road America — The Bend",
-    "raceRef": "Road America — The Bend",
-    "displayName": "Road America — The Bend",
+    "name": "Road America \u2014 The Bend",
+    "raceRef": "Road America \u2014 The Bend",
+    "displayName": "Road America \u2014 The Bend",
     "venueKey": "road-america",
     "venueName": "Road America",
     "layoutLabel": "The Bend",
@@ -190,7 +190,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -206,9 +206,9 @@
   {
     "id": "raceway-road-atlanta-grand-prix",
     "status": "installed",
-    "name": "Road Atlanta — Grand Prix",
-    "raceRef": "Road Atlanta — Grand Prix",
-    "displayName": "Road Atlanta — Grand Prix",
+    "name": "Road Atlanta \u2014 Grand Prix",
+    "raceRef": "Road Atlanta \u2014 Grand Prix",
+    "displayName": "Road Atlanta \u2014 Grand Prix",
     "venueKey": "road-atlanta",
     "venueName": "Road Atlanta",
     "layoutLabel": "Grand Prix",
@@ -224,7 +224,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -240,9 +240,9 @@
   {
     "id": "raceway-road-atlanta-short",
     "status": "installed",
-    "name": "Road Atlanta — Short Course",
-    "raceRef": "Road Atlanta — Short Course",
-    "displayName": "Road Atlanta — Short Course",
+    "name": "Road Atlanta \u2014 Short Course",
+    "raceRef": "Road Atlanta \u2014 Short Course",
+    "displayName": "Road Atlanta \u2014 Short Course",
     "venueKey": "road-atlanta",
     "venueName": "Road Atlanta",
     "layoutLabel": "Short Course",
@@ -258,7 +258,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -274,9 +274,9 @@
   {
     "id": "raceway-road-atlanta-club",
     "status": "installed",
-    "name": "Road Atlanta — Club Course",
-    "raceRef": "Road Atlanta — Club Course",
-    "displayName": "Road Atlanta — Club Course",
+    "name": "Road Atlanta \u2014 Club Course",
+    "raceRef": "Road Atlanta \u2014 Club Course",
+    "displayName": "Road Atlanta \u2014 Club Course",
     "venueKey": "road-atlanta",
     "venueName": "Road Atlanta",
     "layoutLabel": "Club Course",
@@ -292,7 +292,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -308,9 +308,9 @@
   {
     "id": "raceway-vir-full",
     "status": "installed",
-    "name": "Virginia International Raceway — Full Course",
-    "raceRef": "Virginia International Raceway — Full Course",
-    "displayName": "Virginia International Raceway — Full Course",
+    "name": "Virginia International Raceway \u2014 Full Course",
+    "raceRef": "Virginia International Raceway \u2014 Full Course",
+    "displayName": "Virginia International Raceway \u2014 Full Course",
     "venueKey": "vir",
     "venueName": "Virginia International Raceway",
     "layoutLabel": "Full Course",
@@ -326,7 +326,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -342,9 +342,9 @@
   {
     "id": "raceway-vir-north",
     "status": "installed",
-    "name": "Virginia International Raceway — North Course",
-    "raceRef": "Virginia International Raceway — North Course",
-    "displayName": "Virginia International Raceway — North Course",
+    "name": "Virginia International Raceway \u2014 North Course",
+    "raceRef": "Virginia International Raceway \u2014 North Course",
+    "displayName": "Virginia International Raceway \u2014 North Course",
     "venueKey": "vir",
     "venueName": "Virginia International Raceway",
     "layoutLabel": "North Course",
@@ -360,7 +360,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -376,9 +376,9 @@
   {
     "id": "raceway-vir-south",
     "status": "installed",
-    "name": "Virginia International Raceway — South Course",
-    "raceRef": "Virginia International Raceway — South Course",
-    "displayName": "Virginia International Raceway — South Course",
+    "name": "Virginia International Raceway \u2014 South Course",
+    "raceRef": "Virginia International Raceway \u2014 South Course",
+    "displayName": "Virginia International Raceway \u2014 South Course",
     "venueKey": "vir",
     "venueName": "Virginia International Raceway",
     "layoutLabel": "South Course",
@@ -394,7 +394,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -410,9 +410,9 @@
   {
     "id": "raceway-vir-grand",
     "status": "installed",
-    "name": "Virginia International Raceway — Grand Course",
-    "raceRef": "Virginia International Raceway — Grand Course",
-    "displayName": "Virginia International Raceway — Grand Course",
+    "name": "Virginia International Raceway \u2014 Grand Course",
+    "raceRef": "Virginia International Raceway \u2014 Grand Course",
+    "displayName": "Virginia International Raceway \u2014 Grand Course",
     "venueKey": "vir",
     "venueName": "Virginia International Raceway",
     "layoutLabel": "Grand Course",
@@ -428,7 +428,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -444,9 +444,9 @@
   {
     "id": "raceway-sebring-full",
     "status": "installed",
-    "name": "Sebring International Raceway — Full Circuit",
-    "raceRef": "Sebring International Raceway — Full Circuit",
-    "displayName": "Sebring International Raceway — Full Circuit",
+    "name": "Sebring International Raceway \u2014 Full Circuit",
+    "raceRef": "Sebring International Raceway \u2014 Full Circuit",
+    "displayName": "Sebring International Raceway \u2014 Full Circuit",
     "venueKey": "sebring",
     "venueName": "Sebring International Raceway",
     "layoutLabel": "Full Circuit",
@@ -462,7 +462,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -478,9 +478,9 @@
   {
     "id": "raceway-sebring-short",
     "status": "installed",
-    "name": "Sebring International Raceway — Short Circuit",
-    "raceRef": "Sebring International Raceway — Short Circuit",
-    "displayName": "Sebring International Raceway — Short Circuit",
+    "name": "Sebring International Raceway \u2014 Short Circuit",
+    "raceRef": "Sebring International Raceway \u2014 Short Circuit",
+    "displayName": "Sebring International Raceway \u2014 Short Circuit",
     "venueKey": "sebring",
     "venueName": "Sebring International Raceway",
     "layoutLabel": "Short Circuit",
@@ -496,7 +496,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -512,9 +512,9 @@
   {
     "id": "raceway-sebring-club",
     "status": "installed",
-    "name": "Sebring International Raceway — Club Circuit",
-    "raceRef": "Sebring International Raceway — Club Circuit",
-    "displayName": "Sebring International Raceway — Club Circuit",
+    "name": "Sebring International Raceway \u2014 Club Circuit",
+    "raceRef": "Sebring International Raceway \u2014 Club Circuit",
+    "displayName": "Sebring International Raceway \u2014 Club Circuit",
     "venueKey": "sebring",
     "venueName": "Sebring International Raceway",
     "layoutLabel": "Club Circuit",
@@ -530,7 +530,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -546,9 +546,9 @@
   {
     "id": "raceway-indianapolis-oval",
     "status": "installed",
-    "name": "Indianapolis Motor Speedway — Oval",
-    "raceRef": "Indianapolis Motor Speedway — Oval",
-    "displayName": "Indianapolis Motor Speedway — Oval",
+    "name": "Indianapolis Motor Speedway \u2014 Oval",
+    "raceRef": "Indianapolis Motor Speedway \u2014 Oval",
+    "displayName": "Indianapolis Motor Speedway \u2014 Oval",
     "venueKey": "indianapolis",
     "venueName": "Indianapolis Motor Speedway",
     "layoutLabel": "Oval",
@@ -579,9 +579,9 @@
   {
     "id": "raceway-indianapolis-road",
     "status": "installed",
-    "name": "Indianapolis Motor Speedway — Grand Prix Road Course",
-    "raceRef": "Indianapolis Motor Speedway — Grand Prix Road Course",
-    "displayName": "Indianapolis Motor Speedway — Grand Prix Road Course",
+    "name": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+    "raceRef": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+    "displayName": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
     "venueKey": "indianapolis",
     "venueName": "Indianapolis Motor Speedway",
     "layoutLabel": "Grand Prix Road Course",
@@ -612,9 +612,9 @@
   {
     "id": "raceway-homestead-oval",
     "status": "installed",
-    "name": "Homestead-Miami Speedway — Oval",
-    "raceRef": "Homestead-Miami Speedway — Oval",
-    "displayName": "Homestead-Miami Speedway — Oval",
+    "name": "Homestead-Miami Speedway \u2014 Oval",
+    "raceRef": "Homestead-Miami Speedway \u2014 Oval",
+    "displayName": "Homestead-Miami Speedway \u2014 Oval",
     "venueKey": "homestead",
     "venueName": "Homestead-Miami Speedway",
     "layoutLabel": "Oval",
@@ -645,9 +645,9 @@
   {
     "id": "raceway-homestead-road",
     "status": "installed",
-    "name": "Homestead-Miami Speedway — Road Course",
-    "raceRef": "Homestead-Miami Speedway — Road Course",
-    "displayName": "Homestead-Miami Speedway — Road Course",
+    "name": "Homestead-Miami Speedway \u2014 Road Course",
+    "raceRef": "Homestead-Miami Speedway \u2014 Road Course",
+    "displayName": "Homestead-Miami Speedway \u2014 Road Course",
     "venueKey": "homestead",
     "venueName": "Homestead-Miami Speedway",
     "layoutLabel": "Road Course",
@@ -678,9 +678,9 @@
   {
     "id": "raceway-homestead-infield",
     "status": "installed",
-    "name": "Homestead-Miami Speedway — Modified Road Course",
-    "raceRef": "Homestead-Miami Speedway — Modified Road Course",
-    "displayName": "Homestead-Miami Speedway — Modified Road Course",
+    "name": "Homestead-Miami Speedway \u2014 Modified Road Course",
+    "raceRef": "Homestead-Miami Speedway \u2014 Modified Road Course",
+    "displayName": "Homestead-Miami Speedway \u2014 Modified Road Course",
     "venueKey": "homestead",
     "venueName": "Homestead-Miami Speedway",
     "layoutLabel": "Modified Road Course",
@@ -744,9 +744,9 @@
   {
     "id": "raceway-daytona-sports-car",
     "status": "installed",
-    "name": "Daytona International Speedway — Sports Car Course",
-    "raceRef": "Daytona International Speedway — Sports Car Course",
-    "displayName": "Daytona International Speedway — Sports Car Course",
+    "name": "Daytona International Speedway \u2014 Sports Car Course",
+    "raceRef": "Daytona International Speedway \u2014 Sports Car Course",
+    "displayName": "Daytona International Speedway \u2014 Sports Car Course",
     "venueKey": "daytona",
     "venueName": "Daytona International Speedway",
     "layoutLabel": "Sports Car Course",
@@ -777,9 +777,9 @@
   {
     "id": "raceway-daytona-stock-car",
     "status": "installed",
-    "name": "Daytona International Speedway — Stock Car Road Course",
-    "raceRef": "Daytona International Speedway — Stock Car Road Course",
-    "displayName": "Daytona International Speedway — Stock Car Road Course",
+    "name": "Daytona International Speedway \u2014 Stock Car Road Course",
+    "raceRef": "Daytona International Speedway \u2014 Stock Car Road Course",
+    "displayName": "Daytona International Speedway \u2014 Stock Car Road Course",
     "venueKey": "daytona",
     "venueName": "Daytona International Speedway",
     "layoutLabel": "Stock Car Road Course",
@@ -828,7 +828,7 @@
     "replaceRaceRef": "WeatherTech Raceway Laguna Seca",
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -844,9 +844,9 @@
   {
     "id": "raceway-willow-big",
     "status": "installed",
-    "name": "Willow Springs — Big Willow",
-    "raceRef": "Willow Springs — Big Willow",
-    "displayName": "Willow Springs — Big Willow",
+    "name": "Willow Springs \u2014 Big Willow",
+    "raceRef": "Willow Springs \u2014 Big Willow",
+    "displayName": "Willow Springs \u2014 Big Willow",
     "venueKey": "willow",
     "venueName": "Willow Springs",
     "layoutLabel": "Big Willow",
@@ -862,7 +862,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -878,9 +878,9 @@
   {
     "id": "raceway-willow-streets",
     "status": "installed",
-    "name": "Willow Springs — Streets of Willow",
-    "raceRef": "Willow Springs — Streets of Willow",
-    "displayName": "Willow Springs — Streets of Willow",
+    "name": "Willow Springs \u2014 Streets of Willow",
+    "raceRef": "Willow Springs \u2014 Streets of Willow",
+    "displayName": "Willow Springs \u2014 Streets of Willow",
     "venueKey": "willow",
     "venueName": "Willow Springs",
     "layoutLabel": "Streets of Willow",
@@ -896,7 +896,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -912,12 +912,12 @@
   {
     "id": "raceway-willow-streets-short",
     "status": "installed",
-    "name": "Willow Springs — Streets — Short",
-    "raceRef": "Willow Springs — Streets — Short",
-    "displayName": "Willow Springs — Streets — Short",
+    "name": "Willow Springs \u2014 Streets \u2014 Short",
+    "raceRef": "Willow Springs \u2014 Streets \u2014 Short",
+    "displayName": "Willow Springs \u2014 Streets \u2014 Short",
     "venueKey": "willow",
     "venueName": "Willow Springs",
-    "layoutLabel": "Streets — Short",
+    "layoutLabel": "Streets \u2014 Short",
     "hubStage": 11,
     "import_kind": "circuit",
     "event_type": "Circuit race",
@@ -930,7 +930,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -946,9 +946,9 @@
   {
     "id": "raceway-lime-west-chicane",
     "status": "installed",
-    "name": "Lime Rock Park — West Chicane",
-    "raceRef": "Lime Rock Park — West Chicane",
-    "displayName": "Lime Rock Park — West Chicane",
+    "name": "Lime Rock Park \u2014 West Chicane",
+    "raceRef": "Lime Rock Park \u2014 West Chicane",
+    "displayName": "Lime Rock Park \u2014 West Chicane",
     "venueKey": "lime",
     "venueName": "Lime Rock Park",
     "layoutLabel": "West Chicane",
@@ -964,7 +964,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -980,9 +980,9 @@
   {
     "id": "raceway-lime-both-chicanes",
     "status": "installed",
-    "name": "Lime Rock Park — Both Chicanes",
-    "raceRef": "Lime Rock Park — Both Chicanes",
-    "displayName": "Lime Rock Park — Both Chicanes",
+    "name": "Lime Rock Park \u2014 Both Chicanes",
+    "raceRef": "Lime Rock Park \u2014 Both Chicanes",
+    "displayName": "Lime Rock Park \u2014 Both Chicanes",
     "venueKey": "lime",
     "venueName": "Lime Rock Park",
     "layoutLabel": "Both Chicanes",
@@ -998,7 +998,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -1014,9 +1014,9 @@
   {
     "id": "raceway-mid-ohio-chicane",
     "status": "installed",
-    "name": "Mid-Ohio Sports Car Course — Chicane Course",
-    "raceRef": "Mid-Ohio Sports Car Course — Chicane Course",
-    "displayName": "Mid-Ohio Sports Car Course — Chicane Course",
+    "name": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+    "raceRef": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+    "displayName": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
     "venueKey": "mid-ohio",
     "venueName": "Mid-Ohio Sports Car Course",
     "layoutLabel": "Chicane Course",
@@ -1032,7 +1032,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -1048,9 +1048,9 @@
   {
     "id": "raceway-mid-ohio-short",
     "status": "installed",
-    "name": "Mid-Ohio Sports Car Course — Short Course",
-    "raceRef": "Mid-Ohio Sports Car Course — Short Course",
-    "displayName": "Mid-Ohio Sports Car Course — Short Course",
+    "name": "Mid-Ohio Sports Car Course \u2014 Short Course",
+    "raceRef": "Mid-Ohio Sports Car Course \u2014 Short Course",
+    "displayName": "Mid-Ohio Sports Car Course \u2014 Short Course",
     "venueKey": "mid-ohio",
     "venueName": "Mid-Ohio Sports Car Course",
     "layoutLabel": "Short Course",
@@ -1066,7 +1066,7 @@
     "replaceRaceRef": null,
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -1100,7 +1100,7 @@
     "replaceRaceRef": "Nurburgring Nordschleife",
     "existingSideId": null,
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -1126,11 +1126,11 @@
     "artHubStage": 2,
     "import_kind": "road",
     "event_type": "Rally stage",
-    "lengthM": 15111.180850802595,
+    "lengthM": 14977.291203454295,
     "laps": 1,
     "generatedPath": "artifacts/campaign-import/raceways/legacy-turini.json",
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -1141,7 +1141,41 @@
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 583
+    "sceneryCount": 583,
+    "startGps": {
+      "lat": 43.9905468,
+      "lon": 7.3225562
+    },
+    "finishGps": {
+      "lat": 43.9778513,
+      "lon": 7.391058650000001
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        9.16,
+        0.0
+      ],
+      "lengthBeforeM": 15065.82,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "corridorDegrees": [
+        9.16,
+        0.0
+      ],
+      "trimStartM": 39.14,
+      "trimFinishM": 49.38,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 14977.29,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "6c3cd04b701cea55271c8c32405d7013c3d414dd40b9d56d41541cd63e9c8157"
+    }
   },
   {
     "id": "legacy-ouninpohja",
@@ -1156,11 +1190,11 @@
     "artHubStage": 5,
     "import_kind": "road",
     "event_type": "Rally stage",
-    "lengthM": 17404.92383592243,
+    "lengthM": 17016.646397546552,
     "laps": 1,
     "generatedPath": "artifacts/campaign-import/raceways/legacy-ouninpohja.json",
     "warnings": [
-      "Banking is set to 0°; set banking per segment in the editor.",
+      "Banking is set to 0\u00b0; set banking per segment in the editor.",
       "Start line and driving direction are provisional; verify against the real circuit.",
       "Road width uses OSM width where available, otherwise your default.",
       "Mapzen DEM sampled terrain elevations are approximate, not surveyed racing surface or banking. Bridges/tunnels need manual heights."
@@ -1172,12 +1206,46 @@
       "gravel",
       "asphalt"
     ],
-    "sceneryCount": 762
+    "sceneryCount": 762,
+    "startGps": {
+      "lat": 61.7240972,
+      "lon": 24.89217105
+    },
+    "finishGps": {
+      "lat": 61.7429505,
+      "lon": 25.0763056
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        6.78,
+        6.58
+      ],
+      "lengthBeforeM": 17224.96,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        3.05,
+        6.58
+      ],
+      "trimStartM": 129.7,
+      "trimFinishM": 78.62,
+      "status": "adjusted",
+      "afterDegrees": [
+        3.05,
+        0.0
+      ],
+      "lengthAfterM": 17016.65,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "b55f8e223f7ae450755b0eddd7bb4c1afd1c12b5f4484057606ed430ed0d1b91"
+    }
   },
   {
     "id": "state-ak",
-    "name": "Hatcher Pass — Palmer-Fishhook Climb",
-    "displayName": "Hatcher Pass — Palmer-Fishhook Climb",
+    "name": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+    "displayName": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
     "status": "installed",
     "state": "Alaska",
     "stateCode": "AK",
@@ -1193,8 +1261,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 11,
-    "lengthM": 7580.250938814882,
-    "estimatedDrivingSeconds": 388,
+    "lengthM": 7421.712938101082,
+    "estimatedDrivingSeconds": 380,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -1207,19 +1275,53 @@
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage.",
       "direction": "Reverse of mapped source traversal, selected for uphill progression."
     },
-    "raceRef": "Hatcher Pass — Palmer-Fishhook Climb",
+    "raceRef": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
     "documentPath": "races/Hatcher Pass %E2%80%94 Palmer-Fishhook Climb/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Angeles Crest Highway",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 331
+    "sceneryCount": 331,
+    "startGps": {
+      "lat": 61.6940099,
+      "lon": -149.2417031
+    },
+    "finishGps": {
+      "lat": 61.754168533333335,
+      "lon": -149.23085640000002
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        4.6,
+        0.0
+      ],
+      "lengthBeforeM": 7531.96,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        4.6,
+        3.24
+      ],
+      "trimStartM": 42.75,
+      "trimFinishM": 67.5,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        3.24
+      ],
+      "lengthAfterM": 7421.71,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "a185b8752ff1aa954901de7b55dc8ab1a99b15931d919072eb8c23228b7290f9"
+    }
   },
   {
     "id": "state-ar",
-    "name": "Pig Trail — Arkansas 23",
-    "displayName": "Pig Trail — Arkansas 23",
+    "name": "Pig Trail \u2014 Arkansas 23",
+    "displayName": "Pig Trail \u2014 Arkansas 23",
     "status": "installed",
     "state": "Arkansas",
     "stateCode": "AR",
@@ -1244,7 +1346,7 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "Pig Trail — Arkansas 23",
+    "raceRef": "Pig Trail \u2014 Arkansas 23",
     "documentPath": "races/Pig Trail %E2%80%94 Arkansas 23/document.json",
     "lightingPreset": "evening",
     "hubRaceRef": "Ozark Backroads",
@@ -1259,8 +1361,8 @@
   },
   {
     "id": "state-de",
-    "name": "Brandywine Valley — Montchanin Road",
-    "displayName": "Brandywine Valley — Montchanin Road",
+    "name": "Brandywine Valley \u2014 Montchanin Road",
+    "displayName": "Brandywine Valley \u2014 Montchanin Road",
     "status": "installed",
     "state": "Delaware",
     "stateCode": "DE",
@@ -1285,7 +1387,7 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "Brandywine Valley — Montchanin Road",
+    "raceRef": "Brandywine Valley \u2014 Montchanin Road",
     "documentPath": "races/Brandywine Valley %E2%80%94 Montchanin Road/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
@@ -1300,8 +1402,8 @@
   },
   {
     "id": "state-hi",
-    "name": "Hana Highway — Rainforest Bends",
-    "displayName": "Hana Highway — Rainforest Bends",
+    "name": "Hana Highway \u2014 Rainforest Bends",
+    "displayName": "Hana Highway \u2014 Rainforest Bends",
     "status": "installed",
     "state": "Hawaii",
     "stateCode": "HI",
@@ -1326,7 +1428,7 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "Hana Highway — Rainforest Bends",
+    "raceRef": "Hana Highway \u2014 Rainforest Bends",
     "documentPath": "races/Hana Highway %E2%80%94 Rainforest Bends/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Angeles Crest Highway",
@@ -1341,8 +1443,8 @@
   },
   {
     "id": "state-me",
-    "name": "Grafton Notch — Maine 26",
-    "displayName": "Grafton Notch — Maine 26",
+    "name": "Grafton Notch \u2014 Maine 26",
+    "displayName": "Grafton Notch \u2014 Maine 26",
     "status": "installed",
     "state": "Maine",
     "stateCode": "ME",
@@ -1367,10 +1469,10 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "Grafton Notch — Maine 26",
+    "raceRef": "Grafton Notch \u2014 Maine 26",
     "documentPath": "races/Grafton Notch %E2%80%94 Maine 26/document.json",
     "lightingPreset": "noon",
-    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "hubRaceRef": "Mount Washington Auto Road \u2014 point-to-point",
     "installedSurfaces": [
       "asphalt"
     ],
@@ -1382,8 +1484,8 @@
   },
   {
     "id": "state-md",
-    "name": "National Road — Sideling Hill",
-    "displayName": "National Road — Sideling Hill",
+    "name": "National Road \u2014 Sideling Hill",
+    "displayName": "National Road \u2014 Sideling Hill",
     "status": "installed",
     "state": "Maryland",
     "stateCode": "MD",
@@ -1408,7 +1510,7 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "National Road — Sideling Hill",
+    "raceRef": "National Road \u2014 Sideling Hill",
     "documentPath": "races/National Road %E2%80%94 Sideling Hill/document.json",
     "lightingPreset": "evening",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
@@ -1423,8 +1525,8 @@
   },
   {
     "id": "state-ms",
-    "name": "Natchez Trace — Tishomingo",
-    "displayName": "Natchez Trace — Tishomingo",
+    "name": "Natchez Trace \u2014 Tishomingo",
+    "displayName": "Natchez Trace \u2014 Tishomingo",
     "status": "installed",
     "state": "Mississippi",
     "stateCode": "MS",
@@ -1449,7 +1551,7 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "Natchez Trace — Tishomingo",
+    "raceRef": "Natchez Trace \u2014 Tishomingo",
     "documentPath": "races/Natchez Trace %E2%80%94 Tishomingo/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Ozark Backroads",
@@ -1464,8 +1566,8 @@
   },
   {
     "id": "state-mt",
-    "name": "Beartooth Highway — Rock Creek Climb",
-    "displayName": "Beartooth Highway — Rock Creek Climb",
+    "name": "Beartooth Highway \u2014 Rock Creek Climb",
+    "displayName": "Beartooth Highway \u2014 Rock Creek Climb",
     "status": "installed",
     "state": "Montana",
     "stateCode": "MT",
@@ -1490,7 +1592,7 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "Beartooth Highway — Rock Creek Climb",
+    "raceRef": "Beartooth Highway \u2014 Rock Creek Climb",
     "documentPath": "races/Beartooth Highway %E2%80%94 Rock Creek Climb/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Pikes Peak Highway",
@@ -1505,7 +1607,7 @@
   },
   {
     "id": "city-al",
-    "name": "Birmingham, AL — Landmark Run",
+    "name": "Birmingham, AL \u2014 Landmark Run",
     "displayName": "Birmingham, AL",
     "status": "installed",
     "state": "Alabama",
@@ -1570,7 +1672,7 @@
       "lat": 33.518,
       "lon": -86.807
     },
-    "raceRef": "Birmingham, AL — Landmark Run",
+    "raceRef": "Birmingham, AL \u2014 Landmark Run",
     "documentPath": "races/Birmingham%2C AL %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Ozark Backroads",
@@ -1581,7 +1683,7 @@
   },
   {
     "id": "city-az",
-    "name": "Phoenix, AZ — Landmark Run",
+    "name": "Phoenix, AZ \u2014 Landmark Run",
     "displayName": "Phoenix, AZ",
     "status": "installed",
     "state": "Arizona",
@@ -1646,7 +1748,7 @@
       "lat": 33.45,
       "lon": -112.078
     },
-    "raceRef": "Phoenix, AZ — Landmark Run",
+    "raceRef": "Phoenix, AZ \u2014 Landmark Run",
     "documentPath": "races/Phoenix%2C AZ %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Oak Creek Canyon",
@@ -1657,7 +1759,7 @@
   },
   {
     "id": "city-ca",
-    "name": "Los Angeles, CA — Landmark Run",
+    "name": "Los Angeles, CA \u2014 Landmark Run",
     "displayName": "Los Angeles, CA",
     "status": "installed",
     "state": "California",
@@ -1722,7 +1824,7 @@
       "lat": 34.052,
       "lon": -118.248
     },
-    "raceRef": "Los Angeles, CA — Landmark Run",
+    "raceRef": "Los Angeles, CA \u2014 Landmark Run",
     "documentPath": "races/Los Angeles%2C CA %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Angeles Crest Highway",
@@ -1733,7 +1835,7 @@
   },
   {
     "id": "city-ct",
-    "name": "Hartford, CT — Landmark Run",
+    "name": "Hartford, CT \u2014 Landmark Run",
     "displayName": "Hartford, CT",
     "status": "installed",
     "state": "Connecticut",
@@ -1746,8 +1848,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 1,
-    "lengthM": 7358.475929639659,
-    "estimatedDrivingSeconds": 514,
+    "lengthM": 7243.996087478394,
+    "estimatedDrivingSeconds": 506,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -1798,18 +1900,52 @@
       "lat": 41.763,
       "lon": -72.687
     },
-    "raceRef": "Hartford, CT — Landmark Run",
+    "raceRef": "Hartford, CT \u2014 Landmark Run",
     "documentPath": "races/Hartford%2C CT %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Tower Hill Road",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 404
+    "sceneryCount": 404,
+    "startGps": {
+      "lat": 41.772905438461535,
+      "lon": -72.70882999999999
+    },
+    "finishGps": {
+      "lat": 41.75860016666667,
+      "lon": -72.66613029999999
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7337.57,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 46.31,
+      "trimFinishM": 47.26,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7244.0,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "fc7bf1b454ab5f4c6a792f5c3c3627d7937235e7dc7a5a675ec45cba8e27dbfe"
+    }
   },
   {
     "id": "city-de",
-    "name": "Wilmington, DE — Landmark Run",
+    "name": "Wilmington, DE \u2014 Landmark Run",
     "displayName": "Wilmington, DE",
     "status": "installed",
     "state": "Delaware",
@@ -1874,7 +2010,7 @@
       "lat": 39.743,
       "lon": -75.552
     },
-    "raceRef": "Wilmington, DE — Landmark Run",
+    "raceRef": "Wilmington, DE \u2014 Landmark Run",
     "documentPath": "races/Wilmington%2C DE %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
@@ -1885,7 +2021,7 @@
   },
   {
     "id": "city-fl",
-    "name": "Miami, FL — Landmark Run",
+    "name": "Miami, FL \u2014 Landmark Run",
     "displayName": "Miami, FL",
     "status": "installed",
     "state": "Florida",
@@ -1898,8 +2034,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 4,
-    "lengthM": 7502.484938611308,
-    "estimatedDrivingSeconds": 464,
+    "lengthM": 7396.2667108636115,
+    "estimatedDrivingSeconds": 457,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -1950,18 +2086,52 @@
       "lat": 25.778,
       "lon": -80.193
     },
-    "raceRef": "Miami, FL — Landmark Run",
+    "raceRef": "Miami, FL \u2014 Landmark Run",
     "documentPath": "races/Miami%2C FL %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Ohio River Crossing",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 371
+    "sceneryCount": 371,
+    "startGps": {
+      "lat": 25.769466666666666,
+      "lon": -80.20255092222222
+    },
+    "finishGps": {
+      "lat": 25.793596466666667,
+      "lon": -80.18688786666667
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7490.83,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 47.5,
+      "trimFinishM": 47.06,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7396.27,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "a52e22ff92af9bb7e29e71e2d11cfcb58b36fb3b5d18297c83f2fdc83fbc0e89"
+    }
   },
   {
     "id": "city-ga",
-    "name": "Atlanta, GA — Landmark Run",
+    "name": "Atlanta, GA \u2014 Landmark Run",
     "displayName": "Atlanta, GA",
     "status": "installed",
     "state": "Georgia",
@@ -2026,7 +2196,7 @@
       "lat": 33.756,
       "lon": -84.388
     },
-    "raceRef": "Atlanta, GA — Landmark Run",
+    "raceRef": "Atlanta, GA \u2014 Landmark Run",
     "documentPath": "races/Atlanta%2C GA %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "evening",
     "hubRaceRef": "Ohio River Crossing",
@@ -2037,7 +2207,7 @@
   },
   {
     "id": "city-il",
-    "name": "Chicago, IL — Landmark Run",
+    "name": "Chicago, IL \u2014 Landmark Run",
     "displayName": "Chicago, IL",
     "status": "installed",
     "state": "Illinois",
@@ -2050,8 +2220,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 6,
-    "lengthM": 6855.528467552772,
-    "estimatedDrivingSeconds": 394,
+    "lengthM": 6732.388332687477,
+    "estimatedDrivingSeconds": 387,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -2102,18 +2272,52 @@
       "lat": 41.885,
       "lon": -87.628
     },
-    "raceRef": "Chicago, IL — Landmark Run",
+    "raceRef": "Chicago, IL \u2014 Landmark Run",
     "documentPath": "races/Chicago%2C IL %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Data Center City",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 364
+    "sceneryCount": 364,
+    "startGps": {
+      "lat": 41.89207463333333,
+      "lon": -87.61056860000001
+    },
+    "finishGps": {
+      "lat": 41.8723787,
+      "lon": -87.6471248
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.08
+      ],
+      "lengthBeforeM": 6831.24,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.08
+      ],
+      "trimStartM": 42.97,
+      "trimFinishM": 55.88,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 6732.39,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "1f576d5daa2c1f7ce46deea97d2ac1e0b2c40b258edad2a3e4174b4b3add85ce"
+    }
   },
   {
     "id": "city-ia",
-    "name": "Des Moines, IA — Landmark Run",
+    "name": "Des Moines, IA \u2014 Landmark Run",
     "displayName": "Des Moines, IA",
     "status": "installed",
     "state": "Iowa",
@@ -2126,8 +2330,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 6,
-    "lengthM": 7553.247193811593,
-    "estimatedDrivingSeconds": 373,
+    "lengthM": 7273.813308791773,
+    "estimatedDrivingSeconds": 359,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -2178,18 +2382,52 @@
       "lat": 41.587,
       "lon": -93.617
     },
-    "raceRef": "Des Moines, IA — Landmark Run",
+    "raceRef": "Des Moines, IA \u2014 Landmark Run",
     "documentPath": "races/Des Moines%2C IA %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Data Center City",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 396
+    "sceneryCount": 396,
+    "startGps": {
+      "lat": 41.58026945833333,
+      "lon": -93.64295034166666
+    },
+    "finishGps": {
+      "lat": 41.59688061,
+      "lon": -93.59640602
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        4.51
+      ],
+      "lengthBeforeM": 7486.73,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        8.44,
+        4.51
+      ],
+      "trimStartM": 155.08,
+      "trimFinishM": 57.84,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7273.81,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "6d5cfda2d8735b47c301be9828d540f69759dd1d88f25c135c5fa2a9c26a638a"
+    }
   },
   {
     "id": "city-ky",
-    "name": "Louisville, KY — Landmark Run",
+    "name": "Louisville, KY \u2014 Landmark Run",
     "displayName": "Louisville, KY",
     "status": "installed",
     "state": "Kentucky",
@@ -2202,8 +2440,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 6,
-    "lengthM": 7559.546650707744,
-    "estimatedDrivingSeconds": 453,
+    "lengthM": 7192.531152946956,
+    "estimatedDrivingSeconds": 431,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -2254,18 +2492,52 @@
       "lat": 38.255,
       "lon": -85.759
     },
-    "raceRef": "Louisville, KY — Landmark Run",
+    "raceRef": "Louisville, KY \u2014 Landmark Run",
     "documentPath": "races/Louisville%2C KY %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Data Center City",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 397
+    "sceneryCount": 397,
+    "startGps": {
+      "lat": 38.2590067,
+      "lon": -85.73774755714287
+    },
+    "finishGps": {
+      "lat": 38.243736057142854,
+      "lon": -85.77048317142857
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        4.14,
+        0.0
+      ],
+      "lengthBeforeM": 7287.04,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        4.14,
+        0.0
+      ],
+      "trimStartM": 44.68,
+      "trimFinishM": 49.83,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7192.53,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "77191187b34ab1f5c9f2607c491c2bea2dc89107f63ec20a5358b9ee99edb744"
+    }
   },
   {
     "id": "city-md",
-    "name": "Baltimore, MD — Landmark Run",
+    "name": "Baltimore, MD \u2014 Landmark Run",
     "displayName": "Baltimore, MD",
     "status": "installed",
     "state": "Maryland",
@@ -2278,8 +2550,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 3,
-    "lengthM": 7447.760601503319,
-    "estimatedDrivingSeconds": 504,
+    "lengthM": 7303.010206353035,
+    "estimatedDrivingSeconds": 494,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -2330,18 +2602,52 @@
       "lat": 39.291,
       "lon": -76.614
     },
-    "raceRef": "Baltimore, MD — Landmark Run",
+    "raceRef": "Baltimore, MD \u2014 Landmark Run",
     "documentPath": "races/Baltimore%2C MD %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "evening",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 402
+    "sceneryCount": 402,
+    "startGps": {
+      "lat": 39.277888266666665,
+      "lon": -76.62782058666666
+    },
+    "finishGps": {
+      "lat": 39.30293876666667,
+      "lon": -76.60170086666666
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7393.56,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 48.5,
+      "trimFinishM": 42.05,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7303.01,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "bfdd5a17859b5db94dff22f1439c6b7db0a0b4d8799d70af7ea7703c0a180535"
+    }
   },
   {
     "id": "city-mi",
-    "name": "Detroit, MI — Landmark Run",
+    "name": "Detroit, MI \u2014 Landmark Run",
     "displayName": "Detroit, MI",
     "status": "installed",
     "state": "Michigan",
@@ -2406,7 +2712,7 @@
       "lat": 42.335,
       "lon": -83.052
     },
-    "raceRef": "Detroit, MI — Landmark Run",
+    "raceRef": "Detroit, MI \u2014 Landmark Run",
     "documentPath": "races/Detroit%2C MI %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Ohio River Crossing",
@@ -2417,7 +2723,7 @@
   },
   {
     "id": "city-ak",
-    "name": "Anchorage, AK — Landmark Run",
+    "name": "Anchorage, AK \u2014 Landmark Run",
     "displayName": "Anchorage, AK",
     "status": "installed",
     "state": "Alaska",
@@ -2482,7 +2788,7 @@
       "lat": 61.218,
       "lon": -149.896
     },
-    "raceRef": "Anchorage, AK — Landmark Run",
+    "raceRef": "Anchorage, AK \u2014 Landmark Run",
     "documentPath": "races/Anchorage%2C AK %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Angeles Crest Highway",
@@ -2493,7 +2799,7 @@
   },
   {
     "id": "city-ar",
-    "name": "Little Rock, AR — Landmark Run",
+    "name": "Little Rock, AR \u2014 Landmark Run",
     "displayName": "Little Rock, AR",
     "status": "installed",
     "state": "Arkansas",
@@ -2558,7 +2864,7 @@
       "lat": 34.745,
       "lon": -92.283
     },
-    "raceRef": "Little Rock, AR — Landmark Run",
+    "raceRef": "Little Rock, AR \u2014 Landmark Run",
     "documentPath": "races/Little Rock%2C AR %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Ozark Backroads",
@@ -2569,7 +2875,7 @@
   },
   {
     "id": "city-id",
-    "name": "Boise, ID — Landmark Run",
+    "name": "Boise, ID \u2014 Landmark Run",
     "displayName": "Boise, ID",
     "status": "installed",
     "state": "Idaho",
@@ -2634,7 +2940,7 @@
       "lat": 43.615,
       "lon": -116.203
     },
-    "raceRef": "Boise, ID — Landmark Run",
+    "raceRef": "Boise, ID \u2014 Landmark Run",
     "documentPath": "races/Boise%2C ID %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Moki Dugway",
@@ -2645,7 +2951,7 @@
   },
   {
     "id": "city-ks",
-    "name": "Wichita, KS — Landmark Run",
+    "name": "Wichita, KS \u2014 Landmark Run",
     "displayName": "Wichita, KS",
     "status": "installed",
     "state": "Kansas",
@@ -2710,7 +3016,7 @@
       "lat": 37.689,
       "lon": -97.34
     },
-    "raceRef": "Wichita, KS — Landmark Run",
+    "raceRef": "Wichita, KS \u2014 Landmark Run",
     "documentPath": "races/Wichita%2C KS %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "evening",
     "hubRaceRef": "Historic Route 66",
@@ -2721,7 +3027,7 @@
   },
   {
     "id": "city-me",
-    "name": "Portland, ME — Landmark Run",
+    "name": "Portland, ME \u2014 Landmark Run",
     "displayName": "Portland, ME",
     "status": "installed",
     "state": "Maine",
@@ -2734,8 +3040,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 2,
-    "lengthM": 7261.220545001178,
-    "estimatedDrivingSeconds": 487,
+    "lengthM": 6906.550377725913,
+    "estimatedDrivingSeconds": 463,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -2786,14 +3092,48 @@
       "lat": 43.659,
       "lon": -70.254
     },
-    "raceRef": "Portland, ME — Landmark Run",
+    "raceRef": "Portland, ME \u2014 Landmark Run",
     "documentPath": "races/Portland%2C ME %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
-    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "hubRaceRef": "Mount Washington Auto Road \u2014 point-to-point",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 370
+    "sceneryCount": 370,
+    "startGps": {
+      "lat": 43.646192428571425,
+      "lon": -70.26920485714285
+    },
+    "finishGps": {
+      "lat": 43.668818671428575,
+      "lon": -70.24270072857142
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        9.32
+      ],
+      "lengthBeforeM": 7009.97,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 43.8,
+      "trimFinishM": 59.62,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 6906.55,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "5b3f37414b907ebc4aa47041d7fc41a7c5441cfd19cd2145afb2a1d5d6f71408"
+    }
   },
   {
     "id": "state-al",
@@ -3061,8 +3401,8 @@
   },
   {
     "id": "state-mn",
-    "name": "Brainerd — Competition Course",
-    "displayName": "Brainerd — Competition Course",
+    "name": "Brainerd \u2014 Competition Course",
+    "displayName": "Brainerd \u2014 Competition Course",
     "status": "installed",
     "state": "Minnesota",
     "stateCode": "MN",
@@ -3071,7 +3411,7 @@
     "event_type": "Circuit race",
     "import_kind": "circuit",
     "venueKey": "state-mn",
-    "venueName": "Brainerd — Competition Course",
+    "venueName": "Brainerd \u2014 Competition Course",
     "layoutLabel": "Road Course",
     "hubStage": 6,
     "lengthM": 3891.8751046741545,
@@ -3090,7 +3430,7 @@
       "layoutReference": "https://www.birmn.com/apex-hpde",
       "layoutNotes": "Mapped centerline reviewed against published course information."
     },
-    "raceRef": "Brainerd — Competition Course",
+    "raceRef": "Brainerd \u2014 Competition Course",
     "documentPath": "races/Brainerd %E2%80%94 Competition Course/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Data Center City",
@@ -3105,8 +3445,8 @@
   },
   {
     "id": "state-nv",
-    "name": "Spring Mountain — North South",
-    "displayName": "Spring Mountain — North South",
+    "name": "Spring Mountain \u2014 North South",
+    "displayName": "Spring Mountain \u2014 North South",
     "status": "installed",
     "state": "Nevada",
     "stateCode": "NV",
@@ -3115,7 +3455,7 @@
     "event_type": "Circuit race",
     "import_kind": "circuit",
     "venueKey": "state-nv",
-    "venueName": "Spring Mountain — North South",
+    "venueName": "Spring Mountain \u2014 North South",
     "layoutLabel": "Road Course",
     "hubStage": 11,
     "lengthM": 3502.8329491509007,
@@ -3134,7 +3474,7 @@
       "layoutReference": "https://www.springmountainmotorsports.com/track-rentals-group-events/track-rentals/north-south/",
       "layoutNotes": "Mapped North/South configuration; excludes Charleston Peak connectors and pit-lane variants. Approximately the published 2.2-mile footprint, not a surveyed named configuration."
     },
-    "raceRef": "Spring Mountain — North South",
+    "raceRef": "Spring Mountain \u2014 North South",
     "documentPath": "races/Spring Mountain %E2%80%94 North South/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Angeles Crest Highway",
@@ -3149,8 +3489,8 @@
   },
   {
     "id": "state-nj",
-    "name": "NJMP — Thunderbolt",
-    "displayName": "NJMP — Thunderbolt",
+    "name": "NJMP \u2014 Thunderbolt",
+    "displayName": "NJMP \u2014 Thunderbolt",
     "status": "installed",
     "state": "New Jersey",
     "stateCode": "NJ",
@@ -3159,7 +3499,7 @@
     "event_type": "Circuit race",
     "import_kind": "circuit",
     "venueKey": "state-nj",
-    "venueName": "NJMP — Thunderbolt",
+    "venueName": "NJMP \u2014 Thunderbolt",
     "layoutLabel": "Road Course",
     "hubStage": 3,
     "lengthM": 3500.329852543267,
@@ -3178,7 +3518,7 @@
       "layoutReference": "https://njmp.com/track-map/",
       "layoutNotes": "Mapped centerline reviewed against published course information."
     },
-    "raceRef": "NJMP — Thunderbolt",
+    "raceRef": "NJMP \u2014 Thunderbolt",
     "documentPath": "races/NJMP %E2%80%94 Thunderbolt/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
@@ -3193,8 +3533,8 @@
   },
   {
     "id": "state-nm",
-    "name": "Sandia Speedway — Road Course",
-    "displayName": "Sandia Speedway — Road Course",
+    "name": "Sandia Speedway \u2014 Road Course",
+    "displayName": "Sandia Speedway \u2014 Road Course",
     "status": "installed",
     "state": "New Mexico",
     "stateCode": "NM",
@@ -3203,7 +3543,7 @@
     "event_type": "Circuit race",
     "import_kind": "circuit",
     "venueKey": "state-nm",
-    "venueName": "Sandia Speedway — Road Course",
+    "venueName": "Sandia Speedway \u2014 Road Course",
     "layoutLabel": "Road Course",
     "hubStage": 9,
     "lengthM": 2643.098918906927,
@@ -3223,7 +3563,7 @@
       "layoutReference": "https://www.smri-racing.org/Directions",
       "layoutNotes": "Mapped centerline reviewed against published course information."
     },
-    "raceRef": "Sandia Speedway — Road Course",
+    "raceRef": "Sandia Speedway \u2014 Road Course",
     "documentPath": "races/Sandia Speedway %E2%80%94 Road Course/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Moki Dugway",
@@ -3238,8 +3578,8 @@
   },
   {
     "id": "state-nc",
-    "name": "NCCAR — Road Course",
-    "displayName": "NCCAR — Road Course",
+    "name": "NCCAR \u2014 Road Course",
+    "displayName": "NCCAR \u2014 Road Course",
     "status": "installed",
     "state": "North Carolina",
     "stateCode": "NC",
@@ -3248,7 +3588,7 @@
     "event_type": "Circuit race",
     "import_kind": "circuit",
     "venueKey": "state-nc",
-    "venueName": "NCCAR — Road Course",
+    "venueName": "NCCAR \u2014 Road Course",
     "layoutLabel": "Road Course",
     "hubStage": 3,
     "lengthM": 3270.905544066492,
@@ -3267,7 +3607,7 @@
       "layoutReference": "https://nccar.us/contact-us/",
       "layoutNotes": "Mapped centerline reviewed against published course information."
     },
-    "raceRef": "NCCAR — Road Course",
+    "raceRef": "NCCAR \u2014 Road Course",
     "documentPath": "races/NCCAR %E2%80%94 Road Course/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
@@ -3282,8 +3622,8 @@
   },
   {
     "id": "state-nd",
-    "name": "Theodore Roosevelt — North Unit Drive",
-    "displayName": "Theodore Roosevelt — North Unit Drive",
+    "name": "Theodore Roosevelt \u2014 North Unit Drive",
+    "displayName": "Theodore Roosevelt \u2014 North Unit Drive",
     "status": "installed",
     "state": "North Dakota",
     "stateCode": "ND",
@@ -3295,8 +3635,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 8,
-    "lengthM": 8069.318821633145,
-    "estimatedDrivingSeconds": 397,
+    "lengthM": 7906.368918183893,
+    "estimatedDrivingSeconds": 389,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -3308,7 +3648,7 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "Theodore Roosevelt — North Unit Drive",
+    "raceRef": "Theodore Roosevelt \u2014 North Unit Drive",
     "documentPath": "races/Theodore Roosevelt %E2%80%94 North Unit Drive/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Pikes Peak Highway",
@@ -3319,12 +3659,46 @@
     "location": {
       "lat": 47.588,
       "lon": -103.327
+    },
+    "startGps": {
+      "lat": 47.596323174999995,
+      "lon": -103.33612995
+    },
+    "finishGps": {
+      "lat": 47.599608,
+      "lon": -103.255853
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        9.66,
+        2.58
+      ],
+      "lengthBeforeM": 8036.96,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        2.58
+      ],
+      "trimStartM": 71.28,
+      "trimFinishM": 59.32,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7906.37,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "cb46ef77ddd32138e80fdcfd8050fb80aafc1ff4b40644589e193c4fd1c6fdd5"
     }
   },
   {
     "id": "state-sd",
-    "name": "Needles Highway — Granite Gates",
-    "displayName": "Needles Highway — Granite Gates",
+    "name": "Needles Highway \u2014 Granite Gates",
+    "displayName": "Needles Highway \u2014 Granite Gates",
     "status": "installed",
     "state": "South Dakota",
     "stateCode": "SD",
@@ -3336,8 +3710,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 8,
-    "lengthM": 11032.603271147955,
-    "estimatedDrivingSeconds": 752,
+    "lengthM": 9763.43026886577,
+    "estimatedDrivingSeconds": 665,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -3349,7 +3723,7 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "Needles Highway — Granite Gates",
+    "raceRef": "Needles Highway \u2014 Granite Gates",
     "documentPath": "races/Needles Highway %E2%80%94 Granite Gates/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Pikes Peak Highway",
@@ -3360,12 +3734,46 @@
     "location": {
       "lat": 43.85,
       "lon": -103.531
+    },
+    "startGps": {
+      "lat": 43.841719025,
+      "lon": -103.56288775
+    },
+    "finishGps": {
+      "lat": 43.823784100000005,
+      "lon": -103.4930061
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        5.76,
+        9.2
+      ],
+      "lengthBeforeM": 10457.12,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        3.31
+      ],
+      "trimStartM": 267.68,
+      "trimFinishM": 426.01,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        3.31
+      ],
+      "lengthAfterM": 9763.43,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "8e966da690aa491ae839f54930c8f3ca7945e836c7c1aef5c0f8af2278ebd6b9"
     }
   },
   {
     "id": "state-tn",
-    "name": "Flatrock Motorclub — Club Course",
-    "displayName": "Flatrock Motorclub — Club Course",
+    "name": "Flatrock Motorclub \u2014 Club Course",
+    "displayName": "Flatrock Motorclub \u2014 Club Course",
     "status": "installed",
     "state": "Tennessee",
     "stateCode": "TN",
@@ -3378,7 +3786,7 @@
     "event_type": "Circuit race",
     "import_kind": "circuit",
     "venueKey": "state-tn",
-    "venueName": "Flatrock Motorclub — Club Course",
+    "venueName": "Flatrock Motorclub \u2014 Club Course",
     "layoutLabel": "Road Course",
     "hubStage": 4,
     "lengthM": 5629.284753627067,
@@ -3397,7 +3805,7 @@
       "layoutReference": "https://www.flatrockmotorclub.com/drive",
       "layoutNotes": "Mapped 3.5-mile Club Course; excludes pit lanes. Banking and as-built grading are not surveyed."
     },
-    "raceRef": "Flatrock Motorclub — Club Course",
+    "raceRef": "Flatrock Motorclub \u2014 Club Course",
     "documentPath": "races/Flatrock Motorclub %E2%80%94 Club Course/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Ohio River Crossing",
@@ -3408,8 +3816,8 @@
   },
   {
     "id": "state-vt",
-    "name": "Smugglers Notch — Vermont 108",
-    "displayName": "Smugglers Notch — Vermont 108",
+    "name": "Smugglers Notch \u2014 Vermont 108",
+    "displayName": "Smugglers Notch \u2014 Vermont 108",
     "status": "installed",
     "state": "Vermont",
     "stateCode": "VT",
@@ -3434,10 +3842,10 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "Smugglers Notch — Vermont 108",
+    "raceRef": "Smugglers Notch \u2014 Vermont 108",
     "documentPath": "races/Smugglers Notch %E2%80%94 Vermont 108/document.json",
     "lightingPreset": "noon",
-    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "hubRaceRef": "Mount Washington Auto Road \u2014 point-to-point",
     "installedSurfaces": [
       "asphalt"
     ],
@@ -3449,8 +3857,8 @@
   },
   {
     "id": "state-wy",
-    "name": "Wind River Canyon — Canyon Walls",
-    "displayName": "Wind River Canyon — Canyon Walls",
+    "name": "Wind River Canyon \u2014 Canyon Walls",
+    "displayName": "Wind River Canyon \u2014 Canyon Walls",
     "status": "installed",
     "state": "Wyoming",
     "stateCode": "WY",
@@ -3462,8 +3870,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 8,
-    "lengthM": 10994.580615912862,
-    "estimatedDrivingSeconds": 325,
+    "lengthM": 10880.086923325864,
+    "estimatedDrivingSeconds": 322,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -3475,7 +3883,7 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "Wind River Canyon — Canyon Walls",
+    "raceRef": "Wind River Canyon \u2014 Canyon Walls",
     "documentPath": "races/Wind River Canyon %E2%80%94 Canyon Walls/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Pikes Peak Highway",
@@ -3486,6 +3894,40 @@
     "location": {
       "lat": 43.658,
       "lon": -108.204
+    },
+    "startGps": {
+      "lat": 43.62206643333334,
+      "lon": -108.22153845333334
+    },
+    "finishGps": {
+      "lat": 43.6979186,
+      "lon": -108.1768812
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        4.29
+      ],
+      "lengthBeforeM": 10957.91,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        9.63
+      ],
+      "trimStartM": 37.55,
+      "trimFinishM": 40.27,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        5.34
+      ],
+      "lengthAfterM": 10880.09,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "82da8e4e149bd0413b0b1aee9190549831f3283bc28acaee5fc4bcd23ba0ccc8"
     }
   },
   {
@@ -3666,8 +4108,8 @@
   },
   {
     "id": "state-id",
-    "name": "Ponderosa Pine — Idaho 21",
-    "displayName": "Ponderosa Pine — Idaho 21",
+    "name": "Ponderosa Pine \u2014 Idaho 21",
+    "displayName": "Ponderosa Pine \u2014 Idaho 21",
     "status": "installed",
     "state": "Idaho",
     "stateCode": "ID",
@@ -3692,7 +4134,7 @@
     "routeReference": {
       "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
     },
-    "raceRef": "Ponderosa Pine — Idaho 21",
+    "raceRef": "Ponderosa Pine \u2014 Idaho 21",
     "documentPath": "races/Ponderosa Pine %E2%80%94 Idaho 21/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Moki Dugway",
@@ -3707,7 +4149,7 @@
   },
   {
     "id": "city-hi",
-    "name": "Honolulu, HI — Landmark Run",
+    "name": "Honolulu, HI \u2014 Landmark Run",
     "displayName": "Honolulu, HI",
     "status": "installed",
     "state": "Hawaii",
@@ -3720,8 +4162,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 11,
-    "lengthM": 7488.402887691081,
-    "estimatedDrivingSeconds": 447,
+    "lengthM": 7360.194094215832,
+    "estimatedDrivingSeconds": 439,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -3772,18 +4214,52 @@
       "lat": 21.307,
       "lon": -157.859
     },
-    "raceRef": "Honolulu, HI — Landmark Run",
+    "raceRef": "Honolulu, HI \u2014 Landmark Run",
     "documentPath": "races/Honolulu%2C HI %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Angeles Crest Highway",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 405
+    "sceneryCount": 405,
+    "startGps": {
+      "lat": 21.313092249999997,
+      "lon": -157.86993635
+    },
+    "finishGps": {
+      "lat": 21.2982714,
+      "lon": -157.84225013333335
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        4.68,
+        0.0
+      ],
+      "lengthBeforeM": 7445.77,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        4.68,
+        0.0
+      ],
+      "trimStartM": 37.91,
+      "trimFinishM": 47.67,
+      "status": "adjusted",
+      "afterDegrees": [
+        4.68,
+        0.0
+      ],
+      "lengthAfterM": 7360.19,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "3d5fc9b61848e2295ec863df61828baeea6be32b9c8be890fc55037271c9309e"
+    }
   },
   {
     "id": "city-in",
-    "name": "Indianapolis, IN — Landmark Run",
+    "name": "Indianapolis, IN \u2014 Landmark Run",
     "displayName": "Indianapolis, IN",
     "status": "installed",
     "state": "Indiana",
@@ -3796,8 +4272,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 6,
-    "lengthM": 7677.512841452131,
-    "estimatedDrivingSeconds": 475,
+    "lengthM": 7527.911532385039,
+    "estimatedDrivingSeconds": 466,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -3848,18 +4324,52 @@
       "lat": 39.769,
       "lon": -86.159
     },
-    "raceRef": "Indianapolis, IN — Landmark Run",
+    "raceRef": "Indianapolis, IN \u2014 Landmark Run",
     "documentPath": "races/Indianapolis%2C IN %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Data Center City",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 413
+    "sceneryCount": 413,
+    "startGps": {
+      "lat": 39.754338,
+      "lon": -86.1495605
+    },
+    "finishGps": {
+      "lat": 39.78047323333334,
+      "lon": -86.16947365
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.67,
+        0.0
+      ],
+      "lengthBeforeM": 7613.49,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.67,
+        0.0
+      ],
+      "trimStartM": 36.36,
+      "trimFinishM": 49.22,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7527.91,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "e1c90364253ebd659a7c4cc91a6155b54a42abfc440519a16be689be05dc52e4"
+    }
   },
   {
     "id": "city-la",
-    "name": "New Orleans, LA — Landmark Run",
+    "name": "New Orleans, LA \u2014 Landmark Run",
     "displayName": "New Orleans, LA",
     "status": "installed",
     "state": "Louisiana",
@@ -3924,7 +4434,7 @@
       "lat": 29.958,
       "lon": -90.066
     },
-    "raceRef": "New Orleans, LA — Landmark Run",
+    "raceRef": "New Orleans, LA \u2014 Landmark Run",
     "documentPath": "races/New Orleans%2C LA %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Ozark Backroads",
@@ -3935,7 +4445,7 @@
   },
   {
     "id": "city-ma",
-    "name": "Boston, MA — Landmark Run",
+    "name": "Boston, MA \u2014 Landmark Run",
     "displayName": "Boston, MA",
     "status": "installed",
     "state": "Massachusetts",
@@ -3948,8 +4458,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 1,
-    "lengthM": 12706.866954011854,
-    "estimatedDrivingSeconds": 919,
+    "lengthM": 12532.478655237877,
+    "estimatedDrivingSeconds": 906,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -4000,18 +4510,52 @@
       "lat": 42.356,
       "lon": -71.061
     },
-    "raceRef": "Boston, MA — Landmark Run",
+    "raceRef": "Boston, MA \u2014 Landmark Run",
     "documentPath": "races/Boston%2C MA %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Tower Hill Road",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 670
+    "sceneryCount": 670,
+    "startGps": {
+      "lat": 42.371164625,
+      "lon": -71.086528475
+    },
+    "finishGps": {
+      "lat": 42.34257572,
+      "lon": -71.04643376
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 12623.59,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 43.9,
+      "trimFinishM": 47.21,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 12532.48,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "d55ba54e27bc5898beeaedfda26643d66569f920d52a030ee3addf35600fa0b8"
+    }
   },
   {
     "id": "city-mn",
-    "name": "Minneapolis, MN — Landmark Run",
+    "name": "Minneapolis, MN \u2014 Landmark Run",
     "displayName": "Minneapolis, MN",
     "status": "installed",
     "state": "Minnesota",
@@ -4076,7 +4620,7 @@
       "lat": 44.974,
       "lon": -93.27
     },
-    "raceRef": "Minneapolis, MN — Landmark Run",
+    "raceRef": "Minneapolis, MN \u2014 Landmark Run",
     "documentPath": "races/Minneapolis%2C MN %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Data Center City",
@@ -4087,7 +4631,7 @@
   },
   {
     "id": "city-ms",
-    "name": "Jackson, MS — Landmark Run",
+    "name": "Jackson, MS \u2014 Landmark Run",
     "displayName": "Jackson, MS",
     "status": "installed",
     "state": "Mississippi",
@@ -4100,8 +4644,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 5,
-    "lengthM": 7453.505135991448,
-    "estimatedDrivingSeconds": 427,
+    "lengthM": 7224.560271212343,
+    "estimatedDrivingSeconds": 414,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -4152,18 +4696,52 @@
       "lat": 32.302,
       "lon": -90.183
     },
-    "raceRef": "Jackson, MS — Landmark Run",
+    "raceRef": "Jackson, MS \u2014 Landmark Run",
     "documentPath": "races/Jackson%2C MS %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Ozark Backroads",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 396
+    "sceneryCount": 396,
+    "startGps": {
+      "lat": 32.31216826666667,
+      "lon": -90.19255016666666
+    },
+    "finishGps": {
+      "lat": 32.29237992857143,
+      "lon": -90.17902195714287
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        2.19,
+        0.0
+      ],
+      "lengthBeforeM": 7323.39,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        2.19,
+        0.0
+      ],
+      "trimStartM": 48.98,
+      "trimFinishM": 49.85,
+      "status": "adjusted",
+      "afterDegrees": [
+        2.19,
+        0.0
+      ],
+      "lengthAfterM": 7224.56,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "a2519a941b6c37835b4701cc893c558e5c375fc1fc03b7449e702beb314ef922"
+    }
   },
   {
     "id": "city-mo",
-    "name": "St. Louis, MO — Landmark Run",
+    "name": "St. Louis, MO \u2014 Landmark Run",
     "displayName": "St. Louis, MO",
     "status": "installed",
     "state": "Missouri",
@@ -4228,7 +4806,7 @@
       "lat": 38.635,
       "lon": -90.215
     },
-    "raceRef": "St. Louis, MO — Landmark Run",
+    "raceRef": "St. Louis, MO \u2014 Landmark Run",
     "documentPath": "races/St. Louis%2C MO %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Data Center City",
@@ -4239,7 +4817,7 @@
   },
   {
     "id": "city-mt",
-    "name": "Billings, MT — Landmark Run",
+    "name": "Billings, MT \u2014 Landmark Run",
     "displayName": "Billings, MT",
     "status": "installed",
     "state": "Montana",
@@ -4252,8 +4830,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 8,
-    "lengthM": 7372.566985701618,
-    "estimatedDrivingSeconds": 436,
+    "lengthM": 6952.059341176343,
+    "estimatedDrivingSeconds": 411,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -4304,18 +4882,52 @@
       "lat": 45.783,
       "lon": -108.506
     },
-    "raceRef": "Billings, MT — Landmark Run",
+    "raceRef": "Billings, MT \u2014 Landmark Run",
     "documentPath": "races/Billings%2C MT %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Pikes Peak Highway",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 378
+    "sceneryCount": 378,
+    "startGps": {
+      "lat": 45.790948533333335,
+      "lon": -108.52287393333333
+    },
+    "finishGps": {
+      "lat": 45.77393342,
+      "lon": -108.497718515
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7274.44,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 45.83,
+      "trimFinishM": 276.55,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 6952.06,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "502fcd97c48264e9606eb5a112554faf53bbde645f07abe1be529df5da67ba8e"
+    }
   },
   {
     "id": "city-nv",
-    "name": "Las Vegas, NV — Landmark Run",
+    "name": "Las Vegas, NV \u2014 Landmark Run",
     "displayName": "Las Vegas, NV",
     "status": "installed",
     "state": "Nevada",
@@ -4328,8 +4940,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 10,
-    "lengthM": 7383.477553066795,
-    "estimatedDrivingSeconds": 455,
+    "lengthM": 7229.706864329555,
+    "estimatedDrivingSeconds": 446,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -4380,18 +4992,52 @@
       "lat": 36.176,
       "lon": -115.136
     },
-    "raceRef": "Las Vegas, NV — Landmark Run",
+    "raceRef": "Las Vegas, NV \u2014 Landmark Run",
     "documentPath": "races/Las Vegas%2C NV %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Oak Creek Canyon",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 397
+    "sceneryCount": 397,
+    "startGps": {
+      "lat": 36.1628998,
+      "lon": -115.14775755000001
+    },
+    "finishGps": {
+      "lat": 36.1883832,
+      "lon": -115.12806093333333
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7322.09,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        1.73,
+        0.0
+      ],
+      "trimStartM": 43.65,
+      "trimFinishM": 48.73,
+      "status": "adjusted",
+      "afterDegrees": [
+        1.73,
+        0.0
+      ],
+      "lengthAfterM": 7229.71,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "f951dc908e301f0b6d6c269f5881bb035298c8a8cd27b85d42d177d0b52c79f9"
+    }
   },
   {
     "id": "city-nh",
-    "name": "Manchester, NH — Landmark Run",
+    "name": "Manchester, NH \u2014 Landmark Run",
     "displayName": "Manchester, NH",
     "status": "installed",
     "state": "New Hampshire",
@@ -4456,7 +5102,7 @@
       "lat": 42.992,
       "lon": -71.462
     },
-    "raceRef": "Manchester, NH — Landmark Run",
+    "raceRef": "Manchester, NH \u2014 Landmark Run",
     "documentPath": "races/Manchester%2C NH %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Tower Hill Road",
@@ -4467,7 +5113,7 @@
   },
   {
     "id": "city-nj",
-    "name": "Newark, NJ — Landmark Run",
+    "name": "Newark, NJ \u2014 Landmark Run",
     "displayName": "Newark, NJ",
     "status": "installed",
     "state": "New Jersey",
@@ -4532,7 +5178,7 @@
       "lat": 40.744,
       "lon": -74.171
     },
-    "raceRef": "Newark, NJ — Landmark Run",
+    "raceRef": "Newark, NJ \u2014 Landmark Run",
     "documentPath": "races/Newark%2C NJ %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Tower Hill Road",
@@ -4543,7 +5189,7 @@
   },
   {
     "id": "city-nm",
-    "name": "Albuquerque, NM — Landmark Run",
+    "name": "Albuquerque, NM \u2014 Landmark Run",
     "displayName": "Albuquerque, NM",
     "status": "installed",
     "state": "New Mexico",
@@ -4556,8 +5202,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 9,
-    "lengthM": 7461.472043489078,
-    "estimatedDrivingSeconds": 471,
+    "lengthM": 7209.534126600619,
+    "estimatedDrivingSeconds": 455,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -4608,18 +5254,52 @@
       "lat": 35.09,
       "lon": -106.658
     },
-    "raceRef": "Albuquerque, NM — Landmark Run",
+    "raceRef": "Albuquerque, NM \u2014 Landmark Run",
     "documentPath": "races/Albuquerque%2C NM %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Moki Dugway",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 394
+    "sceneryCount": 394,
+    "startGps": {
+      "lat": 35.102317649999996,
+      "lon": -106.6742783
+    },
+    "finishGps": {
+      "lat": 35.06961236666667,
+      "lon": -106.64615136666666
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7413.87,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        7.51,
+        8.78
+      ],
+      "trimStartM": 48.94,
+      "trimFinishM": 155.4,
+      "status": "adjusted",
+      "afterDegrees": [
+        7.51,
+        8.78
+      ],
+      "lengthAfterM": 7209.53,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "deb817b24e966b1999c263fa4e0db073242033fc1850355689e756820dff63f5"
+    }
   },
   {
     "id": "city-nc",
-    "name": "Charlotte, NC — Landmark Run",
+    "name": "Charlotte, NC \u2014 Landmark Run",
     "displayName": "Charlotte, NC",
     "status": "installed",
     "state": "North Carolina",
@@ -4684,7 +5364,7 @@
       "lat": 35.227,
       "lon": -80.845
     },
-    "raceRef": "Charlotte, NC — Landmark Run",
+    "raceRef": "Charlotte, NC \u2014 Landmark Run",
     "documentPath": "races/Charlotte%2C NC %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Ohio River Crossing",
@@ -4695,7 +5375,7 @@
   },
   {
     "id": "city-nd",
-    "name": "Fargo, ND — Landmark Run",
+    "name": "Fargo, ND \u2014 Landmark Run",
     "displayName": "Fargo, ND",
     "status": "installed",
     "state": "North Dakota",
@@ -4760,7 +5440,7 @@
       "lat": 46.876,
       "lon": -96.787
     },
-    "raceRef": "Fargo, ND — Landmark Run",
+    "raceRef": "Fargo, ND \u2014 Landmark Run",
     "documentPath": "races/Fargo%2C ND %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Data Center City",
@@ -4771,7 +5451,7 @@
   },
   {
     "id": "city-oh",
-    "name": "Cleveland, OH — Landmark Run",
+    "name": "Cleveland, OH \u2014 Landmark Run",
     "displayName": "Cleveland, OH",
     "status": "installed",
     "state": "Ohio",
@@ -4784,8 +5464,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 4,
-    "lengthM": 8588.802816160402,
-    "estimatedDrivingSeconds": 470,
+    "lengthM": 8472.116686489748,
+    "estimatedDrivingSeconds": 464,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -4836,18 +5516,52 @@
       "lat": 41.499,
       "lon": -81.693
     },
-    "raceRef": "Cleveland, OH — Landmark Run",
+    "raceRef": "Cleveland, OH \u2014 Landmark Run",
     "documentPath": "races/Cleveland%2C OH %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "evening",
     "hubRaceRef": "Ohio River Crossing",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 471
+    "sceneryCount": 471,
+    "startGps": {
+      "lat": 41.50768884285714,
+      "lon": -81.69878741428572
+    },
+    "finishGps": {
+      "lat": 41.478746275,
+      "lon": -81.6759757
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 8567.66,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 49.48,
+      "trimFinishM": 46.07,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 8472.12,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "97a67648827fa99e4994f756c23b36232fc42b7d7d5930a9501bddb6bbce679b"
+    }
   },
   {
     "id": "city-co",
-    "name": "Denver, CO — Landmark Run",
+    "name": "Denver, CO \u2014 Landmark Run",
     "displayName": "Denver, CO",
     "status": "installed",
     "state": "Colorado",
@@ -4860,8 +5574,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 8,
-    "lengthM": 7622.788761112339,
-    "estimatedDrivingSeconds": 474,
+    "lengthM": 7473.81740575043,
+    "estimatedDrivingSeconds": 465,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -4912,18 +5626,52 @@
       "lat": 39.748,
       "lon": -104.994
     },
-    "raceRef": "Denver, CO — Landmark Run",
+    "raceRef": "Denver, CO \u2014 Landmark Run",
     "documentPath": "races/Denver%2C CO %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Pikes Peak Highway",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 411
+    "sceneryCount": 411,
+    "startGps": {
+      "lat": 39.7613179,
+      "lon": -105.0052423
+    },
+    "finishGps": {
+      "lat": 39.732052100000004,
+      "lon": -104.97817203333334
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        3.53,
+        0.0
+      ],
+      "lengthBeforeM": 7559.24,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        3.67,
+        0.0
+      ],
+      "trimStartM": 36.53,
+      "trimFinishM": 48.9,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.14,
+        0.0
+      ],
+      "lengthAfterM": 7473.82,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "08cd6cffe7ec783684d2ab926e8156a8bafb7d8acd14b1f66afd14f5f60dbd5c"
+    }
   },
   {
     "id": "city-ne",
-    "name": "Omaha, NE — Landmark Run",
+    "name": "Omaha, NE \u2014 Landmark Run",
     "displayName": "Omaha, NE",
     "status": "installed",
     "state": "Nebraska",
@@ -4936,8 +5684,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 6,
-    "lengthM": 7529.27230003882,
-    "estimatedDrivingSeconds": 530,
+    "lengthM": 6779.53201097087,
+    "estimatedDrivingSeconds": 477,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -4988,18 +5736,52 @@
       "lat": 41.257,
       "lon": -95.939
     },
-    "raceRef": "Omaha, NE — Landmark Run",
+    "raceRef": "Omaha, NE \u2014 Landmark Run",
     "documentPath": "races/Omaha%2C NE %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "evening",
     "hubRaceRef": "Data Center City",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 370
+    "sceneryCount": 370,
+    "startGps": {
+      "lat": 41.2664829,
+      "lon": -95.947014675
+    },
+    "finishGps": {
+      "lat": 41.2495502875,
+      "lon": -95.92539305000001
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7316.36,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        7.83
+      ],
+      "trimStartM": 48.2,
+      "trimFinishM": 488.63,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 6779.53,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "5054c9cf0668a6d84bf72d6b44147448155cc753397949135fa3b248f90455b6"
+    }
   },
   {
     "id": "city-ny",
-    "name": "New York, NY — Landmark Run",
+    "name": "New York, NY \u2014 Landmark Run",
     "displayName": "New York, NY",
     "status": "installed",
     "state": "New York",
@@ -5012,8 +5794,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 1,
-    "lengthM": 7493.378286002544,
-    "estimatedDrivingSeconds": 429,
+    "lengthM": 7374.423309034066,
+    "estimatedDrivingSeconds": 422,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -5064,18 +5846,52 @@
       "lat": 40.751,
       "lon": -73.983
     },
-    "raceRef": "New York, NY — Landmark Run",
+    "raceRef": "New York, NY \u2014 Landmark Run",
     "documentPath": "races/New York%2C NY %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Tower Hill Road",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 405
+    "sceneryCount": 405,
+    "startGps": {
+      "lat": 40.73561923333333,
+      "lon": -73.97552736666667
+    },
+    "finishGps": {
+      "lat": 40.763784125,
+      "lon": -73.995481275
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        7.88,
+        0.0
+      ],
+      "lengthBeforeM": 7479.68,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 57.17,
+      "trimFinishM": 48.08,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7374.42,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "bd291c754692cea965b20f4fcf2027ef55aca7fff64edd63d9ce678acad8a973"
+    }
   },
   {
     "id": "city-ok",
-    "name": "Oklahoma City, OK — Landmark Run",
+    "name": "Oklahoma City, OK \u2014 Landmark Run",
     "displayName": "Oklahoma City, OK",
     "status": "installed",
     "state": "Oklahoma",
@@ -5140,7 +5956,7 @@
       "lat": 35.476,
       "lon": -97.51
     },
-    "raceRef": "Oklahoma City, OK — Landmark Run",
+    "raceRef": "Oklahoma City, OK \u2014 Landmark Run",
     "documentPath": "races/Oklahoma City%2C OK %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "evening",
     "hubRaceRef": "Historic Route 66",
@@ -5151,7 +5967,7 @@
   },
   {
     "id": "city-tx",
-    "name": "San Antonio, TX — Landmark Run",
+    "name": "San Antonio, TX \u2014 Landmark Run",
     "displayName": "San Antonio, TX",
     "status": "installed",
     "state": "Texas",
@@ -5216,7 +6032,7 @@
       "lat": 29.424,
       "lon": -98.492
     },
-    "raceRef": "San Antonio, TX — Landmark Run",
+    "raceRef": "San Antonio, TX \u2014 Landmark Run",
     "documentPath": "races/San Antonio%2C TX %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Historic Route 66",
@@ -5227,7 +6043,7 @@
   },
   {
     "id": "city-or",
-    "name": "Portland, OR — Landmark Run",
+    "name": "Portland, OR \u2014 Landmark Run",
     "displayName": "Portland, OR",
     "status": "installed",
     "state": "Oregon",
@@ -5240,8 +6056,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 11,
-    "lengthM": 7373.216552621834,
-    "estimatedDrivingSeconds": 523,
+    "lengthM": 7136.292234881879,
+    "estimatedDrivingSeconds": 506,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -5292,18 +6108,52 @@
       "lat": 45.523,
       "lon": -122.678
     },
-    "raceRef": "Portland, OR — Landmark Run",
+    "raceRef": "Portland, OR \u2014 Landmark Run",
     "documentPath": "races/Portland%2C OR %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Angeles Crest Highway",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 382
+    "sceneryCount": 382,
+    "startGps": {
+      "lat": 45.5293013,
+      "lon": -122.67468475
+    },
+    "finishGps": {
+      "lat": 45.51167863333333,
+      "lon": -122.6889975
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7330.4,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.85,
+        0.0
+      ],
+      "trimStartM": 45.44,
+      "trimFinishM": 148.66,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.85,
+        0.0
+      ],
+      "lengthAfterM": 7136.29,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "b0364798a6a9d8b098ba287ffd8b98c53e96416e06f28e91074fa492d0113124"
+    }
   },
   {
     "id": "city-ri",
-    "name": "Providence, RI — Landmark Run",
+    "name": "Providence, RI \u2014 Landmark Run",
     "displayName": "Providence, RI",
     "status": "installed",
     "state": "Rhode Island",
@@ -5316,8 +6166,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 1,
-    "lengthM": 7650.07696106834,
-    "estimatedDrivingSeconds": 547,
+    "lengthM": 7348.2512644888175,
+    "estimatedDrivingSeconds": 525,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -5368,18 +6218,52 @@
       "lat": 41.825,
       "lon": -71.411
     },
-    "raceRef": "Providence, RI — Landmark Run",
+    "raceRef": "Providence, RI \u2014 Landmark Run",
     "documentPath": "races/Providence%2C RI %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "noon",
     "hubRaceRef": "Tower Hill Road",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 398
+    "sceneryCount": 398,
+    "startGps": {
+      "lat": 41.83589845,
+      "lon": -71.39861069999999
+    },
+    "finishGps": {
+      "lat": 41.814769325,
+      "lon": -71.423259525
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7560.14,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 167.51,
+      "trimFinishM": 44.37,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7348.25,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "93ec9112e58fedc8bf9804d9947a1a66459514064c8c294c7e9254fed6ebd8ab"
+    }
   },
   {
     "id": "city-pa",
-    "name": "Philadelphia, PA — Landmark Run",
+    "name": "Philadelphia, PA \u2014 Landmark Run",
     "displayName": "Philadelphia, PA",
     "status": "installed",
     "state": "Pennsylvania",
@@ -5392,8 +6276,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 3,
-    "lengthM": 6517.014314108714,
-    "estimatedDrivingSeconds": 397,
+    "lengthM": 6289.505718387365,
+    "estimatedDrivingSeconds": 383,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -5444,18 +6328,52 @@
       "lat": 39.955,
       "lon": -75.164
     },
-    "raceRef": "Philadelphia, PA — Landmark Run",
+    "raceRef": "Philadelphia, PA \u2014 Landmark Run",
     "documentPath": "races/Philadelphia%2C PA %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 354
+    "sceneryCount": 354,
+    "startGps": {
+      "lat": 39.9654505,
+      "lon": -75.18889531666666
+    },
+    "finishGps": {
+      "lat": 39.945202849999994,
+      "lon": -75.14261665000001
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 6495.28,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.2
+      ],
+      "trimStartM": 49.21,
+      "trimFinishM": 156.56,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.2
+      ],
+      "lengthAfterM": 6289.51,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "b1f9e516fc7c42840626ae04bb75d78417ec08aeb886ebdb0ff5fb13475faf23"
+    }
   },
   {
     "id": "city-sc",
-    "name": "Charleston, SC — Landmark Run",
+    "name": "Charleston, SC \u2014 Landmark Run",
     "displayName": "Charleston, SC",
     "status": "installed",
     "state": "South Carolina",
@@ -5468,8 +6386,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 4,
-    "lengthM": 7514.793986248239,
-    "estimatedDrivingSeconds": 485,
+    "lengthM": 7366.6120867969985,
+    "estimatedDrivingSeconds": 475,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -5520,18 +6438,52 @@
       "lat": 32.785,
       "lon": -79.933
     },
-    "raceRef": "Charleston, SC — Landmark Run",
+    "raceRef": "Charleston, SC \u2014 Landmark Run",
     "documentPath": "races/Charleston%2C SC %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "evening",
     "hubRaceRef": "Ohio River Crossing",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 395
+    "sceneryCount": 395,
+    "startGps": {
+      "lat": 32.79005784285714,
+      "lon": -79.94388427142857
+    },
+    "finishGps": {
+      "lat": 32.77209379090909,
+      "lon": -79.92825213636364
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7461.64,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 49.31,
+      "trimFinishM": 45.72,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7366.61,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "1f48618330d08ebd3207e90968e35c521af2bb31c02239fd791be3e4c15e3721"
+    }
   },
   {
     "id": "city-sd",
-    "name": "Sioux Falls, SD — Landmark Run",
+    "name": "Sioux Falls, SD \u2014 Landmark Run",
     "displayName": "Sioux Falls, SD",
     "status": "installed",
     "state": "South Dakota",
@@ -5544,8 +6496,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 6,
-    "lengthM": 7532.76478042617,
-    "estimatedDrivingSeconds": 453,
+    "lengthM": 7243.762170397843,
+    "estimatedDrivingSeconds": 436,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -5596,18 +6548,52 @@
       "lat": 43.551,
       "lon": -96.728
     },
-    "raceRef": "Sioux Falls, SD — Landmark Run",
+    "raceRef": "Sioux Falls, SD \u2014 Landmark Run",
     "documentPath": "races/Sioux Falls%2C SD %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Data Center City",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 406
+    "sceneryCount": 406,
+    "startGps": {
+      "lat": 43.56379822,
+      "lon": -96.73963067999999
+    },
+    "finishGps": {
+      "lat": 43.54142695,
+      "lon": -96.71727175
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        8.3
+      ],
+      "lengthBeforeM": 7438.9,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        8.5,
+        1.1
+      ],
+      "trimStartM": 40.37,
+      "trimFinishM": 154.77,
+      "status": "adjusted",
+      "afterDegrees": [
+        8.5,
+        1.1
+      ],
+      "lengthAfterM": 7243.76,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "a27727226f9e29a22df35743c96284ec346d91f52eff73517a1c2196a7143895"
+    }
   },
   {
     "id": "city-tn",
-    "name": "Nashville, TN — Landmark Run",
+    "name": "Nashville, TN \u2014 Landmark Run",
     "displayName": "Nashville, TN",
     "status": "installed",
     "state": "Tennessee",
@@ -5620,8 +6606,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 6,
-    "lengthM": 7615.0793861320335,
-    "estimatedDrivingSeconds": 463,
+    "lengthM": 7492.435758167072,
+    "estimatedDrivingSeconds": 456,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -5672,18 +6658,52 @@
       "lat": 36.162,
       "lon": -86.783
     },
-    "raceRef": "Nashville, TN — Landmark Run",
+    "raceRef": "Nashville, TN \u2014 Landmark Run",
     "documentPath": "races/Nashville%2C TN %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Data Center City",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 401
+    "sceneryCount": 401,
+    "startGps": {
+      "lat": 36.1527598,
+      "lon": -86.7919273
+    },
+    "finishGps": {
+      "lat": 36.16862593333334,
+      "lon": -86.78116419999999
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        1.43,
+        0.0
+      ],
+      "lengthBeforeM": 7592.83,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        2.6,
+        0.0
+      ],
+      "trimStartM": 51.71,
+      "trimFinishM": 48.69,
+      "status": "adjusted",
+      "afterDegrees": [
+        1.17,
+        0.0
+      ],
+      "lengthAfterM": 7492.44,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "94e182af4f9e728430f38f14c6660d91bcd963785580ab4c3f17b8ce7f52ef8b"
+    }
   },
   {
     "id": "city-ut",
-    "name": "Salt Lake City, UT — Landmark Run",
+    "name": "Salt Lake City, UT \u2014 Landmark Run",
     "displayName": "Salt Lake City, UT",
     "status": "installed",
     "state": "Utah",
@@ -5696,8 +6716,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 9,
-    "lengthM": 7722.523290833362,
-    "estimatedDrivingSeconds": 466,
+    "lengthM": 7391.431133893934,
+    "estimatedDrivingSeconds": 446,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -5748,18 +6768,52 @@
       "lat": 40.764,
       "lon": -111.89
     },
-    "raceRef": "Salt Lake City, UT — Landmark Run",
+    "raceRef": "Salt Lake City, UT \u2014 Landmark Run",
     "documentPath": "races/Salt Lake City%2C UT %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Moki Dugway",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 406
+    "sceneryCount": 406,
+    "startGps": {
+      "lat": 40.78021635555556,
+      "lon": -111.9076041
+    },
+    "finishGps": {
+      "lat": 40.75456372,
+      "lon": -111.88250354
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 7692.59,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        0.0
+      ],
+      "trimStartM": 47.25,
+      "trimFinishM": 253.92,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7391.43,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "b20dac8e70029faa26629b95705bda00d896e143365497b89e0fa4ca78dc99d9"
+    }
   },
   {
     "id": "city-vt",
-    "name": "Burlington, VT — Landmark Run",
+    "name": "Burlington, VT \u2014 Landmark Run",
     "displayName": "Burlington, VT",
     "status": "installed",
     "state": "Vermont",
@@ -5772,8 +6826,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 2,
-    "lengthM": 7421.205558494264,
-    "estimatedDrivingSeconds": 414,
+    "lengthM": 7094.28379851415,
+    "estimatedDrivingSeconds": 396,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -5824,18 +6878,52 @@
       "lat": 44.477,
       "lon": -73.211
     },
-    "raceRef": "Burlington, VT — Landmark Run",
+    "raceRef": "Burlington, VT \u2014 Landmark Run",
     "documentPath": "races/Burlington%2C VT %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "evening",
-    "hubRaceRef": "Mount Washington Auto Road — point-to-point",
+    "hubRaceRef": "Mount Washington Auto Road \u2014 point-to-point",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 400
+    "sceneryCount": 400,
+    "startGps": {
+      "lat": 44.48490373333333,
+      "lon": -73.22272433333333
+    },
+    "finishGps": {
+      "lat": 44.47325905,
+      "lon": -73.19188415
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.61,
+        0.72
+      ],
+      "lengthBeforeM": 7316.67,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        1.35,
+        0.09
+      ],
+      "trimStartM": 40.72,
+      "trimFinishM": 181.67,
+      "status": "adjusted",
+      "afterDegrees": [
+        1.35,
+        0.09
+      ],
+      "lengthAfterM": 7094.28,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "513de92f08f3464c5d2bf01a42fcef8eb72f9de9d24e48e91384ec4ac26885a1"
+    }
   },
   {
     "id": "city-va",
-    "name": "Richmond, VA — Landmark Run",
+    "name": "Richmond, VA \u2014 Landmark Run",
     "displayName": "Richmond, VA",
     "status": "installed",
     "state": "Virginia",
@@ -5900,7 +6988,7 @@
       "lat": 37.542,
       "lon": -77.436
     },
-    "raceRef": "Richmond, VA — Landmark Run",
+    "raceRef": "Richmond, VA \u2014 Landmark Run",
     "documentPath": "races/Richmond%2C VA %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "evening",
     "hubRaceRef": "Laurel Highlands Scenic Byway",
@@ -5911,7 +6999,7 @@
   },
   {
     "id": "city-wa",
-    "name": "Seattle, WA — Landmark Run",
+    "name": "Seattle, WA \u2014 Landmark Run",
     "displayName": "Seattle, WA",
     "status": "installed",
     "state": "Washington",
@@ -5924,8 +7012,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 11,
-    "lengthM": 7656.429745805353,
-    "estimatedDrivingSeconds": 436,
+    "lengthM": 7460.525242971683,
+    "estimatedDrivingSeconds": 425,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -5976,18 +7064,52 @@
       "lat": 47.608,
       "lon": -122.337
     },
-    "raceRef": "Seattle, WA — Landmark Run",
+    "raceRef": "Seattle, WA \u2014 Landmark Run",
     "documentPath": "races/Seattle%2C WA %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Angeles Crest Highway",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 414
+    "sceneryCount": 414,
+    "startGps": {
+      "lat": 47.6185874,
+      "lon": -122.3567489
+    },
+    "finishGps": {
+      "lat": 47.592886629999995,
+      "lon": -122.32418363
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        6.87,
+        2.65
+      ],
+      "lengthBeforeM": 7563.35,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        6.87,
+        2.65
+      ],
+      "trimStartM": 48.44,
+      "trimFinishM": 54.38,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 7460.53,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "4ed82fbbd441fdbbc778ea6a4bf819b1c71b1fc10d8f071e3fb8c9d53f8dc869"
+    }
   },
   {
     "id": "city-wv",
-    "name": "Charleston, WV — Landmark Run",
+    "name": "Charleston, WV \u2014 Landmark Run",
     "displayName": "Charleston, WV",
     "status": "installed",
     "state": "West Virginia",
@@ -6004,8 +7126,8 @@
     "venueName": null,
     "layoutLabel": null,
     "hubStage": 4,
-    "lengthM": 7491.007692070882,
-    "estimatedDrivingSeconds": 480,
+    "lengthM": 7333.869665833131,
+    "estimatedDrivingSeconds": 470,
     "laps": 1,
     "surface": [
       "asphalt"
@@ -6052,18 +7174,52 @@
       "rightAngleTurns": 21,
       "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
     },
-    "raceRef": "Charleston, WV — Landmark Run",
+    "raceRef": "Charleston, WV \u2014 Landmark Run",
     "documentPath": "races/Charleston%2C WV %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "night",
     "hubRaceRef": "Ohio River Crossing",
     "installedSurfaces": [
       "asphalt"
     ],
-    "sceneryCount": 393
+    "sceneryCount": 393,
+    "startGps": {
+      "lat": 38.34269575,
+      "lon": -81.613293
+    },
+    "finishGps": {
+      "lat": 38.34350034444444,
+      "lon": -81.63078711111112
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        1.67,
+        0.0
+      ],
+      "lengthBeforeM": 7421.92,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        1.67,
+        0.0
+      ],
+      "trimStartM": 39.81,
+      "trimFinishM": 48.24,
+      "status": "adjusted",
+      "afterDegrees": [
+        1.67,
+        0.0
+      ],
+      "lengthAfterM": 7333.87,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "9ca8972dc74bad5bdaebe3db5c90340134bf84db731008c28d9966075bf23bcf"
+    }
   },
   {
     "id": "city-wi",
-    "name": "Milwaukee, WI — Landmark Run",
+    "name": "Milwaukee, WI \u2014 Landmark Run",
     "displayName": "Milwaukee, WI",
     "status": "installed",
     "state": "Wisconsin",
@@ -6128,7 +7284,7 @@
       "rightAngleTurns": 22,
       "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
     },
-    "raceRef": "Milwaukee, WI — Landmark Run",
+    "raceRef": "Milwaukee, WI \u2014 Landmark Run",
     "documentPath": "races/Milwaukee%2C WI %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Data Center City",
@@ -6139,7 +7295,7 @@
   },
   {
     "id": "city-wy",
-    "name": "Cheyenne, WY — Landmark Run",
+    "name": "Cheyenne, WY \u2014 Landmark Run",
     "displayName": "Cheyenne, WY",
     "status": "installed",
     "state": "Wyoming",
@@ -6204,7 +7360,7 @@
       "rightAngleTurns": 14,
       "routing": "OSM connected local streets; one-way aware; no repeated edges; no motorway/trunk roads. Turn-restriction relations are not modeled for these fictional closed-road events."
     },
-    "raceRef": "Cheyenne, WY — Landmark Run",
+    "raceRef": "Cheyenne, WY \u2014 Landmark Run",
     "documentPath": "races/Cheyenne%2C WY %E2%80%94 Landmark Run/document.json",
     "lightingPreset": "morning",
     "hubRaceRef": "Pikes Peak Highway",
@@ -6212,5 +7368,954 @@
       "asphalt"
     ],
     "sceneryCount": 229
+  },
+  {
+    "id": "detour-thompson",
+    "name": "Thompson Pass \u2014 Snowline Climb",
+    "displayName": "Thompson Pass \u2014 Snowline Climb",
+    "status": "installed",
+    "state": "Alaska",
+    "stateCode": "AK",
+    "location": {
+      "lat": 61.13,
+      "lon": -145.82
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 14020.968640879493,
+    "estimatedDrivingSeconds": 664,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-thompson.json",
+    "references": [
+      "https://dot.alaska.gov/highways/richardson/"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage.",
+      "direction": "Reverse of mapped source traversal, selected for uphill progression."
+    },
+    "artHubStage": 2,
+    "weather": "snow",
+    "palette": "alaska",
+    "targetSeconds": 660,
+    "paceCapMps": 25,
+    "raceRef": "Thompson Pass \u2014 Snowline Climb",
+    "documentPath": "races/Thompson Pass %E2%80%94 Snowline Climb/document.json",
+    "lightingPreset": "night",
+    "hubRaceRef": "Angeles Crest Highway",
+    "installedSurfaces": [
+      "snow"
+    ],
+    "sceneryCount": 1015
+  },
+  {
+    "id": "detour-denali",
+    "name": "Denali Highway \u2014 Tundra Gravel",
+    "displayName": "Denali Highway \u2014 Tundra Gravel",
+    "status": "installed",
+    "state": "Alaska",
+    "stateCode": "AK",
+    "location": {
+      "lat": 63.07,
+      "lon": -146.7
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 12005.29623544451,
+    "estimatedDrivingSeconds": 650,
+    "laps": 1,
+    "surface": [
+      "gravel"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-denali.json",
+    "references": [
+      "https://www.blm.gov/visit/denali-highway"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 2,
+    "weather": "snow",
+    "palette": "tundra",
+    "targetSeconds": 660,
+    "paceCapMps": 25,
+    "raceRef": "Denali Highway \u2014 Tundra Gravel",
+    "documentPath": "races/Denali Highway %E2%80%94 Tundra Gravel/document.json",
+    "lightingPreset": "morning",
+    "hubRaceRef": "Angeles Crest Highway",
+    "installedSurfaces": [
+      "snow",
+      "gravel"
+    ],
+    "sceneryCount": 890,
+    "startGps": {
+      "lat": 63.0704729,
+      "lon": -146.1077985
+    },
+    "finishGps": {
+      "lat": 63.0923479,
+      "lon": -146.2984675
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        6.09
+      ],
+      "lengthBeforeM": 12197.88,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        6.15,
+        4.25
+      ],
+      "trimStartM": 60.24,
+      "trimFinishM": 132.34,
+      "status": "adjusted",
+      "afterDegrees": [
+        6.15,
+        0.0
+      ],
+      "lengthAfterM": 12005.3,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "7717f7ccc6905ba357a36f28799aaa42fdd133c722787aeaf3cb6568a3086672"
+    }
+  },
+  {
+    "id": "detour-skalkaho",
+    "name": "Skalkaho Pass \u2014 Forest Rally",
+    "displayName": "Skalkaho Pass \u2014 Forest Rally",
+    "status": "installed",
+    "state": "Montana",
+    "stateCode": "MT",
+    "location": {
+      "lat": 46.252,
+      "lon": -113.79
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 9,
+    "lengthM": 8059.75025080209,
+    "estimatedDrivingSeconds": 595,
+    "laps": 1,
+    "surface": [
+      "gravel"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-skalkaho.json",
+    "references": [
+      "https://visitmt.com/listing/skalkaho-pass-12543"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 3,
+    "weather": "clear",
+    "palette": "forest",
+    "targetSeconds": 660,
+    "paceCapMps": 25,
+    "raceRef": "Skalkaho Pass \u2014 Forest Rally",
+    "documentPath": "races/Skalkaho Pass %E2%80%94 Forest Rally/document.json",
+    "lightingPreset": "evening",
+    "hubRaceRef": "Moki Dugway",
+    "installedSurfaces": [
+      "gravel"
+    ],
+    "sceneryCount": 854,
+    "startGps": {
+      "lat": 46.244942333333334,
+      "lon": -113.83647506666667
+    },
+    "finishGps": {
+      "lat": 46.249823,
+      "lon": -113.776218
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        26.78
+      ],
+      "lengthBeforeM": 8719.42,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        9.07,
+        7.96
+      ],
+      "trimStartM": 35.56,
+      "trimFinishM": 624.11,
+      "status": "adjusted",
+      "afterDegrees": [
+        9.07,
+        0.0
+      ],
+      "lengthAfterM": 8059.75,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "943f1f7a3f7bcb9dd1d7b7cef1a27c9330a241c3e8e5927116b564b8bf8be369"
+    }
+  },
+  {
+    "id": "detour-magruder",
+    "name": "Magruder Corridor \u2014 Wilderness Ridge",
+    "displayName": "Magruder Corridor \u2014 Wilderness Ridge",
+    "status": "installed",
+    "state": "Idaho",
+    "stateCode": "ID",
+    "location": {
+      "lat": 45.7,
+      "lon": -115
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 9,
+    "lengthM": 6368.482508282402,
+    "estimatedDrivingSeconds": 547,
+    "laps": 1,
+    "surface": [
+      "dirt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-magruder.json",
+    "references": [
+      "https://www.fs.usda.gov/media/45002"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 3,
+    "weather": "clear",
+    "palette": "forest",
+    "targetSeconds": 660,
+    "paceCapMps": 22,
+    "raceRef": "Magruder Corridor \u2014 Wilderness Ridge",
+    "documentPath": "races/Magruder Corridor %E2%80%94 Wilderness Ridge/document.json",
+    "lightingPreset": "evening",
+    "hubRaceRef": "Moki Dugway",
+    "installedSurfaces": [
+      "dirt"
+    ],
+    "sceneryCount": 747,
+    "startGps": {
+      "lat": 45.7151447,
+      "lon": -115.0255593
+    },
+    "finishGps": {
+      "lat": 45.7213455,
+      "lon": -115.0748261
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        7.34,
+        6.2
+      ],
+      "lengthBeforeM": 7263.3,
+      "lineWindowsM": [
+        40,
+        40
+      ],
+      "corridorDegrees": [
+        7.34,
+        6.01
+      ],
+      "trimStartM": 36.58,
+      "trimFinishM": 858.24,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 6368.48,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "5612f217a2f86c5b87623192f5a61627d361ef0c12419cba2a2dcd75acda71f0"
+    }
+  },
+  {
+    "id": "detour-chief-joseph",
+    "name": "Chief Joseph \u2014 Dead Indian Pass",
+    "displayName": "Chief Joseph \u2014 Dead Indian Pass",
+    "status": "installed",
+    "state": "Wyoming",
+    "stateCode": "WY",
+    "location": {
+      "lat": 44.75,
+      "lon": -109.39
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 13975.112065177083,
+    "estimatedDrivingSeconds": 640,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-chief-joseph.json",
+    "references": [
+      "https://www.dot.state.wy.us/files/live/sites/wydot/files/shared/Planning/Buffalo%20Bill%20-%20Yellowstone%20Country%20Scenic%20Byway.pdf"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 8,
+    "weather": "clear",
+    "palette": "alpine",
+    "targetSeconds": 660,
+    "paceCapMps": 40,
+    "raceRef": "Chief Joseph \u2014 Dead Indian Pass",
+    "documentPath": "races/Chief Joseph %E2%80%94 Dead Indian Pass/document.json",
+    "lightingPreset": "noon",
+    "hubRaceRef": "Pikes Peak Highway",
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "sceneryCount": 908,
+    "startGps": {
+      "lat": 44.77126265,
+      "lon": -109.42553805
+    },
+    "finishGps": {
+      "lat": 44.75410638571429,
+      "lon": -109.38417094285714
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        3.92,
+        0.0
+      ],
+      "lengthBeforeM": 14192.09,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        3.92,
+        4.79
+      ],
+      "trimStartM": 36.76,
+      "trimFinishM": 180.22,
+      "status": "adjusted",
+      "afterDegrees": [
+        3.92,
+        0.0
+      ],
+      "lengthAfterM": 13975.11,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "7ff39c9702ded7211d0827807795d9c3bc297fc31cfead41d6c99ae31284e408"
+    }
+  },
+  {
+    "id": "detour-tantalus",
+    "name": "Tantalus \u2014 Honolulu Heights",
+    "displayName": "Tantalus \u2014 Honolulu Heights",
+    "status": "installed",
+    "state": "Hawaii",
+    "stateCode": "HI",
+    "location": {
+      "lat": 21.327,
+      "lon": -157.821
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 7865.771001556983,
+    "estimatedDrivingSeconds": 575,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-tantalus.json",
+    "references": [
+      "https://dlnr.hawaii.gov/dofaw/files/2025/02/Final-TRTD-CMP-2019-12-11-with-Appendices.pdf"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 3,
+    "weather": "rain",
+    "palette": "tropical",
+    "targetSeconds": 660,
+    "paceCapMps": 25,
+    "raceRef": "Tantalus \u2014 Honolulu Heights",
+    "documentPath": "races/Tantalus %E2%80%94 Honolulu Heights/document.json",
+    "lightingPreset": "morning",
+    "hubRaceRef": "Angeles Crest Highway",
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "sceneryCount": 458,
+    "startGps": {
+      "lat": 21.3167007,
+      "lon": -157.83794096666665
+    },
+    "finishGps": {
+      "lat": 21.32528,
+      "lon": -157.8147156
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        9.1
+      ],
+      "lengthBeforeM": 8657.9,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        9.78,
+        4.58
+      ],
+      "trimStartM": 234.72,
+      "trimFinishM": 557.41,
+      "status": "adjusted",
+      "afterDegrees": [
+        9.78,
+        0.0
+      ],
+      "lengthAfterM": 7865.77,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "e82a7ace4b604e4a71169456e380f23dce4b4c031ab1614e7cf8a3723e4bf109"
+    }
+  },
+  {
+    "id": "detour-haleakala",
+    "name": "Haleakala \u2014 Volcano Ascent",
+    "displayName": "Haleakala \u2014 Volcano Ascent",
+    "status": "installed",
+    "state": "Hawaii",
+    "stateCode": "HI",
+    "location": {
+      "lat": 20.745,
+      "lon": -156.245
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 9646.511559098444,
+    "estimatedDrivingSeconds": 604,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-haleakala.json",
+    "references": [
+      "https://www.nps.gov/hale/planyourvisit/directions.htm"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 8,
+    "weather": "clear",
+    "palette": "volcano",
+    "targetSeconds": 660,
+    "paceCapMps": 30,
+    "raceRef": "Haleakala \u2014 Volcano Ascent",
+    "documentPath": "races/Haleakala %E2%80%94 Volcano Ascent/document.json",
+    "lightingPreset": "morning",
+    "hubRaceRef": "Angeles Crest Highway",
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "sceneryCount": 684,
+    "startGps": {
+      "lat": 20.75276025,
+      "lon": -156.229521425
+    },
+    "finishGps": {
+      "lat": 20.713619266666665,
+      "lon": -156.2510475
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 10205.01,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        0.0,
+        6.42
+      ],
+      "trimStartM": 37.92,
+      "trimFinishM": 520.58,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        6.42
+      ],
+      "lengthAfterM": 9646.51,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "aabe2410e9417603209399c3e1f96eac03bae3bd8b1100d508ff5c6f7e46a561"
+    }
+  },
+  {
+    "id": "detour-maunakea",
+    "name": "Maunakea \u2014 Cinder Summit",
+    "displayName": "Maunakea \u2014 Cinder Summit",
+    "status": "installed",
+    "state": "Hawaii",
+    "stateCode": "HI",
+    "location": {
+      "lat": 19.79,
+      "lon": -155.46
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 11,
+    "lengthM": 10344.721313262453,
+    "estimatedDrivingSeconds": 643,
+    "laps": 1,
+    "surface": [
+      "asphalt",
+      "gravel"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-maunakea.json",
+    "references": [
+      "https://hilo.hawaii.edu/maunakea/visitor-information/public-safety"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 8,
+    "weather": "snow",
+    "palette": "volcano-snow",
+    "targetSeconds": 660,
+    "paceCapMps": 22,
+    "raceRef": "Maunakea \u2014 Cinder Summit",
+    "documentPath": "races/Maunakea %E2%80%94 Cinder Summit/document.json",
+    "lightingPreset": "evening",
+    "hubRaceRef": "Angeles Crest Highway",
+    "installedSurfaces": [
+      "gravel",
+      "asphalt",
+      "snow"
+    ],
+    "sceneryCount": 675,
+    "startGps": {
+      "lat": 19.770431666666667,
+      "lon": -155.45982
+    },
+    "finishGps": {
+      "lat": 19.8214316,
+      "lon": -155.4710041
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        4.12
+      ],
+      "lengthBeforeM": 10454.54,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        0.0,
+        4.12
+      ],
+      "trimStartM": 36.7,
+      "trimFinishM": 73.12,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 10344.72,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "80f9bac408acd5e9edcb23df244db96a200e957ce16f8c21f6456d96726b5e16"
+    }
+  },
+  {
+    "id": "detour-sandhills",
+    "name": "Sandhills Journey \u2014 Open Prairie",
+    "displayName": "Sandhills Journey \u2014 Open Prairie",
+    "status": "installed",
+    "state": "Nebraska",
+    "stateCode": "NE",
+    "location": {
+      "lat": 42.045,
+      "lon": -101.34
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 26280.945676893592,
+    "estimatedDrivingSeconds": 670,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-sandhills.json",
+    "references": [
+      "https://visitnebraska.com/sandhills-journey-scenic-byway"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage."
+    },
+    "artHubStage": 7,
+    "weather": "clear",
+    "palette": "prairie",
+    "targetSeconds": 660,
+    "paceCapMps": 50,
+    "raceRef": "Sandhills Journey \u2014 Open Prairie",
+    "documentPath": "races/Sandhills Journey %E2%80%94 Open Prairie/document.json",
+    "lightingPreset": "evening",
+    "hubRaceRef": "Pikes Peak Highway",
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "sceneryCount": 1909
+  },
+  {
+    "id": "detour-desert-view",
+    "name": "Grand Canyon \u2014 Desert View Drive",
+    "displayName": "Grand Canyon \u2014 Desert View Drive",
+    "status": "installed",
+    "state": "Arizona",
+    "stateCode": "AZ",
+    "location": {
+      "lat": 35.995,
+      "lon": -111.97
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 10,
+    "lengthM": 18259.175965953014,
+    "estimatedDrivingSeconds": 657,
+    "laps": 1,
+    "surface": [
+      "asphalt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-desert-view.json",
+    "references": [
+      "https://www.nps.gov/grca/planyourvisit/desert-view-drive.htm"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage.",
+      "targetSeconds": 660,
+      "paceCapMps": 40,
+      "finishElevation": null,
+      "excludeName": null,
+      "sourceSurface": null
+    },
+    "artHubStage": 9,
+    "weather": "clear",
+    "palette": "canyon",
+    "targetSeconds": 660,
+    "paceCapMps": 40,
+    "raceRef": "Grand Canyon \u2014 Desert View Drive",
+    "documentPath": "races/Grand Canyon %E2%80%94 Desert View Drive/document.json",
+    "lightingPreset": "noon",
+    "hubRaceRef": "Oak Creek Canyon",
+    "installedSurfaces": [
+      "asphalt"
+    ],
+    "sceneryCount": 1335,
+    "startGps": {
+      "lat": 35.98426055,
+      "lon": -111.94003475000001
+    },
+    "finishGps": {
+      "lat": 36.0089757,
+      "lon": -111.8054626
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        7.18,
+        7.08
+      ],
+      "lengthBeforeM": 18503.91,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        7.96,
+        8.98
+      ],
+      "trimStartM": 148.96,
+      "trimFinishM": 95.78,
+      "status": "adjusted",
+      "afterDegrees": [
+        7.96,
+        5.43
+      ],
+      "lengthAfterM": 18259.18,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "14ea893eaeaac665912381047433eba983d64d45ea3732cb2376144ff552b34e"
+    }
+  },
+  {
+    "id": "detour-diamond-creek",
+    "name": "Grand Canyon \u2014 Diamond Creek Descent",
+    "displayName": "Grand Canyon \u2014 Diamond Creek Descent",
+    "status": "installed",
+    "state": "Arizona",
+    "stateCode": "AZ",
+    "location": {
+      "lat": 35.665,
+      "lon": -113.37
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 10,
+    "lengthM": 10534.177109319293,
+    "estimatedDrivingSeconds": 624,
+    "laps": 1,
+    "surface": [
+      "dirt"
+    ],
+    "generatedPath": "artifacts/campaign-import/wilderness/detour-diamond-creek.json",
+    "references": [
+      "https://www.arizonahighways.com/diamond-creek-road"
+    ],
+    "routeReference": {
+      "routing": "Longest connected named-road section, bounded to a practical contiguous driving stage.",
+      "targetSeconds": 660,
+      "paceCapMps": 22,
+      "finishElevation": "lowest",
+      "excludeName": null,
+      "sourceSurface": null
+    },
+    "artHubStage": 9,
+    "weather": "clear",
+    "palette": "canyon",
+    "targetSeconds": 660,
+    "paceCapMps": 22,
+    "raceRef": "Grand Canyon \u2014 Diamond Creek Descent",
+    "documentPath": "races/Grand Canyon %E2%80%94 Diamond Creek Descent/document.json",
+    "lightingPreset": "evening",
+    "hubRaceRef": "Oak Creek Canyon",
+    "installedSurfaces": [
+      "dirt"
+    ],
+    "sceneryCount": 780,
+    "startGps": {
+      "lat": 35.693348,
+      "lon": -113.4032184
+    },
+    "finishGps": {
+      "lat": 35.7654774,
+      "lon": -113.371506
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        9.01
+      ],
+      "lengthBeforeM": 11006.42,
+      "lineWindowsM": [
+        80,
+        40
+      ],
+      "corridorDegrees": [
+        7.35,
+        8.64
+      ],
+      "trimStartM": 335.88,
+      "trimFinishM": 136.37,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 10534.18,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "cd01ba5bb4478749d26c17f50534fedb61aac4b7c13a34cc657e6f600c77e979"
+    }
+  },
+  {
+    "id": "detour-bayard",
+    "name": "Bayard \u2014 Road 77 to City Park",
+    "displayName": "Bayard \u2014 Road 77 to City Park",
+    "status": "installed",
+    "state": "Nebraska",
+    "stateCode": "NE",
+    "location": {
+      "lat": 41.76,
+      "lon": -103.32
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 5401.652369880831,
+    "estimatedDrivingSeconds": 432,
+    "laps": 1,
+    "surface": [
+      "asphalt",
+      "dirt"
+    ],
+    "generatedPath": "artifacts/campaign-import/bayard/detour-bayard.json",
+    "references": [
+      "https://www.openstreetmap.org/way/164980742",
+      "https://www.openstreetmap.org/way/823179391",
+      "https://www.openstreetmap.org/way/14164289",
+      "https://www.openstreetmap.org/way/14174012",
+      "https://www.cityofbayard.net/vimages/shared/vnews/stories/5f861d638bd21/COMPREHESIVE%202017.pdf"
+    ],
+    "routeReference": {
+      "routing": "Ordered GPS waypoints on connected public OSM roads; no repeated edges; service roads require explicit reviewed way IDs.",
+      "waypoints": [
+        {
+          "lat": 41.74394,
+          "lon": -103.28
+        },
+        {
+          "lat": 41.744076,
+          "lon": -103.286435
+        },
+        {
+          "lat": 41.7509767,
+          "lon": -103.3020332
+        },
+        {
+          "lat": 41.758261,
+          "lon": -103.3215376
+        },
+        {
+          "lat": 41.7599753,
+          "lon": -103.324287
+        },
+        {
+          "lat": 41.7621738,
+          "lon": -103.3281638
+        },
+        {
+          "lat": 41.7631331,
+          "lon": -103.3281955
+        },
+        {
+          "lat": 41.76225,
+          "lon": -103.3225
+        }
+      ],
+      "allowedServiceWayIds": [
+        164980742
+      ]
+    },
+    "artHubStage": 7,
+    "weather": "clear",
+    "palette": "prairie",
+    "paceCapMps": 30,
+    "raceRef": "Bayard \u2014 Road 77 to City Park",
+    "documentPath": "races/Bayard %E2%80%94 Road 77 to City Park/document.json",
+    "lightingPreset": "noon",
+    "hubRaceRef": "Pikes Peak Highway",
+    "installedSurfaces": [
+      "dirt",
+      "asphalt"
+    ],
+    "sceneryCount": 378,
+    "startGps": {
+      "lat": 41.74397049458272,
+      "lon": -103.2804561538039
+    },
+    "finishGps": {
+      "lat": 41.76219905,
+      "lon": -103.32484641666667
+    },
+    "linePlacement": {
+      "beforeDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthBeforeM": 5584.59,
+      "lineWindowsM": [
+        80,
+        80
+      ],
+      "corridorDegrees": [
+        0.0,
+        6.47
+      ],
+      "trimStartM": 37.93,
+      "trimFinishM": 145.01,
+      "status": "adjusted",
+      "afterDegrees": [
+        0.0,
+        0.0
+      ],
+      "lengthAfterM": 5401.65,
+      "method": "existing-road-straight-v2",
+      "surveyedStartLine": false,
+      "geometrySignature": "dfab1a4a4bc1d509e642b53e3b3a17beb54ae69f512c5cefc0187e755759554e"
+    }
   }
 ]

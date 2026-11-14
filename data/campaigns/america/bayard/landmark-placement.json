@@ -1,0 +1,134 @@
+{
+  "raceId": "detour-bayard",
+  "landmarks": [
+    {
+      "name": "Bayard Public Schools",
+      "lat": 41.75832462857143,
+      "lon": -103.31804650000001,
+      "reference": "https://www.openstreetmap.org/way/823172055",
+      "placeholderRef": "expanded-abandoned-school",
+      "widthM": 48,
+      "heightM": 13,
+      "suggestedArtRef": "landmark-bayard-bayard-public-schools",
+      "artStatus": "Generic placeholder; dedicated likeness needed",
+      "artBrief": "Research the road-facing appearance of Bayard Public Schools in Bayard, Nebraska. Match existing pixel-art perspective; abandoned 2994 setting, transparent background, grounded bottom edge. No baked text/UI. Dimensions are provisional, not surveyed.",
+      "routeDistanceM": 3853,
+      "routeMiles": 2.39,
+      "offsetFromRoadM": 136,
+      "side": "right",
+      "worldX": 162.03302920216902,
+      "worldZ": 186.29306042063627
+    },
+    {
+      "name": "Assumption Greek Orthodox Church",
+      "lat": 41.759105712,
+      "lon": -103.32255402000001,
+      "reference": "https://www.openstreetmap.org/way/681988884",
+      "placeholderRef": "expanded-abandoned-church",
+      "widthM": 18,
+      "heightM": 16,
+      "suggestedArtRef": "landmark-bayard-assumption-greek-orthodox-church",
+      "artStatus": "Generic placeholder; dedicated likeness needed",
+      "artBrief": "Research the road-facing appearance of Assumption Greek Orthodox Church in Bayard, Nebraska. Match existing pixel-art perspective; abandoned 2994 setting, transparent background, grounded bottom edge. No baked text/UI. Dimensions are provisional, not surveyed.",
+      "routeDistanceM": 4177,
+      "routeMiles": 2.6,
+      "offsetFromRoadM": 56,
+      "side": "right",
+      "worldX": -211.84315190646137,
+      "worldZ": 99.4404259116411
+    },
+    {
+      "name": "Chimney Rock Public Power",
+      "lat": 41.7589425,
+      "lon": -103.32506657777778,
+      "reference": "https://www.openstreetmap.org/way/1292752842",
+      "placeholderRef": "expanded-abandoned-business-building",
+      "widthM": 22,
+      "heightM": 10,
+      "suggestedArtRef": "landmark-bayard-chimney-rock-public-power",
+      "artStatus": "Generic placeholder; dedicated likeness needed",
+      "artBrief": "Research the road-facing appearance of Chimney Rock Public Power in Bayard, Nebraska. Match existing pixel-art perspective; abandoned 2994 setting, transparent background, grounded bottom edge. No baked text/UI. Dimensions are provisional, not surveyed.",
+      "routeDistanceM": 4350,
+      "routeMiles": 2.7,
+      "offsetFromRoadM": 65,
+      "side": "left",
+      "worldX": -420.2472203884464,
+      "worldZ": 117.58879734636109
+    },
+    {
+      "name": "Community Bible Church",
+      "lat": 41.7600038,
+      "lon": -103.3239982,
+      "reference": "https://www.openstreetmap.org/node/357777863",
+      "placeholderRef": "expanded-abandoned-church",
+      "widthM": 16,
+      "heightM": 12,
+      "suggestedArtRef": "landmark-bayard-community-bible-church",
+      "artStatus": "Generic placeholder; dedicated likeness needed",
+      "artBrief": "Research the road-facing appearance of Community Bible Church in Bayard, Nebraska. Match existing pixel-art perspective; abandoned 2994 setting, transparent background, grounded bottom edge. No baked text/UI. Dimensions are provisional, not surveyed.",
+      "routeDistanceM": 4459,
+      "routeMiles": 2.77,
+      "offsetFromRoadM": 26,
+      "side": "right",
+      "worldX": -331.6306410868328,
+      "worldZ": -0.4225413050847525
+    },
+    {
+      "name": "Sacred Heart Catholic Church",
+      "lat": 41.7609213,
+      "lon": -103.3273451,
+      "reference": "https://www.openstreetmap.org/node/357777857",
+      "placeholderRef": "expanded-abandoned-church",
+      "widthM": 22,
+      "heightM": 20,
+      "suggestedArtRef": "landmark-bayard-sacred-heart-catholic-church",
+      "artStatus": "Generic placeholder; dedicated likeness needed",
+      "artBrief": "Research the road-facing appearance of Sacred Heart Catholic Church in Bayard, Nebraska. Match existing pixel-art perspective; abandoned 2994 setting, transparent background, grounded bottom edge. No baked text/UI. Dimensions are provisional, not surveyed.",
+      "routeDistanceM": 4731,
+      "routeMiles": 2.94,
+      "offsetFromRoadM": 48,
+      "side": "left",
+      "worldX": -609.2392131065064,
+      "worldZ": -102.44402741934059
+    },
+    {
+      "name": "City Park Water Tower",
+      "lat": 41.7621743,
+      "lon": -103.3227205,
+      "reference": "https://www.openstreetmap.org/node/11961655928",
+      "placeholderRef": "route-66-water-tower",
+      "widthM": 10,
+      "heightM": 30,
+      "suggestedArtRef": "landmark-bayard-city-park-water-tower",
+      "artStatus": "Generic placeholder; dedicated likeness needed",
+      "artBrief": "Research the road-facing appearance of City Park Water Tower in Bayard, Nebraska. Match existing pixel-art perspective; abandoned 2994 setting, transparent background, grounded bottom edge. No baked text/UI. Dimensions are provisional, not surveyed.",
+      "routeDistanceM": 5532,
+      "routeMiles": 3.44,
+      "offsetFromRoadM": 17,
+      "side": "right",
+      "worldX": -225.65183309416565,
+      "worldZ": -241.77146295177877
+    }
+  ],
+  "pending": [
+    {
+      "name": "Bayard City Park pool and courts",
+      "lat": 41.7624941,
+      "lon": -103.32386014,
+      "reference": "https://www.openstreetmap.org/way/1291861735",
+      "artBrief": "Pool, poolhouse and adjacent recreation grounds; requires ground-level scenery artwork rather than an unrelated building sprite."
+    }
+  ],
+  "excluded": [
+    {
+      "name": "Bayard Depot Museum",
+      "reason": "South of this route; do not relocate it next to the race."
+    },
+    {
+      "name": "Chimney Rock",
+      "reason": "Distant southwest landmark; requires dedicated horizon artwork, not a nearby rock substitute."
+    }
+  ],
+  "placementNote": "Mapped locations; dimensions and artwork provisional. Distances from timed start. No road geometry changes.",
+  "routeLengthM": 5401.652369880831
+}

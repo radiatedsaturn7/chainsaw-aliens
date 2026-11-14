@@ -11,9 +11,10 @@ import path from 'node:path';
 const skipped=new Set((process.argv.find(a=>a.startsWith('--skip='))?.slice(7)||'').split(','));
 const sideRaces=process.argv.includes('--side-races');
 const expansion=process.argv.includes('--state-expansion');
-const raceways=process.argv.includes('--raceways')||expansion;
+const wilderness=process.argv.includes('--wilderness');
+const raceways=process.argv.includes('--raceways')||expansion||wilderness;
 const catalog=JSON.parse(fs.readFileSync(new URL(raceways?'../../data/campaigns/america/raceways/catalog.json':sideRaces?'../../data/campaigns/america/side-races/catalog.json':'../../data/campaigns/america/catalog.json',import.meta.url)))
- .filter(stage=>(!expansion||/^(city|state)-/.test(stage.id))&&(!sideRaces||stage.status==='installed')&&!skipped.has(stage.id)).map(stage=>({...stage,name:stage.name||stage.raceRef}));
+ .filter(stage=>(!wilderness||stage.id.startsWith('detour-'))&&(!expansion||/^(city|state)-/.test(stage.id))&&(!sideRaces||stage.status==='installed')&&!skipped.has(stage.id)).map(stage=>({...stage,name:stage.name||stage.raceRef}));
 
 const auditEdges=process.argv.includes('--audit-edges');
 const stageTimeoutMs=Math.max(1000,Number(process.argv.find(a=>a.startsWith('--timeout-ms='))?.slice(13))||360000);

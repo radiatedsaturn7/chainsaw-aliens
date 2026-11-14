@@ -9,5 +9,6 @@ export function drawCodeEntry(ctx,b,e,value,state={},focused=false){
   if(focused&&i===(state.index||0)){ctx.fillStyle='#39434d';ctx.fillRect(b.x+i*cell+2,b.y,cell-4,b.h*.72);}
   ctx.fillStyle=e.color;drawMenuText(ctx,e,'▲',x,b.y+b.h*.12,cell-4);drawMenuText(ctx,e,code[i],x,b.y+b.h*.36,cell-4);drawMenuText(ctx,e,'▼',x,b.y+b.h*.60,cell-4);
  }
+ if(focused&&state.index===code.length){ctx.fillStyle='#39434d';ctx.fillRect(b.x,b.y+b.h*.76,b.w,b.h*.24);}
  ctx.fillStyle=e.color;drawMenuText(ctx,e,'ENTER',b.x+b.w/2,b.y+b.h*.88,b.w-8);
 }

@@ -4075,7 +4075,9 @@ export function updateRaceSimulation({
   const projection = editor.getRaceRouteProjectionForWorldPoint({
     x: editor.playtestSession.worldX,
     y: presentationState.position?.y,
-    z: editor.playtestSession.worldZ
+    z: editor.playtestSession.worldZ,
+    routeDistanceHint:Number(editor.playtestSession.distance)||0,
+    routeHintWindowM:Math.max(40,Math.hypot(Number(presentationState.velocity?.x)||0,Number(presentationState.velocity?.z)||0)*seconds*3+12)
   });
   const routeNetwork = editor.selectedRace?.road?.network;
   if (routeNetwork) {

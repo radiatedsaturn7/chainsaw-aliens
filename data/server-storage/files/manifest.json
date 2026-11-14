@@ -1067,7 +1067,19 @@
       "Seattle, WA — Landmark Run": "races/Seattle%2C WA %E2%80%94 Landmark Run/document.json",
       "Charleston, WV — Landmark Run": "races/Charleston%2C WV %E2%80%94 Landmark Run/document.json",
       "Milwaukee, WI — Landmark Run": "races/Milwaukee%2C WI %E2%80%94 Landmark Run/document.json",
-      "Cheyenne, WY — Landmark Run": "races/Cheyenne%2C WY %E2%80%94 Landmark Run/document.json"
+      "Cheyenne, WY — Landmark Run": "races/Cheyenne%2C WY %E2%80%94 Landmark Run/document.json",
+      "Thompson Pass — Snowline Climb": "races/Thompson Pass %E2%80%94 Snowline Climb/document.json",
+      "Denali Highway — Tundra Gravel": "races/Denali Highway %E2%80%94 Tundra Gravel/document.json",
+      "Skalkaho Pass — Forest Rally": "races/Skalkaho Pass %E2%80%94 Forest Rally/document.json",
+      "Magruder Corridor — Wilderness Ridge": "races/Magruder Corridor %E2%80%94 Wilderness Ridge/document.json",
+      "Chief Joseph — Dead Indian Pass": "races/Chief Joseph %E2%80%94 Dead Indian Pass/document.json",
+      "Tantalus — Honolulu Heights": "races/Tantalus %E2%80%94 Honolulu Heights/document.json",
+      "Haleakala — Volcano Ascent": "races/Haleakala %E2%80%94 Volcano Ascent/document.json",
+      "Maunakea — Cinder Summit": "races/Maunakea %E2%80%94 Cinder Summit/document.json",
+      "Sandhills Journey — Open Prairie": "races/Sandhills Journey %E2%80%94 Open Prairie/document.json",
+      "Grand Canyon — Desert View Drive": "races/Grand Canyon %E2%80%94 Desert View Drive/document.json",
+      "Grand Canyon — Diamond Creek Descent": "races/Grand Canyon %E2%80%94 Diamond Creek Descent/document.json",
+      "Bayard — Road 77 to City Park": "races/Bayard %E2%80%94 Road 77 to City Park/document.json"
     },
     "settings": {
       "chainsaw-gm-soundfont-url": "settings/chainsaw-gm-soundfont-url/document.json",

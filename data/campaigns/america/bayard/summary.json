@@ -1,0 +1,40 @@
+{
+  "name": "Bayard \u2014 Road 77 to City Park",
+  "hub": "Pikes Peak Highway",
+  "category": "Detours",
+  "route": "Road 104 westbound \u2192 winding unpaved Ninemile Canal road (OSM way 164980742) northwest into Bayard \u2192 Canal Street \u2192 Avenue C \u2192 City Park approach",
+  "sourceLengthM": 5650.966576796594,
+  "estimatedDrivingSeconds": 452,
+  "finishNote": "Finish straight beside southwest City Park approach; straightening trims approximately 59 m from source endpoint. No driving through park grounds.",
+  "limitations": [
+    "OSM labels the canal-side approach unnamed/service, not Road 77; this is the user-corrected southeast route. Northern Road 77 is excluded.",
+    "Mapped unpaved surface modeled as dirt. DEM elevations and default widths are approximate.",
+    "Six mapped landmarks use generic placeholder art; dedicated likenesses, pool grounds and canal water geometry remain unmodeled."
+  ],
+  "rebuild": [
+    "python3 tools/campaigns/prepare_state_sources.py --sources tools/campaigns/bayard_sources.json --output-root data/campaigns/america/bayard",
+    "python3 tools/campaigns/import_state_expansion.py --sources tools/campaigns/bayard_sources.json --output-root data/campaigns/america/bayard",
+    "node tools/campaigns/install_raceways.mjs --report-root=data/campaigns/america/bayard --only=detour-bayard"
+  ],
+  "linePlacement": {
+    "beforeDegrees": [
+      0.0,
+      138.35
+    ],
+    "lengthBeforeM": 5643.29,
+    "lineWindowsM": [
+      80,
+      80
+    ],
+    "trimStartM": 0,
+    "trimFinishM": 58.7,
+    "status": "adjusted",
+    "afterDegrees": [
+      0.0,
+      0.0
+    ],
+    "lengthAfterM": 5584.59
+  },
+  "landmarkCount": 6,
+  "landmarkInventory": "data/campaigns/america/bayard/landmark-placement.json"
+}

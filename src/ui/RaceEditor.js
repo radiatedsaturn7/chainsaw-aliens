@@ -1,3 +1,7 @@
+import {timingLine,timingLineArtRefs,buildTimingLineDecals} from '../racing/RaceTimingLines.js';
+import {routeProjectionScore} from '../racing/RaceRouteProgress.js';
+import {restoreRaceDrivingPreferences,captureRaceDrivingPreferences} from '../racing/RaceDrivingPreferences.js';
+import {joinRaceAtGradeCrossings} from '../racing/RaceAtGradeJunctions.js';
 import { axleTireGeometry, tireSizeForWheel } from '../racing/TireSizes.js';
 import {stopCodriver} from '../racing/RaceCodriver.js';
 import {cockpitDashboardRect,cockpitWheelLayout,cockpitGaugeBounds} from '../racing/CarCockpitLayout.js';
@@ -742,6 +746,7 @@ const RACE_EDITOR_AVAILABLE_ACTIONS = new Set([
   'race-fuel',
   'race-tiles',
   'race-road-textures',
+  'race-timing-lines',
   'race-shoulder-textures',
   'race-margin',
   'race-tire-fx',
@@ -7281,6 +7286,7 @@ export default class RaceEditor {
       'delete-trigger': 'Delete Trigger',
       'race-tiles': this.getRaceSurfaceArtLabel(),
       'race-road-textures': 'Road Textures',
+      'race-timing-lines': 'Timing Lines',
       'race-shoulder-textures': 'Shoulders',
       'race-margin': this.getRaceMarginLabel(),
       'race-tire-fx': 'Tire FX',
@@ -10319,6 +10325,8 @@ export default class RaceEditor {
       this.openRaceWeatherDialog();
     } else if (action === 'race-tiles') {
       this.openRaceTilesDialog();
+    } else if (action === 'race-timing-lines') {
+      this.openRaceTimingLines().catch(error=>{this.status=error.message;});
     } else if (action === 'race-road-textures') {
       this.openRaceRoadTextures().catch(error => { this.status = error.message; });
     } else if (action === 'race-shoulder-textures') {
@@ -10498,7 +10506,7 @@ export default class RaceEditor {
     if (action === 'sprite-size' || action === 'sprite-height' || action === 'sprite-behavior') {
       this.activeAction = 'paint-sprite';
     }
-    if (!['generate-random-race', ...BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => entry.id), ...Object.keys(CAR_EDITOR_TUNING_ACTION_PATHS), 'ground-tile-next', 'paint-ground', 'paint-elevation', 'elevation-up', 'elevation-down', 'elevation-brush-size', 'race-ground-mode', 'race-ground-paint', 'race-ground-intensity', 'race-ground-brush', 'race-ground-mode-track', 'race-ground-mode-ground', 'race-ground-mode-elevation', 'race-ground-mode-sprites', 'race-ground-mode-doodad', 'race-ground-paint-raise', 'race-ground-paint-lower', 'race-ground-intensity-erase', 'edge-tile', 'segment-width', 'segment-bumpiness', 'boundary-collidable', 'snow-condition', 'move-node', 'insert-node', 'snap-node', 'remove-node', 'remove-edge', 'transmission-type', 'load-preset', 'summary-sheet', 'engine-sound-next', 'engine-sfx', 'add-sprite', 'sprite-select', 'doodad-select', 'paint-sprite', 'erase-sprite', 'move-sprite', 'delete-sprite', 'sprite-size', 'sprite-height', 'sprite-behavior', 'weather-intensity', 'skybox-next', 'ai-count', 'race-sun', 'race-fx', 'race-weather', 'race-tiles', 'race-road-textures', 'race-shoulder-textures', 'race-margin', 'race-tire-fx', 'race-texture-scale', 'race-debug', 'race-decal', 'race-ground-box', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile', 'sprite-brush-settings'].includes(action) && !action.startsWith('weather-') && !action.startsWith('ground-tile-') && !action.startsWith('ground-brush-') && !action.startsWith('elevation-up-') && !action.startsWith('elevation-down-')) {
+    if (!['generate-random-race', ...BUILT_IN_RACE_LOAD_ACTIONS.map((entry) => entry.id), ...Object.keys(CAR_EDITOR_TUNING_ACTION_PATHS), 'ground-tile-next', 'paint-ground', 'paint-elevation', 'elevation-up', 'elevation-down', 'elevation-brush-size', 'race-ground-mode', 'race-ground-paint', 'race-ground-intensity', 'race-ground-brush', 'race-ground-mode-track', 'race-ground-mode-ground', 'race-ground-mode-elevation', 'race-ground-mode-sprites', 'race-ground-mode-doodad', 'race-ground-paint-raise', 'race-ground-paint-lower', 'race-ground-intensity-erase', 'edge-tile', 'segment-width', 'segment-bumpiness', 'boundary-collidable', 'snow-condition', 'move-node', 'insert-node', 'snap-node', 'remove-node', 'remove-edge', 'transmission-type', 'load-preset', 'summary-sheet', 'engine-sound-next', 'engine-sfx', 'add-sprite', 'sprite-select', 'doodad-select', 'paint-sprite', 'erase-sprite', 'move-sprite', 'delete-sprite', 'sprite-size', 'sprite-height', 'sprite-behavior', 'weather-intensity', 'skybox-next', 'ai-count', 'race-sun', 'race-fx', 'race-weather', 'race-tiles', 'race-road-textures', 'race-timing-lines', 'race-shoulder-textures', 'race-margin', 'race-tire-fx', 'race-texture-scale', 'race-debug', 'race-decal', 'race-ground-box', 'paint-decal', 'erase-decal', 'paint-tile', 'erase-tile', 'sprite-brush-settings'].includes(action) && !action.startsWith('weather-') && !action.startsWith('ground-tile-') && !action.startsWith('ground-brush-') && !action.startsWith('elevation-up-') && !action.startsWith('elevation-down-')) {
       this.status = `${action.replace(/-/g, ' ')} selected`;
     }
     this.activeRootId = this.findRootForAction(action) || this.activeRootId;
@@ -10916,6 +10924,29 @@ export default class RaceEditor {
     this.status = 'Shoulders updated. Save the race to keep changes.';
   }
 
+  async openRaceTimingLines(showForm=openEditorForm){
+    const race=this.selectedRace;if(!race)return;
+    const names=new Set([...listProjectFiles('art').map(f=>f.name),...timingLineArtRefs(race)]);
+    const options=[{value:'',label:'Default checker'},{value:'__none',label:'Hidden'},...[...names].sort().map(value=>({value,label:value}))];
+    const sides=this.getSelectedRaceRuntimeType()==='circuit'?['start']:['start','finish'];
+    const fields=sides.flatMap(side=>{
+      const line=timingLine(race,side),label=side==='start'?'Start / lap':'Finish';
+      return [{id:side,label:label+' artwork',type:'select',options,value:line.artRef},
+        {id:side+'Depth',label:label+' length (m)',type:'number',min:.25,max:30,step:.25,value:line.depthM},
+        {id:side+'Width',label:label+' width (%)',type:'number',min:10,max:200,step:5,value:line.widthScale*100}];
+    });
+    const result=await showForm('Timing Line Artwork',fields);
+    if(!result||this.selectedRace!==race)return;
+    this.captureRaceHistory('Timing line artwork');race.timingLines||={};
+    for(const side of sides)race.timingLines[side]=timingLine({timingLines:{[side]:{artRef:result[side],depthM:result[side+'Depth'],widthScale:Number(result[side+'Width'])/100}}},side);
+    this.clearRaceRuntimeSurfaceCaches();
+    this.status='Timing line artwork updated. Save the race to keep changes.';
+  }
+
+  getRaceRenderDecals(){
+    return [...this.ensureRaceDecals(),...buildTimingLineDecals(this.selectedRace,this.getRaceRouteLength(),d=>this.getRaceWorldPoseAtDistance(d),this.getSelectedRaceRuntimeType()==='circuit')];
+  }
+
   async openRaceRoadTextures(showForm = openEditorForm) {
     const race = this.selectedRace;
     if (!race) return;
@@ -11128,6 +11159,7 @@ export default class RaceEditor {
     (race.sceneryDefinitions || []).forEach((definition) => add(definition?.artRef));
     (race.scenery || []).forEach((sprite) => add(sprite?.artRef));
     (race.decals || []).forEach((decal) => add(decal?.artRef));
+    timingLineArtRefs(race).forEach(add);
     Object.values(race.tireFx || {}).forEach((settings) => add(settings?.artRef));
     Object.values(race.road?.tileMap?.cells || {}).forEach((cell) => {
       add(cell?.artRef || cell?.tileArtRef);
@@ -11166,6 +11198,7 @@ export default class RaceEditor {
     (race.sceneryDefinitions || []).forEach((definition) => add(definition?.artRef));
     (race.scenery || []).forEach((sprite) => add(sprite?.artRef));
     (race.decals || []).forEach((decal) => add(decal?.artRef));
+    timingLineArtRefs(race).forEach(add);
     Object.values(race.tireFx || {}).forEach((settings) => add(settings?.artRef));
     Object.values(race.road?.tileMap?.cells || {}).forEach((cell) => {
       add(cell?.artRef || cell?.tileArtRef);
@@ -11993,7 +12026,7 @@ export default class RaceEditor {
             allowVisualExtension: true
           }));
         }
-        return { ...surfaceBake, sections };
+        return { ...surfaceBake, sections, junctions:joinRaceAtGradeCrossings(sections,{runtimeType,elevationScaleM:RACE_THREE_ELEVATION_M,adjustHeights:false}) };
       })();
     if (terrainTopology === 'road-origin-indexed') {
       const surfaceModel = this.getRaceSurfaceModel();
@@ -13590,16 +13623,17 @@ export default class RaceEditor {
     const playtestCarId = this.getRaceCarProjectIdentity(car) || car?.id || '';
     const savedDriving=options?.carEditorPreview!==true&&this.game.campaignSaves?.hasActive&&!this.game.menuPlayer?.preview ? this.game.menuProgress||{} : null;
     if(savedDriving){
+      restoreRaceDrivingPreferences(this.raceInput,savedDriving);
       if(typeof savedDriving.raceDrivingLine==='boolean')this.selectedRace.drivingGuide={...this.selectedRace.drivingGuide,line:savedDriving.raceDrivingLine};
       if(['Off','Voice','Icons','Both'].includes(savedDriving.racePaceMode)){
         const mode=savedDriving.racePaceMode;
         this.selectedRace.codriver={...this.selectedRace.codriver,enabled:mode!=='Off',spoken:mode==='Voice'||mode==='Both',icons:mode==='Icons'||mode==='Both'};
       }
     }
-    if (typeof savedDriving?.raceLaunchControl === 'boolean') this.raceInput.launchControlEnabled = savedDriving.raceLaunchControl;
-    if(DIGITAL_THROTTLE_MODES.includes(savedDriving?.raceDigitalThrottle))this.raceInput.digitalThrottleMode=savedDriving.raceDigitalThrottle;
-    const preferredTransmission=savedDriving?.raceTransmission;
-    const transmissionType = preferredTransmission&&car.transmissions?.[preferredTransmission]?preferredTransmission:this.getRaceTransmissionType(car);
+    const preferredTransmission=savedDriving?.raceTransmission==='manual'?'manual':savedDriving?'automatic':this.raceInput.transmissionMode||'automatic';
+    // Shifting assistance must not replace the installed gearbox or its ratios.
+    const transmissionType = car.transmissions?.[car.defaultTransmissionType]?car.defaultTransmissionType
+      :car.transmissions?.manual?'manual':car.transmissions?.automatic?'automatic':car.defaultTransmissionType||'automatic';
     const tuning = this.getRaceCarTuning(car, { transmissionType });
     const initialGear = 1;
     const runtimeType = this.getSelectedRaceRuntimeType();
@@ -13645,6 +13679,7 @@ export default class RaceEditor {
       raceDocumentName,
       carId: playtestCarId,
       runtimeCar: car,
+      debugCarOverride: options?.debugCarOverride === true,
       runtimeCarWidthM: tuning.widthM,
       startedAt: Date.now(),
       elapsedMs: 0,
@@ -13798,8 +13833,8 @@ export default class RaceEditor {
       brakeAxis: 0,
       analogThrottleActive: false,
       analogBrakeActive: false,
-      autoShift: tuning.shiftMode !== 'manual',
-      transmissionMode: transmissionType,
+      autoShift: preferredTransmission !== 'manual',
+      transmissionMode: preferredTransmission,
       absEnabled: startAbsEnabled,
       tractionControlEnabled: startTractionControlEnabled,
       launchControlEnabled: this.raceInput.launchControlEnabled === true,
@@ -13866,7 +13901,7 @@ export default class RaceEditor {
 
   persistRaceMechanicalCondition(session=this.playtestSession){
     const travel=this.game?.raceTravelSession;
-    if(!travel||this.mode!=='race'||!session?.mechanical)return Promise.resolve();
+    if(!travel||this.mode!=='race'||!session?.mechanical||session.debugCarOverride)return Promise.resolve();
     const car=travel.carSelection,ref=car?.documentName||car?.name||session.carId;
     return travel.garage?.saveCondition?.(ref,{damage:session.damage,mechanical:session.mechanical})||Promise.resolve();
   }
@@ -14730,7 +14765,9 @@ export default class RaceEditor {
     }
     const projectionCandidates = this.raceRouteProjectionIndex.buckets
       .get(Math.floor(px / projectionCellSizeM))?.get(Math.floor(pz / projectionCellSizeM));
-    let bestIndex = 0, bestDistanceSq = Infinity, bestT = 0;
+    let bestIndex = 0, bestDistanceSq = Infinity, bestScore = Infinity, bestT = 0;
+    const progressHint={hint:point.routeDistanceHint,window:point.routeHintWindowM??40,
+      length:routeSamples.at(-1)?.distance||0,circuit:this.getSelectedRaceRuntimeType()==='circuit'};
     let bestX = 0, bestZ = 0, bestDx = 0, bestDz = 0, bestOffsetX = 0, bestOffsetZ = 0;
     // Same ordered candidates and exact fallback, without a per-query closure
     // or a freshly formatted spatial-bucket string.
@@ -14754,8 +14791,10 @@ export default class RaceEditor {
         const offsetX = px - x;
         const offsetZ = pz - z;
         const distanceSq = offsetX * offsetX + offsetZ * offsetZ;
-        if (!bestIndex || distanceSq < bestDistanceSq) {
-          bestIndex = index; bestDistanceSq = distanceSq; bestT = t;
+        const along=Number(previous.distance||0)+(Number(next.distance||0)-Number(previous.distance||0))*t;
+        const score=routeProjectionScore(distanceSq,along,progressHint);
+        if (!bestIndex || score < bestScore) {
+          bestIndex = index; bestDistanceSq = distanceSq; bestScore=score; bestT = t;
           bestX = x; bestZ = z; bestDx = dx; bestDz = dz;
           bestOffsetX = offsetX; bestOffsetZ = offsetZ;
         }
@@ -16819,6 +16858,44 @@ export default class RaceEditor {
       : 0;
   }
 
+  async selectRaceDebugCar(picker=openProjectBrowser) {
+    const session=this.playtestSession;
+    if(!session||session.preparing||session.finishing)return;
+    const picked=await picker({mode:'open',fixedFolder:'cars',initialFolder:'cars',title:'Swap Car — Restart Race'});
+    if(picked?.action!=='open'||!picked.name||this.playtestSession!==session)return;
+    const car=this.withSavedRaceCarRuntimeIdentity(this.normalizeLoadedCarDocument(picked.payload?.data||picked.payload,picked.name,{preserveExistingArt:false}),picked.name);
+    if(!car?.id)throw Error('Could not load selected car');
+    for(const ref of this.collectRaceCarArtRefs(car)){
+      const payload=await this.hydrateRaceArt(ref);
+      if(this.playtestSession!==session)return;
+      const preparedOnly=session.raceTravelPreparedArtOnly;
+      try {
+        session.raceTravelPreparedArtOnly=false;
+        this.racePreparedArtFrames ||= new Map();
+        const {frames}=getArtDocumentFrames(payload?.data||payload||{});
+        for(let frameIndex=0;frameIndex<Math.max(1,frames.length);frameIndex++){
+          const canvas=this.getRaceArtSpriteCanvas(ref,{frameIndex});
+          if(!canvas)throw Error('Could not prepare car artwork '+ref);
+          this.racePreparedArtFrames.set(`${ref}:frame:${frameIndex}`,canvas);
+        }
+      } finally { session.raceTravelPreparedArtOnly=preparedOnly; }
+    }
+    const carId=this.getRaceCarProjectIdentity(car);
+    if(!this.selectPlaytestCarEntry({id:carId,name:picked.name,car},{silent:true}))return;
+    const worldBake=session.worldBake||this.raceWorldBakeCache,autoShift=this.raceInput.autoShift;
+    this.disposeRacePlaytestSession(session,'debug-car-swap');
+    this.game?.audio?.setEngineRev?.(false);this.game?.audio?.setTireScreech?.(false);
+    this.game?.stopSfxById?.(session.activeEngineSoundId||session.engineSoundId||'',{key:'race-engine'});
+    this.resetRacePlaytestInputs();
+    if(this.raceThreeWorldRenderer){
+      this.raceThreeWorldRenderer.tireTrackSessionKey=null;
+      this.raceThreeWorldRenderer.trackStateCells=null;
+    }
+    this.startPlaytest(carId,{hydrateCars:false,debugCarOverride:true,preparedWorldBake:worldBake,raceTravel:Boolean(this.game?.raceTravelSession)});
+    this.raceInput.autoShift=autoShift;
+    this.status=`Debug car: ${picked.name}; race restarted`;
+  }
+
   async selectRaceDebugTires(picker=openTireLibrary) {
     const session=this.playtestSession;if(!session)return;
     const selected=await picker({currentRef:this.getRaceSessionCar(session)?.setup?.tireDefinition?.ref||''});
@@ -18374,7 +18451,7 @@ export default class RaceEditor {
       return;
     }
     const surfaceId = getSurfaceById(surface).id;
-    const material = ['dirt', 'gravel', 'snow'].includes(surfaceId) ? 'dirt' : 'pavement';
+    const material = /snow|slush/.test(surfaceId)?'snow':/wet-asphalt/.test(surfaceId)?'wet':/gravel|dirt|mud|grass|sand/.test(surfaceId)?'dirt':'pavement';
     this.game.audio.setTireScreech(true, {
       slip: amount,
       speedMps:Math.max(Math.abs(Number(speedMps)||0),Number(slipSpeedMps)||0),
@@ -20343,6 +20420,7 @@ export default class RaceEditor {
   toggleRaceCameraView() {
     this.raceInput.cameraView = this.raceInput.cameraView === 'first-person' ? 'third-person' : 'first-person';
     if (this.playtestSession) this.playtestSession.cameraView = this.raceInput.cameraView;
+    void this.saveDrivingPreference({});
   }
 
   toggleRacePause() {
@@ -20379,6 +20457,7 @@ export default class RaceEditor {
       hydrateCars: false,
       runtimeCarOverrides: this.game?.raceTravelSession?{...car,condition:{damage:structuredClone(session.damage),mechanical:structuredClone(session.mechanical)}}:car,
       preserveMechanicalCondition:true,
+      debugCarOverride:session.debugCarOverride===true,
       preparedWorldBake: worldBake,
       raceTravel: Boolean(this.game?.raceTravelSession)
     });
@@ -20428,6 +20507,7 @@ export default class RaceEditor {
         {id:'race-debug-ai-add',label:'Add AI racer',value:`${this.playtestSession?.aiRuntime?.length || 0} / 29`,disabled:(this.playtestSession?.aiRuntime?.length || 0)>=29,onClick:()=>changeRaceDebugAi(this,1)},
         {id:'race-debug-ai-remove',label:'Remove AI racer',value:'',disabled:!this.playtestSession?.aiRuntime?.length,onClick:()=>changeRaceDebugAi(this,-1)},
         {id:'race-debug-visibility',label:'Visibility (Auto)',value:this.raceInput.pauseMenuMode!=='debug-weather'?'':Number.isFinite(this.getRaceWeatherState().visibilityDistanceM)?Math.round(this.getRaceWeatherState().visibilityDistanceM)+' m':'Clear',onClick:()=>this.adjustRaceDebugEnvironment('visibilityDistanceM'),onAdjust:d=>this.adjustRaceDebugEnvironment('visibilityDistanceM',d)},
+        {id:'race-debug-car',label:'Swap car',value:'Restart race',onClick:()=>this.selectRaceDebugCar().catch(error=>{this.status='Car swap failed: '+error.message;this.game?.showSystemToast?.(this.status);})},
         {id:'race-debug-tires',label:'Swap tires',value:this.raceInput.pauseMenuMode==='debug-vehicle'?this.getSelectedCarTireLabel(this.getRaceSessionCar()||this.selectedCar):'',onClick:()=>this.selectRaceDebugTires().catch(error=>{this.status='Tire swap failed: '+error.message;this.game?.showSystemToast?.(this.status);})},
         {id:'race-debug-input-pedal',label:'Digital throttle',value:this.raceInput.digitalThrottleMode||'off',onClick:()=>this.cycleRaceDigitalThrottle(),onAdjust:d=>this.cycleRaceDigitalThrottle(d)},
         {id:'race-debug-input-intent',label:'Intent display',value:this.raceInput.drivingIntentVisible?'On':'Off',onClick:()=>{this.raceInput.drivingIntentVisible=!this.raceInput.drivingIntentVisible;},onAdjust:()=>{this.raceInput.drivingIntentVisible=!this.raceInput.drivingIntentVisible;}},
@@ -20492,7 +20572,7 @@ export default class RaceEditor {
         : id.startsWith('race-debug-input-') ? 'input'
         : id.startsWith('race-debug-road-') ? 'road'
         : id.startsWith('race-debug-ai-') ? 'ai'
-        : ['race-debug-tires','race-test-indicators'].includes(id) ? 'vehicle'
+        : ['race-debug-car','race-debug-tires','race-test-indicators'].includes(id) ? 'vehicle'
         : id.startsWith('race-toggle-') ? 'overlays' : 'weather';
       const open = mode => {this.raceInput.pauseMenuMode=mode;this.raceInput.pauseMenuIndex=0;};
       const back = {id:'race-pause-back',label:'Back',value:'',onClick:()=>this.backRacePauseMenu()};
@@ -20607,13 +20687,13 @@ export default class RaceEditor {
   activateRacePauseSelection() {
     const rows = this.getRacePauseMenuRows();
     const row = rows[clamp(Math.round(Number(this.raceInput.pauseMenuIndex || 0)), 0, Math.max(0, rows.length - 1))];
-    if(!row?.disabled)row?.onClick?.();
+    if(!row?.disabled){row?.onClick?.();void this.saveDrivingPreference({});}
   }
 
   adjustRacePauseSelection(delta = 0) {
     const rows = this.getRacePauseMenuRows();
     const row = rows[clamp(Math.round(Number(this.raceInput.pauseMenuIndex || 0)), 0, Math.max(0, rows.length - 1))];
-    if (!row?.disabled && row?.onAdjust) row.onAdjust(delta);
+    if (!row?.disabled && row?.onAdjust){row.onAdjust(delta);void this.saveDrivingPreference({});}
   }
 
   backRacePauseMenu() {
@@ -20662,19 +20742,12 @@ export default class RaceEditor {
 
   toggleRaceTransmissionMode() {
     const car = this.getRaceSessionCar(this.playtestSession);
-    const available = car?.transmissions || {};
-    const current = this.getRaceTransmissionType(car);
-    const next = current === 'manual' && available.automatic ? 'automatic' : 'manual';
-    const tuning = this.getRaceCarTuning(car, { transmissionType: next });
+    const next = this.raceInput.autoShift === false ? 'automatic' : 'manual';
     this.raceInput.transmissionMode = next;
-    this.raceInput.autoShift = tuning.shiftMode !== 'manual';
-    if (this.playtestSession) {
-      this.playtestSession.transmissionType = next;
-      this.playtestSession.engineSoundProfile = this.getRaceEngineProfileForTransmission(car, tuning);
-      if (this.raceInput.autoShift && this.raceInput.gear === 0) {
-        this.raceInput.gear = 1;
-        this.playtestSession.gear = 1;
-      }
+    this.raceInput.autoShift = next !== 'manual';
+    if (this.playtestSession && this.raceInput.autoShift && this.raceInput.gear === 0) {
+      this.raceInput.gear = 1;
+      this.playtestSession.gear = 1;
     }
     void this.saveDrivingPreference({raceTransmission:next});
     this.status = `${car.name} transmission: ${next === 'manual' ? 'Manual' : 'Automatic'}`;
@@ -20700,6 +20773,7 @@ export default class RaceEditor {
   toggleRaceAbs() {
     this.raceInput.absEnabled = this.raceInput.absEnabled === false;
     if (this.playtestSession) this.playtestSession.absEnabled = this.raceInput.absEnabled !== false;
+    void this.saveDrivingPreference({});
     this.status = `ABS ${this.raceInput.absEnabled === false ? 'Off' : 'On'}`;
   }
 
@@ -20714,12 +20788,14 @@ export default class RaceEditor {
   toggleRaceTractionControl() {
     this.raceInput.tractionControlEnabled = this.raceInput.tractionControlEnabled === false;
     if (this.playtestSession) this.playtestSession.tractionControlEnabled = this.raceInput.tractionControlEnabled !== false;
+    void this.saveDrivingPreference({});
     this.status = `Traction Control ${this.raceInput.tractionControlEnabled === false ? 'Off' : 'On'}`;
   }
 
   toggleRaceTelemetry() {
     this.raceInput.telemetryVisible = this.raceInput.telemetryVisible !== true;
     if (this.playtestSession) this.playtestSession.telemetryVisible = this.raceInput.telemetryVisible === true;
+    void this.saveDrivingPreference({});
     this.status = `Race telemetry ${this.raceInput.telemetryVisible ? 'On' : 'Off'}`;
   }
 
@@ -20771,7 +20847,7 @@ export default class RaceEditor {
 
   saveDrivingPreference(values){
     if(!this.game.campaignSaves?.hasActive||this.game.menuPlayer?.preview||this.playtestSession?.carEditorPreview||!this.game.raceTravelSession)return;
-    return setMenuProgress(this.game,{raceDrivingLine:this.selectedRace?.drivingGuide?.line!==false,racePaceMode:racePaceNoteModeLabel(this.selectedRace),raceTransmission:this.raceInput.transmissionMode,...values}).catch(error=>{this.game.showSystemToast?.(error.message);});
+    return setMenuProgress(this.game,{...captureRaceDrivingPreferences(this.raceInput),raceDrivingLine:this.selectedRace?.drivingGuide?.line!==false,racePaceMode:racePaceNoteModeLabel(this.selectedRace),raceTransmission:this.raceInput.transmissionMode,...values}).catch(error=>{this.game.showSystemToast?.(error.message);});
   }
 
   toggleRaceDrivingLine() {
@@ -32126,7 +32202,7 @@ export default class RaceEditor {
   }
 
   drawRaceTopDownDecals(ctx, bounds, { kind = null } = {}) {
-    const decals = this.ensureRaceDecals();
+    const decals = this.getRaceRenderDecals();
     if (!decals.length) return;
     decals.forEach((decal) => {
       if (kind && String(decal.kind || 'decal') !== kind) return;
@@ -34097,6 +34173,7 @@ export default class RaceEditor {
       this.isRaceShoulderVisible() ? 1 : 0,
       this.getRaceGroundTextureFilterMode(),
       JSON.stringify(this.getRaceRuntimeRoadTextures()),
+      JSON.stringify(this.selectedRace?.timingLines||{}),
       JSON.stringify(this.selectedRace?.waterRegions || []),
       JSON.stringify((this.selectedRace?.road?.segments || []).map(segment => segment.shoulderTexture || null))
     ].join('::static-track-surface::');
@@ -37290,7 +37367,7 @@ export default class RaceEditor {
 
   getRaceWebGLDecalMeshes(){
     if(this.areRaceDebugDecalsHidden()||this.getRaceRenderDebugSettings().overlaysEnabled===false)return [];
-    const decals=this.ensureRaceDecals().filter(d=>d.kind!=='tile'),surface=this.getRaceSurfaceModel();
+    const decals=this.getRaceRenderDecals().filter(d=>d.kind!=='tile'),surface=this.getRaceSurfaceModel();
     const key=JSON.stringify(decals),cached=this.raceWebGLDecalMeshes;
     if(cached?.key===key&&cached.surface===surface)return cached.meshes;
     const meshes=decals.flatMap(decal=>this.getRaceDecalTriangles(decal).map(points=>({
@@ -37302,7 +37379,7 @@ export default class RaceEditor {
 
   syncRaceThreeDecals(renderer, { stats = null } = {}) {
     if (!renderer?.scene) return false;
-    const decals = this.areRaceDebugDecalsHidden() || this.getRaceRenderDebugSettings().overlaysEnabled === false ? [] : this.ensureRaceDecals().filter(d=>d.kind !== 'tile');
+    const decals = this.areRaceDebugDecalsHidden() || this.getRaceRenderDebugSettings().overlaysEnabled === false ? [] : this.getRaceRenderDecals().filter(d=>d.kind !== 'tile');
     const surface = this.getRaceSurfaceModel();
     const key = JSON.stringify(decals) + ':' + decals.map(d=> {
       const art=this.getRaceArtSpriteCanvas(d.artRef); return art?.__raceArtCacheKey || (art ? `${art.width}x${art.height}` : 'pending');
@@ -38733,10 +38810,10 @@ export default class RaceEditor {
         });
       }
     };
-    if (Number(travel || 0) <= 18) pushStripe(0, 9);
+    if (!timingLine(this.selectedRace,'start').artRef && Number(travel || 0) <= 18) pushStripe(0, 9);
     if (routeRuntimeType !== 'circuit') {
       const finishDistance = Number(routeLength || 1);
-      if (finishDistance >= visibleMinDistance - 12 && finishDistance <= visibleMaxDistance + 12) {
+      if (!timingLine(this.selectedRace,'finish').artRef && finishDistance >= visibleMinDistance - 12 && finishDistance <= visibleMaxDistance + 12) {
         pushStripe(Math.max(0, finishDistance - 10), finishDistance);
       }
     }
@@ -39718,7 +39795,7 @@ export default class RaceEditor {
   drawRaceProjectedDecals(ctx, bounds, { camera = {}, cameraYaw = 0, kind = null } = {}) {
     // Canvas fallback uses the same terrain-conforming triangles, with UVs
     // attached to each triangle rather than stretching a screen-space rectangle.
-    for (const decal of this.ensureRaceDecals()) {
+    for (const decal of this.getRaceRenderDecals()) {
       if (kind && decal.kind !== kind) continue;
       if (decal.kind !== 'tile' && this.areRaceDebugDecalsHidden()) continue;
       const art=this.getRaceArtSpriteCanvas(decal.artRef); if(!art)continue;
@@ -40576,7 +40653,7 @@ export default class RaceEditor {
     const currentTravel = Number(travel) || 0;
     if (!race) return;
     const startDistance = 6;
-    if (currentTravel <= startDistance + 12) {
+    if (!timingLine(race,'start').artRef && currentTravel <= startDistance + 12) {
       this.drawRaceCheckerStripeAtDistance(ctx, bounds, {
         slices,
         camera,
@@ -40588,7 +40665,7 @@ export default class RaceEditor {
     const routeRuntimeType = this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType();
     if (routeRuntimeType !== 'circuit') {
       const finishDistance = Number(routeLength || 1);
-      if (finishDistance >= currentTravel) {
+      if (!timingLine(race,'finish').artRef && finishDistance >= currentTravel) {
         this.drawRaceCheckerStripeAtDistance(ctx, bounds, {
           slices,
           camera,

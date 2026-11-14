@@ -40,7 +40,7 @@ export function recordRaceRecoveryPosition(editor, session, state, upDot, second
   const position = state.position;
   if (!position || ![position.x,position.y,position.z].every(Number.isFinite)) return rejectHistory(history, 'invalid-position');
   const projection = editor.getRaceRouteProjectionForWorldPoint({
-    x:position.x,z:position.z,heightM:position.y,y:position.y
+    x:position.x,z:position.z,heightM:position.y,y:position.y,routeDistanceHint:Number(session.distance)||0
   });
   if (!Number.isFinite(projection?.distance)) return rejectHistory(history, 'invalid-projection');
   const pose = projection.edgeId ? projection : editor.getRaceWorldPoseAtDistance(projection.distance);

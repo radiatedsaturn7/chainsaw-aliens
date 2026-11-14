@@ -1,0 +1,68 @@
+[
+  {
+    "id": "detour-bayard",
+    "name": "Bayard \u2014 Road 77 to City Park",
+    "state": "Nebraska",
+    "stateCode": "NE",
+    "kind": "road",
+    "lat": 41.76,
+    "lon": -103.32,
+    "selection": ".*",
+    "bounds": [
+      41.73,
+      -103.55,
+      41.83,
+      -103.25
+    ],
+    "waypoints": [
+      {
+        "lat": 41.74394,
+        "lon": -103.28
+      },
+      {
+        "lat": 41.744076,
+        "lon": -103.286435
+      },
+      {
+        "lat": 41.7509767,
+        "lon": -103.3020332
+      },
+      {
+        "lat": 41.758261,
+        "lon": -103.3215376
+      },
+      {
+        "lat": 41.7599753,
+        "lon": -103.324287
+      },
+      {
+        "lat": 41.7621738,
+        "lon": -103.3281638
+      },
+      {
+        "lat": 41.7631331,
+        "lon": -103.3281955
+      },
+      {
+        "lat": 41.76225,
+        "lon": -103.3225
+      }
+    ],
+    "references": [
+      "https://www.openstreetmap.org/way/164980742",
+      "https://www.openstreetmap.org/way/823179391",
+      "https://www.openstreetmap.org/way/14164289",
+      "https://www.openstreetmap.org/way/14174012",
+      "https://www.cityofbayard.net/vimages/shared/vnews/stories/5f861d638bd21/COMPREHESIVE%202017.pdf"
+    ],
+    "artHubStage": 7,
+    "weather": "clear",
+    "palette": "prairie",
+    "paceCapMps": 30,
+    "defaultWidthM": 6,
+    "surfaceNote": "User-corrected southeast approach from Road 104 follows mapped unnamed unpaved way 164980742 beside Ninemile Canal. OSM does not name this way Road 77. Northern Road 77 excluded. Unpaved is modeled as dirt; paved town streets retained.",
+    "allowedServiceWayIds": [
+      164980742
+    ]
+  }
+]

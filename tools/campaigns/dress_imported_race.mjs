@@ -1,3 +1,4 @@
+import {applyWildernessConditions} from './wilderness_dressing.mjs';
 // Shared regional dressing for imported side events and raceway layouts.
 import {applySideRaceLighting} from './side_race_lighting.mjs';
 import {authorRaceContinuations} from './author_continuations.mjs';
@@ -27,6 +28,7 @@ export function dressImportedRace(race,row,parent,manifest,editor){
   for(const [i,segment] of race.road.segments.entries())if(i%5===3){segment.surface='gravel';segment.bumpiness=.09;}
   race.source.campaignConditions='Fictional 2994 damage exposes gravel in intermittent sections of the mapped paved NN access road; geometry is unchanged.';
  }
+ applyWildernessConditions(race,row);
  race.source.elevationSmoothingRadiusM=45;
  Object.assign(race.source,{shoulderFlatJoinM:8,shoulderBlendWidthM:32,shoulderMaxSlope:.22});
  if(race.type==='destination')authorRaceContinuations(race);

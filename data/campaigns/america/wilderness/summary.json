@@ -1,0 +1,231 @@
+{
+  "createdAt": "2026-11-13T20:37:46.355532+00:00",
+  "eventCount": 11,
+  "events": [
+    {
+      "id": "detour-thompson",
+      "name": "Thompson Pass \u2014 Snowline Climb",
+      "state": "Alaska",
+      "hub": "Angeles Crest Highway",
+      "menu": "Detours",
+      "lengthMiles": 8.71,
+      "estimatedMinutes": 11.1,
+      "surfaces": [
+        "snow"
+      ],
+      "weather": "snow",
+      "sceneryCount": 1015,
+      "documentPath": "races/Thompson Pass %E2%80%94 Snowline Climb/document.json",
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-thompson.json",
+      "references": [
+        "https://dot.alaska.gov/highways/richardson/"
+      ]
+    },
+    {
+      "id": "detour-denali",
+      "name": "Denali Highway \u2014 Tundra Gravel",
+      "state": "Alaska",
+      "hub": "Angeles Crest Highway",
+      "menu": "Detours",
+      "lengthMiles": 7.62,
+      "estimatedMinutes": 11.1,
+      "surfaces": [
+        "snow",
+        "gravel"
+      ],
+      "weather": "snow",
+      "sceneryCount": 890,
+      "documentPath": "races/Denali Highway %E2%80%94 Tundra Gravel/document.json",
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-denali.json",
+      "references": [
+        "https://www.blm.gov/visit/denali-highway"
+      ]
+    },
+    {
+      "id": "detour-skalkaho",
+      "name": "Skalkaho Pass \u2014 Forest Rally",
+      "state": "Montana",
+      "hub": "Moki Dugway",
+      "menu": "Detours",
+      "lengthMiles": 5.58,
+      "estimatedMinutes": 11.1,
+      "surfaces": [
+        "gravel"
+      ],
+      "weather": "clear",
+      "sceneryCount": 854,
+      "documentPath": "races/Skalkaho Pass %E2%80%94 Forest Rally/document.json",
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-skalkaho.json",
+      "references": [
+        "https://visitmt.com/listing/skalkaho-pass-12543"
+      ]
+    },
+    {
+      "id": "detour-magruder",
+      "name": "Magruder Corridor \u2014 Wilderness Ridge",
+      "state": "Idaho",
+      "hub": "Moki Dugway",
+      "menu": "Detours",
+      "lengthMiles": 4.8,
+      "estimatedMinutes": 11.1,
+      "surfaces": [
+        "dirt"
+      ],
+      "weather": "clear",
+      "sceneryCount": 747,
+      "documentPath": "races/Magruder Corridor %E2%80%94 Wilderness Ridge/document.json",
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-magruder.json",
+      "references": [
+        "https://www.fs.usda.gov/media/45002"
+      ]
+    },
+    {
+      "id": "detour-chief-joseph",
+      "name": "Chief Joseph \u2014 Dead Indian Pass",
+      "state": "Wyoming",
+      "hub": "Pikes Peak Highway",
+      "menu": "Road Runs",
+      "lengthMiles": 8.99,
+      "estimatedMinutes": 11.0,
+      "surfaces": [
+        "asphalt"
+      ],
+      "weather": "clear",
+      "sceneryCount": 908,
+      "documentPath": "races/Chief Joseph %E2%80%94 Dead Indian Pass/document.json",
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-chief-joseph.json",
+      "references": [
+        "https://www.dot.state.wy.us/files/live/sites/wydot/files/shared/Planning/Buffalo%20Bill%20-%20Yellowstone%20Country%20Scenic%20Byway.pdf"
+      ]
+    },
+    {
+      "id": "detour-tantalus",
+      "name": "Tantalus \u2014 Honolulu Heights",
+      "state": "Hawaii",
+      "hub": "Angeles Crest Highway",
+      "menu": "Road Runs",
+      "lengthMiles": 5.55,
+      "estimatedMinutes": 10.9,
+      "surfaces": [
+        "asphalt"
+      ],
+      "weather": "rain",
+      "sceneryCount": 458,
+      "documentPath": "races/Tantalus %E2%80%94 Honolulu Heights/document.json",
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-tantalus.json",
+      "references": [
+        "https://dlnr.hawaii.gov/dofaw/files/2025/02/Final-TRTD-CMP-2019-12-11-with-Appendices.pdf"
+      ]
+    },
+    {
+      "id": "detour-haleakala",
+      "name": "Haleakala \u2014 Volcano Ascent",
+      "state": "Hawaii",
+      "hub": "Angeles Crest Highway",
+      "menu": "Road Runs",
+      "lengthMiles": 6.55,
+      "estimatedMinutes": 11.0,
+      "surfaces": [
+        "asphalt"
+      ],
+      "weather": "clear",
+      "sceneryCount": 684,
+      "documentPath": "races/Haleakala %E2%80%94 Volcano Ascent/document.json",
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-haleakala.json",
+      "references": [
+        "https://www.nps.gov/hale/planyourvisit/directions.htm"
+      ]
+    },
+    {
+      "id": "detour-maunakea",
+      "name": "Maunakea \u2014 Cinder Summit",
+      "state": "Hawaii",
+      "hub": "Angeles Crest Highway",
+      "menu": "Detours",
+      "lengthMiles": 6.63,
+      "estimatedMinutes": 11.1,
+      "surfaces": [
+        "gravel",
+        "asphalt",
+        "snow"
+      ],
+      "weather": "snow",
+      "sceneryCount": 675,
+      "documentPath": "races/Maunakea %E2%80%94 Cinder Summit/document.json",
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-maunakea.json",
+      "references": [
+        "https://hilo.hawaii.edu/maunakea/visitor-information/public-safety"
+      ]
+    },
+    {
+      "id": "detour-sandhills",
+      "name": "Sandhills Journey \u2014 Open Prairie",
+      "state": "Nebraska",
+      "hub": "Pikes Peak Highway",
+      "menu": "Road Runs",
+      "lengthMiles": 16.33,
+      "estimatedMinutes": 11.2,
+      "surfaces": [
+        "asphalt"
+      ],
+      "weather": "clear",
+      "sceneryCount": 1909,
+      "documentPath": "races/Sandhills Journey %E2%80%94 Open Prairie/document.json",
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-sandhills.json",
+      "references": [
+        "https://visitnebraska.com/sandhills-journey-scenic-byway"
+      ]
+    },
+    {
+      "id": "detour-desert-view",
+      "name": "Grand Canyon \u2014 Desert View Drive",
+      "state": "Arizona",
+      "hub": "Oak Creek Canyon",
+      "menu": "Road Runs",
+      "lengthMiles": 11.52,
+      "estimatedMinutes": 11.1,
+      "surfaces": [
+        "asphalt"
+      ],
+      "weather": "clear",
+      "sceneryCount": 1335,
+      "documentPath": "races/Grand Canyon %E2%80%94 Desert View Drive/document.json",
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-desert-view.json",
+      "references": [
+        "https://www.nps.gov/grca/planyourvisit/desert-view-drive.htm"
+      ]
+    },
+    {
+      "id": "detour-diamond-creek",
+      "name": "Grand Canyon \u2014 Diamond Creek Descent",
+      "state": "Arizona",
+      "hub": "Oak Creek Canyon",
+      "menu": "Detours",
+      "lengthMiles": 6.9,
+      "estimatedMinutes": 11.0,
+      "surfaces": [
+        "dirt"
+      ],
+      "weather": "clear",
+      "sceneryCount": 780,
+      "documentPath": "races/Grand Canyon %E2%80%94 Diamond Creek Descent/document.json",
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-diamond-creek.json",
+      "references": [
+        "https://www.arizonahighways.com/diamond-creek-road"
+      ]
+    }
+  ],
+  "limitations": [
+    "Driving durations are curvature-limited estimates, not timed player or AI runs; vehicle, tires, weather and driver change the result.",
+    "OSM width and surface tags are used where mapped; missing widths use documented per-road defaults. BLM/Montana sources correct ambiguous Denali/Skalkaho surface tags.",
+    "Elevation uses Mapzen/Tilezen DEM, not a surveyed road deck. Existing elevation smoothing and bridge approach interpolation apply.",
+    "Existing saved regional artwork is reused. Hawaii-specific vegetation, volcanic rock textures, observatories, and Grand Canyon-specific skyline artwork remain future art work.",
+    "Events are fictional closed-road races in the game; seasonal closures and real-world access permits are not simulated."
+  ],
+  "rebuild": [
+    "python3 tools/campaigns/prepare_state_sources.py --sources tools/campaigns/wilderness_sources.json --output-root data/campaigns/america/wilderness",
+    "python3 tools/campaigns/import_state_expansion.py --sources tools/campaigns/wilderness_sources.json --output-root data/campaigns/america/wilderness",
+    "node tools/campaigns/install_raceways.mjs --report-root=data/campaigns/america/wilderness",
+    "node tools/campaigns/validate_loading.mjs --wilderness --report=data/campaigns/america/wilderness/validation.json"
+  ]
+}

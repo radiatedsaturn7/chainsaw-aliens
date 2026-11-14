@@ -2,10 +2,10 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const num=(v,d,a,b)=>Number.isFinite(Number(v))?clamp(Number(v),a,b):d;
 const color=(v,d)=>/^#[0-9a-f]{6}$/i.test(v||'')?v:d;
 export const RACE_FX_PRESETS={
- morning:{brightness:.65,sunX:.25,sunY:.42,sunColor:'#ffdcaa',sunIntensity:.65,skyBrightness:.8,tintColor:'#ffd1a0',tintAmount:.06},
+ morning:{brightness:.65,sunX:.25,sunY:.42,sunColor:'#ffdcaa',sunIntensity:.65,skyBrightness:.65,tintColor:'#ffd1a0',tintAmount:.06},
  noon:{brightness:1,sunX:.5,sunY:.08,sunColor:'#fff5dc',sunIntensity:.8,skyBrightness:1,tintColor:'#ffffff',tintAmount:0},
- evening:{brightness:.42,sunX:.75,sunY:.48,sunColor:'#ffb16c',sunIntensity:.65,skyBrightness:.65,tintColor:'#ffae78',tintAmount:.08},
- night:{brightness:.05,sunX:.5,sunY:.15,sunColor:'#afc9ff',sunIntensity:0,skyBrightness:.12,tintColor:'#839ccc',tintAmount:.04}
+ evening:{brightness:.42,sunX:.75,sunY:.48,sunColor:'#ffb16c',sunIntensity:.65,skyBrightness:.42,tintColor:'#ffae78',tintAmount:.08},
+ night:{brightness:.05,sunX:.5,sunY:.15,sunColor:'#afc9ff',sunIntensity:0,skyBrightness:.05,tintColor:'#839ccc',tintAmount:.04}
 };
 export function normalizeRaceVisualFx(value={}){
  return {enabled:value.enabled===true,preset:Object.hasOwn(RACE_FX_PRESETS,value.preset)?value.preset:'noon',

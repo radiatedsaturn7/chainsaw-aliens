@@ -75,3 +75,12 @@ test('actuators advertising no dual-rumble fall back to phone immediately',()=>{
  const pulses=[];const h=new RaceHaptics({navigator:{getGamepads:()=>[{connected:true,vibrationActuator:{effects:['trigger-rumble'],playEffect(){assert.fail('unsupported effect');}}}],vibrate:p=>{pulses.push(p);return true;}},window:null,document:null});
  h.send(.5,.1);assert.equal(pulses.length,1);assert.equal(typeof pulses[0],'number');h.stop();
 });
+
+test('road feedback responds to wheel load changes without a reset spike or airborne vibration',()=>{
+ const s=session('gravel');const first=raceHapticSample(s);
+ assert.equal(raceHapticSample(s,first.previous).road,first.road);
+ for(const p of Object.values(s.vehicleDynamicsRunner.state.contactPatches))p.normalLoadN=4200;
+ const rough=raceHapticSample(s,first.previous);assert.ok(rough.road>first.road);
+ assert.equal(raceHapticSample(s,{}).road,first.road,'new/reset history does not create a load kick');
+ s.airborne=true;assert.equal(raceHapticSample(s,first.previous).road,0);
+});

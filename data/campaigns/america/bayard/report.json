@@ -1,0 +1,81 @@
+[
+  {
+    "id": "detour-bayard",
+    "name": "Bayard \u2014 Road 77 to City Park",
+    "displayName": "Bayard \u2014 Road 77 to City Park",
+    "status": "imported",
+    "state": "Nebraska",
+    "stateCode": "NE",
+    "location": {
+      "lat": 41.76,
+      "lon": -103.32
+    },
+    "city": null,
+    "kind": "road",
+    "event_type": "Scenic road stage",
+    "import_kind": "road",
+    "venueKey": null,
+    "venueName": null,
+    "layoutLabel": null,
+    "hubStage": 8,
+    "lengthM": 5650.966576796594,
+    "estimatedDrivingSeconds": 452,
+    "laps": 1,
+    "surface": [
+      "asphalt",
+      "dirt"
+    ],
+    "generatedPath": "artifacts/campaign-import/bayard/detour-bayard.json",
+    "references": [
+      "https://www.openstreetmap.org/way/164980742",
+      "https://www.openstreetmap.org/way/823179391",
+      "https://www.openstreetmap.org/way/14164289",
+      "https://www.openstreetmap.org/way/14174012",
+      "https://www.cityofbayard.net/vimages/shared/vnews/stories/5f861d638bd21/COMPREHESIVE%202017.pdf"
+    ],
+    "routeReference": {
+      "routing": "Ordered GPS waypoints on connected public OSM roads; no repeated edges; service roads require explicit reviewed way IDs.",
+      "waypoints": [
+        {
+          "lat": 41.74394,
+          "lon": -103.28
+        },
+        {
+          "lat": 41.744076,
+          "lon": -103.286435
+        },
+        {
+          "lat": 41.7509767,
+          "lon": -103.3020332
+        },
+        {
+          "lat": 41.758261,
+          "lon": -103.3215376
+        },
+        {
+          "lat": 41.7599753,
+          "lon": -103.324287
+        },
+        {
+          "lat": 41.7621738,
+          "lon": -103.3281638
+        },
+        {
+          "lat": 41.7631331,
+          "lon": -103.3281955
+        },
+        {
+          "lat": 41.76225,
+          "lon": -103.3225
+        }
+      ],
+      "allowedServiceWayIds": [
+        164980742
+      ]
+    },
+    "artHubStage": 7,
+    "weather": "clear",
+    "palette": "prairie",
+    "paceCapMps": 30
+  }
+]

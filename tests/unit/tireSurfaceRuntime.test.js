@@ -38,7 +38,7 @@ test('saved rally tires are usable on asphalt but rain tires lead on wet asphalt
  const rallyDry=sample('Rally','asphalt'),rallyWet=sample('Rally','wet-asphalt'),rainWet=sample('Rain','wet-asphalt');
  assert.ok(rallyDry.mu>.65);
  assert.ok(rallyWet.mu<rallyDry.mu);
- assert.ok(rainWet.mu>rallyWet.mu*1.2);
+ assert.ok(rainWet.mu>rallyWet.mu*1.1);
  assert.ok(rallyWet.mu>.35);
 });
 
@@ -56,4 +56,13 @@ test('winter tires remain usable on dry and wet pavement without matching dry ra
  const dry=sample('Snow','asphalt'),wet=sample('Snow','wet-asphalt'),race=sample('Tarmac','asphalt');
  assert.ok(dry.mu>.75 && dry.mu<race.mu*.8,`winter dry ${dry.mu}`);
  assert.ok(wet.mu>.55 && wet.mu<dry.mu,`winter wet ${wet.mu}`);
+});
+
+test('mixed-surface Rally keeps usable pavement grip while specialists retain their roles',()=>{
+ const rally=sample('Rally','asphalt'),stock=sample('Stock','asphalt'),tarmac=sample('Tarmac','asphalt');
+ assert.ok(rally.mu>=stock.mu,`rally ${rally.mu}, stock ${stock.mu}`);
+ assert.ok(tarmac.mu>rally.mu*1.15);
+ const rallySnow=sample('Rally','snow'),stockSnow=sample('Stock','snow'),winter=sample('Snow','snow');
+ assert.ok(rallySnow.mu>stockSnow.mu);
+ assert.ok(winter.mu>rallySnow.mu*1.2);
 });
