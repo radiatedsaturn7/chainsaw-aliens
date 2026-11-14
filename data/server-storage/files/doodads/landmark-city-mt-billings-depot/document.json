@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794614903503,
+  "doodad": {
+    "id": "campaign-landmark-city-mt-billings-depot",
+    "name": "landmark-city-mt-billings-depot",
+    "artRef": "landmark-city-mt-billings-depot",
+    "widthM": 58.85057471264368,
+    "heightM": 20,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 50.02298850574712,
+    "hitboxHeightM": 18,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

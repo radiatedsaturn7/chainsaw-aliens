@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794614903503,
+  "doodad": {
+    "id": "campaign-landmark-city-mt-yellowstone-art-museum",
+    "name": "landmark-city-mt-yellowstone-art-museum",
+    "artRef": "landmark-city-mt-yellowstone-art-museum",
+    "widthM": 41.91812865497076,
+    "heightM": 14,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 35.630409356725146,
+    "hitboxHeightM": 12.6,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

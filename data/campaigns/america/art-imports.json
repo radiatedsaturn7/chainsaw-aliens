@@ -2350,5 +2350,33 @@
     "documentSha256": "833e057dc785e084268d700f85672a8548279cdd925ec3e0682460405a1bf96e",
     "width": 512,
     "height": 341
+  },
+  "landmark-city-mt-moss-mansion": {
+    "source": "assets/campaign-art/landmarks/MT/landmark-city-mt-moss-mansion.png",
+    "sourceSha256": "70dfab284df44164567a51383dee2fb431c10a1d6589185f34e3282e8035b593",
+    "documentSha256": "7501539f9172c235adb4bb4b21d661645f85b36bb970dfe5484630ce67af8703",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-mt-alberta-bair-theater": {
+    "source": "assets/campaign-art/landmarks/MT/landmark-city-mt-alberta-bair-theater.png",
+    "sourceSha256": "aa39dd3c8d3a8909c8221fb293fc036090f77a57a8d85a556bc0643658efa3be",
+    "documentSha256": "4bbb8043f5ef869772767b075d68b70c03a6aff1cd4075b7c5de7734fb729bed",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-mt-yellowstone-art-museum": {
+    "source": "assets/campaign-art/landmarks/MT/landmark-city-mt-yellowstone-art-museum.png",
+    "sourceSha256": "9915c5c3918d375e5b09bef0b4440b8065e63a695b6323f197e5971c0edb2524",
+    "documentSha256": "aa9e0b5987cb812aedd7d3490661c510abfc83ef99873b680b4c92949fcb8b1b",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-mt-billings-depot": {
+    "source": "assets/campaign-art/landmarks/MT/landmark-city-mt-billings-depot.png",
+    "sourceSha256": "0b25e31a76ea8692fbd588b85da1cfd92a0a9d08cb9d1c1f867e280e219b6f2f",
+    "documentSha256": "84c03b11940cebd45e3b1614a95f1a9a1a81d78b27572debebce77ba4e529439",
+    "width": 512,
+    "height": 174
   }
 }

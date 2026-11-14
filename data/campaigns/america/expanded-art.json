@@ -2932,6 +2932,34 @@
       "heightM": 30,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-mt-moss-mansion",
+      "source": "landmarks/MT/landmark-city-mt-moss-mansion.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mt-alberta-bair-theater",
+      "source": "landmarks/MT/landmark-city-mt-alberta-bair-theater.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mt-yellowstone-art-museum",
+      "source": "landmarks/MT/landmark-city-mt-yellowstone-art-museum.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-mt-billings-depot",
+      "source": "landmarks/MT/landmark-city-mt-billings-depot.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

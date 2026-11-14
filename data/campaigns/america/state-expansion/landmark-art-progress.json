@@ -7850,35 +7850,461 @@
     },
     "landmark-city-mt-moss-mansion": {
       "raceRef": "Billings, MT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -765.4542385083687,
+        "worldZ": 374.4716717022807,
+        "routeDistanceM": 1683,
+        "offsetFromRoadM": 64,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.3663040577413317,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 28.34287491003541,
+            "angularWidthDegrees": 19.478228660843307,
+            "rangeM": 78.73179081213195,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 22.713843130659523,
+            "angularWidthDegrees": 15.893999051846755,
+            "rangeM": 96.80102898198331,
+            "occluderIds": [],
+            "score": 0.09144627477361911
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 18.880342129076595,
+            "angularWidthDegrees": 13.34527746381373,
+            "rangeM": 115.50836999739978,
+            "occluderIds": [],
+            "score": 0.24478631483693614
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 16.12412976560196,
+            "angularWidthDegrees": 11.4670409803793,
+            "rangeM": 134.58799302664997,
+            "occluderIds": [],
+            "score": 0.3550348093759216
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 13.205352040917798,
+            "angularWidthDegrees": 9.442554162909191,
+            "rangeM": 163.62012210657235,
+            "occluderIds": [],
+            "score": 0.4717859183632881
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 10.622467440045883,
+            "angularWidthDegrees": 7.625506223078401,
+            "rangeM": 202.76842213012478,
+            "occluderIds": [
+              "city-mt-prop-86"
+            ],
+            "score": 0.06901215628777976
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 8.877866248606617,
+            "angularWidthDegrees": 6.386973443733501,
+            "rangeM": 242.19521396615414,
+            "occluderIds": [
+              "city-mt-prop-86"
+            ],
+            "score": 0.07738624200668824
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 7.362016361424561,
+            "angularWidthDegrees": 5.304768931565396,
+            "rangeM": 291.6982730268117,
+            "occluderIds": [
+              "city-mt-prop-84",
+              "city-mt-prop-86"
+            ],
+            "score": 0.07485234209709901
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "0ec6793d86ce469f0302ff7d50388657726bb3ebd02cd5d2eecbfb8c6473c8e8",
+      "sourceSha256": "70dfab284df44164567a51383dee2fb431c10a1d6589185f34e3282e8035b593",
+      "roadSha256": "a89af04c3604a47568f44e3774575d5f27f8b68fc38fde4d86f9dc3593ad755e",
+      "placementDetails": {
+        "x": -758.103703607184,
+        "z": 352.53026351385614,
+        "yaw": -0.27604656785915527,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1682.6413621099541,
+        "trackLateral": 44.901374864855015,
+        "minimumRoadClearanceM": 23.251180570879104,
+        "checkedSegments": 3957,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MT/moss-mansion-desktop.png",
+        "docs/art/landmark-previews/MT/moss-mansion-mobile.png"
+      ]
     },
     "landmark-city-mt-alberta-bair-theater": {
       "raceRef": "Billings, MT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -153.5700756691177,
+        "worldZ": -95.93911522551036,
+        "routeDistanceM": 2391,
+        "offsetFromRoadM": 28,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 7.287671154043748,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 2.432836599280794,
+            "angularWidthDegrees": 19.422779186734225,
+            "rangeM": 81.80545510780696,
+            "occluderIds": [],
+            "score": 0.9026865360287682
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 1.9549683072508248,
+            "angularWidthDegrees": 15.662287170667334,
+            "rangeM": 101.79096880762664,
+            "occluderIds": [],
+            "score": 0.921801267709967
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 1.633966610168025,
+            "angularWidthDegrees": 13.115895657613413,
+            "rangeM": 121.78123901568323,
+            "occluderIds": [],
+            "score": 0.934641335593279
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.4034946446709675,
+            "angularWidthDegrees": 11.279181415875389,
+            "rangeM": 141.77425373316106,
+            "occluderIds": [],
+            "score": 0.9438602142131614
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 1.1583905213121477,
+            "angularWidthDegrees": 9.319281492993909,
+            "rangeM": 171.7668253467313,
+            "occluderIds": [],
+            "score": 0.9536643791475141
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.9395931360536068,
+            "angularWidthDegrees": 7.564927743872372,
+            "rangeM": 211.76019451373296,
+            "occluderIds": [],
+            "score": 0.9624162745578557
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.7350829403813447,
+            "angularWidthDegrees": 6.365819619324996,
+            "rangeM": 251.75567058418645,
+            "occluderIds": [],
+            "score": 0.9705966823847462
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.746965247798759,
+            "angularWidthDegrees": 5.312764813878547,
+            "rangeM": 301.7510192680555,
+            "occluderIds": [],
+            "score": 0.8590044644084558
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "810c13dc08fecee15ee2f6268fc3e9f38f1bbdde3639ef17226a30c3eb64642c",
+      "sourceSha256": "aa39dd3c8d3a8909c8221fb293fc036090f77a57a8d85a556bc0643658efa3be",
+      "roadSha256": "a89af04c3604a47568f44e3774575d5f27f8b68fc38fde4d86f9dc3593ad755e",
+      "placementDetails": {
+        "x": 14.436661344192498,
+        "z": -177.67074330892876,
+        "yaw": 2.166956860935308,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2539.690663277861,
+        "trackLateral": 39.863362512170134,
+        "minimumRoadClearanceM": 13.568599257102065,
+        "checkedSegments": 3957,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MT/alberta-bair-theater-desktop.png",
+        "docs/art/landmark-previews/MT/alberta-bair-theater-mobile.png"
+      ]
     },
     "landmark-city-mt-yellowstone-art-museum": {
       "raceRef": "Billings, MT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -82.67845621008144,
+        "worldZ": -314.74879410857096,
+        "routeDistanceM": 2677,
+        "offsetFromRoadM": 53,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 5.540782106467446,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 7.016440742620807,
+            "angularWidthDegrees": 18.332961574034833,
+            "rangeM": 129.88658661856346,
+            "occluderIds": [],
+            "score": 0.7193423702951678
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 6.081694502271347,
+            "angularWidthDegrees": 15.934058179279459,
+            "rangeM": 149.7567385952371,
+            "occluderIds": [],
+            "score": 0.7567322199091462
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 5.366083137898805,
+            "angularWidthDegrees": 14.084999424600747,
+            "rangeM": 169.65740810805414,
+            "occluderIds": [],
+            "score": 0.7853566744840478
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 4.800795922788421,
+            "angularWidthDegrees": 12.617526498480338,
+            "rangeM": 189.57898485117892,
+            "occluderIds": [],
+            "score": 0.8079681630884632
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 4.145368355126565,
+            "angularWidthDegrees": 10.909345596040035,
+            "rangeM": 219.4880966113978,
+            "occluderIds": [],
+            "score": 0.8341852657949373
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 3.5066874829907286,
+            "angularWidthDegrees": 9.23874234648222,
+            "rangeM": 259.3995668782343,
+            "occluderIds": [],
+            "score": 0.8597325006803709
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 3.0383771946171834,
+            "angularWidthDegrees": 8.010493418982707,
+            "rangeM": 299.3346722969742,
+            "occluderIds": [],
+            "score": 0.8784649122153126
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 88.28317571737922,
+            "angularWidthDegrees": 7.311802549422157,
+            "rangeM": 328.027389454523,
+            "occluderIds": [
+              "city-mt-prop-142",
+              "city-mt-prop-144",
+              "city-mt-prop-150",
+              "city-mt-prop-152"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "18358d2432a49495905a4f0a33529890122774f3f95c3a65d3b900c1c5326daa",
+      "sourceSha256": "9915c5c3918d375e5b09bef0b4440b8065e63a695b6323f197e5971c0edb2524",
+      "roadSha256": "a89af04c3604a47568f44e3774575d5f27f8b68fc38fde4d86f9dc3593ad755e",
+      "placementDetails": {
+        "x": 195.87749892281457,
+        "z": -424.1240211760862,
+        "yaw": 2.0950560121759043,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2885.5534644572936,
+        "trackLateral": -94.99920035988107,
+        "minimumRoadClearanceM": 61.19597256091757,
+        "checkedSegments": 3957,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MT/yellowstone-art-museum-desktop.png",
+        "docs/art/landmark-previews/MT/yellowstone-art-museum-mobile.png"
+      ]
     },
     "landmark-city-mt-billings-depot": {
       "raceRef": "Billings, MT — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 535.4248139148676,
+        "worldZ": -93.30379182399244,
+        "routeDistanceM": 3532,
+        "offsetFromRoadM": 52,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.0058542605088332,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 15.532119894624357,
+            "angularWidthDegrees": 27.704453529583887,
+            "rangeM": 119.32865017597378,
+            "occluderIds": [
+              "city-mt-prop-187"
+            ],
+            "score": 0.04544582450580308
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 13.37003174826479,
+            "angularWidthDegrees": 23.95600085793242,
+            "rangeM": 138.69693512313353,
+            "occluderIds": [
+              "city-mt-prop-187"
+            ],
+            "score": 0.055823847608329
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 11.69505990165127,
+            "angularWidthDegrees": 21.070350148268492,
+            "rangeM": 158.2224790359497,
+            "occluderIds": [
+              "city-mt-prop-187"
+            ],
+            "score": 0.0638637124720739
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 10.388925929594038,
+            "angularWidthDegrees": 18.788606414078927,
+            "rangeM": 177.85349569803893,
+            "occluderIds": [
+              "city-mt-prop-187"
+            ],
+            "score": 0.0701331555379486
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.894471988797983,
+            "angularWidthDegrees": 16.147641270072477,
+            "rangeM": 207.43224320632643,
+            "occluderIds": [],
+            "score": 0.6442211204480807
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 7.459866596076084,
+            "angularWidthDegrees": 13.585776467498759,
+            "rangeM": 247.0286656262193,
+            "occluderIds": [
+              "city-mt-prop-184",
+              "city-mt-prop-188"
+            ],
+            "score": 0.08419264033883479
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 6.422091750466011,
+            "angularWidthDegrees": 11.718493170919471,
+            "rangeM": 286.737140532112,
+            "occluderIds": [
+              "city-mt-prop-182",
+              "city-mt-prop-184",
+              "city-mt-prop-186",
+              "city-mt-prop-188"
+            ],
+            "score": 0.08917395959776314
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 81.40494869802654,
+            "angularWidthDegrees": 10.338914019815904,
+            "rangeM": 325.2503204610693,
+            "occluderIds": [
+              "city-mt-prop-175"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "bc35484970c7f6ec573a507f66cc95fd23dbb0958f27bd59f02004bdc531b839",
+      "sourceSha256": "0b25e31a76ea8692fbd588b85da1cfd92a0a9d08cb9d1c1f867e280e219b6f2f",
+      "roadSha256": "a89af04c3604a47568f44e3774575d5f27f8b68fc38fde4d86f9dc3593ad755e",
+      "placementDetails": {
+        "x": 637.8572476416355,
+        "z": -76.83989360488034,
+        "yaw": 0.7867336792628243,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3561.1700927332145,
+        "trackLateral": 95,
+        "minimumRoadClearanceM": 52.528405612369504,
+        "checkedSegments": 3957,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/MT/billings-depot-desktop.png",
+        "docs/art/landmark-previews/MT/billings-depot-mobile.png"
+      ]
     },
     "landmark-city-nc-nascar-hall-of-fame": {
       "raceRef": "Charlotte, NC — Landmark Run",
