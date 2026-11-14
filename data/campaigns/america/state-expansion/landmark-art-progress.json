@@ -13832,35 +13832,489 @@
     },
     "landmark-city-nm-new-mexico-museum-of-natural-history": {
       "raceRef": "Albuquerque, NM — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -695.7288168771487,
+        "worldZ": -878.0297120479064,
+        "routeDistanceM": 1243,
+        "offsetFromRoadM": 50,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 2.448451142069068,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 60.297777009228604,
+            "angularWidthDegrees": 32.61738875797664,
+            "rangeM": 92.10093024705452,
+            "occluderIds": [
+              "city-nm-prop-66"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 50.63312048773335,
+            "angularWidthDegrees": 29.19273095911736,
+            "rangeM": 103.47945024874238,
+            "occluderIds": [
+              "city-nm-prop-64"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 42.86018516177058,
+            "angularWidthDegrees": 25.899723915423134,
+            "rangeM": 117.18964838908995,
+            "occluderIds": [
+              "city-nm-prop-62"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 23.1959357110236,
+            "angularWidthDegrees": 22.83426015643674,
+            "rangeM": 133.43814215687303,
+            "occluderIds": [
+              "city-nm-prop-62"
+            ],
+            "score": 0.00865950858708671
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 46.95829090923247,
+            "angularWidthDegrees": 19.252995676036925,
+            "rangeM": 158.87553098099318,
+            "occluderIds": [
+              "city-nm-prop-62"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 11.867453356233808,
+            "angularWidthDegrees": 15.795270558238478,
+            "rangeM": 194.25810936602412,
+            "occluderIds": [],
+            "score": 0.5253018657506476
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.6824987616584857,
+            "angularWidthDegrees": 13.127413599464584,
+            "rangeM": 234.1985189070743,
+            "occluderIds": [],
+            "score": 0.9727000495336606
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.6552570450581761,
+            "angularWidthDegrees": 10.833196952843092,
+            "rangeM": 284.1946071856878,
+            "occluderIds": [],
+            "score": 0.9737897181976729
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "94e6520c019f0cda9bf2609757c4855dca9ce07c5ec98a8d74493b9c72e8cef4",
+      "sourceSha256": "251f2e50495393e13dfce5f03057911e2f76bae527b5aa76cfb23a3c865cbb4c",
+      "roadSha256": "7872d10313e34ec8d20bb2bde46897cdbbd3fa6ff29a6b394366612cf41d5550",
+      "placementDetails": {
+        "x": -679.5480791392781,
+        "z": -902.8316328303862,
+        "yaw": 1.6390672892713793,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1242.3647430023882,
+        "trackLateral": -79.99999999999996,
+        "minimumRoadClearanceM": 42.10706619238041,
+        "checkedSegments": 4155,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-nm-san-felipe-de-neri-church": {
       "raceRef": "Albuquerque, NM — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -1096.956151466085,
+        "worldZ": -741.7379022057644,
+        "routeDistanceM": 2176,
+        "offsetFromRoadM": 41,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.728419633109992,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 36.30352683397374,
+            "angularWidthDegrees": 28.048992550134248,
+            "rangeM": 72.13323242628881,
+            "occluderIds": [
+              "city-nm-prop-119"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 29.273333391606897,
+            "angularWidthDegrees": 22.878625206023017,
+            "rangeM": 89.04195673808027,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 105.08295986704431,
+            "angularWidthDegrees": 20.787936058815248,
+            "rangeM": 98.22839834386934,
+            "occluderIds": [
+              "city-nm-prop-117"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 95.83594538567388,
+            "angularWidthDegrees": 21.70068042676197,
+            "rangeM": 94.00275441738131,
+            "occluderIds": [
+              "city-nm-prop-117"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 3.0462250494228793,
+            "angularWidthDegrees": 18.284760591073695,
+            "rangeM": 111.9572658116669,
+            "occluderIds": [],
+            "score": 0.8781509980230848
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 2.168284122827323,
+            "angularWidthDegrees": 13.527420560969947,
+            "rangeM": 151.91844202821656,
+            "occluderIds": [],
+            "score": 0.913268635086907
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 86.30146426213885,
+            "angularWidthDegrees": 11.723311303361584,
+            "rangeM": 175.50127979921209,
+            "occluderIds": [
+              "city-nm-prop-112",
+              "city-nm-prop-115"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 70.38762816669694,
+            "angularWidthDegrees": 11.074936233055682,
+            "rangeM": 185.8459361736934,
+            "occluderIds": [
+              "city-nm-prop-110",
+              "city-nm-prop-116",
+              "city-nm-prop-117"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 150
+      },
+      "signature": "4af4f6adbb87651b8c6a83f33f227d283ee2cc3fe8ad12bface89c30dbab6757",
+      "sourceSha256": "f3c61d55d9af3d9db89d95540eb6dcdbb4423bcb24d3094a555cc156dc82deb3",
+      "roadSha256": "7872d10313e34ec8d20bb2bde46897cdbbd3fa6ff29a6b394366612cf41d5550",
+      "placementDetails": {
+        "x": -1219.844269136297,
+        "z": -700.2356568335315,
+        "yaw": -1.7382450250750765,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2325.4675455501197,
+        "trackLateral": 44.86805876615765,
+        "minimumRoadClearanceM": 17.83665473581676,
+        "checkedSegments": 4155,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NM/san-felipe-de-neri-church-desktop.png",
+        "docs/art/landmark-previews/NM/san-felipe-de-neri-church-mobile.png"
+      ]
     },
     "landmark-city-nm-kimo-theatre": {
       "raceRef": "Albuquerque, NM — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 494.86948905280497,
+        "worldZ": 576.179547246253,
+        "routeDistanceM": 4560,
+        "offsetFromRoadM": 15,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.4832563589059887,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 18.88333860487799,
+            "angularWidthDegrees": 26.412799203049207,
+            "rangeM": 93.75037648125718,
+            "occluderIds": [
+              "city-nm-prop-250"
+            ],
+            "score": 0.02935997469658564
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 15.595445914871364,
+            "angularWidthDegrees": 22.060931962325117,
+            "rangeM": 112.85975982810372,
+            "occluderIds": [
+              "city-nm-prop-250"
+            ],
+            "score": 0.04514185960861745
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 13.26503366050488,
+            "angularWidthDegrees": 18.891924706670984,
+            "rangeM": 132.23282300890608,
+            "occluderIds": [
+              "city-nm-prop-250"
+            ],
+            "score": 0.056327838429576574
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 11.532281970671747,
+            "angularWidthDegrees": 16.49600429381412,
+            "rangeM": 151.76862445090407,
+            "occluderIds": [
+              "city-nm-prop-248",
+              "city-nm-prop-250"
+            ],
+            "score": 0.0646450465407756
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 9.636132772528256,
+            "angularWidthDegrees": 13.840406630301423,
+            "rangeM": 181.26227561845528,
+            "occluderIds": [
+              "city-nm-prop-246",
+              "city-nm-prop-248",
+              "city-nm-prop-250"
+            ],
+            "score": 0.07374656269186437
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 7.898402047201871,
+            "angularWidthDegrees": 11.380103273503718,
+            "rangeM": 220.7994907200094,
+            "occluderIds": [
+              "city-nm-prop-246",
+              "city-nm-prop-248",
+              "city-nm-prop-250"
+            ],
+            "score": 0.08208767017343102
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 6.689240306002986,
+            "angularWidthDegrees": 9.655497184217428,
+            "rangeM": 260.47806974776205,
+            "occluderIds": [
+              "city-nm-prop-246",
+              "city-nm-prop-250"
+            ],
+            "score": 0.08789164653118567
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 5.6133832845932465,
+            "angularWidthDegrees": 8.113672920279386,
+            "rangeM": 310.1924355290873,
+            "occluderIds": [
+              "city-nm-prop-238",
+              "city-nm-prop-244",
+              "city-nm-prop-246",
+              "city-nm-prop-250"
+            ],
+            "score": 0.09305576023395241
+          }
+        ],
+        "sourceDistanceShiftM": 90
+      },
+      "signature": "6b27c6e4a0b6c7574f93301d110fef4f6ba87554fd4b6de0f3d5f7955f525e47",
+      "sourceSha256": "e99780e28ee4f6119f026dd4fe2e5aaa4ab7be7131c9c905f57ae39b3454c5dd",
+      "roadSha256": "7872d10313e34ec8d20bb2bde46897cdbbd3fa6ff29a6b394366612cf41d5550",
+      "placementDetails": {
+        "x": 626.2893036117033,
+        "z": 582.1762434938637,
+        "yaw": 1.6114391699745436,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4648.627549515786,
+        "trackLateral": -54.4263632857338,
+        "minimumRoadClearanceM": 22.584546830451618,
+        "checkedSegments": 4155,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-nm-albuquerque-rail-yards": {
       "raceRef": "Albuquerque, NM — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 697.148188825673,
+        "worldZ": 1851.0200226156846,
+        "routeDistanceM": 6038,
+        "offsetFromRoadM": 111,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 1.8013786330151804,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 62.047607703174435,
+            "angularWidthDegrees": 40.950266387102175,
+            "rangeM": 96.22597457763541,
+            "occluderIds": [
+              "city-nm-prop-330"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 52.55010733987525,
+            "angularWidthDegrees": 37.101280525707594,
+            "rangeM": 107.0683472168569,
+            "occluderIds": [
+              "city-nm-prop-330"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 44.996758791855804,
+            "angularWidthDegrees": 33.263090770500206,
+            "rangeM": 120.28227451478698,
+            "occluderIds": [
+              "city-nm-prop-325",
+              "city-nm-prop-328"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 76.35498419594062,
+            "angularWidthDegrees": 30.104680618331784,
+            "rangeM": 133.60361775615172,
+            "occluderIds": [
+              "city-nm-prop-325",
+              "city-nm-prop-328"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 116.03070106116039,
+            "angularWidthDegrees": 33.098180512972505,
+            "rangeM": 120.91652403242412,
+            "occluderIds": [
+              "city-nm-prop-325"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 96.4729298121263,
+            "angularWidthDegrees": 36.35273966585934,
+            "rangeM": 109.43327317028798,
+            "occluderIds": [
+              "city-nm-prop-323"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.542701918306588,
+            "angularWidthDegrees": 29.328330563392733,
+            "rangeM": 137.30615650889524,
+            "occluderIds": [],
+            "score": 0.9782919232677365
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.3978322563139028,
+            "angularWidthDegrees": 21.717783692479703,
+            "rangeM": 187.3045683836478,
+            "occluderIds": [],
+            "score": 0.9840867097474439
+          }
+        ],
+        "sourceDistanceShiftM": 90
+      },
+      "signature": "f8e7306752ebe415ddc9a5dfe9e4d125013985396d3ec45e34a836e62a763de6",
+      "sourceSha256": "4849a2258db844095f49d48690a677b01df65dfdc8797ea2a40e71a7b23b5ff9",
+      "roadSha256": "7872d10313e34ec8d20bb2bde46897cdbbd3fa6ff29a6b394366612cf41d5550",
+      "placementDetails": {
+        "x": 489.63659816549574,
+        "z": 1909.601770561902,
+        "yaw": -0.8249930480064653,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6127.8953037892525,
+        "trackLateral": 84.99999999999987,
+        "minimumRoadClearanceM": 36.30942158984053,
+        "checkedSegments": 4155,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/NM/albuquerque-rail-yards-desktop.png",
+        "docs/art/landmark-previews/NM/albuquerque-rail-yards-mobile.png"
+      ]
     },
     "landmark-city-nv-mob-museum": {
       "raceRef": "Las Vegas, NV — Landmark Run",

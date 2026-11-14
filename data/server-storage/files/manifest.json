@@ -684,7 +684,11 @@
       "landmark-city-me-portland-museum-of-art": "art/landmark-city-me-portland-museum-of-art/document.json",
       "landmark-city-me-portland-city-hall": "art/landmark-city-me-portland-city-hall/document.json",
       "landmark-city-me-victoria-mansion": "art/landmark-city-me-victoria-mansion/document.json",
-      "landmark-city-me-portland-observatory": "art/landmark-city-me-portland-observatory/document.json"
+      "landmark-city-me-portland-observatory": "art/landmark-city-me-portland-observatory/document.json",
+      "landmark-city-nm-new-mexico-museum-of-natural-history": "art/landmark-city-nm-new-mexico-museum-of-natural-history/document.json",
+      "landmark-city-nm-san-felipe-de-neri-church": "art/landmark-city-nm-san-felipe-de-neri-church/document.json",
+      "landmark-city-nm-kimo-theatre": "art/landmark-city-nm-kimo-theatre/document.json",
+      "landmark-city-nm-albuquerque-rail-yards": "art/landmark-city-nm-albuquerque-rail-yards/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1104,7 +1108,11 @@
       "landmark-city-me-portland-museum-of-art": "doodads/landmark-city-me-portland-museum-of-art/document.json",
       "landmark-city-me-portland-city-hall": "doodads/landmark-city-me-portland-city-hall/document.json",
       "landmark-city-me-victoria-mansion": "doodads/landmark-city-me-victoria-mansion/document.json",
-      "landmark-city-me-portland-observatory": "doodads/landmark-city-me-portland-observatory/document.json"
+      "landmark-city-me-portland-observatory": "doodads/landmark-city-me-portland-observatory/document.json",
+      "landmark-city-nm-new-mexico-museum-of-natural-history": "doodads/landmark-city-nm-new-mexico-museum-of-natural-history/document.json",
+      "landmark-city-nm-san-felipe-de-neri-church": "doodads/landmark-city-nm-san-felipe-de-neri-church/document.json",
+      "landmark-city-nm-kimo-theatre": "doodads/landmark-city-nm-kimo-theatre/document.json",
+      "landmark-city-nm-albuquerque-rail-yards": "doodads/landmark-city-nm-albuquerque-rail-yards/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

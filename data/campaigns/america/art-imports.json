@@ -2714,5 +2714,33 @@
     "documentSha256": "48fe02a5519af5017880437668967a344ba127cfabb8873667b1bafa4d24a4e2",
     "width": 341,
     "height": 512
+  },
+  "landmark-city-nm-new-mexico-museum-of-natural-history": {
+    "source": "assets/campaign-art/landmarks/NM/landmark-city-nm-new-mexico-museum-of-natural-history.png",
+    "sourceSha256": "251f2e50495393e13dfce5f03057911e2f76bae527b5aa76cfb23a3c865cbb4c",
+    "documentSha256": "98869add5289f71ea131f1a6f00cd7e9bae6c7d04d867df6640835e659f6c5f3",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-nm-san-felipe-de-neri-church": {
+    "source": "assets/campaign-art/landmarks/NM/landmark-city-nm-san-felipe-de-neri-church.png",
+    "sourceSha256": "f3c61d55d9af3d9db89d95540eb6dcdbb4423bcb24d3094a555cc156dc82deb3",
+    "documentSha256": "b66c7057826648b799dd5ca5850ec1659f016f2d948361a40fd724e913d0ecd5",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-nm-kimo-theatre": {
+    "source": "assets/campaign-art/landmarks/NM/landmark-city-nm-kimo-theatre.png",
+    "sourceSha256": "e99780e28ee4f6119f026dd4fe2e5aaa4ab7be7131c9c905f57ae39b3454c5dd",
+    "documentSha256": "8e99140f0ba0ef0fe1b52f3da2cfca8e3c4e680fd1e80cce24cb1c96ba97b803",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-nm-albuquerque-rail-yards": {
+    "source": "assets/campaign-art/landmarks/NM/landmark-city-nm-albuquerque-rail-yards.png",
+    "sourceSha256": "4849a2258db844095f49d48690a677b01df65dfdc8797ea2a40e71a7b23b5ff9",
+    "documentSha256": "6148a16c59099720399d1f3db3702da9d3584aca9f3a4354203e6edc380d3c6c",
+    "width": 512,
+    "height": 171
   }
 }

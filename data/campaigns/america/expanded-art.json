@@ -3296,6 +3296,34 @@
       "heightM": 30,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-nm-new-mexico-museum-of-natural-history",
+      "source": "landmarks/NM/landmark-city-nm-new-mexico-museum-of-natural-history.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nm-san-felipe-de-neri-church",
+      "source": "landmarks/NM/landmark-city-nm-san-felipe-de-neri-church.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nm-kimo-theatre",
+      "source": "landmarks/NM/landmark-city-nm-kimo-theatre.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-nm-albuquerque-rail-yards",
+      "source": "landmarks/NM/landmark-city-nm-albuquerque-rail-yards.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
