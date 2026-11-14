@@ -664,7 +664,11 @@
       "landmark-city-hi-hawaii-state-capitol": "art/landmark-city-hi-hawaii-state-capitol/document.json",
       "landmark-city-hi-iolani-palace": "art/landmark-city-hi-iolani-palace/document.json",
       "landmark-city-hi-aloha-tower": "art/landmark-city-hi-aloha-tower/document.json",
-      "landmark-city-hi-honolulu-museum-of-art": "art/landmark-city-hi-honolulu-museum-of-art/document.json"
+      "landmark-city-hi-honolulu-museum-of-art": "art/landmark-city-hi-honolulu-museum-of-art/document.json",
+      "landmark-city-ak-anchorage-museum": "art/landmark-city-ak-anchorage-museum/document.json",
+      "landmark-city-ak-town-square-park": "art/landmark-city-ak-town-square-park/document.json",
+      "landmark-city-ak-oscar-anderson-house": "art/landmark-city-ak-oscar-anderson-house/document.json",
+      "landmark-city-ak-alaska-railroad-depot": "art/landmark-city-ak-alaska-railroad-depot/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1064,7 +1068,11 @@
       "landmark-city-hi-hawaii-state-capitol": "doodads/landmark-city-hi-hawaii-state-capitol/document.json",
       "landmark-city-hi-iolani-palace": "doodads/landmark-city-hi-iolani-palace/document.json",
       "landmark-city-hi-aloha-tower": "doodads/landmark-city-hi-aloha-tower/document.json",
-      "landmark-city-hi-honolulu-museum-of-art": "doodads/landmark-city-hi-honolulu-museum-of-art/document.json"
+      "landmark-city-hi-honolulu-museum-of-art": "doodads/landmark-city-hi-honolulu-museum-of-art/document.json",
+      "landmark-city-ak-anchorage-museum": "doodads/landmark-city-ak-anchorage-museum/document.json",
+      "landmark-city-ak-town-square-park": "doodads/landmark-city-ak-town-square-park/document.json",
+      "landmark-city-ak-oscar-anderson-house": "doodads/landmark-city-ak-oscar-anderson-house/document.json",
+      "landmark-city-ak-alaska-railroad-depot": "doodads/landmark-city-ak-alaska-railroad-depot/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

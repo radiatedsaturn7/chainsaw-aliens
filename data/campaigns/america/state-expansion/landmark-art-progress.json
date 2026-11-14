@@ -4,35 +4,461 @@
   "assets": {
     "landmark-city-ak-anchorage-museum": {
       "raceRef": "Anchorage, AK — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 605.7773856199489,
+        "worldZ": 223.37979668191977,
+        "routeDistanceM": 1185,
+        "offsetFromRoadM": 76,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.282510027302223,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 4.372202197297493,
+            "angularWidthDegrees": 15.993018595131558,
+            "rangeM": 170.8443963206028,
+            "occluderIds": [],
+            "score": 0.8251119121081003
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 3.9143213344513406,
+            "angularWidthDegrees": 14.339299474541985,
+            "rangeM": 190.79228686985775,
+            "occluderIds": [],
+            "score": 0.8434271466219464
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 3.543141862957943,
+            "angularWidthDegrees": 12.993593279772142,
+            "rangeM": 210.75005524670465,
+            "occluderIds": [],
+            "score": 0.8582743254816823
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 3.857583922737652,
+            "angularWidthDegrees": 11.877596437223206,
+            "rangeM": 230.71513805237876,
+            "occluderIds": [],
+            "score": 0.845696643090494
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 87.83890976570129,
+            "angularWidthDegrees": 11.184145358908326,
+            "rangeM": 245.12014017106483,
+            "occluderIds": [
+              "city-ak-prop-59",
+              "city-ak-prop-62"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 78.73359320341235,
+            "angularWidthDegrees": 10.976978359641612,
+            "rangeM": 249.7754941652143,
+            "occluderIds": [
+              "city-ak-prop-66",
+              "city-ak-prop-67"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 70.08342219745475,
+            "angularWidthDegrees": 10.52523453433553,
+            "rangeM": 260.5603810708601,
+            "occluderIds": [
+              "city-ak-prop-55",
+              "city-ak-prop-66"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 60.524082915152334,
+            "angularWidthDegrees": 9.745715580651032,
+            "rangeM": 281.514826816913,
+            "occluderIds": [
+              "city-ak-prop-68"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "eaeff824e978f69bbeb5e235e83892a523cbb5749f9644bf2b310fc24763856e",
+      "sourceSha256": "02132b9a7702b5bc0d865e74eceb88497456ddc3e4cb0a11f5125f8ec74f1c61",
+      "roadSha256": "286b7f4dc9f56419335961f993b5a9455325f3f7890904d0774c0b32bb80161d",
+      "placementDetails": {
+        "x": 558.8845829340651,
+        "z": -86.53257076794463,
+        "yaw": -3.0863774988678117,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1304.0469329131024,
+        "trackLateral": 134.99056570550465,
+        "minimumRoadClearanceM": 99.04060903309349,
+        "checkedSegments": 4349,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ak-town-square-park": {
       "raceRef": "Anchorage, AK — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 189.04811587840044,
+        "worldZ": 97.02882701189205,
+        "routeDistanceM": 1673,
+        "offsetFromRoadM": 49,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.45820224450954894,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 41.94350110787402,
+            "angularWidthDegrees": 18.972884848727244,
+            "rangeM": 59.8446308711638,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 31.800279040278635,
+            "angularWidthDegrees": 15.00985425350786,
+            "rangeM": 75.90709914089308,
+            "occluderIds": [
+              "city-ak-prop-74"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 25.328272117301555,
+            "angularWidthDegrees": 12.209268824181645,
+            "rangeM": 93.50077881196998,
+            "occluderIds": [
+              "city-ak-prop-74"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 20.943278785192625,
+            "angularWidthDegrees": 10.212876695280375,
+            "rangeM": 111.90578027735901,
+            "occluderIds": [],
+            "score": 0.16226884859229496
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 16.56088256745916,
+            "angularWidthDegrees": 8.151844279326125,
+            "rangeM": 140.33412217234132,
+            "occluderIds": [],
+            "score": 0.33756469730163363
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 12.909750139345345,
+            "angularWidthDegrees": 6.39375337178513,
+            "rangeM": 179.03821486889655,
+            "occluderIds": [
+              "city-ak-prop-70"
+            ],
+            "score": 0.05803319933114234
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 10.390070366384057,
+            "angularWidthDegrees": 5.247757930961498,
+            "rangeM": 218.21021802683998,
+            "occluderIds": [
+              "city-ak-prop-66",
+              "city-ak-prop-68",
+              "city-ak-prop-70"
+            ],
+            "score": 0.06133549928447798
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 71.94015108832699,
+            "angularWidthDegrees": 4.681474077051174,
+            "rangeM": 244.64046666996097,
+            "occluderIds": [
+              "city-ak-prop-67",
+              "city-ak-prop-72"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -150
+      },
+      "signature": "3f49faca74fc036822a6ffc86cf6108050cdf16ac10c49e72914bb3bed621394",
+      "sourceSha256": "069ab4cfd9c297a363b02e51a4031f5adbde1ac6c669da46a9d323a042156144",
+      "roadSha256": "286b7f4dc9f56419335961f993b5a9455325f3f7890904d0774c0b32bb80161d",
+      "placementDetails": {
+        "x": 339.200861419717,
+        "z": 8.254938814694185,
+        "yaw": -1.937249993473116,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1523.4873092300882,
+        "trackLateral": 40.00000000000001,
+        "minimumRoadClearanceM": 20.87918471982869,
+        "checkedSegments": 4349,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ak-oscar-anderson-house": {
       "raceRef": "Anchorage, AK — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -534.3630156601555,
+        "worldZ": -63.08096901571085,
+        "routeDistanceM": 2382,
+        "offsetFromRoadM": 113,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 3.0132843885893985,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 4.971470200077499,
+            "angularWidthDegrees": 10.11327138301909,
+            "rangeM": 84.84317951804992,
+            "occluderIds": [],
+            "score": 0.8011411919969
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 8.94435532757232,
+            "angularWidthDegrees": 8.208012956726895,
+            "rangeM": 104.63007958580482,
+            "occluderIds": [],
+            "score": 0.6422257868971073
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 2.55678480934406,
+            "angularWidthDegrees": 6.9037234876892075,
+            "rangeM": 124.45975414899995,
+            "occluderIds": [],
+            "score": 0.8977286076262376
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 4.124339480448063,
+            "angularWidthDegrees": 5.950868965033325,
+            "rangeM": 144.4332465009502,
+            "occluderIds": [],
+            "score": 0.8281888020691538
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 79.60171672587141,
+            "angularWidthDegrees": 5.420890121955565,
+            "rangeM": 158.57819672086197,
+            "occluderIds": [
+              "city-ak-prop-126"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 66.32469834706477,
+            "angularWidthDegrees": 5.04676159129153,
+            "rangeM": 170.35092924693214,
+            "occluderIds": [
+              "city-ak-prop-128"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 55.32459023131684,
+            "angularWidthDegrees": 4.525929977514968,
+            "rangeM": 189.97850943110979,
+            "occluderIds": [
+              "city-ak-prop-120"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 45.05746207223356,
+            "angularWidthDegrees": 3.8727123408123907,
+            "rangeM": 222.05348160651218,
+            "occluderIds": [],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 120
+      },
+      "signature": "2a06e8afa842015d3b06228f3c7322f95145d10e83f0441405abfa5a22bba3a9",
+      "sourceSha256": "dc85e8e859f0fed87ac87d5949a7d4905206a5cfd5570f9c30cc1a912df01bc4",
+      "roadSha256": "286b7f4dc9f56419335961f993b5a9455325f3f7890904d0774c0b32bb80161d",
+      "placementDetails": {
+        "x": -531.2662656093265,
+        "z": 204.6231945958499,
+        "yaw": -0.03522999641355278,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2501.427204176792,
+        "trackLateral": -49.85289929613196,
+        "minimumRoadClearanceM": 35.36510825748374,
+        "checkedSegments": 4349,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ak-alaska-railroad-depot": {
       "raceRef": "Anchorage, AK — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 296.31154658417955,
+        "worldZ": -408.07482494886995,
+        "routeDistanceM": 5259,
+        "offsetFromRoadM": 26,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 3.637377691028012,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 10.728839291824006,
+            "angularWidthDegrees": 21.429782436560497,
+            "rangeM": 105.69642713297338,
+            "occluderIds": [],
+            "score": 0.5708464283270398
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 0.18355458889938925,
+            "angularWidthDegrees": 18.0933192484094,
+            "rangeM": 125.6128800772495,
+            "occluderIds": [],
+            "score": 0.9926578164440244
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.4468744974131583,
+            "angularWidthDegrees": 15.641411886607793,
+            "rangeM": 145.612180488392,
+            "occluderIds": [],
+            "score": 0.9821250201034737
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.3693202037260391,
+            "angularWidthDegrees": 13.771895384081166,
+            "rangeM": 165.61164667332065,
+            "occluderIds": [],
+            "score": 0.9852271918509584
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 20.01196914243711,
+            "angularWidthDegrees": 11.698178922942304,
+            "rangeM": 195.23245457848793,
+            "occluderIds": [],
+            "score": 0.19952123430251556
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 53.977450548589246,
+            "angularWidthDegrees": 10.096733545375724,
+            "rangeM": 226.3996801752325,
+            "occluderIds": [
+              "city-ak-prop-260",
+              "city-ak-prop-262"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 56.5551091782232,
+            "angularWidthDegrees": 9.270160615689733,
+            "rangeM": 246.68714448305928,
+            "occluderIds": [
+              "city-ak-prop-252",
+              "city-ak-prop-262"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 47.90500683321651,
+            "angularWidthDegrees": 8.247580327740998,
+            "rangeM": 277.39922848815746,
+            "occluderIds": [
+              "city-ak-prop-250"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "a1f561084c6f063d449468e6f7cab9f40590c94f7a3a7870e73aa29f033f9a64",
+      "sourceSha256": "a39e610b59bd0eabf612bd2132ca596c0eb9e0dad04b8327765cb5070e2e2675",
+      "roadSha256": "286b7f4dc9f56419335961f993b5a9455325f3f7890904d0774c0b32bb80161d",
+      "placementDetails": {
+        "x": 58.059320334944815,
+        "z": -466.5414373512584,
+        "yaw": -3.0653629680230257,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5048.4451937129425,
+        "trackLateral": -74.87372050346131,
+        "minimumRoadClearanceM": 45.424456527687944,
+        "checkedSegments": 4349,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-al-birmingham-civil-rights-institute": {
       "raceRef": "Birmingham, AL — Landmark Run",

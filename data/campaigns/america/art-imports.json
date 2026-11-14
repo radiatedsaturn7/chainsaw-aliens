@@ -2574,5 +2574,33 @@
     "documentSha256": "abb259a6375a03aada896cbc9eadcaaa1f29a7e355ba7d3a3301a2eea9d3446c",
     "width": 512,
     "height": 171
+  },
+  "landmark-city-ak-anchorage-museum": {
+    "source": "assets/campaign-art/landmarks/AK/landmark-city-ak-anchorage-museum.png",
+    "sourceSha256": "02132b9a7702b5bc0d865e74eceb88497456ddc3e4cb0a11f5125f8ec74f1c61",
+    "documentSha256": "8976518b18a159215bc8001b9dc6cd4ac7b147934ebe33c333e11b79e90ffea9",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ak-town-square-park": {
+    "source": "assets/campaign-art/landmarks/AK/landmark-city-ak-town-square-park.png",
+    "sourceSha256": "069ab4cfd9c297a363b02e51a4031f5adbde1ac6c669da46a9d323a042156144",
+    "documentSha256": "2a9b21fbdb71aaf7b2da7fc9fe985a0625cc29b29f910cf2c0c7b75925f37835",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ak-oscar-anderson-house": {
+    "source": "assets/campaign-art/landmarks/AK/landmark-city-ak-oscar-anderson-house.png",
+    "sourceSha256": "dc85e8e859f0fed87ac87d5949a7d4905206a5cfd5570f9c30cc1a912df01bc4",
+    "documentSha256": "1627517d05e20f1d0cbe2ebfd9ac6b07c026455575fb53d56b628538dc29b603",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ak-alaska-railroad-depot": {
+    "source": "assets/campaign-art/landmarks/AK/landmark-city-ak-alaska-railroad-depot.png",
+    "sourceSha256": "a39e610b59bd0eabf612bd2132ca596c0eb9e0dad04b8327765cb5070e2e2675",
+    "documentSha256": "a5d721e91adcd64c1c5eda8167b72222d84ae43a59df86f04177cf8c05e88b27",
+    "width": 512,
+    "height": 256
   }
 }

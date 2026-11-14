@@ -3156,6 +3156,34 @@
       "heightM": 18,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ak-anchorage-museum",
+      "source": "landmarks/AK/landmark-city-ak-anchorage-museum.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ak-town-square-park",
+      "source": "landmarks/AK/landmark-city-ak-town-square-park.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ak-oscar-anderson-house",
+      "source": "landmarks/AK/landmark-city-ak-oscar-anderson-house.png",
+      "heightM": 10,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ak-alaska-railroad-depot",
+      "source": "landmarks/AK/landmark-city-ak-alaska-railroad-depot.png",
+      "heightM": 20,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
