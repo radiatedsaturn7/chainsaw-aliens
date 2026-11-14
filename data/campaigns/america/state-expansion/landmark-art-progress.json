@@ -21238,35 +21238,499 @@
     },
     "landmark-city-wa-space-needle": {
       "raceRef": "Seattle, WA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -922.3718835098215,
+        "worldZ": -1391.3951584701772,
+        "routeDistanceM": 593,
+        "offsetFromRoadM": 215,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.8468352629020017,
+        "views": [
+          {
+            "beforeM": 30,
+            "angleDegrees": 69.48378322508125,
+            "angularWidthDegrees": 19.4698882823528,
+            "rangeM": 85.40607582285678,
+            "occluderIds": [
+              "city-wa-prop-40"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 45,
+            "angleDegrees": 60.67562287134833,
+            "angularWidthDegrees": 18.14781399034696,
+            "rangeM": 91.74516242419405,
+            "occluderIds": [
+              "city-wa-prop-40"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 51.17703424529441,
+            "angularWidthDegrees": 16.188539097617564,
+            "rangeM": 103.02660005450939,
+            "occluderIds": [
+              "city-wa-prop-40"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 129.80804622101508,
+            "angularWidthDegrees": 15.468241020772876,
+            "rangeM": 107.88715409301956,
+            "occluderIds": [
+              "city-wa-prop-37"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 123.5682668330865,
+            "angularWidthDegrees": 17.43768401347218,
+            "rangeM": 95.54334663931367,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 101.85239783767926,
+            "angularWidthDegrees": 19.94973365781721,
+            "rangeM": 83.311255254252,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 1.4541184274499563,
+            "angularWidthDegrees": 18.40804474356527,
+            "rangeM": 90.42607860377159,
+            "occluderIds": [],
+            "score": 0.9418352629020017
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 45.50317536197205,
+            "angularWidthDegrees": 13.006607541986476,
+            "rangeM": 128.53607489610746,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 34.08027375711556,
+            "angularWidthDegrees": 10.036907598377043,
+            "rangeM": 166.85806719896965,
+            "occluderIds": [
+              "city-wa-prop-30",
+              "city-wa-prop-33",
+              "city-wa-prop-34"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "9e0e5ac7a8b94b6c8d10727e28500ddd14d8b684e320b8e0c22d2fc69b8dc374",
+      "sourceSha256": "a9376b78c7d7d77f74b02517465e66710719fff0771a18304e6a27643911f241",
+      "roadSha256": "d5b3e0218b2f0a2987183454063bc0ee9cd09d7acfa9ec22ae9f012f0b7b0ec3",
+      "placementDetails": {
+        "x": -851.2797574617168,
+        "z": -1083.789879780977,
+        "yaw": 1.74604293347838,
+        "facingApproachBeforeM": 65,
+        "trackDistance": 804.3925378275283,
+        "trackLateral": -79.98902724751159,
+        "minimumRoadClearanceM": 53.675715483479294,
+        "checkedSegments": 4118,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-wa-smith-tower": {
       "raceRef": "Seattle, WA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 390.9337641777125,
+        "worldZ": 666.1252476466641,
+        "routeDistanceM": 3023,
+        "offsetFromRoadM": 29,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.7944244742634416,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 30.26003291677234,
+            "angularWidthDegrees": 21.561321831857963,
+            "rangeM": 73.45358909956045,
+            "occluderIds": [
+              "city-wa-prop-166"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 23.827844356134836,
+            "angularWidthDegrees": 17.418219039657554,
+            "rangeM": 91.30397400303501,
+            "occluderIds": [],
+            "score": 0.04688622575460655
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 20.346252847977627,
+            "angularWidthDegrees": 14.50577958616066,
+            "rangeM": 109.89724633055093,
+            "occluderIds": [],
+            "score": 0.1861498860808949
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 17.39805347587367,
+            "angularWidthDegrees": 12.395381180704398,
+            "rangeM": 128.79468880998024,
+            "occluderIds": [],
+            "score": 0.3040778609650532
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 12.818149228126755,
+            "angularWidthDegrees": 10.130738817387869,
+            "rangeM": 157.79080499245137,
+            "occluderIds": [
+              "city-wa-prop-163",
+              "city-wa-prop-167"
+            ],
+            "score": 0.058472883704991575
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 10.416690896748252,
+            "angularWidthDegrees": 8.122226887781677,
+            "rangeM": 196.99403658025645,
+            "occluderIds": [
+              "city-wa-prop-163",
+              "city-wa-prop-167"
+            ],
+            "score": 0.06999988369560839
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 8.962258171259691,
+            "angularWidthDegrees": 6.7712635975900035,
+            "rangeM": 236.41810705755955,
+            "occluderIds": [
+              "city-wa-prop-157",
+              "city-wa-prop-161",
+              "city-wa-prop-163",
+              "city-wa-prop-167"
+            ],
+            "score": 0.07698116077795349
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 7.401612428028194,
+            "angularWidthDegrees": 5.60112204611327,
+            "rangeM": 285.9138845087329,
+            "occluderIds": [
+              "city-wa-prop-157",
+              "city-wa-prop-159",
+              "city-wa-prop-163",
+              "city-wa-prop-167"
+            ],
+            "score": 0.07885657328433364
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "de140a3402132042548afdca950ea80af4d71c8c4b4a1ff6947301888117ed94",
+      "sourceSha256": "594e746ef1b8d811c20cd90d6f00709888bee28d5521b3d5d10b005367a91189",
+      "roadSha256": "d5b3e0218b2f0a2987183454063bc0ee9cd09d7acfa9ec22ae9f012f0b7b0ec3",
+      "placementDetails": {
+        "x": 360.5473097550162,
+        "z": 742.2688381792476,
+        "yaw": 0.26734417979647274,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3052.978547264631,
+        "trackLateral": -44.99987342321873,
+        "minimumRoadClearanceM": 19.970227884876117,
+        "checkedSegments": 4118,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-wa-pike-place-market": {
       "raceRef": "Seattle, WA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -330.62229596639037,
+        "worldZ": -155.31728807041827,
+        "routeDistanceM": 4964,
+        "offsetFromRoadM": 43,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.2152482562763714,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 33.11610964886945,
+            "angularWidthDegrees": 25.96225743154204,
+            "rangeM": 65.06991001468988,
+            "occluderIds": [
+              "city-wa-prop-271"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 25.509583253862907,
+            "angularWidthDegrees": 20.59805661540217,
+            "rangeM": 82.54762631852678,
+            "occluderIds": [
+              "city-wa-prop-271"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 20.615817637672905,
+            "angularWidthDegrees": 16.900663323025856,
+            "rangeM": 100.96599030107933,
+            "occluderIds": [
+              "city-wa-prop-269",
+              "city-wa-prop-271"
+            ],
+            "score": 0.021044075339170062
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 17.24854370867852,
+            "angularWidthDegrees": 14.262706100575716,
+            "rangeM": 119.89226392592272,
+            "occluderIds": [
+              "city-wa-prop-269",
+              "city-wa-prop-271"
+            ],
+            "score": 0.03720699019834311
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 13.821467091235878,
+            "angularWidthDegrees": 11.511964762125281,
+            "rangeM": 148.80926218367452,
+            "occluderIds": [
+              "city-wa-prop-269",
+              "city-wa-prop-271"
+            ],
+            "score": 0.053656957962067785
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 23.33501256225161,
+            "angularWidthDegrees": 9.15006637158299,
+            "rangeM": 187.4542353881658,
+            "occluderIds": [
+              "city-wa-prop-267",
+              "city-wa-prop-269",
+              "city-wa-prop-271"
+            ],
+            "score": 0.007991939701192278
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 23.380100603597306,
+            "angularWidthDegrees": 7.675605187633778,
+            "rangeM": 223.6047746193606,
+            "occluderIds": [
+              "city-wa-prop-263",
+              "city-wa-prop-265",
+              "city-wa-prop-267",
+              "city-wa-prop-269",
+              "city-wa-prop-271"
+            ],
+            "score": 0.007775517102732929
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 3.422338338986405,
+            "angularWidthDegrees": 6.311197804204325,
+            "rangeM": 272.0775235340401,
+            "occluderIds": [
+              "city-wa-prop-261",
+              "city-wa-prop-263",
+              "city-wa-prop-265",
+              "city-wa-prop-267",
+              "city-wa-prop-269",
+              "city-wa-prop-271"
+            ],
+            "score": 0.10357277597286525
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "63d6fd14117411e22898606032589f7983b5daf636ee4eb182fa591c720982b5",
+      "sourceSha256": "823716aa2643e235fafbc4f56ee926be410477140f13cbbd5d3aa4a870a09962",
+      "roadSha256": "d5b3e0218b2f0a2987183454063bc0ee9cd09d7acfa9ec22ae9f012f0b7b0ec3",
+      "placementDetails": {
+        "x": -332.84457266658524,
+        "z": -153.02980756067083,
+        "yaw": 1.1458558407784745,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4964.339290863063,
+        "trackLateral": -39.98112400373604,
+        "minimumRoadClearanceM": 16.449901083479066,
+        "checkedSegments": 4118,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-wa-king-street-station": {
       "raceRef": "Seattle, WA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 532.4351889748488,
+        "worldZ": 1062.346677043175,
+        "routeDistanceM": 6659,
+        "offsetFromRoadM": 60,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 8.351408866348073,
+        "views": [
+          {
+            "beforeM": 30,
+            "angleDegrees": 9.842644136944477,
+            "angularWidthDegrees": 40.6459301773008,
+            "rangeM": 56.755947559658644,
+            "occluderIds": [],
+            "score": 0.6062942345222209
+          },
+          {
+            "beforeM": 45,
+            "angleDegrees": 0.546970563490942,
+            "angularWidthDegrees": 32.660041374587536,
+            "rangeM": 71.74503231704756,
+            "occluderIds": [],
+            "score": 0.9781211774603623
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 0.4288855599965652,
+            "angularWidthDegrees": 25.809808101851345,
+            "rangeM": 91.74435900656947,
+            "occluderIds": [],
+            "score": 0.9828445776001374
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 0.3524259191445023,
+            "angularWidthDegrees": 21.307202080322632,
+            "rangeM": 111.74393774637791,
+            "occluderIds": [],
+            "score": 0.9859029632342199
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 0.29892437609602535,
+            "angularWidthDegrees": 18.130973137693235,
+            "rangeM": 131.7436564004412,
+            "occluderIds": [],
+            "score": 0.988043024956159
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 0.24348031672693002,
+            "angularWidthDegrees": 14.809566017341087,
+            "rangeM": 161.74338318599646,
+            "occluderIds": [],
+            "score": 0.9902607873309228
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 0.16902215758429928,
+            "angularWidthDegrees": 11.896879404082032,
+            "rangeM": 201.74319452867817,
+            "occluderIds": [],
+            "score": 0.993239113696628
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.14077602255335767,
+            "angularWidthDegrees": 9.939192689092595,
+            "rangeM": 241.74312898082377,
+            "occluderIds": [],
+            "score": 0.9943689590978657
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.11664928876108296,
+            "angularWidthDegrees": 8.242250293218222,
+            "rangeM": 291.74310283521163,
+            "occluderIds": [],
+            "score": 0.9953340284495567
+          }
+        ],
+        "sourceDistanceShiftM": -150
+      },
+      "signature": "3e697827e2336ac85104d54f7fe00a70c8b7aacc8ce02f8704070cb1049a9331",
+      "sourceSha256": "03f6161bf9ab03e5a2d6bc806159a8cc8a5e7457cda5396722bcca4498dcef44",
+      "roadSha256": "d5b3e0218b2f0a2987183454063bc0ee9cd09d7acfa9ec22ae9f012f0b7b0ec3",
+      "placementDetails": {
+        "x": 544.1345082513366,
+        "z": 884.3609993709781,
+        "yaw": 1.5737799115828723,
+        "facingApproachBeforeM": 65,
+        "trackDistance": 6509.151272727573,
+        "trackLateral": -44.999630169596706,
+        "minimumRoadClearanceM": 11.111253315906726,
+        "checkedSegments": 4118,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-wi-pabst-theater": {
       "raceRef": "Milwaukee, WI — Landmark Run",

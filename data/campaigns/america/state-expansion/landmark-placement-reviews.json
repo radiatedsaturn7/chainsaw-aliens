@@ -5861,5 +5861,119 @@
       265
     ],
     "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-wa-king-street-station": {
+    "reason": "Measure the near-bend approach on the safe opposite side while preserving surveyed source coordinates and route data.",
+    "distanceOffsets": [
+      -150,
+      -120,
+      -180
+    ],
+    "minimumSetbackM": 40,
+    "maximumSetbackM": 55,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 65,
+    "approachOffsetsM": [
+      30,
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-wa-pike-place-market": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-wa-smith-tower": {
+    "reason": "Rank safe approaches near source reference and verify native render; preserve all prior route data.",
+    "distanceOffsets": [
+      0,
+      -30,
+      30,
+      -60,
+      60,
+      -90,
+      90,
+      -120,
+      120,
+      -150,
+      150,
+      -210,
+      210
+    ],
+    "minimumSetbackM": 20,
+    "maximumSetbackM": 135,
+    "allowOppositeSide": true,
+    "facingApproachBeforeM": 105,
+    "approachOffsetsM": [
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
+  },
+  "landmark-city-wa-space-needle": {
+    "reason": "Test the measured left-side open-sky approach for an identifiable observation disk without changing native lighting.",
+    "distanceOffsets": [
+      210,
+      180,
+      150
+    ],
+    "minimumSetbackM": 70,
+    "maximumSetbackM": 100,
+    "allowOppositeSide": false,
+    "facingApproachBeforeM": 65,
+    "approachOffsetsM": [
+      30,
+      45,
+      65,
+      85,
+      105,
+      135,
+      175,
+      215,
+      265
+    ],
+    "occlusionWidthFactor": 0.85
   }
 }

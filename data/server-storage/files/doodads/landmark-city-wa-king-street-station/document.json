@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617443430,
+  "doodad": {
+    "id": "campaign-landmark-city-wa-king-street-station",
+    "name": "landmark-city-wa-king-street-station",
+    "artRef": "landmark-city-wa-king-street-station",
+    "widthM": 42.04105571847507,
+    "heightM": 28,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 35.73489736070381,
+    "hitboxHeightM": 25.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

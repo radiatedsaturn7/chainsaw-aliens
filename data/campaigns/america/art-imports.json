@@ -2854,5 +2854,33 @@
     "documentSha256": "715bf7d5e6337556a30fcba75c8716707ac409b06f9a4a501a6a0bcf1799cae2",
     "width": 512,
     "height": 341
+  },
+  "landmark-city-wa-space-needle": {
+    "source": "assets/campaign-art/landmarks/WA/landmark-city-wa-space-needle.png",
+    "sourceSha256": "a9376b78c7d7d77f74b02517465e66710719fff0771a18304e6a27643911f241",
+    "documentSha256": "7a3ba30d42eade8fe565765f349c5df4e9441b51bae5c4e24b35be4a281a8a27",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-wa-smith-tower": {
+    "source": "assets/campaign-art/landmarks/WA/landmark-city-wa-smith-tower.png",
+    "sourceSha256": "594e746ef1b8d811c20cd90d6f00709888bee28d5521b3d5d10b005367a91189",
+    "documentSha256": "19670452ae18e837d6ba34c3b07e9375852383f838168c560eebb2403dcbbd5e",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-wa-pike-place-market": {
+    "source": "assets/campaign-art/landmarks/WA/landmark-city-wa-pike-place-market.png",
+    "sourceSha256": "823716aa2643e235fafbc4f56ee926be410477140f13cbbd5d3aa4a870a09962",
+    "documentSha256": "db9047135dd9cf87f50932591a597abbd94ae109b75f164dac8f8fcb0c37c6d6",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wa-king-street-station": {
+    "source": "assets/campaign-art/landmarks/WA/landmark-city-wa-king-street-station.png",
+    "sourceSha256": "03f6161bf9ab03e5a2d6bc806159a8cc8a5e7457cda5396722bcca4498dcef44",
+    "documentSha256": "2cf249b708e6537e51f855d6189caed2a12280f27b5cfa8b25ea2a0e07c72c08",
+    "width": 512,
+    "height": 341
   }
 }

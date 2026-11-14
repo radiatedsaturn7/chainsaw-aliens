@@ -704,7 +704,11 @@
       "landmark-city-ut-union-pacific-depot": "art/landmark-city-ut-union-pacific-depot/document.json",
       "landmark-city-ut-utah-state-capitol": "art/landmark-city-ut-utah-state-capitol/document.json",
       "landmark-city-ut-temple-square": "art/landmark-city-ut-temple-square/document.json",
-      "landmark-city-ut-salt-lake-city-and-county-building": "art/landmark-city-ut-salt-lake-city-and-county-building/document.json"
+      "landmark-city-ut-salt-lake-city-and-county-building": "art/landmark-city-ut-salt-lake-city-and-county-building/document.json",
+      "landmark-city-wa-space-needle": "art/landmark-city-wa-space-needle/document.json",
+      "landmark-city-wa-smith-tower": "art/landmark-city-wa-smith-tower/document.json",
+      "landmark-city-wa-pike-place-market": "art/landmark-city-wa-pike-place-market/document.json",
+      "landmark-city-wa-king-street-station": "art/landmark-city-wa-king-street-station/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1144,7 +1148,11 @@
       "landmark-city-ut-union-pacific-depot": "doodads/landmark-city-ut-union-pacific-depot/document.json",
       "landmark-city-ut-utah-state-capitol": "doodads/landmark-city-ut-utah-state-capitol/document.json",
       "landmark-city-ut-temple-square": "doodads/landmark-city-ut-temple-square/document.json",
-      "landmark-city-ut-salt-lake-city-and-county-building": "doodads/landmark-city-ut-salt-lake-city-and-county-building/document.json"
+      "landmark-city-ut-salt-lake-city-and-county-building": "doodads/landmark-city-ut-salt-lake-city-and-county-building/document.json",
+      "landmark-city-wa-space-needle": "doodads/landmark-city-wa-space-needle/document.json",
+      "landmark-city-wa-smith-tower": "doodads/landmark-city-wa-smith-tower/document.json",
+      "landmark-city-wa-pike-place-market": "doodads/landmark-city-wa-pike-place-market/document.json",
+      "landmark-city-wa-king-street-station": "doodads/landmark-city-wa-king-street-station/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

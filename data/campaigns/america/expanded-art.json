@@ -3436,6 +3436,34 @@
       "heightM": 34,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-wa-space-needle",
+      "source": "landmarks/WA/landmark-city-wa-space-needle.png",
+      "heightM": 44,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wa-smith-tower",
+      "source": "landmarks/WA/landmark-city-wa-smith-tower.png",
+      "heightM": 42,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wa-pike-place-market",
+      "source": "landmarks/WA/landmark-city-wa-pike-place-market.png",
+      "heightM": 15,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wa-king-street-station",
+      "source": "landmarks/WA/landmark-city-wa-king-street-station.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
