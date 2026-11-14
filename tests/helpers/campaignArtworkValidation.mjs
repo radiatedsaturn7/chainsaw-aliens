@@ -1,3 +1,4 @@
+import {createCampaignHubMenus} from '../../src/menus/CampaignHubMenus.js';
 import assert from 'node:assert/strict';
 import {normalizeRaceDoodadDocument} from '../../src/racing/raceDoodads.js';
 
@@ -44,4 +45,17 @@ export function assertSceneryArtwork(editor, sprite, manifest, loadDefinition, p
   if (sprite.previewDoodad) assert.equal(effective.id, saved.id, `Embedded definition mismatch: ${sprite.id}`);
   if (preloadRefs) assert.ok(preloadRefs.has(effective.artRef), `Missing preload: ${effective.artRef}`);
   return effective;
+}
+
+// Use the same enabled race choices as campaign installation, not every library race.
+export function campaignArtworkRacePaths(catalog, research, installed, manifest) {
+  const {screens} = createCampaignHubMenus(catalog, research, installed);
+  const refs = new Set(screens.flatMap(s => s.elements)
+    .filter(e => !e.disabled && e.action?.type === 'set-param' && e.action?.parameter === 'raceRef')
+    .map(e => e.action.value));
+  return [...refs].map(ref => {
+    const path = manifest.folders.races[ref];
+    assert.ok(path, `Missing playable campaign race: ${ref}`);
+    return path;
+  });
 }

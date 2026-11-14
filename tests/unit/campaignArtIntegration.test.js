@@ -1,4 +1,4 @@
-import {assertCampaignImportInventory,createSavedDoodadResolver,assertSceneryArtwork} from '../helpers/campaignArtworkValidation.mjs';
+import {campaignArtworkRacePaths,assertCampaignImportInventory,createSavedDoodadResolver,assertSceneryArtwork} from '../helpers/campaignArtworkValidation.mjs';
 import {collectSceneryArtRefs} from '../../src/racing/RaceSceneryAssets.js';
 import {applyCampaignArtCoverage} from '../../tools/campaigns/campaign_art_coverage.mjs';
 import test from 'node:test';
@@ -93,8 +93,9 @@ test('every delivered PNG is imported exactly once and decals remain surface art
 
 test('all delivered art has an actual campaign use, including ground decals and physical surface ribbons',()=>{
  const used=new Set();
- for(const e of read('data/campaigns/america/catalog.json')){
-  const r=read(root+e.documentPath).race,settings=roadTextureSettings(r);
+ const paths=campaignArtworkRacePaths(read('data/campaigns/america/catalog.json'),read('AI/last-on-the-grid/last_on_the_grid_99_side_races.json'),[...read('data/campaigns/america/side-races/catalog.json'),...read('data/campaigns/america/raceways/catalog.json')],manifest);
+ for(const path of paths){
+  const r=read(root+path).race,settings=roadTextureSettings(r);
   used.add(r.skyboxArtRef);
   collectSceneryArtRefs(r,loadDefinition).forEach(ref=>used.add(ref));
   for(const p of [...r.scenery,...r.decals,...Object.values(r.road.tileMap.cells)])used.add(p.artRef);
@@ -286,4 +287,15 @@ test('named-ref scenery validation rejects missing definitions, art, conflicting
  assert.throws(()=>assertSceneryArtwork(editor,{...sprite,previewDoodad:{...document.doodad,artRef:'wrong'}},registry,loader,refs),/Definition artwork mismatch/);
  assert.throws(()=>assertSceneryArtwork(editor,sprite,registry,loader,new Set()),/Missing preload/);
  const removed=new Set(collectSceneryArtRefs({scenery:[]},loader));assert.equal(removed.has('tree-art'),false,'Removed scenery cannot count as active use');
+});
+
+
+test('campaign use scope excludes unavailable events and unrelated library races',()=>{
+ const catalog=[{name:'Main',stage:1}],research={hubs:[{sequence:1,races:[{id:'pending',name:'Pending'}]}]};
+ const installed=[{id:'side',status:'installed',raceRef:'Side',hubStage:1},{id:'pending',status:'planned',raceRef:'Pending',hubStage:1},{id:'orphan',status:'installed',raceRef:'Orphan',hubStage:99}];
+ const m={folders:{races:{Main:'main.json',Side:'side.json',Pending:'pending.json',Orphan:'orphan.json',EditorOnly:'editor.json'}}};
+ assert.deepEqual(new Set(campaignArtworkRacePaths(catalog,research,installed,m)),new Set(['main.json','side.json']));
+ assert.deepEqual(campaignArtworkRacePaths(catalog,research,[],m),['main.json']);
+ delete m.folders.races.Side;
+ assert.throws(()=>campaignArtworkRacePaths(catalog,research,installed,m),/Missing playable campaign race: Side/);
 });
