@@ -32,6 +32,7 @@ test('start bars and two-row finish checkers have distinct identities',()=>{
 import RaceEditor from '../../src/ui/RaceEditor.js';
 test('road graphics end at the real finish, follow cross sections and keep circuit shared',()=>{
   const e=Object.create(RaceEditor.prototype);
+  Object.defineProperty(e,'selectedRace',{value:{timingLines:{}},configurable:true});
   e.playtestSession={routeRuntimeType:'destination'};
   e.getRaceRoadCrossSectionAtDistance=(d)=>({left:{x:-5,z:d,elevation:d/100},right:{x:5,z:d,elevation:d/100+.1}});
   const args={travel:0,routeLength:100,slices:[{center:{distance:0}},{center:{distance:100}}]};
@@ -46,4 +47,14 @@ test('road graphics end at the real finish, follow cross sections and keep circu
   assert.equal(shared.length,raceLineGraphic('finish').length);
   assert.ok(shared.flatMap(m=>m.points).every(p=>p.z<=2.4));
   assert.ok(!shared.some(m=>m.color==='#b79950'));
+});
+
+test('authored timing art and explicit hidden lines suppress fallback in both renderers',()=>{
+  const e=Object.create(RaceEditor.prototype);
+  Object.defineProperty(e,'selectedRace',{value:{timingLines:{start:{artRef:'start-custom'},finish:{artRef:'__none'}}}});
+  e.playtestSession={routeRuntimeType:'destination'};
+  e.getRaceRoadCrossSectionAtDistance=()=>{throw new Error('no fallback geometry expected');};
+  e.drawRaceCheckerStripeAtDistance=()=>{throw new Error('no fallback paint expected');};
+  assert.deepEqual(e.getRaceWebGLCheckerStripeMeshes({travel:0,routeLength:100}),[]);
+  e.drawRaceStartFinishCheckerStripes({}, {}, {travel:0,routeLength:100});
 });
