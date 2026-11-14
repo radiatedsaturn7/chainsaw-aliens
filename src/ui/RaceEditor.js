@@ -3641,7 +3641,7 @@ export default class RaceEditor {
     });
     const first = panels[0], definition = this.getRaceDoodadForScenery(first);
     return { ...first, fencePath: { points, ref: first.doodadRef,
-      definition: { ...definition, isFence: true, widthM: first.widthM / Math.max(0.00001, first.fenceU1 - first.fenceU0) } } };
+      definition: { ...definition, isFence: true, widthM: first.widthM / Math.max(0.00001, Math.abs(first.fenceU1 - first.fenceU0)) } } };
 
   }
 

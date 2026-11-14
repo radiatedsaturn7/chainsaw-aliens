@@ -19,11 +19,15 @@ export function buildRaceFencePlacements(points, definition, { id = 'fence', ref
       const u0 = phase < 0.00001 || repeat - phase < 0.00001 ? 0 : phase / repeat;
       const width = Math.min(length - at, repeat * (1 - u0), 2);
       const fraction = (at + width / 2) / length;
+      // Opt-in organic strips meet at the same source edge on alternate tiles.
+      // Keep the PNG untouched and preserve phase around path corners.
+      const mirrored = doodad.fenceMirrorRepeat && Math.floor((traveled + 0.000001) / repeat) % 2 === 1;
+      const u1 = u0 + width / repeat;
       placements.push({
         id: `${id}:${placements.length}`, fenceId: id, presetId: 'doodad', doodadRef: ref,
         label: doodad.name, artRef: doodad.artRef, x: a.x + dx * fraction, z: a.z + dz * fraction,
         yaw: Math.atan2(dz, -dx), widthM: width, heightM: doodad.heightM,
-        fenceU0: u0, fenceU1: u0 + width / repeat, solid: true, state: 'standing',
+        fenceU0: mirrored ? 1 - u0 : u0, fenceU1: mirrored ? 1 - u1 : u1, solid: true, state: 'standing',
         previewDoodad: { ...doodad, itemType: 'scenery', model: null, widthM: width, hitboxWidthM: width, hitboxHeightM: doodad.heightM, rules: [],
           defaultRule: { ...doodad.defaultRule, behavior: 'collide' } }
       });

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "selectedDoodadId": "fence-region-new-england-stonewall",
+  "doodad": {
+    "id": "fence-region-new-england-stonewall",
+    "name": "New England crumbled fieldstone wall [solid fence]",
+    "artRef": "fence-region-new-england-stonewall",
+    "isFence": true,
+    "fenceMirrorRepeat": true,
+    "fenceThicknessM": 0.5,
+    "itemType": "scenery",
+    "model": null,
+    "widthM": 10,
+    "heightM": 1.8,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 10,
+    "hitboxHeightM": 1.8,
+    "weightKg": 10000,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 45,
+      "damage": {
+        "panels": 14,
+        "suspension": 6,
+        "engine": 3.5
+      }
+    },
+    "rules": []
+  },
+  "regionalFence": {
+    "region": "New England",
+    "collision": "Continuous solid fence; transparent art is not an opening.",
+    "source": "regional-fences/fence-new-england-stonewall.png"
+  }
+}

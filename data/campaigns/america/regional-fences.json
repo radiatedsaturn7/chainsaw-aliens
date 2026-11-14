@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "name": "fence-region-new-england-stonewall",
+      "source": "regional-fences/fence-new-england-stonewall.png",
+      "label": "New England crumbled fieldstone wall",
+      "region": "New England",
+      "widthM": 10,
+      "heightM": 1.8,
+      "thicknessM": 0.5,
+      "mirrorRepeat": true
+    },
+    {
+      "name": "fence-region-appalachian-splitrail",
+      "source": "regional-fences/fence-appalachian-splitrail.png",
+      "label": "Appalachian abandoned split-rail fence",
+      "region": "Appalachia",
+      "widthM": 12,
+      "heightM": 1.6,
+      "thicknessM": 0.2,
+      "mirrorRepeat": true
+    },
+    {
+      "name": "fence-region-new-england-hardwoods",
+      "source": "regional-fences/fence-new-england-hardwoods.png",
+      "label": "New England ruined hardwood tree line",
+      "region": "New England",
+      "widthM": 28,
+      "heightM": 9,
+      "thicknessM": 1,
+      "mirrorRepeat": true
+    },
+    {
+      "name": "fence-region-new-england-rowhouses",
+      "source": "regional-fences/fence-new-england-rowhouses.png",
+      "label": "New England abandoned brick rowhouses",
+      "region": "New England",
+      "widthM": 36,
+      "heightM": 12,
+      "thicknessM": 1,
+      "mirrorRepeat": false
+    },
+    {
+      "name": "fence-region-southwest-adobe",
+      "source": "regional-fences/fence-southwest-adobe.png",
+      "label": "Southwest ruined adobe street",
+      "region": "Southwest",
+      "widthM": 24,
+      "heightM": 8,
+      "thicknessM": 1,
+      "mirrorRepeat": false
+    },
+    {
+      "name": "fence-region-pnw-conifers",
+      "source": "regional-fences/fence-pnw-conifers.png",
+      "label": "Pacific Northwest weathered conifer line",
+      "region": "Pacific Northwest",
+      "widthM": 36,
+      "heightM": 12,
+      "thicknessM": 1,
+      "mirrorRepeat": true
+    },
+    {
+      "name": "fence-region-plains-shelterbelt",
+      "source": "regional-fences/fence-plains-shelterbelt.png",
+      "label": "Great Plains abandoned shelterbelt",
+      "region": "Great Plains",
+      "widthM": 24,
+      "heightM": 8,
+      "thicknessM": 1,
+      "mirrorRepeat": true
+    },
+    {
+      "name": "fence-region-southwest-scrub",
+      "source": "regional-fences/fence-southwest-scrub.png",
+      "label": "Southwest scrub and ruined wire fence",
+      "region": "Southwest",
+      "widthM": 9,
+      "heightM": 3,
+      "thicknessM": 0.3,
+      "mirrorRepeat": true
+    },
+    {
+      "name": "fence-region-plains-farm",
+      "source": "regional-fences/fence-plains-farm.png",
+      "label": "Great Plains ruined country fence",
+      "region": "Great Plains",
+      "widthM": 6,
+      "heightM": 2,
+      "thicknessM": 0.25,
+      "mirrorRepeat": true
+    },
+    {
+      "name": "fence-region-industrial-cityblock",
+      "source": "regional-fences/fence-industrial-cityblock.png",
+      "label": "Rust Belt industrial street ruins",
+      "region": "Great Lakes / Pacific industrial",
+      "widthM": 45,
+      "heightM": 15,
+      "thicknessM": 1,
+      "mirrorRepeat": false
+    }
+  ]
+}
