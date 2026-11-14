@@ -1,3 +1,5 @@
+import {assertCampaignImportInventory,createSavedDoodadResolver,assertSceneryArtwork} from '../helpers/campaignArtworkValidation.mjs';
+import {collectSceneryArtRefs} from '../../src/racing/RaceSceneryAssets.js';
 import {applyCampaignArtCoverage} from '../../tools/campaigns/campaign_art_coverage.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -10,10 +12,13 @@ const root='data/server-storage/files/';
 const read=p=>{let d=JSON.parse(fs.readFileSync(p));return d.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(d.data,'base64'))):d;};
 const manifest=read(root+'manifest.json'),imports=read('data/campaigns/america/art-imports.json');
 const expanded=read('data/campaigns/america/expanded-art.json').assets;
+const inventory=read('assets/campaign-art/inventory.json');
 const regionalFences=read('data/campaigns/america/regional-fences.json').assets;
+const loadDefinition=createSavedDoodadResolver(manifest,p=>read(root+p));
+const savedEditor=()=>{const e=new RaceEditor({});e.loadRaceDoodadDocument=loadDefinition;return e;};
 const race=read(root+'races/Laurel Highlands Scenic Byway/document.json').race;
 test('reviewed PNG imports are registered, bounded and preserve alpha',()=>{
- assert.equal(Object.keys(imports).length,134+expanded.length+regionalFences.length);
+ assertCampaignImportInventory(imports,inventory,expanded,regionalFences);
  for(const [name,record] of Object.entries(imports)){
   const file=root+manifest.folders.art[name],raw=fs.readFileSync(file),art=read(file);
   assert.equal(createHash('sha256').update(raw).digest('hex'),record.documentSha256);
@@ -34,12 +39,8 @@ test('Laurel artwork uses the road ribbon, saved ground art and valid doodad def
  assert.deepEqual(new Set(cells.map(c=>c.artRef)),new Set(['ground-frozen-forest']));
  const props=race.scenery.filter(p=>/^(leafless|frozen-bush|gray-rock)/.test(p.doodadRef||'')||p.id.startsWith('campaign-art-laurel-'));
  assert.ok(props.length>100);
- for(const p of props){
-  const d=read(root+manifest.folders.doodads[p.doodadRef]).doodad;
-  const embedded=race.sceneryDefinitions?.find(item=>item.ref===p.doodadRef);
-  const resolved=p.previewDoodad||embedded||d;
-  assert.equal(p.artRef||resolved.artRef,d.artRef);assert.ok(manifest.folders.art[d.artRef]);assert.equal(resolved.id,d.id);
- }
+ const editor=savedEditor();
+ for(const p of props)assertSceneryArtwork(editor,p,manifest,loadDefinition);
  assert.ok(race.road.segments.every(s=>s.surface==='asphalt'));
  assert.ok(Math.max(...race.road.segments.map(s=>s.bumpiness))>.35,'frost-damage gameplay retained');
 });
@@ -78,10 +79,8 @@ test('regional props keep clear of the road and preserve Tower Hill snowroad',()
 });
 
 test('every delivered PNG is imported exactly once and decals remain surface art',()=>{
- const inventory=read('assets/campaign-art/inventory.json');
- assert.equal(inventory.assetCount,134);
+ assertCampaignImportInventory(imports,inventory,expanded,regionalFences);
  const bySource=new Map(Object.values(imports).map(r=>[r.source,r]));
- assert.equal(bySource.size,134+expanded.length+regionalFences.length);
  for(const asset of inventory.assets){
   assert.ok(bySource.has(`assets/campaign-art/${asset.path}`),asset.path); // Generator refreshes inventory hashes after the full revision.
  }
@@ -92,20 +91,17 @@ test('every delivered PNG is imported exactly once and decals remain surface art
  }
 });
 
-test('placed artwork resolves across the saved library; regional fence library remains available for authoring',()=>{
- const used=new Set(),definitions=new Map();
- const definition=ref=>{if(!definitions.has(ref))definitions.set(ref,manifest.folders.doodads[ref]?read(root+manifest.folders.doodads[ref]).doodad:null);return definitions.get(ref);};
- for(const path of Object.values(manifest.folders.races)){
-  const r=read(root+path).race,settings=roadTextureSettings(r);
-  for(const p of r.scenery||[]){const d=p.previewDoodad||r.sceneryDefinitions?.find(d=>d.ref===p.doodadRef)||definition(p.doodadRef);if(d?.artRef)used.add(d.artRef);}
-  for(const texture of Object.values(settings.surfaceRoads||{}))used.add(texture.artRef);
+test('all delivered art has an actual campaign use, including ground decals and physical surface ribbons',()=>{
+ const used=new Set();
+ for(const e of read('data/campaigns/america/catalog.json')){
+  const r=read(root+e.documentPath).race,settings=roadTextureSettings(r);
   used.add(r.skyboxArtRef);
-  for(const p of [...r.scenery,...(r.decals||[]),...Object.values(r.road.tileMap?.cells||{})])used.add(p.artRef);
+  collectSceneryArtRefs(r,loadDefinition).forEach(ref=>used.add(ref));
+  for(const p of [...r.scenery,...r.decals,...Object.values(r.road.tileMap.cells)])used.add(p.artRef);
   for(const segment of r.road.segments){used.add(roadTextureForSegment(settings,segment).artRef);if(r.margin?.shoulderMode==='on')used.add((settings.surfaceShoulders[segment.surface]||settings.shoulder).artRef);}
   for(const p of r.scenery.filter(p=>p.fenceId?.startsWith('campaign-complete'))){assert.equal(p.previewDoodad.isFence,true);assert.equal(p.previewDoodad.defaultRule.behavior,'collide');assert.ok(p.previewDoodad.fenceThicknessM>0);}
  }
- const deferred=new Set([...expanded.filter(a=>a.deferredReason).map(a=>a.name),...regionalFences.map(a=>a.name)]);
- for(const a of regionalFences)assert.ok(manifest.folders.doodads[a.name]&&manifest.folders.art[a.name],a.name);
+ const deferred=new Set(expanded.filter(a=>a.deferredReason).map(a=>a.name));
  assert.deepEqual(Object.keys(imports).filter(name=>name!=='ground-snow-dead-grass'&&!deferred.has(name)&&!used.has(name)),[]);
 });
 
@@ -161,16 +157,12 @@ test('coverage preserves customized obstacle hitboxes, rules and positions and i
 });
 
 test('every campaign doodad and its artwork resolves and is included in the preload list',()=>{
- const editor=new RaceEditor({});
+ const editor=savedEditor();
  for(const entry of read('data/campaigns/america/catalog.json')){
   const r=read(root+entry.documentPath).race;editor.applyLoadedRaceDocument(r);
   const refs=new Set(editor.collectSelectedRaceArtRefs());
   for(const p of r.scenery){
-   assert.ok(manifest.folders.doodads[p.doodadRef],entry.name+': '+p.doodadRef);
-   const artRef=editor.getRaceDoodadForScenery(p).artRef;
-   assert.ok(manifest.folders.art[artRef],entry.name+': '+artRef);
-   assert.ok(refs.has(artRef));
-   if(p.artRef)assert.equal(artRef,p.artRef);
+   assertSceneryArtwork(editor,p,manifest,loadDefinition,refs);
   }
  }
 });
@@ -197,9 +189,7 @@ test('expanded landmarks use reviewed regions and stay outside the driving corri
   for(const p of r.scenery.filter(p=>p.artRef?.startsWith('expanded-'))){
    const a=expanded.find(a=>a.name===p.artRef);
    assert.ok(a?.placements.some(plan=>plan.race===key),p.artRef+' in '+entry.name);
-   const projection=editor.getRaceRouteProjectionForWorldPoint(p);
-   const clearance=p.fenceId?editor.getRaceRoadHalfWidthWorld(projection.segment)+.5:10+p.widthM/2;
-   assert.ok(Math.abs(projection.lateral)>=clearance-1e-6,p.id);
+   assert.ok(Math.abs(editor.getRaceRouteProjectionForWorldPoint(p).lateral)>=10+p.widthM/2-1e-6,p.id);
    assert.equal(p.previewDoodad.defaultRule.behavior,a.kind==='vegetation'?'flatten':a.kind==='background'?'decoration':'collide');
    if(a.kind==='fence')assert.equal(p.previewDoodad.isFence,true);
   }
@@ -266,4 +256,34 @@ test('every campaign has biome-specific distant clusters inside saved terrain an
    assert.ok(manifest.folders.doodads[p.doodadRef],p.id+' saved asset');
   }
  }
+});
+
+test('inventory validation rejects missing, unexpected, duplicated and misnamed imports',()=>{
+ const inventory={assetCount:1,assets:[{path:'base.png'}]},expanded=[{source:'expanded.png',name:'expanded'}],fences=[{source:'fence.png',name:'fence'}];
+ const valid={base:{source:'assets/campaign-art/base.png'},expanded:{source:'assets/campaign-art/expanded.png'},fence:{source:'assets/campaign-art/fence.png'}};
+ const check=v=>assertCampaignImportInventory(v,inventory,expanded,fences);
+ check(valid);
+ const missing=structuredClone(valid);delete missing.fence;assert.throws(()=>check(missing),/source coverage/);
+ assert.throws(()=>check({...valid,unexpected:{source:'assets/campaign-art/unapproved.png'}}),/source coverage/);
+ assert.throws(()=>check({...valid,duplicate:valid.base}),/Duplicate imported source/);
+ const misnamed=structuredClone(valid);misnamed.wrong=misnamed.fence;delete misnamed.fence;assert.throws(()=>check(misnamed),/Exact authored ref/);
+ assert.throws(()=>assertCampaignImportInventory(valid,{...inventory,assetCount:2},expanded,fences),/source inventory count/);
+ assert.throws(()=>assertCampaignImportInventory(valid,inventory,expanded,[...fences,...fences]),/Duplicate authored source/);
+});
+
+test('named-ref scenery validation rejects missing definitions, art, conflicting overrides and preload omissions',()=>{
+ const registry={folders:{doodads:{tree:'tree.json'},art:{'tree-art':'tree-art.json'}}};
+ const document={kind:'race-doodad',doodad:{id:'tree',name:'tree',artRef:'tree-art',rules:[],defaultRule:{behavior:'collide'}}};
+ const loader=createSavedDoodadResolver(registry,()=>document),editor=new RaceEditor({});editor.loadRaceDoodadDocument=loader;
+ const sprite={id:'prop',doodadRef:'tree'};
+ const refs=new Set(collectSceneryArtRefs({scenery:[sprite]},loader));
+ assertSceneryArtwork(editor,sprite,registry,loader,refs);
+ assertSceneryArtwork(editor,{...sprite,artRef:'tree-art',previewDoodad:document.doodad},registry,loader,refs);
+ assert.throws(()=>assertSceneryArtwork(editor,{...sprite,doodadRef:'missing'},registry,loader,refs),/Missing doodad registration/);
+ assert.throws(()=>createSavedDoodadResolver(registry,()=>({doodad:{id:'tree'}}))('tree'),/Missing saved doodad artwork/);
+ assert.throws(()=>assertSceneryArtwork(editor,sprite,{folders:{...registry.folders,art:{}}},loader,refs),/Missing art registration/);
+ assert.throws(()=>assertSceneryArtwork(editor,{...sprite,artRef:'wrong'},registry,loader,refs),/Explicit artwork mismatch/);
+ assert.throws(()=>assertSceneryArtwork(editor,{...sprite,previewDoodad:{...document.doodad,artRef:'wrong'}},registry,loader,refs),/Definition artwork mismatch/);
+ assert.throws(()=>assertSceneryArtwork(editor,sprite,registry,loader,new Set()),/Missing preload/);
+ const removed=new Set(collectSceneryArtRefs({scenery:[]},loader));assert.equal(removed.has('tree-art'),false,'Removed scenery cannot count as active use');
 });
