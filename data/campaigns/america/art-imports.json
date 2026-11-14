@@ -1513,8 +1513,8 @@
   },
   "providence": {
     "source": "assets/campaign-art/skyboxes/providence-2994.png",
-    "sourceSha256": "8424f3c05748016dab2753c0112ca015501014c189de555e23cee5ac9b178ac9",
-    "documentSha256": "195cec215c42681b041cc1dbd8209944cca7469b8d7fa3fec16b903f4f0aa772",
+    "sourceSha256": "358bf0ffdb34b9cf0a510cb11b8426c3d74d3d29f3ac6965afb9d90c96856309",
+    "documentSha256": "0f5b5d78b4a87298255cc50607dda8c040d103714a679645c28b256031cb1b3a",
     "width": 512,
     "height": 171
   }
