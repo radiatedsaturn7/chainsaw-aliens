@@ -1,0 +1,22 @@
+{
+  "tool": "image_gen",
+  "body": {
+    "path": "/workspace/generated_images/exec-19655532-e7b7-41c0-92c2-33b5384c55a1.png",
+    "brief": "Original badge-free 2994 UK Punto Evo Sporting-proportioned three-door hatch, rusty ochre body/plum bonnet/ivory repair; eight directions in4x2; transparent wheel cutouts; no wheels, ground, text, logos or copied livery."
+  },
+  "dashboard": {
+    "path": "/workspace/generated_images/exec-96b43eb1-375f-45ff-84c8-93a44128198c.png",
+    "brief": "Original RHD plum/charcoal/ochre 2994 dashboard, blank RIGHT binnacle, passenger LEFT repair; transparent windshield; no baked instruments/text/wheel, runtime shared wheel and gauges."
+  },
+  "mapping": [
+    "front",
+    "frontRight",
+    "right",
+    "rearRight",
+    "rear",
+    "rearLeft",
+    "left",
+    "frontLeft"
+  ],
+  "bitmapEdits": "None; originals preserved. Native importer applies normal alpha preparation."
+}
