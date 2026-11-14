@@ -2882,5 +2882,33 @@
     "documentSha256": "2cf249b708e6537e51f855d6189caed2a12280f27b5cfa8b25ea2a0e07c72c08",
     "width": 512,
     "height": 341
+  },
+  "landmark-city-wv-west-virginia-state-capitol": {
+    "source": "assets/campaign-art/landmarks/WV/landmark-city-wv-west-virginia-state-capitol.png",
+    "sourceSha256": "ccb0e5ab56f3a66fb489ec91862d7b2e5ebebd6554d554feef78138aabe7c26d",
+    "documentSha256": "1562af2dd49906f4ad354adf85bb407b79ea5706bd3b2690388164986f77d609",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wv-clay-center": {
+    "source": "assets/campaign-art/landmarks/WV/landmark-city-wv-clay-center.png",
+    "sourceSha256": "b07176b4f595926641534eae8c4d3a5b45bca1059a6832a48737bfea53c96a87",
+    "documentSha256": "6646808d7101d8c7fd593a82e969c7ca3915e3831749d7de4b6c607238077f1f",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wv-haddad-riverfront-park": {
+    "source": "assets/campaign-art/landmarks/WV/landmark-city-wv-haddad-riverfront-park.png",
+    "sourceSha256": "041cc272a4d417a80c1501eeaabbdfc92248407072471142d9d4400c415b8e5e",
+    "documentSha256": "f85edf9e94d87cd5712ac672fc886f1fe6cb9e77d44ed4dcccb96dd2f93e79dd",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-wv-capitol-market": {
+    "source": "assets/campaign-art/landmarks/WV/landmark-city-wv-capitol-market.png",
+    "sourceSha256": "1ef57c109bee4b1b548ef9189eef9b2bd41371825b1eb9f9ff78452bfe42662e",
+    "documentSha256": "f01ac4f04d3ee77c56271a3798471471285970c50a30a78510dd6826e59544b0",
+    "width": 512,
+    "height": 171
   }
 }

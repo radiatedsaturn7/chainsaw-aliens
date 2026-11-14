@@ -22198,35 +22198,488 @@
     },
     "landmark-city-wv-west-virginia-state-capitol": {
       "raceRef": "Charleston, WV — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 1196.9644146631917,
+        "worldZ": 1189.097949001191,
+        "routeDistanceM": 1180,
+        "offsetFromRoadM": 98,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 1.1174637318508502,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 5.327507461107373,
+            "angularWidthDegrees": 39.03201224903962,
+            "rangeM": 95.92786362867453,
+            "occluderIds": [
+              "city-wv-prop-59"
+            ],
+            "score": 0.09442796418668462
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 11.231590493695364,
+            "angularWidthDegrees": 32.787411085789344,
+            "rangeM": 115.56896331148324,
+            "occluderIds": [
+              "city-wv-prop-59"
+            ],
+            "score": 0.06608836563026224
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 9.581014733346302,
+            "angularWidthDegrees": 28.22354051653105,
+            "rangeM": 135.24208139414566,
+            "occluderIds": [
+              "city-wv-prop-59"
+            ],
+            "score": 0.07401112927993775
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.350402071483964,
+            "angularWidthDegrees": 24.744480425333823,
+            "rangeM": 154.99890176830127,
+            "occluderIds": [],
+            "score": 0.6659839171406414
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.998987770783228,
+            "angularWidthDegrees": 20.857170398513176,
+            "rangeM": 184.73230601642882,
+            "occluderIds": [
+              "city-wv-prop-56",
+              "city-wv-prop-58"
+            ],
+            "score": 0.0864048587002405
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.7548798663367675,
+            "angularWidthDegrees": 17.22469972991151,
+            "rangeM": 224.48724874486794,
+            "occluderIds": [
+              "city-wv-prop-56",
+              "city-wv-prop-58"
+            ],
+            "score": 0.09237657664158351
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.885399651843046,
+            "angularWidthDegrees": 14.659846930108504,
+            "rangeM": 264.3161733501179,
+            "occluderIds": [
+              "city-wv-prop-56",
+              "city-wv-prop-58"
+            ],
+            "score": 0.09655008167115338
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 4.037325291594384,
+            "angularWidthDegrees": 12.353465881048963,
+            "rangeM": 314.16349795687626,
+            "occluderIds": [
+              "city-wv-prop-56",
+              "city-wv-prop-58"
+            ],
+            "score": 0.10062083860034694
+          }
+        ],
+        "sourceDistanceShiftM": -90
+      },
+      "signature": "f82d89d631959023ee52b06dd391330ce874f6eee1e7c4dbb7705d9046fdbe1d",
+      "sourceSha256": "ccb0e5ab56f3a66fb489ec91862d7b2e5ebebd6554d554feef78138aabe7c26d",
+      "roadSha256": "9059c88835e95a2c91e2512de35c0d35b635b81bbf44d6e11295e9b7ea48a9cb",
+      "placementDetails": {
+        "x": 1251.7530936838014,
+        "z": 1382.1322869179237,
+        "yaw": -0.4916260455065043,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1090.2187360516261,
+        "trackLateral": -80.00000000000004,
+        "minimumRoadClearanceM": 33.629228047417726,
+        "checkedSegments": 4087,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/WV/west-virginia-state-capitol-desktop.png",
+        "docs/art/landmark-previews/WV/west-virginia-state-capitol-mobile.png"
+      ]
     },
     "landmark-city-wv-clay-center": {
       "raceRef": "Charleston, WV — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": -295.3516844132538,
+        "worldZ": -122.61481497318475,
+        "routeDistanceM": 3640,
+        "offsetFromRoadM": 52,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.1188825787310415,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 42.27793203224532,
+            "angularWidthDegrees": 40.592831906081614,
+            "rangeM": 64.89290542571943,
+            "occluderIds": [
+              "city-wv-prop-198"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 33.198370109285655,
+            "angularWidthDegrees": 33.078781584968034,
+            "rangeM": 80.81856565252444,
+            "occluderIds": [
+              "city-wv-prop-198"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 29.25594784448535,
+            "angularWidthDegrees": 27.487832068243144,
+            "rangeM": 98.12503387342714,
+            "occluderIds": [
+              "city-wv-prop-196",
+              "city-wv-prop-198"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 24.939847135916505,
+            "angularWidthDegrees": 23.39893878546606,
+            "rangeM": 115.89702150291109,
+            "occluderIds": [
+              "city-wv-prop-196"
+            ],
+            "score": 0.00028873374760078006
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 19.888024590789186,
+            "angularWidthDegrees": 18.968924317972895,
+            "rangeM": 143.65765714556764,
+            "occluderIds": [
+              "city-wv-prop-194"
+            ],
+            "score": 0.024537481964211908
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 15.595117427877657,
+            "angularWidthDegrees": 15.042089961317732,
+            "rangeM": 181.78211991694442,
+            "occluderIds": [
+              "city-wv-prop-192",
+              "city-wv-prop-194"
+            ],
+            "score": 0.04514343634618724
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 12.800670705170061,
+            "angularWidthDegrees": 12.419625020164256,
+            "rangeM": 220.5719167731023,
+            "occluderIds": [
+              "city-wv-prop-190",
+              "city-wv-prop-192",
+              "city-wv-prop-194"
+            ],
+            "score": 0.058556780615183705
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 2.4258029046129477,
+            "angularWidthDegrees": 10.174254075455028,
+            "rangeM": 269.59881815689084,
+            "occluderIds": [
+              "city-wv-prop-190",
+              "city-wv-prop-192",
+              "city-wv-prop-194"
+            ],
+            "score": 0.10835614605785784
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "6493d8edef242837ed41a2f8a34053d10db5027bf0ccae30a1b7fbc3c268b023",
+      "sourceSha256": "b07176b4f595926641534eae8c4d3a5b45bca1059a6832a48737bfea53c96a87",
+      "roadSha256": "9059c88835e95a2c91e2512de35c0d35b635b81bbf44d6e11295e9b7ea48a9cb",
+      "placementDetails": {
+        "x": -224.81324637276614,
+        "z": -189.86950625616487,
+        "yaw": -2.800983885455639,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3639.4561933863356,
+        "trackLateral": 44.99999952738328,
+        "minimumRoadClearanceM": 10.65004285497217,
+        "checkedSegments": 4087,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/WV/clay-center-desktop.png",
+        "docs/art/landmark-previews/WV/clay-center-mobile.png"
+      ]
     },
     "landmark-city-wv-haddad-riverfront-park": {
       "raceRef": "Charleston, WV — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -1093.0401787126925,
+        "worldZ": -275.7860379952996,
+        "routeDistanceM": 4827,
+        "offsetFromRoadM": 29,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.721937200039669,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 17.166882482347955,
+            "angularWidthDegrees": 15.235657792637092,
+            "rangeM": 119.63044951893882,
+            "occluderIds": [
+              "city-wv-prop-260"
+            ],
+            "score": 0.03759896408472981
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 15.223102492062148,
+            "angularWidthDegrees": 13.15009773164516,
+            "rangeM": 138.81338440951387,
+            "occluderIds": [],
+            "score": 0.39107590031751405
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 13.320759063726841,
+            "angularWidthDegrees": 11.550347735379109,
+            "rangeM": 158.19883248928548,
+            "occluderIds": [],
+            "score": 0.4671696374509263
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 11.834989260694742,
+            "angularWidthDegrees": 10.288824152304542,
+            "rangeM": 177.72053674618326,
+            "occluderIds": [],
+            "score": 0.5266004295722103
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 10.13312290181703,
+            "angularWidthDegrees": 8.832336358753686,
+            "rangeM": 207.17425982575355,
+            "occluderIds": [],
+            "score": 0.5946750839273187
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 8.498135916054032,
+            "angularWidthDegrees": 7.423042791740444,
+            "rangeM": 246.6508323904069,
+            "occluderIds": [],
+            "score": 0.6600745633578387
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 7.345287223097619,
+            "angularWidthDegrees": 6.397951550086922,
+            "rangeM": 286.2727842215,
+            "occluderIds": [
+              "city-wv-prop-253",
+              "city-wv-prop-255"
+            ],
+            "score": 0.08474262132913143
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 87.76753479626358,
+            "angularWidthDegrees": 5.566344244630913,
+            "rangeM": 329.1249278530903,
+            "occluderIds": [
+              "city-wv-prop-251",
+              "city-wv-prop-253",
+              "city-wv-prop-257",
+              "city-wv-prop-262"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 0
+      },
+      "signature": "ff93e618e6c99ab79ab499379c93ff4c1b3cb4be5c5313fcc900e45e2587ee06",
+      "sourceSha256": "041cc272a4d417a80c1501eeaabbdfc92248407072471142d9d4400c415b8e5e",
+      "roadSha256": "9059c88835e95a2c91e2512de35c0d35b635b81bbf44d6e11295e9b7ea48a9cb",
+      "placementDetails": {
+        "x": -1143.8989587676458,
+        "z": -225.84262012363092,
+        "yaw": -0.6112929304920165,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4826.968116136746,
+        "trackLateral": 99.99999999999994,
+        "minimumRoadClearanceM": 70.46669555172585,
+        "checkedSegments": 4087,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-wv-capitol-market": {
       "raceRef": "Charleston, WV — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -141.4667244758996,
+        "worldZ": -562.480313360989,
+        "routeDistanceM": 5984,
+        "offsetFromRoadM": 13,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 5.3396880559039115,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 3.1875655739963586,
+            "angularWidthDegrees": 13.793832229168231,
+            "rangeM": 173.27457168514846,
+            "occluderIds": [],
+            "score": 0.8724973770401456
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 2.857837454937932,
+            "angularWidthDegrees": 12.379918522687934,
+            "rangeM": 193.24687458524062,
+            "occluderIds": [],
+            "score": 0.8856865018024827
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 2.589887833399334,
+            "angularWidthDegrees": 11.227802274892953,
+            "rangeM": 213.22437841833496,
+            "occluderIds": [],
+            "score": 0.8964044866640266
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 2.3678505614710366,
+            "angularWidthDegrees": 10.271172826480221,
+            "rangeM": 233.20574657892934,
+            "occluderIds": [],
+            "score": 0.9052859775411586
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.098016675617212,
+            "angularWidthDegrees": 9.106487605602684,
+            "rangeM": 263.1831190410798,
+            "occluderIds": [],
+            "score": 0.9160793329753115
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 2.5821869137124684,
+            "angularWidthDegrees": 7.90970872156377,
+            "rangeM": 303.16113942360056,
+            "occluderIds": [],
+            "score": 0.8967125234515012
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 14.995446577232167,
+            "angularWidthDegrees": 7.009222949662845,
+            "rangeM": 342.2256424997394,
+            "occluderIds": [
+              "city-wv-prop-316"
+            ],
+            "score": 0.0480218564292856
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 70.66463805706212,
+            "angularWidthDegrees": 6.5992828154867675,
+            "rangeM": 363.5358829126964,
+            "occluderIds": [
+              "city-wv-prop-312",
+              "city-wv-prop-315",
+              "city-wv-prop-317",
+              "city-wv-prop-319",
+              "city-wv-prop-321",
+              "city-wv-prop-323",
+              "city-wv-prop-325",
+              "city-wv-prop-327"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 90
+      },
+      "signature": "7b4ab70ab3ce64c08ac597abda497f7340294f51dbccd386aa9f240f81ca0ce7",
+      "sourceSha256": "1ef57c109bee4b1b548ef9189eef9b2bd41371825b1eb9f9ff78452bfe42662e",
+      "roadSha256": "9059c88835e95a2c91e2512de35c0d35b635b81bbf44d6e11295e9b7ea48a9cb",
+      "placementDetails": {
+        "x": -2.9672061716351266,
+        "z": -392.94464731913286,
+        "yaw": 0.7472769399238413,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6074.000143100207,
+        "trackLateral": -134.99179553707722,
+        "minimumRoadClearanceM": 104.30376217657093,
+        "checkedSegments": 4087,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-wy-big-boy-steam-engine": {
       "raceRef": "Cheyenne, WY — Landmark Run",

@@ -3464,6 +3464,34 @@
       "heightM": 28,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-wv-west-virginia-state-capitol",
+      "source": "landmarks/WV/landmark-city-wv-west-virginia-state-capitol.png",
+      "heightM": 34,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wv-clay-center",
+      "source": "landmarks/WV/landmark-city-wv-clay-center.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wv-haddad-riverfront-park",
+      "source": "landmarks/WV/landmark-city-wv-haddad-riverfront-park.png",
+      "heightM": 16,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-wv-capitol-market",
+      "source": "landmarks/WV/landmark-city-wv-capitol-market.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

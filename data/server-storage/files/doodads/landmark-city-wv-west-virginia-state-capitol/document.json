@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617585626,
+  "doodad": {
+    "id": "campaign-landmark-city-wv-west-virginia-state-capitol",
+    "name": "landmark-city-wv-west-virginia-state-capitol",
+    "artRef": "landmark-city-wv-west-virginia-state-capitol",
+    "widthM": 68,
+    "heightM": 34,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 57.8,
+    "hitboxHeightM": 30.6,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

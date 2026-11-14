@@ -708,7 +708,11 @@
       "landmark-city-wa-space-needle": "art/landmark-city-wa-space-needle/document.json",
       "landmark-city-wa-smith-tower": "art/landmark-city-wa-smith-tower/document.json",
       "landmark-city-wa-pike-place-market": "art/landmark-city-wa-pike-place-market/document.json",
-      "landmark-city-wa-king-street-station": "art/landmark-city-wa-king-street-station/document.json"
+      "landmark-city-wa-king-street-station": "art/landmark-city-wa-king-street-station/document.json",
+      "landmark-city-wv-west-virginia-state-capitol": "art/landmark-city-wv-west-virginia-state-capitol/document.json",
+      "landmark-city-wv-clay-center": "art/landmark-city-wv-clay-center/document.json",
+      "landmark-city-wv-haddad-riverfront-park": "art/landmark-city-wv-haddad-riverfront-park/document.json",
+      "landmark-city-wv-capitol-market": "art/landmark-city-wv-capitol-market/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1152,7 +1156,11 @@
       "landmark-city-wa-space-needle": "doodads/landmark-city-wa-space-needle/document.json",
       "landmark-city-wa-smith-tower": "doodads/landmark-city-wa-smith-tower/document.json",
       "landmark-city-wa-pike-place-market": "doodads/landmark-city-wa-pike-place-market/document.json",
-      "landmark-city-wa-king-street-station": "doodads/landmark-city-wa-king-street-station/document.json"
+      "landmark-city-wa-king-street-station": "doodads/landmark-city-wa-king-street-station/document.json",
+      "landmark-city-wv-west-virginia-state-capitol": "doodads/landmark-city-wv-west-virginia-state-capitol/document.json",
+      "landmark-city-wv-clay-center": "doodads/landmark-city-wv-clay-center/document.json",
+      "landmark-city-wv-haddad-riverfront-park": "doodads/landmark-city-wv-haddad-riverfront-park/document.json",
+      "landmark-city-wv-capitol-market": "doodads/landmark-city-wv-capitol-market/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

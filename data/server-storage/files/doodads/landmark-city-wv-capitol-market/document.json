@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617585626,
+  "doodad": {
+    "id": "campaign-landmark-city-wv-capitol-market",
+    "name": "landmark-city-wv-capitol-market",
+    "artRef": "landmark-city-wv-capitol-market",
+    "widthM": 41.91812865497076,
+    "heightM": 14,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 35.630409356725146,
+    "hitboxHeightM": 12.6,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}
