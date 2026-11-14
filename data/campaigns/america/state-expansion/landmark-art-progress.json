@@ -3292,35 +3292,445 @@
     },
     "landmark-city-hi-hawaii-state-capitol": {
       "raceRef": "Honolulu, HI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 208.19395758497902,
+        "worldZ": -37.08355925788173,
+        "routeDistanceM": 2308,
+        "offsetFromRoadM": 56,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 4.705311203242458,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 14.844687807316788,
+            "angularWidthDegrees": 40.37498262680477,
+            "rangeM": 114.0069372458531,
+            "occluderIds": [],
+            "score": 0.40621248770732843
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 12.64399204347659,
+            "angularWidthDegrees": 34.87914386052633,
+            "rangeM": 133.43787618598924,
+            "occluderIds": [],
+            "score": 0.4942403182609364
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 11.004504112658326,
+            "angularWidthDegrees": 30.640277497831352,
+            "rangeM": 153.01554025084263,
+            "occluderIds": [
+              "city-hi-prop-119"
+            ],
+            "score": 0.06717838025924004
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 9.737738738813482,
+            "angularWidthDegrees": 27.287754451577637,
+            "rangeM": 172.6900344891662,
+            "occluderIds": [],
+            "score": 0.6104904504474608
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 8.30062520233167,
+            "angularWidthDegrees": 23.410513007688557,
+            "rangeM": 202.32151052966253,
+            "occluderIds": [],
+            "score": 0.6679749919067333
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 4.073447514093834,
+            "angularWidthDegrees": 19.655016161742257,
+            "rangeM": 241.98734707587712,
+            "occluderIds": [],
+            "score": 0.8370620994362467
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 2.863729433076297,
+            "angularWidthDegrees": 16.913924210313297,
+            "rangeM": 281.92923466208293,
+            "occluderIds": [],
+            "score": 0.8854508226769482
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 2.4324586863109037,
+            "angularWidthDegrees": 14.397417257186758,
+            "rangeM": 331.87631079169694,
+            "occluderIds": [],
+            "score": 0.9027016525475638
+          }
+        ],
+        "sourceDistanceShiftM": -120
+      },
+      "signature": "5e4c420452196d6ba62b1e625e72d4fcc01a6970353ee80310a8a6201f3b7058",
+      "sourceSha256": "e7c7e94f6a60814df63a1ad66fbb3d48f48afd749635a70dfb267096f5db4ade",
+      "roadSha256": "81079abc5f892231edce7eb2e9403b168b76fee4de45200fc693ca9edd59e874",
+      "placementDetails": {
+        "x": 401.2059824841519,
+        "z": 3.1666969535216793,
+        "yaw": 2.104323359302108,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2187.901242094069,
+        "trackLateral": 74.69720994055278,
+        "minimumRoadClearanceM": 15.902376430399904,
+        "checkedSegments": 3993,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-hi-iolani-palace": {
       "raceRef": "Honolulu, HI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 24.292920861136317,
+        "worldZ": 20.604448367082224,
+        "routeDistanceM": 2712,
+        "offsetFromRoadM": 115,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.5042900286453579,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 12.85266699496984,
+            "angularWidthDegrees": 20.148279581265175,
+            "rangeM": 157.60308146761824,
+            "occluderIds": [
+              "city-hi-prop-136"
+            ],
+            "score": 0.05830719842414476
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 11.469415940189906,
+            "angularWidthDegrees": 17.9631668920952,
+            "rangeM": 177.1535624978172,
+            "occluderIds": [
+              "city-hi-prop-136"
+            ],
+            "score": 0.06494680348708845
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.743240793057522,
+            "angularWidthDegrees": 16.19543821101313,
+            "rangeM": 196.7944151129036,
+            "occluderIds": [
+              "city-hi-prop-136"
+            ],
+            "score": 0.07803244419332389
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 5.401630362644557,
+            "angularWidthDegrees": 14.72932537891451,
+            "rangeM": 216.63406401566246,
+            "occluderIds": [
+              "city-hi-prop-136"
+            ],
+            "score": 0.09407217425930611
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 4.745234154619251,
+            "angularWidthDegrees": 12.960041226831116,
+            "rangeM": 246.51708864811536,
+            "occluderIds": [
+              "city-hi-prop-136"
+            ],
+            "score": 0.09722287605782759
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 4.06079154842256,
+            "angularWidthDegrees": 11.167626684343848,
+            "rangeM": 286.399192860272,
+            "occluderIds": [
+              "city-hi-prop-136"
+            ],
+            "score": 0.1005082005675717
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 2.1747167116690727,
+            "angularWidthDegrees": 9.807982021031382,
+            "rangeM": 326.3387653053192,
+            "occluderIds": [
+              "city-hi-prop-136"
+            ],
+            "score": 0.10956135978398845
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.28354752664439936,
+            "angularWidthDegrees": 8.510587840859328,
+            "rangeM": 376.31503303140937,
+            "occluderIds": [
+              "city-hi-prop-135",
+              "city-hi-prop-136"
+            ],
+            "score": 0.11863897187210688
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "13b4ee3f83ab595ee7f0ac5c0273c578f4acb41d0ab51a838bc299f3f1f5905c",
+      "sourceSha256": "0997f49957d80588e2287e6740312e1a8562c9d243f25795b03ca0fe115c6d6b",
+      "roadSha256": "81079abc5f892231edce7eb2e9403b168b76fee4de45200fc693ca9edd59e874",
+      "placementDetails": {
+        "x": 54.429770704916066,
+        "z": -304.7082913545326,
+        "yaw": -2.4107938524306083,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2502.01464446415,
+        "trackLateral": 135,
+        "minimumRoadClearanceM": 93.6753548084591,
+        "checkedSegments": 3993,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-hi-aloha-tower": {
       "raceRef": "Honolulu, HI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -542.0377390995668,
+        "worldZ": 154.4833249684021,
+        "routeDistanceM": 3499,
+        "offsetFromRoadM": 9,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 6.254239451835354,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 2.7541761844172803,
+            "angularWidthDegrees": 13.299500140139902,
+            "rangeM": 157.10076405565636,
+            "occluderIds": [],
+            "score": 0.8898329526233087
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 2.595262616200031,
+            "angularWidthDegrees": 11.810389046234407,
+            "rangeM": 177.07773629455122,
+            "occluderIds": [],
+            "score": 0.8961894953519988
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 2.341900195737163,
+            "angularWidthDegrees": 10.62005795991404,
+            "rangeM": 197.05930781268256,
+            "occluderIds": [],
+            "score": 0.9063239921705135
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 2.063838546388064,
+            "angularWidthDegrees": 9.647032550443555,
+            "rangeM": 217.0442579778161,
+            "occluderIds": [],
+            "score": 0.9174464581444775
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 1.8419254682578918,
+            "angularWidthDegrees": 8.480674296599139,
+            "rangeM": 247.0275780779491,
+            "occluderIds": [],
+            "score": 0.9263229812696843
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 2.7943212581940107,
+            "angularWidthDegrees": 7.303160026912777,
+            "rangeM": 286.9923775571495,
+            "occluderIds": [],
+            "score": 0.8882271496722396
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 2.452589434921714,
+            "angularWidthDegrees": 6.412594281262315,
+            "rangeM": 326.95072417951206,
+            "occluderIds": [],
+            "score": 0.9018964226031314
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 85.99272434952378,
+            "angularWidthDegrees": 5.675903413568433,
+            "rangeM": 369.47016702217576,
+            "occluderIds": [
+              "city-hi-prop-181",
+              "city-hi-prop-185"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -60
+      },
+      "signature": "d7439a250e25c05a4234922e5eeb1036f175fb709ea95f27c11c214fc988c9ae",
+      "sourceSha256": "d437cc23244957990432048341d5f30f7b85bf6a6a8e24e74d475ac8014b85d2",
+      "roadSha256": "81079abc5f892231edce7eb2e9403b168b76fee4de45200fc693ca9edd59e874",
+      "placementDetails": {
+        "x": -680.484607272748,
+        "z": 166.26945654798476,
+        "yaw": -0.860874934450444,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3439.438757047212,
+        "trackLateral": 135,
+        "minimumRoadClearanceM": 107.48336029495971,
+        "checkedSegments": 3993,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-hi-honolulu-museum-of-art": {
       "raceRef": "Honolulu, HI — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1085.815866561971,
+        "worldZ": 361.3840107587323,
+        "routeDistanceM": 6088,
+        "offsetFromRoadM": 59,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 7.158827385791385,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 3.375754081677533,
+            "angularWidthDegrees": 17.644329182789832,
+            "rangeM": 173.62511950815912,
+            "occluderIds": [],
+            "score": 0.8649698367328986
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 3.0272072064697673,
+            "angularWidthDegrees": 15.84876423592221,
+            "rangeM": 193.59404443907516,
+            "occluderIds": [],
+            "score": 0.8789117117412093
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 2.743849487198268,
+            "angularWidthDegrees": 14.38275919665753,
+            "rangeM": 213.56879373334684,
+            "occluderIds": [],
+            "score": 0.8902460205120692
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 2.5089670357559317,
+            "angularWidthDegrees": 13.163665085150685,
+            "rangeM": 233.54787296727483,
+            "occluderIds": [],
+            "score": 0.8996413185697627
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.2234299147160366,
+            "angularWidthDegrees": 11.677352815097096,
+            "rangeM": 263.5224560914811,
+            "occluderIds": [],
+            "score": 0.9110628034113586
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 1.930459491682091,
+            "angularWidthDegrees": 10.147943755753042,
+            "rangeM": 303.49640140275596,
+            "occluderIds": [],
+            "score": 0.9227816203327164
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 1.7056867293480682,
+            "angularWidthDegrees": 8.971878009169163,
+            "rangeM": 343.47643478103305,
+            "occluderIds": [],
+            "score": 0.9317725308260772
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 1.4889614083676466,
+            "angularWidthDegrees": 7.835988813081371,
+            "rangeM": 393.4572105374006,
+            "occluderIds": [],
+            "score": 0.9404415436652941
+          }
+        ],
+        "sourceDistanceShiftM": 90
+      },
+      "signature": "c6a0938628010bcdfadd2b8d607fd6d41744e83ea1fe5642bee79e160310920b",
+      "sourceSha256": "ec60531043dacd681f1152ad65393314b71d422688a8462c54776f73751948f5",
+      "roadSha256": "81079abc5f892231edce7eb2e9403b168b76fee4de45200fc693ca9edd59e874",
+      "placementDetails": {
+        "x": 1227.3834375364927,
+        "z": 182.98703412365865,
+        "yaw": 2.735032854672907,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6176.86255333001,
+        "trackLateral": -134.97290639136105,
+        "minimumRoadClearanceM": 96.59570887489593,
+        "checkedSegments": 3993,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ia-pappajohn-sculpture-park": {
       "raceRef": "Des Moines, IA — Landmark Run",

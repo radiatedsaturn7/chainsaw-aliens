@@ -660,7 +660,11 @@
       "landmark-city-ky-louisville-slugger-field": "art/landmark-city-ky-louisville-slugger-field/document.json",
       "landmark-city-ky-louisville-palace": "art/landmark-city-ky-louisville-palace/document.json",
       "landmark-city-ky-muhammad-ali-center": "art/landmark-city-ky-muhammad-ali-center/document.json",
-      "landmark-city-ky-louisville-slugger-museum": "art/landmark-city-ky-louisville-slugger-museum/document.json"
+      "landmark-city-ky-louisville-slugger-museum": "art/landmark-city-ky-louisville-slugger-museum/document.json",
+      "landmark-city-hi-hawaii-state-capitol": "art/landmark-city-hi-hawaii-state-capitol/document.json",
+      "landmark-city-hi-iolani-palace": "art/landmark-city-hi-iolani-palace/document.json",
+      "landmark-city-hi-aloha-tower": "art/landmark-city-hi-aloha-tower/document.json",
+      "landmark-city-hi-honolulu-museum-of-art": "art/landmark-city-hi-honolulu-museum-of-art/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1056,7 +1060,11 @@
       "landmark-city-ky-louisville-slugger-field": "doodads/landmark-city-ky-louisville-slugger-field/document.json",
       "landmark-city-ky-louisville-palace": "doodads/landmark-city-ky-louisville-palace/document.json",
       "landmark-city-ky-muhammad-ali-center": "doodads/landmark-city-ky-muhammad-ali-center/document.json",
-      "landmark-city-ky-louisville-slugger-museum": "doodads/landmark-city-ky-louisville-slugger-museum/document.json"
+      "landmark-city-ky-louisville-slugger-museum": "doodads/landmark-city-ky-louisville-slugger-museum/document.json",
+      "landmark-city-hi-hawaii-state-capitol": "doodads/landmark-city-hi-hawaii-state-capitol/document.json",
+      "landmark-city-hi-iolani-palace": "doodads/landmark-city-hi-iolani-palace/document.json",
+      "landmark-city-hi-aloha-tower": "doodads/landmark-city-hi-aloha-tower/document.json",
+      "landmark-city-hi-honolulu-museum-of-art": "doodads/landmark-city-hi-honolulu-museum-of-art/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

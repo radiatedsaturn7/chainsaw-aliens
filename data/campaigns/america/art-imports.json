@@ -2546,5 +2546,33 @@
     "documentSha256": "02a89eed78c6d810504674bc31a070cf6e2035ae286631e33baa5fe2b3f687bd",
     "width": 512,
     "height": 341
+  },
+  "landmark-city-hi-hawaii-state-capitol": {
+    "source": "assets/campaign-art/landmarks/HI/landmark-city-hi-hawaii-state-capitol.png",
+    "sourceSha256": "e7c7e94f6a60814df63a1ad66fbb3d48f48afd749635a70dfb267096f5db4ade",
+    "documentSha256": "2d512a5500025562abb9f41c9816316195b5f23b6b0a131d388279fe2d2da6bd",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-hi-iolani-palace": {
+    "source": "assets/campaign-art/landmarks/HI/landmark-city-hi-iolani-palace.png",
+    "sourceSha256": "0997f49957d80588e2287e6740312e1a8562c9d243f25795b03ca0fe115c6d6b",
+    "documentSha256": "b3583f30f18808a19f38b416cad90b2292ffd9e4107e7f20231f8fd73f85d57d",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-hi-aloha-tower": {
+    "source": "assets/campaign-art/landmarks/HI/landmark-city-hi-aloha-tower.png",
+    "sourceSha256": "d437cc23244957990432048341d5f30f7b85bf6a6a8e24e74d475ac8014b85d2",
+    "documentSha256": "8c6ef94786b5081eee59d9d453b6a5abf62d9cc6f6275d50dd78bdcb658fda8d",
+    "width": 341,
+    "height": 512
+  },
+  "landmark-city-hi-honolulu-museum-of-art": {
+    "source": "assets/campaign-art/landmarks/HI/landmark-city-hi-honolulu-museum-of-art.png",
+    "sourceSha256": "ec60531043dacd681f1152ad65393314b71d422688a8462c54776f73751948f5",
+    "documentSha256": "abb259a6375a03aada896cbc9eadcaaa1f29a7e355ba7d3a3301a2eea9d3446c",
+    "width": 512,
+    "height": 171
   }
 }

@@ -3128,6 +3128,34 @@
       "heightM": 28,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-hi-hawaii-state-capitol",
+      "source": "landmarks/HI/landmark-city-hi-hawaii-state-capitol.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-hi-iolani-palace",
+      "source": "landmarks/HI/landmark-city-hi-iolani-palace.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-hi-aloha-tower",
+      "source": "landmarks/HI/landmark-city-hi-aloha-tower.png",
+      "heightM": 55,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-hi-honolulu-museum-of-art",
+      "source": "landmarks/HI/landmark-city-hi-honolulu-museum-of-art.png",
+      "heightM": 18,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }
