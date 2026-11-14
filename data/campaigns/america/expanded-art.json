@@ -3100,6 +3100,34 @@
       "heightM": 30,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ky-louisville-slugger-field",
+      "source": "landmarks/KY/landmark-city-ky-louisville-slugger-field.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ky-louisville-palace",
+      "source": "landmarks/KY/landmark-city-ky-louisville-palace.png",
+      "heightM": 26,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ky-muhammad-ali-center",
+      "source": "landmarks/KY/landmark-city-ky-muhammad-ali-center.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ky-louisville-slugger-museum",
+      "source": "landmarks/KY/landmark-city-ky-louisville-slugger-museum.png",
+      "heightM": 28,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

@@ -656,7 +656,11 @@
       "landmark-city-tn-tennessee-state-capitol": "art/landmark-city-tn-tennessee-state-capitol/document.json",
       "landmark-city-tn-ryman-auditorium": "art/landmark-city-tn-ryman-auditorium/document.json",
       "landmark-city-tn-union-station-hotel": "art/landmark-city-tn-union-station-hotel/document.json",
-      "landmark-city-tn-country-music-hall-of-fame": "art/landmark-city-tn-country-music-hall-of-fame/document.json"
+      "landmark-city-tn-country-music-hall-of-fame": "art/landmark-city-tn-country-music-hall-of-fame/document.json",
+      "landmark-city-ky-louisville-slugger-field": "art/landmark-city-ky-louisville-slugger-field/document.json",
+      "landmark-city-ky-louisville-palace": "art/landmark-city-ky-louisville-palace/document.json",
+      "landmark-city-ky-muhammad-ali-center": "art/landmark-city-ky-muhammad-ali-center/document.json",
+      "landmark-city-ky-louisville-slugger-museum": "art/landmark-city-ky-louisville-slugger-museum/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1048,7 +1052,11 @@
       "landmark-city-tn-tennessee-state-capitol": "doodads/landmark-city-tn-tennessee-state-capitol/document.json",
       "landmark-city-tn-ryman-auditorium": "doodads/landmark-city-tn-ryman-auditorium/document.json",
       "landmark-city-tn-union-station-hotel": "doodads/landmark-city-tn-union-station-hotel/document.json",
-      "landmark-city-tn-country-music-hall-of-fame": "doodads/landmark-city-tn-country-music-hall-of-fame/document.json"
+      "landmark-city-tn-country-music-hall-of-fame": "doodads/landmark-city-tn-country-music-hall-of-fame/document.json",
+      "landmark-city-ky-louisville-slugger-field": "doodads/landmark-city-ky-louisville-slugger-field/document.json",
+      "landmark-city-ky-louisville-palace": "doodads/landmark-city-ky-louisville-palace/document.json",
+      "landmark-city-ky-muhammad-ali-center": "doodads/landmark-city-ky-muhammad-ali-center/document.json",
+      "landmark-city-ky-louisville-slugger-museum": "doodads/landmark-city-ky-louisville-slugger-museum/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

@@ -2518,5 +2518,33 @@
     "documentSha256": "7d1d33ffe81cbfee1d8aef233e6ca6509df6228c9cf030f17ff14d3a965681e0",
     "width": 512,
     "height": 256
+  },
+  "landmark-city-ky-louisville-slugger-field": {
+    "source": "assets/campaign-art/landmarks/KY/landmark-city-ky-louisville-slugger-field.png",
+    "sourceSha256": "3c2cec2fdcfd95b2771e39b3f472fdccbee307c0e2ce98cf44b40e028ba42c9a",
+    "documentSha256": "7d0de0737196a1cfd099b7cfd1ad4af3d7b1ce546869b3f6a77ecf37f7aee886",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ky-louisville-palace": {
+    "source": "assets/campaign-art/landmarks/KY/landmark-city-ky-louisville-palace.png",
+    "sourceSha256": "655e4d6ed32b1d0326aeedf235ea7f64250c51dc5d829c8a08fbf7150a44a91f",
+    "documentSha256": "a455c1da60d24c5f8761836e88cbb7bd215219ee34419dc71af3914670c57bad",
+    "width": 512,
+    "height": 341
+  },
+  "landmark-city-ky-muhammad-ali-center": {
+    "source": "assets/campaign-art/landmarks/KY/landmark-city-ky-muhammad-ali-center.png",
+    "sourceSha256": "632d52aa02982133a1ec643b54d8a2973c2ebf9670817be0692006a89a72b25b",
+    "documentSha256": "0c49b1572fa422a458a01d27ff7593dc37743f922e2698dc3110edae033fdda6",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-ky-louisville-slugger-museum": {
+    "source": "assets/campaign-art/landmarks/KY/landmark-city-ky-louisville-slugger-museum.png",
+    "sourceSha256": "18b48aa254c59436684a5a679f8baf64e4d09467c1f37cce87912f9432c350f6",
+    "documentSha256": "02a89eed78c6d810504674bc31a070cf6e2035ae286631e33baa5fe2b3f687bd",
+    "width": 512,
+    "height": 341
   }
 }

@@ -4538,35 +4538,465 @@
     },
     "landmark-city-ky-louisville-slugger-field": {
       "raceRef": "Louisville, KY — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1342.5831703658066,
+        "worldZ": -161.36630043470387,
+        "routeDistanceM": 596,
+        "offsetFromRoadM": 124,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.23093316053297072,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 63.13816158968792,
+            "angularWidthDegrees": 39.29015655143758,
+            "rangeM": 100.65201182247802,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 47.130508081600354,
+            "angularWidthDegrees": 35.580000181845,
+            "rangeM": 111.9754413685281,
+            "occluderIds": [
+              "city-ky-prop-21"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 39.36549262379923,
+            "angularWidthDegrees": 31.666464024683687,
+            "rangeM": 126.69278565523489,
+            "occluderIds": [
+              "city-ky-prop-21"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 34.23160663204561,
+            "angularWidthDegrees": 28.261200221099475,
+            "rangeM": 142.71998235629445,
+            "occluderIds": [
+              "city-ky-prop-19",
+              "city-ky-prop-21"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 14.825478185657165,
+            "angularWidthDegrees": 23.94609838755365,
+            "rangeM": 169.4283742912135,
+            "occluderIds": [
+              "city-ky-prop-19"
+            ],
+            "score": 0.04883770470884561
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 11.136621845292208,
+            "angularWidthDegrees": 19.555360977209123,
+            "rangeM": 208.49570406771457,
+            "occluderIds": [
+              "city-ky-prop-17",
+              "city-ky-prop-19"
+            ],
+            "score": 0.0665442151425974
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 5.204294190033043,
+            "angularWidthDegrees": 16.492096973568287,
+            "rangeM": 247.92409111799503,
+            "occluderIds": [
+              "city-ky-prop-15",
+              "city-ky-prop-17",
+              "city-ky-prop-19"
+            ],
+            "score": 0.0950193878878414
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 3.8475306679820216,
+            "angularWidthDegrees": 13.755140695180387,
+            "rangeM": 297.8857809205695,
+            "occluderIds": [
+              "city-ky-prop-15",
+              "city-ky-prop-17",
+              "city-ky-prop-19"
+            ],
+            "score": 0.10153185279368629
+          }
+        ],
+        "sourceDistanceShiftM": -150
+      },
+      "signature": "49e9e4acfd16d902cbb78646c7a93d0d2a1127e9c94be4d379f23e447a446b3c",
+      "sourceSha256": "3c2cec2fdcfd95b2771e39b3f472fdccbee307c0e2ce98cf44b40e028ba42c9a",
+      "roadSha256": "d7c3f05a33db49002532e6ed5c0e266eb08993e1ea2b183f7ee0ba33a04c2c2d",
+      "placementDetails": {
+        "x": 1502.0463138066932,
+        "z": -194.71350793489376,
+        "yaw": -0.823179381195819,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 445.9353359094535,
+        "trackLateral": -90.00000000000001,
+        "minimumRoadClearanceM": 41.3094215898406,
+        "checkedSegments": 3973,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ky-louisville-palace": {
       "raceRef": "Louisville, KY — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 104.13469708917123,
+        "worldZ": 773.306185484003,
+        "routeDistanceM": 2833,
+        "offsetFromRoadM": 21,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 4.4297987462352,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 2.1354351733451127,
+            "angularWidthDegrees": 23.06854962479798,
+            "rangeM": 95.64634848465302,
+            "occluderIds": [],
+            "score": 0.9145825930661955
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 1.7661767804855732,
+            "angularWidthDegrees": 19.16231474749136,
+            "rangeM": 115.63487812152613,
+            "occluderIds": [],
+            "score": 0.9293529287805771
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 1.5057703168812069,
+            "angularWidthDegrees": 16.379258461497223,
+            "rangeM": 135.62679488280543,
+            "occluderIds": [],
+            "score": 0.9397691873247517
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 1.3122741741398514,
+            "angularWidthDegrees": 14.29821692008454,
+            "rangeM": 155.6207933871775,
+            "occluderIds": [],
+            "score": 0.9475090330344059
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 2.9103748992682745,
+            "angularWidthDegrees": 12.006302478193248,
+            "rangeM": 185.61326348585496,
+            "occluderIds": [],
+            "score": 0.883585004029269
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 82.97745713642642,
+            "angularWidthDegrees": 11.085922538269914,
+            "rangeM": 201.13232507555327,
+            "occluderIds": [
+              "city-ky-prop-134",
+              "city-ky-prop-137",
+              "city-ky-prop-139",
+              "city-ky-prop-141"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 72.0704217471593,
+            "angularWidthDegrees": 10.629948676898945,
+            "rangeM": 209.81289115155323,
+            "occluderIds": [
+              "city-ky-prop-139",
+              "city-ky-prop-141"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 46.30830431222772,
+            "angularWidthDegrees": 9.679755415906213,
+            "rangeM": 230.52205789011913,
+            "occluderIds": [
+              "city-ky-prop-130"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "dc2bb102741e41ba21f4bd0ff3b05bd476f2f281ef66f07e9f73bef4c59b8e06",
+      "sourceSha256": "655e4d6ed32b1d0326aeedf235ea7f64250c51dc5d829c8a08fbf7150a44a91f",
+      "roadSha256": "d7c3f05a33db49002532e6ed5c0e266eb08993e1ea2b183f7ee0ba33a04c2c2d",
+      "placementDetails": {
+        "x": 61.76687934723779,
+        "z": 543.3968831965145,
+        "yaw": -1.7362130983498787,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 2622.5713618758423,
+        "trackLateral": 54.83775342089125,
+        "minimumRoadClearanceM": 26.02991258718393,
+        "checkedSegments": 3973,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ky-muhammad-ali-center": {
       "raceRef": "Louisville, KY — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -86.19970901097966,
+        "worldZ": -366.94376477019847,
+        "routeDistanceM": 4662,
+        "offsetFromRoadM": 32,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 3.2614361030976724,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 10.76539997404952,
+            "angularWidthDegrees": 27.432139019369266,
+            "rangeM": 122.915115831594,
+            "occluderIds": [],
+            "score": 0.5693840010380191
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 9.26434854200115,
+            "angularWidthDegrees": 23.759161164848255,
+            "rangeM": 142.61207562122607,
+            "occluderIds": [],
+            "score": 0.629426058319954
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.128190579916817,
+            "angularWidthDegrees": 20.934540719439408,
+            "rangeM": 162.38313926748756,
+            "occluderIds": [],
+            "score": 0.6748723768033273
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.238936959366509,
+            "angularWidthDegrees": 18.699773466035758,
+            "rangeM": 182.2041852318547,
+            "occluderIds": [],
+            "score": 0.7104425216253396
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.217221367224196,
+            "angularWidthDegrees": 16.10891917563818,
+            "rangeM": 211.99879604132042,
+            "occluderIds": [],
+            "score": 0.7513111453110322
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 80.33938099862688,
+            "angularWidthDegrees": 14.100348258979665,
+            "rangeM": 242.57407454094624,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 71.81812133216675,
+            "angularWidthDegrees": 13.574741330614884,
+            "rangeM": 252.06011057032904,
+            "occluderIds": [
+              "city-ky-prop-246",
+              "city-ky-prop-248"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 61.75427950673115,
+            "angularWidthDegrees": 12.595037178529072,
+            "rangeM": 271.8445406825502,
+            "occluderIds": [
+              "city-ky-prop-235",
+              "city-ky-prop-248"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -120
+      },
+      "signature": "3d96a557ab0b47c2d61809b4f27df4b3793d2f9400ed9b9dc32673dcf297fb7f",
+      "sourceSha256": "632d52aa02982133a1ec643b54d8a2973c2ebf9670817be0692006a89a72b25b",
+      "roadSha256": "d7c3f05a33db49002532e6ed5c0e266eb08993e1ea2b183f7ee0ba33a04c2c2d",
+      "placementDetails": {
+        "x": -163.9172525117574,
+        "z": -256.1994566603988,
+        "yaw": -1.8372440870494793,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4541.867296485313,
+        "trackLateral": -94.99999990882691,
+        "minimumRoadClearanceM": 50.9407663540856,
+        "checkedSegments": 3973,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ky-louisville-slugger-museum": {
       "raceRef": "Louisville, KY — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -411.47438081915203,
+        "worldZ": -206.656056613723,
+        "routeDistanceM": 5228,
+        "offsetFromRoadM": 41,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 2.540025123400737,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 75.4947241134998,
+            "angularWidthDegrees": 28.027904389812587,
+            "rangeM": 84.22135694234002,
+            "occluderIds": [
+              "city-ky-prop-272"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 94.74068156134412,
+            "angularWidthDegrees": 27.53532393935664,
+            "rangeM": 85.78925405169468,
+            "occluderIds": [
+              "city-ky-prop-272"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 106.74745949519071,
+            "angularWidthDegrees": 28.73607133058528,
+            "rangeM": 82.05957760067828,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 99.80491172763593,
+            "angularWidthDegrees": 30.539425768092887,
+            "rangeM": 76.99800144532159,
+            "occluderIds": [
+              "city-ky-prop-268"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 62.0277429729409,
+            "angularWidthDegrees": 29.863869157054324,
+            "rangeM": 78.8241203672397,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 7.8081100695964825,
+            "angularWidthDegrees": 20.9323599563547,
+            "rangeM": 113.79143168259547,
+            "occluderIds": [],
+            "score": 0.6876755972161407
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 0.7786972168592919,
+            "angularWidthDegrees": 15.57492211532125,
+            "rangeM": 153.70375515149559,
+            "occluderIds": [],
+            "score": 0.9688521113256283
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 0.587564628525797,
+            "angularWidthDegrees": 11.783384008700441,
+            "rangeM": 203.70031436628375,
+            "occluderIds": [],
+            "score": 0.9764974148589681
+          }
+        ],
+        "sourceDistanceShiftM": -210
+      },
+      "signature": "17aa6bd64b049345abfa5a1f72a09af1c41bedfe195400225f7d10d8adb4358f",
+      "sourceSha256": "18b48aa254c59436684a5a679f8baf64e4d09467c1f37cce87912f9432c350f6",
+      "roadSha256": "d7c3f05a33db49002532e6ed5c0e266eb08993e1ea2b183f7ee0ba33a04c2c2d",
+      "placementDetails": {
+        "x": -270.574697275681,
+        "z": -408.46739445512935,
+        "yaw": -2.0248279337722095,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5017.820170983383,
+        "trackLateral": 74.99999999999996,
+        "minimumRoadClearanceM": 44.23161175124103,
+        "checkedSegments": 3973,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-la-jackson-square": {
       "raceRef": "New Orleans, LA — Landmark Run",
