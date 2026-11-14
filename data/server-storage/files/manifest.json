@@ -733,7 +733,9 @@
       "catalog-briar-2024-body": "art/catalog-briar-2024-body/document.json",
       "catalog-briar-2024-dashboard": "art/catalog-briar-2024-dashboard/document.json",
       "catalog-thornbill-gt-2018-body": "art/catalog-thornbill-gt-2018-body/document.json",
-      "catalog-thornbill-gt-2018-dashboard": "art/catalog-thornbill-gt-2018-dashboard/document.json"
+      "catalog-thornbill-gt-2018-dashboard": "art/catalog-thornbill-gt-2018-dashboard/document.json",
+      "catalog-celandine-ls-1995-body": "art/catalog-celandine-ls-1995-body/document.json",
+      "catalog-celandine-ls-1995-dashboard": "art/catalog-celandine-ls-1995-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -811,7 +813,8 @@
       "Hawthorn V 2005": "cars/Hawthorn V 2005/document.json",
       "Silverleaf 200 2018": "cars/Silverleaf 200 2018/document.json",
       "Briar 2024": "cars/Briar 2024/document.json",
-      "Thornbill GT 2018": "cars/Thornbill GT 2018/document.json"
+      "Thornbill GT 2018": "cars/Thornbill GT 2018/document.json",
+      "Celandine LS 1995": "cars/Celandine LS 1995/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

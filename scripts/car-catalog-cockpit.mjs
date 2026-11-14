@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'celandine-ls-1995':{wheelOpening:true,size:[2172,724],cluster:[320,470,620,160],wheel:[620,690,275]},
  'thornbill-gt-2018':{wheelOpening:true,size:[1774,887],cluster:[265,610,420,170],wheel:[470,835,250]},
  'briar-2024':{wheelOpening:true,size:[1774,887],cluster:[175,585,390,175],wheel:[365,825,250]},
  'silverleaf-200-2018':{wheelOpening:true,size:[1983,793],cluster:[220,490,460,185],wheel:[455,705,250]},

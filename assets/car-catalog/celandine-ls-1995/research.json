@@ -1,0 +1,63 @@
+{
+  "referenceVehicle": "Stock1995 US Acura Integra LS sedan5MT, non-VTEC",
+  "sources": [
+    {
+      "url": "https://acuranews.com/en-US/releases/release-6283b2b02a3a80cc1e0b08004c34ca11-1995-acura-integra-specifications",
+      "fields": [
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.engineDisplacementL",
+        "tuning.redlineRpm",
+        "tuning.revLimitRpm",
+        "tuning.weightKg",
+        "tuning.frontWeightDistribution",
+        "dimensions",
+        "transmissions.manual",
+        "setup.tireSize",
+        "tuning.steeringRatio",
+        "tuning.physics.bodyProfile.overallHeightM",
+        "tuning.physics.bodyProfile.groundClearanceM"
+      ],
+      "access": "Full official exact-year Acura specification page read2026-11-14; LS sedan manual column and metric values selected."
+    },
+    {
+      "url": "https://www.imcdb.org/vehicle_9556-Acura-Integra-DB8-1994.html",
+      "fields": [
+        "selectionContext"
+      ],
+      "access": "Secondary film-identification page lists1995 Integra LS sedan in2001film. Historical comments dispute1994/1995; used only for model-selection context, not mechanical specs or exact screen-car certification."
+    }
+  ],
+  "verifiedFacts": {
+    "power": {
+      "value": 142,
+      "unit": "hp",
+      "rpm": 6300
+    },
+    "torque": {
+      "value": 127,
+      "unit": "lb-ft",
+      "rpm": 5200
+    },
+    "displacement": {
+      "value": 1834,
+      "unit": "cm3"
+    },
+    "mass": {
+      "value": 1226,
+      "unit": "kg",
+      "qualifier": "LS sedan manual, rounded OEM metric value paired2703lb"
+    },
+    "redlineRpm": 6800,
+    "fuelCutoffRpm": 7000,
+    "frontWeightFraction": 0.62
+  },
+  "estimates": [
+    "Auto Assist is gameplay automatic shifting over the sourced five-speed manual, not the factory4AT. It retains manual reductions and timing estimates; real5MT remains selectable.",
+    "750idle and interpolated torque curve except142hp6300/127lb-ft5200 are estimated. OEM6800redline/7000cutoff retained. Shift/clutch/launch timing and86%efficiency are simulation estimates, not factory control maps.",
+    ".34drag,.49mCG,overhang split and collider sections,suspension/brakes/alignment/aero,30psi pressures,tire grip and open-differential approximation are modeled.125mph/9sec0–60 are unvalidated display targets, not measured performance.",
+    "Metric OEM dimensions and1226kg mass used; rounded paired inch/lb values are not exact conversions.1995 page lists1370mm sedan height and150mm clearance, differing from1994 page; no cross-year substitution made. Source bore/stroke transcription typo is not used.",
+    "Nominal.2948m radius calculated from195/60R14 is not loaded rolling radius; body rig uses mean1.4725m track. Wheel centers/radii are artistic measurements, straight-view centers inferred behind shell.",
+    "Original burgundy2994 fictional art; no film graphics, tuning, spoiler or JDM front conversion. Shared tire/wheel/surface-smoke assets; cockpit gauges aligned to new blank binnacle."
+  ]
+}
