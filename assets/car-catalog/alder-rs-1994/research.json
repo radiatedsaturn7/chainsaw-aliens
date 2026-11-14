@@ -1,0 +1,71 @@
+{
+  "referenceVehicle": "Stock early1994 European Audi Avant RS2, LHD, 2.2 turbo five-cylinder permanent AWD6MT, standard period brochure tires; not S2, modified car or later RS4",
+  "sources": [
+    {
+      "url": "https://www.brochure-catalogue-voiture-neuve.fr/brochures/audi/80/audi-80-1991/B4-4-ANG-02-1994-AVANT-RS2/",
+      "fields": [
+        "dimensions",
+        "setup.tireSize",
+        "tuning.weightKg",
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.engineDisplacementL",
+        "transmissions.manual.gearRatios",
+        "transmissions.manual.reverseRatio",
+        "transmissions.manual.gearFinalDrive"
+      ],
+      "access": "Archived manufacturer English brochure dated02/1994. Linked12-pagePDF downloaded from inspirauto and technical page11 visually read. Heading explicitly provisional data/summary; that qualification retained."
+    },
+    {
+      "url": "https://www.audi.com/de/der-aufstieg-ins-premiumsegment-17326",
+      "fields": [
+        "tuning.weightKg",
+        "tuning.powerHp",
+        "tuning.engineDisplacementL",
+        "tuning.physics.bodyProfile.overallHeightM"
+      ],
+      "access": "Audi historical model record corroborates1595kg,232kW6500rpm,2226cc,1695width1386height. Lists4509mm length versus period4510; period dimension used,1mm discrepancy recorded."
+    },
+    {
+      "url": "https://www.audi-mediacenter.com/en/photos/detail/audi-avant-rs-2-b4-model-year-1994-37228",
+      "fields": [
+        "tuning.torqueLbFt",
+        "tuning.torquePeakStartRpm"
+      ],
+      "access": "Audi primary historical engine record confirms410Nm at3000rpm."
+    }
+  ],
+  "verifiedFacts": {
+    "powerKw": 232,
+    "powerRpm": 6500,
+    "torqueNm": 410,
+    "torqueRpm": 3000,
+    "massKg": 1595,
+    "forwardGearCount": 6,
+    "gearRatios": [
+      3.5,
+      1.889,
+      1.32,
+      1.034,
+      0.857,
+      0.711
+    ],
+    "reverseRatio": 3.455,
+    "finalDrive": 4.111,
+    "topSpeedKph": 262,
+    "zeroTo100Sec": 5.4,
+    "sourceQualification": "Period manufacturer technical page is explicitly provisional data/summary; options increase unladen mass."
+  },
+  "gearingStatus": {
+    "individualRatios": "Manufacturer provisional technical sheet values, not independently final-production homologation verified",
+    "finalDrive": "4.111 manufacturer provisional brochure value; no claim of independently final homologation certification"
+  },
+  "estimates": [
+    "232kW and410Nm converted to mechanical hp/lb-ft; native scalar rounding311hp/302lb-ft, curve keeps precise anchors. Marketing315 is metric PS, not mechanical hp.",
+    "Period brochure245/40ZR17 and2597mm wheelbase used, rather than conflicting235 tires/2611wheelbase in unsourced listings. Nominal radius.3139m calculated, not loaded radius. Historical Audi length4509 differs1mm from period4510 selected.",
+    "Unpublished idle850/redline7000/limiter7200, torque curve outside two anchors, steering15.7,drag.35, frontweight61%,CG.49,clearance.12, overhangsplit, body sections, springs/damping,brakeforces,tirepressure36psi/grip and84%efficiency are gameplay estimates.",
+    "AWD50:50 and differential settings approximate permanentAWD; actual Torsen torque bias and switchable rear lock/25kph disengagement are not faithfully simulated. No separate factoryABS emulation.",
+    "Auto Assist automates the modeled6MT; manual selectable, no factory automatic claimed.5.2sec0-60 estimate distinct5.4sec0-100 and displaytop speed; no measured game acceleration calibration.",
+    "Original indigo badge-free wagon and LHD dashboard, shared tires/steeringwheel, fixedrear/surfaceFX. Not copied Audi or Porsche artwork/livery."
+  ]
+}
