@@ -512,7 +512,24 @@
       "catalog-hemlock-rt-2005-body": "art/catalog-hemlock-rt-2005-body/document.json",
       "catalog-hemlock-rt-2005-dashboard": "art/catalog-hemlock-rt-2005-dashboard/document.json",
       "catalog-hawthorn-v-2005-body": "art/catalog-hawthorn-v-2005-body/document.json",
-      "catalog-hawthorn-v-2005-dashboard": "art/catalog-hawthorn-v-2005-dashboard/document.json"
+      "catalog-hawthorn-v-2005-dashboard": "art/catalog-hawthorn-v-2005-dashboard/document.json",
+      "catalog-silverleaf-200-2018-body": "art/catalog-silverleaf-200-2018-body/document.json",
+      "catalog-silverleaf-200-2018-dashboard": "art/catalog-silverleaf-200-2018-dashboard/document.json",
+      "fence-region-new-england-stonewall": "art/fence-region-new-england-stonewall/document.json",
+      "fence-region-appalachian-splitrail": "art/fence-region-appalachian-splitrail/document.json",
+      "fence-region-new-england-hardwoods": "art/fence-region-new-england-hardwoods/document.json",
+      "fence-region-new-england-rowhouses": "art/fence-region-new-england-rowhouses/document.json",
+      "fence-region-southwest-adobe": "art/fence-region-southwest-adobe/document.json",
+      "fence-region-pnw-conifers": "art/fence-region-pnw-conifers/document.json",
+      "fence-region-plains-shelterbelt": "art/fence-region-plains-shelterbelt/document.json",
+      "fence-region-southwest-scrub": "art/fence-region-southwest-scrub/document.json",
+      "fence-region-plains-farm": "art/fence-region-plains-farm/document.json",
+      "fence-region-industrial-cityblock": "art/fence-region-industrial-cityblock/document.json",
+      "skybox-bayard-noon-2994": "art/skybox-bayard-noon-2994/document.json",
+      "landmark-bayard-community-bible-church": "art/landmark-bayard-community-bible-church/document.json",
+      "landmark-bayard-city-park-water-tower": "art/landmark-bayard-city-park-water-tower/document.json",
+      "bayard-city-park-playground-ruin": "art/bayard-city-park-playground-ruin/document.json",
+      "bayard-sage-sandstone-cluster": "art/bayard-sage-sandstone-cluster/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -587,7 +604,8 @@
       "Rotarypetal 2011": "cars/Rotarypetal 2011/document.json",
       "Thistle 190 1990": "cars/Thistle 190 1990/document.json",
       "Hemlock RT 2005": "cars/Hemlock RT 2005/document.json",
-      "Hawthorn V 2005": "cars/Hawthorn V 2005/document.json"
+      "Hawthorn V 2005": "cars/Hawthorn V 2005/document.json",
+      "Silverleaf 200 2018": "cars/Silverleaf 200 2018/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
@@ -760,7 +778,21 @@
       "expanded-tree-hickory-young-01": "doodads/expanded-tree-hickory-young-01/document.json",
       "expanded-tree-river-birch-young-01": "doodads/expanded-tree-river-birch-young-01/document.json",
       "expanded-tree-shortleaf-pine-young-01": "doodads/expanded-tree-shortleaf-pine-young-01/document.json",
-      "expanded-tree-white-oak-young-01": "doodads/expanded-tree-white-oak-young-01/document.json"
+      "expanded-tree-white-oak-young-01": "doodads/expanded-tree-white-oak-young-01/document.json",
+      "fence-region-new-england-stonewall": "doodads/fence-region-new-england-stonewall/document.json",
+      "fence-region-appalachian-splitrail": "doodads/fence-region-appalachian-splitrail/document.json",
+      "fence-region-new-england-hardwoods": "doodads/fence-region-new-england-hardwoods/document.json",
+      "fence-region-new-england-rowhouses": "doodads/fence-region-new-england-rowhouses/document.json",
+      "fence-region-southwest-adobe": "doodads/fence-region-southwest-adobe/document.json",
+      "fence-region-pnw-conifers": "doodads/fence-region-pnw-conifers/document.json",
+      "fence-region-plains-shelterbelt": "doodads/fence-region-plains-shelterbelt/document.json",
+      "fence-region-southwest-scrub": "doodads/fence-region-southwest-scrub/document.json",
+      "fence-region-plains-farm": "doodads/fence-region-plains-farm/document.json",
+      "fence-region-industrial-cityblock": "doodads/fence-region-industrial-cityblock/document.json",
+      "landmark-bayard-community-bible-church": "doodads/landmark-bayard-community-bible-church/document.json",
+      "landmark-bayard-city-park-water-tower": "doodads/landmark-bayard-city-park-water-tower/document.json",
+      "bayard-city-park-playground-ruin": "doodads/bayard-city-park-playground-ruin/document.json",
+      "bayard-sage-sandstone-cluster": "doodads/bayard-sage-sandstone-cluster/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

@@ -102,6 +102,7 @@ export function normalizeRaceDoodadDocument(data = {}, fallbackName = '') {
     name: String(doodad.name || cleanName || fallback.name),
     artRef: String(doodad.artRef || '').trim(),
     isFence: doodad.isFence === true,
+    fenceMirrorRepeat: doodad.fenceMirrorRepeat === true,
     fenceThicknessM: clamp(Number(doodad.fenceThicknessM) || 0.3, 0.1, 5),
     itemType: doodad.itemType === 'mix-tape' ? 'mix-tape' : 'scenery',
     unlockTrackId: typeof doodad.unlockTrackId === 'string' ? doodad.unlockTrackId.trim() : '',

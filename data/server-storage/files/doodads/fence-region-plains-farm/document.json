@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "selectedDoodadId": "fence-region-plains-farm",
+  "doodad": {
+    "id": "fence-region-plains-farm",
+    "name": "Great Plains ruined country fence [solid fence]",
+    "artRef": "fence-region-plains-farm",
+    "isFence": true,
+    "fenceMirrorRepeat": true,
+    "fenceThicknessM": 0.25,
+    "itemType": "scenery",
+    "model": null,
+    "widthM": 6,
+    "heightM": 2,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 6,
+    "hitboxHeightM": 2,
+    "weightKg": 10000,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 45,
+      "damage": {
+        "panels": 14,
+        "suspension": 6,
+        "engine": 3.5
+      }
+    },
+    "rules": []
+  },
+  "regionalFence": {
+    "region": "Great Plains",
+    "collision": "Continuous solid fence; transparent art is not an opening.",
+    "source": "regional-fences/fence-plains-farm.png"
+  }
+}

@@ -1,3 +1,4 @@
+import {withLegacyGaugeDefaults} from '../helpers/catalogRoundtrip.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -12,7 +13,7 @@ test('Sunmallow candidate preserves US2006 base5MT source, not GXP',()=>{
  assert.equal(car.mechanics.fuelTankGallons,13.8);assert.equal(car.mechanics.fuelLiters,13.8*3.785411784);assert.deepEqual(car.setup.tireSize,{widthMm:245,aspectRatio:45,wheelDiameterIn:18});assert.equal(car.setup.tireSizeByAxle,undefined);assert.equal(t.wheelRadiusM,.33885);
 });
 test('Sunmallow candidate preserves mapped angles and has explicitly attributed estimates',()=>{assert.deepEqual(c.mapping,[0,7,2,3,4,5,6,1]);assert.equal(c.provenance.sources.length,1);assert.ok(c.provenance.estimates.length>=4);assert.equal(c.car.camera.trackingMode,'fixed-rear');assert.equal(c.car.art.gauges.interior.coordinateSpace,'wheel-opening');});
-test('Sunmallow native editor roundtrip retains fixedrear, dashboard gauges and tire visibility',()=>{const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(structuredClone(d),{name:d.car.name});assert.deepEqual(e.serializeSelectedCarDocument().car,d.car);assert.equal(d.car.camera.trackingMode,'fixed-rear');assert.equal(d.car.art.interior.steeringWheel.artRef,'steeringwheel');assert.equal(d.car.art.gauges.interior.coordinateSpace,'wheel-opening');for(const l of Object.values(d.car.art.angleLayers))assert.equal(l.tires.tireMode,'auto');assert.deepEqual(c.mapping,[0,7,2,3,4,5,6,1]);});
+test('Sunmallow native editor roundtrip retains fixedrear, dashboard gauges and tire visibility',()=>{const e=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});e.applyLoadedCarDocument(structuredClone(d),{name:d.car.name});assert.deepEqual(e.serializeSelectedCarDocument().car,withLegacyGaugeDefaults(d.car));assert.equal(d.car.camera.trackingMode,'fixed-rear');assert.equal(d.car.art.interior.steeringWheel.artRef,'steeringwheel');assert.equal(d.car.art.gauges.interior.coordinateSpace,'wheel-opening');for(const l of Object.values(d.car.art.angleLayers))assert.equal(l.tires.tireMode,'auto');assert.deepEqual(c.mapping,[0,7,2,3,4,5,6,1]);});
 
 test('Sunmallow production editor preview launches on tire support, not an occluding body box',()=>{
  assert.equal(c.car.tuning.physics.bodyProfile.wheelWellAware,true);

@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794339723474,
+  "doodad": {
+    "id": "campaign-landmark-bayard-city-park-water-tower",
+    "name": "landmark-bayard-city-park-water-tower",
+    "artRef": "landmark-bayard-city-park-water-tower",
+    "widthM": 10,
+    "heightM": 30,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 8.5,
+    "hitboxHeightM": 27,
+    "weightKg": 1000,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 45,
+      "damage": {
+        "panels": 14,
+        "suspension": 6,
+        "engine": 3.5
+      }
+    },
+    "rules": [],
+    "campaignArtBounds": {
+      "widthM": 9.32421875,
+      "heightM": 14
+    }
+  }
+}

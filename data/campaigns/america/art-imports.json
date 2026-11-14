@@ -1510,5 +1510,117 @@
     "documentSha256": "93a763c5d3cf1ca08e6f65d5dedadc769fa94c6c1c6993c931025efacae7b172",
     "width": 512,
     "height": 512
+  },
+  "providence": {
+    "source": "assets/campaign-art/skyboxes/providence-2994.png",
+    "sourceSha256": "358bf0ffdb34b9cf0a510cb11b8426c3d74d3d29f3ac6965afb9d90c96856309",
+    "documentSha256": "0f5b5d78b4a87298255cc50607dda8c040d103714a679645c28b256031cb1b3a",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-new-england-stonewall": {
+    "source": "assets/campaign-art/regional-fences/fence-new-england-stonewall.png",
+    "sourceSha256": "3f9e886a30394c181d9f6ba672c5514180081a33b3254f652804fe4ed0e0931d",
+    "documentSha256": "da08271bc4c83a566609e4ebe6d96429b14c8dfaaec3606b31d9c52c2eab86f4",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-appalachian-splitrail": {
+    "source": "assets/campaign-art/regional-fences/fence-appalachian-splitrail.png",
+    "sourceSha256": "fc70685c0000b2fac5c256cb65710eb750884edc5eb9b98cac2a11dc2cf8c72e",
+    "documentSha256": "2b56211bca52ad78acf02a5f2561e16432a239e70293be1d3b81853dd8a9cf20",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-new-england-hardwoods": {
+    "source": "assets/campaign-art/regional-fences/fence-new-england-hardwoods.png",
+    "sourceSha256": "da6737f90bcfbec74977a02a88f214544365bca1dc742b99e9e2343c7497c302",
+    "documentSha256": "d101600bcad96c13158c0d9758c804872fbdb88367490055609435a97434a126",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-new-england-rowhouses": {
+    "source": "assets/campaign-art/regional-fences/fence-new-england-rowhouses.png",
+    "sourceSha256": "f9dd4876b15358987cbb5217c02cd283621c68f4007cf51e71d1a771bb86a50c",
+    "documentSha256": "00c1821da086b9ff986ab3b6ffeca18e72ef45b08a990e83bbf9eb5e363a51b3",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-southwest-adobe": {
+    "source": "assets/campaign-art/regional-fences/fence-southwest-adobe.png",
+    "sourceSha256": "b4142aab0232a344eeaa1724d1c074977eb9c70474b2871633e9925ae5937b7e",
+    "documentSha256": "51c7e11654b8c31c6945c69b5299190bc40d2277656fecd766e5117ff844d327",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-pnw-conifers": {
+    "source": "assets/campaign-art/regional-fences/fence-pnw-conifers.png",
+    "sourceSha256": "78a7cbb94f4ee4985b2ba38fc864cc6e7d978fc6248dabdb7aabc27322fe0c90",
+    "documentSha256": "675fea4ef2468da456d0ad1ece520b680061fab474d9064b06a583d18cfe43b7",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-plains-shelterbelt": {
+    "source": "assets/campaign-art/regional-fences/fence-plains-shelterbelt.png",
+    "sourceSha256": "ffa5d849acc0da3408932a351d4b75eca5b571cc7b4c1f23757a8c8fc4731288",
+    "documentSha256": "0007512e832cf3b0b4f90261cc50f0532140e2dd0651b5fd66b650f6bfbbeef4",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-southwest-scrub": {
+    "source": "assets/campaign-art/regional-fences/fence-southwest-scrub.png",
+    "sourceSha256": "b0b87747530f5b90cd3d33247b78790830b07165d2eca3063cb7209b156bcf65",
+    "documentSha256": "d24a002c945616518aca65be059ba2ae3a3554928e242649a38f883715f456bc",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-plains-farm": {
+    "source": "assets/campaign-art/regional-fences/fence-plains-farm.png",
+    "sourceSha256": "213574368a83a444de21ac92abf88a0e9a4d9bea159a129ccd69078816c76aa2",
+    "documentSha256": "fc279bb1f56aac3777fbc8fffda3e822b6dbad4f1345c328449cb22c1003a346",
+    "width": 512,
+    "height": 171
+  },
+  "fence-region-industrial-cityblock": {
+    "source": "assets/campaign-art/regional-fences/fence-industrial-cityblock.png",
+    "sourceSha256": "4b6258ebf0d375497c22d78ef95c9625fe248cc56c98df924d48341fdb7b0c96",
+    "documentSha256": "914e73efe0631cc6ed50ebd5019792f24938093fef1e26b09a5542fc2e607f27",
+    "width": 512,
+    "height": 171
+  },
+  "skybox-bayard-noon-2994": {
+    "source": "assets/campaign-art/skyboxes/bayard-noon-2994.png",
+    "sourceSha256": "403583e3de4f710d859ad1dee597006daabdd4abe3609b890831d591b10653b2",
+    "documentSha256": "2777ea5a8423f9ac3a4973dc476c6787741d95fa33d7c014e37437750d256a59",
+    "width": 1024,
+    "height": 341
+  },
+  "landmark-bayard-community-bible-church": {
+    "source": "assets/campaign-art/bayard/landmark-bayard-community-bible-church.png",
+    "sourceSha256": "086f39b4acec469a21550a07078fb17a1daf2a0f776cf0a26152bd44931be6e4",
+    "documentSha256": "aa3e5dc2bfd242ef3e2338e5c1cd17e500e41f2808ec5056a9fa69d44b25a4cb",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-bayard-city-park-water-tower": {
+    "source": "assets/campaign-art/bayard/landmark-bayard-city-park-water-tower.png",
+    "sourceSha256": "2265417eba957daf2e44deac5af85be06e3900b63b8d70fca670425064f659b6",
+    "documentSha256": "fdcc25039b47986e8e477191e0f19b72da0c18e5ffc4908e11412e0eaf028622",
+    "width": 341,
+    "height": 512
+  },
+  "bayard-city-park-playground-ruin": {
+    "source": "assets/campaign-art/bayard/bayard-city-park-playground-ruin.png",
+    "sourceSha256": "078edc5447730cbd1594c6f727dc83dfae70bc68d58f5fa4f7d3e62bc355eca6",
+    "documentSha256": "5e4de8c95289458f1b52d3052f88ee954a9546859b84f8ccb716b99fbdeebb57",
+    "width": 512,
+    "height": 341
+  },
+  "bayard-sage-sandstone-cluster": {
+    "source": "assets/campaign-art/bayard/bayard-sage-sandstone-cluster.png",
+    "sourceSha256": "e66a75974a6466827a8c6a0f19f5531d0e0253093b2e9fa612904282cce09c39",
+    "documentSha256": "dfb764ab0fb4ef3f7fc0cc9d6a73b6031484bce090f84bdeefdb590c91a086ae",
+    "width": 512,
+    "height": 341
   }
 }

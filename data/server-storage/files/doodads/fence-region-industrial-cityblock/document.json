@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "selectedDoodadId": "fence-region-industrial-cityblock",
+  "doodad": {
+    "id": "fence-region-industrial-cityblock",
+    "name": "Rust Belt industrial street ruins [solid fence]",
+    "artRef": "fence-region-industrial-cityblock",
+    "isFence": true,
+    "fenceMirrorRepeat": false,
+    "fenceThicknessM": 1,
+    "itemType": "scenery",
+    "model": null,
+    "widthM": 45,
+    "heightM": 15,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 45,
+    "hitboxHeightM": 15,
+    "weightKg": 10000,
+    "defaultRule": {
+      "minSpeedMph": 0,
+      "behavior": "collide",
+      "speedDrainPercent": 45,
+      "damage": {
+        "panels": 14,
+        "suspension": 6,
+        "engine": 3.5
+      }
+    },
+    "rules": []
+  },
+  "regionalFence": {
+    "region": "Great Lakes / Pacific industrial",
+    "collision": "Continuous solid fence; transparent art is not an opening.",
+    "source": "regional-fences/fence-industrial-cityblock.png"
+  }
+}

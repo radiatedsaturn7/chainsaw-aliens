@@ -19,15 +19,16 @@
       "mappedName": "Navy Pier, 600, East Grand Avenue, Near North Side, Chicago, North Chicago Township, Cook County, Illinois, 60611, United States",
       "coordinateSource": "https://www.openstreetmap.org/way/24800238",
       "query": "Navy Pier",
-      "routeDistanceM": -43,
-      "routeMiles": -0.03,
+      "routeDistanceM": 0,
+      "routeMiles": 0,
       "offsetFromRoadM": 104,
       "side": "left",
       "worldX": 1974.818557798633,
       "worldZ": -756.1154260804785,
       "artStatus": "landmark-specific artwork pending",
       "suggestedArtRef": "landmark-city-il-navy-pier",
-      "artBrief": "Recognizable road-facing landmark silhouette/facade, adapted to abandoned 2994 setting; transparent background. GPS position is a reference, not a guaranteed sightline."
+      "artBrief": "Recognizable road-facing landmark silhouette/facade, adapted to abandoned 2994 setting; transparent background. GPS position is a reference, not a guaranteed sightline.",
+      "signedRouteDistanceM": -43
     },
     {
       "name": "Wrigley Building",

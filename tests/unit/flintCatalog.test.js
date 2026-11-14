@@ -1,3 +1,4 @@
+import {withLegacyGaugeDefaults} from '../helpers/catalogRoundtrip.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -16,5 +17,5 @@ test('Flint editor round trip retains corrected curve and every other serialized
  const editor=new RaceEditor({deviceIsMobile:false,isMobile:false},{mode:'car'});
  editor.applyLoadedCarDocument(structuredClone(document),{name:document.car.name});
  const output=editor.serializeSelectedCarDocument();
- assert.deepEqual(output.car,document.car);
+ assert.deepEqual(output.car,withLegacyGaugeDefaults(document.car));
 });
