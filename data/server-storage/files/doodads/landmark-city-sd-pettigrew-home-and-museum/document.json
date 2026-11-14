@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617306920,
+  "doodad": {
+    "id": "campaign-landmark-city-sd-pettigrew-home-and-museum",
+    "name": "landmark-city-sd-pettigrew-home-and-museum",
+    "artRef": "landmark-city-sd-pettigrew-home-and-museum",
+    "widthM": 22.26086956521739,
+    "heightM": 16,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 18.92173913043478,
+    "hitboxHeightM": 14.4,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

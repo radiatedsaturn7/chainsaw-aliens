@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613509555,
+  "doodad": {
+    "id": "campaign-landmark-city-nd-fargo-civic-center",
+    "name": "landmark-city-nd-fargo-civic-center",
+    "artRef": "landmark-city-nd-fargo-civic-center",
+    "widthM": 32,
+    "heightM": 16,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 27.2,
+    "hitboxHeightM": 14.4,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

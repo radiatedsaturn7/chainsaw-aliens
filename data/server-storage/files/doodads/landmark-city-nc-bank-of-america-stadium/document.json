@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613866752,
+  "doodad": {
+    "id": "campaign-landmark-city-nc-bank-of-america-stadium",
+    "name": "landmark-city-nc-bank-of-america-stadium",
+    "artRef": "landmark-city-nc-bank-of-america-stadium",
+    "widthM": 68,
+    "heightM": 34,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 57.8,
+    "hitboxHeightM": 30.6,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

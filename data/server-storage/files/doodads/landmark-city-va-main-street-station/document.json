@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794611103375,
+  "doodad": {
+    "id": "campaign-landmark-city-va-main-street-station",
+    "name": "landmark-city-va-main-street-station",
+    "artRef": "landmark-city-va-main-street-station",
+    "widthM": 51.049853372434015,
+    "heightM": 34,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 43.39237536656891,
+    "hitboxHeightM": 30.6,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

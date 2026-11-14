@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794609732366,
+  "doodad": {
+    "id": "campaign-landmark-city-az-chase-field",
+    "name": "landmark-city-az-chase-field",
+    "artRef": "landmark-city-az-chase-field",
+    "widthM": 52,
+    "heightM": 26,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 44.199999999999996,
+    "hitboxHeightM": 23.400000000000002,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

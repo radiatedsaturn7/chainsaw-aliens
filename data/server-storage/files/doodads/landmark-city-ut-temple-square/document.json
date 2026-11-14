@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617370668,
+  "doodad": {
+    "id": "campaign-landmark-city-ut-temple-square",
+    "name": "landmark-city-ut-temple-square",
+    "artRef": "landmark-city-ut-temple-square",
+    "widthM": 41.572649572649574,
+    "heightM": 38,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 35.33675213675214,
+    "hitboxHeightM": 34.2,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

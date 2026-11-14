@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613606929,
+  "doodad": {
+    "id": "campaign-landmark-city-de-delaware-history-museum",
+    "name": "landmark-city-de-delaware-history-museum",
+    "artRef": "landmark-city-de-delaware-history-museum",
+    "widthM": 30.029325513196483,
+    "heightM": 20,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 25.52492668621701,
+    "hitboxHeightM": 18,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

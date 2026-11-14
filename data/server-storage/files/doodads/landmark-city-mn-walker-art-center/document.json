@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794610827032,
+  "doodad": {
+    "id": "campaign-landmark-city-mn-walker-art-center",
+    "name": "landmark-city-mn-walker-art-center",
+    "artRef": "landmark-city-mn-walker-art-center",
+    "widthM": 58.71559633027523,
+    "heightM": 25,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 49.908256880733944,
+    "hitboxHeightM": 22.5,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

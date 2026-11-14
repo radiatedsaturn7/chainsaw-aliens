@@ -107,6 +107,15 @@ test('delivered art satisfies explicit campaign, editor and configured-unused in
   for(const segment of r.road.segments){used.add(roadTextureForSegment(settings,segment).artRef);if(r.margin?.shoulderMode==='on')used.add((settings.surfaceShoulders[segment.surface]||settings.shoulder).artRef);}
   for(const p of r.scenery.filter(p=>p.fenceId?.startsWith('campaign-complete'))){assert.equal(p.previewDoodad.isFence,true);assert.equal(p.previewDoodad.defaultRule.behavior,'collide');assert.ok(p.previewDoodad.fenceThicknessM>0);}
  }
+ // Every expansion landmark must be present and counted by enabled campaign usage above.
+ for(const city of read('AI/last-on-the-grid/state-expansion-landmark-artwork.json').cities){
+  const r=read(root+manifest.folders.races[city.raceRef]).race;
+  for(const mark of city.landmarks){
+   const prop=r.scenery.find(p=>p.id===`city-landmark-${mark.suggestedArtRef}`);
+   assert.equal(prop?.artRef,mark.suggestedArtRef);
+   assert.ok(used.has(prop.artRef),`Landmark not used by an enabled campaign event: ${prop.artRef}`);
+  }
+ }
  const deferred=new Set(expanded.filter(a=>a.deferredReason).map(a=>a.name));
  // Preserve pre-existing deferred scope; new editor intent must load and has browser selection coverage.
  deferred.add('ground-snow-dead-grass');

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794607106742,
+  "doodad": {
+    "id": "campaign-landmark-city-ct-bushnell-park",
+    "name": "landmark-city-ct-bushnell-park",
+    "artRef": "landmark-city-ct-bushnell-park",
+    "widthM": 25.031111111111112,
+    "heightM": 22,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 21.276444444444444,
+    "hitboxHeightM": 19.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794607106742,
+  "doodad": {
+    "id": "campaign-landmark-city-ct-connecticut-state-capitol",
+    "name": "landmark-city-ct-connecticut-state-capitol",
+    "artRef": "landmark-city-ct-connecticut-state-capitol",
+    "widthM": 57.487719298245615,
+    "heightM": 32,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 48.86456140350877,
+    "hitboxHeightM": 28.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

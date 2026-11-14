@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617016214,
+  "doodad": {
+    "id": "campaign-landmark-city-me-portland-observatory",
+    "name": "landmark-city-me-portland-observatory",
+    "artRef": "landmark-city-me-portland-observatory",
+    "widthM": 19.98046875,
+    "heightM": 30,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 16.9833984375,
+    "hitboxHeightM": 27,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

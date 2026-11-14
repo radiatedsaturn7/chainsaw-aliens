@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794615303888,
+  "doodad": {
+    "id": "campaign-landmark-city-nj-new-jersey-performing-arts-center",
+    "name": "landmark-city-nj-new-jersey-performing-arts-center",
+    "artRef": "landmark-city-nj-new-jersey-performing-arts-center",
+    "widthM": 64,
+    "heightM": 32,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 54.4,
+    "hitboxHeightM": 28.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613015554,
+  "doodad": {
+    "id": "campaign-landmark-city-vt-burlington-city-hall",
+    "name": "landmark-city-vt-burlington-city-hall",
+    "artRef": "landmark-city-vt-burlington-city-hall",
+    "widthM": 36.03519061583578,
+    "heightM": 24,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 30.629912023460413,
+    "hitboxHeightM": 21.6,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

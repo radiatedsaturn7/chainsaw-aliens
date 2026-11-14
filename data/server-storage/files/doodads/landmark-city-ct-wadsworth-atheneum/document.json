@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794607106742,
+  "doodad": {
+    "id": "campaign-landmark-city-ct-wadsworth-atheneum",
+    "name": "landmark-city-ct-wadsworth-atheneum",
+    "artRef": "landmark-city-ct-wadsworth-atheneum",
+    "widthM": 44,
+    "heightM": 22,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 37.4,
+    "hitboxHeightM": 19.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

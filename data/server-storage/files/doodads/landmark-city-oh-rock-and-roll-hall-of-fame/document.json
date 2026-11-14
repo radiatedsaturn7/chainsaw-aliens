@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794607600039,
+  "doodad": {
+    "id": "campaign-landmark-city-oh-rock-and-roll-hall-of-fame",
+    "name": "landmark-city-oh-rock-and-roll-hall-of-fame",
+    "artRef": "landmark-city-oh-rock-and-roll-hall-of-fame",
+    "widthM": 53.89473684210526,
+    "heightM": 24,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 45.81052631578947,
+    "hitboxHeightM": 21.6,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794617231355,
+  "doodad": {
+    "id": "campaign-landmark-city-ca-los-angeles-city-hall",
+    "name": "landmark-city-ca-los-angeles-city-hall",
+    "artRef": "landmark-city-ca-los-angeles-city-hall",
+    "widthM": 39.78515625,
+    "heightM": 42,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 33.8173828125,
+    "hitboxHeightM": 37.800000000000004,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

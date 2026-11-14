@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794615194653,
+  "doodad": {
+    "id": "campaign-landmark-city-sc-rainbow-row",
+    "name": "landmark-city-sc-rainbow-row",
+    "artRef": "landmark-city-sc-rainbow-row",
+    "widthM": 49.951219512195124,
+    "heightM": 20,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 42.458536585365856,
+    "hitboxHeightM": 18,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794609732366,
+  "doodad": {
+    "id": "campaign-landmark-city-az-orpheum-theatre",
+    "name": "landmark-city-az-orpheum-theatre",
+    "artRef": "landmark-city-az-orpheum-theatre",
+    "widthM": 40,
+    "heightM": 20,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 34,
+    "hitboxHeightM": 18,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

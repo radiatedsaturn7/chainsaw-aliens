@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794616787159,
+  "doodad": {
+    "id": "campaign-landmark-city-al-alabama-theatre",
+    "name": "landmark-city-al-alabama-theatre",
+    "artRef": "landmark-city-al-alabama-theatre",
+    "widthM": 22.9375,
+    "heightM": 32,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 19.496875,
+    "hitboxHeightM": 28.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

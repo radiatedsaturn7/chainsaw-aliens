@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794612412001,
+  "doodad": {
+    "id": "campaign-landmark-city-ga-ebenezer-baptist-church",
+    "name": "landmark-city-ga-ebenezer-baptist-church",
+    "artRef": "landmark-city-ga-ebenezer-baptist-church",
+    "widthM": 24.068376068376068,
+    "heightM": 22,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 20.458119658119656,
+    "hitboxHeightM": 19.8,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

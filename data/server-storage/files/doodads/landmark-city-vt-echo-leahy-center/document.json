@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613015554,
+  "doodad": {
+    "id": "campaign-landmark-city-vt-echo-leahy-center",
+    "name": "landmark-city-vt-echo-leahy-center",
+    "artRef": "landmark-city-vt-echo-leahy-center",
+    "widthM": 39.083969465648856,
+    "heightM": 20,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 33.221374045801525,
+    "hitboxHeightM": 18,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

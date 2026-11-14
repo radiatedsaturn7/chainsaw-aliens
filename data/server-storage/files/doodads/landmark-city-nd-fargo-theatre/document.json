@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794613509555,
+  "doodad": {
+    "id": "campaign-landmark-city-nd-fargo-theatre",
+    "name": "landmark-city-nd-fargo-theatre",
+    "artRef": "landmark-city-nd-fargo-theatre",
+    "widthM": 39.038123167155426,
+    "heightM": 26,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 33.18240469208211,
+    "hitboxHeightM": 23.400000000000002,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

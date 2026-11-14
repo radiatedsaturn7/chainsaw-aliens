@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794610433373,
+  "doodad": {
+    "id": "campaign-landmark-city-pa-philadelphia-city-hall",
+    "name": "landmark-city-pa-philadelphia-city-hall",
+    "artRef": "landmark-city-pa-philadelphia-city-hall",
+    "widthM": 80,
+    "heightM": 60,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 68,
+    "hitboxHeightM": 54,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

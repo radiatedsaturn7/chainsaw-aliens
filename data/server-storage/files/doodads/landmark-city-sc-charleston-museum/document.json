@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794615194653,
+  "doodad": {
+    "id": "campaign-landmark-city-sc-charleston-museum",
+    "name": "landmark-city-sc-charleston-museum",
+    "artRef": "landmark-city-sc-charleston-museum",
+    "widthM": 32,
+    "heightM": 16,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 27.2,
+    "hitboxHeightM": 14.4,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}

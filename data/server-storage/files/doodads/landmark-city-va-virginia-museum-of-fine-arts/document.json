@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "kind": "race-doodad",
+  "savedAt": 1794611103375,
+  "doodad": {
+    "id": "campaign-landmark-city-va-virginia-museum-of-fine-arts",
+    "name": "landmark-city-va-virginia-museum-of-fine-arts",
+    "artRef": "landmark-city-va-virginia-museum-of-fine-arts",
+    "widthM": 59.88304093567251,
+    "heightM": 20,
+    "groundOffsetM": 0,
+    "hitboxWidthM": 50.900584795321635,
+    "hitboxHeightM": 18,
+    "weightKg": 100000,
+    "rules": [],
+    "defaultRule": {
+      "behavior": "collide",
+      "speedDrainPercent": 90,
+      "damage": {
+        "panels": 20,
+        "suspension": 8,
+        "engine": 4
+      }
+    }
+  }
+}
