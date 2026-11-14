@@ -3240,6 +3240,34 @@
       "heightM": 52,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-il-navy-pier",
+      "source": "landmarks/IL/landmark-city-il-navy-pier.png",
+      "heightM": 48,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-il-wrigley-building",
+      "source": "landmarks/IL/landmark-city-il-wrigley-building.png",
+      "heightM": 65,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-il-art-institute-of-chicago",
+      "source": "landmarks/IL/landmark-city-il-art-institute-of-chicago.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-il-union-station",
+      "source": "landmarks/IL/landmark-city-il-union-station.png",
+      "heightM": 30,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

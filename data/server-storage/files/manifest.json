@@ -676,7 +676,11 @@
       "landmark-city-ia-pappajohn-sculpture-park": "art/landmark-city-ia-pappajohn-sculpture-park/document.json",
       "landmark-city-ia-principal-park": "art/landmark-city-ia-principal-park/document.json",
       "landmark-city-ia-state-historical-museum": "art/landmark-city-ia-state-historical-museum/document.json",
-      "landmark-city-ia-iowa-state-capitol": "art/landmark-city-ia-iowa-state-capitol/document.json"
+      "landmark-city-ia-iowa-state-capitol": "art/landmark-city-ia-iowa-state-capitol/document.json",
+      "landmark-city-il-navy-pier": "art/landmark-city-il-navy-pier/document.json",
+      "landmark-city-il-wrigley-building": "art/landmark-city-il-wrigley-building/document.json",
+      "landmark-city-il-art-institute-of-chicago": "art/landmark-city-il-art-institute-of-chicago/document.json",
+      "landmark-city-il-union-station": "art/landmark-city-il-union-station/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1088,7 +1092,11 @@
       "landmark-city-ia-pappajohn-sculpture-park": "doodads/landmark-city-ia-pappajohn-sculpture-park/document.json",
       "landmark-city-ia-principal-park": "doodads/landmark-city-ia-principal-park/document.json",
       "landmark-city-ia-state-historical-museum": "doodads/landmark-city-ia-state-historical-museum/document.json",
-      "landmark-city-ia-iowa-state-capitol": "doodads/landmark-city-ia-iowa-state-capitol/document.json"
+      "landmark-city-ia-iowa-state-capitol": "doodads/landmark-city-ia-iowa-state-capitol/document.json",
+      "landmark-city-il-navy-pier": "doodads/landmark-city-il-navy-pier/document.json",
+      "landmark-city-il-wrigley-building": "doodads/landmark-city-il-wrigley-building/document.json",
+      "landmark-city-il-art-institute-of-chicago": "doodads/landmark-city-il-art-institute-of-chicago/document.json",
+      "landmark-city-il-union-station": "doodads/landmark-city-il-union-station/document.json"
     },
     "fonts": {
       "LastOnTheGrid_Pixel.ttf": "fonts/LastOnTheGrid_Pixel.ttf/document.json",

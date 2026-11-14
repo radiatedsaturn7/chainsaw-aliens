@@ -5300,35 +5300,505 @@
     },
     "landmark-city-il-navy-pier": {
       "raceRef": "Chicago, IL — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "passed",
+      "sourceReference": {
+        "worldX": 1974.818557798633,
+        "worldZ": -756.1154260804785,
+        "routeDistanceM": 0,
+        "offsetFromRoadM": 104,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 0.11337924027247223,
+        "views": [
+          {
+            "beforeM": 30,
+            "angleDegrees": 66.90832895007775,
+            "angularWidthDegrees": 38.05656580616082,
+            "rangeM": 76.13204803631248,
+            "occluderIds": [
+              "city-il-prop-11"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 45,
+            "angleDegrees": 57.3583490242669,
+            "angularWidthDegrees": 35.04227394768353,
+            "rangeM": 83.16769914669139,
+            "occluderIds": [
+              "city-il-prop-11"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 47.196174145548476,
+            "angularWidthDegrees": 30.76019405331854,
+            "rangeM": 95.45279516890088,
+            "occluderIds": [
+              "city-il-prop-9",
+              "city-il-prop-11"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 39.53201322211513,
+            "angularWidthDegrees": 26.843995351948653,
+            "rangeM": 110.02547900262783,
+            "occluderIds": [
+              "city-il-prop-9"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 32.47449188200019,
+            "angularWidthDegrees": 23.51985896213,
+            "rangeM": 126.12292641339728,
+            "occluderIds": [
+              "city-il-prop-9"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 22.113903949486804,
+            "angularWidthDegrees": 19.467548172373775,
+            "rangeM": 153.06300600952162,
+            "occluderIds": [
+              "city-il-prop-7",
+              "city-il-prop-9"
+            ],
+            "score": 0.013853261042463339
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 17.585404854883922,
+            "angularWidthDegrees": 15.677599141697888,
+            "rangeM": 190.71587798538428,
+            "occluderIds": [
+              "city-il-prop-5",
+              "city-il-prop-7",
+              "city-il-prop-9"
+            ],
+            "score": 0.03559005669655717
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 14.562499127975778,
+            "angularWidthDegrees": 13.072214967381182,
+            "rangeM": 229.1654607980904,
+            "occluderIds": [
+              "city-il-prop-5",
+              "city-il-prop-7",
+              "city-il-prop-9"
+            ],
+            "score": 0.050100004185716265
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 13.142091838777555,
+            "angularWidthDegrees": 11.830189858859006,
+            "rangeM": 253.42502751452577,
+            "occluderIds": [
+              "city-il-prop-1",
+              "city-il-prop-3",
+              "city-il-prop-5"
+            ],
+            "score": 0.05691795917386773
+          },
+          {
+            "beforeM": 325,
+            "angleDegrees": 13.142091838777555,
+            "angularWidthDegrees": 11.830189858859006,
+            "rangeM": 253.42502751452577,
+            "occluderIds": [
+              "city-il-prop-1",
+              "city-il-prop-3",
+              "city-il-prop-5"
+            ],
+            "score": 0.05691795917386773
+          }
+        ],
+        "sourceDistanceShiftM": 240
+      },
+      "signature": "60b9c08eed658cbb339967bfd168078ed80bb9ab872947d9c1944b83687e97da",
+      "sourceSha256": "e45ef862d50768fd1b2b9fe1f44ddbf365031c1371a92ae7c4cdbc2d96d84f66",
+      "roadSha256": "92b5b7c8fbefdeeae447873a2788a45b93659e4ef7b131bf7dd859882bcb27c7",
+      "placementDetails": {
+        "x": 1249.0970672938724,
+        "z": -701.4990158904095,
+        "yaw": -0.9517133624303412,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 239.98434372684594,
+        "trackLateral": -69.99999385581779,
+        "minimumRoadClearanceM": 28.137648094547487,
+        "checkedSegments": 3668,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [],
+      "visualEvidence": [
+        "docs/art/landmark-previews/IL/navy-pier-desktop.png",
+        "docs/art/landmark-previews/IL/navy-pier-mobile.png"
+      ]
     },
     "landmark-city-il-wrigley-building": {
       "raceRef": "Chicago, IL — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 263.2423625759474,
+        "worldZ": -546.1902341076105,
+        "routeDistanceM": 1443,
+        "offsetFromRoadM": 51,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 4.3239325932921595,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 9.060730488306776,
+            "angularWidthDegrees": 25.02547616164257,
+            "rangeM": 160.21217689330456,
+            "occluderIds": [],
+            "score": 0.637570780467729
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 8.05806766255012,
+            "angularWidthDegrees": 22.348865550613787,
+            "rangeM": 179.9901759248344,
+            "occluderIds": [],
+            "score": 0.6776772934979951
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 7.25413414301567,
+            "angularWidthDegrees": 20.17973864792243,
+            "rangeM": 199.81237507725618,
+            "occluderIds": [],
+            "score": 0.7098346342793732
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 6.596346765165301,
+            "angularWidthDegrees": 18.38845873162014,
+            "rangeM": 219.66680914188075,
+            "occluderIds": [],
+            "score": 0.736146129393388
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 5.919526498250566,
+            "angularWidthDegrees": 16.221564840813574,
+            "rangeM": 249.48976757558776,
+            "occluderIds": [],
+            "score": 0.7632189400699774
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.112710419578114,
+            "angularWidthDegrees": 14.01300614274192,
+            "rangeM": 289.30529731917323,
+            "occluderIds": [],
+            "score": 0.7954915832168754
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.432586877686241,
+            "angularWidthDegrees": 12.330061778173517,
+            "rangeM": 329.1654517151861,
+            "occluderIds": [
+              "city-il-prop-67",
+              "city-il-prop-69",
+              "city-il-prop-71"
+            ],
+            "score": 0.09872358298710604
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 3.2771563792263385,
+            "angularWidthDegrees": 10.717247896026679,
+            "rangeM": 379.0600063856637,
+            "occluderIds": [
+              "city-il-prop-61",
+              "city-il-prop-63",
+              "city-il-prop-67",
+              "city-il-prop-69",
+              "city-il-prop-71"
+            ],
+            "score": 0.10426964937971357
+          }
+        ],
+        "sourceDistanceShiftM": -150
+      },
+      "signature": "66878ee420d45c440c04007c56b600a69e783d914320b3ceede0c28d0cd502bc",
+      "sourceSha256": "ad5da46455231ad486128ee431f5d857fcaab968b0e05d2f35dbc810222e7196",
+      "roadSha256": "92b5b7c8fbefdeeae447873a2788a45b93659e4ef7b131bf7dd859882bcb27c7",
+      "placementDetails": {
+        "x": 81.7857855403027,
+        "z": -718.5538631405335,
+        "yaw": -1.4364395983495593,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1292.6965421692357,
+        "trackLateral": 134.99998615465097,
+        "minimumRoadClearanceM": 86.09057849412969,
+        "checkedSegments": 3668,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-il-art-institute-of-chicago": {
       "raceRef": "Chicago, IL — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 407.9888234585888,
+        "worldZ": 599.8974578599143,
+        "routeDistanceM": 3375,
+        "offsetFromRoadM": 101,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.48991228239942297,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 57.43729890443878,
+            "angularWidthDegrees": 32.23446442167681,
+            "rangeM": 83.05618747609067,
+            "occluderIds": [
+              "city-il-prop-178"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 47.21492224596282,
+            "angularWidthDegrees": 28.263955130410974,
+            "rangeM": 95.32280829788456,
+            "occluderIds": [
+              "city-il-prop-178"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 11.58083473524125,
+            "angularWidthDegrees": 24.553556046811604,
+            "rangeM": 110.28867910411037,
+            "occluderIds": [],
+            "score": 0.5367666105903499
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 43.896682091710886,
+            "angularWidthDegrees": 21.695709449145035,
+            "rangeM": 125.24399346220369,
+            "occluderIds": [
+              "city-il-prop-178"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 34.47625548850113,
+            "angularWidthDegrees": 18.364278433009886,
+            "rangeM": 148.47372047570317,
+            "occluderIds": [
+              "city-il-prop-178"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 27.34102348036256,
+            "angularWidthDegrees": 14.95408315669499,
+            "rangeM": 182.8642847565016,
+            "occluderIds": [
+              "city-il-prop-178"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 23.30298503977645,
+            "angularWidthDegrees": 12.498600564564182,
+            "rangeM": 219.16716817789236,
+            "occluderIds": [
+              "city-il-prop-171",
+              "city-il-prop-178"
+            ],
+            "score": 0.008145671809073054
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 157.51791652706305,
+            "angularWidthDegrees": 13.91671004384992,
+            "rangeM": 196.64583377092796,
+            "occluderIds": [
+              "city-il-prop-171",
+              "city-il-prop-172",
+              "city-il-prop-178",
+              "city-il-prop-179"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": 90
+      },
+      "signature": "cc37860eb6fc93cec4aed1acaa7f1f5c76eabd6f2b0455d16994487f278b376d",
+      "sourceSha256": "a07177f599a36508df13d4346778c4745e50d5c0de9aec3353039426ef01d01d",
+      "roadSha256": "92b5b7c8fbefdeeae447873a2788a45b93659e4ef7b131bf7dd859882bcb27c7",
+      "placementDetails": {
+        "x": 218.16912388831886,
+        "z": 537.2104214861092,
+        "yaw": -2.3452957518951827,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 3465.297312406708,
+        "trackLateral": 69.99999999999999,
+        "minimumRoadClearanceM": 34.05004332758887,
+        "checkedSegments": 3668,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-il-union-station": {
       "raceRef": "Chicago, IL — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -918.2977073419538,
+        "worldZ": 707.0783956964631,
+        "routeDistanceM": 5075,
+        "offsetFromRoadM": 65,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 3.814718170503242,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 10.608244125548977,
+            "angularWidthDegrees": 27.40455361033499,
+            "rangeM": 123.04369617972307,
+            "occluderIds": [
+              "city-il-prop-280"
+            ],
+            "score": 0.06908042819736492
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 9.822919483880826,
+            "angularWidthDegrees": 23.747238112657836,
+            "rangeM": 142.68577201165206,
+            "occluderIds": [
+              "city-il-prop-280"
+            ],
+            "score": 0.07284998647737204
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 8.405398944013028,
+            "angularWidthDegrees": 20.92799539847498,
+            "rangeM": 162.4350729555109,
+            "occluderIds": [],
+            "score": 0.663784042239479
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 7.485876443339852,
+            "angularWidthDegrees": 18.695789164860486,
+            "rangeM": 182.24371311474985,
+            "occluderIds": [],
+            "score": 0.700564942266406
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 6.557696977627828,
+            "angularWidthDegrees": 16.107025588081672,
+            "rangeM": 212.02405060637523,
+            "occluderIds": [],
+            "score": 0.7376921208948868
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 5.691241530751868,
+            "angularWidthDegrees": 13.588969861831384,
+            "rangeM": 251.7937006103624,
+            "occluderIds": [],
+            "score": 0.7723503387699253
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 4.911871926586397,
+            "angularWidthDegrees": 11.746982590203961,
+            "rangeM": 291.62350934364696,
+            "occluderIds": [],
+            "score": 0.8035251229365441
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 4.193502349736717,
+            "angularWidthDegrees": 10.041805623729852,
+            "rangeM": 341.4667269595366,
+            "occluderIds": [
+              "city-il-prop-278"
+            ],
+            "score": 0.09987118872126376
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "1d59195d26fe42bb1f7e89a2b9ca0e97a3d5c43f0b032e55e21f8be110e93294",
+      "sourceSha256": "fb2557d2e05622a5fb4741176a3d98aa333c0864253ea00ff4c8b01ef07f1faf",
+      "roadSha256": "92b5b7c8fbefdeeae447873a2788a45b93659e4ef7b131bf7dd859882bcb27c7",
+      "placementDetails": {
+        "x": -631.0773203237126,
+        "z": 792.0208006503592,
+        "yaw": 1.4511272323734508,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5285.268294816535,
+        "trackLateral": -104.99999999999997,
+        "minimumRoadClearanceM": 63.437554159486126,
+        "checkedSegments": 3668,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-in-soldiers-and-sailors-monument": {
       "raceRef": "Indianapolis, IN — Landmark Run",

@@ -2658,5 +2658,33 @@
     "documentSha256": "33f07fba8100113108b9e18927c0d743e70ba138a19d67cfa211b61dc88723b0",
     "width": 512,
     "height": 341
+  },
+  "landmark-city-il-navy-pier": {
+    "source": "assets/campaign-art/landmarks/IL/landmark-city-il-navy-pier.png",
+    "sourceSha256": "e45ef862d50768fd1b2b9fe1f44ddbf365031c1371a92ae7c4cdbc2d96d84f66",
+    "documentSha256": "92372fc677bf45188dc7ec3feba3eb02359558d0fb31f36f3a3e33a09dc8f5ab",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-il-wrigley-building": {
+    "source": "assets/campaign-art/landmarks/IL/landmark-city-il-wrigley-building.png",
+    "sourceSha256": "ad5da46455231ad486128ee431f5d857fcaab968b0e05d2f35dbc810222e7196",
+    "documentSha256": "1d7ee3d39b9b5ef1cdd9d840cabc9394e6bb3b1d1c8f8afbe8a60e125a206963",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-il-art-institute-of-chicago": {
+    "source": "assets/campaign-art/landmarks/IL/landmark-city-il-art-institute-of-chicago.png",
+    "sourceSha256": "a07177f599a36508df13d4346778c4745e50d5c0de9aec3353039426ef01d01d",
+    "documentSha256": "d55352f1f7d2b091d77958165d9b1cba1c2d62543954fc5deda705e1aaed73ec",
+    "width": 512,
+    "height": 256
+  },
+  "landmark-city-il-union-station": {
+    "source": "assets/campaign-art/landmarks/IL/landmark-city-il-union-station.png",
+    "sourceSha256": "fb2557d2e05622a5fb4741176a3d98aa333c0864253ea00ff4c8b01ef07f1faf",
+    "documentSha256": "e81e3659c6b74f073e9970cdea5ffacd7d49d01ea7b0afea4646c3d40edbc41a",
+    "width": 512,
+    "height": 256
   }
 }
