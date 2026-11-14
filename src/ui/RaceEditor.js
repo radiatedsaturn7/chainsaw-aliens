@@ -2,6 +2,7 @@ import {timingLine,timingLineArtRefs,buildTimingLineDecals} from '../racing/Race
 import {routeProjectionScore} from '../racing/RaceRouteProgress.js';
 import {restoreRaceDrivingPreferences,captureRaceDrivingPreferences} from '../racing/RaceDrivingPreferences.js';
 import {joinRaceAtGradeCrossings} from '../racing/RaceAtGradeJunctions.js';
+import { raceLineGraphic, distantRaceLineGraphic, RACE_LINE_DEPTH_M } from '../racing/RaceLineGraphics.js';
 import { axleTireGeometry, tireSizeForWheel } from '../racing/TireSizes.js';
 import {stopCodriver} from '../racing/RaceCodriver.js';
 import {cockpitDashboardRect,cockpitWheelLayout,cockpitGaugeBounds} from '../racing/CarCockpitLayout.js';
@@ -38776,47 +38777,34 @@ export default class RaceEditor {
     const routeRuntimeType = this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType();
     const allowVisualExtension = routeRuntimeType !== 'circuit';
     const meshes = [];
-    const pushStripe = (startDistance, endDistance) => {
-      const nearDistance = Math.min(startDistance, endDistance);
-      const farDistance = Math.max(startDistance, endDistance);
-      if (farDistance < visibleMinDistance - 2 || nearDistance > visibleMaxDistance + 2) return;
-      const nearSection = this.getRaceRoadCrossSectionAtDistance(nearDistance, {
-        routeLength,
-        runtimeType: routeRuntimeType,
-        allowVisualExtension
-      });
-      const farSection = this.getRaceRoadCrossSectionAtDistance(farDistance, {
-        routeLength,
-        runtimeType: routeRuntimeType,
-        allowVisualExtension
-      });
-      const cells = 10;
-      for (let index = 0; index < cells; index += 1) {
-        const t0 = index / cells;
-        const t1 = (index + 1) / cells;
-        const lift = (point) => ({ ...point, elevation: Number(point.elevation || 0) + 0.018 });
+    const pushStripe = (startDistance, kind) => {
+      const farDistance = startDistance + RACE_LINE_DEPTH_M;
+      if (farDistance < visibleMinDistance - 2 || startDistance > visibleMaxDistance + 2) return;
+      const sections = new Map();
+      const sectionAt = (v) => {
+        if (!sections.has(v)) sections.set(v, this.getRaceRoadCrossSectionAtDistance(startDistance + v * RACE_LINE_DEPTH_M, {
+          routeLength, runtimeType: routeRuntimeType, allowVisualExtension
+        }));
+        return sections.get(v);
+      };
+      const lift = (point) => ({ ...point, elevation: Number(point.elevation || 0) + 0.018 });
+      for (const pixel of raceLineGraphic(kind)) {
+        const near = sectionAt(pixel.v0), far = sectionAt(pixel.v1);
         meshes.push({
           source: 'road-checker',
           points: [
-            lift(this.lerpRaceWorldPoint(farSection.left, farSection.right, t0)),
-            lift(this.lerpRaceWorldPoint(farSection.left, farSection.right, t1)),
-            lift(this.lerpRaceWorldPoint(nearSection.left, nearSection.right, t1)),
-            lift(this.lerpRaceWorldPoint(nearSection.left, nearSection.right, t0))
+            lift(this.lerpRaceWorldPoint(far.left, far.right, pixel.u0)),
+            lift(this.lerpRaceWorldPoint(far.left, far.right, pixel.u1)),
+            lift(this.lerpRaceWorldPoint(near.left, near.right, pixel.u1)),
+            lift(this.lerpRaceWorldPoint(near.left, near.right, pixel.u0))
           ],
-          color: index % 2 === 0 ? '#f1f4ef' : '#050807',
-          textured: false,
-          depthOffset: -0.05,
-          minScreenY: null
+          color: pixel.color, textured: false, depthOffset: -0.05, minScreenY: null
         });
       }
     };
-    if (!timingLine(this.selectedRace,'start').artRef && Number(travel || 0) <= 18) pushStripe(0, 9);
-    if (routeRuntimeType !== 'circuit') {
-      const finishDistance = Number(routeLength || 1);
-      if (!timingLine(this.selectedRace,'finish').artRef && finishDistance >= visibleMinDistance - 12 && finishDistance <= visibleMaxDistance + 12) {
-        pushStripe(Math.max(0, finishDistance - 10), finishDistance);
-      }
-    }
+    // Authored timing-line assets take precedence over procedural fallback paint.
+    if (!timingLine(this.selectedRace,'start').artRef && Number(travel || 0) <= 18) pushStripe(0, routeRuntimeType === 'circuit' ? 'finish' : 'start');
+    if (routeRuntimeType !== 'circuit' && !timingLine(this.selectedRace,'finish').artRef) pushStripe(Math.max(0, Number(routeLength || 1) - RACE_LINE_DEPTH_M), 'finish');
     return meshes;
   }
 
@@ -40649,91 +40637,48 @@ export default class RaceEditor {
   }
 
   drawRaceStartFinishCheckerStripes(ctx, bounds, { slices = [], camera = {}, cameraYaw = 0, travel = 0, routeLength = 1 } = {}) {
-    const race = this.selectedRace;
-    const currentTravel = Number(travel) || 0;
-    if (!race) return;
-    const startDistance = 6;
-    if (!timingLine(race,'start').artRef && currentTravel <= startDistance + 12) {
+    if (!this.selectedRace) return;
+    const runtimeType = this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType();
+    if (!timingLine(this.selectedRace,'start').artRef && Number(travel || 0) <= 18) this.drawRaceCheckerStripeAtDistance(ctx, bounds, {
+      slices, camera, cameraYaw, distance: 0, kind: runtimeType === 'circuit' ? 'finish' : 'start'
+    });
+    if (runtimeType !== 'circuit' && !timingLine(this.selectedRace,'finish').artRef && Number(routeLength) >= Number(travel || 0)) {
       this.drawRaceCheckerStripeAtDistance(ctx, bounds, {
-        slices,
-        camera,
-        cameraYaw,
-        distance: startDistance,
-        depth: 9
+        slices, camera, cameraYaw, distance: Math.max(0, Number(routeLength || 1) - RACE_LINE_DEPTH_M), kind: 'finish'
       });
-    }
-    const routeRuntimeType = this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType();
-    if (routeRuntimeType !== 'circuit') {
-      const finishDistance = Number(routeLength || 1);
-      if (!timingLine(race,'finish').artRef && finishDistance >= currentTravel) {
-        this.drawRaceCheckerStripeAtDistance(ctx, bounds, {
-          slices,
-          camera,
-          cameraYaw,
-          distance: finishDistance,
-          depth: 10
-        });
-      }
     }
   }
 
-  drawRaceCheckerStripeAtDistance(ctx, bounds, { slices = [], camera = {}, cameraYaw = 0, distance = 0, depth = 9 } = {}) {
+  drawRaceCheckerStripeAtDistance(ctx, bounds, { slices = [], camera = {}, cameraYaw = 0, distance = 0, depth = RACE_LINE_DEPTH_M, kind = 'finish' } = {}) {
     const startDistance = Number(distance) || 0;
-    const stripeDepth = Math.max(2, Number(depth) || 9);
-    const routeLength = this.getRaceRouteLength();
-    const routeRuntimeType = this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType();
-    const allowVisualExtension = routeRuntimeType !== 'circuit';
-    const nearDistance = startDistance;
-    const farDistance = startDistance + stripeDepth;
-    if (farDistance < Number(camera.distance || 0) - 2) return;
+    const stripeDepth = Math.max(.1, Number(depth) || RACE_LINE_DEPTH_M);
+    if (startDistance + stripeDepth < Number(camera.distance || 0) - 2) return;
+    const runtimeType = this.playtestSession?.routeRuntimeType || this.getSelectedRaceRuntimeType();
     const clipTop = this.getRaceProjectedTerrainTop(bounds, camera);
     ctx.save?.();
     ctx.beginPath?.();
     ctx.rect?.(Number(bounds.x || 0), clipTop, Number(bounds.w || 1), Math.max(1, Number(bounds.y || 0) + Number(bounds.h || 1) - clipTop));
     ctx.clip?.();
-    const cells = 10;
-    const projectedNear = this.getRaceInterpolatedMarkerSlice(slices, nearDistance);
-    const projectedFar = this.getRaceInterpolatedMarkerSlice(slices, farDistance);
-    if (projectedNear?.left && projectedNear?.right && projectedFar?.left && projectedFar?.right) {
-      for (let index = 0; index < cells; index += 1) {
-        const t0 = index / cells;
-        const t1 = (index + 1) / cells;
-        const projected = [
-          this.lerpRaceProjectedPoint(projectedFar.left, projectedFar.right, t0),
-          this.lerpRaceProjectedPoint(projectedFar.left, projectedFar.right, t1),
-          this.lerpRaceProjectedPoint(projectedNear.left, projectedNear.right, t1),
-          this.lerpRaceProjectedPoint(projectedNear.left, projectedNear.right, t0)
-        ];
-        const clipped = this.getRaceNearClippedProjectedPolygon(projected, camera, bounds);
-        if (clipped.length < 3 || clipped.every((point) => Number(point.screenY || 0) < clipTop)) continue;
-        ctx.fillStyle = index % 2 === 0 ? '#f1f4ef' : '#050807';
-        this.drawRaceProjectedQuad(ctx, bounds, clipped, ctx.fillStyle);
+    const sections = new Map();
+    const sectionAt = (v) => {
+      if (!sections.has(v)) {
+        const d = startDistance + v * stripeDepth;
+        const projected = this.getRaceInterpolatedMarkerSlice(slices, d);
+        sections.set(v, projected?.left && projected?.right ? { projected } : {
+          world: this.getRaceRoadCrossSectionAtDistance(d, { runtimeType, allowVisualExtension: runtimeType !== 'circuit' })
+        });
       }
-      ctx.restore?.();
-      return;
-    }
-    const nearSection = this.getRaceRoadCrossSectionAtDistance(nearDistance, { allowVisualExtension });
-    const farSection = this.getRaceRoadCrossSectionAtDistance(farDistance, { allowVisualExtension });
-    const lerpWorld = (a = {}, b = {}, t = 0) => ({
-      ...a,
-      x: Number(a.x || 0) + (Number(b.x || 0) - Number(a.x || 0)) * t,
-      z: Number(a.z || 0) + (Number(b.z || 0) - Number(a.z || 0)) * t,
-      elevation: Number(a.elevation || 0) + (Number(b.elevation || 0) - Number(a.elevation || 0)) * t,
-      segment: a.segment || b.segment
-    });
-    for (let index = 0; index < cells; index += 1) {
-      const t0 = index / cells;
-      const t1 = (index + 1) / cells;
-      const projected = [
-        this.projectRaceWorldPointToCamera(lerpWorld(farSection.left, farSection.right, t0), camera, cameraYaw, bounds),
-        this.projectRaceWorldPointToCamera(lerpWorld(farSection.left, farSection.right, t1), camera, cameraYaw, bounds),
-        this.projectRaceWorldPointToCamera(lerpWorld(nearSection.left, nearSection.right, t1), camera, cameraYaw, bounds),
-        this.projectRaceWorldPointToCamera(lerpWorld(nearSection.left, nearSection.right, t0), camera, cameraYaw, bounds)
-      ];
+      return sections.get(v);
+    };
+    const point = (section, u) => section.projected
+      ? this.lerpRaceProjectedPoint(section.projected.left, section.projected.right, u)
+      : this.projectRaceWorldPointToCamera(this.lerpRaceWorldPoint(section.world.left, section.world.right, u), camera, cameraYaw, bounds);
+    for (const pixel of (startDistance - Number(camera.distance || 0) > 35 ? distantRaceLineGraphic(kind) : raceLineGraphic(kind))) {
+      const near = sectionAt(pixel.v0), far = sectionAt(pixel.v1);
+      const projected = [point(far,pixel.u0),point(far,pixel.u1),point(near,pixel.u1),point(near,pixel.u0)];
       const clipped = this.getRaceNearClippedProjectedPolygon(projected, camera, bounds);
-      if (clipped.length < 3 || clipped.every((point) => Number(point.screenY || 0) < clipTop)) continue;
-      ctx.fillStyle = index % 2 === 0 ? '#f1f4ef' : '#050807';
-      this.drawRaceProjectedQuad(ctx, bounds, clipped, ctx.fillStyle);
+      if (clipped.length < 3 || clipped.every((p) => Number(p.screenY || 0) < clipTop)) continue;
+      this.drawRaceProjectedQuad(ctx, bounds, clipped, pixel.color);
     }
     ctx.restore?.();
   }
