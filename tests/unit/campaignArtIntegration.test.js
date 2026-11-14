@@ -10,9 +10,10 @@ const root='data/server-storage/files/';
 const read=p=>{let d=JSON.parse(fs.readFileSync(p));return d.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(d.data,'base64'))):d;};
 const manifest=read(root+'manifest.json'),imports=read('data/campaigns/america/art-imports.json');
 const expanded=read('data/campaigns/america/expanded-art.json').assets;
+const regionalFences=read('data/campaigns/america/regional-fences.json').assets;
 const race=read(root+'races/Laurel Highlands Scenic Byway/document.json').race;
 test('reviewed PNG imports are registered, bounded and preserve alpha',()=>{
- assert.equal(Object.keys(imports).length,134+expanded.length);
+ assert.equal(Object.keys(imports).length,134+expanded.length+regionalFences.length);
  for(const [name,record] of Object.entries(imports)){
   const file=root+manifest.folders.art[name],raw=fs.readFileSync(file),art=read(file);
   assert.equal(createHash('sha256').update(raw).digest('hex'),record.documentSha256);
@@ -35,7 +36,9 @@ test('Laurel artwork uses the road ribbon, saved ground art and valid doodad def
  assert.ok(props.length>100);
  for(const p of props){
   const d=read(root+manifest.folders.doodads[p.doodadRef]).doodad;
-  assert.equal(p.artRef,d.artRef);assert.ok(manifest.folders.art[d.artRef]);assert.equal(p.previewDoodad.id,d.id);
+  const embedded=race.sceneryDefinitions?.find(item=>item.ref===p.doodadRef);
+  const resolved=p.previewDoodad||embedded||d;
+  assert.equal(p.artRef||resolved.artRef,d.artRef);assert.ok(manifest.folders.art[d.artRef]);assert.equal(resolved.id,d.id);
  }
  assert.ok(race.road.segments.every(s=>s.surface==='asphalt'));
  assert.ok(Math.max(...race.road.segments.map(s=>s.bumpiness))>.35,'frost-damage gameplay retained');
@@ -78,7 +81,7 @@ test('every delivered PNG is imported exactly once and decals remain surface art
  const inventory=read('assets/campaign-art/inventory.json');
  assert.equal(inventory.assetCount,134);
  const bySource=new Map(Object.values(imports).map(r=>[r.source,r]));
- assert.equal(bySource.size,134+expanded.length);
+ assert.equal(bySource.size,134+expanded.length+regionalFences.length);
  for(const asset of inventory.assets){
   assert.ok(bySource.has(`assets/campaign-art/${asset.path}`),asset.path); // Generator refreshes inventory hashes after the full revision.
  }
@@ -89,12 +92,15 @@ test('every delivered PNG is imported exactly once and decals remain surface art
  }
 });
 
-test('all delivered art has an actual campaign use, including ground decals and physical surface ribbons',()=>{
- const used=new Set();
- for(const e of read('data/campaigns/america/catalog.json')){
-  const r=read(root+e.documentPath).race,settings=roadTextureSettings(r);
+test('placed artwork resolves across the saved library; regional fence library remains available for authoring',()=>{
+ const used=new Set(),definitions=new Map();
+ const definition=ref=>{if(!definitions.has(ref))definitions.set(ref,manifest.folders.doodads[ref]?read(root+manifest.folders.doodads[ref]).doodad:null);return definitions.get(ref);};
+ for(const path of Object.values(manifest.folders.races)){
+  const r=read(root+path).race,settings=roadTextureSettings(r);
+  for(const p of r.scenery||[]){const d=p.previewDoodad||r.sceneryDefinitions?.find(d=>d.ref===p.doodadRef)||definition(p.doodadRef);if(d?.artRef)used.add(d.artRef);}
+  for(const texture of Object.values(settings.surfaceRoads||{}))used.add(texture.artRef);
   used.add(r.skyboxArtRef);
-  for(const p of [...r.scenery,...r.decals,...Object.values(r.road.tileMap.cells)])used.add(p.artRef);
+  for(const p of [...r.scenery,...(r.decals||[]),...Object.values(r.road.tileMap?.cells||{})])used.add(p.artRef);
   for(const segment of r.road.segments){used.add(roadTextureForSegment(settings,segment).artRef);if(r.margin?.shoulderMode==='on')used.add((settings.surfaceShoulders[segment.surface]||settings.shoulder).artRef);}
   for(const p of r.scenery.filter(p=>p.fenceId?.startsWith('campaign-complete'))){assert.equal(p.previewDoodad.isFence,true);assert.equal(p.previewDoodad.defaultRule.behavior,'collide');assert.ok(p.previewDoodad.fenceThicknessM>0);}
  }
@@ -107,7 +113,8 @@ test('all delivered art has an actual campaign use, including ground decals and 
    used.add(prop.artRef);
   }
  }
- const deferred=new Set(expanded.filter(a=>a.deferredReason).map(a=>a.name));
+ const deferred=new Set([...expanded.filter(a=>a.deferredReason).map(a=>a.name),...regionalFences.map(a=>a.name)]);
+ for(const a of regionalFences)assert.ok(manifest.folders.doodads[a.name]&&manifest.folders.art[a.name],a.name);
  assert.deepEqual(Object.keys(imports).filter(name=>name!=='ground-snow-dead-grass'&&!deferred.has(name)&&!used.has(name)),[]);
 });
 
@@ -169,9 +176,10 @@ test('every campaign doodad and its artwork resolves and is included in the prel
   const refs=new Set(editor.collectSelectedRaceArtRefs());
   for(const p of r.scenery){
    assert.ok(manifest.folders.doodads[p.doodadRef],entry.name+': '+p.doodadRef);
-   assert.ok(manifest.folders.art[p.artRef],entry.name+': '+p.artRef);
-   assert.ok(refs.has(p.artRef));
-   if(p.previewDoodad)assert.equal(editor.resolveRaceDoodadForScenery(p).artRef,p.artRef);
+   const artRef=editor.getRaceDoodadForScenery(p).artRef;
+   assert.ok(manifest.folders.art[artRef],entry.name+': '+artRef);
+   assert.ok(refs.has(artRef));
+   if(p.artRef)assert.equal(artRef,p.artRef);
   }
  }
 });
@@ -198,7 +206,9 @@ test('expanded landmarks use reviewed regions and stay outside the driving corri
   for(const p of r.scenery.filter(p=>p.artRef?.startsWith('expanded-'))){
    const a=expanded.find(a=>a.name===p.artRef);
    assert.ok(a?.placements.some(plan=>plan.race===key),p.artRef+' in '+entry.name);
-   assert.ok(Math.abs(editor.getRaceRouteProjectionForWorldPoint(p).lateral)>=10+p.widthM/2-1e-6,p.id);
+   const projection=editor.getRaceRouteProjectionForWorldPoint(p);
+   const clearance=p.fenceId?editor.getRaceRoadHalfWidthWorld(projection.segment)+.5:10+p.widthM/2;
+   assert.ok(Math.abs(projection.lateral)>=clearance-1e-6,p.id);
    assert.equal(p.previewDoodad.defaultRule.behavior,a.kind==='vegetation'?'flatten':a.kind==='background'?'decoration':'collide');
    if(a.kind==='fence')assert.equal(p.previewDoodad.isFence,true);
   }

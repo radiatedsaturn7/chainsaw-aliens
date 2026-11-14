@@ -10,7 +10,7 @@ const defs={
  'fencebushes':{widthM:8,heightM:2,artRef:'hedge',isFence:true},
  'roadside-metal-guardrail-intact':{widthM:4,heightM:.8,artRef:'rail'},
 };
-const helpers=()=>({length:1000,pose:d=>({x:0,z:d,yaw:0,elevation:0,segment:{roadWidthM:7}}),project:p=>({distance:p.z,lateral:p.x}),ground:()=>0,hasGround:()=>true,definition:r=>defs[r]});
+const helpers=()=>({length:1000,pose:d=>({x:0,z:d,yaw:0,elevation:0,segment:{roadWidthM:7}}),project:p=>({distance:p.z,lateral:-p.x}),ground:()=>0,hasGround:()=>true,definition:r=>defs[r]});
 const race=scenery=>({id:'test',name:'Providence Landmark Run',road:{width:7,segments:[{surface:'asphalt'}]},scenery});
 test('streetlights are infrastructure, never tree seeds for either vegetation pass',()=>{
  assert.equal(infrastructureKind('roadside-streetlight'),'light');
@@ -24,7 +24,7 @@ test('accidental vegetation lights become trees; true lights form readable space
  const report=repairRoadsideInfrastructure(r,helpers());assert.equal(report.replacedVegetation,1);
  assert.equal(r.scenery.find(p=>p.id==='ecology-v2-1').doodadRef,'expanded-tree-white-oak-young-01');
  const lights=r.scenery.filter(p=>p.doodadRef==='roadside-streetlight');assert.ok(lights.length>1);
- for(const p of lights){assert.ok(Math.abs(p.trackLateral)<=11.5);assert.equal(p.previewDoodad.hitboxWidthM,.4);}
+ for(const p of lights){assert.ok(Math.abs(p.trackLateral)<=11.5);assert.equal(p.previewDoodad.hitboxWidthM,.4);assert.equal(p.flipX,p.trackLateral<0);}
  for(let i=1;i<lights.length;i++)assert.ok(lights[i].trackDistance-lights[i-1].trackDistance>=45);
 });
 test('loose fence sprites become connected native fence strokes',()=>{
