@@ -1,0 +1,59 @@
+{
+  "referenceVehicle": "UK 2010 Fiat Punto Evo Sporting three-door 1.4 MultiAir Turbo 135, RHD, 5MT; not 105HP six-speed, Abarth, five-door or Dualogic",
+  "sources": [
+    {
+      "url": "https://www.media.stellantis.com/uk-en/fiat/press/new-fiat-punto-evo-evolution-of-the-species",
+      "fields": [
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.engineDisplacementL",
+        "tuning.weightKg",
+        "dimensions",
+        "setup.tireSize",
+        "tuning.physics.bodyProfile.overallHeightM",
+        "tuning.topSpeedMph",
+        "transmissions.manual.gearCount"
+      ],
+      "access": "Full UK release and technical tables read, 21 Jan 2010. Sporting price/equipment and 135 engine column selected. Five gears plus reverse explicitly listed. UK exact-trim values govern."
+    },
+    {
+      "url": "https://www.media.stellantis.com/uploads/es/ES/2010/FIAT/SPECIFICATIONS/MODELS/PUNTO_EVO/100126_F_Fichas_Punto.pdf",
+      "fields": [
+        "transmissions.manual.gearCount",
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.weightKg"
+      ],
+      "access": "Original Fiat Spain technical sheet 18 Jan 2010; PDF page2 rendered and visually read. Corroborates 99kW/206Nm/1155kg three-door and five-speed Turbo135, distinct from six-speed105. Spanish tire alternatives/trim not substituted for UK Sporting."
+    }
+  ],
+  "verifiedFacts": {
+    "powerKw": 99,
+    "powerRpm": 5000,
+    "marketingPowerPS": 135,
+    "torqueNm": 206,
+    "torqueRpm": 1750,
+    "engineCm3": 1368,
+    "massKg": 1155,
+    "massConvention": "UK press kit DIN three-door kerb",
+    "forwardGearCount": 5,
+    "topSpeedMph": 127,
+    "zeroTo62Sec": 8.5
+  },
+  "gearingStatus": {
+    "forwardGearCount": "primary verified",
+    "individualRatios": "gameplay estimates; exact UK135 reductions not independently verified",
+    "reverseRatio": "gameplay estimate",
+    "finalDrive": "3.563 gameplay estimate, NOT verified factory value",
+    "rejectedEvidence": "Other-market third-party JATO transcription has a different ratio set and C514 claim. No credible exact-UK-trim final-drive source established, so no source attribution is made for reductions."
+  },
+  "estimates": [
+    "UK prose/table calls135 bhp but SI column99kW and manufacturer Spanish135CV identify metric marketing horsepower; use99kW converted to132.76 mechanical hp.206Nm converted to lb-ft. Do not mistake marketing135 for SAE hp. Native editor serialization rounds scalar power/torque to133hp/152lb-ft; the authored curve retains the exact SI-converted anchors.",
+    "Five forward gears are verified. Individual forward ratios [3.909,2.158,1.480,1.121,.897], reverse3.818 and final3.563 are explicit gameplay estimates pending credible exact UK135 evidence, not transplanted as verified105/Abarth specs.",
+    "Auto Assist is gameplay automatic shifting of the modeled5MT, not a factory Dualogic/automatic. Manual remains selectable. Shift/clutch/launch times and87% efficiency are estimates.",
+    "Engine curve is modeled except206Nm at1750 and99kW at5000; idle800, redline6000 and limiter6500 are estimates.127mph is factory display target;8.2sec0-60 is estimated separately from sourced8.5sec0-62. Actual performance not calibrated.",
+    "Front weight63%, CG.52m, clearance.14m, overhangsplit, collider sections, steering15:1, drag.32, alignment/springs/brakes/aero, pressure33/30psi and grip are estimates. Nominal.30815m wheel radius derives from205/45R17, not loaded radius.",
+    "No implementation of factory MultiAir valve events, start-stop, Dualdrive City assistance or hill-holder logic. Shared existing FWD simulation and open-differential approximation.",
+    "Original ochre/plum2994 three-door exterior and RHD dashboard; no badges/livery. Mark identified a Punto in Forza Motorsport4, but this exact trim is our documented catalog choice, not a verified screenshot identification."
+  ]
+}

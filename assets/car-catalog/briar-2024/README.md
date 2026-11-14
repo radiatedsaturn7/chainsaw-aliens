@@ -1,0 +1,13 @@
+# Briar 2024
+
+New original logo-free 2994 salvage compact SUV referencing the **2024 US Subaru Forester Base, standard equipment**, naturally aspirated 2.5-liter AWD Lineartronic CVT. This is distinct from the already imported 2004 turbocharged Briar XT.
+
+Primary research: [manufacturer specification PDF](https://s3.amazonaws.com/subarumedia.iconicweb.com/mediasite/attachments/24MY_Forester_Specs_-_FINAL.pdf) and [official Base equipment](https://www.subaru.com/owners/vehicle-resources.html?model=2024-FOR-RFA), read 2026-11-14. Exact source fields and simulation assumptions are recorded in research.json and import.json. The PDF's stepped ratios apply to higher trims: the Base is simulated continuously, with explicitly unverified .556–3.601 endpoints, reverse and final reduction assumptions. No manual variant or seven physical gears is invented. Unpublished controls, chassis parameters and display performance estimates are not measured factory or game performance.
+
+body.png and dashboard.png were generated using the supported image generation tool, inspected, and imported using scripts/car-catalog-import.mjs through the native car editor serializers. No source bitmap edits or borrowed vehicle art. The eight body views use identity mapping, measured transparent wheel openings and the existing tire art. Decorative roof rails are fictional art, not a claim of optional equipment mass. The source standard-equipment height and mass remain intact.
+
+Fixed rear camera; existing surface-sensitive smoke/spray; shared steeringwheel with car-specific left-hand-drive anchoring. Four live instruments use wheel-opening coordinates in the original dashboard's dark binnacle. Exterior instruments retain defaults.
+
+Checks: tests/unit/briar2024Catalog.test.js (source anchors, truthful CVT modeling, editor roundtrip, PNG hashes, distinct eight frames); catalogWheelCoverage.test.js filtered to Briar 2024; carCatalogImport.test.js. Browser acceptance uses the existing car-catalog-preview.spec.js Briar case and car-catalog-cockpit.spec.js at 1280×720 and 390×844. Runtime motion smoke is not a measured performance calibration.
+
+Local acceptance 2026-11-14: 13 source/import unit tests plus the one Briar wheel-coverage test passed; three Chromium browser tests passed. All eight rendered exterior angles, the live editor driving cockpit, and both cockpit compositor sizes were inspected. Desktop/handheld gauges are visible within the shared wheel opening. Artifacts: `/tmp/briar-browser`; logs `/tmp/briar-unit.log` and `/tmp/briar-browser.log` in the authoring executor. These local passes do not claim remote CI or a full game regression run. Based on staging d98379b05ddc1f5189d7b1975d3f809b10bb602d; unrelated car/world documents are preserved.
