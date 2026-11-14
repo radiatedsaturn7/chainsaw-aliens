@@ -3212,6 +3212,34 @@
       "heightM": 48,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "landmark-city-ia-pappajohn-sculpture-park",
+      "source": "landmarks/IA/landmark-city-ia-pappajohn-sculpture-park.png",
+      "heightM": 14,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ia-principal-park",
+      "source": "landmarks/IA/landmark-city-ia-principal-park.png",
+      "heightM": 24,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ia-state-historical-museum",
+      "source": "landmarks/IA/landmark-city-ia-state-historical-museum.png",
+      "heightM": 22,
+      "kind": "sprite",
+      "placements": []
+    },
+    {
+      "name": "landmark-city-ia-iowa-state-capitol",
+      "source": "landmarks/IA/landmark-city-ia-iowa-state-capitol.png",
+      "heightM": 52,
+      "kind": "sprite",
+      "placements": []
     }
   ]
 }

@@ -2630,5 +2630,33 @@
     "documentSha256": "af1dc57b977677a9d7f4b896f7c1db8963855cf33fef97c623e12859c52538c6",
     "width": 341,
     "height": 512
+  },
+  "landmark-city-ia-pappajohn-sculpture-park": {
+    "source": "assets/campaign-art/landmarks/IA/landmark-city-ia-pappajohn-sculpture-park.png",
+    "sourceSha256": "371b33cb3c49427b04945605ef9d3a4837ec407ea121e066254e7e07da500056",
+    "documentSha256": "b623f5da403dab7d9c061e622cdd6ba0c397edc097e4f5f5e5c80522654d452d",
+    "width": 512,
+    "height": 468
+  },
+  "landmark-city-ia-principal-park": {
+    "source": "assets/campaign-art/landmarks/IA/landmark-city-ia-principal-park.png",
+    "sourceSha256": "79ea2d20a53fd6b213cadcf5ab6c726e21112f4624c09cf2e918e704550d75e3",
+    "documentSha256": "08739083fa51b833a39b6c35284508d2806edcb682e8dca56327922a598a9222",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ia-state-historical-museum": {
+    "source": "assets/campaign-art/landmarks/IA/landmark-city-ia-state-historical-museum.png",
+    "sourceSha256": "644aa095b0eb690f46bcad8afcfc82759f849f44930d8e0ca4acbdde930b7b11",
+    "documentSha256": "b1e1ca3356c50eb479d9e859bf9ed4c8f9ce16f379b7076a8f03e0b1d10635d7",
+    "width": 512,
+    "height": 171
+  },
+  "landmark-city-ia-iowa-state-capitol": {
+    "source": "assets/campaign-art/landmarks/IA/landmark-city-ia-iowa-state-capitol.png",
+    "sourceSha256": "1a7a393041cfe18be590e752d6ded194911c512c4927795f7fe59bf9539a04ba",
+    "documentSha256": "33f07fba8100113108b9e18927c0d743e70ba138a19d67cfa211b61dc88723b0",
+    "width": 512,
+    "height": 341
   }
 }

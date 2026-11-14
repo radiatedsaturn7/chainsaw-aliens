@@ -4618,35 +4618,468 @@
     },
     "landmark-city-ia-pappajohn-sculpture-park": {
       "raceRef": "Des Moines, IA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": -1537.4809261329585,
+        "worldZ": 213.11649077573009,
+        "routeDistanceM": 1105,
+        "offsetFromRoadM": 52,
+        "side": "left"
+      },
+      "candidateReview": {
+        "score": 2.5253052194902836,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 12.973521862388049,
+            "angularWidthDegrees": 6.881769836309452,
+            "rangeM": 127.36558289900377,
+            "occluderIds": [],
+            "score": 0.48105912550447805
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 11.382765240272938,
+            "angularWidthDegrees": 5.967981142224504,
+            "rangeM": 146.91103849370802,
+            "occluderIds": [],
+            "score": 0.5417826683686342
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 10.024839380725028,
+            "angularWidthDegrees": 5.264858701976593,
+            "rangeM": 166.56445220126034,
+            "occluderIds": [],
+            "score": 0.5256140313325801
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 8.954006489135283,
+            "angularWidthDegrees": 4.708004925160359,
+            "rangeM": 186.2916590312662,
+            "occluderIds": [],
+            "score": 0.5036307765216149
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 7.14466556691045,
+            "angularWidthDegrees": 4.061497598919157,
+            "rangeM": 215.97658246115503,
+            "occluderIds": [],
+            "score": 0.48346265285261164
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 22.435979448225083,
+            "angularWidthDegrees": 3.4373338897200827,
+            "rangeM": 255.22474093644874,
+            "occluderIds": [],
+            "score": 0.058755964910364736
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 52.11779271273518,
+            "angularWidthDegrees": 3.059668861352985,
+            "rangeM": 286.7458398133381,
+            "occluderIds": [
+              "city-ia-prop-44",
+              "city-ia-prop-46",
+              "city-ia-prop-48"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 51.288384214257604,
+            "angularWidthDegrees": 2.8136462813166787,
+            "rangeM": 311.83006719043595,
+            "occluderIds": [
+              "city-ia-prop-42",
+              "city-ia-prop-54"
+            ],
+            "score": 0
+          }
+        ],
+        "sourceDistanceShiftM": -90
+      },
+      "signature": "77b1ad4ccf913050326c4cebea91559d8d26355cae8528258bbba64e0c1c8aba",
+      "sourceSha256": "371b33cb3c49427b04945605ef9d3a4837ec407ea121e066254e7e07da500056",
+      "roadSha256": "69f19bdb86bf85a9fc2204fb03b79f88ac280414108464661e4c1af49b1f65cb",
+      "placementDetails": {
+        "x": -1638.1631393141192,
+        "z": 186.45069686593698,
+        "yaw": -3.033675000673516,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 1015.1177759542808,
+        "trackLateral": -105.00000000000001,
+        "minimumRoadClearanceM": 88.66382594710902,
+        "checkedSegments": 4059,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ia-principal-park": {
       "raceRef": "Des Moines, IA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 32.069664462463265,
+        "worldZ": 754.2028707002339,
+        "routeDistanceM": 3953,
+        "offsetFromRoadM": 89,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.41489884728318704,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 71.70306603330494,
+            "angularWidthDegrees": 28.362705560272037,
+            "rangeM": 142.18785789284783,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 64.41451523956873,
+            "angularWidthDegrees": 26.99693793725331,
+            "rangeM": 149.67610951781487,
+            "occluderIds": [
+              "city-ia-prop-207"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 57.914035288980344,
+            "angularWidthDegrees": 25.414736100986584,
+            "rangeM": 159.33766212145366,
+            "occluderIds": [
+              "city-ia-prop-207"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 52.220494191832884,
+            "angularWidthDegrees": 23.758726150961106,
+            "rangeM": 170.80411400777663,
+            "occluderIds": [
+              "city-ia-prop-205"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 43.582856036808224,
+            "angularWidthDegrees": 21.34169071780552,
+            "rangeM": 190.6850177000161,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 17.357757332239142,
+            "angularWidthDegrees": 18.13514622938204,
+            "rangeM": 225.13320609038098,
+            "occluderIds": [],
+            "score": 0.3056897067104343
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 1.578415768021435,
+            "angularWidthDegrees": 15.478619970750556,
+            "rangeM": 264.3765046641368,
+            "occluderIds": [
+              "city-ia-prop-201"
+            ],
+            "score": 0.11242360431349711
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 1.2946799459884084,
+            "angularWidthDegrees": 13.04061415089758,
+            "rangeM": 314.3613883861564,
+            "occluderIds": [
+              "city-ia-prop-201"
+            ],
+            "score": 0.11378553625925564
+          }
+        ],
+        "sourceDistanceShiftM": 210
+      },
+      "signature": "6858f7925368679a9b0a8430a9f7082dc168b051d064cba73d3a6d4b1579a63d",
+      "sourceSha256": "79ea2d20a53fd6b213cadcf5ab6c726e21112f4624c09cf2e918e704550d75e3",
+      "roadSha256": "69f19bdb86bf85a9fc2204fb03b79f88ac280414108464661e4c1af49b1f65cb",
+      "placementDetails": {
+        "x": 44.103800426182815,
+        "z": 482.753614558614,
+        "yaw": 2.5168407638486823,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 4162.886212129942,
+        "trackLateral": 134.9991638104897,
+        "minimumRoadClearanceM": 86.30858540033032,
+        "checkedSegments": 4059,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ia-state-historical-museum": {
       "raceRef": "Des Moines, IA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 648.9116960610907,
+        "worldZ": -403.6159022315438,
+        "routeDistanceM": 5852,
+        "offsetFromRoadM": 52,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.2078586708123611,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 63.288810407821295,
+            "angularWidthDegrees": 36.22257207158849,
+            "rangeM": 100.69964185568013,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 54.037491360561006,
+            "angularWidthDegrees": 33.01512649031914,
+            "rangeM": 111.13509352051265,
+            "occluderIds": [
+              "city-ia-prop-306"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 46.53265121451248,
+            "angularWidthDegrees": 29.763106574993508,
+            "rangeM": 123.94193049760526,
+            "occluderIds": [
+              "city-ia-prop-306"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 40.51519641585696,
+            "angularWidthDegrees": 26.760029133061998,
+            "rangeM": 138.46370369466075,
+            "occluderIds": [
+              "city-ia-prop-304",
+              "city-ia-prop-306"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 33.62443665405318,
+            "angularWidthDegrees": 22.92279615544154,
+            "rangeM": 162.44412459243438,
+            "occluderIds": [
+              "city-ia-prop-304"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 27.168700448769386,
+            "angularWidthDegrees": 18.98248860230807,
+            "rangeM": 197.00075054577235,
+            "occluderIds": [
+              "city-ia-prop-302",
+              "city-ia-prop-304"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 22.67862227861331,
+            "angularWidthDegrees": 16.070801668875983,
+            "rangeM": 233.30346277633865,
+            "occluderIds": [
+              "city-ia-prop-302"
+            ],
+            "score": 0.011142613062656105
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 18.732098556257377,
+            "angularWidthDegrees": 13.412618895138774,
+            "rangeM": 280.10181974656405,
+            "occluderIds": [],
+            "score": 0.25071605774970496
+          }
+        ],
+        "sourceDistanceShiftM": 60
+      },
+      "signature": "41e94035f41c9e996f653f04d0800b3508ee1ea175ad3e5d6a4d15c4ce64a89d",
+      "sourceSha256": "644aa095b0eb690f46bcad8afcfc82759f849f44930d8e0ca4acbdde930b7b11",
+      "roadSha256": "69f19bdb86bf85a9fc2204fb03b79f88ac280414108464661e4c1af49b1f65cb",
+      "placementDetails": {
+        "x": 717.1404654588624,
+        "z": -382.8190348449673,
+        "yaw": 1.1316079873866014,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 5911.876457697301,
+        "trackLateral": 90,
+        "minimumRoadClearanceM": 43.308636457353906,
+        "checkedSegments": 4059,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-ia-iowa-state-capitol": {
       "raceRef": "Des Moines, IA — Landmark Run",
-      "source": "pending",
-      "savedArtwork": "pending",
-      "definition": "pending",
-      "placement": "pending",
-      "visualQA": "pending"
+      "source": "saved",
+      "savedArtwork": "imported",
+      "definition": "registered",
+      "placement": "clearance-checked",
+      "visualQA": "pending",
+      "sourceReference": {
+        "worldX": 1096.273535125296,
+        "worldZ": -467.5864318900373,
+        "routeDistanceM": 6300,
+        "offsetFromRoadM": 110,
+        "side": "right"
+      },
+      "candidateReview": {
+        "score": 0.12251357331289131,
+        "views": [
+          {
+            "beforeM": 45,
+            "angleDegrees": 63.14792794274679,
+            "angularWidthDegrees": 42.367746123591246,
+            "rangeM": 100.730374915889,
+            "occluderIds": [],
+            "score": 0
+          },
+          {
+            "beforeM": 65,
+            "angleDegrees": 53.626939862612154,
+            "angularWidthDegrees": 38.6732949905474,
+            "rangeM": 111.24722192395699,
+            "occluderIds": [
+              "city-ia-prop-331"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 85,
+            "angleDegrees": 46.16711852134608,
+            "angularWidthDegrees": 34.90844833405446,
+            "rangeM": 124.15890527349859,
+            "occluderIds": [
+              "city-ia-prop-331"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 105,
+            "angleDegrees": 40.19921732120541,
+            "angularWidthDegrees": 31.425906101475203,
+            "rangeM": 138.76211699645702,
+            "occluderIds": [
+              "city-ia-prop-331"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 135,
+            "angleDegrees": 33.3696196004431,
+            "angularWidthDegrees": 26.963858724355326,
+            "rangeM": 162.83171024398482,
+            "occluderIds": [
+              "city-ia-prop-329",
+              "city-ia-prop-331"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 175,
+            "angleDegrees": 26.972502217000986,
+            "angularWidthDegrees": 22.365729278513612,
+            "rangeM": 197.46685914473696,
+            "occluderIds": [
+              "city-ia-prop-327"
+            ],
+            "score": 0
+          },
+          {
+            "beforeM": 215,
+            "angleDegrees": 22.522356517853385,
+            "angularWidthDegrees": 18.957063578687762,
+            "rangeM": 233.82079246044805,
+            "occluderIds": [
+              "city-ia-prop-325",
+              "city-ia-prop-327"
+            ],
+            "score": 0.011892688714303755
+          },
+          {
+            "beforeM": 265,
+            "angleDegrees": 18.60947788503531,
+            "angularWidthDegrees": 15.837295896834508,
+            "rangeM": 280.66158855796,
+            "occluderIds": [],
+            "score": 0.25562088459858756
+          }
+        ],
+        "sourceDistanceShiftM": 30
+      },
+      "signature": "99e23f7b4c5cf0b256552fd5b37808eb898515488530615228a19527b0cb4884",
+      "sourceSha256": "1a7a393041cfe18be590e752d6ded194911c512c4927795f7fe59bf9539a04ba",
+      "roadSha256": "69f19bdb86bf85a9fc2204fb03b79f88ac280414108464661e4c1af49b1f65cb",
+      "placementDetails": {
+        "x": 1072.4727171918423,
+        "z": -668.271687519464,
+        "yaw": 2.5445700898433854,
+        "facingApproachBeforeM": 105,
+        "trackDistance": 6329.760599462648,
+        "trackLateral": -90.00000000000006,
+        "minimumRoadClearanceM": 34.37299325230491,
+        "checkedSegments": 4059,
+        "samplingStepM": 2,
+        "samplingPaddingM": 2,
+        "clearanceMarginM": 5,
+        "collisionBound": "circumscribed radius of runtime square hitbox; all route and continuation segments"
+      },
+      "remaining": [
+        "Inspect actual in-race approach, framing, grounded edge, recognition and occlusion; save screenshot evidence before merge"
+      ]
     },
     "landmark-city-id-idaho-state-capitol": {
       "raceRef": "Boise, ID — Landmark Run",
