@@ -739,7 +739,9 @@
       "catalog-fenfire-1800-1986-body": "art/catalog-fenfire-1800-1986-body/document.json",
       "catalog-fenfire-1800-1986-dashboard": "art/catalog-fenfire-1800-1986-dashboard/document.json",
       "catalog-saffron-135-2010-body": "art/catalog-saffron-135-2010-body/document.json",
-      "catalog-saffron-135-2010-dashboard": "art/catalog-saffron-135-2010-dashboard/document.json"
+      "catalog-saffron-135-2010-dashboard": "art/catalog-saffron-135-2010-dashboard/document.json",
+      "catalog-vervain-200-2011-body": "art/catalog-vervain-200-2011-body/document.json",
+      "catalog-vervain-200-2011-dashboard": "art/catalog-vervain-200-2011-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -820,7 +822,8 @@
       "Thornbill GT 2018": "cars/Thornbill GT 2018/document.json",
       "Celandine LS 1995": "cars/Celandine LS 1995/document.json",
       "Fenfire 1800 1986": "cars/Fenfire 1800 1986/document.json",
-      "Saffron 135 2010": "cars/Saffron 135 2010/document.json"
+      "Saffron 135 2010": "cars/Saffron 135 2010/document.json",
+      "Vervain 200 2011": "cars/Vervain 200 2011/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

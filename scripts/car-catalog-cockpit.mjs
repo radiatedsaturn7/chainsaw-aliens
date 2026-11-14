@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'vervain-200-2011':{wheelOpening:true,size:[2172,724],cluster:[1330,410,580,140],wheel:[1620,610,280]},
  'saffron-135-2010':{wheelOpening:true,size:[2172,724],cluster:[1330,410,580,140],wheel:[1620,610,280]},
  'fenfire-1800-1986':{wheelOpening:true,size:[2172,724],cluster:[230,450,680,190],wheel:[580,690,285]},
  'celandine-ls-1995':{wheelOpening:true,size:[2172,724],cluster:[320,470,620,160],wheel:[620,690,275]},
