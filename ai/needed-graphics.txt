@@ -1,0 +1,3 @@
+No missing scenery artwork references found in the saved race library.
+The green rectangles were caused by artwork preloading missing indirect doodad references, not absent images.
+No new graphics are requested by this audit.

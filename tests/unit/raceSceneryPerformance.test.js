@@ -476,3 +476,13 @@ test('disposing a previous session preserves all replacement renderer owners and
  assert.equal(renderer.trackStateHeights,heights);assert.equal(renderer.trackStateBuild,build);assert.equal(renderer.trackStateCells,cells);
 });
 
+
+test('deferred artwork arriving after a placeholder rebuilds the managed scenery batches',()=>{
+ const sprites=[{id:'pending-tree',presetId:'doodad',x:0,z:0,yaw:0,previewDoodad:{artRef:'tree',widthM:2,heightM:4}}];
+ const {e,renderer}=managedSceneryEditor(sprites);let canvas=null;
+ e.getRaceArtSpriteCanvas=()=>canvas;
+ e.addRaceThreeDoodads(renderer);const pending=renderer.dynamicDoodadGroup;
+ canvas={__raceArtCacheKey:'prepared:tree:1:0'};
+ e.addRaceThreeDoodads(renderer);assert.notEqual(renderer.dynamicDoodadGroup,pending);
+ const loaded=renderer.dynamicDoodadGroup;e.addRaceThreeDoodads(renderer);assert.equal(renderer.dynamicDoodadGroup,loaded);
+});

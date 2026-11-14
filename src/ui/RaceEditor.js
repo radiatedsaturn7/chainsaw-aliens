@@ -1,3 +1,4 @@
+import {collectSceneryArtRefs} from '../racing/RaceSceneryAssets.js';
 import {timingLine,timingLineArtRefs,buildTimingLineDecals} from '../racing/RaceTimingLines.js';
 import {routeProjectionScore} from '../racing/RaceRouteProgress.js';
 import {restoreRaceDrivingPreferences,captureRaceDrivingPreferences} from '../racing/RaceDrivingPreferences.js';
@@ -1776,7 +1777,8 @@ export default class RaceEditor {
   loadRaceDoodadDocument(name = '') {
     const clean = sanitizeProjectFileName(name);
     if (!clean) return null;
-    const payload = loadProjectFile('doodads', clean);
+    const payload = this.selectedRace?.sceneryDefinitions?.find(d => d.ref === clean || d.name === clean) || loadProjectFile('doodads', clean);
+    if (!payload) return null;
     const savedAt = Number(payload?.savedAt || payload?.metadata?.updatedAt || 0);
     const cached = this.raceDoodadDocumentCache.get(clean);
     if (cached && cached.savedAt === savedAt && cached.payload === payload) return cached.document;
@@ -3647,7 +3649,7 @@ export default class RaceEditor {
 
   rebuildRaceFence(id, path) {
     const scenery = this.ensureRaceScenery();
-    const panels = buildRaceFencePlacements(path.points, path.definition, { id, ref: path.ref });
+    const panels = buildRaceFencePlacements(path.points, path.definition, { id, ref: path.ref, endFlared: path.endFlared, roadside: {roadWidthM:this.selectedRace?.road?.width,project:p=>this.getRaceRouteProjectionForWorldPoint(p),pose:d=>this.getRaceWorldPoseAtDistance(d)} });
     if (!panels.length) return;
     for (let i = scenery.length - 1; i >= 0; i--) if (scenery[i].fenceId === id) scenery.splice(i, 1);
     this.selectedSceneryIndex = scenery.length;
@@ -11158,7 +11160,7 @@ export default class RaceEditor {
     for(const entry of Object.values(race.roadTextures?.surfaceShoulders||{}))add(entry.artRef);
     for(const segment of race.road?.segments || [])add(segment.shoulderTexture?.artRef);
     (race.sceneryDefinitions || []).forEach((definition) => add(definition?.artRef));
-    (race.scenery || []).forEach((sprite) => add(sprite?.artRef));
+    collectSceneryArtRefs(race, ref => this.loadRaceDoodadDocument(ref)).forEach(add);
     (race.decals || []).forEach((decal) => add(decal?.artRef));
     timingLineArtRefs(race).forEach(add);
     Object.values(race.tireFx || {}).forEach((settings) => add(settings?.artRef));
@@ -11197,7 +11199,7 @@ export default class RaceEditor {
     for(const entry of Object.values(race.roadTextures?.surfaceShoulders||{}))add(entry.artRef);
     for(const segment of race.road?.segments || [])add(segment.shoulderTexture?.artRef);
     (race.sceneryDefinitions || []).forEach((definition) => add(definition?.artRef));
-    (race.scenery || []).forEach((sprite) => add(sprite?.artRef));
+    collectSceneryArtRefs(race, ref => this.loadRaceDoodadDocument(ref)).forEach(add);
     (race.decals || []).forEach((decal) => add(decal?.artRef));
     timingLineArtRefs(race).forEach(add);
     Object.values(race.tireFx || {}).forEach((settings) => add(settings?.artRef));
