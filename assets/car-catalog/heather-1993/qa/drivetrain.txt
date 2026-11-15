@@ -1,0 +1,21 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (268.746673ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (11.305554ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (49.021413ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (9476.416645ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (23.377928ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (4664.917869ms)
+✔ performance is finite, deterministic, responds to upgrades and balances E1 through S (7.460027ms)
+✔ saved variants remain unique, exclude player, then fill only with the selected default (0.732328ms)
+✔ eligibility, category and performance filters apply together; fallback cannot select player (0.529874ms)
+✔ missing acceleration and legacy null selection use valid defaults (0.302083ms)
+✔ PI class ceilings are inclusive from E1 100 through S 1000 (0.288112ms)
+✔ dry-tarmac PI ignores stale performance claims and responds to gearing, driven wheels and tire compounds (0.611567ms)
+✔ two-output force allocation exactly matches generic distribution (116.27161ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15202.67349
