@@ -6,6 +6,14 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'zinnia-16-2010':{"size": [2172, 724], "cluster": [325, 490, 555, 170], "wheel": [602, 710, 280], "gaugeColor": "#deefa0", "wheelOpening": true},
+ 'sumac-40-2012':{"size": [2172, 724], "cluster": [340, 465, 530, 150], "wheel": [605, 680, 280], "gaugeColor": "#ffd69c", "wheelOpening": true},
+ 'iris-22-2001':{"size": [1827, 861], "cluster": [285, 590, 495, 145], "wheel": [535, 810, 265], "gaugeColor": "#d4e8ff", "wheelOpening": true},
+ 'rowan-53-2004':{"wheelOpening": true, "size": [2172, 724], "cluster": [290, 465, 590, 155], "wheel": [585, 680, 280], "gaugeColor": "#fff1cf"},
+ 'magnolia-40-1990':{"wheelOpening": true, "size": [2172, 724], "cluster": [1370, 475, 550, 155], "wheel": [1645, 680, 280], "gaugeColor": "#b9e6de"},
+ 'juniper-40-2014':{"wheelOpening": true, "size": [2172, 724], "cluster": [280, 455, 590, 160], "wheel": [575, 675, 280]},
+ 'lunaria-30-1991':{"wheelOpening": true, "size": [2172, 724], "cluster": [365, 475, 590, 155], "wheel": [660, 680, 280]},
+ 'tansy-cargo-2010':{wheelOpening:true,size:[2172,724],cluster:[405,475,490,145],wheel:[650,670,280]},
  'ironwood-v8-2004':{wheelOpening:true,size:[2172,724],cluster:[245,480,525,145],wheel:[510,675,280]},
  'hellebore-rs-2015':{wheelOpening:true,size:[2172,724],cluster:[280,435,570,140],wheel:[565,630,280]},
  'gentian-sx-1977':{wheelOpening:true,size:[2172,724],cluster:[310,465,580,140],wheel:[600,660,280]},
@@ -103,6 +111,7 @@ export function applyCockpitAnchors(car,a){
    Object.assign(g,{x:xs[i],y:i===3?.92:0,width:widths[i],height:i===3?.08:.88,fontSize:i===3?18:120});
   }
  }
+ if(a.gaugeColor)for(const g of layout.widgets)Object.assign(g,{color:a.gaugeColor,textColor:a.gaugeColor});
  car.art.gauges={...car.art.gauges,interior:layout};return car;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){

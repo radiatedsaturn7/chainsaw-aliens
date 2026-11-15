@@ -1,0 +1,59 @@
+{
+  "referenceVehicle": "US 2001 Honda Prelude base 5MT FWD LHD; not Type SH/ATTS or automatic",
+  "sources": [
+    {
+      "url": "https://hondanews.com/en-US/releases/release-ff82699f1c3527fa113578004c34c897-2001-honda-prelude-specifications",
+      "fields": [
+        "engine output",
+        "mass",
+        "dimensions",
+        "tires",
+        "fuel",
+        "transmission and drive type"
+      ],
+      "access": "Exact January4 2001 table base manual column. Reverse3.000 retained from year-specific table; generic Prelude transmission narrative contradicts it with4.266. No TypeSH ATTS claim."
+    }
+  ],
+  "verifiedFacts": {
+    "hp": 200,
+    "hprpm": 7000,
+    "tq": 156,
+    "tqrpm": 5250,
+    "mass": 1340,
+    "cc": 2.157,
+    "dims": [
+      4.522,
+      1.752,
+      2.585,
+      1.525,
+      1.515
+    ],
+    "height": 1.315,
+    "clear": 0.145,
+    "tire": [
+      205,
+      50,
+      16
+    ],
+    "fuel": 15.9
+  },
+  "gearingStatus": {
+    "individualRatios": [
+      3.285,
+      1.956,
+      1.344,
+      1.034,
+      0.812
+    ],
+    "reverse": 3,
+    "finalDrive": 4.266
+  },
+  "estimates": [
+    "CG, suspension/brakes/grip and body collision sections, overhang split, Cd and displayed top speed/0-60 are game tuning, not manufacturer measurements.",
+    "Idle750, torque interpolation away from manufacturer peak anchors, shift timing, launchRPM and drivetrain efficiency are gameplay estimates. Tire pressure32psi estimated; nominal radii calculated from sourced sizes.",
+    "Car Editor uses generic suspension geometry; no claim of actual factory hardpoints, axle architecture or detailed electronic assist calibration.",
+    "Original fictional exterior and dashboard; runtime shared wheels, fitted live speed/RPM/gear/fuel gauges, fixed-rear camera and unchanged surface effects.",
+    "Exact January4 2001 table base manual column. Reverse3.000 retained from year-specific table; generic Prelude transmission narrative contradicts it with4.266. No TypeSH ATTS claim.",
+    "Auto Assist is game assistance for the sourced5MT, not an invented factory automatic. Redline/limiter estimates; open differential."
+  ]
+}
