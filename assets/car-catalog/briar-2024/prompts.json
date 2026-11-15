@@ -1,0 +1,14 @@
+{
+  "generator": "image_gen.imagegen",
+  "generatedAt": "2026-11-14",
+  "body": {
+    "originalPath": "/workspace/generated_images/exec-4b17f201-9bf6-4318-a9aa-f77b24f39358.png",
+    "brief": "Original fictional logo-free year2994 sage-green salvage compact SUV inspired only by 2024 Forester proportions. Transparent 4x2 eight-angle sheet; cream roof, amber lamps, black cladding, pixel-art detail. No wheels: transparent openings for runtime tire sprites. No logos, text, ground, shadows or scenery.",
+    "actualMapping": [0,1,2,3,4,5,6,7],
+    "note": "Angles assigned by inspecting generated orientation, not trusting prompt angle labels. Original pixels retained."
+  },
+  "dashboard": {
+    "originalPath": "/workspace/generated_images/exec-8950cb08-8a6b-4324-ad0f-8275cc5290b2.png",
+    "brief": "Original fictional left-hand-drive sage-green and charcoal salvage SUV dashboard, transparent windshield area, large empty left instrument binnacle. No steering wheel, numbers, gauges, needles, text, logos or scenery; shared wheel and dynamic instruments added by game. Crisp pixel-art detail."
+  }
+}

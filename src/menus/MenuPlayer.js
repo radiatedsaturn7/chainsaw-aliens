@@ -1,3 +1,5 @@
+import {configureCampaignRegionMap} from './CampaignRegionDialogue.js';
+import {ownedCampaignCars,campaignCarPrice} from '../garage/CampaignEconomy.js';
 import {loadCampaignSaves} from './CampaignSaves.js';
 import {GarageEnginePreview} from './GarageEnginePreview.js';
 import {drawDisplayModeInBounds} from '../ui/shared/displayModes.js';
@@ -50,6 +52,7 @@ export default class MenuPlayer {
       continueGame:()=>this.openSaveSlots('continue'),
       wheelSettings:()=>openWheelSettings(this.game.wheelService),
       haptics:target=>target==='test'?this.game.raceHaptics?.test():this.openHaptics(target==='effects'),
+      campaignGarage:(action,value)=>this.campaignGarage(action,value),
       saveSlot:(action,index)=>this.saveSlotAction(action,index),
       cheatCode:code=>this.redeemCheat(code),
       parameterChanged:(key,value)=>{void (key.startsWith('haptics.')?this.setHaptic(key.slice(8),value):this.settings.set(key,value)).catch(error=>{if(this.flow)this.flow.error=error.message})},
@@ -68,11 +71,67 @@ export default class MenuPlayer {
       },
       playMovie:(ref)=>this.playMovie(ref),launchRace:(ref,params)=>this.launchRace(ref,params),launchLevel:(ref,params)=>this.launchLevel(ref,params)
     });
+    configureCampaignRegionMap(this.flow.document);
+    this.installCampaignGarage();
     if(preview&&this.flow.document.screens.some(s=>s.id===screenId))this.flow.screenId=screenId;
     Object.assign(this.flow.parameters,await loadMenuProgress(this.game),this.settings.parameters());if(!preview&&this.game.menuProgress.selectedGameCar){this.flow.lockCar(this.game.menuProgress.selectedGameCar);if(this.flow.isCarSelection(this.flow.screenId))this.flow.screenId='world-map';}this.refreshSaveButtons();const openingFlow=this.flow;this.pendingScreenEntry=true;
     await this.resources.prepareScreen(openingFlow.document,openingFlow.screen,openingFlow.parameters,{bounds:this.bounds,isCurrent:()=>this.flow===openingFlow&&openingFlow.active});
     if(this.flow!==openingFlow||!openingFlow.active)return;
     this.game.transitionTo('menu-player',{forceCleanup:true});this.enterScreen({prepared:true});
+  }
+  installCampaignGarage(){
+    const screen=this.flow.document.screens.find(s=>s.id==='garage');if(!screen)return;
+    const buttons=['garage-play','garage-tune','garage-upgrade'].map(id=>screen.elements.find(e=>e.id===id));
+    if(buttons.some(e=>!e))return;
+    buttons.forEach((e,i)=>{e.x=.05+i*.23;e.w=.21;});
+    if(!screen.elements.some(e=>e.id==='campaign-garage'))screen.elements.push({...structuredClone(buttons[2]),id:'campaign-garage',label:'Garage',x:.74,w:.21,tabOrder:4,action:{type:'campaign-garage',target:'owned',parameter:'',value:null}});
+    if(!screen.elements.some(e=>e.id==='race-rewards'))screen.elements.push(normalizeMenuDocument({screens:[{id:'brief',elements:[{id:'race-rewards',type:'race-description',property:'rewards',binding:'raceRef',x:.05,y:.44,w:.32,h:.31,fontSize:19}]}]}).screens[0].elements[0]);
+  }
+  async campaignGarage(action='owned',value={}){
+    // Saved menu actions normalize omitted payloads to null, not undefined.
+    value ||= {};
+    const garage=this.resources.garage,current=this.preview?this.flow.parameters.carRef:(this.game.menuProgress?.selectedGameCar||this.flow.parameters.carRef);
+    await garage.load();
+    const owned=ownedCampaignCars(garage.progress,current);
+    const command=(target,value)=>({type:'campaign-garage',target,value});
+    if(action==='select'){
+      if(!owned.includes(value.ref))throw Error('You do not own this car');
+      await garage.transaction(next=>{next.garage.ownedCars=owned;});
+      const ref=this.preview?value.ref:await commitMenuCar(this.game,value.ref,{allowSwitch:true});
+      this.flow.lockedCarRef=ref;this.flow.setParameter('carRef',ref);this.flow.parameters.selectedGameCar=ref;
+      this.resources.garageCars.clear();this.resources.cancelAutoUpgradeQuotes();
+      this.flow.history=this.flow.history.filter(id=>!id.startsWith('fleet-'));
+      if(this.flow.history.at(-1)==='garage')this.flow.history.pop();
+      this.flow.goTo('garage',{remember:false});return;
+    }
+    const all=this.resources.choices('cars',this.flow.document,this.flow.parameters);
+    if(action==='inspect'||action==='buy'){
+      if(!all.some(c=>c.value===value.ref))throw Error('Car unavailable');
+      const selected=await this.game.resolveRaceTravelCarAsync(value.ref);if(!selected?.car)throw Error('Car unavailable');
+      const price=campaignCarPrice(this.resources.performance(selected.car).points);
+      if(action==='buy'){
+        await garage.transaction(next=>{
+          if(ownedCampaignCars(next.garage,current).includes(value.ref))return {debit:0};
+          next.garage.ownedCars=[...ownedCampaignCars(next.garage,current),value.ref];
+          return {debit:price};
+        });
+        this.flow.history=this.flow.history.filter(id=>!id.startsWith('fleet-'));
+        this.flow.goTo('garage',{remember:false});
+        return this.campaignGarage('owned');
+      }
+      this.showOptionsScreen('fleet-confirm',value.ref,[
+        {label:owned.includes(value.ref)?'Drive':'Buy',disabled:!owned.includes(value.ref)&&(Number(garage.items.game.player?.credits??garage.items.savedStats?.credits)||0)<price,action:command(owned.includes(value.ref)?'select':'buy',{ref:value.ref})},
+        {label:'Back',action:{type:'back'}}
+      ],{details:[{label:owned.includes(value.ref)?'Owned':`${price.toLocaleString()} scrap`,y:.39,h:.08},{type:'car-preview',assetRef:value.ref,property:'stock',animation:'none',angle:135,x:.32,y:.45,w:.4,h:.4}]});return;
+    }
+    const shop=action==='shop',list=all.filter(c=>shop?!owned.includes(c.value):owned.includes(c.value));
+    const size=shop?5:4,page=Math.max(0,Math.min(Math.ceil(list.length/size)-1,Number(value.page)||0));
+    const rows=list.slice(page*size,(page+1)*size).map(c=>({label:c.label+(c.value===current?' ✓':''),action:command('inspect',{ref:c.value})}));
+    if(!shop)rows.push({label:'Buy Cars',action:command('shop')});
+    if(page>0)rows.push({label:'Previous',action:command(action,{page:page-1})});
+    if((page+1)*size<list.length)rows.push({label:'Next',action:command(action,{page:page+1})});
+    rows.push({label:'Back',action:{type:'back'}});
+    this.showOptionsScreen(`fleet-${action}`,shop?'Buy Cars':'Owned Cars',rows,{remember:!this.flow.screenId.startsWith(`fleet-${action}`)});
   }
   refreshSaveButtons(){}
   showOptionsScreen(id,title,rows,{remember=true,details=[]}={}){

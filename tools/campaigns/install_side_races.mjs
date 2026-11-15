@@ -1,3 +1,4 @@
+import {configureCampaignRegionMap} from '../../src/menus/CampaignRegionDialogue.js';
 import {dressImportedRace} from './dress_imported_race.mjs';
 // Install successful imports only; never rewrite existing campaign races.
 import fs from 'node:fs';
@@ -42,8 +43,7 @@ menu.screens=menu.screens.filter(s=>!s.id.startsWith('campaign-hub-')).concat(sc
 menu.parameters.campaignHubs=hubs;
 menu.parameters.campaignEventHubs=Object.fromEntries(allEvents.filter(e=>e.status==='installed').map(e=>[e.raceRef,e.hubRaceRef]));
 menu.parameters.campaignSideGates=sideGates;
-const heading=menu.screens.find(s=>s.id==='world-map')?.elements.find(e=>e.id==='america-heading');
-if(heading)heading.label=`MIDDLE ROUTE · ${catalog.length} LOCATIONS`;
+configureCampaignRegionMap(menu);
 write(menuPath,menu);write(`${root}/menus/Game Menu/metadata.json`,{...read(`${root}/menus/Game Menu/metadata.json`),savedAt});
 const latestManifest=read(`${root}/manifest.json`);
 for(const event of installed.filter(e=>e.status==='installed'))latestManifest.folders.races[event.raceRef]=event.documentPath;

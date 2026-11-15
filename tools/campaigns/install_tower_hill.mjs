@@ -1,3 +1,4 @@
+import {configureCampaignRegionMap} from '../../src/menus/CampaignRegionDialogue.js';
 // Install only the opening stage and its campaign/menu links.
 import fs from 'node:fs';
 import zlib from 'node:zlib';
@@ -48,8 +49,7 @@ const menuPath=`${root}/menus/Game Menu/document.json`,menu=read(menuPath);
 menu.parameters.campaignOpeningRace=race.name;menu.parameters.campaignStartingCar='RTG-001';
 const map=menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.type==='world-map');
 Object.assign(map,createAmericaWorldMap(read('data/campaigns/america/catalog.json')));
-const heading=menu.screens.find(s=>s.id==='world-map').elements.find(e=>e.id==='america-heading');
-if(heading)heading.label=`MIDDLE ROUTE · ${read('data/campaigns/america/catalog.json').length} RACES`;
+configureCampaignRegionMap(menu);
 write(menuPath,menu);
 const metaPath=`${root}/menus/Game Menu/metadata.json`;write(metaPath,{...read(metaPath),savedAt});
 console.log(JSON.stringify({name:race.name,length,scenery:race.scenery.length,weatherRamp:race.weatherRamp}));

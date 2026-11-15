@@ -1,3 +1,5 @@
+import {prepareSkyboxTexture} from '../racing/RaceSkyboxTexture.js';
+import {awardCampaignRace} from '../garage/CampaignEconomy.js';
 import {collectSceneryArtRefs} from '../racing/RaceSceneryAssets.js';
 import {timingLine,timingLineArtRefs,buildTimingLineDecals} from '../racing/RaceTimingLines.js';
 import {routeProjectionScore} from '../racing/RaceRouteProgress.js';
@@ -2385,6 +2387,7 @@ export default class RaceEditor {
     delete session.thirdPersonCameraPlacement;
     delete session.thirdPersonCameraChaseDistanceM;
     delete session.cameraSmoothing;
+    delete session.cameraBodyHeight;
   }
 
   async openRaceTireFxArtPicker(slotId = this.raceSettingsDialogDraft?.slotId || 'skidSmoke') {
@@ -13946,6 +13949,10 @@ export default class RaceEditor {
       const ref=session.raceDocumentName||session.raceId;
       const finish=resolveRaceNodeFinish(this.selectedRace,session.networkProgress?.finishNodeId);
       const mission=mechanicalMissionVariables(session.mechanical,this.selectedRace?.mechanicalMission,this.game.items?.progress?.bags?.items);
+      if(!session.debugCarOverride&&this.game.items?.garage){
+        session.rewardRunId ||= globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`;
+        session.campaignReward=await awardCampaignRace(this.game.items.garage,{ref,race:this.selectedRace,runId:session.rewardRunId,success:mission.success});
+      }
       await setMenuProgress(this.game,{...raceDriftScoreVariables(this.selectedRace,session.driftScore,this.game.menuProgress),...(ref?{[raceCompletionKey(ref)]:mission.success,lastCompletedRace:ref,
         garageReturnCount:Number(this.game.menuProgress?.garageReturnCount||0)+1,garageDialogueEvent:''}:{}),...finish.variables,...mission.variables});
       session.campaignProgressSaved=true;
@@ -15761,9 +15768,29 @@ export default class RaceEditor {
     session = this.playtestSession,
     roadElevation = 0
   ) {
-    const bodyElevation = this.getRacePlayerRenderPose(session, this.getRaceSessionCar(session), {
+    const pose = this.getRacePlayerRenderPose(session, this.getRaceSessionCar(session), {
       fallbackElevation: Number(roadElevation || 0)
-    }).elevation;
+    });
+    let bodyElevation = Number(pose.elevation || 0);
+    if (session && !this.isCarExteriorArtPreview(session)) {
+      const previous = session.cameraBodyHeight;
+      const now = Number(session.elapsedMs || 0);
+      const generation = session.vehicleDynamicsRunner?.state?.vehicleResetGeneration || 0;
+      const reset = !previous || previous.startedAt !== session.startedAt
+        || previous.generation !== generation || now < previous.elapsedMs
+        || Number(session.edgeResetFadeMs || 0) > 0
+        || Math.hypot(pose.x - previous.x, pose.z - previous.z) > 18
+        || Math.abs(bodyElevation - previous.rawElevation) * RACE_THREE_ELEVATION_M > 6;
+      if (!reset) {
+        const dt = clamp((now - previous.elapsedMs) / 1000, 0, .12);
+        // Smooth the body anchor itself: smoothing the road alone cancels out
+        // when eye height is calculated as body minus road. Keep this short
+        // so climbs/jumps remain readable; terrain clearance still wins below.
+        bodyElevation = previous.elevation + (bodyElevation - previous.elevation) * (1 - Math.exp(-dt * 12));
+      }
+      session.cameraBodyHeight = {elevation:bodyElevation, rawElevation:pose.elevation,
+        x:pose.x,z:pose.z,elapsedMs:now,startedAt:session.startedAt,generation};
+    }
     return Math.max(
       0,
       Number(bodyElevation || 0)
@@ -15881,12 +15908,14 @@ export default class RaceEditor {
     const previous = session.cameraSmoothing || null;
     const previousMs = Number.isFinite(Number(previous?.elapsedMs)) ? Number(previous.elapsedMs) : nowMs - 16.6667;
     const dt = clamp((nowMs - previousMs) / 1000, 1 / 120, 0.12);
-    const previousTravel = Number(previous?.visualTravel);
-    const travelSnap = Number.isFinite(previousTravel)
-      && Math.abs(Number(visualTravel || 0) - previousTravel) > 36 + Math.abs(Number(session.speedMps || 0)) * 0.42;
-    const elevationSnap = previous
-      && Math.abs(targetRoadElevation - Number(previous.roadElevation || 0)) > 0.85;
-    const reset = !previous || travelSnap || elevationSnap || Number(session.edgeResetFadeMs || 0) > 0;
+    const position = this.getRaceSessionPlanarWorldPosition(session);
+    const generation = session.vehicleDynamicsRunner?.state?.vehicleResetGeneration || 0;
+    // Route distance can change branches at crossings or wrap at a lap line.
+    // Neither is a camera teleport. Reset only for actual world-space moves.
+    const reset = !previous || previous.startedAt !== session.startedAt
+      || (previous.generation ?? generation) !== generation || nowMs < previousMs
+      || Number(session.edgeResetFadeMs || 0) > 0
+      || (Number.isFinite(previous.x) && Math.hypot(position.x - previous.x, position.z - previous.z) > 18);
     const smooth = (key, rate) => {
       if (reset) return target[key];
       const alpha = clamp(1 - Math.exp(-Math.max(0.1, rate) * dt), 0, 1);
@@ -15899,7 +15928,8 @@ export default class RaceEditor {
       nearPlaneBoost: smooth('nearPlaneBoost', 4.8),
       roadElevation: smooth('roadElevation', 4.2),
       elapsedMs: nowMs,
-      visualTravel: Number(visualTravel || 0)
+      visualTravel: Number(visualTravel || 0),
+      x: position.x, z: position.z, startedAt: session.startedAt, generation
     };
     smoothed.hillPitch = clamp(smoothed.terrainHillPitch + smoothed.verticalCue, -0.34, 0.34);
     smoothed.horizonRatio = clamp(smoothed.terrainHorizonRatio - smoothed.verticalCue * 0.16, 0.08, 0.58);
@@ -20490,6 +20520,7 @@ export default class RaceEditor {
       ...(this.playtestSession.mechanicalMissionSuccess===false?[{id:'mission-failed',label:'Mechanical mission incomplete',value:'Salvage / condition requirement unmet',disabled:true}]:[]),
       ...(this.selectedRace?.campaign?.scoring==='drift'?[{id:'race-result-drift',label:'Drift score',value:String(Math.floor(this.playtestSession.driftScore?.points||0)),disabled:true}]:[]),
       {id:'race-result-time',label:'Finish time',value:(Number(this.playtestSession.elapsedMs||0)/1000).toFixed(2)+' s',disabled:true},
+      ...(this.playtestSession.campaignReward?[{id:'race-result-scrap',label:'Scrap earned',value:String(this.playtestSession.campaignReward.scrap),disabled:true},...(this.playtestSession.campaignReward.partName?[{id:'race-result-part',label:'Part won',value:this.playtestSession.campaignReward.partName,disabled:true}]:[])]:[]),
       {id:'race-results-continue',label:'Continue',value:'',onClick:()=>this.finishPlaytest()}
     ];
     if(this.raceInput.pauseMenuMode==='inventory'&&this.game.items){
@@ -32546,10 +32577,6 @@ export default class RaceEditor {
     const scale = Math.min(1, maxW / sourceW, maxH / sourceH);
     const width = Math.max(1, Math.round(sourceW * scale));
     const height = Math.max(1, Math.round(sourceH * scale));
-    if (scale >= 0.999) {
-      this.raceSkyboxRenderCache = { artRef: clean, canvas: source };
-      return source;
-    }
     const canvas = document.createElement('canvas');
     canvas.width = width;
     canvas.height = height;
@@ -32562,8 +32589,9 @@ export default class RaceEditor {
     renderCtx.imageSmoothingEnabled = false;
     renderCtx.drawImage(source, 0, 0, width, height);
     renderCtx.imageSmoothingEnabled = previousSmoothing;
-    this.raceSkyboxRenderCache = { artRef: clean, canvas };
-    return canvas;
+    const wrapped = prepareSkyboxTexture(canvas);
+    this.raceSkyboxRenderCache = { artRef: clean, canvas: wrapped };
+    return wrapped;
   }
 
   drawRaceTilePalette(ctx, bounds) {
@@ -32937,7 +32965,9 @@ export default class RaceEditor {
     const artRef = skyboxSettings.artRef;
     const canvas = artRef ? this.getRaceSkyboxRenderCanvas(artRef) : null;
     if (!canvas || typeof ctx.drawImage !== 'function') return false;
-    const aspect = Math.max(0.1, Number(canvas.width || 1) / Math.max(1, Number(canvas.height || 1)));
+    const gutter = canvas.skyboxGutter || 0;
+    const tileWidth = canvas.width - gutter * 2;
+    const aspect = Math.max(0.1, tileWidth / Math.max(1, Number(canvas.height || 1)));
     const geometry=skyboxImageGeometry(bounds,skyboxSettings,aspect,{horizon,yaw:normalizedCameraYaw,hillPitch,driftOffset});
     const {height:destH,width:wrapW,y:destY,x:rawX}=geometry;
     const startX = bounds.x + ((((rawX - bounds.x) % wrapW) + wrapW) % wrapW) - wrapW;
@@ -32951,10 +32981,12 @@ export default class RaceEditor {
     for (let x = startX + Math.floor((coverage.x - startX) / wrapW) * wrapW; x < coverage.x + coverage.w + wrapW; x += wrapW) {
       // Clamp the vertical edges like a sky texture, so pitch/zoom cannot expose
       // the fallback palette or the magenta empty-world color around the artwork.
-      if(destY>coverage.y)ctx.drawImage(canvas,0,0,canvas.width,1,x,coverage.y,wrapW,destY-coverage.y);
-      ctx.drawImage(canvas, x, destY, wrapW, destH);
+      const padding = gutter * wrapW / tileWidth;
+      const drawX = x - padding, drawWidth = wrapW + padding * 2;
+      if(destY>coverage.y)ctx.drawImage(canvas,0,0,canvas.width,1,drawX,coverage.y,drawWidth,destY-coverage.y);
+      ctx.drawImage(canvas, drawX, destY, drawWidth, destH);
       const bottom=destY+destH,coverageBottom=coverage.y+coverage.h;
-      if(bottom<coverageBottom)ctx.drawImage(canvas,0,canvas.height-1,canvas.width,1,x,bottom,wrapW,coverageBottom-bottom);
+      if(bottom<coverageBottom)ctx.drawImage(canvas,0,canvas.height-1,canvas.width,1,drawX,bottom,drawWidth,coverageBottom-bottom);
     }
     const fx=this.getRaceRenderVisualFx();
     this.raceSunScreenPoints=captureSkySun(ctx,bounds,geometry,fx,horizon);

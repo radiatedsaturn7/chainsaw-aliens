@@ -1,0 +1,57 @@
+{
+  "referenceVehicle": "Stock March1998 Japan Subaru Impreza22B STI version, RHD two-door coupe, 2212cc turbo flat-four AWD5MT; not 2020 Airslayer or a WRC competition car",
+  "sources": [
+    {
+      "url": "https://www.sti.jp/brand/heritage/1998/impreza-22b/",
+      "fields": [
+        "dimensions",
+        "setup.tireSize",
+        "tuning.weightKg",
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.engineDisplacementL",
+        "tuning.steeringRatio",
+        "tuning.physics.bodyProfile.groundClearanceM"
+      ],
+      "access": "Manufacturer heritage page opened and read; mass explicitly reference value."
+    },
+    {
+      "url": "https://ucar.subaru.jp/php/catalog/grade.php?cat_id=4501993",
+      "fields": [
+        "transmissions.manual.gearRatios",
+        "transmissions.manual.reverseRatio",
+        "transmissions.manual.gearFinalDrive"
+      ],
+      "access": "Subaru official catalog exact March1998 22B grade returned complete indexed specification text in web search. Direct open403; indexed manufacturer values, not a downloaded original homologation sheet."
+    }
+  ],
+  "verifiedFacts": {
+    "powerKw": 206,
+    "powerRpm": 6000,
+    "torqueNm": 363,
+    "torqueRpm": 3200,
+    "massKg": 1270,
+    "forwardGearCount": 5,
+    "gearRatios": [
+      3.083,
+      2.062,
+      1.545,
+      1.151,
+      0.825
+    ],
+    "reverseRatio": 3.416,
+    "finalDrive": 4.444,
+    "sourceQualification": "STI reference mass; Subaru official indexed exact-grade gearbox table, direct catalog open403."
+  },
+  "gearingStatus": {
+    "individualRatios": "Subaru official indexed exact March1998 22B table",
+    "finalDrive": "4.444 Subaru official indexed exact-grade table; direct page403"
+  },
+  "estimates": [
+    "206kW and363Nm convert to276mechanicalhp and268lb-ft after native rounding. STI rounds torque363; Subaru catalog362.8. Tire nominal radius.3099m derived from235/40R17, not loaded radius.",
+    "Manufacturer mentions7900rpm capability, not a certified cutoff; selected7900redline/8000limit and850idle, curve outside published anchors,58percent frontweight,CG,overhang split,body sections,drag.35,springs/dampers/brakes,36psi,grip and84percent drivetrain efficiency are game estimates.",
+    "Center35percent front and differential coefficients are gameplay approximation; DCCD variable locking and actual differential behavior are not faithfully modeled. No competition suspension or real-car performance certification.",
+    "Auto Assist automates modeled5MT; no factory automatic claimed. Display245kph and5.0sec0-60 are estimates, not factory facts or measured simulation results.",
+    "Original copper badge-free fictional coupe and RHD dashboard; shared wheel art, fixed rear camera and existing surfaceFX. No copied Subaru logos or rally livery."
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "referenceVehicle": "UK February 2011 Clio Renaultsport 200, standard Sport chassis, RHD three-door, naturally aspirated front-engine FWD 6MT; not optional Cup, lighter Cup model, V6 or later turbo EDC",
+  "sources": [
+    {
+      "url": "https://device.report/m/446bfaedbe52b133746a262a1e2918a6774b107691e64b17f12ed562a0b2fc8a",
+      "fields": [
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.weightKg",
+        "tuning.engineDisplacementL",
+        "dimensions.wheelbaseM",
+        "dimensions.lengthM",
+        "setup.tireSize",
+        "transmissions.manual.gearCount",
+        "transmissions.manual.roadSpeeds"
+      ],
+      "access": "Archived Renault UK manufacturer brochure February2011 part7701380594; full extracted text read. Original PDF download403; no claim of visual PDF inspection. Exact2011 source used rather than assigning blocked2010 brochure data."
+    }
+  ],
+  "verifiedFacts": {
+    "powerKw": 147.5,
+    "powerRpm": 7100,
+    "torqueNm": 215,
+    "torqueRpm": 5400,
+    "massKg": 1240,
+    "cupMassKg": 1204,
+    "frontMassKg": 786,
+    "rearMassKg": 454,
+    "forwardGearCount": 6,
+    "roadMphAt1000": [
+      4.91,
+      7.84,
+      10.87,
+      13.7,
+      17,
+      20.36
+    ],
+    "topSpeedMph": 141,
+    "zeroTo62Sec": 6.9
+  },
+  "gearingStatus": {
+    "individualRatios": "Calculated effective simulation ratios from manufacturer mph/1000rpm and nominal tire circumference; NOT verified physical tooth ratios",
+    "finalDrive": "4.5 arbitrary simulation split, NOT verified factory value",
+    "reverseRatio": "3.2 gameplay estimate"
+  },
+  "estimates": [
+    "147.5kW/215Nm converted to mechanical hp/lb-ft; editor rounds scalar values to198hp/159lb-ft, curve retains precise SI anchors.",
+    "Nominal tire radius.31265m, total reductions computed as1000*2*pi*r*60/(mph*1609.344). Physical individual and final reductions unknown;4.5 split does not affect verified effective road gearing.",
+    "Width1.768m estimated pending unambiguous no-mirror source; extracted brochure2025mm is overall mirror width. Idle850,redline7500,limiter7700, steering15.3,drag.35,CG.52,clearance.14, suspension/brake forces, tirepressure33/30 and grip remain game estimates.",
+    "Auto Assist automates the modeled6MT; no factory automatic claimed. Torque curve off the two factoryanchors, shifts, launch and87%efficiency are estimates. Display0-60 6.7sec estimated, distinct6.9sec0-62; no calibrated performance claim.",
+    "Standard Sport selected, not Cup: no copied Cup lowering/stiffness or quicker steering. Real PerfoHub geometry, ESP/ABS and convenience electronics not independently simulated.",
+    "Original badge-free art. FH5 lists2010ClioRS; selection inspiration only, no exact game trim or current ownership assertion."
+  ]
+}

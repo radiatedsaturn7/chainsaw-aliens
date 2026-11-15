@@ -1,0 +1,51 @@
+{
+  "referenceVehicle": "Stock US1991 Acura NSX3.0 five-speed manual LHD coupe",
+  "sources": [
+    {
+      "url": "https://hondanews.com/en-US/releases/release-4edb8848ab8a9f2f9a24ee004c34ca7a-1991-acura-nsx-introduction",
+      "access": "Official June3,1990 manufacturer press kit and Specifications table, manual column; metric figures used consistently.",
+      "fields": [
+        "engine",
+        "manual ratios",
+        "dimensions",
+        "curb mass",
+        "42/58 distribution",
+        "tires",
+        "fuel",
+        "Cd"
+      ]
+    }
+  ],
+  "verifiedFacts": {
+    "powerHp": 270,
+    "powerRpm": 7100,
+    "torqueLbFt": 210,
+    "torqueRpm": 5300,
+    "massKg": 1365,
+    "frontWeightDistribution": 0.42,
+    "redlineRpm": 8000,
+    "cutoffRpm": 8300,
+    "gears": [
+      3.071,
+      1.727,
+      1.23,
+      0.967,
+      0.771
+    ],
+    "reverse": 3.186,
+    "final": 4.062,
+    "dragCoefficient": 0.32,
+    "sourceQualification": "Manual3.0 model; excludes252hp automatic and later3.2. Manufacturer metric mass/dimensions selected rather than mixed rounded imperial conversions."
+  },
+  "gearingStatus": {
+    "individualRatios": "Manufacturer exact5MT ratios",
+    "finalDrive": "Manufacturer4.062 final applied once"
+  },
+  "estimates": [
+    "Nominal staggered tire radii calculated from manufacturer sizes; runtime RWD scalar uses rear.3157m.",
+    "Variable factory steering18.2–20.8 approximated by constant19.5. Idle800,curve interpolation,32psi,CG/bodysections,overhangsplit,grip,springs/dampers/brakes and88percent efficiency are game tuning.",
+    "Factory LSD approximated by.25/.10; no claim of calibrated torque bias,OEMTCS/ABS,VTEC transition or aerodynamic lift. Cd.32 sourced.",
+    "Auto Assist automates sourced5MT, not a factory automatic specification. Display168mph/5.7sec are estimates, not measured game performance.",
+    "Original coral/charcoal2994 coupe and LHDdash; shared wheels/livegauges,fixedrear,surfaceFX."
+  ]
+}

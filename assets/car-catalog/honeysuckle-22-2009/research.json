@@ -1,0 +1,55 @@
+{
+  "referenceVehicle": "Stock US2009 Honda S2000 base6MT, LHD naturally aspirated2.2L RWD roadster with closed soft top; not CR, AP1 film car or modified trim",
+  "sources": [
+    {
+      "url": "https://hondanews.com/en-US/releases/release-14bd1d0c629deb9de1f115004c34bc7f-2009-honda-s2000-specifications-and-features",
+      "fields": [
+        "dimensions",
+        "setup.tireSizeByAxle",
+        "tuning.weightKg",
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.engineDisplacementL",
+        "tuning.redlineRpm",
+        "tuning.frontWeightDistribution",
+        "tuning.steeringRatio",
+        "transmissions.manual.gearRatios",
+        "transmissions.manual.reverseRatio",
+        "transmissions.manual.gearFinalDrive"
+      ],
+      "access": "Honda August27,2008 exact US2009 specification sheet opened and read, base column selected rather than CR."
+    }
+  ],
+  "verifiedFacts": {
+    "powerHp": 237,
+    "powerRpm": 7800,
+    "torqueLbFt": 162,
+    "torqueRpm": 6800,
+    "massLb": 2864,
+    "forwardGearCount": 6,
+    "gearRatios": [
+      3.133,
+      2.045,
+      1.481,
+      1.161,
+      0.942,
+      0.763
+    ],
+    "reverseRatio": 2.8,
+    "physicalFinalDrive": 4.1,
+    "secondaryReduction": 1.208,
+    "effectiveFinalDrive": 4.952799999999999,
+    "sourceQualification": "Exact Honda US2009 base specification; inch and pound units converted without mixing CR values."
+  },
+  "gearingStatus": {
+    "individualRatios": "Honda exact base6MT primary ratios",
+    "finalDrive": "Runtime effective4.9528 = physical4.100 times secondary1.208, applied once to forward and reverse; not a factory ring-and-pinion4.9528."
+  },
+  "estimates": [
+    "Primary dimensions in inches converted at.0254m/in and mass2864lb at.45359237kg/lb; nominal rear radius.3139m and front.31265m computed from staggered tires, not loaded radii.",
+    "Factory8000redline retained;8200limiter and850idle, torque interpolation outside two anchors,CG,clearance.12m,overhangsplit,body sections,drag.35,springs/dampers/brakes,36psi,tiregrip and88percent efficiency are game estimates.",
+    "Rear differential coefficients approximate the factory Torsen; actual torque-bias behavior and factoryVSA/ABS are not faithfully replicated. Auto Assist automates6MT; no factory automatic claimed.",
+    "Display240kph and5.8sec0-60 are estimates, not manufacturer evidence or calibrated performance measurements.",
+    "Original cream/plum badge-free2994 roadster and LHD dash, shared tires/wheel, fixedrear and surfaceFX. No film livery or claim that this is the film trim."
+  ]
+}

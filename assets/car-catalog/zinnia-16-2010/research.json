@@ -1,0 +1,66 @@
+{
+  "referenceVehicle": "US 2010 Kia Soul base1.6 five-speed manual FWD LHD, standard15inch wheels; not2.0/plus/sport/automatic",
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Kia/Soul/Kia_US%20Soul_2010.pdf",
+      "fields": [
+        "engine output",
+        "mass",
+        "dimensions",
+        "tires",
+        "fuel",
+        "transmission and drive type"
+      ],
+      "access": "US OEM brochure physicalpage23 specification table visually inspected; base1.6 manual column. Gearing from archived2010 OEM G1.6 service manual M5CF1-1 page896, not rounded secondary values. OEM web specification403 and first brochure archive denied download; alternate original brochure successfully read. Front distribution61percent and steering15.1 are game estimates, not verified in used primary source."
+    },
+    {
+      "url": "https://www.manualslib.com/manual/3662512/Kia-Soul-2010.html?page=896",
+      "fields": [
+        "M5CF1-1 exact1.6 gear ratios, reverse, final"
+      ],
+      "access": "Original service manual archived transcription read."
+    }
+  ],
+  "verifiedFacts": {
+    "hp": 122,
+    "hprpm": 6300,
+    "tq": 115,
+    "tqrpm": 4200,
+    "mass": 1161.1964672000001,
+    "cc": 1.591,
+    "dims": [
+      4.10464,
+      1.7856199999999998,
+      2.55016,
+      1.5697199999999998,
+      1.5748
+    ],
+    "height": 1.6103599999999998,
+    "clear": 0.1651,
+    "tire": [
+      195,
+      65,
+      15
+    ],
+    "fuel": 12.7
+  },
+  "gearingStatus": {
+    "individualRatios": [
+      3.615,
+      1.962,
+      1.286,
+      0.971,
+      0.839
+    ],
+    "reverse": 3.545,
+    "finalDrive": 4.267
+  },
+  "estimates": [
+    "CG, suspension/brakes/grip and body collision sections, overhang split, Cd and displayed top speed/0-60 are game tuning, not manufacturer measurements.",
+    "Idle750, torque interpolation away from manufacturer peak anchors, shift timing, launchRPM and drivetrain efficiency are gameplay estimates. Tire pressure32psi estimated; nominal radii calculated from sourced sizes.",
+    "Car Editor uses generic suspension geometry; no claim of actual factory hardpoints, axle architecture or detailed electronic assist calibration.",
+    "Original fictional exterior and dashboard; runtime shared wheels, fitted live speed/RPM/gear/fuel gauges, fixed-rear camera and unchanged surface effects.",
+    "US OEM brochure physicalpage23 specification table visually inspected; base1.6 manual column. Gearing from archived2010 OEM G1.6 service manual M5CF1-1 page896, not rounded secondary values. OEM web specification403 and first brochure archive denied download; alternate original brochure successfully read. Front distribution61percent and steering15.1 are game estimates, not verified in used primary source.",
+    "Auto Assist is game assistance for the sourced5MT, not an invented factory automatic. Redline/limiter estimates; open differential."
+  ]
+}

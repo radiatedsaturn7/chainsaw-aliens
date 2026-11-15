@@ -3,8 +3,8 @@ import {getAuthoritativeChassisState} from './simulation/VehicleState.js';
 import {loadServerPreferenceAsync,saveServerPreference} from '../ui/serverPreferences.js';
 import {openEditorForm} from '../ui/shared/editorForm.js';
 const clamp=(v,max=1)=>Math.max(0,Math.min(max,Number(v)||0));
-export const HAPTIC_DEFAULTS=Object.freeze({enabled:true,strength:.65,road:.7,slip:.85,braking:.6,impacts:.9,phonePulse:16,output:'auto'});
-export function normalizeHaptics(value={}){return {...HAPTIC_DEFAULTS,...Object.fromEntries(['strength','road','slip','braking','impacts'].map(k=>[k,clamp(value[k]??HAPTIC_DEFAULTS[k])])),phonePulse:Math.max(8,Math.min(30,Number(value.phonePulse)||16)),enabled:value.enabled!==false,output:['auto','phone','controller'].includes(value.output)?value.output:'auto'};}
+export const HAPTIC_DEFAULTS=Object.freeze({enabled:true,strength:.85,road:.7,slip:1,braking:.6,impacts:1,phonePulse:24,output:'auto'});
+export function normalizeHaptics(value={}){return {...HAPTIC_DEFAULTS,...Object.fromEntries(['strength','road','slip','braking','impacts'].map(k=>[k,clamp(value[k]??HAPTIC_DEFAULTS[k])])),phonePulse:Math.max(8,Math.min(30,Number(value.phonePulse)||HAPTIC_DEFAULTS.phonePulse)),enabled:value.enabled!==false,output:['auto','phone','controller'].includes(value.output)?value.output:'auto'};}
 export function raceHapticSample(session,previous={},dt=.016,input={}){
  const state=getAuthoritativeChassisState(session)||{},patches=state.contactPatches||{},wheels=session.wheelContacts3d||{};
  const speed=Math.abs(Number(session.speedMps)||0),motion=clamp((speed-.5)/18);
@@ -32,7 +32,16 @@ export function raceHapticSample(session,previous={},dt=.016,input={}){
  const landing=session.lastLandingImpactAtMs!==previous.landing&&now-Number(session.lastLandingImpactAtMs)<150?clamp((Number(session.lastLandingImpactMps)-1)/8):0;
  const collisions=session.vehicleDynamicsRunner?.impactHistory;
  const impactEvent=collisions?.at(-1),collisionSequence=impactEvent?.sequence??0;
- const collision=previous.collision!=null&&collisionSequence!==previous.collision?.value&&collisionSequence>0?clamp(Number(impactEvent?.bodyNormalImpulseNs)/7000):0;
+ // Several physics impacts can occur between rendered frames. Do not lose a
+ // hard collision just because the last contact in that frame was a light one.
+ let collision=0;
+ if(previous.collision!=null){
+  for(let i=(collisions?.length||0)-1;i>=0;i--){
+   const event=collisions[i];
+   if(event.sequence<=previous.collision.value)break;
+   collision=Math.max(collision,clamp(Number(event.bodyNormalImpulseNs)/7000));
+  }
+ }
  const abs=Number(input.brakeAxis||input.brake||0)>0&&Object.values(state.powertrainState?.absModulationByWheel||{}).some(v=>Number(v)<.95);
  const phase=(Number(session.projectedDistance)||now/1000)*2.7;
  const texturePulse=.55+.25*Math.sin(phase)+.2*Math.sin(phase*2.39);

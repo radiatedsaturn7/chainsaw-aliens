@@ -22,6 +22,7 @@ export class MenuFlow {
     if(!this.active||generation!==this.generation)return;if(depth>12)throw Error('Too many chained menu actions');
     const target=resolveMenuValue(action.target,this.parameters),configuration={...structuredClone(this.parameters),...(this.lockedCarRef?{carRef:this.lockedCarRef}:{})};
     switch(action.type){
+      case 'campaign-garage':await this.adapter.campaignGarage?.(target,action.value);return;
       case 'save-slot':await this.adapter.saveSlot?.(target,action.value);return;
       case 'wheel-settings':await this.adapter.wheelSettings?.();break;
       case 'haptics':await this.adapter.haptics?.(target);break;

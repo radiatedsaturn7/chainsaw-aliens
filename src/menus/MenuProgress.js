@@ -22,11 +22,12 @@ export async function setMenuProgress(game,variables){
  await game.menuProgressSaving;
 }
 
-export async function commitMenuCar(game,carRef,{save=saveServerPreference,newGame=false}={}){
+export async function commitMenuCar(game,carRef,{save=saveServerPreference,newGame=false,allowSwitch=false}={}){
  await loadMenuProgress(game);
- if(!newGame&&game.menuProgress.selectedGameCar)return game.menuProgress.selectedGameCar;
+ if(allowSwitch&&!game.items?.progress?.garage?.ownedCars?.includes(carRef))throw Error('You do not own this car');
+ if(!newGame&&!allowSwitch&&game.menuProgress.selectedGameCar)return game.menuProgress.selectedGameCar;
  const task=(game.menuProgressSaving||Promise.resolve()).catch(()=>{}).then(async()=>{
-  if(!newGame&&game.menuProgress.selectedGameCar)return game.menuProgress.selectedGameCar;
+  if(!newGame&&!allowSwitch&&game.menuProgress.selectedGameCar)return game.menuProgress.selectedGameCar;
   const snapshot={...game.menuProgress,selectedGameCar:carRef};
   const result=await persistProgress(game,snapshot,save);
   if(!result?.ok)throw Error('Could not save your car selection');

@@ -2230,10 +2230,32 @@ export class ContactPatchTireModel {
         rawRequestedCompressionM, springRateNpm, damperRateNsM,
         chassisSupportLoadN = normalLoadN, antiRollLoadTransferN = 0
       } = wheelInputs[wheelId];
+      // Near rest, lagged brush force can outlive the slip that created it.
+      // Bound its impulse by the remaining wheel/ground velocity difference.
+      // Apply the same bounded force to chassis and wheel reaction; clamping
+      // wheel speed alone leaves a stale, unbalanced force on the chassis.
+      const passiveNearRest = geometricContact && normalLoadN > 1 && dt > 0
+        && Math.abs(kinematics.longitudinalVelocityMps) < .5
+        && Number(controls.throttle || 0) <= .001
+        && Math.abs(Number(powertrainStep.wheelDriveTorqueNm[wheelId] || 0)) <= EPSILON
+        && Number(powertrainStep.wheelBrakeTorqueNm[wheelId] || 0) <= EPSILON;
+      if (passiveNearRest) {
+        const radius = Math.max(EPSILON, kinematics.effectiveRollingRadiusM);
+        const relativeSpeed = kinematics.wheelAngularVelocityRadps * radius
+          - kinematics.longitudinalVelocityMps;
+        let supportedLoad = 0;
+        for (const id of RACE_WHEEL_IDS) supportedLoad += Math.max(0, wheelInputs[id].normalLoadN);
+        const massShare = config.massKg * normalLoadN / Math.max(1, supportedLoad);
+        const stoppingForce = relativeSpeed / (dt * (
+          radius * radius / config.wheelInertiaKgM2 + 1 / Math.max(1, massShare)
+        ));
+        force.longitudinalForceN = clamp(force.longitudinalForceN,
+          Math.min(0, stoppingForce), Math.max(0, stoppingForce));
+      }
       const rollingVelocity = Number(kinematics.longitudinalVelocityMps || 0);
       const rollingSign = rollingVelocity / Math.sqrt(rollingVelocity * rollingVelocity + 0.25 * 0.25);
       let localLongitudinal = force.longitudinalForceN - force.rollingResistanceN * rollingSign;
-      if (Number(controls.throttle || 0) <= 0.001
+      if (!passiveNearRest && Number(controls.throttle || 0) <= 0.001
         && localLongitudinal * rollingVelocity > 0) {
         localLongitudinal = 0;
       }

@@ -4,7 +4,8 @@ export const GARAGE_DIALOGUE={
  garage:{
  drive:"Ready to head out?",
  tune:"Maybe we can make it run faster?",
- upgrade:"If we got enough scrap, I can fabricate something new."
+ upgrade:"If we got enough scrap, I can fabricate something new.",
+ cars:"You really want to change cars? You just got this one!"
  },
  tuning:{
  repair:"Let’s find what’s broken. We can fix individual components, or repair everything if we have the scrap and parts.",
@@ -60,7 +61,7 @@ export function garageDialogueContext(screen,resources,parameters,states=new Map
   const detail=row?.package?row.description:selectedItem?.description||'';
   return {kind:'upgrades',category,detail,selection:[state.slot||'',...(state.path||[]),row?.value||''].join('/'),insufficient:!!item&&!owned&&credits<item.carPart.price,expensive:!!item&&!owned&&credits>0&&item.carPart.price>=credits*.6,maximum};
  }
- const category=screen.id==='garage'?({'garage-play':'drive','garage-tune':'tune','garage-upgrade':'upgrade'}[focusedId]||'drive'):'';
+ const category=screen.id==='garage'?({'garage-play':'drive','garage-tune':'tune','garage-upgrade':'upgrade','campaign-garage':'cars'}[focusedId]||'drive'):'';
  return {kind:'garage',category};
 }
 export function garageDialogueText(context){

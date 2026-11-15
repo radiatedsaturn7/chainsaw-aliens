@@ -307,7 +307,7 @@ for(const mode of ['desktop','portrait','landscape','gamepad'])test(`${mode} fou
  await page.screenshot({path:`test-results/menu-${mode}-world-map.png`});
  await press('Enter','jump');await expect.poll(()=>page.evaluate(()=>window.__game.menuPlayer.flow.screenId)).toBe('garage');
  expect(await page.evaluate(()=>{const p=window.__game.menuPlayer;return p.interactive()[p.focus].id})).toBe('garage-play');
- expect(await page.evaluate(()=>window.__game.menuPlayer.interactive().map(e=>e.label))).toEqual(['Drive','Tune','Upgrade']);
+ expect(await page.evaluate(()=>window.__game.menuPlayer.interactive().map(e=>e.label))).toEqual(['Drive','Tune','Upgrade','Garage']);
  for(const [target,destination] of [[1,'tuning'],[2,'upgrades']]){
   const initialFocus=await page.evaluate(()=>window.__game.menuPlayer.focus);
   for(let i=initialFocus;i<target;i++){

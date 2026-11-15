@@ -6,6 +6,28 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'zinnia-16-2010':{"size": [2172, 724], "cluster": [325, 490, 555, 170], "wheel": [602, 710, 280], "gaugeColor": "#deefa0", "wheelOpening": true},
+ 'sumac-40-2012':{"size": [2172, 724], "cluster": [340, 465, 530, 150], "wheel": [605, 680, 280], "gaugeColor": "#ffd69c", "wheelOpening": true},
+ 'iris-22-2001':{"size": [1827, 861], "cluster": [285, 590, 495, 145], "wheel": [535, 810, 265], "gaugeColor": "#d4e8ff", "wheelOpening": true},
+ 'rowan-53-2004':{"wheelOpening": true, "size": [2172, 724], "cluster": [290, 465, 590, 155], "wheel": [585, 680, 280], "gaugeColor": "#fff1cf"},
+ 'magnolia-40-1990':{"wheelOpening": true, "size": [2172, 724], "cluster": [1370, 475, 550, 155], "wheel": [1645, 680, 280], "gaugeColor": "#b9e6de"},
+ 'juniper-40-2014':{"wheelOpening": true, "size": [2172, 724], "cluster": [280, 455, 590, 160], "wheel": [575, 675, 280]},
+ 'lunaria-30-1991':{"wheelOpening": true, "size": [2172, 724], "cluster": [365, 475, 590, 155], "wheel": [660, 680, 280]},
+ 'tansy-cargo-2010':{wheelOpening:true,size:[2172,724],cluster:[405,475,490,145],wheel:[650,670,280]},
+ 'ironwood-v8-2004':{wheelOpening:true,size:[2172,724],cluster:[245,480,525,145],wheel:[510,675,280]},
+ 'hellebore-rs-2015':{wheelOpening:true,size:[2172,724],cluster:[280,435,570,140],wheel:[565,630,280]},
+ 'gentian-sx-1977':{wheelOpening:true,size:[2172,724],cluster:[310,465,580,140],wheel:[600,660,280]},
+ 'milkweed-60-2013':{electric:true,wheelOpening:true,size:[2172,724],cluster:[300,410,490,125],wheel:[545,600,280]},
+ 'sycamore-rt-2017':{wheelOpening:true,size:[2172,724],cluster:[275,420,500,145],wheel:[530,615,280]},
+ 'honeysuckle-22-2009':{wheelOpening:true,size:[2172,724],cluster:[280,360,520,145],wheel:[540,565,280]},
+ 'copperleaf-22-1998':{wheelOpening:true,size:[2172,724],cluster:[1280,440,570,150],wheel:[1565,635,280]},
+ 'alder-rs-1994':{wheelOpening:true,size:[2172,724],cluster:[250,410,580,140],wheel:[540,610,280]},
+ 'vervain-200-2011':{wheelOpening:true,size:[2172,724],cluster:[1330,410,580,140],wheel:[1620,610,280]},
+ 'saffron-135-2010':{wheelOpening:true,size:[2172,724],cluster:[1330,410,580,140],wheel:[1620,610,280]},
+ 'fenfire-1800-1986':{wheelOpening:true,size:[2172,724],cluster:[230,450,680,190],wheel:[580,690,285]},
+ 'celandine-ls-1995':{wheelOpening:true,size:[2172,724],cluster:[320,470,620,160],wheel:[620,690,275]},
+ 'thornbill-gt-2018':{wheelOpening:true,size:[1774,887],cluster:[265,610,420,170],wheel:[470,835,250]},
+ 'briar-2024':{wheelOpening:true,size:[1774,887],cluster:[175,585,390,175],wheel:[365,825,250]},
  'silverleaf-200-2018':{wheelOpening:true,size:[1983,793],cluster:[220,490,460,185],wheel:[455,705,250]},
  'glowmoth-sc-1988':{wheelOpening:true,size:[1983,793],cluster:[250,555,550,160],wheel:[525,755,250]},
  'wispwing-1993':{wheelOpening:true,size:[1983,793],cluster:[1245,455,420,180],wheel:[1455,665,250]},
@@ -89,6 +111,7 @@ export function applyCockpitAnchors(car,a){
    Object.assign(g,{x:xs[i],y:i===3?.92:0,width:widths[i],height:i===3?.08:.88,fontSize:i===3?18:120});
   }
  }
+ if(a.gaugeColor)for(const g of layout.widgets)Object.assign(g,{color:a.gaugeColor,textColor:a.gaugeColor});
  car.art.gauges={...car.art.gauges,interior:layout};return car;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){

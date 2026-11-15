@@ -857,12 +857,34 @@
         "wheelDiameterIn": 18
       }
     },
-    "defaultTransmissionType": "manual",
+    "defaultTransmissionType": "automatic",
     "transmissions": {
       "manual": {
         "type": "manual",
         "label": "6MT",
         "shiftMode": "manual",
+        "shiftTimeMs": 320,
+        "clutchDelayMs": 80,
+        "launchRpm": 4000,
+        "autoUpshiftRpm": 6800,
+        "autoDownshiftRpm": 3000,
+        "gearRatios": [
+          3.538,
+          2.238,
+          1.535,
+          1.162,
+          0.9188911443795992,
+          0.7667343313879726
+        ],
+        "reverseRatio": 3.2564958132453694,
+        "gearFinalDrive": 3.941,
+        "drivetrainEfficiency": 0.84,
+        "engineProfile": null
+      },
+      "automatic": {
+        "type": "automatic",
+        "label": "Auto Assist (6MT)",
+        "shiftMode": "automatic",
         "shiftTimeMs": 320,
         "clutchDelayMs": 80,
         "launchRpm": 4000,
@@ -1079,7 +1101,8 @@
       "7000 redline,7200 limiter,850 idle, torque interpolation except 3000–4600 peak and6500 power anchor,84% drivetrain efficiency and shift/launch behavior are modeling estimates.",
       "60% front mass,.50m CG, collider subshapes,suspension/brakes/alignment/aero except OEM drag coefficient and33psi tire pressures are development assumptions.",
       "142mph brochure display conflicts with143mph launch press pack; neither a measured game result nor implemented governor. OEM5.5sec is0–62, not0–60;5.3sec0–60 display is unvalidated estimate.",
-      "Nominal tire radius .3186m calculated from225/40R18; sprite anchors and cockpit placements are artistic calibration."
+      "Nominal tire radius .3186m calculated from225/40R18; sprite anchors and cockpit placements are artistic calibration.",
+      "Auto Assist is a gameplay automatic-shift option over the sourced UK base six-speed manual reductions, not a factory automatic trim. Manual ratios, shift/clutch timing, launch and efficiency estimates are retained."
     ]
   },
   "authoredWheelAnchors": {

@@ -593,3 +593,56 @@ test('detailed tire stages preserve forces and close all accounting scopes',asyn
  for(const name of ['tireSuspensionInitialContact','tireSuspensionDynamics','tireSuspensionGeometry','tireSuspensionKinematics'])assert.equal(timings[name].calls,4);
  for(const name of ['tireContactSetup','tireGripForces','tirePowertrain','tireForceIntegration'])assert.equal(timings[name].calls,1);
 });
+
+test('unpowered near-rest wheels cannot turn stored tire relaxation into fresh wheelspin',()=>{
+ for(const dt of [1/60,1/120,1/360])for(const rememberedSlip of [-.3,.3]){
+  const model=new ContactPatchTireModel();
+  const cfg=createVehicleDynamicsConfig({wheelRadiusM:.4329,wheelInertiaKgM2:1.66465,massKg:1684.7});
+  const state=createVehicleDynamicsState({position:{x:0,y:cfg.cgHeightM,z:0},velocity:{x:.034,y:0,z:-.02},speedMps:.04});
+  const env={surfaceHeightByWheel:{fl:0,fr:0,rl:0,rr:0}};
+  for(const id of ['fl','fr','rl','rr']){
+   const k=calculateWheelContactKinematics({state,config:cfg,controls,environment:env,wheelId:id});
+   state.wheelAngularVelocityRadps[id]=k.longitudinalVelocityMps/k.effectiveRollingRadiusM;
+   state.contactPatches[id]={relaxedSlipRatio:rememberedSlip,relaxedSlipAngleRad:.1};
+  }
+  const result=model.step({state,config:cfg,controls:{...controls,requestedGear:-1},environment:env,dt});
+  for(const id of ['fl','fr','rl','rr']){
+   const p=result.contactPatches[id];
+   assert.ok(p.normalLoadN>1000,`load=${p.normalLoadN}`);
+   assert.equal(p.driveTorqueNm,0);
+   assert.ok(Math.abs(p.longitudinalForceN)<1,`${id}, dt=${dt}: stale slip generated ${p.longitudinalForceN} N`);
+   assert.ok(Math.abs(result.wheelAngularVelocityRadps[id]-state.wheelAngularVelocityRadps[id])<.01);
+  }
+ }
+});
+
+test('passive low-speed contact dissipates wheelspin instead of alternating its sign',()=>{
+ for(const dt of [1/60,1/120,1/360]){
+  const model=new ContactPatchTireModel(),cfg=createVehicleDynamicsConfig({wheelRadiusM:.4329,wheelInertiaKgM2:1.66465,massKg:1684.7});
+  const state=createVehicleDynamicsState({position:{x:0,y:cfg.cgHeightM,z:0},velocity:{x:.034,y:0,z:0},wheelAngularVelocityRadps:{fl:8,fr:-8,rl:8,rr:-8}});
+  const env={surfaceHeightByWheel:{fl:0,fr:0,rl:0,rr:0}};
+  let previous=8;
+  for(let i=0;i<3/dt;i++){
+   const result=model.step({state,config:cfg,controls,environment:env,dt});
+   const maximum=Math.max(...Object.values(result.wheelAngularVelocityRadps).map(Math.abs));
+   assert.ok(maximum<=previous+.0001,`${dt}: ${previous} -> ${maximum}`);
+   previous=maximum;
+   state.wheelAngularVelocityRadps={...result.wheelAngularVelocityRadps};
+   state.contactPatches=structuredClone(result.contactPatches);
+   state.powertrainState=structuredClone(result.powertrainState);
+  }
+  assert.ok(previous<.01,`wheels should settle: ${previous}`);
+ }
+});
+
+test('powered stationary burnout still spins wheels with traction control disabled',()=>{
+ const model=new ContactPatchTireModel(),cfg=createVehicleDynamicsConfig({enginePeakTorqueNm:1300,wheelRadiusM:.4329,wheelInertiaKgM2:1.66465,massKg:1684.7,powertrainTuning:{drivetrain:'rwd',gearRatios:[3.5],finalDrive:4,torqueLbFt:960}});
+ const state=createVehicleDynamicsState({position:{x:0,y:cfg.cgHeightM,z:0},engineRpm:4000});
+ let maxOmega=0;
+ for(let i=0;i<120;i++){
+  const result=model.step({state,config:cfg,controls:{...controls,throttle:1,assists:{tractionControlEnabled:false}},environment:{surfaceHeightByWheel:{fl:0,fr:0,rl:0,rr:0}},dt:1/120});
+  maxOmega=Math.max(maxOmega,Math.abs(result.wheelAngularVelocityRadps.rl));
+  state.wheelAngularVelocityRadps={...result.wheelAngularVelocityRadps};state.contactPatches=structuredClone(result.contactPatches);state.powertrainState=structuredClone(result.powertrainState);
+ }
+ assert.ok(maxOmega>10,`powered wheelspin must remain possible: ${maxOmega}`);
+});

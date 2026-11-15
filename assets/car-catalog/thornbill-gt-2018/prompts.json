@@ -1,0 +1,7 @@
+{
+ "generator":"image_gen.imagegen",
+ "generatedAt":"2026-11-14",
+ "body":{"originalPath":"/workspace/generated_images/exec-3d6a1ff0-dbb5-4a02-8e60-ed41681242e8.png","brief":"Original2994 salvage long low four-door fastback, burnt-copper paint and graphite patched sills, split rectangular amber lights and separate triple red rear lamps. No badges, logos, text, film livery, wheels, tires, ground or shadows. Transparent 4x2 sheet: front, front-quarter noseleft, side noseleft, rear-quarter noseleft; rear, rear-quarter noseright, side noseright, front-quarter noseright. Transparent wheel openings. Broad Stinger proportions only, not OEM design.","actualMapping":[0,1,2,3,4,5,6,7]},
+ "dashboard":{"originalPath":"/workspace/generated_images/exec-0c37bf17-dc7f-4248-b25b-4c8ccb94485b.png","brief":"Original2994 charcoal/copper left-hand-drive sporty fastback dashboard, three central round vents, teal trim, blank left binnacle and screen, transparent windshield, opaque bottom. No steering wheel, gauges, numbers, text, badges, scenery or seats. Dynamic shared wheel/gauges composed in game."},
+ "processing":"Original PNG pixels retained; existing native car importer performs transparent gutter extraction and alpha-haze cleanup on its working copy. Source hashes recorded in saved car."
+}

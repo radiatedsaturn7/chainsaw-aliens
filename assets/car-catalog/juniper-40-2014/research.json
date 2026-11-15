@@ -1,0 +1,55 @@
+{
+  "referenceVehicle": "US 2014 Toyota FJ Cruiser standard 4x4 6-speed manual, LHD, high range",
+  "sources": [
+    {
+      "url": "https://pressroom.toyota.com/2014-toyota-fj-cruiser/",
+      "access": "Official manufacturer release indexed text; 260 hp, 271 lb-ft, 6MT full-time 4WD, 40:60 normal center split, manual final 3.909; direct page later returned403.",
+      "fields": [
+        "engine",
+        "manual final drive",
+        "normal center torque split"
+      ]
+    },
+    {
+      "url": "https://cdn.dealereprocess.org/cdn/brochures/toyota/2014-fjcruiser.pdf",
+      "access": "Archived Toyota US2014 brochure, page11 specification table read in full; manual column selected.",
+      "fields": [
+        "dimensions",
+        "tracks",
+        "tires",
+        "fuel",
+        "engine peak RPM",
+        "brochure curb weight"
+      ]
+    }
+  ],
+  "verifiedFacts": {
+    "powerHp": 260,
+    "powerRpm": 5600,
+    "torqueLbFt": 271,
+    "torqueRpm": 4400,
+    "manualForwardGearCount": 6,
+    "finalDrive": 3.909,
+    "normalFrontRearSplit": [
+      40,
+      60
+    ],
+    "curbWeightLbBrochure": 4332,
+    "fuelGallons": 19,
+    "tires": "P265/70R17",
+    "sourceQualification": "Brochure specifies4332lb for4x4 MT. A secondary transcription of later product information reports4290lb; later primary PDF inaccessible403. Use brochure figure1964.962kg explicitly, not claim resolved production-weight discrepancy. Body dimensions converted from brochure inches. No Trail Teams equipment."
+  },
+  "gearingStatus": {
+    "individualRatios": "Six high-range ratios and reverse are gameplay estimates, not verified exact factory ratios.",
+    "finalDrive": "Manufacturer release exact3.909 applied once; transfer high1.000"
+  },
+  "estimates": [
+    "Redline5800,cutoff6000,idle700,torque interpolation,54percent front mass,CG/bodysections,overhangsplit,17steering ratio,Cd.43,32psi,suspension/brakes/grip and83percent efficiency are game tuning.",
+    "6MT ratio set[4.17,2.19,1.49,1.19,1,.80] and reverse3.6 are explicitly unverified game estimates. Auto Assist automates this6MT; not factory5AT.",
+    "Normal AWD rear share.6 approximates40:60; no selectable low range, center lock, rear e-locker, calibrated Torsen, A-TRAC or crawl control simulation. Rear diff left unlocked.",
+    "Stock M+S tires approximated using existing street compound; nominal radius.4014m from265/70R17. Display110mph/8.5sec are estimates, not measured game performance.",
+    "Original green/charcoal2994 body and LHDdash, not manufacturer/film artwork. Roof rack and spare cover are fictional styling. Shared wheels, live gauges, fixed rear camera and existing surface effects.",
+    "Runtime CG height and collision-profile CG both use the same estimated0.72m; avoids inherited0.56m suspension frame conflicting with taller body collider.",
+    "Uses existing wheel-well-aware compound collider to represent wheel openings; factory front double-wishbone/rear solid-axle architecture is sourced but the editor does not forward per-car suspension geometry; runtime uses its generic MacPherson/multilink presets, not factory geometry."
+  ]
+}

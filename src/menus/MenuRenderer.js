@@ -1,3 +1,5 @@
+import {campaignRegionDialogue} from './CampaignRegionDialogue.js';
+import {raceRewardQuote} from '../garage/CampaignEconomy.js';
 import {loadingFact} from './MenuLoadingScreen.js';
 import {drawWorldMap} from './MenuWorldMapRenderer.js';
 import {menuTypedText} from './MenuTypewriter.js';
@@ -141,7 +143,15 @@ export function drawMenuScreen(ctx,bounds,document,screen,parameters,{time=0,res
     else if(element.type==='race-description'){
       const map=screen.elements.find(e=>e.type==='world-map'&&e.binding===element.binding);
       const ref=element.assetRef||value||(map?worldMapSelection(worldMapNodes(map,resources,document,parameters),parameters[map.binding])?.raceRef:'');
-      drawCarDescription(ctx,b,resources?.race?.(ref)?.description||'',fontFamily,element,{time,editing});
+      if(element.property==='region-dialogue'){
+        drawCarDescription(ctx,b,campaignRegionDialogue(ref),fontFamily,element,{time,editing});
+        ctx.restore();continue;
+      }
+      const race=resources?.race?.(ref);
+      const quote=resources?.raceReward?.(ref)||raceRewardQuote(ref,race,resources?.garage?.progress);
+      const part=quote.part&&resources?.partCatalog?.find(e=>e.item.id===quote.part)?.item.name;
+      const rewards=race?`${quote.first?'First clear':'Repeat clear'}: ${quote.total} scrap${part?' · '+part:''}.`:'Loading rewards…';
+      drawCarDescription(ctx,b,element.property==='rewards'?`${quote.distanceKm.toFixed(1)} km · ${quote.surfaces||'Road'} · ${quote.weather}. ${rewards}`:`${rewards} ${race?.description||''}`,fontFamily,element,{time,editing});
     }
     else if(element.type==='car-description'){
       const car=resources?.car(element.assetRef||value);

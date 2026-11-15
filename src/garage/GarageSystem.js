@@ -23,13 +23,13 @@ export class GarageSystem {
    const next=normalizeItemProgress(items.progress),stats={...items.savedStats};
    const beforeCredits=Number(items.game.player?.credits??stats.credits)||0;
    const result=await change(next,{credits:beforeCredits});
-   const debit=Number(result?.debit)||0;
+   const debit=Number(result?.debit)||0,credit=Math.max(0,Number(result?.credit)||0);
    if(debit>beforeCredits)throw Error('Not enough scrap');
-   if(debit)stats.credits=beforeCredits-debit;
+   if(debit||credit)stats.credits=beforeCredits-debit+credit;
    const saved=await items.savePreference('rtg-item-progress',{...next,stats});
    if(saved?.ok===false)throw Error(saved.reason||'Garage could not be saved');
    items.progress=next;items.savedStats=stats;items.game.itemProgress=next;
-   if(debit&&items.game.player)items.game.player.credits=Math.max(0,items.game.player.credits-debit);
+   if((debit||credit)&&items.game.player)items.game.player.credits=stats.credits;
    syncItemGrantsToPlayer(items.game.player,next);this.revision++;return result;
   });items.queue=task.catch(()=>{});return task;
  }

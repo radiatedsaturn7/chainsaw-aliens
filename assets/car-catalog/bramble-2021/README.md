@@ -7,3 +7,5 @@ OEM UK brochure and launch technical press pack provide power, torque, minimum k
 Normal nominal 60/40 front/rear AWD is approximated using 0.4 rear share. Dynamic manufacturer ECU behavior is not modeled. Open front/rear differentials match the base variant, not Circuit Pack Torsen.
 
 Detailed sources, conflicting brochure/launch figures, and modeling estimates are explicitly recorded in import.json and research.json. No claim of measured in-game acceleration or production speed limiter. Eight individually calibrated wheel placements, shared steering wheel, RHD instruments and fixed rear camera; existing surface-sensitive smoke and spray. Native editor serialization only; no maps or worlds changed.
+
+The default driving option is **Auto Assist (6MT)**, with the original manual option still selectable. This automates shifting using the same effective six-speed reductions and modeled shift/clutch timing; it does not claim a factory automatic trim or change the sourced specification.

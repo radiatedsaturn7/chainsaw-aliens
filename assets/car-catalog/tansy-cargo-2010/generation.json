@@ -1,0 +1,8 @@
+{
+  "tool": "supported image_gen imagegen",
+  "initialBody": "/workspace/generated_images/exec-a5b01a3c-1d59-49c0-80ad-a4edfc26b090.png",
+  "orientationEdit": "/workspace/generated_images/exec-bfd1528d-8143-49fe-a565-b83a07b9de2a.png",
+  "bodyOriginal": "/workspace/generated_images/exec-f1a50807-6d8d-4116-99c3-f1e59417212a.png",
+  "dashboardOriginal": "/workspace/generated_images/exec-cc1ed581-427b-4fa4-84e2-0a92247d83c6.png",
+  "processing": "Supported edits corrected repeated orientations and white roof-edge artifacts. Final PNG copied unchanged; native editor import with measured shared-wheel anchors."
+}
