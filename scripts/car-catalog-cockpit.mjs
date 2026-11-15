@@ -6,6 +6,14 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'ironwood-v8-2004':{wheelOpening:true,size:[2172,724],cluster:[245,480,525,145],wheel:[510,675,280]},
+ 'hellebore-rs-2015':{wheelOpening:true,size:[2172,724],cluster:[280,435,570,140],wheel:[565,630,280]},
+ 'gentian-sx-1977':{wheelOpening:true,size:[2172,724],cluster:[310,465,580,140],wheel:[600,660,280]},
+ 'milkweed-60-2013':{electric:true,wheelOpening:true,size:[2172,724],cluster:[300,410,490,125],wheel:[545,600,280]},
+ 'sycamore-rt-2017':{wheelOpening:true,size:[2172,724],cluster:[275,420,500,145],wheel:[530,615,280]},
+ 'honeysuckle-22-2009':{wheelOpening:true,size:[2172,724],cluster:[280,360,520,145],wheel:[540,565,280]},
+ 'copperleaf-22-1998':{wheelOpening:true,size:[2172,724],cluster:[1280,440,570,150],wheel:[1565,635,280]},
+ 'alder-rs-1994':{wheelOpening:true,size:[2172,724],cluster:[250,410,580,140],wheel:[540,610,280]},
  'vervain-200-2011':{wheelOpening:true,size:[2172,724],cluster:[1330,410,580,140],wheel:[1620,610,280]},
  'saffron-135-2010':{wheelOpening:true,size:[2172,724],cluster:[1330,410,580,140],wheel:[1620,610,280]},
  'fenfire-1800-1986':{wheelOpening:true,size:[2172,724],cluster:[230,450,680,190],wheel:[580,690,285]},

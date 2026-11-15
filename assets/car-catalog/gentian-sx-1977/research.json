@@ -1,0 +1,51 @@
+{
+  "referenceVehicle": "Stock French 1977 Alpine A110 1600 SX road berlinette, rear-engine RWD five-speed manual; not 1600 S/SC, Group 4 or modern A110",
+  "sources": [
+    {
+      "url": "https://www.guide-autosport.com/wp-content/uploads/2017/12/Catalogue_Alpine_A110_1977.pdf",
+      "fields": [
+        "dimensions",
+        "tuning.weightKg",
+        "tuning.powerHp",
+        "tuning.engineDisplacementL",
+        "tuning.steeringRatio",
+        "transmissions.manual.gearFinalDrive",
+        "tuning.physics.bodyProfile"
+      ],
+      "access": "Scanned original Alpine-Renault 1977 brochure, eight pages; final technical page visually inspected. Publisher archive copy, manufacturer original."
+    },
+    {
+      "url": "https://media.alpinecars.com/a-trio-of-iconic-alpine-a110-models-to-star-at-retromobile-classic-event-as-current-version-enters-last-months-of-production/?lang=eng",
+      "fields": [
+        "tuning.weightKg",
+        "tuning.engineDisplacementL",
+        "tuning.drivetrain",
+        "transmissions.manual"
+      ],
+      "access": "Alpine manufacturer January22 2026 confirms 1977 stock 1600 SX, 1647cc,95ch,790kg,5MT and195kph. French counterpart resolves metric ch rather than mechanical hp."
+    }
+  ],
+  "verifiedFacts": {
+    "powerPs": 95,
+    "powerRpm": 6000,
+    "massRunningOrderKg": 790,
+    "displacementCc": 1647,
+    "forwardGearCount": 5,
+    "finalDrive": 3.875,
+    "steeringRatio": 15,
+    "fuelTankLitres": 50,
+    "tires": "165 HR13",
+    "sourceQualification": "1977 brochure prints width1550mm,height1120mm,front/rear tracks1315/1346mm,140mmclearance and840/910mmoverhangs. Do not mix earlier S/SC dimensions or power."
+  },
+  "gearingStatus": {
+    "individualRatios": "Five forward gears sourced; numerical forward ratios [3.61,2.26,1.48,1.03,.86] and reverse3.3 are explicit gameplay estimates, not verified factory gearing",
+    "finalDrive": "Factory 8x31 = 3.875:1 from original brochure, used once"
+  },
+  "estimates": [
+    "95 metric ch converted to mechanical hp; 128Nm peak torque and curve except sourced95ch at6000rpm are game estimates, as are6500redline,6700limiter and850idle.",
+    "165HR13 has no explicit aspect ratio in brochure;80percent nominal aspect and.2971m radius are game assumptions, not verified original loaded radius.",
+    "40percent front weight,CG.4m,bodysection shapes,.38drag,tirepressure/grip,springs/dampers/brakes and86percent efficiency are game estimates; rear-engine packaging and independent double-wishbone/four-disc layout are sourced, not full suspension kinematics reproduction.",
+    "Auto Assist automates the 5MT, not a claimed factory automatic.10sec0-60 is estimated.195kph display comes from brochure but is not independent performance certification.",
+    "Original ivory/coral badge-free2994 coupe with no rally livery; shared tires/wheel and fixed rear camera with existing surfaceFX."
+  ]
+}

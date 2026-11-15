@@ -1,0 +1,55 @@
+{
+  "referenceVehicle": "Stock US 2004 Mercury Marauder 4.6 DOHC V8 RWD four-speed automatic LHD full-size sedan",
+  "sources": [
+    {
+      "url": "https://www.auto-brochures.com/makes/Mercury/Marauder/Mercury_US%20Marauder_2004.pdf",
+      "fields": [
+        "dimensions.lengthM",
+        "dimensions.wheelbaseM",
+        "dimensions.trackFrontM",
+        "dimensions.trackRearM",
+        "setup.tireSizeByAxle",
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.weightKg",
+        "tuning.redlineRpm",
+        "transmissions.automatic.gearFinalDrive",
+        "mechanics.fuelTankGallons"
+      ],
+      "access": "Original 2004 Mercury manufacturer brochure archived by Auto-Brochures; downloaded and visually read page14 Mechanical/Specifications. Factory source, archive host. Width84.9in explicitly includes mirrors and is not used as collision-body width."
+    }
+  ],
+  "verifiedFacts": {
+    "powerHp": 302,
+    "powerRpm": 5750,
+    "torqueLbFt": 318,
+    "torqueRpm": 4300,
+    "displacementL": 4.6,
+    "curbMassLb": 4199,
+    "forwardGearCount": 4,
+    "finalDrive": 3.55,
+    "rearDifferential": "limited-slip",
+    "fuelTankUsGallons": 19,
+    "redlineRpm": 6250,
+    "lengthIn": 212,
+    "wheelbaseIn": 114.7,
+    "heightIn": 56.8,
+    "trackFrontIn": 63.4,
+    "trackRearIn": 65.6,
+    "frontTire": "P235/50R18 97W",
+    "rearTire": "P245/55R18 103W",
+    "sourceQualification": "2004 brochure values; do not substitute2003 road-test4195lb or4250rpm torque. Original front SLA/rear solid axle Watt linkage with rear load-leveling air springs documented but not faithfully modeled."
+  },
+  "gearingStatus": {
+    "individualRatios": "Game estimates [2.84,1.55,1,.70], reverse2.32; exact2004 ratios not verified from primary source",
+    "finalDrive": "Factory3.55 limited-slip axle, applied once"
+  },
+  "estimates": [
+    "Nominal tire geometry calculated from factory staggered sizes; unloaded front.3461m/rear.36335m radius. Curb mass converted at.45359237kg/lb, inch dimensions at.0254m/in; no extra driver mass.",
+    "Factory6250tach redline retained.6500limiter,750idle,torque interpolation outside sourced anchors,55percent front mass,CG.53m,1.986m body width excluding mirrors,groundclearance.145m,overhangsplit,body sections,steering16,drag.36,springs/dampers/brakes,35psi,grip and84percent efficiency are game estimates.",
+    "4AT forward count and3.55 axle sourced; individual gear ratios,reverse,converter slip.10/multiplication1.7,350ms shifts and shift schedule are explicitly unverified gameplay parameters. No manual transmission offered or claimed.",
+    "Rear LSD approximated by.30/.12 coefficients. OEM ABS/traction control,air-spring leveling and exact solid-axle dynamics are not certified or specially simulated. Stock street compound; no race tire or police modification.",
+    "Display125mph and7.5sec0-60 are estimates, not factory claims or measured game performance.",
+    "Original plum/copper badge-free2994 four-door body and LHD dashboard, shared tires/wheel,fixed rear camera, existing surface-dependent smoke."
+  ]
+}

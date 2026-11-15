@@ -1,0 +1,54 @@
+{
+  "referenceVehicle": "Stock US2015 Nissan Juke NISMO RS FWD six-speed manual LHD, standard225/45R18 tires; not AWD CVT, regular NISMO or modified Juke-R",
+  "sources": [
+    {
+      "url": "https://usa.nissannews.com/en-US/releases/release-35574a2d3b5645c0b4d8262e80a89068-us-2015-nissan-juke-nismo-press-kit",
+      "fields": [
+        "dimensions",
+        "setup.tireSizeByAxle",
+        "tuning",
+        "transmissions.manual",
+        "mechanics.fuelTankGallons"
+      ],
+      "access": "Nissan November20 2014 US2015 NISMO press kit, Specs table read with NISMO RS FWD column. RS manual ratio set distinguished from standard NISMO and AWD CVT."
+    }
+  ],
+  "verifiedFacts": {
+    "powerHp": 215,
+    "powerRpm": 6000,
+    "torqueLbFt": 210,
+    "torqueRpm": [
+      3600,
+      4800
+    ],
+    "maximumEngineRpm": 6400,
+    "displacementCc": 1618,
+    "massLb": 2969,
+    "frontWeightDistribution": 0.62,
+    "gearRatios": [
+      3.727,
+      2.043,
+      1.393,
+      1.055,
+      0.865,
+      0.732
+    ],
+    "reverseRatio": 3.641,
+    "finalDrive": 4.428,
+    "fuelTankUsGallons": 13.2,
+    "dragCoefficient": 0.35,
+    "steeringRatio": 16.5,
+    "sourceQualification": "US exact RS FWD:2969lb curb,62/38distribution,60in both tracks and6.9in clearance. AWD mass/track/clearance and211hp/184lb-ft excluded. Standard NISMO188hp and3.933 final excluded."
+  },
+  "gearingStatus": {
+    "individualRatios": "Exact Nissan RS manual ratios, not non-RS ratios or CVT endpoints",
+    "finalDrive": "Factory4.428 final used once for all six forward gears and reverse"
+  },
+  "estimates": [
+    "US inch dimensions and curb mass converted without adding a driver/load; manufacturer does not specify an individual VIN or optional-equipment allowance. Nominal.32985m tire radius derived from225/45R18, not loaded radius.",
+    "6400rpm manufacturer maximum used for redline and limiter.800idle,torque interpolation outside sourced anchors,CG.58m,overhangsplit,bodysection shapes,springs/dampers/brakes,35psi,tiregrip and88percent efficiency are gameplay estimates.",
+    "Factory helical front LSD approximated by .30/.12 coefficients; no claim of exact torque-bias,torque-steer,ABS,VDC or turbo transient behavior. Existing street compound approximates sourced summer tires.",
+    "Auto Assist automates sourced6MT and is not a claimed factory FWD automatic/CVT. Display215kph and6.8sec0-60 are game estimates, not manufacturer-certified or independently calibrated performance.",
+    "Original teal/apricot badge-free2994 crossover with shared tire/wheel art, fixed rear camera and existing surfaceFX. No borrowed manufacturer imagery or branded racing livery."
+  ]
+}

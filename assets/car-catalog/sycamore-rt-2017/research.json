@@ -1,0 +1,63 @@
+{
+  "referenceVehicle": "Stock US2017 Honda Ridgeline RT2WD6AT, LHD naturally aspirated3.5V6 FWD crew-cab pickup at curb mass; not AWD, later9AT or hybrid",
+  "sources": [
+    {
+      "url": "https://hondanews.com/en-US/releases/release-e176e4fdb4f8461e9b0f2ce3ce23b49b-2017-honda-ridgeline-u-s-specifications-features",
+      "fields": [
+        "dimensions",
+        "setup.tireSize",
+        "tuning.weightKg",
+        "tuning.powerHp",
+        "tuning.torqueLbFt",
+        "tuning.engineDisplacementL",
+        "tuning.redlineRpm",
+        "tuning.frontWeightDistribution",
+        "tuning.steeringRatio",
+        "tuning.physics.bodyProfile.groundClearanceM",
+        "transmissions.automatic.gearRatios",
+        "transmissions.automatic.reverseRatio",
+        "transmissions.automatic.gearFinalDrive"
+      ],
+      "access": "Honda May9,2016 exact US2017 specifications opened and read; RT2WD column and2WD-specific geometry selected."
+    },
+    {
+      "url": "https://hondanews.com/en-US/honda-automobiles/releases/release-d7a2667d4c8741a7851544e06ef9edc8-2017-honda-ridgeline-press-kit-overview",
+      "fields": [
+        "tuning.drivetrain"
+      ],
+      "access": "Honda powertrain section explicitly states2WD system drives front wheels; no AWD torque-vectoring modeled."
+    }
+  ],
+  "verifiedFacts": {
+    "powerHp": 280,
+    "powerRpm": 6000,
+    "torqueLbFt": 262,
+    "torqueRpm": 4700,
+    "massLb": 4242,
+    "frontWeightDistribution": 0.586,
+    "forwardGearCount": 6,
+    "gearRatios": [
+      3.359,
+      2.095,
+      1.485,
+      1.065,
+      0.754,
+      0.556
+    ],
+    "reverseRatio": 2.269,
+    "finalDrive": 4.25,
+    "sourceQualification": "Honda exact RT2WD specifications; curb not gross or loaded mass. Inch dimensions converted directly, rather than mixing rounded companion metric figures."
+  },
+  "gearingStatus": {
+    "individualRatios": "Honda exact2017 6AT ratios",
+    "finalDrive": "4.25 manufacturer specification"
+  },
+  "estimates": [
+    "4242lb mass converted at.45359237kg/lb; inch dimensions at.0254m/in. Companion Honda overview rounded metric lengths differ byabout1mm; exact spec inch conversions used. Nominal tire radius.3756m from245/60R18, not loaded radius.",
+    "Factory6800redline retained;7000limiter,750idle,torque interpolation outside two anchors,CG,overhangsplit,bodysections,drag.40,springs/dampers/brakes,36psi,tiregrip and86percent efficiency are game estimates.",
+    "Factory6AT ratio layout retained; generic converter slip.10/multiplication1.6,300ms shifts and shift schedule approximate actual transmission. No factory manual offered or claimed.",
+    "VCM cylinder deactivation, Normal/Snow traction maps,OEMVSA/ABS,bed/cargo loading,towing and tailgate interactions are not simulated. Unladen FWD behavior only; no AWD or lowrange claim.",
+    "Display180kph/7.0sec0-60 are estimates, not manufacturer facts or measured game performance.",
+    "Original sage/sand badge-free2994 pickup and LHDdash, shared tires/wheel,fixedrear,surfaceFX. Hybrid deferred because inspected runtime separates combustion/electric torque paths, with no coupled hybrid assist/regen mechanism."
+  ]
+}

@@ -741,7 +741,23 @@
       "catalog-saffron-135-2010-body": "art/catalog-saffron-135-2010-body/document.json",
       "catalog-saffron-135-2010-dashboard": "art/catalog-saffron-135-2010-dashboard/document.json",
       "catalog-vervain-200-2011-body": "art/catalog-vervain-200-2011-body/document.json",
-      "catalog-vervain-200-2011-dashboard": "art/catalog-vervain-200-2011-dashboard/document.json"
+      "catalog-vervain-200-2011-dashboard": "art/catalog-vervain-200-2011-dashboard/document.json",
+      "catalog-alder-rs-1994-body": "art/catalog-alder-rs-1994-body/document.json",
+      "catalog-alder-rs-1994-dashboard": "art/catalog-alder-rs-1994-dashboard/document.json",
+      "catalog-copperleaf-22-1998-body": "art/catalog-copperleaf-22-1998-body/document.json",
+      "catalog-copperleaf-22-1998-dashboard": "art/catalog-copperleaf-22-1998-dashboard/document.json",
+      "catalog-honeysuckle-22-2009-body": "art/catalog-honeysuckle-22-2009-body/document.json",
+      "catalog-honeysuckle-22-2009-dashboard": "art/catalog-honeysuckle-22-2009-dashboard/document.json",
+      "catalog-sycamore-rt-2017-body": "art/catalog-sycamore-rt-2017-body/document.json",
+      "catalog-sycamore-rt-2017-dashboard": "art/catalog-sycamore-rt-2017-dashboard/document.json",
+      "catalog-milkweed-60-2013-body": "art/catalog-milkweed-60-2013-body/document.json",
+      "catalog-milkweed-60-2013-dashboard": "art/catalog-milkweed-60-2013-dashboard/document.json",
+      "catalog-gentian-sx-1977-body": "art/catalog-gentian-sx-1977-body/document.json",
+      "catalog-gentian-sx-1977-dashboard": "art/catalog-gentian-sx-1977-dashboard/document.json",
+      "catalog-hellebore-rs-2015-body": "art/catalog-hellebore-rs-2015-body/document.json",
+      "catalog-hellebore-rs-2015-dashboard": "art/catalog-hellebore-rs-2015-dashboard/document.json",
+      "catalog-ironwood-v8-2004-body": "art/catalog-ironwood-v8-2004-body/document.json",
+      "catalog-ironwood-v8-2004-dashboard": "art/catalog-ironwood-v8-2004-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -823,7 +839,15 @@
       "Celandine LS 1995": "cars/Celandine LS 1995/document.json",
       "Fenfire 1800 1986": "cars/Fenfire 1800 1986/document.json",
       "Saffron 135 2010": "cars/Saffron 135 2010/document.json",
-      "Vervain 200 2011": "cars/Vervain 200 2011/document.json"
+      "Vervain 200 2011": "cars/Vervain 200 2011/document.json",
+      "Alder RS 1994": "cars/Alder RS 1994/document.json",
+      "Copperleaf 22 1998": "cars/Copperleaf 22 1998/document.json",
+      "Honeysuckle 22 2009": "cars/Honeysuckle 22 2009/document.json",
+      "Sycamore RT 2017": "cars/Sycamore RT 2017/document.json",
+      "Milkweed 60 2013": "cars/Milkweed 60 2013/document.json",
+      "Gentian SX 1977": "cars/Gentian SX 1977/document.json",
+      "Hellebore RS 2015": "cars/Hellebore RS 2015/document.json",
+      "Ironwood V8 2004": "cars/Ironwood V8 2004/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
