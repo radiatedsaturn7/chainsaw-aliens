@@ -3046,8 +3046,8 @@
   },
   "environment-v1-ohio-little-muskingum-storm": {
     "source": "assets/campaign-art/environment-v1/ohio-little-muskingum-storm.png",
-    "sourceSha256": "317d6b2154577ed44eb49396021fcd1160d43e26cbd2993aeafd2a72c41e691c",
-    "documentSha256": "83098eddbed5394566603be5d3111fd3aac77e375200509fcd4d34ab3de3088a",
+    "sourceSha256": "aee8e31850d5e3c12400e2ee387d619ffdc301f4e5fcf370a7684e0c97a21674",
+    "documentSha256": "c470b63a30d4f21c468501a353eac25da35123798fce2c82459cc7b2f9b0bcc4",
     "width": 1024,
     "height": 341
   },

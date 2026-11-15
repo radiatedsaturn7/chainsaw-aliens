@@ -382,7 +382,7 @@
       "osmWayIds": []
     },
     {
-      "raceRef": "Mount Washington Auto Road \u2014 point-to-point",
+      "raceRef": "Mount Washington Auto Road — point-to-point",
       "documentPath": "races/Mount Washington Auto Road %E2%80%94 point-to-point/document.json",
       "siteGroup": "site-0a68d934985ab307",
       "sharingEvidence": [],
@@ -525,12 +525,12 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Mount Washington Auto Road, Sargent's Purchase, Co\u00f6s County, New Hampshire, 03589, United States",
+      "physicalSiteLabel": "Mount Washington Auto Road, Sargent's Purchase, Coös County, New Hampshire, 03589, United States",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
         "kind": "place",
-        "name": "Mount Washington Auto Road, Sargent's Purchase, Co\u00f6s County, New Hampshire, 03589, United States",
+        "name": "Mount Washington Auto Road, Sargent's Purchase, Coös County, New Hampshire, 03589, United States",
         "lat": 44.2811197,
         "lon": -71.246017,
         "osmType": "way",
@@ -554,10 +554,17 @@
         1211919720,
         1211919723,
         1322664023
-      ]
+      ],
+      "nextArtBrief": {
+        "physicalSite": "Presidential Range exposed upper slopes and alpine rock at noon, active snow at1 brightness and-12C.",
+        "terrainReviewPlan": "Keep snow ground and road visual intent; distinguish exposed rock/snow pockets only through image refs, not material edits.",
+        "lightingRule": "Preserve full authoredEnvironment; day + evening preset0.42 is not noon. Do not pre-darken artwork twice.",
+        "sourceSegment": null,
+        "acceptance": "Planning from saved source metadata; no new visual pass claimed."
+      }
     },
     {
-      "raceRef": "Mount Washington Auto Road \u2014 point-to-point Copy",
+      "raceRef": "Mount Washington Auto Road — point-to-point Copy",
       "documentPath": "races/Mount Washington Auto Road %E2%80%94 point-to-point Copy/document.json",
       "siteGroup": "site-af086b4ab458d226",
       "sharingEvidence": [],
@@ -658,12 +665,12 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Mount Washington Auto Road, Sargent's Purchase, Co\u00f6s County, New Hampshire, 03589, United States",
+      "physicalSiteLabel": "Mount Washington Auto Road, Sargent's Purchase, Coös County, New Hampshire, 03589, United States",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
         "kind": "place",
-        "name": "Mount Washington Auto Road, Sargent's Purchase, Co\u00f6s County, New Hampshire, 03589, United States",
+        "name": "Mount Washington Auto Road, Sargent's Purchase, Coös County, New Hampshire, 03589, United States",
         "lat": 44.2811197,
         "lon": -71.246017,
         "osmType": "way",
@@ -1042,7 +1049,8 @@
         "shoulder": "Hidden authored margin retained.",
         "rough": "Explicit same boreal art for normal and rough cell variants.",
         "acceptance": "source-reviewed; production pending"
-      }
+      },
+      "sourceLimitations": "External rally-maps page returned468 during this pass; location is grounded in saved GPS/OSM provenance. Finland tourist-board museum description supports boreal/gravel regional character, not exact sightline geometry."
     },
     {
       "raceRef": "Studio Sprint",
@@ -1353,7 +1361,14 @@
       "layoutReference": null,
       "osmWayIds": [
         19365929
-      ]
+      ],
+      "nextArtBrief": {
+        "physicalSite": "Cumberland Rhode Island low snowy woodland at authored0.05 night, preserve mission snow/intensity1/temperature-8.",
+        "terrainReviewPlan": "Retain snowroad and snow-compatible ground pending night gameplay review; do not brighten weather or lighting.",
+        "lightingRule": "Preserve full authoredEnvironment; day + evening preset0.42 is not noon. Do not pre-darken artwork twice.",
+        "sourceSegment": null,
+        "acceptance": "Planning from saved source metadata; no new visual pass claimed."
+      }
     },
     {
       "raceRef": "WeatherTech Raceway Laguna Seca",
@@ -1917,7 +1932,14 @@
         157963715,
         503629725,
         1338504671
-      ]
+      ],
+      "nextArtBrief": {
+        "physicalSite": "Rounded wooded PA381 Ohiopyle hills and Youghiogheny gorge, hemlocks/deciduous forest, cold clear evening; no alpine peaks.",
+        "terrainReviewPlan": "Frozen forest/leaf litter plausible at authored-3C; inspect existing sky and ground before replacement.",
+        "lightingRule": "Preserve full authoredEnvironment; day + evening preset0.42 is not noon. Do not pre-darken artwork twice.",
+        "sourceSegment": "PA 381 through the wooded Ohiopyle / Mill Run hills, including the gorge approaches.",
+        "acceptance": "Planning from saved source metadata; no new visual pass claimed."
+      }
     },
     {
       "raceRef": "Ohio River Crossing",
@@ -2083,13 +2105,18 @@
         "data/campaigns/america/imported-middle.json: Ohio segmentDescription",
         "data/campaigns/america/middle-sources/ohio.json"
       ],
-      "originalImage": "/workspace/generated_images/exec-ebe94e4f-9d11-4e29-ad91-d40bf6bc3543.png",
+      "originalImage": "/workspace/generated_images/exec-bda871c8-7524-4210-9510-d8af61cdab96.png",
       "terrainReview": {
         "ground": "Replace dirty-snow pixels with wet silt/leaf-litter; preserve snow tileId and snow weights as explicitly required, so this is visual only.",
         "road": "Keep wet-asphalt texture and actual wet-asphalt segment surfaces.",
         "shoulder": "Keep gray gravel shoulder. Dirt/gravel/snow conditional shoulder refs retained; snow branch inactive on wet-asphalt segments.",
         "rough": "No authored roughArtRef; same registered native tile image used by existing fallback.",
         "acceptance": "source-reviewed; production pending"
+      },
+      "artworkHistory": {
+        "rejectedBroadRiverDraft": "/workspace/generated_images/exec-fda1b953-0b2e-41cd-b642-b102a684a7c6.png",
+        "preSeamCorrection": "/workspace/generated_images/exec-ebe94e4f-9d11-4e29-ad91-d40bf6bc3543.png",
+        "correction": "Image generation edit to align cloud boundaries; originals preserved."
       }
     },
     {
@@ -2428,7 +2455,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "playabilityEvidence": {
+          "desktop": true,
+          "handheld": true,
+          "checkpoint": "74fd63463650cf1070fb637dbd15ca6fa82a2079",
+          "path": "/tmp/race-environment-city-moving",
+          "limitation": "Movement verified only; dark horizon prevents environment acceptance."
+        }
       },
       "sources": [
         "https://www.stlouis-mo.gov/live-work/community/neighborhoods/riverview/",
@@ -2651,7 +2685,14 @@
         972448295,
         1037782707,
         1047286931
-      ]
+      ],
+      "nextArtBrief": {
+        "physicalSite": "Low Erick–Texola prairie, utility poles and worn industry/town silhouettes; clear evening, no desert mesas.",
+        "terrainReviewPlan": "Audit inherited desert-scrub ground against prairie soil/grass; retain authored road condition and surface weights.",
+        "lightingRule": "Preserve full authoredEnvironment; day + evening preset0.42 is not noon. Do not pre-darken artwork twice.",
+        "sourceSegment": "Historic Route 66 around Erick and Texola toward the Texas line; exposed plains and abandoned roadside industry.",
+        "acceptance": "Planning from saved source metadata; no new visual pass claimed."
+      }
     },
     {
       "raceRef": "Pikes Peak Highway",
@@ -2817,7 +2858,14 @@
         38340857,
         243875435,
         243875441
-      ]
+      ],
+      "nextArtBrief": {
+        "physicalSite": "Upper treeless pink-gray granite/talus, broad high-altitude views, clear evening; no uniform white blanket.",
+        "terrainReviewPlan": "Inspect rock/talus and localized snow visuals; retain inactive configured snow warning and existing physical surfaces.",
+        "lightingRule": "Preserve full authoredEnvironment; day + evening preset0.42 is not noon. Do not pre-darken artwork twice.",
+        "sourceSegment": "Upper Pikes Peak Highway: technical alpine hairpins and high-altitude climbs.",
+        "acceptance": "Planning from saved source metadata; no new visual pass claimed."
+      }
     },
     {
       "raceRef": "Moki Dugway",
@@ -3172,7 +3220,14 @@
         1125497477,
         1125497481,
         1125497483
-      ]
+      ],
+      "nextArtBrief": {
+        "physicalSite": "Upper89A/Vista pine rim, folded red/tan strata and forested canyon walls; clear evening.",
+        "terrainReviewPlan": "Regional red/tan rock plus pine litter; audit near-road tile/rough/shoulder fallbacks without broad snow.",
+        "lightingRule": "Preserve full authoredEnvironment; day + evening preset0.42 is not noon. Do not pre-darken artwork twice.",
+        "sourceSegment": "Arizona 89A through the upper Oak Creek Canyon and the Oak Creek Vista switchbacks.",
+        "acceptance": "Planning from saved source metadata; no new visual pass claimed."
+      }
     },
     {
       "raceRef": "Angeles Crest Highway",
@@ -3319,10 +3374,17 @@
       "osmWayIds": [
         723615829,
         723910248
-      ]
+      ],
+      "nextArtBrief": {
+        "physicalSite": "Angular gray San Gabriel ridges, chaparral and dry pines; clear evening, not rounded green Appalachian hills.",
+        "terrainReviewPlan": "Gray rock, chaparral soil and dry grass; preserve authored asphalt/gravel and collisions.",
+        "lightingRule": "Preserve full authoredEnvironment; day + evening preset0.42 is not noon. Do not pre-darken artwork twice.",
+        "sourceSegment": "California 2 in the San Gabriel Mountains: sustained sweeping bends, ridge exposure and steep wooded slopes.",
+        "acceptance": "Planning from saved source metadata; no new visual pass claimed."
+      }
     },
     {
-      "raceRef": "RI 116 \u2014 North Smithfield Scituate",
+      "raceRef": "RI 116 — North Smithfield Scituate",
       "documentPath": "races/RI 116 %E2%80%94 North Smithfield Scituate/document.json",
       "siteGroup": "site-931ca89b7a891ab6",
       "sharingEvidence": [],
@@ -3435,11 +3497,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "RI 116 \u2014 North Smithfield / Scituate",
+      "physicalSiteLabel": "RI 116 — North Smithfield / Scituate",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "RI 116 \u2014 North Smithfield / Scituate",
+        "name": "RI 116 — North Smithfield / Scituate",
         "lat": 41.89,
         "lon": -71.58,
         "country": "us"
@@ -3467,7 +3529,7 @@
       }
     },
     {
-      "raceRef": "Thompson Speedway \u2014 1.7-mile road course",
+      "raceRef": "Thompson Speedway — 1.7-mile road course",
       "documentPath": "races/Thompson Speedway %E2%80%94 1.7-mile road course/document.json",
       "siteGroup": "site-221391234fac4087",
       "sharingEvidence": [],
@@ -3580,11 +3642,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Thompson Speedway \u2014 1.7-mile road course",
+      "physicalSiteLabel": "Thompson Speedway — 1.7-mile road course",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Thompson Speedway \u2014 1.7-mile road course",
+        "name": "Thompson Speedway — 1.7-mile road course",
         "lat": 41.98,
         "lon": -71.825,
         "country": "us"
@@ -3608,7 +3670,7 @@
       }
     },
     {
-      "raceRef": "I-95 \u2014 Attleboro to Warwick curves",
+      "raceRef": "I-95 — Attleboro to Warwick curves",
       "documentPath": "races/I-95 %E2%80%94 Attleboro to Warwick curves/document.json",
       "siteGroup": "site-15ddb8bf02ebb77a",
       "sharingEvidence": [],
@@ -3723,11 +3785,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "I-95 \u2014 Attleboro to Warwick curves",
+      "physicalSiteLabel": "I-95 — Attleboro to Warwick curves",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "I-95 \u2014 Attleboro to Warwick curves",
+        "name": "I-95 — Attleboro to Warwick curves",
         "lat": 41.92,
         "lon": -71.36,
         "country": "us"
@@ -3842,7 +3904,7 @@
       }
     },
     {
-      "raceRef": "RI 102 \u2014 Victory Highway",
+      "raceRef": "RI 102 — Victory Highway",
       "documentPath": "races/RI 102 %E2%80%94 Victory Highway/document.json",
       "siteGroup": "site-810746e752ff427f",
       "sharingEvidence": [],
@@ -3955,11 +4017,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "RI 102 \u2014 Victory Highway",
+      "physicalSiteLabel": "RI 102 — Victory Highway",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "RI 102 \u2014 Victory Highway",
+        "name": "RI 102 — Victory Highway",
         "lat": 41.94,
         "lon": -71.7,
         "country": "us"
@@ -3985,7 +4047,7 @@
       }
     },
     {
-      "raceRef": "Pachaug State Forest \u2014 public gravel access roads",
+      "raceRef": "Pachaug State Forest — public gravel access roads",
       "documentPath": "races/Pachaug State Forest %E2%80%94 public gravel access roads/document.json",
       "siteGroup": "site-4377bec11798e430",
       "sharingEvidence": [],
@@ -4098,11 +4160,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Pachaug State Forest \u2014 public gravel access roads",
+      "physicalSiteLabel": "Pachaug State Forest — public gravel access roads",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Pachaug State Forest \u2014 public gravel access roads",
+        "name": "Pachaug State Forest — public gravel access roads",
         "lat": 41.56,
         "lon": -71.85,
         "country": "us"
@@ -4123,7 +4185,7 @@
       }
     },
     {
-      "raceRef": "Seekonk Speedway \u2014 oval",
+      "raceRef": "Seekonk Speedway — oval",
       "documentPath": "races/Seekonk Speedway %E2%80%94 oval/document.json",
       "siteGroup": "site-74b77eb0a353758c",
       "sharingEvidence": [],
@@ -4236,11 +4298,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Seekonk Speedway \u2014 oval",
+      "physicalSiteLabel": "Seekonk Speedway — oval",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Seekonk Speedway \u2014 oval",
+        "name": "Seekonk Speedway — oval",
         "lat": 41.7844807,
         "lon": -71.3020359,
         "country": "us"
@@ -4258,7 +4320,7 @@
       }
     },
     {
-      "raceRef": "RI 44 \u2014 Putnam Pike Glocester",
+      "raceRef": "RI 44 — Putnam Pike Glocester",
       "documentPath": "races/RI 44 %E2%80%94 Putnam Pike Glocester/document.json",
       "siteGroup": "site-407f8b96bd290ca5",
       "sharingEvidence": [],
@@ -4371,11 +4433,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "RI 44 \u2014 Putnam Pike / Glocester",
+      "physicalSiteLabel": "RI 44 — Putnam Pike / Glocester",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "RI 44 \u2014 Putnam Pike / Glocester",
+        "name": "RI 44 — Putnam Pike / Glocester",
         "lat": 41.91,
         "lon": -71.69,
         "country": "us"
@@ -4401,7 +4463,7 @@
       }
     },
     {
-      "raceRef": "Lime Rock Park \u2014 Connecticut",
+      "raceRef": "Lime Rock Park — Connecticut",
       "documentPath": "races/Lime Rock Park %E2%80%94 Connecticut/document.json",
       "siteGroup": "site-6282566e1d87f3de",
       "sharingEvidence": [],
@@ -4552,7 +4614,7 @@
       }
     },
     {
-      "raceRef": "Palmer Motorsports Park \u2014 Massachusetts",
+      "raceRef": "Palmer Motorsports Park — Massachusetts",
       "documentPath": "races/Palmer Motorsports Park %E2%80%94 Massachusetts/document.json",
       "siteGroup": "site-03abcca56f0f5592",
       "sharingEvidence": [],
@@ -4665,11 +4727,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Palmer Motorsports Park \u2014 Massachusetts",
+      "physicalSiteLabel": "Palmer Motorsports Park — Massachusetts",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Palmer Motorsports Park \u2014 Massachusetts",
+        "name": "Palmer Motorsports Park — Massachusetts",
         "lat": 42.2259907,
         "lon": -72.2527533,
         "country": "us"
@@ -4688,7 +4750,7 @@
       }
     },
     {
-      "raceRef": "Kancamagus Highway \u2014 NH 112",
+      "raceRef": "Kancamagus Highway — NH 112",
       "documentPath": "races/Kancamagus Highway %E2%80%94 NH 112/document.json",
       "siteGroup": "site-dfcb58ea4510984b",
       "sharingEvidence": [],
@@ -4801,11 +4863,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Kancamagus Highway \u2014 NH 112",
+      "physicalSiteLabel": "Kancamagus Highway — NH 112",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Kancamagus Highway \u2014 NH 112",
+        "name": "Kancamagus Highway — NH 112",
         "lat": 44.05,
         "lon": -71.49,
         "country": "us"
@@ -4823,7 +4885,7 @@
       }
     },
     {
-      "raceRef": "Bear Notch Road \u2014 Bartlett",
+      "raceRef": "Bear Notch Road — Bartlett",
       "documentPath": "races/Bear Notch Road %E2%80%94 Bartlett/document.json",
       "siteGroup": "site-996a00e2fcbb5289",
       "sharingEvidence": [],
@@ -4936,11 +4998,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Bear Notch Road \u2014 Bartlett",
+      "physicalSiteLabel": "Bear Notch Road — Bartlett",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Bear Notch Road \u2014 Bartlett",
+        "name": "Bear Notch Road — Bartlett",
         "lat": 44.047,
         "lon": -71.274,
         "country": "us"
@@ -4958,7 +5020,7 @@
       }
     },
     {
-      "raceRef": "Hurricane Mountain Road \u2014 Conway",
+      "raceRef": "Hurricane Mountain Road — Conway",
       "documentPath": "races/Hurricane Mountain Road %E2%80%94 Conway/document.json",
       "siteGroup": "site-affc31958020fbaf",
       "sharingEvidence": [],
@@ -5071,11 +5133,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Hurricane Mountain Road \u2014 Conway",
+      "physicalSiteLabel": "Hurricane Mountain Road — Conway",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Hurricane Mountain Road \u2014 Conway",
+        "name": "Hurricane Mountain Road — Conway",
         "lat": 44.069,
         "lon": -71.08,
         "country": "us"
@@ -5093,7 +5155,7 @@
       }
     },
     {
-      "raceRef": "Crawford Notch \u2014 US 302",
+      "raceRef": "Crawford Notch — US 302",
       "documentPath": "races/Crawford Notch %E2%80%94 US 302/document.json",
       "siteGroup": "site-8bddb6a4b297a267",
       "sharingEvidence": [],
@@ -5206,11 +5268,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Crawford Notch \u2014 US 302",
+      "physicalSiteLabel": "Crawford Notch — US 302",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Crawford Notch \u2014 US 302",
+        "name": "Crawford Notch — US 302",
         "lat": 44.185,
         "lon": -71.394,
         "country": "us"
@@ -5236,7 +5298,7 @@
       }
     },
     {
-      "raceRef": "Pinkham Notch \u2014 NH 16",
+      "raceRef": "Pinkham Notch — NH 16",
       "documentPath": "races/Pinkham Notch %E2%80%94 NH 16/document.json",
       "siteGroup": "site-d4f3647ae10043c0",
       "sharingEvidence": [],
@@ -5349,11 +5411,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Pinkham Notch \u2014 NH 16",
+      "physicalSiteLabel": "Pinkham Notch — NH 16",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Pinkham Notch \u2014 NH 16",
+        "name": "Pinkham Notch — NH 16",
         "lat": 44.225,
         "lon": -71.252,
         "country": "us"
@@ -5374,7 +5436,7 @@
       }
     },
     {
-      "raceRef": "Club Motorsports \u2014 Tamworth",
+      "raceRef": "Club Motorsports — Tamworth",
       "documentPath": "races/Club Motorsports %E2%80%94 Tamworth/document.json",
       "siteGroup": "site-b77b2426c4ac70c2",
       "sharingEvidence": [],
@@ -5487,11 +5549,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Club Motorsports \u2014 Tamworth",
+      "physicalSiteLabel": "Club Motorsports — Tamworth",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Club Motorsports \u2014 Tamworth",
+        "name": "Club Motorsports — Tamworth",
         "lat": 43.8210049,
         "lon": -71.2452097,
         "country": "us"
@@ -5509,7 +5571,7 @@
       }
     },
     {
-      "raceRef": "Team O\u2019Neil-inspired Rally Stage (2994)",
+      "raceRef": "Team O’Neil-inspired Rally Stage (2994)",
       "documentPath": "races/Team O%E2%80%99Neil-inspired Rally Stage (2994)/document.json",
       "siteGroup": "site-6f08eb24ddcc4294",
       "sharingEvidence": [],
@@ -5622,11 +5684,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Team O\u2019Neil Rally School \u2014 Dalton",
+      "physicalSiteLabel": "Team O’Neil Rally School — Dalton",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Team O\u2019Neil Rally School \u2014 Dalton",
+        "name": "Team O’Neil Rally School — Dalton",
         "lat": 44.36779,
         "lon": -71.709566,
         "country": "us"
@@ -5642,7 +5704,7 @@
       }
     },
     {
-      "raceRef": "New Hampshire Motor Speedway \u2014 Loudon",
+      "raceRef": "New Hampshire Motor Speedway — Loudon",
       "documentPath": "races/New Hampshire Motor Speedway %E2%80%94 Loudon/document.json",
       "siteGroup": "site-2e5bd5e7faad72ca",
       "sharingEvidence": [],
@@ -5755,11 +5817,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "New Hampshire Motor Speedway \u2014 Loudon",
+      "physicalSiteLabel": "New Hampshire Motor Speedway — Loudon",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "New Hampshire Motor Speedway \u2014 Loudon",
+        "name": "New Hampshire Motor Speedway — Loudon",
         "lat": 43.362,
         "lon": -71.46,
         "country": "us"
@@ -5783,7 +5845,7 @@
       }
     },
     {
-      "raceRef": "New England Dragway \u2014 Epping",
+      "raceRef": "New England Dragway — Epping",
       "documentPath": "races/New England Dragway %E2%80%94 Epping/document.json",
       "siteGroup": "site-5ce2409ff8a9c529",
       "sharingEvidence": [],
@@ -5896,11 +5958,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "New England Dragway \u2014 Epping",
+      "physicalSiteLabel": "New England Dragway — Epping",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "New England Dragway \u2014 Epping",
+        "name": "New England Dragway — Epping",
         "lat": 43.03,
         "lon": -71.034,
         "country": "us"
@@ -5918,7 +5980,7 @@
       }
     },
     {
-      "raceRef": "PA 381 \u2014 Ohiopyle approach",
+      "raceRef": "PA 381 — Ohiopyle approach",
       "documentPath": "races/PA 381 %E2%80%94 Ohiopyle approach/document.json",
       "siteGroup": "site-ea45982cd0691d1d",
       "sharingEvidence": [],
@@ -6031,11 +6093,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "PA 381 \u2014 Ohiopyle approach",
+      "physicalSiteLabel": "PA 381 — Ohiopyle approach",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "PA 381 \u2014 Ohiopyle approach",
+        "name": "PA 381 — Ohiopyle approach",
         "lat": 39.93,
         "lon": -79.45,
         "country": "us"
@@ -6057,7 +6119,7 @@
       }
     },
     {
-      "raceRef": "PA 711 \u2014 Normalville Champion",
+      "raceRef": "PA 711 — Normalville Champion",
       "documentPath": "races/PA 711 %E2%80%94 Normalville Champion/document.json",
       "siteGroup": "site-0c07fa38fb04f09c",
       "sharingEvidence": [],
@@ -6170,11 +6232,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "PA 711 \u2014 Normalville / Champion",
+      "physicalSiteLabel": "PA 711 — Normalville / Champion",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "PA 711 \u2014 Normalville / Champion",
+        "name": "PA 711 — Normalville / Champion",
         "lat": 40.02,
         "lon": -79.39,
         "country": "us"
@@ -6193,7 +6255,7 @@
       }
     },
     {
-      "raceRef": "US 40 \u2014 Chalk Hill Summit",
+      "raceRef": "US 40 — Chalk Hill Summit",
       "documentPath": "races/US 40 %E2%80%94 Chalk Hill Summit/document.json",
       "siteGroup": "site-d200c051d2de088c",
       "sharingEvidence": [],
@@ -6306,11 +6368,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "US 40 \u2014 Chalk Hill / Summit",
+      "physicalSiteLabel": "US 40 — Chalk Hill / Summit",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "US 40 \u2014 Chalk Hill / Summit",
+        "name": "US 40 — Chalk Hill / Summit",
         "lat": 39.85,
         "lon": -79.61,
         "country": "us"
@@ -6335,7 +6397,7 @@
       }
     },
     {
-      "raceRef": "PA 31 \u2014 Donegal to Laurel Ridge",
+      "raceRef": "PA 31 — Donegal to Laurel Ridge",
       "documentPath": "races/PA 31 %E2%80%94 Donegal to Laurel Ridge/document.json",
       "siteGroup": "site-972e17deb852af50",
       "sharingEvidence": [],
@@ -6448,11 +6510,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "PA 31 \u2014 Donegal to Laurel Ridge",
+      "physicalSiteLabel": "PA 31 — Donegal to Laurel Ridge",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "PA 31 \u2014 Donegal to Laurel Ridge",
+        "name": "PA 31 — Donegal to Laurel Ridge",
         "lat": 40.09,
         "lon": -79.3,
         "country": "us"
@@ -6472,7 +6534,7 @@
       }
     },
     {
-      "raceRef": "County Line Road \u2014 Seven Springs",
+      "raceRef": "County Line Road — Seven Springs",
       "documentPath": "races/County Line Road %E2%80%94 Seven Springs/document.json",
       "siteGroup": "site-f7da332c258efcfe",
       "sharingEvidence": [],
@@ -6585,11 +6647,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "County Line Road \u2014 Seven Springs",
+      "physicalSiteLabel": "County Line Road — Seven Springs",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "County Line Road \u2014 Seven Springs",
+        "name": "County Line Road — Seven Springs",
         "lat": 40.05,
         "lon": -79.28,
         "country": "us"
@@ -6614,7 +6676,7 @@
       }
     },
     {
-      "raceRef": "Forbes State Forest \u2014 designated gravel roads",
+      "raceRef": "Forbes State Forest — designated gravel roads",
       "documentPath": "races/Forbes State Forest %E2%80%94 designated gravel roads/document.json",
       "siteGroup": "site-970130995788e0e1",
       "sharingEvidence": [],
@@ -6727,11 +6789,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Forbes State Forest \u2014 designated gravel roads",
+      "physicalSiteLabel": "Forbes State Forest — designated gravel roads",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Forbes State Forest \u2014 designated gravel roads",
+        "name": "Forbes State Forest — designated gravel roads",
         "lat": 40.12,
         "lon": -79.18,
         "country": "us"
@@ -6750,7 +6812,7 @@
       }
     },
     {
-      "raceRef": "Jennerstown Speedway \u2014 oval",
+      "raceRef": "Jennerstown Speedway — oval",
       "documentPath": "races/Jennerstown Speedway %E2%80%94 oval/document.json",
       "siteGroup": "site-8094a0b0d3afc061",
       "sharingEvidence": [],
@@ -6863,11 +6925,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Jennerstown Speedway \u2014 oval",
+      "physicalSiteLabel": "Jennerstown Speedway — oval",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Jennerstown Speedway \u2014 oval",
+        "name": "Jennerstown Speedway — oval",
         "lat": 40.155,
         "lon": -79.063,
         "country": "us"
@@ -6885,7 +6947,7 @@
       }
     },
     {
-      "raceRef": "Keystone Motorsports Park \u2014 New Alexandria",
+      "raceRef": "Keystone Motorsports Park — New Alexandria",
       "documentPath": "races/Keystone Motorsports Park %E2%80%94 New Alexandria/document.json",
       "siteGroup": "site-7602d0e9bdf75459",
       "sharingEvidence": [],
@@ -6998,11 +7060,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Keystone Motorsports Park \u2014 New Alexandria",
+      "physicalSiteLabel": "Keystone Motorsports Park — New Alexandria",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Keystone Motorsports Park \u2014 New Alexandria",
+        "name": "Keystone Motorsports Park — New Alexandria",
         "lat": 40.40831,
         "lon": -79.39744,
         "country": "us"
@@ -7020,7 +7082,7 @@
       }
     },
     {
-      "raceRef": "Pittsburgh International Race Complex \u2014 Wampum",
+      "raceRef": "Pittsburgh International Race Complex — Wampum",
       "documentPath": "races/Pittsburgh International Race Complex %E2%80%94 Wampum/document.json",
       "siteGroup": "site-b863ba89a6b16f08",
       "sharingEvidence": [],
@@ -7133,11 +7195,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Pittsburgh International Race Complex \u2014 Wampum",
+      "physicalSiteLabel": "Pittsburgh International Race Complex — Wampum",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Pittsburgh International Race Complex \u2014 Wampum",
+        "name": "Pittsburgh International Race Complex — Wampum",
         "lat": 40.85,
         "lon": -80.347,
         "country": "us"
@@ -7164,7 +7226,7 @@
       }
     },
     {
-      "raceRef": "OH 26 \u2014 Covered Bridge Scenic Byway",
+      "raceRef": "OH 26 — Covered Bridge Scenic Byway",
       "documentPath": "races/OH 26 %E2%80%94 Covered Bridge Scenic Byway/document.json",
       "siteGroup": "site-ce967576740b91ba",
       "sharingEvidence": [],
@@ -7277,11 +7339,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "OH 26 \u2014 Covered Bridge Scenic Byway",
+      "physicalSiteLabel": "OH 26 — Covered Bridge Scenic Byway",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "OH 26 \u2014 Covered Bridge Scenic Byway",
+        "name": "OH 26 — Covered Bridge Scenic Byway",
         "lat": 39.56,
         "lon": -81.2,
         "country": "us"
@@ -7301,7 +7363,7 @@
       }
     },
     {
-      "raceRef": "OH 555 \u2014 Triple Nickel",
+      "raceRef": "OH 555 — Triple Nickel",
       "documentPath": "races/OH 555 %E2%80%94 Triple Nickel/document.json",
       "siteGroup": "site-810d6d9e4e9b3ddc",
       "sharingEvidence": [],
@@ -7414,11 +7476,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "OH 555 \u2014 Triple Nickel",
+      "physicalSiteLabel": "OH 555 — Triple Nickel",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "OH 555 \u2014 Triple Nickel",
+        "name": "OH 555 — Triple Nickel",
         "lat": 39.4195178,
         "lon": -81.8156907,
         "country": "us"
@@ -7436,7 +7498,7 @@
       }
     },
     {
-      "raceRef": "OH 550 \u2014 Barlow approach",
+      "raceRef": "OH 550 — Barlow approach",
       "documentPath": "races/OH 550 %E2%80%94 Barlow approach/document.json",
       "siteGroup": "site-962dcdad0505b546",
       "sharingEvidence": [],
@@ -7549,11 +7611,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "OH 550 \u2014 Barlow approach",
+      "physicalSiteLabel": "OH 550 — Barlow approach",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "OH 550 \u2014 Barlow approach",
+        "name": "OH 550 — Barlow approach",
         "lat": 39.4,
         "lon": -81.65,
         "country": "us"
@@ -7572,7 +7634,7 @@
       }
     },
     {
-      "raceRef": "OH 536 \u2014 Ohio River hills",
+      "raceRef": "OH 536 — Ohio River hills",
       "documentPath": "races/OH 536 %E2%80%94 Ohio River hills/document.json",
       "siteGroup": "site-46654cec16ae2e4b",
       "sharingEvidence": [],
@@ -7685,11 +7747,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "OH 536 \u2014 Ohio River hills",
+      "physicalSiteLabel": "OH 536 — Ohio River hills",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "OH 536 \u2014 Ohio River hills",
+        "name": "OH 536 — Ohio River hills",
         "lat": 39.73,
         "lon": -80.99,
         "country": "us"
@@ -7708,7 +7770,7 @@
       }
     },
     {
-      "raceRef": "OH 676 \u2014 Western county hills",
+      "raceRef": "OH 676 — Western county hills",
       "documentPath": "races/OH 676 %E2%80%94 Western county hills/document.json",
       "siteGroup": "site-b0105dc9624aeb55",
       "sharingEvidence": [],
@@ -7821,11 +7883,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "OH 676 \u2014 Western county hills",
+      "physicalSiteLabel": "OH 676 — Western county hills",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "OH 676 \u2014 Western county hills",
+        "name": "OH 676 — Western county hills",
         "lat": 39.44,
         "lon": -81.78,
         "country": "us"
@@ -7847,7 +7909,7 @@
       }
     },
     {
-      "raceRef": "Marietta\u2013Williamstown \u2014 I-77 river bridge",
+      "raceRef": "Marietta–Williamstown — I-77 river bridge",
       "documentPath": "races/Marietta%E2%80%93Williamstown %E2%80%94 I-77 river bridge/document.json",
       "siteGroup": "site-85f359605453a4d3",
       "sharingEvidence": [],
@@ -7960,11 +8022,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Marietta\u2013Williamstown \u2014 I-77 river bridge",
+      "physicalSiteLabel": "Marietta–Williamstown — I-77 river bridge",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Marietta\u2013Williamstown \u2014 I-77 river bridge",
+        "name": "Marietta–Williamstown — I-77 river bridge",
         "lat": 39.403,
         "lon": -81.45,
         "country": "us"
@@ -8127,7 +8189,7 @@
       }
     },
     {
-      "raceRef": "Ohio Valley Speedway \u2014 Washington, West Virginia",
+      "raceRef": "Ohio Valley Speedway — Washington, West Virginia",
       "documentPath": "races/Ohio Valley Speedway %E2%80%94 Washington%2C West Virginia/document.json",
       "siteGroup": "site-e25b27253b7705c1",
       "sharingEvidence": [],
@@ -8240,11 +8302,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Ohio Valley Speedway \u2014 Washington, West Virginia",
+      "physicalSiteLabel": "Ohio Valley Speedway — Washington, West Virginia",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Ohio Valley Speedway \u2014 Washington, West Virginia",
+        "name": "Ohio Valley Speedway — Washington, West Virginia",
         "lat": 39.206,
         "lon": -81.663,
         "country": "us"
@@ -8262,7 +8324,7 @@
       }
     },
     {
-      "raceRef": "Mid-Ohio Sports Car Course \u2014 Lexington",
+      "raceRef": "Mid-Ohio Sports Car Course — Lexington",
       "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Lexington/document.json",
       "siteGroup": "site-b0cbeb7350e806ba",
       "sharingEvidence": [],
@@ -8406,7 +8468,7 @@
       }
     },
     {
-      "raceRef": "MO 19 \u2014 Eminence Current River",
+      "raceRef": "MO 19 — Eminence Current River",
       "documentPath": "races/MO 19 %E2%80%94 Eminence Current River/document.json",
       "siteGroup": "site-6f7ee9926494c5dd",
       "sharingEvidence": [],
@@ -8519,11 +8581,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "MO 19 \u2014 Eminence / Current River",
+      "physicalSiteLabel": "MO 19 — Eminence / Current River",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "MO 19 \u2014 Eminence / Current River",
+        "name": "MO 19 — Eminence / Current River",
         "lat": 37.43,
         "lon": -91.43,
         "country": "us"
@@ -8542,7 +8604,7 @@
       }
     },
     {
-      "raceRef": "MO 106 \u2014 Alley Spring approach",
+      "raceRef": "MO 106 — Alley Spring approach",
       "documentPath": "races/MO 106 %E2%80%94 Alley Spring approach/document.json",
       "siteGroup": "site-609064f37aca1fb7",
       "sharingEvidence": [],
@@ -8655,11 +8717,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "MO 106 \u2014 Alley Spring approach",
+      "physicalSiteLabel": "MO 106 — Alley Spring approach",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "MO 106 \u2014 Alley Spring approach",
+        "name": "MO 106 — Alley Spring approach",
         "lat": 37.15,
         "lon": -91.4,
         "country": "us"
@@ -8679,7 +8741,7 @@
       }
     },
     {
-      "raceRef": "MO 106 \u2014 Powder Mill approach",
+      "raceRef": "MO 106 — Powder Mill approach",
       "documentPath": "races/MO 106 %E2%80%94 Powder Mill approach/document.json",
       "siteGroup": "site-3424a58af1a064f0",
       "sharingEvidence": [],
@@ -8792,11 +8854,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "MO 106 \u2014 Powder Mill approach",
+      "physicalSiteLabel": "MO 106 — Powder Mill approach",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "MO 106 \u2014 Powder Mill approach",
+        "name": "MO 106 — Powder Mill approach",
         "lat": 37.17,
         "lon": -91.25,
         "country": "us"
@@ -8814,7 +8876,7 @@
       }
     },
     {
-      "raceRef": "MO V \u2014 Two Rivers access",
+      "raceRef": "MO V — Two Rivers access",
       "documentPath": "races/MO V %E2%80%94 Two Rivers access/document.json",
       "siteGroup": "site-64c6850d56553d64",
       "sharingEvidence": [],
@@ -8927,11 +8989,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "MO V \u2014 Two Rivers access",
+      "physicalSiteLabel": "MO V — Two Rivers access",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "MO V \u2014 Two Rivers access",
+        "name": "MO V — Two Rivers access",
         "lat": 37.2,
         "lon": -91.25,
         "country": "us"
@@ -8950,7 +9012,7 @@
       }
     },
     {
-      "raceRef": "MO H NN \u2014 Roberts Field access",
+      "raceRef": "MO H NN — Roberts Field access",
       "documentPath": "races/MO H NN %E2%80%94 Roberts Field access/document.json",
       "siteGroup": "site-28d57b9433a11920",
       "sharingEvidence": [],
@@ -9064,11 +9126,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "MO H / NN \u2014 Roberts Field access",
+      "physicalSiteLabel": "MO H / NN — Roberts Field access",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "MO H / NN \u2014 Roberts Field access",
+        "name": "MO H / NN — Roberts Field access",
         "lat": 37.12,
         "lon": -91.19,
         "country": "us"
@@ -9223,7 +9285,7 @@
       }
     },
     {
-      "raceRef": "US 60 \u2014 Winona Van Buren",
+      "raceRef": "US 60 — Winona Van Buren",
       "documentPath": "races/US 60 %E2%80%94 Winona Van Buren/document.json",
       "siteGroup": "site-4371a2e6ea253028",
       "sharingEvidence": [],
@@ -9336,11 +9398,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "US 60 \u2014 Winona / Van Buren",
+      "physicalSiteLabel": "US 60 — Winona / Van Buren",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "US 60 \u2014 Winona / Van Buren",
+        "name": "US 60 — Winona / Van Buren",
         "lat": 37.0097738,
         "lon": -91.3234669,
         "country": "us"
@@ -9358,7 +9420,7 @@
       }
     },
     {
-      "raceRef": "Glade Top Trail \u2014 Mark Twain National Forest",
+      "raceRef": "Glade Top Trail — Mark Twain National Forest",
       "documentPath": "races/Glade Top Trail %E2%80%94 Mark Twain National Forest/document.json",
       "siteGroup": "site-d82c5ca31f178e1b",
       "sharingEvidence": [],
@@ -9472,11 +9534,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Glade Top Trail \u2014 Mark Twain National Forest",
+      "physicalSiteLabel": "Glade Top Trail — Mark Twain National Forest",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Glade Top Trail \u2014 Mark Twain National Forest",
+        "name": "Glade Top Trail — Mark Twain National Forest",
         "lat": 36.6715964,
         "lon": -92.8147636,
         "country": "us"
@@ -9496,7 +9558,7 @@
       }
     },
     {
-      "raceRef": "Ozarks International Raceway \u2014 Gravois Mills",
+      "raceRef": "Ozarks International Raceway — Gravois Mills",
       "documentPath": "races/Ozarks International Raceway %E2%80%94 Gravois Mills/document.json",
       "siteGroup": "site-b21506fb96eb02cd",
       "sharingEvidence": [],
@@ -9609,11 +9671,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Ozarks International Raceway \u2014 Gravois Mills",
+      "physicalSiteLabel": "Ozarks International Raceway — Gravois Mills",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Ozarks International Raceway \u2014 Gravois Mills",
+        "name": "Ozarks International Raceway — Gravois Mills",
         "lat": 38.2758834,
         "lon": -92.8867072,
         "country": "us"
@@ -9636,7 +9698,7 @@
       }
     },
     {
-      "raceRef": "World Wide Technology Raceway \u2014 road course",
+      "raceRef": "World Wide Technology Raceway — road course",
       "documentPath": "races/World Wide Technology Raceway %E2%80%94 road course/document.json",
       "siteGroup": "site-a553209686518868",
       "sharingEvidence": [],
@@ -9749,11 +9811,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "World Wide Technology Raceway \u2014 road course",
+      "physicalSiteLabel": "World Wide Technology Raceway — road course",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "World Wide Technology Raceway \u2014 road course",
+        "name": "World Wide Technology Raceway — road course",
         "lat": 38.65,
         "lon": -90.135,
         "country": "us"
@@ -9774,7 +9836,7 @@
       }
     },
     {
-      "raceRef": "World Wide Technology Raceway \u2014 oval",
+      "raceRef": "World Wide Technology Raceway — oval",
       "documentPath": "races/World Wide Technology Raceway %E2%80%94 oval/document.json",
       "siteGroup": "site-79da39f5559f1500",
       "sharingEvidence": [],
@@ -9887,11 +9949,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "World Wide Technology Raceway \u2014 oval",
+      "physicalSiteLabel": "World Wide Technology Raceway — oval",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "World Wide Technology Raceway \u2014 oval",
+        "name": "World Wide Technology Raceway — oval",
         "lat": 38.65,
         "lon": -90.135,
         "country": "us"
@@ -9910,7 +9972,7 @@
       }
     },
     {
-      "raceRef": "World Wide Technology Raceway \u2014 drag strip",
+      "raceRef": "World Wide Technology Raceway — drag strip",
       "documentPath": "races/World Wide Technology Raceway %E2%80%94 drag strip/document.json",
       "siteGroup": "site-35b20e57daf6e4ff",
       "sharingEvidence": [],
@@ -10023,11 +10085,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "World Wide Technology Raceway \u2014 drag strip",
+      "physicalSiteLabel": "World Wide Technology Raceway — drag strip",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "World Wide Technology Raceway \u2014 drag strip",
+        "name": "World Wide Technology Raceway — drag strip",
         "lat": 38.65,
         "lon": -90.135,
         "country": "us"
@@ -10045,7 +10107,7 @@
       }
     },
     {
-      "raceRef": "I-64 \u2014 St. Louis downtown approaches",
+      "raceRef": "I-64 — St. Louis downtown approaches",
       "documentPath": "races/I-64 %E2%80%94 St. Louis downtown approaches/document.json",
       "siteGroup": "site-7728fb281937918e",
       "sharingEvidence": [],
@@ -10160,11 +10222,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "I-64 \u2014 St. Louis downtown approaches",
+      "physicalSiteLabel": "I-64 — St. Louis downtown approaches",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "I-64 \u2014 St. Louis downtown approaches",
+        "name": "I-64 — St. Louis downtown approaches",
         "lat": 38.625,
         "lon": -90.2,
         "country": "us"
@@ -10224,7 +10286,7 @@
       }
     },
     {
-      "raceRef": "I-70 \u2014 Stan Musial Veterans Memorial Bridge",
+      "raceRef": "I-70 — Stan Musial Veterans Memorial Bridge",
       "documentPath": "races/I-70 %E2%80%94 Stan Musial Veterans Memorial Bridge/document.json",
       "siteGroup": "site-c7f00861949723bf",
       "sharingEvidence": [],
@@ -10339,11 +10401,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "I-70 \u2014 Stan Musial Veterans Memorial Bridge",
+      "physicalSiteLabel": "I-70 — Stan Musial Veterans Memorial Bridge",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "I-70 \u2014 Stan Musial Veterans Memorial Bridge",
+        "name": "I-70 — Stan Musial Veterans Memorial Bridge",
         "lat": 38.65,
         "lon": -90.18,
         "country": "us"
@@ -10387,7 +10449,7 @@
       }
     },
     {
-      "raceRef": "IL 100 \u2014 Great River Road bluffs",
+      "raceRef": "IL 100 — Great River Road bluffs",
       "documentPath": "races/IL 100 %E2%80%94 Great River Road bluffs/document.json",
       "siteGroup": "site-72a95d1b5b2b1923",
       "sharingEvidence": [],
@@ -10500,11 +10562,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "IL 100 \u2014 Great River Road bluffs",
+      "physicalSiteLabel": "IL 100 — Great River Road bluffs",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "IL 100 \u2014 Great River Road bluffs",
+        "name": "IL 100 — Great River Road bluffs",
         "lat": 38.94,
         "lon": -90.3,
         "country": "us"
@@ -10533,7 +10595,7 @@
       }
     },
     {
-      "raceRef": "MO 94 \u2014 Defiance Augusta",
+      "raceRef": "MO 94 — Defiance Augusta",
       "documentPath": "races/MO 94 %E2%80%94 Defiance Augusta/document.json",
       "siteGroup": "site-d33be2e789a2ea03",
       "sharingEvidence": [],
@@ -10646,11 +10708,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "MO 94 \u2014 Defiance / Augusta",
+      "physicalSiteLabel": "MO 94 — Defiance / Augusta",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "MO 94 \u2014 Defiance / Augusta",
+        "name": "MO 94 — Defiance / Augusta",
         "lat": 38.64,
         "lon": -90.8,
         "country": "us"
@@ -10685,7 +10747,7 @@
       }
     },
     {
-      "raceRef": "Gateway Kartplex \u2014 WWT complex",
+      "raceRef": "Gateway Kartplex — WWT complex",
       "documentPath": "races/Gateway Kartplex %E2%80%94 WWT complex/document.json",
       "siteGroup": "site-76af81318dbcdf1e",
       "sharingEvidence": [],
@@ -10798,11 +10860,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Gateway Kartplex \u2014 WWT complex",
+      "physicalSiteLabel": "Gateway Kartplex — WWT complex",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Gateway Kartplex \u2014 WWT complex",
+        "name": "Gateway Kartplex — WWT complex",
         "lat": 38.65,
         "lon": -90.135,
         "country": "us"
@@ -10820,7 +10882,7 @@
       }
     },
     {
-      "raceRef": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+      "raceRef": "Federated Auto Parts Raceway at I-55 — Pevely",
       "documentPath": "races/Federated Auto Parts Raceway at I-55 %E2%80%94 Pevely/document.json",
       "siteGroup": "site-6a38c943710afccb",
       "sharingEvidence": [],
@@ -10933,11 +10995,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+      "physicalSiteLabel": "Federated Auto Parts Raceway at I-55 — Pevely",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+        "name": "Federated Auto Parts Raceway at I-55 — Pevely",
         "lat": 38.28,
         "lon": -90.41,
         "country": "us"
@@ -10956,7 +11018,7 @@
       }
     },
     {
-      "raceRef": "Old Route 66 \u2014 Shamrock McLean",
+      "raceRef": "Old Route 66 — Shamrock McLean",
       "documentPath": "races/Old Route 66 %E2%80%94 Shamrock McLean/document.json",
       "siteGroup": "site-c39fb30133bf59a1",
       "sharingEvidence": [],
@@ -11069,11 +11131,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Old Route 66 \u2014 Shamrock / McLean",
+      "physicalSiteLabel": "Old Route 66 — Shamrock / McLean",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Old Route 66 \u2014 Shamrock / McLean",
+        "name": "Old Route 66 — Shamrock / McLean",
         "lat": 35.23,
         "lon": -100.5,
         "country": "us"
@@ -11093,7 +11155,7 @@
       }
     },
     {
-      "raceRef": "Old Route 66 \u2014 Groom Conway",
+      "raceRef": "Old Route 66 — Groom Conway",
       "documentPath": "races/Old Route 66 %E2%80%94 Groom Conway/document.json",
       "siteGroup": "site-b162812f9b65fa16",
       "sharingEvidence": [],
@@ -11207,11 +11269,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Old Route 66 \u2014 Groom / Conway",
+      "physicalSiteLabel": "Old Route 66 — Groom / Conway",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Old Route 66 \u2014 Groom / Conway",
+        "name": "Old Route 66 — Groom / Conway",
         "lat": 35.2,
         "lon": -101.3,
         "country": "us"
@@ -11232,7 +11294,7 @@
       }
     },
     {
-      "raceRef": "Amarillo \u2014 Historic 6th Avenue alignment",
+      "raceRef": "Amarillo — Historic 6th Avenue alignment",
       "documentPath": "races/Amarillo %E2%80%94 Historic 6th Avenue alignment/document.json",
       "siteGroup": "site-7cc80bc12a0a8444",
       "sharingEvidence": [],
@@ -11345,11 +11407,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Amarillo \u2014 Historic 6th Avenue alignment",
+      "physicalSiteLabel": "Amarillo — Historic 6th Avenue alignment",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Amarillo \u2014 Historic 6th Avenue alignment",
+        "name": "Amarillo — Historic 6th Avenue alignment",
         "lat": 35.21,
         "lon": -101.87,
         "country": "us"
@@ -11375,7 +11437,7 @@
       }
     },
     {
-      "raceRef": "Old Route 66 \u2014 Vega Adrian",
+      "raceRef": "Old Route 66 — Vega Adrian",
       "documentPath": "races/Old Route 66 %E2%80%94 Vega Adrian/document.json",
       "siteGroup": "site-92f69a857d2f218c",
       "sharingEvidence": [],
@@ -11488,11 +11550,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Old Route 66 \u2014 Vega / Adrian",
+      "physicalSiteLabel": "Old Route 66 — Vega / Adrian",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Old Route 66 \u2014 Vega / Adrian",
+        "name": "Old Route 66 — Vega / Adrian",
         "lat": 35.26,
         "lon": -102.6,
         "country": "us"
@@ -11519,7 +11581,7 @@
       }
     },
     {
-      "raceRef": "Old Route 66 \u2014 Adrian Glenrio",
+      "raceRef": "Old Route 66 — Adrian Glenrio",
       "documentPath": "races/Old Route 66 %E2%80%94 Adrian Glenrio/document.json",
       "siteGroup": "site-285ed697fa66294d",
       "sharingEvidence": [],
@@ -11632,11 +11694,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Old Route 66 \u2014 Adrian / Glenrio",
+      "physicalSiteLabel": "Old Route 66 — Adrian / Glenrio",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Old Route 66 \u2014 Adrian / Glenrio",
+        "name": "Old Route 66 — Adrian / Glenrio",
         "lat": 35.18,
         "lon": -102.95,
         "country": "us"
@@ -11658,7 +11720,7 @@
       }
     },
     {
-      "raceRef": "Palo Duro Canyon \u2014 Park Road 5",
+      "raceRef": "Palo Duro Canyon — Park Road 5",
       "documentPath": "races/Palo Duro Canyon %E2%80%94 Park Road 5/document.json",
       "siteGroup": "site-6e59eaf3604323d1",
       "sharingEvidence": [],
@@ -11771,11 +11833,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Palo Duro Canyon \u2014 Park Road 5",
+      "physicalSiteLabel": "Palo Duro Canyon — Park Road 5",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Palo Duro Canyon \u2014 Park Road 5",
+        "name": "Palo Duro Canyon — Park Road 5",
         "lat": 34.96,
         "lon": -101.68,
         "country": "us"
@@ -11933,7 +11995,7 @@
       }
     },
     {
-      "raceRef": "Route 66 \u2014 Bridgeport Pony Bridge, Oklahoma",
+      "raceRef": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
       "documentPath": "races/Route 66 %E2%80%94 Bridgeport Pony Bridge%2C Oklahoma/document.json",
       "siteGroup": "site-439e4445088459ca",
       "sharingEvidence": [],
@@ -12046,11 +12108,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Route 66 \u2014 Bridgeport Pony Bridge, Oklahoma",
+      "physicalSiteLabel": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Route 66 \u2014 Bridgeport Pony Bridge, Oklahoma",
+        "name": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
         "lat": 35.54,
         "lon": -98.32,
         "country": "us"
@@ -12078,7 +12140,7 @@
       }
     },
     {
-      "raceRef": "Hallett Motor Racing Circuit \u2014 Jennings, Oklahoma",
+      "raceRef": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
       "documentPath": "races/Hallett Motor Racing Circuit %E2%80%94 Jennings%2C Oklahoma/document.json",
       "siteGroup": "site-236e80a57d83e64a",
       "sharingEvidence": [],
@@ -12191,11 +12253,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Hallett Motor Racing Circuit \u2014 Jennings, Oklahoma",
+      "physicalSiteLabel": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Hallett Motor Racing Circuit \u2014 Jennings, Oklahoma",
+        "name": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
         "lat": 36.22,
         "lon": -96.59,
         "country": "us"
@@ -12230,7 +12292,7 @@
       }
     },
     {
-      "raceRef": "Gold Camp Road \u2014 Colorado Springs",
+      "raceRef": "Gold Camp Road — Colorado Springs",
       "documentPath": "races/Gold Camp Road %E2%80%94 Colorado Springs/document.json",
       "siteGroup": "site-906155ccfcaaf978",
       "sharingEvidence": [],
@@ -12344,11 +12406,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Gold Camp Road \u2014 Colorado Springs",
+      "physicalSiteLabel": "Gold Camp Road — Colorado Springs",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Gold Camp Road \u2014 Colorado Springs",
+        "name": "Gold Camp Road — Colorado Springs",
         "lat": 38.79,
         "lon": -104.9,
         "country": "us"
@@ -12377,7 +12439,7 @@
       }
     },
     {
-      "raceRef": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "raceRef": "Phantom Canyon Road — Gold Belt Tour",
       "documentPath": "races/Phantom Canyon Road %E2%80%94 Gold Belt Tour/document.json",
       "siteGroup": "site-cdc17dfd050eb620",
       "sharingEvidence": [],
@@ -12490,11 +12552,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "physicalSiteLabel": "Phantom Canyon Road — Gold Belt Tour",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Phantom Canyon Road \u2014 Gold Belt Tour",
+        "name": "Phantom Canyon Road — Gold Belt Tour",
         "lat": 38.61,
         "lon": -105.12,
         "country": "us"
@@ -12512,7 +12574,7 @@
       }
     },
     {
-      "raceRef": "Shelf Road \u2014 Gold Belt Tour",
+      "raceRef": "Shelf Road — Gold Belt Tour",
       "documentPath": "races/Shelf Road %E2%80%94 Gold Belt Tour/document.json",
       "siteGroup": "site-26b605086a4b97c7",
       "sharingEvidence": [],
@@ -12625,11 +12687,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Shelf Road \u2014 Gold Belt Tour",
+      "physicalSiteLabel": "Shelf Road — Gold Belt Tour",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Shelf Road \u2014 Gold Belt Tour",
+        "name": "Shelf Road — Gold Belt Tour",
         "lat": 38.65,
         "lon": -105.23,
         "country": "us"
@@ -12651,7 +12713,7 @@
       }
     },
     {
-      "raceRef": "Skyline Drive \u2014 Ca\u00f1on City",
+      "raceRef": "Skyline Drive — Cañon City",
       "documentPath": "races/Skyline Drive %E2%80%94 Ca%C3%B1on City/document.json",
       "siteGroup": "site-3f4662184f179d49",
       "sharingEvidence": [],
@@ -12764,11 +12826,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Skyline Drive \u2014 Ca\u00f1on City",
+      "physicalSiteLabel": "Skyline Drive — Cañon City",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Skyline Drive \u2014 Ca\u00f1on City",
+        "name": "Skyline Drive — Cañon City",
         "lat": 38.46,
         "lon": -105.25,
         "country": "us"
@@ -12788,7 +12850,7 @@
       }
     },
     {
-      "raceRef": "US 24 \u2014 Ute Pass Woodland Park",
+      "raceRef": "US 24 — Ute Pass Woodland Park",
       "documentPath": "races/US 24 %E2%80%94 Ute Pass Woodland Park/document.json",
       "siteGroup": "site-d868f3e723288325",
       "sharingEvidence": [],
@@ -12901,11 +12963,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "US 24 \u2014 Ute Pass / Woodland Park",
+      "physicalSiteLabel": "US 24 — Ute Pass / Woodland Park",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "US 24 \u2014 Ute Pass / Woodland Park",
+        "name": "US 24 — Ute Pass / Woodland Park",
         "lat": 38.91,
         "lon": -104.98,
         "country": "us"
@@ -12925,7 +12987,7 @@
       }
     },
     {
-      "raceRef": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "raceRef": "CO 67 — Woodland Park Cripple Creek",
       "documentPath": "races/CO 67 %E2%80%94 Woodland Park Cripple Creek/document.json",
       "siteGroup": "site-81796521387fbcf3",
       "sharingEvidence": [],
@@ -13038,11 +13100,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "CO 67 \u2014 Woodland Park / Cripple Creek",
+      "physicalSiteLabel": "CO 67 — Woodland Park / Cripple Creek",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "CO 67 \u2014 Woodland Park / Cripple Creek",
+        "name": "CO 67 — Woodland Park / Cripple Creek",
         "lat": 38.83,
         "lon": -105.14,
         "country": "us"
@@ -13063,7 +13125,7 @@
       }
     },
     {
-      "raceRef": "Garden of the Gods \u2014 paved park road",
+      "raceRef": "Garden of the Gods — paved park road",
       "documentPath": "races/Garden of the Gods %E2%80%94 paved park road/document.json",
       "siteGroup": "site-d7bd7e4e0e2a093c",
       "sharingEvidence": [],
@@ -13176,11 +13238,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Garden of the Gods \u2014 paved park road",
+      "physicalSiteLabel": "Garden of the Gods — paved park road",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Garden of the Gods \u2014 paved park road",
+        "name": "Garden of the Gods — paved park road",
         "lat": 38.88,
         "lon": -104.88,
         "country": "us"
@@ -13205,7 +13267,7 @@
       }
     },
     {
-      "raceRef": "Pikes Peak International Raceway \u2014 Fountain",
+      "raceRef": "Pikes Peak International Raceway — Fountain",
       "documentPath": "races/Pikes Peak International Raceway %E2%80%94 Fountain/document.json",
       "siteGroup": "site-1ea8542dba6e677f",
       "sharingEvidence": [],
@@ -13318,11 +13380,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Pikes Peak International Raceway \u2014 Fountain",
+      "physicalSiteLabel": "Pikes Peak International Raceway — Fountain",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Pikes Peak International Raceway \u2014 Fountain",
+        "name": "Pikes Peak International Raceway — Fountain",
         "lat": 38.59,
         "lon": -104.68,
         "country": "us"
@@ -13343,7 +13405,7 @@
       }
     },
     {
-      "raceRef": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "raceRef": "Pueblo Motorsports Park — road course or drag strip",
       "documentPath": "races/Pueblo Motorsports Park %E2%80%94 road course or drag strip/document.json",
       "siteGroup": "site-e4b44163946fe00b",
       "sharingEvidence": [],
@@ -13456,11 +13518,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "physicalSiteLabel": "Pueblo Motorsports Park — road course or drag strip",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Pueblo Motorsports Park \u2014 road course or drag strip",
+        "name": "Pueblo Motorsports Park — road course or drag strip",
         "lat": 38.31,
         "lon": -104.67,
         "country": "us"
@@ -13480,7 +13542,7 @@
       }
     },
     {
-      "raceRef": "Valley of the Gods Road \u2014 San Juan CR 242",
+      "raceRef": "Valley of the Gods Road — San Juan CR 242",
       "documentPath": "races/Valley of the Gods Road %E2%80%94 San Juan CR 242/document.json",
       "siteGroup": "site-35b1b320d8f54b67",
       "sharingEvidence": [],
@@ -13593,11 +13655,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Valley of the Gods Road \u2014 San Juan CR 242",
+      "physicalSiteLabel": "Valley of the Gods Road — San Juan CR 242",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Valley of the Gods Road \u2014 San Juan CR 242",
+        "name": "Valley of the Gods Road — San Juan CR 242",
         "lat": 37.29,
         "lon": -109.83,
         "country": "us"
@@ -13615,7 +13677,7 @@
       }
     },
     {
-      "raceRef": "Muley Point Road \u2014 CR 241",
+      "raceRef": "Muley Point Road — CR 241",
       "documentPath": "races/Muley Point Road %E2%80%94 CR 241/document.json",
       "siteGroup": "site-033e9a76320cf0fc",
       "sharingEvidence": [],
@@ -13728,11 +13790,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Muley Point Road \u2014 CR 241",
+      "physicalSiteLabel": "Muley Point Road — CR 241",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Muley Point Road \u2014 CR 241",
+        "name": "Muley Point Road — CR 241",
         "lat": 37.25,
         "lon": -109.98,
         "country": "us"
@@ -13750,7 +13812,7 @@
       }
     },
     {
-      "raceRef": "UT 316 \u2014 Goosenecks State Park Road",
+      "raceRef": "UT 316 — Goosenecks State Park Road",
       "documentPath": "races/UT 316 %E2%80%94 Goosenecks State Park Road/document.json",
       "siteGroup": "site-ab8b6b6cf346c866",
       "sharingEvidence": [],
@@ -13863,11 +13925,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "UT 316 \u2014 Goosenecks State Park Road",
+      "physicalSiteLabel": "UT 316 — Goosenecks State Park Road",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "UT 316 \u2014 Goosenecks State Park Road",
+        "name": "UT 316 — Goosenecks State Park Road",
         "lat": 37.18,
         "lon": -109.92,
         "country": "us"
@@ -13887,7 +13949,7 @@
       }
     },
     {
-      "raceRef": "US 163 \u2014 Mexican Hat Monument Valley approach",
+      "raceRef": "US 163 — Mexican Hat Monument Valley approach",
       "documentPath": "races/US 163 %E2%80%94 Mexican Hat Monument Valley approach/document.json",
       "siteGroup": "site-b7b73301af0f9960",
       "sharingEvidence": [],
@@ -14000,11 +14062,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "US 163 \u2014 Mexican Hat / Monument Valley approach",
+      "physicalSiteLabel": "US 163 — Mexican Hat / Monument Valley approach",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "US 163 \u2014 Mexican Hat / Monument Valley approach",
+        "name": "US 163 — Mexican Hat / Monument Valley approach",
         "lat": 37.1014683,
         "lon": -109.9908441,
         "country": "us"
@@ -14022,7 +14084,7 @@
       }
     },
     {
-      "raceRef": "UT 95 \u2014 Comb Ridge Cedar Mesa",
+      "raceRef": "UT 95 — Comb Ridge Cedar Mesa",
       "documentPath": "races/UT 95 %E2%80%94 Comb Ridge Cedar Mesa/document.json",
       "siteGroup": "site-10c403e94ba88c6f",
       "sharingEvidence": [],
@@ -14135,11 +14197,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "UT 95 \u2014 Comb Ridge / Cedar Mesa",
+      "physicalSiteLabel": "UT 95 — Comb Ridge / Cedar Mesa",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "UT 95 \u2014 Comb Ridge / Cedar Mesa",
+        "name": "UT 95 — Comb Ridge / Cedar Mesa",
         "lat": 37.54,
         "lon": -109.73,
         "country": "us"
@@ -14160,7 +14222,7 @@
       }
     },
     {
-      "raceRef": "UT 276 \u2014 Halls Crossing approach",
+      "raceRef": "UT 276 — Halls Crossing approach",
       "documentPath": "races/UT 276 %E2%80%94 Halls Crossing approach/document.json",
       "siteGroup": "site-33a27248a35a988d",
       "sharingEvidence": [],
@@ -14273,11 +14335,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "UT 276 \u2014 Halls Crossing approach",
+      "physicalSiteLabel": "UT 276 — Halls Crossing approach",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "UT 276 \u2014 Halls Crossing approach",
+        "name": "UT 276 — Halls Crossing approach",
         "lat": 37.451041,
         "lon": -110.6919999,
         "country": "us"
@@ -14295,7 +14357,7 @@
       }
     },
     {
-      "raceRef": "US 191 \u2014 Bluff Blanding",
+      "raceRef": "US 191 — Bluff Blanding",
       "documentPath": "races/US 191 %E2%80%94 Bluff Blanding/document.json",
       "siteGroup": "site-d47c24ae2aacbd9e",
       "sharingEvidence": [],
@@ -14408,11 +14470,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "US 191 \u2014 Bluff / Blanding",
+      "physicalSiteLabel": "US 191 — Bluff / Blanding",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "US 191 \u2014 Bluff / Blanding",
+        "name": "US 191 — Bluff / Blanding",
         "lat": 37.42,
         "lon": -109.47,
         "country": "us"
@@ -14438,7 +14500,7 @@
       }
     },
     {
-      "raceRef": "Shafer Trail \u2014 Canyonlands National Park",
+      "raceRef": "Shafer Trail — Canyonlands National Park",
       "documentPath": "races/Shafer Trail %E2%80%94 Canyonlands National Park/document.json",
       "siteGroup": "site-5f666c63d5369660",
       "sharingEvidence": [],
@@ -14551,11 +14613,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Shafer Trail \u2014 Canyonlands National Park",
+      "physicalSiteLabel": "Shafer Trail — Canyonlands National Park",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Shafer Trail \u2014 Canyonlands National Park",
+        "name": "Shafer Trail — Canyonlands National Park",
         "lat": 38.46,
         "lon": -109.8,
         "country": "us"
@@ -14573,7 +14635,7 @@
       }
     },
     {
-      "raceRef": "Burr Trail switchbacks \u2014 Capitol Reef",
+      "raceRef": "Burr Trail switchbacks — Capitol Reef",
       "documentPath": "races/Burr Trail switchbacks %E2%80%94 Capitol Reef/document.json",
       "siteGroup": "site-6def4e54ef86c467",
       "sharingEvidence": [],
@@ -14686,11 +14748,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Burr Trail switchbacks \u2014 Capitol Reef",
+      "physicalSiteLabel": "Burr Trail switchbacks — Capitol Reef",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Burr Trail switchbacks \u2014 Capitol Reef",
+        "name": "Burr Trail switchbacks — Capitol Reef",
         "lat": 37.85,
         "lon": -111.03,
         "country": "us"
@@ -14713,7 +14775,7 @@
       }
     },
     {
-      "raceRef": "SR 179 \u2014 Red Rock Scenic Byway",
+      "raceRef": "SR 179 — Red Rock Scenic Byway",
       "documentPath": "races/SR 179 %E2%80%94 Red Rock Scenic Byway/document.json",
       "siteGroup": "site-005bb170476d94f6",
       "sharingEvidence": [],
@@ -14826,11 +14888,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "SR 179 \u2014 Red Rock Scenic Byway",
+      "physicalSiteLabel": "SR 179 — Red Rock Scenic Byway",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "SR 179 \u2014 Red Rock Scenic Byway",
+        "name": "SR 179 — Red Rock Scenic Byway",
         "lat": 34.8,
         "lon": -111.77,
         "country": "us"
@@ -15137,7 +15199,7 @@
       }
     },
     {
-      "raceRef": "Beaverhead Flat Road \u2014 CR 78",
+      "raceRef": "Beaverhead Flat Road — CR 78",
       "documentPath": "races/Beaverhead Flat Road %E2%80%94 CR 78/document.json",
       "siteGroup": "site-e0d9ff95a939a46d",
       "sharingEvidence": [],
@@ -15250,11 +15312,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Beaverhead Flat Road \u2014 CR 78",
+      "physicalSiteLabel": "Beaverhead Flat Road — CR 78",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Beaverhead Flat Road \u2014 CR 78",
+        "name": "Beaverhead Flat Road — CR 78",
         "lat": 34.73,
         "lon": -111.81,
         "country": "us"
@@ -15410,7 +15472,7 @@
       }
     },
     {
-      "raceRef": "Schnebly Hill Road \u2014 Sedona",
+      "raceRef": "Schnebly Hill Road — Sedona",
       "documentPath": "races/Schnebly Hill Road %E2%80%94 Sedona/document.json",
       "siteGroup": "site-d428e61a2c362a15",
       "sharingEvidence": [],
@@ -15523,11 +15585,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Schnebly Hill Road \u2014 Sedona",
+      "physicalSiteLabel": "Schnebly Hill Road — Sedona",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Schnebly Hill Road \u2014 Sedona",
+        "name": "Schnebly Hill Road — Sedona",
         "lat": 34.87,
         "lon": -111.72,
         "country": "us"
@@ -15546,7 +15608,7 @@
       }
     },
     {
-      "raceRef": "SR 89A \u2014 Mingus Mountain Jerome",
+      "raceRef": "SR 89A — Mingus Mountain Jerome",
       "documentPath": "races/SR 89A %E2%80%94 Mingus Mountain Jerome/document.json",
       "siteGroup": "site-c7a857d009b62bb3",
       "sharingEvidence": [],
@@ -15659,11 +15721,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "SR 89A \u2014 Mingus Mountain / Jerome",
+      "physicalSiteLabel": "SR 89A — Mingus Mountain / Jerome",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "SR 89A \u2014 Mingus Mountain / Jerome",
+        "name": "SR 89A — Mingus Mountain / Jerome",
         "lat": 34.69,
         "lon": -112.14,
         "country": "us"
@@ -15684,7 +15746,7 @@
       }
     },
     {
-      "raceRef": "Podium Club at Attesa \u2014 Casa Grande",
+      "raceRef": "Podium Club at Attesa — Casa Grande",
       "documentPath": "races/Podium Club at Attesa %E2%80%94 Casa Grande/document.json",
       "siteGroup": "site-bc3da45495f16d3f",
       "sharingEvidence": [],
@@ -15797,11 +15859,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Podium Club at Attesa \u2014 Casa Grande",
+      "physicalSiteLabel": "Podium Club at Attesa — Casa Grande",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Podium Club at Attesa \u2014 Casa Grande",
+        "name": "Podium Club at Attesa — Casa Grande",
         "lat": 32.8176383,
         "lon": -111.8347568,
         "country": "us"
@@ -15837,7 +15899,7 @@
       }
     },
     {
-      "raceRef": "Firebird Motorsports Park \u2014 Chandler",
+      "raceRef": "Firebird Motorsports Park — Chandler",
       "documentPath": "races/Firebird Motorsports Park %E2%80%94 Chandler/document.json",
       "siteGroup": "site-a17a7ee8466cc956",
       "sharingEvidence": [],
@@ -15950,11 +16012,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Firebird Motorsports Park \u2014 Chandler",
+      "physicalSiteLabel": "Firebird Motorsports Park — Chandler",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Firebird Motorsports Park \u2014 Chandler",
+        "name": "Firebird Motorsports Park — Chandler",
         "lat": 33.27,
         "lon": -111.97,
         "country": "us"
@@ -15972,7 +16034,7 @@
       }
     },
     {
-      "raceRef": "Angeles Forest Highway \u2014 County N3",
+      "raceRef": "Angeles Forest Highway — County N3",
       "documentPath": "races/Angeles Forest Highway %E2%80%94 County N3/document.json",
       "siteGroup": "site-e4711b7efab83f45",
       "sharingEvidence": [],
@@ -16085,11 +16147,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Angeles Forest Highway \u2014 County N3",
+      "physicalSiteLabel": "Angeles Forest Highway — County N3",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Angeles Forest Highway \u2014 County N3",
+        "name": "Angeles Forest Highway — County N3",
         "lat": 34.34,
         "lon": -118.12,
         "country": "us"
@@ -16647,7 +16709,7 @@
       }
     },
     {
-      "raceRef": "San Gabriel Canyon Road \u2014 SR 39",
+      "raceRef": "San Gabriel Canyon Road — SR 39",
       "documentPath": "races/San Gabriel Canyon Road %E2%80%94 SR 39/document.json",
       "siteGroup": "site-71fc83180996c63f",
       "sharingEvidence": [],
@@ -16760,11 +16822,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "San Gabriel Canyon Road \u2014 SR 39",
+      "physicalSiteLabel": "San Gabriel Canyon Road — SR 39",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "San Gabriel Canyon Road \u2014 SR 39",
+        "name": "San Gabriel Canyon Road — SR 39",
         "lat": 34.22,
         "lon": -117.86,
         "country": "us"
@@ -16919,7 +16981,7 @@
       }
     },
     {
-      "raceRef": "Willow Springs \u2014 Horse Thief Mile",
+      "raceRef": "Willow Springs — Horse Thief Mile",
       "documentPath": "races/Willow Springs %E2%80%94 Horse Thief Mile/document.json",
       "siteGroup": "site-b238642901dc2ed8",
       "sharingEvidence": [],
@@ -17276,7 +17338,7 @@
       }
     },
     {
-      "raceRef": "Watkins Glen \u2014 Long Course",
+      "raceRef": "Watkins Glen — Long Course",
       "documentPath": "races/Watkins Glen %E2%80%94 Long Course/document.json",
       "siteGroup": "site-bce67147a49c75bc",
       "sharingEvidence": [],
@@ -17425,7 +17487,7 @@
       }
     },
     {
-      "raceRef": "Watkins Glen \u2014 Short Course",
+      "raceRef": "Watkins Glen — Short Course",
       "documentPath": "races/Watkins Glen %E2%80%94 Short Course/document.json",
       "siteGroup": "site-bdd7c0bf00cb496c",
       "sharingEvidence": [],
@@ -17567,7 +17629,7 @@
       }
     },
     {
-      "raceRef": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+      "raceRef": "Watkins Glen — Long — No Inner Loop",
       "documentPath": "races/Watkins Glen %E2%80%94 Long %E2%80%94 No Inner Loop/document.json",
       "siteGroup": "site-468899f5347de81c",
       "sharingEvidence": [],
@@ -17716,7 +17778,7 @@
       }
     },
     {
-      "raceRef": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+      "raceRef": "Watkins Glen — Short — No Inner Loop",
       "documentPath": "races/Watkins Glen %E2%80%94 Short %E2%80%94 No Inner Loop/document.json",
       "siteGroup": "site-f7e4f9c73a855753",
       "sharingEvidence": [],
@@ -17858,7 +17920,7 @@
       }
     },
     {
-      "raceRef": "Road America \u2014 Full Course",
+      "raceRef": "Road America — Full Course",
       "documentPath": "races/Road America %E2%80%94 Full Course/document.json",
       "siteGroup": "site-c5a6ac0390ee2b55",
       "sharingEvidence": [],
@@ -18015,7 +18077,7 @@
       }
     },
     {
-      "raceRef": "Road America \u2014 The Bend",
+      "raceRef": "Road America — The Bend",
       "documentPath": "races/Road America %E2%80%94 The Bend/document.json",
       "siteGroup": "site-4399c0994726fd79",
       "sharingEvidence": [],
@@ -18172,7 +18234,7 @@
       }
     },
     {
-      "raceRef": "Road Atlanta \u2014 Grand Prix",
+      "raceRef": "Road Atlanta — Grand Prix",
       "documentPath": "races/Road Atlanta %E2%80%94 Grand Prix/document.json",
       "siteGroup": "site-ddf07ab9c4e833ad",
       "sharingEvidence": [],
@@ -18305,7 +18367,7 @@
       }
     },
     {
-      "raceRef": "Road Atlanta \u2014 Short Course",
+      "raceRef": "Road Atlanta — Short Course",
       "documentPath": "races/Road Atlanta %E2%80%94 Short Course/document.json",
       "siteGroup": "site-e7da23dedd4402ce",
       "sharingEvidence": [],
@@ -18439,7 +18501,7 @@
       }
     },
     {
-      "raceRef": "Road Atlanta \u2014 Club Course",
+      "raceRef": "Road Atlanta — Club Course",
       "documentPath": "races/Road Atlanta %E2%80%94 Club Course/document.json",
       "siteGroup": "site-de59986543b00c20",
       "sharingEvidence": [],
@@ -18571,7 +18633,7 @@
       }
     },
     {
-      "raceRef": "Virginia International Raceway \u2014 Full Course",
+      "raceRef": "Virginia International Raceway — Full Course",
       "documentPath": "races/Virginia International Raceway %E2%80%94 Full Course/document.json",
       "siteGroup": "site-6ba4a2035b915fa5",
       "sharingEvidence": [],
@@ -18718,7 +18780,7 @@
       }
     },
     {
-      "raceRef": "Virginia International Raceway \u2014 North Course",
+      "raceRef": "Virginia International Raceway — North Course",
       "documentPath": "races/Virginia International Raceway %E2%80%94 North Course/document.json",
       "siteGroup": "site-3bee6fca2e0c86b7",
       "sharingEvidence": [],
@@ -18865,7 +18927,7 @@
       }
     },
     {
-      "raceRef": "Virginia International Raceway \u2014 South Course",
+      "raceRef": "Virginia International Raceway — South Course",
       "documentPath": "races/Virginia International Raceway %E2%80%94 South Course/document.json",
       "siteGroup": "site-94cdae4231d7d611",
       "sharingEvidence": [],
@@ -19005,7 +19067,7 @@
       }
     },
     {
-      "raceRef": "Virginia International Raceway \u2014 Grand Course",
+      "raceRef": "Virginia International Raceway — Grand Course",
       "documentPath": "races/Virginia International Raceway %E2%80%94 Grand Course/document.json",
       "siteGroup": "site-9df814c43ed0963f",
       "sharingEvidence": [],
@@ -19156,7 +19218,7 @@
       }
     },
     {
-      "raceRef": "Sebring International Raceway \u2014 Full Circuit",
+      "raceRef": "Sebring International Raceway — Full Circuit",
       "documentPath": "races/Sebring International Raceway %E2%80%94 Full Circuit/document.json",
       "siteGroup": "site-8a5c42a243a2044e",
       "sharingEvidence": [],
@@ -19305,7 +19367,7 @@
       }
     },
     {
-      "raceRef": "Sebring International Raceway \u2014 Short Circuit",
+      "raceRef": "Sebring International Raceway — Short Circuit",
       "documentPath": "races/Sebring International Raceway %E2%80%94 Short Circuit/document.json",
       "siteGroup": "site-d4f4aa25da5dd387",
       "sharingEvidence": [],
@@ -19444,7 +19506,7 @@
       }
     },
     {
-      "raceRef": "Sebring International Raceway \u2014 Club Circuit",
+      "raceRef": "Sebring International Raceway — Club Circuit",
       "documentPath": "races/Sebring International Raceway %E2%80%94 Club Circuit/document.json",
       "siteGroup": "site-c1f49cf92ebea172",
       "sharingEvidence": [],
@@ -19587,7 +19649,7 @@
       }
     },
     {
-      "raceRef": "Indianapolis Motor Speedway \u2014 Oval",
+      "raceRef": "Indianapolis Motor Speedway — Oval",
       "documentPath": "races/Indianapolis Motor Speedway %E2%80%94 Oval/document.json",
       "siteGroup": "site-a5cbfb89b7330fb2",
       "sharingEvidence": [],
@@ -19727,7 +19789,7 @@
       }
     },
     {
-      "raceRef": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+      "raceRef": "Indianapolis Motor Speedway — Grand Prix Road Course",
       "documentPath": "races/Indianapolis Motor Speedway %E2%80%94 Grand Prix Road Course/document.json",
       "siteGroup": "site-992e4be2802567c7",
       "sharingEvidence": [],
@@ -19864,7 +19926,7 @@
       }
     },
     {
-      "raceRef": "Homestead-Miami Speedway \u2014 Oval",
+      "raceRef": "Homestead-Miami Speedway — Oval",
       "documentPath": "races/Homestead-Miami Speedway %E2%80%94 Oval/document.json",
       "siteGroup": "site-0cdd624ed9fbb7b7",
       "sharingEvidence": [],
@@ -19999,7 +20061,7 @@
       }
     },
     {
-      "raceRef": "Homestead-Miami Speedway \u2014 Road Course",
+      "raceRef": "Homestead-Miami Speedway — Road Course",
       "documentPath": "races/Homestead-Miami Speedway %E2%80%94 Road Course/document.json",
       "siteGroup": "site-31f1c57180770e27",
       "sharingEvidence": [],
@@ -20135,7 +20197,7 @@
       }
     },
     {
-      "raceRef": "Homestead-Miami Speedway \u2014 Modified Road Course",
+      "raceRef": "Homestead-Miami Speedway — Modified Road Course",
       "documentPath": "races/Homestead-Miami Speedway %E2%80%94 Modified Road Course/document.json",
       "siteGroup": "site-8ea2d614b48dc6b0",
       "sharingEvidence": [],
@@ -20271,7 +20333,7 @@
       }
     },
     {
-      "raceRef": "Daytona International Speedway \u2014 Sports Car Course",
+      "raceRef": "Daytona International Speedway — Sports Car Course",
       "documentPath": "races/Daytona International Speedway %E2%80%94 Sports Car Course/document.json",
       "siteGroup": "site-040012d0d2a78868",
       "sharingEvidence": [],
@@ -20413,7 +20475,7 @@
       }
     },
     {
-      "raceRef": "Daytona International Speedway \u2014 Stock Car Road Course",
+      "raceRef": "Daytona International Speedway — Stock Car Road Course",
       "documentPath": "races/Daytona International Speedway %E2%80%94 Stock Car Road Course/document.json",
       "siteGroup": "site-f8732f7943c1da08",
       "sharingEvidence": [],
@@ -20556,7 +20618,7 @@
       }
     },
     {
-      "raceRef": "Willow Springs \u2014 Big Willow",
+      "raceRef": "Willow Springs — Big Willow",
       "documentPath": "races/Willow Springs %E2%80%94 Big Willow/document.json",
       "siteGroup": "site-4a76608503775342",
       "sharingEvidence": [],
@@ -20687,7 +20749,7 @@
       }
     },
     {
-      "raceRef": "Willow Springs \u2014 Streets of Willow",
+      "raceRef": "Willow Springs — Streets of Willow",
       "documentPath": "races/Willow Springs %E2%80%94 Streets of Willow/document.json",
       "siteGroup": "site-6353372d8bbd3acc",
       "sharingEvidence": [],
@@ -20820,7 +20882,7 @@
       }
     },
     {
-      "raceRef": "Willow Springs \u2014 Streets \u2014 Short",
+      "raceRef": "Willow Springs — Streets — Short",
       "documentPath": "races/Willow Springs %E2%80%94 Streets %E2%80%94 Short/document.json",
       "siteGroup": "site-618999da161e61bd",
       "sharingEvidence": [],
@@ -20954,7 +21016,7 @@
       }
     },
     {
-      "raceRef": "Lime Rock Park \u2014 West Chicane",
+      "raceRef": "Lime Rock Park — West Chicane",
       "documentPath": "races/Lime Rock Park %E2%80%94 West Chicane/document.json",
       "siteGroup": "site-a1b439a494376429",
       "sharingEvidence": [],
@@ -21097,7 +21159,7 @@
       }
     },
     {
-      "raceRef": "Lime Rock Park \u2014 Both Chicanes",
+      "raceRef": "Lime Rock Park — Both Chicanes",
       "documentPath": "races/Lime Rock Park %E2%80%94 Both Chicanes/document.json",
       "siteGroup": "site-cca2e8da95ac4711",
       "sharingEvidence": [],
@@ -21240,7 +21302,7 @@
       }
     },
     {
-      "raceRef": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+      "raceRef": "Mid-Ohio Sports Car Course — Chicane Course",
       "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Chicane Course/document.json",
       "siteGroup": "site-955f0c22bb8a9ff8",
       "sharingEvidence": [],
@@ -21376,7 +21438,7 @@
       }
     },
     {
-      "raceRef": "Mid-Ohio Sports Car Course \u2014 Short Course",
+      "raceRef": "Mid-Ohio Sports Car Course — Short Course",
       "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Short Course/document.json",
       "siteGroup": "site-60dd2dabe28ff5a9",
       "sharingEvidence": [],
@@ -21511,7 +21573,7 @@
       }
     },
     {
-      "raceRef": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+      "raceRef": "Hatcher Pass — Palmer-Fishhook Climb",
       "documentPath": "races/Hatcher Pass %E2%80%94 Palmer-Fishhook Climb/document.json",
       "siteGroup": "site-216b9cad691d1390",
       "sharingEvidence": [],
@@ -21630,11 +21692,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+      "physicalSiteLabel": "Hatcher Pass — Palmer-Fishhook Climb",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+        "name": "Hatcher Pass — Palmer-Fishhook Climb",
         "lat": 61.738,
         "lon": -149.24,
         "country": "us"
@@ -21653,7 +21715,7 @@
       }
     },
     {
-      "raceRef": "Pig Trail \u2014 Arkansas 23",
+      "raceRef": "Pig Trail — Arkansas 23",
       "documentPath": "races/Pig Trail %E2%80%94 Arkansas 23/document.json",
       "siteGroup": "site-78f0fe9c94a11f29",
       "sharingEvidence": [],
@@ -21764,11 +21826,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Pig Trail \u2014 Arkansas 23",
+      "physicalSiteLabel": "Pig Trail — Arkansas 23",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Pig Trail \u2014 Arkansas 23",
+        "name": "Pig Trail — Arkansas 23",
         "lat": 35.672,
         "lon": -93.816,
         "country": "us"
@@ -21790,7 +21852,7 @@
       }
     },
     {
-      "raceRef": "Brandywine Valley \u2014 Montchanin Road",
+      "raceRef": "Brandywine Valley — Montchanin Road",
       "documentPath": "races/Brandywine Valley %E2%80%94 Montchanin Road/document.json",
       "siteGroup": "site-bb4fb2890971812e",
       "sharingEvidence": [],
@@ -21901,11 +21963,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Brandywine Valley \u2014 Montchanin Road",
+      "physicalSiteLabel": "Brandywine Valley — Montchanin Road",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Brandywine Valley \u2014 Montchanin Road",
+        "name": "Brandywine Valley — Montchanin Road",
         "lat": 39.805,
         "lon": -75.591,
         "country": "us"
@@ -21943,7 +22005,7 @@
       }
     },
     {
-      "raceRef": "Hana Highway \u2014 Rainforest Bends",
+      "raceRef": "Hana Highway — Rainforest Bends",
       "documentPath": "races/Hana Highway %E2%80%94 Rainforest Bends/document.json",
       "siteGroup": "site-7cd23d44d23189c0",
       "sharingEvidence": [],
@@ -22054,11 +22116,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Hana Highway \u2014 Rainforest Bends",
+      "physicalSiteLabel": "Hana Highway — Rainforest Bends",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Hana Highway \u2014 Rainforest Bends",
+        "name": "Hana Highway — Rainforest Bends",
         "lat": 20.855,
         "lon": -156.145,
         "country": "us"
@@ -22085,7 +22147,7 @@
       }
     },
     {
-      "raceRef": "Grafton Notch \u2014 Maine 26",
+      "raceRef": "Grafton Notch — Maine 26",
       "documentPath": "races/Grafton Notch %E2%80%94 Maine 26/document.json",
       "siteGroup": "site-d9cc2cc3ede4adad",
       "sharingEvidence": [],
@@ -22196,11 +22258,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Grafton Notch \u2014 Maine 26",
+      "physicalSiteLabel": "Grafton Notch — Maine 26",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Grafton Notch \u2014 Maine 26",
+        "name": "Grafton Notch — Maine 26",
         "lat": 44.589,
         "lon": -70.94,
         "country": "us"
@@ -22225,7 +22287,7 @@
       }
     },
     {
-      "raceRef": "National Road \u2014 Sideling Hill",
+      "raceRef": "National Road — Sideling Hill",
       "documentPath": "races/National Road %E2%80%94 Sideling Hill/document.json",
       "siteGroup": "site-2c1fd8d13734f0b2",
       "sharingEvidence": [],
@@ -22336,11 +22398,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "National Road \u2014 Sideling Hill",
+      "physicalSiteLabel": "National Road — Sideling Hill",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "National Road \u2014 Sideling Hill",
+        "name": "National Road — Sideling Hill",
         "lat": 39.694,
         "lon": -78.359,
         "country": "us"
@@ -22365,7 +22427,7 @@
       }
     },
     {
-      "raceRef": "Natchez Trace \u2014 Tishomingo",
+      "raceRef": "Natchez Trace — Tishomingo",
       "documentPath": "races/Natchez Trace %E2%80%94 Tishomingo/document.json",
       "siteGroup": "site-a49d702c7d874e77",
       "sharingEvidence": [],
@@ -22476,11 +22538,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Natchez Trace \u2014 Tishomingo",
+      "physicalSiteLabel": "Natchez Trace — Tishomingo",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Natchez Trace \u2014 Tishomingo",
+        "name": "Natchez Trace — Tishomingo",
         "lat": 34.602,
         "lon": -88.215,
         "country": "us"
@@ -22513,7 +22575,7 @@
       }
     },
     {
-      "raceRef": "Beartooth Highway \u2014 Rock Creek Climb",
+      "raceRef": "Beartooth Highway — Rock Creek Climb",
       "documentPath": "races/Beartooth Highway %E2%80%94 Rock Creek Climb/document.json",
       "siteGroup": "site-d5026e3f3babb2fe",
       "sharingEvidence": [],
@@ -22624,11 +22686,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Beartooth Highway \u2014 Rock Creek Climb",
+      "physicalSiteLabel": "Beartooth Highway — Rock Creek Climb",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Beartooth Highway \u2014 Rock Creek Climb",
+        "name": "Beartooth Highway — Rock Creek Climb",
         "lat": 45.068,
         "lon": -109.411,
         "country": "us"
@@ -23486,7 +23548,7 @@
       }
     },
     {
-      "raceRef": "Brainerd \u2014 Competition Course",
+      "raceRef": "Brainerd — Competition Course",
       "documentPath": "races/Brainerd %E2%80%94 Competition Course/document.json",
       "siteGroup": "site-a2afa1a045dcd258",
       "sharingEvidence": [],
@@ -23495,7 +23557,7 @@
         {
           "id": "state-mn",
           "venueKey": "state-mn",
-          "venueName": "Brainerd \u2014 Competition Course",
+          "venueName": "Brainerd — Competition Course",
           "hubStage": 6,
           "location": {
             "lat": 46.418,
@@ -23597,13 +23659,13 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Brainerd \u2014 Competition Course",
+      "physicalSiteLabel": "Brainerd — Competition Course",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [
-        "Brainerd \u2014 Competition Course"
+        "Brainerd — Competition Course"
       ],
       "sourceOrigin": {
-        "name": "Brainerd \u2014 Competition Course",
+        "name": "Brainerd — Competition Course",
         "lat": 46.418,
         "lon": -94.274,
         "country": "us"
@@ -23623,7 +23685,7 @@
       }
     },
     {
-      "raceRef": "Spring Mountain \u2014 North South",
+      "raceRef": "Spring Mountain — North South",
       "documentPath": "races/Spring Mountain %E2%80%94 North South/document.json",
       "siteGroup": "site-a7d4aa2554113a6e",
       "sharingEvidence": [],
@@ -23632,7 +23694,7 @@
         {
           "id": "state-nv",
           "venueKey": "state-nv",
-          "venueName": "Spring Mountain \u2014 North South",
+          "venueName": "Spring Mountain — North South",
           "hubStage": 11,
           "location": {
             "lat": 36.17,
@@ -23734,13 +23796,13 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Spring Mountain \u2014 North South",
+      "physicalSiteLabel": "Spring Mountain — North South",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [
-        "Spring Mountain \u2014 North South"
+        "Spring Mountain — North South"
       ],
       "sourceOrigin": {
-        "name": "Spring Mountain \u2014 North South",
+        "name": "Spring Mountain — North South",
         "lat": 36.17,
         "lon": -115.912,
         "country": "us"
@@ -23759,7 +23821,7 @@
       }
     },
     {
-      "raceRef": "NJMP \u2014 Thunderbolt",
+      "raceRef": "NJMP — Thunderbolt",
       "documentPath": "races/NJMP %E2%80%94 Thunderbolt/document.json",
       "siteGroup": "site-c041aab7eb129987",
       "sharingEvidence": [],
@@ -23768,7 +23830,7 @@
         {
           "id": "state-nj",
           "venueKey": "state-nj",
-          "venueName": "NJMP \u2014 Thunderbolt",
+          "venueName": "NJMP — Thunderbolt",
           "hubStage": 3,
           "location": {
             "lat": 39.355,
@@ -23870,13 +23932,13 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "NJMP \u2014 Thunderbolt",
+      "physicalSiteLabel": "NJMP — Thunderbolt",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [
-        "NJMP \u2014 Thunderbolt"
+        "NJMP — Thunderbolt"
       ],
       "sourceOrigin": {
-        "name": "NJMP \u2014 Thunderbolt",
+        "name": "NJMP — Thunderbolt",
         "lat": 39.355,
         "lon": -75.061,
         "country": "us"
@@ -23896,7 +23958,7 @@
       }
     },
     {
-      "raceRef": "Sandia Speedway \u2014 Road Course",
+      "raceRef": "Sandia Speedway — Road Course",
       "documentPath": "races/Sandia Speedway %E2%80%94 Road Course/document.json",
       "siteGroup": "site-855447c8432138fc",
       "sharingEvidence": [],
@@ -23905,7 +23967,7 @@
         {
           "id": "state-nm",
           "venueKey": "state-nm",
-          "venueName": "Sandia Speedway \u2014 Road Course",
+          "venueName": "Sandia Speedway — Road Course",
           "hubStage": 9,
           "location": {
             "lat": 35.028,
@@ -24007,13 +24069,13 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Sandia Speedway \u2014 Road Course",
+      "physicalSiteLabel": "Sandia Speedway — Road Course",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [
-        "Sandia Speedway \u2014 Road Course"
+        "Sandia Speedway — Road Course"
       ],
       "sourceOrigin": {
-        "name": "Sandia Speedway \u2014 Road Course",
+        "name": "Sandia Speedway — Road Course",
         "lat": 35.028,
         "lon": -106.858,
         "country": "us"
@@ -24031,7 +24093,7 @@
       }
     },
     {
-      "raceRef": "NCCAR \u2014 Road Course",
+      "raceRef": "NCCAR — Road Course",
       "documentPath": "races/NCCAR %E2%80%94 Road Course/document.json",
       "siteGroup": "site-3a5aa14c138a5399",
       "sharingEvidence": [],
@@ -24040,7 +24102,7 @@
         {
           "id": "state-nc",
           "venueKey": "state-nc",
-          "venueName": "NCCAR \u2014 Road Course",
+          "venueName": "NCCAR — Road Course",
           "hubStage": 3,
           "location": {
             "lat": 36.468,
@@ -24142,13 +24204,13 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "NCCAR \u2014 Road Course",
+      "physicalSiteLabel": "NCCAR — Road Course",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [
-        "NCCAR \u2014 Road Course"
+        "NCCAR — Road Course"
       ],
       "sourceOrigin": {
-        "name": "NCCAR \u2014 Road Course",
+        "name": "NCCAR — Road Course",
         "lat": 36.468,
         "lon": -77.569,
         "country": "us"
@@ -24167,7 +24229,7 @@
       }
     },
     {
-      "raceRef": "Theodore Roosevelt \u2014 North Unit Drive",
+      "raceRef": "Theodore Roosevelt — North Unit Drive",
       "documentPath": "races/Theodore Roosevelt %E2%80%94 North Unit Drive/document.json",
       "siteGroup": "site-0a44617d8ce6d04d",
       "sharingEvidence": [],
@@ -24286,11 +24348,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Theodore Roosevelt \u2014 North Unit Drive",
+      "physicalSiteLabel": "Theodore Roosevelt — North Unit Drive",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Theodore Roosevelt \u2014 North Unit Drive",
+        "name": "Theodore Roosevelt — North Unit Drive",
         "lat": 47.588,
         "lon": -103.327,
         "country": "us"
@@ -24310,7 +24372,7 @@
       }
     },
     {
-      "raceRef": "Needles Highway \u2014 Granite Gates",
+      "raceRef": "Needles Highway — Granite Gates",
       "documentPath": "races/Needles Highway %E2%80%94 Granite Gates/document.json",
       "siteGroup": "site-713f04892f9e7ccc",
       "sharingEvidence": [],
@@ -24429,11 +24491,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Needles Highway \u2014 Granite Gates",
+      "physicalSiteLabel": "Needles Highway — Granite Gates",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Needles Highway \u2014 Granite Gates",
+        "name": "Needles Highway — Granite Gates",
         "lat": 43.85,
         "lon": -103.531,
         "country": "us"
@@ -24462,7 +24524,7 @@
       }
     },
     {
-      "raceRef": "Smugglers Notch \u2014 Vermont 108",
+      "raceRef": "Smugglers Notch — Vermont 108",
       "documentPath": "races/Smugglers Notch %E2%80%94 Vermont 108/document.json",
       "siteGroup": "site-a487c1e38b5678d4",
       "sharingEvidence": [],
@@ -24573,11 +24635,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Smugglers Notch \u2014 Vermont 108",
+      "physicalSiteLabel": "Smugglers Notch — Vermont 108",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Smugglers Notch \u2014 Vermont 108",
+        "name": "Smugglers Notch — Vermont 108",
         "lat": 44.556,
         "lon": -72.792,
         "country": "us"
@@ -24604,7 +24666,7 @@
       }
     },
     {
-      "raceRef": "Wind River Canyon \u2014 Canyon Walls",
+      "raceRef": "Wind River Canyon — Canyon Walls",
       "documentPath": "races/Wind River Canyon %E2%80%94 Canyon Walls/document.json",
       "siteGroup": "site-e52ed6fb5f7b9b45",
       "sharingEvidence": [],
@@ -24723,11 +24785,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Wind River Canyon \u2014 Canyon Walls",
+      "physicalSiteLabel": "Wind River Canyon — Canyon Walls",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Wind River Canyon \u2014 Canyon Walls",
+        "name": "Wind River Canyon — Canyon Walls",
         "lat": 43.658,
         "lon": -108.204,
         "country": "us"
@@ -25320,7 +25382,7 @@
       }
     },
     {
-      "raceRef": "Ponderosa Pine \u2014 Idaho 21",
+      "raceRef": "Ponderosa Pine — Idaho 21",
       "documentPath": "races/Ponderosa Pine %E2%80%94 Idaho 21/document.json",
       "siteGroup": "site-af7c737aa09bdaf5",
       "sharingEvidence": [],
@@ -25431,11 +25493,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Ponderosa Pine \u2014 Idaho 21",
+      "physicalSiteLabel": "Ponderosa Pine — Idaho 21",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Ponderosa Pine \u2014 Idaho 21",
+        "name": "Ponderosa Pine — Idaho 21",
         "lat": 43.822,
         "lon": -115.846,
         "country": "us"
@@ -25453,7 +25515,7 @@
       }
     },
     {
-      "raceRef": "Birmingham, AL \u2014 Landmark Run",
+      "raceRef": "Birmingham, AL — Landmark Run",
       "documentPath": "races/Birmingham%2C AL %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-8fbef84f052f150c",
       "sharingEvidence": [],
@@ -25564,11 +25626,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Birmingham \u2014 Landmark Run",
+      "physicalSiteLabel": "Birmingham — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Birmingham \u2014 Landmark Run",
+        "name": "Birmingham — Landmark Run",
         "lat": 33.518,
         "lon": -86.807,
         "country": "us"
@@ -25627,7 +25689,7 @@
       }
     },
     {
-      "raceRef": "Phoenix, AZ \u2014 Landmark Run",
+      "raceRef": "Phoenix, AZ — Landmark Run",
       "documentPath": "races/Phoenix%2C AZ %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-c862046bbb9c22a4",
       "sharingEvidence": [],
@@ -25738,11 +25800,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Phoenix \u2014 Landmark Run",
+      "physicalSiteLabel": "Phoenix — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Phoenix \u2014 Landmark Run",
+        "name": "Phoenix — Landmark Run",
         "lat": 33.45,
         "lon": -112.078,
         "country": "us"
@@ -25825,7 +25887,7 @@
       }
     },
     {
-      "raceRef": "Los Angeles, CA \u2014 Landmark Run",
+      "raceRef": "Los Angeles, CA — Landmark Run",
       "documentPath": "races/Los Angeles%2C CA %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-dfe391e6a8375f3f",
       "sharingEvidence": [],
@@ -25936,11 +25998,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Los Angeles \u2014 Landmark Run",
+      "physicalSiteLabel": "Los Angeles — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Los Angeles \u2014 Landmark Run",
+        "name": "Los Angeles — Landmark Run",
         "lat": 34.052,
         "lon": -118.248,
         "country": "us"
@@ -26047,7 +26109,7 @@
       }
     },
     {
-      "raceRef": "Hartford, CT \u2014 Landmark Run",
+      "raceRef": "Hartford, CT — Landmark Run",
       "documentPath": "races/Hartford%2C CT %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-dc75e0e04643379e",
       "sharingEvidence": [],
@@ -26166,11 +26228,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Hartford \u2014 Landmark Run",
+      "physicalSiteLabel": "Hartford — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Hartford \u2014 Landmark Run",
+        "name": "Hartford — Landmark Run",
         "lat": 41.763,
         "lon": -72.687,
         "country": "us"
@@ -26259,7 +26321,7 @@
       }
     },
     {
-      "raceRef": "Wilmington, DE \u2014 Landmark Run",
+      "raceRef": "Wilmington, DE — Landmark Run",
       "documentPath": "races/Wilmington%2C DE %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-57f19d99e17eb2bd",
       "sharingEvidence": [],
@@ -26370,11 +26432,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Wilmington \u2014 Landmark Run",
+      "physicalSiteLabel": "Wilmington — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Wilmington \u2014 Landmark Run",
+        "name": "Wilmington — Landmark Run",
         "lat": 39.743,
         "lon": -75.552,
         "country": "us"
@@ -26443,7 +26505,7 @@
       }
     },
     {
-      "raceRef": "Miami, FL \u2014 Landmark Run",
+      "raceRef": "Miami, FL — Landmark Run",
       "documentPath": "races/Miami%2C FL %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-5109a6bdde2bfc10",
       "sharingEvidence": [],
@@ -26562,11 +26624,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Miami \u2014 Landmark Run",
+      "physicalSiteLabel": "Miami — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Miami \u2014 Landmark Run",
+        "name": "Miami — Landmark Run",
         "lat": 25.778,
         "lon": -80.193,
         "country": "us"
@@ -26652,7 +26714,7 @@
       }
     },
     {
-      "raceRef": "Atlanta, GA \u2014 Landmark Run",
+      "raceRef": "Atlanta, GA — Landmark Run",
       "documentPath": "races/Atlanta%2C GA %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-6f5b30be5456f7e1",
       "sharingEvidence": [],
@@ -26763,11 +26825,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Atlanta \u2014 Landmark Run",
+      "physicalSiteLabel": "Atlanta — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Atlanta \u2014 Landmark Run",
+        "name": "Atlanta — Landmark Run",
         "lat": 33.756,
         "lon": -84.388,
         "country": "us"
@@ -26863,7 +26925,7 @@
       }
     },
     {
-      "raceRef": "Chicago, IL \u2014 Landmark Run",
+      "raceRef": "Chicago, IL — Landmark Run",
       "documentPath": "races/Chicago%2C IL %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-18f72d527e5df19a",
       "sharingEvidence": [],
@@ -26982,11 +27044,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Chicago \u2014 Landmark Run",
+      "physicalSiteLabel": "Chicago — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Chicago \u2014 Landmark Run",
+        "name": "Chicago — Landmark Run",
         "lat": 41.885,
         "lon": -87.628,
         "country": "us"
@@ -27079,7 +27141,7 @@
       }
     },
     {
-      "raceRef": "Des Moines, IA \u2014 Landmark Run",
+      "raceRef": "Des Moines, IA — Landmark Run",
       "documentPath": "races/Des Moines%2C IA %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-48a69f289b41065e",
       "sharingEvidence": [],
@@ -27198,11 +27260,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Des Moines \u2014 Landmark Run",
+      "physicalSiteLabel": "Des Moines — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Des Moines \u2014 Landmark Run",
+        "name": "Des Moines — Landmark Run",
         "lat": 41.587,
         "lon": -93.617,
         "country": "us"
@@ -27253,7 +27315,7 @@
       }
     },
     {
-      "raceRef": "Louisville, KY \u2014 Landmark Run",
+      "raceRef": "Louisville, KY — Landmark Run",
       "documentPath": "races/Louisville%2C KY %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-a55d00ac69a1e402",
       "sharingEvidence": [],
@@ -27372,11 +27434,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Louisville \u2014 Landmark Run",
+      "physicalSiteLabel": "Louisville — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Louisville \u2014 Landmark Run",
+        "name": "Louisville — Landmark Run",
         "lat": 38.255,
         "lon": -85.759,
         "country": "us"
@@ -27434,7 +27496,7 @@
       }
     },
     {
-      "raceRef": "Baltimore, MD \u2014 Landmark Run",
+      "raceRef": "Baltimore, MD — Landmark Run",
       "documentPath": "races/Baltimore%2C MD %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-727739080f4edf00",
       "sharingEvidence": [],
@@ -27553,11 +27615,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Baltimore \u2014 Landmark Run",
+      "physicalSiteLabel": "Baltimore — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Baltimore \u2014 Landmark Run",
+        "name": "Baltimore — Landmark Run",
         "lat": 39.291,
         "lon": -76.614,
         "country": "us"
@@ -27635,7 +27697,7 @@
       }
     },
     {
-      "raceRef": "Detroit, MI \u2014 Landmark Run",
+      "raceRef": "Detroit, MI — Landmark Run",
       "documentPath": "races/Detroit%2C MI %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-c5f1aa302a17a49e",
       "sharingEvidence": [],
@@ -27746,11 +27808,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Detroit \u2014 Landmark Run",
+      "physicalSiteLabel": "Detroit — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Detroit \u2014 Landmark Run",
+        "name": "Detroit — Landmark Run",
         "lat": 42.335,
         "lon": -83.052,
         "country": "us"
@@ -27838,7 +27900,7 @@
       }
     },
     {
-      "raceRef": "Anchorage, AK \u2014 Landmark Run",
+      "raceRef": "Anchorage, AK — Landmark Run",
       "documentPath": "races/Anchorage%2C AK %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-c22955a9bacbba73",
       "sharingEvidence": [],
@@ -27949,11 +28011,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Anchorage \u2014 Landmark Run",
+      "physicalSiteLabel": "Anchorage — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Anchorage \u2014 Landmark Run",
+        "name": "Anchorage — Landmark Run",
         "lat": 61.218,
         "lon": -149.896,
         "country": "us"
@@ -28013,7 +28075,7 @@
       }
     },
     {
-      "raceRef": "Little Rock, AR \u2014 Landmark Run",
+      "raceRef": "Little Rock, AR — Landmark Run",
       "documentPath": "races/Little Rock%2C AR %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-f5f47a1aa540e675",
       "sharingEvidence": [],
@@ -28124,11 +28186,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Little Rock \u2014 Landmark Run",
+      "physicalSiteLabel": "Little Rock — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Little Rock \u2014 Landmark Run",
+        "name": "Little Rock — Landmark Run",
         "lat": 34.745,
         "lon": -92.283,
         "country": "us"
@@ -28194,7 +28256,7 @@
       }
     },
     {
-      "raceRef": "Boise, ID \u2014 Landmark Run",
+      "raceRef": "Boise, ID — Landmark Run",
       "documentPath": "races/Boise%2C ID %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-d8c9960fb4ef0df7",
       "sharingEvidence": [],
@@ -28305,11 +28367,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Boise \u2014 Landmark Run",
+      "physicalSiteLabel": "Boise — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Boise \u2014 Landmark Run",
+        "name": "Boise — Landmark Run",
         "lat": 43.615,
         "lon": -116.203,
         "country": "us"
@@ -28367,7 +28429,7 @@
       }
     },
     {
-      "raceRef": "Wichita, KS \u2014 Landmark Run",
+      "raceRef": "Wichita, KS — Landmark Run",
       "documentPath": "races/Wichita%2C KS %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-879d7801409b1a84",
       "sharingEvidence": [],
@@ -28478,11 +28540,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Wichita \u2014 Landmark Run",
+      "physicalSiteLabel": "Wichita — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Wichita \u2014 Landmark Run",
+        "name": "Wichita — Landmark Run",
         "lat": 37.689,
         "lon": -97.34,
         "country": "us"
@@ -28546,7 +28608,7 @@
       }
     },
     {
-      "raceRef": "Portland, ME \u2014 Landmark Run",
+      "raceRef": "Portland, ME — Landmark Run",
       "documentPath": "races/Portland%2C ME %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-be2bff47e0136b6f",
       "sharingEvidence": [],
@@ -28665,11 +28727,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Portland \u2014 Landmark Run",
+      "physicalSiteLabel": "Portland — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Portland \u2014 Landmark Run",
+        "name": "Portland — Landmark Run",
         "lat": 43.659,
         "lon": -70.254,
         "country": "us"
@@ -28726,7 +28788,7 @@
       }
     },
     {
-      "raceRef": "Honolulu, HI \u2014 Landmark Run",
+      "raceRef": "Honolulu, HI — Landmark Run",
       "documentPath": "races/Honolulu%2C HI %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-a1f7d35a406767d9",
       "sharingEvidence": [],
@@ -28845,11 +28907,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Honolulu \u2014 Landmark Run",
+      "physicalSiteLabel": "Honolulu — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Honolulu \u2014 Landmark Run",
+        "name": "Honolulu — Landmark Run",
         "lat": 21.307,
         "lon": -157.859,
         "country": "us"
@@ -28917,7 +28979,7 @@
       }
     },
     {
-      "raceRef": "Indianapolis, IN \u2014 Landmark Run",
+      "raceRef": "Indianapolis, IN — Landmark Run",
       "documentPath": "races/Indianapolis%2C IN %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-fe73b02344865b7a",
       "sharingEvidence": [],
@@ -29036,11 +29098,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Indianapolis \u2014 Landmark Run",
+      "physicalSiteLabel": "Indianapolis — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Indianapolis \u2014 Landmark Run",
+        "name": "Indianapolis — Landmark Run",
         "lat": 39.769,
         "lon": -86.159,
         "country": "us"
@@ -29116,7 +29178,7 @@
       }
     },
     {
-      "raceRef": "New Orleans, LA \u2014 Landmark Run",
+      "raceRef": "New Orleans, LA — Landmark Run",
       "documentPath": "races/New Orleans%2C LA %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-6bbf3e59bf508848",
       "sharingEvidence": [],
@@ -29227,11 +29289,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "New Orleans \u2014 Landmark Run",
+      "physicalSiteLabel": "New Orleans — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "New Orleans \u2014 Landmark Run",
+        "name": "New Orleans — Landmark Run",
         "lat": 29.958,
         "lon": -90.066,
         "country": "us"
@@ -29287,7 +29349,7 @@
       }
     },
     {
-      "raceRef": "Boston, MA \u2014 Landmark Run",
+      "raceRef": "Boston, MA — Landmark Run",
       "documentPath": "races/Boston%2C MA %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-6ccb0a86ebef8c91",
       "sharingEvidence": [],
@@ -29406,11 +29468,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Boston \u2014 Landmark Run",
+      "physicalSiteLabel": "Boston — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Boston \u2014 Landmark Run",
+        "name": "Boston — Landmark Run",
         "lat": 42.356,
         "lon": -71.061,
         "country": "us"
@@ -29533,7 +29595,7 @@
       }
     },
     {
-      "raceRef": "Minneapolis, MN \u2014 Landmark Run",
+      "raceRef": "Minneapolis, MN — Landmark Run",
       "documentPath": "races/Minneapolis%2C MN %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-057af482cd61c0ab",
       "sharingEvidence": [],
@@ -29644,11 +29706,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Minneapolis \u2014 Landmark Run",
+      "physicalSiteLabel": "Minneapolis — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Minneapolis \u2014 Landmark Run",
+        "name": "Minneapolis — Landmark Run",
         "lat": 44.974,
         "lon": -93.27,
         "country": "us"
@@ -29738,7 +29800,7 @@
       }
     },
     {
-      "raceRef": "Jackson, MS \u2014 Landmark Run",
+      "raceRef": "Jackson, MS — Landmark Run",
       "documentPath": "races/Jackson%2C MS %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-99d091992ba9491f",
       "sharingEvidence": [],
@@ -29857,11 +29919,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Jackson \u2014 Landmark Run",
+      "physicalSiteLabel": "Jackson — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Jackson \u2014 Landmark Run",
+        "name": "Jackson — Landmark Run",
         "lat": 32.302,
         "lon": -90.183,
         "country": "us"
@@ -29919,7 +29981,7 @@
       }
     },
     {
-      "raceRef": "St. Louis, MO \u2014 Landmark Run",
+      "raceRef": "St. Louis, MO — Landmark Run",
       "documentPath": "races/St. Louis%2C MO %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-0c5d5fef0282a090",
       "sharingEvidence": [],
@@ -30030,11 +30092,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "St. Louis \u2014 Landmark Run",
+      "physicalSiteLabel": "St. Louis — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "St. Louis \u2014 Landmark Run",
+        "name": "St. Louis — Landmark Run",
         "lat": 38.635,
         "lon": -90.215,
         "country": "us"
@@ -30100,7 +30162,7 @@
       }
     },
     {
-      "raceRef": "Billings, MT \u2014 Landmark Run",
+      "raceRef": "Billings, MT — Landmark Run",
       "documentPath": "races/Billings%2C MT %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-730824111f7d9bed",
       "sharingEvidence": [],
@@ -30219,11 +30281,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Billings \u2014 Landmark Run",
+      "physicalSiteLabel": "Billings — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Billings \u2014 Landmark Run",
+        "name": "Billings — Landmark Run",
         "lat": 45.783,
         "lon": -108.506,
         "country": "us"
@@ -30276,7 +30338,7 @@
       }
     },
     {
-      "raceRef": "Las Vegas, NV \u2014 Landmark Run",
+      "raceRef": "Las Vegas, NV — Landmark Run",
       "documentPath": "races/Las Vegas%2C NV %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-41f11c9a14aa9721",
       "sharingEvidence": [],
@@ -30395,11 +30457,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Las Vegas \u2014 Landmark Run",
+      "physicalSiteLabel": "Las Vegas — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Las Vegas \u2014 Landmark Run",
+        "name": "Las Vegas — Landmark Run",
         "lat": 36.176,
         "lon": -115.136,
         "country": "us"
@@ -30493,7 +30555,7 @@
       }
     },
     {
-      "raceRef": "Manchester, NH \u2014 Landmark Run",
+      "raceRef": "Manchester, NH — Landmark Run",
       "documentPath": "races/Manchester%2C NH %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-e051a868b62fe758",
       "sharingEvidence": [],
@@ -30604,11 +30666,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Manchester \u2014 Landmark Run",
+      "physicalSiteLabel": "Manchester — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Manchester \u2014 Landmark Run",
+        "name": "Manchester — Landmark Run",
         "lat": 42.992,
         "lon": -71.462,
         "country": "us"
@@ -30675,7 +30737,7 @@
       }
     },
     {
-      "raceRef": "Newark, NJ \u2014 Landmark Run",
+      "raceRef": "Newark, NJ — Landmark Run",
       "documentPath": "races/Newark%2C NJ %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-52261b0d7b65ac63",
       "sharingEvidence": [],
@@ -30786,11 +30848,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Newark \u2014 Landmark Run",
+      "physicalSiteLabel": "Newark — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Newark \u2014 Landmark Run",
+        "name": "Newark — Landmark Run",
         "lat": 40.744,
         "lon": -74.171,
         "country": "us"
@@ -30879,7 +30941,7 @@
       }
     },
     {
-      "raceRef": "Albuquerque, NM \u2014 Landmark Run",
+      "raceRef": "Albuquerque, NM — Landmark Run",
       "documentPath": "races/Albuquerque%2C NM %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-3ee589081f632bf5",
       "sharingEvidence": [],
@@ -30998,11 +31060,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Albuquerque \u2014 Landmark Run",
+      "physicalSiteLabel": "Albuquerque — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Albuquerque \u2014 Landmark Run",
+        "name": "Albuquerque — Landmark Run",
         "lat": 35.09,
         "lon": -106.658,
         "country": "us"
@@ -31087,7 +31149,7 @@
       }
     },
     {
-      "raceRef": "Charlotte, NC \u2014 Landmark Run",
+      "raceRef": "Charlotte, NC — Landmark Run",
       "documentPath": "races/Charlotte%2C NC %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-748cb3ba26739e14",
       "sharingEvidence": [],
@@ -31198,11 +31260,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Charlotte \u2014 Landmark Run",
+      "physicalSiteLabel": "Charlotte — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Charlotte \u2014 Landmark Run",
+        "name": "Charlotte — Landmark Run",
         "lat": 35.227,
         "lon": -80.845,
         "country": "us"
@@ -31299,7 +31361,7 @@
       }
     },
     {
-      "raceRef": "Fargo, ND \u2014 Landmark Run",
+      "raceRef": "Fargo, ND — Landmark Run",
       "documentPath": "races/Fargo%2C ND %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-f94d734970ec32dc",
       "sharingEvidence": [],
@@ -31410,11 +31472,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Fargo \u2014 Landmark Run",
+      "physicalSiteLabel": "Fargo — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Fargo \u2014 Landmark Run",
+        "name": "Fargo — Landmark Run",
         "lat": 46.876,
         "lon": -96.787,
         "country": "us"
@@ -31466,7 +31528,7 @@
       }
     },
     {
-      "raceRef": "Cleveland, OH \u2014 Landmark Run",
+      "raceRef": "Cleveland, OH — Landmark Run",
       "documentPath": "races/Cleveland%2C OH %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-8832609ac0b53a91",
       "sharingEvidence": [],
@@ -31585,11 +31647,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Cleveland \u2014 Landmark Run",
+      "physicalSiteLabel": "Cleveland — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Cleveland \u2014 Landmark Run",
+        "name": "Cleveland — Landmark Run",
         "lat": 41.499,
         "lon": -81.693,
         "country": "us"
@@ -31678,7 +31740,7 @@
       }
     },
     {
-      "raceRef": "Denver, CO \u2014 Landmark Run",
+      "raceRef": "Denver, CO — Landmark Run",
       "documentPath": "races/Denver%2C CO %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-608d001ffe92f21a",
       "sharingEvidence": [],
@@ -31797,11 +31859,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Denver, CO \u2014 Landmark Run",
+      "physicalSiteLabel": "Denver, CO — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Denver, CO \u2014 Landmark Run",
+        "name": "Denver, CO — Landmark Run",
         "lat": 39.748,
         "lon": -104.994,
         "country": "us"
@@ -31889,7 +31951,7 @@
       }
     },
     {
-      "raceRef": "Omaha, NE \u2014 Landmark Run",
+      "raceRef": "Omaha, NE — Landmark Run",
       "documentPath": "races/Omaha%2C NE %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-ed3ce9339abe5cb5",
       "sharingEvidence": [],
@@ -32008,11 +32070,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Omaha, NE \u2014 Landmark Run",
+      "physicalSiteLabel": "Omaha, NE — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Omaha, NE \u2014 Landmark Run",
+        "name": "Omaha, NE — Landmark Run",
         "lat": 41.257,
         "lon": -95.939,
         "country": "us"
@@ -32105,7 +32167,7 @@
       }
     },
     {
-      "raceRef": "New York, NY \u2014 Landmark Run",
+      "raceRef": "New York, NY — Landmark Run",
       "documentPath": "races/New York%2C NY %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-3be06da06fef8f5d",
       "sharingEvidence": [],
@@ -32224,11 +32286,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "New York, NY \u2014 Landmark Run",
+      "physicalSiteLabel": "New York, NY — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "New York, NY \u2014 Landmark Run",
+        "name": "New York, NY — Landmark Run",
         "lat": 40.751,
         "lon": -73.983,
         "country": "us"
@@ -32298,7 +32360,7 @@
       }
     },
     {
-      "raceRef": "Oklahoma City, OK \u2014 Landmark Run",
+      "raceRef": "Oklahoma City, OK — Landmark Run",
       "documentPath": "races/Oklahoma City%2C OK %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-81ce2ad172102837",
       "sharingEvidence": [],
@@ -32409,11 +32471,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Oklahoma City, OK \u2014 Landmark Run",
+      "physicalSiteLabel": "Oklahoma City, OK — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Oklahoma City, OK \u2014 Landmark Run",
+        "name": "Oklahoma City, OK — Landmark Run",
         "lat": 35.476,
         "lon": -97.51,
         "country": "us"
@@ -32504,7 +32566,7 @@
       }
     },
     {
-      "raceRef": "San Antonio, TX \u2014 Landmark Run",
+      "raceRef": "San Antonio, TX — Landmark Run",
       "documentPath": "races/San Antonio%2C TX %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-5f5ac78c36de132d",
       "sharingEvidence": [],
@@ -32615,11 +32677,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "San Antonio, TX \u2014 Landmark Run",
+      "physicalSiteLabel": "San Antonio, TX — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "San Antonio, TX \u2014 Landmark Run",
+        "name": "San Antonio, TX — Landmark Run",
         "lat": 29.424,
         "lon": -98.492,
         "country": "us"
@@ -32692,7 +32754,7 @@
       }
     },
     {
-      "raceRef": "Portland, OR \u2014 Landmark Run",
+      "raceRef": "Portland, OR — Landmark Run",
       "documentPath": "races/Portland%2C OR %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-2ed7e10939e122a4",
       "sharingEvidence": [],
@@ -32811,11 +32873,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Portland, OR \u2014 Landmark Run",
+      "physicalSiteLabel": "Portland, OR — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Portland, OR \u2014 Landmark Run",
+        "name": "Portland, OR — Landmark Run",
         "lat": 45.523,
         "lon": -122.678,
         "country": "us"
@@ -32896,7 +32958,7 @@
       }
     },
     {
-      "raceRef": "Providence, RI \u2014 Landmark Run",
+      "raceRef": "Providence, RI — Landmark Run",
       "documentPath": "races/Providence%2C RI %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-af447d0223704431",
       "sharingEvidence": [],
@@ -33015,11 +33077,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Providence, RI \u2014 Landmark Run",
+      "physicalSiteLabel": "Providence, RI — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Providence, RI \u2014 Landmark Run",
+        "name": "Providence, RI — Landmark Run",
         "lat": 41.825,
         "lon": -71.411,
         "country": "us"
@@ -33098,7 +33160,7 @@
       }
     },
     {
-      "raceRef": "Philadelphia, PA \u2014 Landmark Run",
+      "raceRef": "Philadelphia, PA — Landmark Run",
       "documentPath": "races/Philadelphia%2C PA %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-373f1863a333c2ae",
       "sharingEvidence": [],
@@ -33217,11 +33279,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Philadelphia, PA \u2014 Landmark Run",
+      "physicalSiteLabel": "Philadelphia, PA — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Philadelphia, PA \u2014 Landmark Run",
+        "name": "Philadelphia, PA — Landmark Run",
         "lat": 39.955,
         "lon": -75.164,
         "country": "us"
@@ -33298,7 +33360,7 @@
       }
     },
     {
-      "raceRef": "Charleston, SC \u2014 Landmark Run",
+      "raceRef": "Charleston, SC — Landmark Run",
       "documentPath": "races/Charleston%2C SC %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-e3b0e114c719d39f",
       "sharingEvidence": [],
@@ -33417,11 +33479,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Charleston, SC \u2014 Landmark Run",
+      "physicalSiteLabel": "Charleston, SC — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Charleston, SC \u2014 Landmark Run",
+        "name": "Charleston, SC — Landmark Run",
         "lat": 32.785,
         "lon": -79.933,
         "country": "us"
@@ -33476,7 +33538,7 @@
       }
     },
     {
-      "raceRef": "Sioux Falls, SD \u2014 Landmark Run",
+      "raceRef": "Sioux Falls, SD — Landmark Run",
       "documentPath": "races/Sioux Falls%2C SD %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-7bd4bd348e420804",
       "sharingEvidence": [],
@@ -33595,11 +33657,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Sioux Falls, SD \u2014 Landmark Run",
+      "physicalSiteLabel": "Sioux Falls, SD — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Sioux Falls, SD \u2014 Landmark Run",
+        "name": "Sioux Falls, SD — Landmark Run",
         "lat": 43.551,
         "lon": -96.728,
         "country": "us"
@@ -33658,7 +33720,7 @@
       }
     },
     {
-      "raceRef": "Nashville, TN \u2014 Landmark Run",
+      "raceRef": "Nashville, TN — Landmark Run",
       "documentPath": "races/Nashville%2C TN %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-801a87f5aebb72dd",
       "sharingEvidence": [],
@@ -33777,11 +33839,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Nashville, TN \u2014 Landmark Run",
+      "physicalSiteLabel": "Nashville, TN — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Nashville, TN \u2014 Landmark Run",
+        "name": "Nashville, TN — Landmark Run",
         "lat": 36.162,
         "lon": -86.783,
         "country": "us"
@@ -33877,7 +33939,7 @@
       }
     },
     {
-      "raceRef": "Salt Lake City, UT \u2014 Landmark Run",
+      "raceRef": "Salt Lake City, UT — Landmark Run",
       "documentPath": "races/Salt Lake City%2C UT %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-fab32f74536d94b7",
       "sharingEvidence": [],
@@ -33996,11 +34058,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Salt Lake City, UT \u2014 Landmark Run",
+      "physicalSiteLabel": "Salt Lake City, UT — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Salt Lake City, UT \u2014 Landmark Run",
+        "name": "Salt Lake City, UT — Landmark Run",
         "lat": 40.764,
         "lon": -111.89,
         "country": "us"
@@ -34097,7 +34159,7 @@
       }
     },
     {
-      "raceRef": "Burlington, VT \u2014 Landmark Run",
+      "raceRef": "Burlington, VT — Landmark Run",
       "documentPath": "races/Burlington%2C VT %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-f5f8b5a09fba2177",
       "sharingEvidence": [],
@@ -34216,11 +34278,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Burlington, VT \u2014 Landmark Run",
+      "physicalSiteLabel": "Burlington, VT — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Burlington, VT \u2014 Landmark Run",
+        "name": "Burlington, VT — Landmark Run",
         "lat": 44.477,
         "lon": -73.211,
         "country": "us"
@@ -34286,7 +34348,7 @@
       }
     },
     {
-      "raceRef": "Richmond, VA \u2014 Landmark Run",
+      "raceRef": "Richmond, VA — Landmark Run",
       "documentPath": "races/Richmond%2C VA %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-f86a23e25c2cac55",
       "sharingEvidence": [],
@@ -34397,11 +34459,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Richmond, VA \u2014 Landmark Run",
+      "physicalSiteLabel": "Richmond, VA — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Richmond, VA \u2014 Landmark Run",
+        "name": "Richmond, VA — Landmark Run",
         "lat": 37.542,
         "lon": -77.436,
         "country": "us"
@@ -34480,7 +34542,7 @@
       }
     },
     {
-      "raceRef": "Flatrock Motorclub \u2014 Club Course",
+      "raceRef": "Flatrock Motorclub — Club Course",
       "documentPath": "races/Flatrock Motorclub %E2%80%94 Club Course/document.json",
       "siteGroup": "site-fd0df59bcbdae7a7",
       "sharingEvidence": [],
@@ -34489,7 +34551,7 @@
         {
           "id": "state-tn",
           "venueKey": "state-tn",
-          "venueName": "Flatrock Motorclub \u2014 Club Course",
+          "venueName": "Flatrock Motorclub — Club Course",
           "hubStage": 4,
           "location": {
             "lat": 35.8793707,
@@ -34591,13 +34653,13 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Flatrock Motorclub \u2014 Club Course",
+      "physicalSiteLabel": "Flatrock Motorclub — Club Course",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [
-        "Flatrock Motorclub \u2014 Club Course"
+        "Flatrock Motorclub — Club Course"
       ],
       "sourceOrigin": {
-        "name": "Flatrock Motorclub \u2014 Club Course",
+        "name": "Flatrock Motorclub — Club Course",
         "lat": 35.8793707,
         "lon": -84.7538283,
         "country": "us"
@@ -34615,7 +34677,7 @@
       }
     },
     {
-      "raceRef": "Seattle, WA \u2014 Landmark Run",
+      "raceRef": "Seattle, WA — Landmark Run",
       "documentPath": "races/Seattle%2C WA %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-5a18b9dbf0b936ae",
       "sharingEvidence": [],
@@ -34734,11 +34796,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Seattle, WA \u2014 Landmark Run",
+      "physicalSiteLabel": "Seattle, WA — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Seattle, WA \u2014 Landmark Run",
+        "name": "Seattle, WA — Landmark Run",
         "lat": 47.608,
         "lon": -122.337,
         "country": "us"
@@ -34830,7 +34892,7 @@
       }
     },
     {
-      "raceRef": "Charleston, WV \u2014 Landmark Run",
+      "raceRef": "Charleston, WV — Landmark Run",
       "documentPath": "races/Charleston%2C WV %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-1a5f89f9794417e3",
       "sharingEvidence": [],
@@ -34949,11 +35011,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Charleston, WV \u2014 Landmark Run",
+      "physicalSiteLabel": "Charleston, WV — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Charleston, WV \u2014 Landmark Run",
+        "name": "Charleston, WV — Landmark Run",
         "lat": 38.347,
         "lon": -81.626,
         "country": "us"
@@ -35011,7 +35073,7 @@
       }
     },
     {
-      "raceRef": "Milwaukee, WI \u2014 Landmark Run",
+      "raceRef": "Milwaukee, WI — Landmark Run",
       "documentPath": "races/Milwaukee%2C WI %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-711d3f6b0ea42407",
       "sharingEvidence": [],
@@ -35122,11 +35184,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Milwaukee, WI \u2014 Landmark Run",
+      "physicalSiteLabel": "Milwaukee, WI — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Milwaukee, WI \u2014 Landmark Run",
+        "name": "Milwaukee, WI — Landmark Run",
         "lat": 43.038,
         "lon": -87.911,
         "country": "us"
@@ -35239,7 +35301,7 @@
       }
     },
     {
-      "raceRef": "Cheyenne, WY \u2014 Landmark Run",
+      "raceRef": "Cheyenne, WY — Landmark Run",
       "documentPath": "races/Cheyenne%2C WY %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-23b5d8cf3290299f",
       "sharingEvidence": [],
@@ -35350,11 +35412,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Cheyenne, WY \u2014 Landmark Run",
+      "physicalSiteLabel": "Cheyenne, WY — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Cheyenne, WY \u2014 Landmark Run",
+        "name": "Cheyenne, WY — Landmark Run",
         "lat": 41.14,
         "lon": -104.814,
         "country": "us"
@@ -35400,7 +35462,7 @@
       }
     },
     {
-      "raceRef": "Thompson Pass \u2014 Snowline Climb",
+      "raceRef": "Thompson Pass — Snowline Climb",
       "documentPath": "races/Thompson Pass %E2%80%94 Snowline Climb/document.json",
       "siteGroup": "site-632a07716f4a2dcd",
       "sharingEvidence": [],
@@ -35513,11 +35575,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Thompson Pass \u2014 Snowline Climb",
+      "physicalSiteLabel": "Thompson Pass — Snowline Climb",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Thompson Pass \u2014 Snowline Climb",
+        "name": "Thompson Pass — Snowline Climb",
         "lat": 61.13,
         "lon": -145.82,
         "country": "us"
@@ -35536,7 +35598,7 @@
       }
     },
     {
-      "raceRef": "Denali Highway \u2014 Tundra Gravel",
+      "raceRef": "Denali Highway — Tundra Gravel",
       "documentPath": "races/Denali Highway %E2%80%94 Tundra Gravel/document.json",
       "siteGroup": "site-8870f7e6d7a1ad92",
       "sharingEvidence": [],
@@ -35658,11 +35720,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Denali Highway \u2014 Tundra Gravel",
+      "physicalSiteLabel": "Denali Highway — Tundra Gravel",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Denali Highway \u2014 Tundra Gravel",
+        "name": "Denali Highway — Tundra Gravel",
         "lat": 63.07,
         "lon": -146.7,
         "country": "us"
@@ -35680,7 +35742,7 @@
       }
     },
     {
-      "raceRef": "Skalkaho Pass \u2014 Forest Rally",
+      "raceRef": "Skalkaho Pass — Forest Rally",
       "documentPath": "races/Skalkaho Pass %E2%80%94 Forest Rally/document.json",
       "siteGroup": "site-bc9aed0343ff98ae",
       "sharingEvidence": [],
@@ -35801,12 +35863,12 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Skalkaho Pass \u2014 Forest Rally",
+      "physicalSiteLabel": "Skalkaho Pass — Forest Rally",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "priorityNote": "Conflicting sky refs: top-level currently wins. Resolve explicitly with planned site asset; no lighting change.",
       "sourceOrigin": {
-        "name": "Skalkaho Pass \u2014 Forest Rally",
+        "name": "Skalkaho Pass — Forest Rally",
         "lat": 46.252,
         "lon": -113.79,
         "country": "us"
@@ -35826,7 +35888,7 @@
       }
     },
     {
-      "raceRef": "Magruder Corridor \u2014 Wilderness Ridge",
+      "raceRef": "Magruder Corridor — Wilderness Ridge",
       "documentPath": "races/Magruder Corridor %E2%80%94 Wilderness Ridge/document.json",
       "siteGroup": "site-e94228a91f6d3858",
       "sharingEvidence": [],
@@ -35947,12 +36009,12 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Magruder Corridor \u2014 Wilderness Ridge",
+      "physicalSiteLabel": "Magruder Corridor — Wilderness Ridge",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "priorityNote": "Conflicting sky refs: top-level currently wins. Resolve explicitly with planned site asset; no lighting change.",
       "sourceOrigin": {
-        "name": "Magruder Corridor \u2014 Wilderness Ridge",
+        "name": "Magruder Corridor — Wilderness Ridge",
         "lat": 45.7,
         "lon": -115,
         "country": "us"
@@ -35973,7 +36035,7 @@
       }
     },
     {
-      "raceRef": "Chief Joseph \u2014 Dead Indian Pass",
+      "raceRef": "Chief Joseph — Dead Indian Pass",
       "documentPath": "races/Chief Joseph %E2%80%94 Dead Indian Pass/document.json",
       "siteGroup": "site-78690b80d5ccdac6",
       "sharingEvidence": [],
@@ -36094,11 +36156,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Chief Joseph \u2014 Dead Indian Pass",
+      "physicalSiteLabel": "Chief Joseph — Dead Indian Pass",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Chief Joseph \u2014 Dead Indian Pass",
+        "name": "Chief Joseph — Dead Indian Pass",
         "lat": 44.75,
         "lon": -109.39,
         "country": "us"
@@ -36120,7 +36182,7 @@
       }
     },
     {
-      "raceRef": "Tantalus \u2014 Honolulu Heights",
+      "raceRef": "Tantalus — Honolulu Heights",
       "documentPath": "races/Tantalus %E2%80%94 Honolulu Heights/document.json",
       "siteGroup": "site-9355ce47e2414978",
       "sharingEvidence": [],
@@ -36241,12 +36303,12 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Tantalus \u2014 Honolulu Heights",
+      "physicalSiteLabel": "Tantalus — Honolulu Heights",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "priorityNote": "Conflicting sky refs: top-level currently wins. Resolve explicitly with planned site asset; no lighting change.",
       "sourceOrigin": {
-        "name": "Tantalus \u2014 Honolulu Heights",
+        "name": "Tantalus — Honolulu Heights",
         "lat": 21.327,
         "lon": -157.821,
         "country": "us"
@@ -36266,7 +36328,7 @@
       }
     },
     {
-      "raceRef": "Haleakala \u2014 Volcano Ascent",
+      "raceRef": "Haleakala — Volcano Ascent",
       "documentPath": "races/Haleakala %E2%80%94 Volcano Ascent/document.json",
       "siteGroup": "site-16532ce2e70c3a9d",
       "sharingEvidence": [],
@@ -36387,11 +36449,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Haleakala \u2014 Volcano Ascent",
+      "physicalSiteLabel": "Haleakala — Volcano Ascent",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Haleakala \u2014 Volcano Ascent",
+        "name": "Haleakala — Volcano Ascent",
         "lat": 20.745,
         "lon": -156.245,
         "country": "us"
@@ -36411,7 +36473,7 @@
       }
     },
     {
-      "raceRef": "Maunakea \u2014 Cinder Summit",
+      "raceRef": "Maunakea — Cinder Summit",
       "documentPath": "races/Maunakea %E2%80%94 Cinder Summit/document.json",
       "siteGroup": "site-15b1ac599d7224a9",
       "sharingEvidence": [],
@@ -36534,11 +36596,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Maunakea \u2014 Cinder Summit",
+      "physicalSiteLabel": "Maunakea — Cinder Summit",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Maunakea \u2014 Cinder Summit",
+        "name": "Maunakea — Cinder Summit",
         "lat": 19.79,
         "lon": -155.46,
         "country": "us"
@@ -36557,7 +36619,7 @@
       }
     },
     {
-      "raceRef": "Sandhills Journey \u2014 Open Prairie",
+      "raceRef": "Sandhills Journey — Open Prairie",
       "documentPath": "races/Sandhills Journey %E2%80%94 Open Prairie/document.json",
       "siteGroup": "site-22f5f1c9744860a0",
       "sharingEvidence": [],
@@ -36670,11 +36732,11 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Sandhills Journey \u2014 Open Prairie",
+      "physicalSiteLabel": "Sandhills Journey — Open Prairie",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "sourceOrigin": {
-        "name": "Sandhills Journey \u2014 Open Prairie",
+        "name": "Sandhills Journey — Open Prairie",
         "lat": 42.045,
         "lon": -101.34,
         "country": "us"
@@ -36695,7 +36757,7 @@
       }
     },
     {
-      "raceRef": "Grand Canyon \u2014 Desert View Drive",
+      "raceRef": "Grand Canyon — Desert View Drive",
       "documentPath": "races/Grand Canyon %E2%80%94 Desert View Drive/document.json",
       "siteGroup": "site-d92c7a2faac3d653",
       "sharingEvidence": [],
@@ -36816,12 +36878,12 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Grand Canyon \u2014 Desert View Drive",
+      "physicalSiteLabel": "Grand Canyon — Desert View Drive",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "priorityNote": "Conflicting sky refs: top-level currently wins. Resolve explicitly with planned site asset; no lighting change.",
       "sourceOrigin": {
-        "name": "Grand Canyon \u2014 Desert View Drive",
+        "name": "Grand Canyon — Desert View Drive",
         "lat": 35.995,
         "lon": -111.97,
         "country": "us"
@@ -36849,7 +36911,7 @@
       }
     },
     {
-      "raceRef": "Grand Canyon \u2014 Diamond Creek Descent",
+      "raceRef": "Grand Canyon — Diamond Creek Descent",
       "documentPath": "races/Grand Canyon %E2%80%94 Diamond Creek Descent/document.json",
       "siteGroup": "site-e6e5b74e38580cc8",
       "sharingEvidence": [],
@@ -36970,12 +37032,12 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Grand Canyon \u2014 Diamond Creek Descent",
+      "physicalSiteLabel": "Grand Canyon — Diamond Creek Descent",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "priorityNote": "Conflicting sky refs: top-level currently wins. Resolve explicitly with planned site asset; no lighting change.",
       "sourceOrigin": {
-        "name": "Grand Canyon \u2014 Diamond Creek Descent",
+        "name": "Grand Canyon — Diamond Creek Descent",
         "lat": 35.665,
         "lon": -113.37,
         "country": "us"
@@ -36995,7 +37057,7 @@
       }
     },
     {
-      "raceRef": "Bayard \u2014 Road 77 to City Park",
+      "raceRef": "Bayard — Road 77 to City Park",
       "documentPath": "races/Bayard %E2%80%94 Road 77 to City Park/document.json",
       "siteGroup": "site-9402a31481461910",
       "sharingEvidence": [],
@@ -37117,12 +37179,12 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Bayard \u2014 Road 77 to City Park",
+      "physicalSiteLabel": "Bayard — Road 77 to City Park",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
       "candidateVenueLabels": [],
       "priorityNote": "Preserve authored noon; inspect existing sky before replacement.",
       "sourceOrigin": {
-        "name": "Bayard \u2014 Road 77 to City Park",
+        "name": "Bayard — Road 77 to City Park",
         "lat": 41.76,
         "lon": -103.32,
         "country": "us"

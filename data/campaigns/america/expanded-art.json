@@ -452,7 +452,7 @@
       "kind": "skybox",
       "maxEdge": 1024,
       "placements": [],
-      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+      "usageNote": "Free-race site binding: Col de Turini; see data/race-environments/ledger.json."
     },
     {
       "name": "skybox-data-center-city",
@@ -483,7 +483,7 @@
       "kind": "skybox",
       "maxEdge": 1024,
       "placements": [],
-      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+      "usageNote": "Free-race site binding: Nurburgring Nordschleife; see data/race-environments/ledger.json."
     },
     {
       "name": "skybox-finnish-lakes",
@@ -2081,7 +2081,8 @@
       "name": "providence",
       "source": "skyboxes/providence-2994.png",
       "kind": "skybox",
-      "maxEdge": 512
+      "maxEdge": 512,
+      "placements": []
     },
     {
       "name": "skybox-bayard-noon-2994",
