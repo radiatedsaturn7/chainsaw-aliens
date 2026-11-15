@@ -73,7 +73,7 @@ export function placedSceneryArtRefs(race, resolve) {
   return refs;
 }
 
-export function validateArtworkIntent(policy, imports, used, editorLoaded, configured, existingDeferred = new Set()) {
+export function validateArtworkIntent(policy, imports, used, editorLoaded, configured, existingDeferred = new Set(), authoredFreeRaceUsed = new Set()) {
   assert.equal(policy.schemaVersion, 1);
   assert.equal(policy.defaultIntent, 'campaign-placement');
   for (const [ref, intent] of Object.entries(policy.editorAssets)) {
@@ -94,7 +94,31 @@ export function validateArtworkIntent(policy, imports, used, editorLoaded, confi
   }
   for (const ref of Object.keys(imports)) {
     if (policy.editorAssets[ref] || existingDeferred.has(ref) || ref === 'road-snow-patchy') continue;
-    assert.ok(used.has(ref), `Campaign art has no actual placement: ${ref}`);
+    assert.ok(used.has(ref) || authoredFreeRaceUsed.has(ref), `Campaign art has no actual placement: ${ref}`);
   }
   return diagnostics;
+}
+
+// Separate authored free-race scope: exact registry bindings must be selected by
+// the shipped Game Menu and resolve to active saved sky/ground slots, not preloads.
+export function authoredFreeRaceArtwork(registry, menu, manifest, read, campaignPaths) {
+  assert.equal(registry.schemaVersion, 1);
+  const selectors=menu.screens.flatMap(s=>s.elements||[]);
+  assert.ok(selectors.some(e=>e.source==='races'&&e.binding==='raceRef'),'Missing runtime free-race selector');
+  const refs=new Set();
+  for(const [ref,rule] of Object.entries(registry.assets)){
+    assert.ok(rule.reason && ['sky','ground'].includes(rule.slot),'Invalid free-race intent');
+    const path=manifest.folders.races[rule.raceRef];
+    assert.ok(path,`Unreachable free race: ${rule.raceRef}`);
+    assert.ok(!campaignPaths.includes(path),'Campaign asset must retain campaign guard');
+    assert.ok(manifest.folders.art[ref],`Missing free-race art: ${ref}`);
+    const race=read(path).race;
+    assert.ok(race,`Invalid free race document: ${rule.raceRef}`);
+    if(rule.slot==='sky'){
+      assert.equal(race.skyboxArtRef,ref,`Free-race sky placement: ${ref}`);
+      assert.equal(race.skyboxSettings?.artRef,ref,`Free-race sky settings: ${ref}`);
+    }else assert.equal(race.groundPlaneArtRef,ref,`Free-race ground placement: ${ref}`);
+    refs.add(ref);
+  }
+  return refs;
 }

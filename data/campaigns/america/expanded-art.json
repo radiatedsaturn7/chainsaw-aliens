@@ -530,11 +530,7 @@
       "source": "skyboxes/laurel-highlands.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "laurel"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-moki-dugway",
@@ -619,11 +615,7 @@
       "source": "skyboxes/route-66.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "route66"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-sawtooth",
@@ -3591,6 +3583,35 @@
     {
       "name": "environment-v1-ground-finnish-boreal-verge",
       "source": "environment-v1/ground-finnish-boreal-verge.png",
+      "kind": "texture",
+      "maxEdge": 512,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-laurel-ohiopyle-evening",
+      "source": "environment-v1/laurel-ohiopyle-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "laurel"
+        }
+      ]
+    },
+    {
+      "name": "environment-v1-route66-erick-texola",
+      "source": "environment-v1/route66-erick-texola.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "route66"
+        }
+      ]
+    },
+    {
+      "name": "environment-v1-ground-dormant-prairie",
+      "source": "environment-v1/ground-dormant-prairie.png",
       "kind": "texture",
       "maxEdge": 512,
       "placements": []

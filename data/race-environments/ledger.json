@@ -183,8 +183,10 @@
     {
       "raceRef": "Daytona Tri-Oval",
       "documentPath": "races/Daytona Tri-Oval/document.json",
-      "siteGroup": "site-054a8fea3dbf1cde",
-      "sharingEvidence": [],
+      "siteGroup": "facility-daytona-50603b2b39",
+      "sharingEvidence": [
+        "Exact daytona/oval source layout at 29.1852,-81.0705; raceway-daytona-oval; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -289,7 +291,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Daytona International Speedway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Daytona International Speedway"
       ],
@@ -313,6 +315,16 @@
         "maxX": 776.1923445415525,
         "minY": -702.419321835538,
         "maxY": 730.8519038508908
+      },
+      "physicalSiteGroup": "facility-daytona",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "daytona",
+        "layoutKey": "oval",
+        "catalogId": "raceway-daytona-oval",
+        "latitude": 29.1852,
+        "longitude": -81.0705,
+        "reference": "https://www.daytonainternationalspeedway.com/"
       }
     },
     {
@@ -699,8 +711,10 @@
     {
       "raceRef": "Nurburgring Nordschleife",
       "documentPath": "races/Nurburgring Nordschleife/document.json",
-      "siteGroup": "site-ce8b9b1ca4e96f75",
-      "sharingEvidence": [],
+      "siteGroup": "facility-nordschleife-41bc38d75f",
+      "sharingEvidence": [
+        "Exact nordschleife/full source layout at 50.36,6.96; raceway-nordschleife-full; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "bound-awaiting-production-review",
       "catalog": [
         {
@@ -805,7 +819,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Nurburgring Nordschleife",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Nurburgring Nordschleife"
       ],
@@ -885,6 +899,15 @@
       "originalImage": "assets/campaign-art/skyboxes/eifel-circuit.png",
       "terrainReview": {
         "acceptance": "pending: inherited frozen-forest ground must be assessed against authored clear/evening course; no terrain change yet"
+      },
+      "physicalSiteGroup": "facility-nordschleife",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "nordschleife",
+        "layoutKey": "full",
+        "catalogId": "raceway-nordschleife-full",
+        "latitude": 50.36,
+        "longitude": 6.96
       }
     },
     {
@@ -1373,8 +1396,10 @@
     {
       "raceRef": "WeatherTech Raceway Laguna Seca",
       "documentPath": "races/WeatherTech Raceway Laguna Seca/document.json",
-      "siteGroup": "site-e38489e604c77527",
-      "sharingEvidence": [],
+      "siteGroup": "facility-laguna-a8ccedb566",
+      "sharingEvidence": [
+        "Exact laguna/full source layout at 36.584,-121.753; raceway-laguna-full; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -1479,7 +1504,7 @@
         "seam": false
       },
       "physicalSiteLabel": "WeatherTech Raceway Laguna Seca",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "WeatherTech Raceway Laguna Seca"
       ],
@@ -1506,6 +1531,16 @@
         "maxX": 357.928259522631,
         "minY": -519.7146855035351,
         "maxY": 456.7782700914468
+      },
+      "physicalSiteGroup": "facility-laguna",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "laguna",
+        "layoutKey": "full",
+        "catalogId": "raceway-laguna-full",
+        "latitude": 36.584,
+        "longitude": -121.753,
+        "reference": "https://www.co.monterey.ca.us/government/government-links/weathertech-raceway"
       }
     },
     {
@@ -1781,7 +1816,7 @@
       "documentPath": "races/Laurel Highlands Scenic Byway/document.json",
       "siteGroup": "site-791513cf0aa0fbeb",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "america-middle-laurel",
@@ -1907,8 +1942,8 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Laurel Highlands Scenic Byway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "physicalSiteLabel": "PA 381 Ohiopyle / Mill Run hills and gorge approaches",
+      "siteEvidenceStatus": "saved-route-gps-and-osm-ways-reviewed",
       "candidateVenueLabels": [],
       "sourceOrigin": {
         "name": "Laurel Highlands Scenic Byway",
@@ -1939,6 +1974,22 @@
         "lightingRule": "Preserve full authoredEnvironment; day + evening preset0.42 is not noon. Do not pre-darken artwork twice.",
         "sourceSegment": "PA 381 through the wooded Ohiopyle / Mill Run hills, including the gorge approaches.",
         "acceptance": "Planning from saved source metadata; no new visual pass claimed."
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-laurel-ohiopyle-evening"
+      },
+      "recipe": {
+        "sourceImage": "/workspace/generated_images/exec-12bd75f3-35b6-4bde-8261-361397eedacd.png",
+        "rejectedSeasonDraft": "/workspace/generated_images/exec-8b56360b-0ee0-43b7-b8ac-95d678b354f1.png",
+        "geography": "Rounded Appalachian ridges, overlapping gorge approaches, hemlock and bare late-autumn hardwood stands. Based on saved PA381 segment and exact start/finish GPS, not state label.",
+        "exposure": "Bright source midtones; engine evening .42 retained, -3C cold season, no added snow.",
+        "seam": "Edges requested to match; numeric and engine inspection pending."
+      },
+      "terrainReview": {
+        "ground": "Retain frozen forest and leaf litter consistent with authored -3C; no blanket snow.",
+        "road": "Active asphalt uses patched asphalt; existing rough/default refs retained.",
+        "shoulder": "Asphalt/gravel shoulder retained; hidden margin and inactive snowbank mapping preserved.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -2531,7 +2582,7 @@
       "documentPath": "races/Historic Route 66/document.json",
       "siteGroup": "site-8181ef4f052d27bd",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "america-middle-route66",
@@ -2657,8 +2708,8 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Historic Route 66",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "physicalSiteLabel": "Erick–Texola Route 66 low prairie",
+      "siteEvidenceStatus": "saved-route-gps-and-source-segment-reviewed",
       "candidateVenueLabels": [],
       "sourceOrigin": {
         "name": "Historic Route 66",
@@ -2692,6 +2743,26 @@
         "lightingRule": "Preserve full authoredEnvironment; day + evening preset0.42 is not noon. Do not pre-darken artwork twice.",
         "sourceSegment": "Historic Route 66 around Erick and Texola toward the Texas line; exposed plains and abandoned roadside industry.",
         "acceptance": "Planning from saved source metadata; no new visual pass claimed."
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-route66-erick-texola",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainArtMap": {
+          "ground-desert-scrub-v2": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "recipe": {
+        "sourceImage": "/workspace/generated_images/exec-e25072b7-ca3d-462d-b92f-5aa9eafdf7e5.png",
+        "geography": "Level prairie, sparse windbreaks, low utility and grain-storage structures; exact saved Erick–Texola route, not other Route 66 segments.",
+        "exposure": "Bright source for saved evening .42, clear sky. No mesa silhouettes or snow.",
+        "seam": "Matching level boundary requested; engine seam inspection pending.",
+        "groundSourceImage": "/workspace/generated_images/exec-e74763f7-60ad-4ef2-97e0-d54018300fae.png"
+      },
+      "terrainReview": {
+        "ground": "Replace visually sandy desert scrub with short dormant prairie grass and exposed brown loam; source inspected, native repeated-tile and driving scale pending. Preserve exact active material IDs/weights.",
+        "road": "Existing patched asphalt preserved for active asphalt; rough refs unchanged.",
+        "shoulder": "Existing gravel/dry verge bindings retained; margin physics unchanged.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -4465,8 +4536,10 @@
     {
       "raceRef": "Lime Rock Park — Connecticut",
       "documentPath": "races/Lime Rock Park %E2%80%94 Connecticut/document.json",
-      "siteGroup": "site-6282566e1d87f3de",
-      "sharingEvidence": [],
+      "siteGroup": "facility-lime-41bc38d75f",
+      "sharingEvidence": [
+        "Exact lime/full source layout at 41.928,-73.38; H01-S08; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -4579,7 +4652,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Lime Rock Park",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Lime Rock Park"
       ],
@@ -4611,6 +4684,16 @@
         "maxX": 169.16115537239426,
         "minY": -228.97290921745082,
         "maxY": 320.96459909357577
+      },
+      "physicalSiteGroup": "facility-lime",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "lime",
+        "layoutKey": "full",
+        "catalogId": "H01-S08",
+        "latitude": 41.928,
+        "longitude": -73.38,
+        "reference": "https://limerock.com/"
       }
     },
     {
@@ -8326,8 +8409,10 @@
     {
       "raceRef": "Mid-Ohio Sports Car Course — Lexington",
       "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Lexington/document.json",
-      "siteGroup": "site-b0cbeb7350e806ba",
-      "sharingEvidence": [],
+      "siteGroup": "facility-mid-ohio-4c19cda147",
+      "sharingEvidence": [
+        "Exact mid-ohio/sports-car source layout at 40.689,-82.635; H04-S09; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -8440,7 +8525,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Mid-Ohio Sports Car Course",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Mid-Ohio Sports Car Course"
       ],
@@ -8465,6 +8550,16 @@
         "maxX": 255.2712696884125,
         "minY": -620.0015283664188,
         "maxY": 569.1631376836918
+      },
+      "physicalSiteGroup": "facility-mid-ohio",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "mid-ohio",
+        "layoutKey": "sports-car",
+        "catalogId": "H04-S09",
+        "latitude": 40.689,
+        "longitude": -82.635,
+        "reference": "https://midohio.com/"
       }
     },
     {
@@ -9700,8 +9795,10 @@
     {
       "raceRef": "World Wide Technology Raceway — road course",
       "documentPath": "races/World Wide Technology Raceway %E2%80%94 road course/document.json",
-      "siteGroup": "site-a553209686518868",
-      "sharingEvidence": [],
+      "siteGroup": "facility-gateway-50603b2b39",
+      "sharingEvidence": [
+        "Explicit WWT/Gateway facility route H06-S01 at 38.65,-90.135; authored environment variants kept separate."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -9811,8 +9908,8 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "World Wide Technology Raceway — road course",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "physicalSiteLabel": "World Wide Technology Raceway / Gateway complex",
+      "siteEvidenceStatus": "exact-authored-facility-route-and-source-coordinate",
       "candidateVenueLabels": [],
       "sourceOrigin": {
         "name": "World Wide Technology Raceway — road course",
@@ -9833,13 +9930,23 @@
         "maxX": 100.9870032407533,
         "minY": -537.9617981697714,
         "maxY": 314.19281870801694
+      },
+      "physicalSiteGroup": "facility-gateway",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/side_race_sources.json",
+        "catalogId": "H06-S01",
+        "latitude": 38.65,
+        "longitude": -90.135,
+        "scope": "Explicit WWT road, oval, drag and Kartplex routes only"
       }
     },
     {
       "raceRef": "World Wide Technology Raceway — oval",
       "documentPath": "races/World Wide Technology Raceway %E2%80%94 oval/document.json",
-      "siteGroup": "site-79da39f5559f1500",
-      "sharingEvidence": [],
+      "siteGroup": "facility-gateway-a8ccedb566",
+      "sharingEvidence": [
+        "Explicit WWT/Gateway facility route H06-S02 at 38.65,-90.135; authored environment variants kept separate."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -9949,8 +10056,8 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "World Wide Technology Raceway — oval",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "physicalSiteLabel": "World Wide Technology Raceway / Gateway complex",
+      "siteEvidenceStatus": "exact-authored-facility-route-and-source-coordinate",
       "candidateVenueLabels": [],
       "sourceOrigin": {
         "name": "World Wide Technology Raceway — oval",
@@ -9969,13 +10076,23 @@
         "maxX": 142.44473421166168,
         "minY": -537.9617981697714,
         "maxY": 317.70658324337415
+      },
+      "physicalSiteGroup": "facility-gateway",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/side_race_sources.json",
+        "catalogId": "H06-S02",
+        "latitude": 38.65,
+        "longitude": -90.135,
+        "scope": "Explicit WWT road, oval, drag and Kartplex routes only"
       }
     },
     {
       "raceRef": "World Wide Technology Raceway — drag strip",
       "documentPath": "races/World Wide Technology Raceway %E2%80%94 drag strip/document.json",
-      "siteGroup": "site-35b20e57daf6e4ff",
-      "sharingEvidence": [],
+      "siteGroup": "facility-gateway-a8ccedb566",
+      "sharingEvidence": [
+        "Explicit WWT/Gateway facility route H06-S03 at 38.65,-90.135; authored environment variants kept separate."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -10085,8 +10202,8 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "World Wide Technology Raceway — drag strip",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "physicalSiteLabel": "World Wide Technology Raceway / Gateway complex",
+      "siteEvidenceStatus": "exact-authored-facility-route-and-source-coordinate",
       "candidateVenueLabels": [],
       "sourceOrigin": {
         "name": "World Wide Technology Raceway — drag strip",
@@ -10104,6 +10221,14 @@
         "maxX": -297.3366457190061,
         "minY": -504.0472986988402,
         "maxY": -115.97903463527156
+      },
+      "physicalSiteGroup": "facility-gateway",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/side_race_sources.json",
+        "catalogId": "H06-S03",
+        "latitude": 38.65,
+        "longitude": -90.135,
+        "scope": "Explicit WWT road, oval, drag and Kartplex routes only"
       }
     },
     {
@@ -10749,8 +10874,10 @@
     {
       "raceRef": "Gateway Kartplex — WWT complex",
       "documentPath": "races/Gateway Kartplex %E2%80%94 WWT complex/document.json",
-      "siteGroup": "site-76af81318dbcdf1e",
-      "sharingEvidence": [],
+      "siteGroup": "facility-gateway-4c19cda147",
+      "sharingEvidence": [
+        "Explicit WWT/Gateway facility route H06-S08 at 38.65,-90.135; authored environment variants kept separate."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -10860,8 +10987,8 @@
         "handheld": false,
         "seam": false
       },
-      "physicalSiteLabel": "Gateway Kartplex — WWT complex",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "physicalSiteLabel": "World Wide Technology Raceway / Gateway complex",
+      "siteEvidenceStatus": "exact-authored-facility-route-and-source-coordinate",
       "candidateVenueLabels": [],
       "sourceOrigin": {
         "name": "Gateway Kartplex — WWT complex",
@@ -10879,6 +11006,14 @@
         "maxX": 102.74986863420499,
         "minY": 41.60919902294261,
         "maxY": 429.83570215046353
+      },
+      "physicalSiteGroup": "facility-gateway",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/side_race_sources.json",
+        "catalogId": "H06-S08",
+        "latitude": 38.65,
+        "longitude": -90.135,
+        "scope": "Explicit WWT road, oval, drag and Kartplex routes only"
       }
     },
     {
@@ -16983,8 +17118,10 @@
     {
       "raceRef": "Willow Springs — Horse Thief Mile",
       "documentPath": "races/Willow Springs %E2%80%94 Horse Thief Mile/document.json",
-      "siteGroup": "site-b238642901dc2ed8",
-      "sharingEvidence": [],
+      "siteGroup": "facility-willow-a8ccedb566",
+      "sharingEvidence": [
+        "Exact willow/horse-thief source layout at 34.872,-118.264; H11-S08; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -17097,7 +17234,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Willow Springs",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Willow Springs"
       ],
@@ -17117,6 +17254,16 @@
         "maxX": 115.48544070421133,
         "minY": -860.1717821622949,
         "maxY": -545.422988053724
+      },
+      "physicalSiteGroup": "facility-willow",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "willow",
+        "layoutKey": "horse-thief",
+        "catalogId": "H11-S08",
+        "latitude": 34.872,
+        "longitude": -118.264,
+        "reference": "https://willowspringsraceway.com/tracks/"
       }
     },
     {
@@ -17340,8 +17487,10 @@
     {
       "raceRef": "Watkins Glen — Long Course",
       "documentPath": "races/Watkins Glen %E2%80%94 Long Course/document.json",
-      "siteGroup": "site-bce67147a49c75bc",
-      "sharingEvidence": [],
+      "siteGroup": "facility-watkins-4c19cda147",
+      "sharingEvidence": [
+        "Exact watkins/long source layout at 42.3369,-76.9272; raceway-watkins-long; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -17446,7 +17595,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Watkins Glen",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Watkins Glen"
       ],
@@ -17484,13 +17633,25 @@
         "maxX": 564.9599772324386,
         "minY": -819.2519926369558,
         "maxY": 937.1632557166022
+      },
+      "physicalSiteGroup": "facility-watkins",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "watkins",
+        "layoutKey": "long",
+        "catalogId": "raceway-watkins-long",
+        "latitude": 42.3369,
+        "longitude": -76.9272,
+        "reference": "https://www.theglen.com/track-info/"
       }
     },
     {
       "raceRef": "Watkins Glen — Short Course",
       "documentPath": "races/Watkins Glen %E2%80%94 Short Course/document.json",
-      "siteGroup": "site-bdd7c0bf00cb496c",
-      "sharingEvidence": [],
+      "siteGroup": "facility-watkins-41bc38d75f",
+      "sharingEvidence": [
+        "Exact watkins/short source layout at 42.3369,-76.9272; raceway-watkins-short; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -17595,7 +17756,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Watkins Glen",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Watkins Glen"
       ],
@@ -17626,13 +17787,25 @@
         "maxX": 564.9599772324386,
         "minY": -819.2519926369558,
         "maxY": 744.9959180567562
+      },
+      "physicalSiteGroup": "facility-watkins",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "watkins",
+        "layoutKey": "short",
+        "catalogId": "raceway-watkins-short",
+        "latitude": 42.3369,
+        "longitude": -76.9272,
+        "reference": "https://www.theglen.com/track-info/"
       }
     },
     {
       "raceRef": "Watkins Glen — Long — No Inner Loop",
       "documentPath": "races/Watkins Glen %E2%80%94 Long %E2%80%94 No Inner Loop/document.json",
-      "siteGroup": "site-468899f5347de81c",
-      "sharingEvidence": [],
+      "siteGroup": "facility-watkins-41bc38d75f",
+      "sharingEvidence": [
+        "Exact watkins/long-no-loop source layout at 42.3369,-76.9272; raceway-watkins-long-no-loop; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -17737,7 +17910,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Watkins Glen",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Watkins Glen"
       ],
@@ -17775,13 +17948,25 @@
         "maxX": 564.9599772324386,
         "minY": -819.2519926369558,
         "maxY": 937.1632557166022
+      },
+      "physicalSiteGroup": "facility-watkins",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "watkins",
+        "layoutKey": "long-no-loop",
+        "catalogId": "raceway-watkins-long-no-loop",
+        "latitude": 42.3369,
+        "longitude": -76.9272,
+        "reference": "https://www.theglen.com/track-info/"
       }
     },
     {
       "raceRef": "Watkins Glen — Short — No Inner Loop",
       "documentPath": "races/Watkins Glen %E2%80%94 Short %E2%80%94 No Inner Loop/document.json",
-      "siteGroup": "site-f7e4f9c73a855753",
-      "sharingEvidence": [],
+      "siteGroup": "facility-watkins-50603b2b39",
+      "sharingEvidence": [
+        "Exact watkins/short-no-loop source layout at 42.3369,-76.9272; raceway-watkins-short-no-loop; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -17886,7 +18071,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Watkins Glen",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Watkins Glen"
       ],
@@ -17917,13 +18102,25 @@
         "maxX": 564.9599772324386,
         "minY": -819.2519926369558,
         "maxY": 744.9959180567562
+      },
+      "physicalSiteGroup": "facility-watkins",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "watkins",
+        "layoutKey": "short-no-loop",
+        "catalogId": "raceway-watkins-short-no-loop",
+        "latitude": 42.3369,
+        "longitude": -76.9272,
+        "reference": "https://www.theglen.com/track-info/"
       }
     },
     {
       "raceRef": "Road America — Full Course",
       "documentPath": "races/Road America %E2%80%94 Full Course/document.json",
-      "siteGroup": "site-c5a6ac0390ee2b55",
-      "sharingEvidence": [],
+      "siteGroup": "facility-road-america-41bc38d75f",
+      "sharingEvidence": [
+        "Exact road-america/full source layout at 43.7975,-87.9897; raceway-road-america-full; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -18028,7 +18225,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Road America",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Road America"
       ],
@@ -18074,13 +18271,25 @@
         "maxX": 18.03431965779899,
         "minY": -834.3634040403066,
         "maxY": 680.0802302162934
+      },
+      "physicalSiteGroup": "facility-road-america",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "road-america",
+        "layoutKey": "full",
+        "catalogId": "raceway-road-america-full",
+        "latitude": 43.7975,
+        "longitude": -87.9897,
+        "reference": "https://www.roadamerica.com/sites/main/files/file-attachments/road_america_track_notes_2023_july_for_web.pdf"
       }
     },
     {
       "raceRef": "Road America — The Bend",
       "documentPath": "races/Road America %E2%80%94 The Bend/document.json",
-      "siteGroup": "site-4399c0994726fd79",
-      "sharingEvidence": [],
+      "siteGroup": "facility-road-america-50603b2b39",
+      "sharingEvidence": [
+        "Exact road-america/bend source layout at 43.7975,-87.9897; raceway-road-america-bend; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -18185,7 +18394,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Road America",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Road America"
       ],
@@ -18231,13 +18440,25 @@
         "maxX": 18.03431965779899,
         "minY": -834.3634040403066,
         "maxY": 680.0802302162934
+      },
+      "physicalSiteGroup": "facility-road-america",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "road-america",
+        "layoutKey": "bend",
+        "catalogId": "raceway-road-america-bend",
+        "latitude": 43.7975,
+        "longitude": -87.9897,
+        "reference": "https://www.roadamerica.com/sites/main/files/file-attachments/road_america_track_notes_2023_july_for_web.pdf"
       }
     },
     {
       "raceRef": "Road Atlanta — Grand Prix",
       "documentPath": "races/Road Atlanta %E2%80%94 Grand Prix/document.json",
-      "siteGroup": "site-ddf07ab9c4e833ad",
-      "sharingEvidence": [],
+      "siteGroup": "facility-road-atlanta-4c19cda147",
+      "sharingEvidence": [
+        "Exact road-atlanta/grand-prix source layout at 34.1495,-83.8131; raceway-road-atlanta-grand-prix; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -18342,7 +18563,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Road Atlanta",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Road Atlanta"
       ],
@@ -18364,13 +18585,25 @@
         "maxX": 260.02753416272,
         "minY": -145.45428445300675,
         "maxY": 1484.6767112786533
+      },
+      "physicalSiteGroup": "facility-road-atlanta",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "road-atlanta",
+        "layoutKey": "grand-prix",
+        "catalogId": "raceway-road-atlanta-grand-prix",
+        "latitude": 34.1495,
+        "longitude": -83.8131,
+        "reference": "https://www.roadatlanta.com/track-info/about-mrra/track-map"
       }
     },
     {
       "raceRef": "Road Atlanta — Short Course",
       "documentPath": "races/Road Atlanta %E2%80%94 Short Course/document.json",
-      "siteGroup": "site-e7da23dedd4402ce",
-      "sharingEvidence": [],
+      "siteGroup": "facility-road-atlanta-41bc38d75f",
+      "sharingEvidence": [
+        "Exact road-atlanta/short source layout at 34.1495,-83.8131; raceway-road-atlanta-short; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -18475,7 +18708,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Road Atlanta",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Road Atlanta"
       ],
@@ -18498,13 +18731,25 @@
         "maxX": 260.02753416272,
         "minY": -145.45428445300675,
         "maxY": 870.9799439616755
+      },
+      "physicalSiteGroup": "facility-road-atlanta",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "road-atlanta",
+        "layoutKey": "short",
+        "catalogId": "raceway-road-atlanta-short",
+        "latitude": 34.1495,
+        "longitude": -83.8131,
+        "reference": "https://www.roadatlanta.com/track-info/about-mrra/track-map"
       }
     },
     {
       "raceRef": "Road Atlanta — Club Course",
       "documentPath": "races/Road Atlanta %E2%80%94 Club Course/document.json",
-      "siteGroup": "site-de59986543b00c20",
-      "sharingEvidence": [],
+      "siteGroup": "facility-road-atlanta-a8ccedb566",
+      "sharingEvidence": [
+        "Exact road-atlanta/club source layout at 34.1495,-83.8131; raceway-road-atlanta-club; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -18609,7 +18854,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Road Atlanta",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Road Atlanta"
       ],
@@ -18630,13 +18875,25 @@
         "maxX": -310.53859814734284,
         "minY": 876.7509686260792,
         "maxY": 1484.6767112786533
+      },
+      "physicalSiteGroup": "facility-road-atlanta",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "road-atlanta",
+        "layoutKey": "club",
+        "catalogId": "raceway-road-atlanta-club",
+        "latitude": 34.1495,
+        "longitude": -83.8131,
+        "reference": "https://www.roadatlanta.com/track-info/about-mrra/track-map"
       }
     },
     {
       "raceRef": "Virginia International Raceway — Full Course",
       "documentPath": "races/Virginia International Raceway %E2%80%94 Full Course/document.json",
-      "siteGroup": "site-6ba4a2035b915fa5",
-      "sharingEvidence": [],
+      "siteGroup": "facility-vir-4c19cda147",
+      "sharingEvidence": [
+        "Exact vir/full source layout at 36.561,-79.204; raceway-vir-full; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -18741,7 +18998,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Virginia International Raceway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Virginia International Raceway"
       ],
@@ -18777,13 +19034,25 @@
         "maxX": 161.76634996054267,
         "minY": -875.8725274914498,
         "maxY": 1011.975305697356
+      },
+      "physicalSiteGroup": "facility-vir",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "vir",
+        "layoutKey": "full",
+        "catalogId": "raceway-vir-full",
+        "latitude": 36.561,
+        "longitude": -79.204,
+        "reference": "https://virnow.com/track/configurations/"
       }
     },
     {
       "raceRef": "Virginia International Raceway — North Course",
       "documentPath": "races/Virginia International Raceway %E2%80%94 North Course/document.json",
-      "siteGroup": "site-3bee6fca2e0c86b7",
-      "sharingEvidence": [],
+      "siteGroup": "facility-vir-4c19cda147",
+      "sharingEvidence": [
+        "Exact vir/north source layout at 36.561,-79.204; raceway-vir-north; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -18888,7 +19157,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Virginia International Raceway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Virginia International Raceway"
       ],
@@ -18924,13 +19193,25 @@
         "maxX": 161.76634996054267,
         "minY": -875.8725274914498,
         "maxY": 94.62701327843301
+      },
+      "physicalSiteGroup": "facility-vir",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "vir",
+        "layoutKey": "north",
+        "catalogId": "raceway-vir-north",
+        "latitude": 36.561,
+        "longitude": -79.204,
+        "reference": "https://virnow.com/track/configurations/"
       }
     },
     {
       "raceRef": "Virginia International Raceway — South Course",
       "documentPath": "races/Virginia International Raceway %E2%80%94 South Course/document.json",
-      "siteGroup": "site-94cdae4231d7d611",
-      "sharingEvidence": [],
+      "siteGroup": "facility-vir-a8ccedb566",
+      "sharingEvidence": [
+        "Exact vir/south source layout at 36.561,-79.204; raceway-vir-south; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -19035,7 +19316,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Virginia International Raceway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Virginia International Raceway"
       ],
@@ -19064,13 +19345,25 @@
         "maxX": -31.44762136786155,
         "minY": -5.8933392525096755,
         "maxY": 1011.975305697356
+      },
+      "physicalSiteGroup": "facility-vir",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "vir",
+        "layoutKey": "south",
+        "catalogId": "raceway-vir-south",
+        "latitude": 36.561,
+        "longitude": -79.204,
+        "reference": "https://virnow.com/track/configurations/"
       }
     },
     {
       "raceRef": "Virginia International Raceway — Grand Course",
       "documentPath": "races/Virginia International Raceway %E2%80%94 Grand Course/document.json",
-      "siteGroup": "site-9df814c43ed0963f",
-      "sharingEvidence": [],
+      "siteGroup": "facility-vir-a8ccedb566",
+      "sharingEvidence": [
+        "Exact vir/grand source layout at 36.561,-79.204; raceway-vir-grand; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -19175,7 +19468,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Virginia International Raceway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Virginia International Raceway"
       ],
@@ -19215,13 +19508,25 @@
         "maxX": 161.76634996054267,
         "minY": -875.8725274914498,
         "maxY": 1011.975305697356
+      },
+      "physicalSiteGroup": "facility-vir",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "vir",
+        "layoutKey": "grand",
+        "catalogId": "raceway-vir-grand",
+        "latitude": 36.561,
+        "longitude": -79.204,
+        "reference": "https://virnow.com/track/configurations/"
       }
     },
     {
       "raceRef": "Sebring International Raceway — Full Circuit",
       "documentPath": "races/Sebring International Raceway %E2%80%94 Full Circuit/document.json",
-      "siteGroup": "site-8a5c42a243a2044e",
-      "sharingEvidence": [],
+      "siteGroup": "facility-sebring-a8ccedb566",
+      "sharingEvidence": [
+        "Exact sebring/full source layout at 27.454,-81.349; raceway-sebring-full; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -19326,7 +19631,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Sebring International Raceway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Sebring International Raceway"
       ],
@@ -19364,13 +19669,25 @@
         "maxX": 288.1827011512397,
         "minY": -360.01631127207355,
         "maxY": 637.5036339950753
+      },
+      "physicalSiteGroup": "facility-sebring",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "sebring",
+        "layoutKey": "full",
+        "catalogId": "raceway-sebring-full",
+        "latitude": 27.454,
+        "longitude": -81.349,
+        "reference": "https://www.imsa.com/sebring-international-raceway"
       }
     },
     {
       "raceRef": "Sebring International Raceway — Short Circuit",
       "documentPath": "races/Sebring International Raceway %E2%80%94 Short Circuit/document.json",
-      "siteGroup": "site-d4f4aa25da5dd387",
-      "sharingEvidence": [],
+      "siteGroup": "facility-sebring-4c19cda147",
+      "sharingEvidence": [
+        "Exact sebring/short source layout at 27.454,-81.349; raceway-sebring-short; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -19475,7 +19792,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Sebring International Raceway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Sebring International Raceway"
       ],
@@ -19503,13 +19820,25 @@
         "maxX": 288.37017876828617,
         "minY": 54.774696523169006,
         "maxY": 637.5036339950753
+      },
+      "physicalSiteGroup": "facility-sebring",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "sebring",
+        "layoutKey": "short",
+        "catalogId": "raceway-sebring-short",
+        "latitude": 27.454,
+        "longitude": -81.349,
+        "reference": "https://www.imsa.com/sebring-international-raceway"
       }
     },
     {
       "raceRef": "Sebring International Raceway — Club Circuit",
       "documentPath": "races/Sebring International Raceway %E2%80%94 Club Circuit/document.json",
-      "siteGroup": "site-c1f49cf92ebea172",
-      "sharingEvidence": [],
+      "siteGroup": "facility-sebring-41bc38d75f",
+      "sharingEvidence": [
+        "Exact sebring/club source layout at 27.454,-81.349; raceway-sebring-club; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -19614,7 +19943,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Sebring International Raceway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Sebring International Raceway"
       ],
@@ -19646,13 +19975,25 @@
         "maxX": 110.80913969516413,
         "minY": -360.01631127207355,
         "maxY": 153.69383989899907
+      },
+      "physicalSiteGroup": "facility-sebring",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "sebring",
+        "layoutKey": "club",
+        "catalogId": "raceway-sebring-club",
+        "latitude": 27.454,
+        "longitude": -81.349,
+        "reference": "https://www.imsa.com/sebring-international-raceway"
       }
     },
     {
       "raceRef": "Indianapolis Motor Speedway — Oval",
       "documentPath": "races/Indianapolis Motor Speedway %E2%80%94 Oval/document.json",
-      "siteGroup": "site-a5cbfb89b7330fb2",
-      "sharingEvidence": [],
+      "siteGroup": "facility-indianapolis-a8ccedb566",
+      "sharingEvidence": [
+        "Exact indianapolis/oval source layout at 39.795,-86.234; raceway-indianapolis-oval; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -19757,7 +20098,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Indianapolis Motor Speedway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Indianapolis Motor Speedway"
       ],
@@ -19786,13 +20127,25 @@
         "maxX": 313.60830675944254,
         "minY": -769.247565055455,
         "maxY": 765.0110324988243
+      },
+      "physicalSiteGroup": "facility-indianapolis",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "indianapolis",
+        "layoutKey": "oval",
+        "catalogId": "raceway-indianapolis-oval",
+        "latitude": 39.795,
+        "longitude": -86.234,
+        "reference": "https://www.indianapolismotorspeedway.com/"
       }
     },
     {
       "raceRef": "Indianapolis Motor Speedway — Grand Prix Road Course",
       "documentPath": "races/Indianapolis Motor Speedway %E2%80%94 Grand Prix Road Course/document.json",
-      "siteGroup": "site-992e4be2802567c7",
-      "sharingEvidence": [],
+      "siteGroup": "facility-indianapolis-41bc38d75f",
+      "sharingEvidence": [
+        "Exact indianapolis/road source layout at 39.795,-86.234; raceway-indianapolis-road; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -19897,7 +20250,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Indianapolis Motor Speedway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Indianapolis Motor Speedway"
       ],
@@ -19923,13 +20276,25 @@
         "maxX": 259.7582738626963,
         "minY": -693.3124447638596,
         "maxY": 760.229644049003
+      },
+      "physicalSiteGroup": "facility-indianapolis",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "indianapolis",
+        "layoutKey": "road",
+        "catalogId": "raceway-indianapolis-road",
+        "latitude": 39.795,
+        "longitude": -86.234,
+        "reference": "https://www.indianapolismotorspeedway.com/"
       }
     },
     {
       "raceRef": "Homestead-Miami Speedway — Oval",
       "documentPath": "races/Homestead-Miami Speedway %E2%80%94 Oval/document.json",
-      "siteGroup": "site-0cdd624ed9fbb7b7",
-      "sharingEvidence": [],
+      "siteGroup": "facility-homestead-41bc38d75f",
+      "sharingEvidence": [
+        "Exact homestead/oval source layout at 25.4517,-80.4098; raceway-homestead-oval; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -20034,7 +20399,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Homestead-Miami Speedway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Homestead-Miami Speedway"
       ],
@@ -20058,13 +20423,25 @@
         "maxX": 557.2487003964009,
         "minY": -355.39059593442306,
         "maxY": 304.196380994741
+      },
+      "physicalSiteGroup": "facility-homestead",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "homestead",
+        "layoutKey": "oval",
+        "catalogId": "raceway-homestead-oval",
+        "latitude": 25.4517,
+        "longitude": -80.4098,
+        "reference": "https://www.homesteadmiamispeedway.com/track-history/"
       }
     },
     {
       "raceRef": "Homestead-Miami Speedway — Road Course",
       "documentPath": "races/Homestead-Miami Speedway %E2%80%94 Road Course/document.json",
-      "siteGroup": "site-31f1c57180770e27",
-      "sharingEvidence": [],
+      "siteGroup": "facility-homestead-41bc38d75f",
+      "sharingEvidence": [
+        "Exact homestead/road source layout at 25.4517,-80.4098; raceway-homestead-road; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -20169,7 +20546,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Homestead-Miami Speedway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Homestead-Miami Speedway"
       ],
@@ -20194,13 +20571,25 @@
         "maxX": 557.2487003964009,
         "minY": -355.39059593442306,
         "maxY": 252.5240272103928
+      },
+      "physicalSiteGroup": "facility-homestead",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "homestead",
+        "layoutKey": "road",
+        "catalogId": "raceway-homestead-road",
+        "latitude": 25.4517,
+        "longitude": -80.4098,
+        "reference": "https://www.homesteadmiamispeedway.com/track-history/"
       }
     },
     {
       "raceRef": "Homestead-Miami Speedway — Modified Road Course",
       "documentPath": "races/Homestead-Miami Speedway %E2%80%94 Modified Road Course/document.json",
-      "siteGroup": "site-8ea2d614b48dc6b0",
-      "sharingEvidence": [],
+      "siteGroup": "facility-homestead-41bc38d75f",
+      "sharingEvidence": [
+        "Exact homestead/infield source layout at 25.4517,-80.4098; raceway-homestead-infield; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -20305,7 +20694,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Homestead-Miami Speedway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Homestead-Miami Speedway"
       ],
@@ -20330,13 +20719,25 @@
         "maxX": 461.65465927097915,
         "minY": -337.65498063731275,
         "maxY": 252.5240272103928
+      },
+      "physicalSiteGroup": "facility-homestead",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "homestead",
+        "layoutKey": "infield",
+        "catalogId": "raceway-homestead-infield",
+        "latitude": 25.4517,
+        "longitude": -80.4098,
+        "reference": "https://www.homesteadmiamispeedway.com/track-history/"
       }
     },
     {
       "raceRef": "Daytona International Speedway — Sports Car Course",
       "documentPath": "races/Daytona International Speedway %E2%80%94 Sports Car Course/document.json",
-      "siteGroup": "site-040012d0d2a78868",
-      "sharingEvidence": [],
+      "siteGroup": "facility-daytona-50603b2b39",
+      "sharingEvidence": [
+        "Exact daytona/sports-car source layout at 29.1852,-81.0705; raceway-daytona-sports-car; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -20441,7 +20842,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Daytona International Speedway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Daytona International Speedway"
       ],
@@ -20472,13 +20873,25 @@
         "maxX": 776.1923445415525,
         "minY": -702.419321835538,
         "maxY": 730.8519038508908
+      },
+      "physicalSiteGroup": "facility-daytona",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "daytona",
+        "layoutKey": "sports-car",
+        "catalogId": "raceway-daytona-sports-car",
+        "latitude": 29.1852,
+        "longitude": -81.0705,
+        "reference": "https://www.daytonainternationalspeedway.com/"
       }
     },
     {
       "raceRef": "Daytona International Speedway — Stock Car Road Course",
       "documentPath": "races/Daytona International Speedway %E2%80%94 Stock Car Road Course/document.json",
-      "siteGroup": "site-f8732f7943c1da08",
-      "sharingEvidence": [],
+      "siteGroup": "facility-daytona-41bc38d75f",
+      "sharingEvidence": [
+        "Exact daytona/stock-car source layout at 29.1852,-81.0705; raceway-daytona-stock-car; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -20583,7 +20996,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Daytona International Speedway",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Daytona International Speedway"
       ],
@@ -20615,13 +21028,25 @@
         "maxX": 776.1923445415525,
         "minY": -702.419321835538,
         "maxY": 730.8519038508908
+      },
+      "physicalSiteGroup": "facility-daytona",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "daytona",
+        "layoutKey": "stock-car",
+        "catalogId": "raceway-daytona-stock-car",
+        "latitude": 29.1852,
+        "longitude": -81.0705,
+        "reference": "https://www.daytonainternationalspeedway.com/"
       }
     },
     {
       "raceRef": "Willow Springs — Big Willow",
       "documentPath": "races/Willow Springs %E2%80%94 Big Willow/document.json",
-      "siteGroup": "site-4a76608503775342",
-      "sharingEvidence": [],
+      "siteGroup": "facility-willow-4c19cda147",
+      "sharingEvidence": [
+        "Exact willow/big source layout at 34.872,-118.264; raceway-willow-big; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -20726,7 +21151,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Willow Springs",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Willow Springs"
       ],
@@ -20746,13 +21171,25 @@
         "maxX": 660.4628683710887,
         "minY": -463.6723650659019,
         "maxY": 338.8114094718241
+      },
+      "physicalSiteGroup": "facility-willow",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "willow",
+        "layoutKey": "big",
+        "catalogId": "raceway-willow-big",
+        "latitude": 34.872,
+        "longitude": -118.264,
+        "reference": "https://willowspringsraceway.com/tracks/"
       }
     },
     {
       "raceRef": "Willow Springs — Streets of Willow",
       "documentPath": "races/Willow Springs %E2%80%94 Streets of Willow/document.json",
-      "siteGroup": "site-6353372d8bbd3acc",
-      "sharingEvidence": [],
+      "siteGroup": "facility-willow-4c19cda147",
+      "sharingEvidence": [
+        "Exact willow/streets source layout at 34.872,-118.264; raceway-willow-streets; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -20857,7 +21294,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Willow Springs",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Willow Springs"
       ],
@@ -20879,13 +21316,25 @@
         "maxX": 608.782244182854,
         "minY": -1060.6120337918032,
         "maxY": -254.93696045121507
+      },
+      "physicalSiteGroup": "facility-willow",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "willow",
+        "layoutKey": "streets",
+        "catalogId": "raceway-willow-streets",
+        "latitude": 34.872,
+        "longitude": -118.264,
+        "reference": "https://willowspringsraceway.com/tracks/"
       }
     },
     {
       "raceRef": "Willow Springs — Streets — Short",
       "documentPath": "races/Willow Springs %E2%80%94 Streets %E2%80%94 Short/document.json",
-      "siteGroup": "site-618999da161e61bd",
-      "sharingEvidence": [],
+      "siteGroup": "facility-willow-41bc38d75f",
+      "sharingEvidence": [
+        "Exact willow/streets-short source layout at 34.872,-118.264; raceway-willow-streets-short; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -20990,7 +21439,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Willow Springs",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Willow Springs"
       ],
@@ -21013,13 +21462,25 @@
         "maxX": 608.782244182854,
         "minY": -791.2753104495672,
         "maxY": -254.93696045121507
+      },
+      "physicalSiteGroup": "facility-willow",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "willow",
+        "layoutKey": "streets-short",
+        "catalogId": "raceway-willow-streets-short",
+        "latitude": 34.872,
+        "longitude": -118.264,
+        "reference": "https://willowspringsraceway.com/tracks/"
       }
     },
     {
       "raceRef": "Lime Rock Park — West Chicane",
       "documentPath": "races/Lime Rock Park %E2%80%94 West Chicane/document.json",
-      "siteGroup": "site-a1b439a494376429",
-      "sharingEvidence": [],
+      "siteGroup": "facility-lime-50603b2b39",
+      "sharingEvidence": [
+        "Exact lime/west-chicane source layout at 41.928,-73.38; raceway-lime-west-chicane; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -21124,7 +21585,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Lime Rock Park",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Lime Rock Park"
       ],
@@ -21156,13 +21617,25 @@
         "maxX": 169.16115537239426,
         "minY": -228.97290921745082,
         "maxY": 320.96459909357577
+      },
+      "physicalSiteGroup": "facility-lime",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "lime",
+        "layoutKey": "west-chicane",
+        "catalogId": "raceway-lime-west-chicane",
+        "latitude": 41.928,
+        "longitude": -73.38,
+        "reference": "https://limerock.com/"
       }
     },
     {
       "raceRef": "Lime Rock Park — Both Chicanes",
       "documentPath": "races/Lime Rock Park %E2%80%94 Both Chicanes/document.json",
-      "siteGroup": "site-cca2e8da95ac4711",
-      "sharingEvidence": [],
+      "siteGroup": "facility-lime-41bc38d75f",
+      "sharingEvidence": [
+        "Exact lime/both-chicanes source layout at 41.928,-73.38; raceway-lime-both-chicanes; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -21267,7 +21740,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Lime Rock Park",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Lime Rock Park"
       ],
@@ -21299,13 +21772,25 @@
         "maxX": 169.16115537239426,
         "minY": -228.97290921745082,
         "maxY": 320.96459909357577
+      },
+      "physicalSiteGroup": "facility-lime",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "lime",
+        "layoutKey": "both-chicanes",
+        "catalogId": "raceway-lime-both-chicanes",
+        "latitude": 41.928,
+        "longitude": -73.38,
+        "reference": "https://limerock.com/"
       }
     },
     {
       "raceRef": "Mid-Ohio Sports Car Course — Chicane Course",
       "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Chicane Course/document.json",
-      "siteGroup": "site-955f0c22bb8a9ff8",
-      "sharingEvidence": [],
+      "siteGroup": "facility-mid-ohio-4c19cda147",
+      "sharingEvidence": [
+        "Exact mid-ohio/chicane source layout at 40.689,-82.635; raceway-mid-ohio-chicane; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -21410,7 +21895,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Mid-Ohio Sports Car Course",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Mid-Ohio Sports Car Course"
       ],
@@ -21435,13 +21920,25 @@
         "maxX": 255.2712696884125,
         "minY": -620.0015283664188,
         "maxY": 569.1631376836918
+      },
+      "physicalSiteGroup": "facility-mid-ohio",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "mid-ohio",
+        "layoutKey": "chicane",
+        "catalogId": "raceway-mid-ohio-chicane",
+        "latitude": 40.689,
+        "longitude": -82.635,
+        "reference": "https://midohio.com/"
       }
     },
     {
       "raceRef": "Mid-Ohio Sports Car Course — Short Course",
       "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Short Course/document.json",
-      "siteGroup": "site-60dd2dabe28ff5a9",
-      "sharingEvidence": [],
+      "siteGroup": "facility-mid-ohio-a8ccedb566",
+      "sharingEvidence": [
+        "Exact mid-ohio/short source layout at 40.689,-82.635; raceway-mid-ohio-short; same facility composition only with identical saved authoredEnvironment."
+      ],
       "status": "pending-location-and-render-review",
       "catalog": [
         {
@@ -21546,7 +22043,7 @@
         "seam": false
       },
       "physicalSiteLabel": "Mid-Ohio Sports Car Course",
-      "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
+      "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
       "candidateVenueLabels": [
         "Mid-Ohio Sports Car Course"
       ],
@@ -21570,6 +22067,16 @@
         "maxX": 255.2712696884125,
         "minY": -619.812496729393,
         "maxY": 127.14045473864067
+      },
+      "physicalSiteGroup": "facility-mid-ohio",
+      "physicalSiteEvidence": {
+        "source": "tools/campaigns/raceway_sources.json",
+        "sourceKey": "mid-ohio",
+        "layoutKey": "short",
+        "catalogId": "raceway-mid-ohio-short",
+        "latitude": 40.689,
+        "longitude": -82.635,
+        "reference": "https://midohio.com/"
       }
     },
     {

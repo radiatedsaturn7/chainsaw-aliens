@@ -7,3 +7,14 @@ test('seam diagnostics flag a vertical discontinuity, never substitute for visua
 test('all effective texture refs can vary without permitting shoulder physics or tile weights',()=>{const r={margin:{artRef:'edge',collisionMode:'solid',widthM:2},roadTextures:{surfaceRoads:{gravel:{artRef:'gravel',roughArtRef:'rough',repeatM:12}},surfaceShoulders:{dirt:{artRef:'verge',repeatM:5}}},road:{tileMap:{cells:{a:{tileId:'snow',tileWeights:{snow:1}}}}}};const a=structuredClone(r);a.margin.artRef='new-edge';a.roadTextures.surfaceRoads.gravel.roughArtRef='new-rough';a.roadTextures.surfaceShoulders.dirt.artRef='new-verge';a.road.tileMap.cells.a.artRef='forest';a.road.tileMap.cells.a.roughArtRef='forest';assertVisualOnly(r,a);for(const mutate of [x=>x.margin.collisionMode='none',x=>x.margin.widthM=4,x=>x.roadTextures.surfaceShoulders.dirt.repeatM=6,x=>x.road.tileMap.cells.a.tileId='grass',x=>x.road.tileMap.cells.a.tileWeights.snow=.5]){const b=structuredClone(a);mutate(b);assert.throws(()=>assertVisualOnly(r,b));}});
 
 test('same-site evidence cannot authorize incompatible weather or time',()=>{const rows=[{raceRef:'a',siteGroup:'same',sharingEvidence:['same physical site'],authoredEnvironment:{timeOfDay:'day',weather:'clear'}},{raceRef:'b',siteGroup:'same',sharingEvidence:['same physical site'],authoredEnvironment:{timeOfDay:'night',weather:'snow'}}];assert.throws(()=>assertLedger({rows},['a','b']),/incompatible authored environment/);});
+
+import {authoredFreeRaceArtwork} from '../helpers/campaignArtworkValidation.mjs';
+test('free-race art requires an exact active binding and runtime selector, never a blanket exemption',()=>{
+ const registry={schemaVersion:1,assets:{sky:{raceRef:'free',slot:'sky',reason:'exact authored location'}}},menu={screens:[{elements:[{source:'races',binding:'raceRef'}]}]},manifest={folders:{races:{free:'free.json'},art:{sky:'sky.json'}}},read=()=>({race:{skyboxArtRef:'sky',skyboxSettings:{artRef:'sky'}}});
+ assert.deepEqual([...authoredFreeRaceArtwork(registry,menu,manifest,read,[])],['sky']);
+ assert.throws(()=>authoredFreeRaceArtwork(registry,{screens:[]},manifest,read,[]),/selector/);
+ assert.throws(()=>authoredFreeRaceArtwork(registry,menu,{folders:{races:{},art:{sky:'sky.json'}}},read,[]),/Unreachable/);
+ assert.throws(()=>authoredFreeRaceArtwork(registry,menu,manifest,()=>({race:{skyboxArtRef:'other'}}),[]),/placement/);
+ assert.throws(()=>authoredFreeRaceArtwork(registry,menu,manifest,read,['free.json']),/campaign guard/);
+ assert.throws(()=>authoredFreeRaceArtwork({schemaVersion:1,assets:{sky:{raceRef:'free',slot:'preload',reason:'unused'}}},menu,manifest,read,[]),/Invalid/);
+});

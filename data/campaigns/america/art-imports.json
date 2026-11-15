@@ -3078,5 +3078,26 @@
     "documentSha256": "b75a2e2a86bb78cf1194aeaf8f58aef9a621e04ca8a939cbb8b65756cc8674ea",
     "width": 512,
     "height": 512
+  },
+  "environment-v1-laurel-ohiopyle-evening": {
+    "source": "assets/campaign-art/environment-v1/laurel-ohiopyle-evening.png",
+    "sourceSha256": "98c8ec6021bc9e574d95f5ce7481ce9af6f2178ab00a1a1937729d7d14041660",
+    "documentSha256": "e100dbc5842ff1144e9c5057f0cf52aca5400ce7b6ed033266dc292cbbf047df",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-route66-erick-texola": {
+    "source": "assets/campaign-art/environment-v1/route66-erick-texola.png",
+    "sourceSha256": "526269f53bd93f3e3c8ca8e9457230f9f99f5e11df9e2906dc1b0c2070b29378",
+    "documentSha256": "0aa3c18b0ab16479951281e07fd2bd6db4f23e496042f593a09fedd0aab81d1e",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-ground-dormant-prairie": {
+    "source": "assets/campaign-art/environment-v1/ground-dormant-prairie.png",
+    "sourceSha256": "3845069c866232ef2ad818937ca388035593b0022aa3dfa90ea5e45e53532f3d",
+    "documentSha256": "9e46d773cda5b3c17dd99e43f3d75fd3717bea5bf428f2752bfbf40ed4cdb099",
+    "width": 512,
+    "height": 512
   }
 }

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "skybox-col-de-turini": {
+      "raceRef": "Col de Turini",
+      "slot": "sky",
+      "reason": "Saved Game Menu races selector enumerates this manifest race; native editor binding is validated separately from enabled campaign choices."
+    },
+    "skybox-eifel-circuit": {
+      "raceRef": "Nurburgring Nordschleife",
+      "slot": "sky",
+      "reason": "Saved Game Menu races selector enumerates this manifest race; native editor binding is validated separately from enabled campaign choices."
+    },
+    "environment-v1-ouninpohja-boreal-noon": {
+      "raceRef": "Ouninpohja",
+      "slot": "sky",
+      "reason": "Saved Game Menu races selector enumerates this manifest race; native editor binding is validated separately from enabled campaign choices."
+    },
+    "environment-v1-ground-finnish-boreal-verge": {
+      "raceRef": "Ouninpohja",
+      "slot": "ground",
+      "reason": "Saved Game Menu races selector enumerates this manifest race; native editor binding is validated separately from enabled campaign choices."
+    },
+    "environment-v1-old-staples-woodland-day": {
+      "raceRef": "Old Staples Road",
+      "slot": "sky",
+      "reason": "Saved Game Menu races selector enumerates this manifest race; native editor binding is validated separately from enabled campaign choices."
+    }
+  }
+}

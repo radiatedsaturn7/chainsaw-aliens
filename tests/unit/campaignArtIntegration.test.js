@@ -1,7 +1,7 @@
 import {assertFenceRoadClearance,fenceRoadGap,assertFencePathGeometry} from '../helpers/campaignFenceValidation.mjs';
 import {createRaceStaticColliderWorld} from '../../src/racing/RaceSimulation.js';
 import {buildRaceFencePlacements} from '../../src/racing/RaceFences.js';
-import {placedSceneryArtRefs,validateArtworkIntent,campaignArtworkRacePaths,assertCampaignImportInventory,createSavedDoodadResolver,assertSceneryArtwork} from '../helpers/campaignArtworkValidation.mjs';
+import {authoredFreeRaceArtwork,placedSceneryArtRefs,validateArtworkIntent,campaignArtworkRacePaths,assertCampaignImportInventory,createSavedDoodadResolver,assertSceneryArtwork} from '../helpers/campaignArtworkValidation.mjs';
 import {collectSceneryArtRefs} from '../../src/racing/RaceSceneryAssets.js';
 import {applyCampaignArtCoverage} from '../../tools/campaigns/campaign_art_coverage.mjs';
 import test from 'node:test';
@@ -127,7 +127,7 @@ test('delivered art satisfies explicit campaign, editor and configured-unused in
  }
  const snow=read(root+manifest.folders.races[intent.configuredUnused['road-snow-patchy'].raceRef]).race;
  const configured=new Set([roadTextureSettings(snow).surfaceRoads.snow?.artRef]);
- for(const message of validateArtworkIntent(intent,imports,used,editorLoaded,configured,deferred))t.diagnostic(message);
+ for(const message of validateArtworkIntent(intent,imports,used,editorLoaded,configured,deferred,authoredFreeRaceArtwork(read('data/race-environments/free-race-art.json'),read(root+manifest.folders.menus['Game Menu']),manifest,p=>read(root+p),paths)))t.diagnostic(message);
 });
 
 test('exposed terrain keeps material weights and the marked turnout is a usable pull-off',()=>{
