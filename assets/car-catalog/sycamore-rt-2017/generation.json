@@ -1,0 +1,8 @@
+{
+  "tool": "supported image_gen imagegen",
+  "bodyOriginal": "/workspace/generated_images/exec-d0a48a0f-ba1e-44fb-8803-639334075652.png",
+  "dashboardRejectedBackdrop": "/workspace/generated_images/exec-7c29168b-fd62-4fdb-8b06-178c8955a0c9.png",
+  "dashboardFinal": "/workspace/generated_images/exec-a135187e-77b7-4b59-a05b-0e494fc8f3b2.png",
+  "brief": "Original sage/sand crew-cab utility pickup, open empty bed, eight directional body views, no badges or livery; original LHD utility dash blank binnacle and shared runtime wheel/gauges.",
+  "correction": "Imagegen removed unwanted pale backdrop above dashboard. Final original PNG copied unchanged; top250rows have80 alpha1 pixels and all other pixels alpha0, checked explicitly."
+}

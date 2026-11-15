@@ -747,7 +747,9 @@
       "catalog-copperleaf-22-1998-body": "art/catalog-copperleaf-22-1998-body/document.json",
       "catalog-copperleaf-22-1998-dashboard": "art/catalog-copperleaf-22-1998-dashboard/document.json",
       "catalog-honeysuckle-22-2009-body": "art/catalog-honeysuckle-22-2009-body/document.json",
-      "catalog-honeysuckle-22-2009-dashboard": "art/catalog-honeysuckle-22-2009-dashboard/document.json"
+      "catalog-honeysuckle-22-2009-dashboard": "art/catalog-honeysuckle-22-2009-dashboard/document.json",
+      "catalog-sycamore-rt-2017-body": "art/catalog-sycamore-rt-2017-body/document.json",
+      "catalog-sycamore-rt-2017-dashboard": "art/catalog-sycamore-rt-2017-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -832,7 +834,8 @@
       "Vervain 200 2011": "cars/Vervain 200 2011/document.json",
       "Alder RS 1994": "cars/Alder RS 1994/document.json",
       "Copperleaf 22 1998": "cars/Copperleaf 22 1998/document.json",
-      "Honeysuckle 22 2009": "cars/Honeysuckle 22 2009/document.json"
+      "Honeysuckle 22 2009": "cars/Honeysuckle 22 2009/document.json",
+      "Sycamore RT 2017": "cars/Sycamore RT 2017/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
