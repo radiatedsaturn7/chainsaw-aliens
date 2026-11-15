@@ -4744,5 +4744,12 @@
     "documentSha256": "af2342626502f3a3c86641114f7dd111ec8b0c87b87f6a0c1273af1991fae8a4",
     "width": 1024,
     "height": 341
+  },
+  "ground-frosted-grass-v1": {
+    "source": "assets/campaign-art/environment-v1/ground-frosted-grass-v1.png",
+    "sourceSha256": "7f17c81e239ca5fe24a12eb501df39446f7f9bf38b02f9f21a7ae046bd4ba027",
+    "documentSha256": "5554b9f2ad312c8316247361a3a59b41214d980497a69a1bf3d6f807982630f0",
+    "width": 512,
+    "height": 512
   }
 }

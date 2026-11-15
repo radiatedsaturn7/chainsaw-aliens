@@ -93,3 +93,15 @@ test('final island and legacy bindings preserve exact baseline cell coverage inc
   for(const cell of entries){for(const slot of ['artRef','roughArtRef'])assert.ok(terrainArtMaterials[cell[slot]],row.raceRef+': '+slot);assertTerrainArtMaterial(cell,{tileId:cell.tileId});}
  }
 });
+
+test('all245 routes have declared terrain in both layers and material-correct ground planes',()=>{
+ const l=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));assert.equal(l.rows.length,245);let total=0,empty=0;
+ for(const row of l.rows){let d=JSON.parse(fs.readFileSync('data/server-storage/files/'+row.documentPath));if(d.__chainsawStorage)d=JSON.parse(gunzipSync(Buffer.from(d.data,'base64')));const map=d.race.road.tileMap,counts={};
+  for(const cell of Object.values(map.cells)){assert.ok(cell.artRef&&cell.roughArtRef,row.raceRef);assertTerrainArtMaterial(cell,{tileId:cell.tileId});counts[cell.tileId]=(counts[cell.tileId]||0)+1;total++;}
+  const dominant=Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0]||map.defaultTileId;if(!Object.keys(counts).length)empty++;
+  assert.equal(terrainArtMaterials[d.race.groundPlaneArtRef],dominant,row.raceRef+' ground plane substrate');
+ }
+ assert.equal(total,3355076);assert.equal(empty,4);
+ assert.throws(()=>assertTerrainArtMaterial({artRef:'unclassified-example'},{tileId:'grass'}),/Unclassified/);
+ assert.throws(()=>assertTerrainArtMaterial({artRef:'ground-frosted-grass-v1'},{tileId:'snow'}),/must visually represent/);
+});

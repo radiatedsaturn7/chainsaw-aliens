@@ -26,7 +26,7 @@ for(const selectedRow of selected)for(const mobile of deviceModes)test(`${select
    const {roadTextureSettings,shoulderTextureForSegment}=await import('/src/racing/RaceRoadTextures.js');
    const {skyVisibilityOpacity}=await import('/src/racing/WeatherVisibility.js');
    const map=e.selectedRace.road.tileMap,tileImageCounts={},tileImageById={};for(const cell of Object.values(map?.cells||{})){const image=cell.artRef||cell.tileArtRef||e.getRaceSurfaceArtRefForSlot(cell.tileId||map.defaultTileId||'grass')||e.getRaceDefaultGroundArtRef(cell.tileId,cell.tileWeights,map)||'[procedural/default tile]';tileImageCounts[image]=(tileImageCounts[image]||0)+1;const id=cell.tileId||map.defaultTileId||'grass';tileImageById[id]??={};tileImageById[id][image]=(tileImageById[id][image]||0)+1;}
-   const surfaceSamples=[...new Map(e.selectedRace.road.segments.map(s=>[s.surface,s])).values()].map(s=>({surface:s.surface,shoulder:shoulderTextureForSegment(e.selectedRace.roadTextures,s),surfaceArt:e.getRaceSurfaceArtRefForSurface(s.surface)}));
+   const surfaceSamples=[...new Map([...e.selectedRace.road.segments,...(e.selectedRace.road.network?.edges||[])].map(s=>[s.surface,s])).values()].map(s=>({surface:s.surface,shoulder:shoulderTextureForSegment(e.selectedRace.roadTextures,s),surfaceArt:e.getRaceSurfaceArtRefForSurface(s.surface)}));
    const effectiveLayers={tileImageCounts,tileImageById,road:roadTextureSettings(e.selectedRace),surfaceSamples,margin:e.selectedRace.margin,ground:e.selectedRace.groundPlaneArtRef};
    const {hydrateServerStorage}=await import('/src/ui/serverStorage.js');await hydrateServerStorage({folder:'races'});
    const selectorChoices=window.__game.menuPlayer.resources.choices('races',{});

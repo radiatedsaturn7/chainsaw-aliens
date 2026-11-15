@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {terrainArtMaterials} from './terrain-materials.mjs';
+import {roadTextureSettings,roadTextureForSegment,shoulderTextureForSegment} from '../../src/racing/RaceRoadTextures.js';
+const roadMaterials={asphaltRoad:['asphalt'],'road-asphalt-patched':['asphalt'],'road-asphalt-industrial':['asphalt'],'road-asphalt-worn':['asphalt'],'road-asphalt-faded66':['asphalt'],'road-asphalt-wet':['asphalt','wet-asphalt'],'road-dirt-packed':['dirt'],'road-dirt-loose':['dirt'],'road-gravel-gray':['gravel'],'road-gravel-rutted':['gravel'],'road-gravel-red':['gravel'],snowroad:['snow'],'road-snow-packed':['snow'],'road-snow-patchy':['snow'],'road-slush':['slush']};
 const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
 const rows=[];
 for(const row of ledger.rows){
@@ -12,9 +14,15 @@ for(const row of ledger.rows){
   const status=!material?'unclassified':material===cell.tileId?'matching':'mismatch';
   const key=JSON.stringify({slot,ref,tileId:cell.tileId,material,status});counts.set(key,(counts.get(key)||0)+1);
  }
- rows.push({race:row.raceRef,pack:row.environmentPack,ground:doc.race.groundPlaneArtRef,defaultTileId:doc.race.road?.tileMap?.defaultTileId,layers:[...counts].map(([key,cells])=>({...JSON.parse(key),cells}))});
+ const materialCounts={};for(const c of Object.values(doc.race.road?.tileMap?.cells||{}))materialCounts[c.tileId]=(materialCounts[c.tileId]||0)+1;
+ const groundIntent=Object.keys(materialCounts).sort((a,b)=>materialCounts[b]-materialCounts[a])[0]||doc.race.road?.tileMap?.defaultTileId;
+ const groundStatus=terrainArtMaterials[doc.race.groundPlaneArtRef]===groundIntent?'matching':'mismatch';
+ const settings=roadTextureSettings(doc.race),roadEvidence=new Map();
+ for(const seg of [...(doc.race.road.segments||[]),...(doc.race.road.network?.edges||[])]){const t=roadTextureForSegment(settings,seg),ref=t?.enabled===false?'':t?.artRef||'',expected=roadMaterials[ref];const status=!ref?'procedural-material-renderer':!expected?'unclassified':expected.includes(seg.surface)?'matching':'mismatch';const sh=shoulderTextureForSegment(settings,seg);const key=JSON.stringify({surface:seg.surface,ref,status,shoulderArtRef:sh?.artRef||null,shoulderEnabled:sh?.enabled!==false});roadEvidence.set(key,(roadEvidence.get(key)||0)+1);}
+ rows.push({groundIntent,groundStatus,roadEvidence:[...roadEvidence].map(([key,sections])=>({...JSON.parse(key),sections})),race:row.raceRef,pack:row.environmentPack,ground:doc.race.groundPlaneArtRef,defaultTileId:doc.race.road?.tileMap?.defaultTileId,layers:[...counts].map(([key,cells])=>({...JSON.parse(key),cells}))});
 }
 const mismatchRows=rows.filter(r=>r.layers.some(l=>l.status==='mismatch'));
 const unclassifiedRows=rows.filter(r=>r.layers.some(l=>l.status==='unclassified'));
-console.log(JSON.stringify({total:rows.length,mismatchRaceCount:mismatchRows.length,unclassifiedRaceCount:unclassifiedRows.length,note:'Counts are per visual slot, not unique cells. Unknown art requires visual classification; known mismatches block release. Ground/road/shoulder visual review remains separate.',rows},null,2));
-if(mismatchRows.length||unclassifiedRows.length)process.exitCode=1;
+const roadProblems=rows.filter(r=>r.roadEvidence.some(e=>['mismatch','unclassified'].includes(e.status)));const groundProblems=rows.filter(r=>r.groundStatus!=='matching');
+console.log(JSON.stringify({roadProblemCount:roadProblems.length,groundProblemCount:groundProblems.length,total:rows.length,mismatchRaceCount:mismatchRows.length,unclassifiedRaceCount:unclassifiedRows.length,note:'Counts are per visual slot, not unique cells. Unknown art requires visual classification; known mismatches block release. Ground/road/shoulder visual review remains separate.',rows},null,2));
+if(mismatchRows.length||unclassifiedRows.length||roadProblems.length||groundProblems.length)process.exitCode=1;

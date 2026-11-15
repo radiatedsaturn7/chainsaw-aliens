@@ -1,0 +1,180 @@
+{
+  "parent": "03641a6d5d3abdf51d67b5de5cfd0767340f6e12",
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "scope": "Local remediation checkpoint, not release-ready; no runtime/lighting/weather/geometry/physics edits.",
+  "coverage": {
+    "bound": 245,
+    "newTerrainPlans": 131,
+    "knownCellMismatchRows": 0,
+    "unclassifiedCellRows": 0,
+    "groundPlaneMismatchRows": 0,
+    "newNativeSkyComparisons": 24,
+    "newProductionSamples": {
+      "DemoDesktopBaseline": "passed 21.25 m",
+      "DemoDesktopCandidate": "passed 20.05 m; slower wall/sim ratio"
+    },
+    "fullRouteDrivingAcceptance": false,
+    "coldP1": {
+      "baseline": "pass",
+      "candidate": "pass",
+      "missingArtRefs": [],
+      "knownAssetResponses": "HTTP 200 for both refs on both snapshots; no observed named static fallback"
+    },
+    "newGroundNativeRepeatReviews": 6,
+    "remainingFlaggedRoadRows": 2
+  },
+  "evidence": {
+    "materialPlan": "pack16-material-plan.json",
+    "layerFindings": "pack16-layer-findings.json",
+    "skyComparisons": "pack16-skybox-*-review.jpg",
+    "demo": "pack16-demo-cold-results.json",
+    "p1Sources": "pack16-p1-source-integrity.json",
+    "p1Cold": "pack16-p1-cold-results.json",
+    "nativeGround": "pack16-six-main-terrain-review.jpg",
+    "httpPayloads": "pack16-http-payload-validity.json",
+    "allLayers": "pack16-all-layer-audit.json",
+    "unused": "pack16-unused-art.json"
+  },
+  "limitations": [
+    "Material-correct refs do not prove every revised terrain visually reviewed in game.",
+    "Six supersessions preserve source/native hashes and reviewed matched source/native composition; they do not certify seam or full-route driving.",
+    "Previous wrap warnings and native top/bottom extrusion remain unresolved; no art-only boundary correction in this checkpoint.",
+    "Pevely exact baseline asphalt visual restored, but physical site is a dirt oval: separate design mismatch remains.",
+    "Tower Hill snow cover over asphalt is unchanged; p2loadtest inherited mixed dirt/gravel asphalt visual remains exposed.",
+    "Candidate Demo cold sample significantly slower; causal attribution unproven.",
+    "P1 inspector wire bodies evicted; no worker ResourceTiming captured. HTTP status/timings and startup transfer diagnostics are available.",
+    "P1 earlier transfer failure did not reproduce cold/serial; no claim of a baseline failure or resolution."
+  ],
+  "groundReview": "Inspected native repeated ground textures for Ohio, Laurel, Angeles, Pikes, Mount Washington and Route 66: snow/leaf, wet forest dirt, decomposed granite dirt, alpine snow, granite gravel and red-brown dirt respectively. This is an isolated material renderer review, not all terrain cells or driving acceptance.",
+  "p1IndependentProbe": "Both exact baseline/candidate APIs return HTTP200 valid decoded JSON for body and snowsmoke. Encoded static body path returns404; snowsmoke static returns200 valid JSON. This is separate from cold in-game requests, which used successful APIs. No inference that fallback caused the earlier dual failure.",
+  "p1PayloadFinding": {
+    "diskBytes": 17639726,
+    "apiBytes": 63226823,
+    "payloadsIdenticalToBaseline": true,
+    "body": {
+      "frames": 8,
+      "width": 550,
+      "height": 315
+    },
+    "snowsmoke": {
+      "frames": 12,
+      "width": 309,
+      "height": 412
+    },
+    "interpretation": "API expands compressed source bodies before synchronous stringify; load-sensitive transfer pressure plausible, not proven causal. No runtime timeout or criticality changes."
+  },
+  "tests": {
+    "fullUnitsBeforeFixtureRefresh": {
+      "tests": 114,
+      "pass": 111,
+      "fail": 3,
+      "log": "/tmp/pack16-units.tap"
+    },
+    "refreshedTwoFixtureTests": {
+      "pass": 2,
+      "fail": 0,
+      "log": "/tmp/pack16-fixture-regressions.tap"
+    },
+    "remainingUnitBlockers": [
+      "ground-dirty-snow-v2",
+      "ground-industrial-rubble-v2",
+      "ground-red-gravel-v2"
+    ],
+    "manifest": {
+      "passed": true,
+      "documents": 1829,
+      "assets": 16
+    },
+    "preservation": {
+      "passed": true,
+      "races": 245,
+      "log": "/tmp/pack16-preservation.json"
+    },
+    "decodedArtwork": {
+      "races": 245,
+      "uniqueDecodedSkies": 235,
+      "groundArtChecked": 20,
+      "numericWrapWarnings": [
+        {
+          "race": "Mount Washington Auto Road \u2014 point-to-point Copy",
+          "meanRGB": 13.61619047619046
+        },
+        {
+          "race": "Studio Sprint",
+          "meanRGB": 32.45063538611926
+        },
+        {
+          "race": "Studio Sprint Copy",
+          "meanRGB": 48.00879765395894
+        },
+        {
+          "race": "p1",
+          "meanRGB": 14.219941348973599
+        },
+        {
+          "race": "Little Tujunga Canyon Road",
+          "meanRGB": 15.658846529814259
+        },
+        {
+          "race": "Miami, FL \u2014 Landmark Run",
+          "meanRGB": 24.34604105571848
+        },
+        {
+          "race": "Anchorage, AK \u2014 Landmark Run",
+          "meanRGB": 14.81231671554253
+        },
+        {
+          "race": "Charleston, SC \u2014 Landmark Run",
+          "meanRGB": 49.18963831867058
+        },
+        {
+          "race": "Richmond, VA \u2014 Landmark Run",
+          "meanRGB": 23.649071358748774
+        },
+        {
+          "race": "Tantalus \u2014 Honolulu Heights",
+          "meanRGB": 14.071358748778117
+        }
+      ],
+      "note": "Decoded/ref and measurement checks pass; numerical seam warnings are not visual acceptance. Native boundary extensions remain separately pending."
+    },
+    "campaignBrowser": {
+      "pass": 6,
+      "fail": 0,
+      "durationSeconds": 54.8,
+      "log": "/tmp/pack16-campaign-final.log"
+    },
+    "coldLoading": {
+      "p1DesktopBaseline": "pass",
+      "p1DesktopCandidate": "pass",
+      "demoDesktopBaseline": "pass",
+      "demoDesktopCandidate": "pass",
+      "otherAggregateLoadingCases": "not repeated this remediation checkpoint; no full-route claim"
+    },
+    "fullUnitsFinal": {
+      "tests": 114,
+      "pass": 113,
+      "fail": 1,
+      "failure": "Campaign art has no actual placement: ground-dirty-snow-v2; full usage audit additionally exposes ground-industrial-rubble-v2 and ground-red-gravel-v2.",
+      "log": "/tmp/pack16-units-final.tap"
+    }
+  },
+  "commands": [
+    "node --test tests/unit/campaignArtIntegration.test.js tests/unit/americaCampaign.test.js tests/unit/raceTerrainTextureBlend.test.js tests/unit/raceRoadTextures.test.js tests/unit/raceDecals.test.js tests/unit/raceVisualFx.test.js tests/unit/raceEnvironmentVisualContract.test.js tests/unit/raceEnvironmentDrivingControls.test.js",
+    "python tools/project_manifest.py --check --validate-assets",
+    "node tools/race-environments/bind.mjs",
+    "node tools/race-environments/check-art.mjs",
+    "node tools/race-environments/audit-material-coverage.mjs",
+    "node_modules/.bin/playwright test tests/playwright/race-road-textures.spec.js --config race-environments-pack16-campaign-local.config.mjs --workers=1 --reporter=line"
+  ],
+  "localDiagnosticReproduction": {
+    "coldScript": "/tmp/pack16-final-checks.sh",
+    "demoScript": "/tmp/pack16-cold-probes.sh (P1 name-filter first attempt selected no tests; corrected cold script is authoritative)",
+    "payloadProbe": "/tmp/pack16-http-validity.mjs",
+    "baselineRoot": "/tmp/race-pack16-baseline-root",
+    "baselineConstruction": "/tmp/pack16-baseline-root-evidence.json",
+    "noCleanup": true
+  },
+  "releaseReady": false,
+  "diskAvailableBeforeCommitBytes": 1398538240
+}

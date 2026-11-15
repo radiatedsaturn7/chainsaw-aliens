@@ -70,7 +70,7 @@ test('packed campaign terrain creates the same blend lookup as editor terrain',(
  assert.ok(runtimeGrid,'campaign runtime must not fall back to unblended tiles');
  assert.deepEqual(runtimeGrid,editorGrid);
  assert.ok(runtimeGrid.refs.includes('ground-gray-gravel-v2'));
- assert.ok(runtimeGrid.refs.includes('ground-brown-dirt-v2'));
+ assert.ok(runtimeGrid.refs.includes('ground-frozen-forest')); // Reviewed dirt/leaf substrate; packed/editor parity remains exact.
 });
 test('runtime blend lookup respects sparse editor overrides of packed cells',()=>{
  const map={cellSizeM:75,cells:{'-1,0':{artRef:'dirt'},'0,0':{artRef:'gravel'}}};

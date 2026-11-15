@@ -16,11 +16,6 @@
       "slot": "sky",
       "reason": "Saved Game Menu races selector enumerates this manifest race; native editor binding is validated separately from enabled campaign choices."
     },
-    "environment-v1-ground-finnish-boreal-verge": {
-      "raceRef": "Ouninpohja",
-      "slot": "ground",
-      "reason": "Saved Game Menu races selector enumerates this manifest race; native editor binding is validated separately from enabled campaign choices."
-    },
     "environment-v1-old-staples-woodland-day": {
       "raceRef": "Old Staples Road",
       "slot": "sky",

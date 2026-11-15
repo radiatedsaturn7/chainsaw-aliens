@@ -5495,6 +5495,14 @@
       "maxEdge": 1024,
       "placements": [],
       "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "ground-frosted-grass-v1",
+      "source": "environment-v1/ground-frosted-grass-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Visible grass substrate with thin frost/snow cover for preserved grass cells under authored snow weather; explicit pack16 per-route mappings."
     }
   ]
 }

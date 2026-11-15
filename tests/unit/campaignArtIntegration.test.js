@@ -43,7 +43,8 @@ test('Laurel artwork uses the road ribbon, saved ground art and valid doodad def
  const textures=roadTextureSettings(race);assert.equal(textures.road.artRef,'road-asphalt-patched');
  assert.equal(textures.road.repeatWidthM,0);assert.equal(showBuiltInRoadMarkings(race),false);
  const cells=Object.values(race.road.tileMap.cells);
- assert.deepEqual(new Set(cells.map(c=>c.artRef)),new Set(['ground-frozen-forest']));
+ assert.deepEqual(new Set(cells.map(c=>c.artRef)),new Set(['environment-v1-ground-ohio-wet-leaf-litter']));
+ assert.ok(cells.length>0);for(const cell of cells)assertTerrainArtMaterial(cell,{tileId:cell.tileId});
  const props=race.scenery.filter(p=>/^(leafless|frozen-bush|gray-rock)/.test(p.doodadRef||'')||p.id.startsWith('campaign-art-laurel-'));
  assert.ok(props.length>100);
  const editor=savedEditor();

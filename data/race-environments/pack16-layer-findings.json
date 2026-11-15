@@ -1,0 +1,144 @@
+{
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "terrainCellRows": 245,
+  "mismatchRows": 0,
+  "unknownRows": 0,
+  "groundPlaneMismatchRows": 0,
+  "roadRowsRequiringReview": [
+    {
+      "groundIntent": "grass",
+      "groundStatus": "matching",
+      "roadEvidence": [
+        {
+          "surface": "asphalt",
+          "ref": "snowroad",
+          "status": "mismatch",
+          "shoulderArtRef": null,
+          "shoulderEnabled": true,
+          "sections": 91
+        }
+      ],
+      "race": "Tower Hill Road",
+      "pack": "new-england-pack6",
+      "ground": "ground-frosted-grass-v1",
+      "defaultTileId": "grass",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frosted-grass-v1",
+          "tileId": "grass",
+          "material": "grass",
+          "status": "matching",
+          "cells": 7421
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frosted-grass-v1",
+          "tileId": "grass",
+          "material": "grass",
+          "status": "matching",
+          "cells": 7421
+        }
+      ]
+    },
+    {
+      "groundIntent": "grass",
+      "groundStatus": "matching",
+      "roadEvidence": [
+        {
+          "surface": "asphalt",
+          "ref": "asphaltRoad",
+          "status": "matching",
+          "shoulderArtRef": null,
+          "shoulderEnabled": true,
+          "sections": 61
+        },
+        {
+          "surface": "dirt",
+          "ref": "asphaltRoad",
+          "status": "mismatch",
+          "shoulderArtRef": null,
+          "shoulderEnabled": true,
+          "sections": 30
+        },
+        {
+          "surface": "gravel",
+          "ref": "asphaltRoad",
+          "status": "mismatch",
+          "shoulderArtRef": null,
+          "shoulderEnabled": true,
+          "sections": 30
+        }
+      ],
+      "race": "p2loadtest",
+      "pack": "islands-legacy-final-pack15",
+      "ground": "ground-temperate-grass-v1",
+      "defaultTileId": "grass",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-temperate-grass-v1",
+          "tileId": "grass",
+          "material": "grass",
+          "status": "matching",
+          "cells": 23975
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-temperate-grass-v1",
+          "tileId": "grass",
+          "material": "grass",
+          "status": "matching",
+          "cells": 23975
+        }
+      ]
+    },
+    {
+      "groundIntent": "snow",
+      "groundStatus": "matching",
+      "roadEvidence": [
+        {
+          "surface": "asphalt",
+          "ref": "road-dirt-packed",
+          "status": "mismatch",
+          "shoulderArtRef": null,
+          "shoulderEnabled": true,
+          "sections": 30
+        }
+      ],
+      "race": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+      "pack": "ozark-riverlands-pack8",
+      "ground": "ground-plains-snow-straw-v1",
+      "defaultTileId": "snow",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-plains-snow-straw-v1",
+          "tileId": "snow",
+          "material": "snow",
+          "status": "matching",
+          "cells": 1364
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-plains-snow-straw-v1",
+          "tileId": "snow",
+          "material": "snow",
+          "status": "matching",
+          "cells": 1364
+        }
+      ]
+    }
+  ],
+  "classification": {
+    "Tower Hill Road": "Existing snowroad on asphalt unchanged from base; authored snow/weather cover is intentional. Requires explicit weather-overlay distinction; not physical snow evidence.",
+    "p2loadtest": "Existing asphaltRoad across asphalt/dirt/gravel unchanged from base. Real visual material mismatch retained and exposed; needs per-surface visual binding.",
+    "Federated Auto Parts Raceway at I-55 \u2014 Pevely": {
+      "status": "restored baseline asphalt-compatible art; physical-site mismatch pending",
+      "reason": "Prior dirt visual on physical asphalt was introduced by this branch. Restore exact baseline road textures rather than conceal traction semantics. The real dirt-oval site still conflicts with preserved asphalt physics and requires separate design resolution."
+    }
+  },
+  "note": "Initial road findings retained; final audit proves Pevely material mismatch removed. Site/physics discrepancy remains separately unresolved.",
+  "finalRoadProblemCount": 2,
+  "finalAudit": "pack16-all-layer-audit.json"
+}
