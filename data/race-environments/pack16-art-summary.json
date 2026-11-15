@@ -1,0 +1,48 @@
+{
+  "races": 245,
+  "uniqueDecodedSkies": 235,
+  "groundArtChecked": 20,
+  "numericWrapWarnings": [
+    {
+      "race": "Mount Washington Auto Road \u2014 point-to-point Copy",
+      "meanRGB": 13.61619047619046
+    },
+    {
+      "race": "Studio Sprint",
+      "meanRGB": 32.45063538611926
+    },
+    {
+      "race": "Studio Sprint Copy",
+      "meanRGB": 48.00879765395894
+    },
+    {
+      "race": "p1",
+      "meanRGB": 14.219941348973599
+    },
+    {
+      "race": "Little Tujunga Canyon Road",
+      "meanRGB": 15.658846529814259
+    },
+    {
+      "race": "Miami, FL \u2014 Landmark Run",
+      "meanRGB": 24.34604105571848
+    },
+    {
+      "race": "Anchorage, AK \u2014 Landmark Run",
+      "meanRGB": 14.81231671554253
+    },
+    {
+      "race": "Charleston, SC \u2014 Landmark Run",
+      "meanRGB": 49.18963831867058
+    },
+    {
+      "race": "Richmond, VA \u2014 Landmark Run",
+      "meanRGB": 23.649071358748774
+    },
+    {
+      "race": "Tantalus \u2014 Honolulu Heights",
+      "meanRGB": 14.071358748778117
+    }
+  ],
+  "note": "Decoded/ref and measurement checks pass; numerical seam warnings are not visual acceptance. Native boundary extensions remain separately pending."
+}

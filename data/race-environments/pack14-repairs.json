@@ -1,0 +1,68 @@
+[
+  {
+    "ref": "environment-v1-boise-night",
+    "raceRef": "Boise, ID \u2014 Landmark Run",
+    "path": "/workspace/roster-combined-local/assets/campaign-art/environment-v1/boise-night.png",
+    "import": {
+      "source": "assets/campaign-art/environment-v1/boise-night.png",
+      "sourceSha256": "dd07b68288ffb8a26974d3cc8617e341589d94eef41ba09f85aaee36126c2379",
+      "documentSha256": "a61840250f7562d782d74f1ce03c69f11263bbced5e8e999181135e097cd0896",
+      "width": 1024,
+      "height": 341
+    },
+    "prompt": "Edit this panoramic pixel-art sky asset conservatively. Preserve Boise winter city and foothills. Fade snow/litter foreground subtly into a uniform very dark blue ground shade in bottom 16 pixels. Preserve locale, silhouette, time and composition. Horizontal wrap must be seamless. Quiet top AND bottom 16 pixel bands uniform across width, blending gradually over adjacent 8% height, no hard border or frame. Do not put textured detail at image boundary. No text/logo. Retain panoramic aspect.",
+    "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-4dd9b4d3-bcd4-44d0-ba9d-2390ba2abad8.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "sourceImage": "/workspace/generated_images/exec-4dd9b4d3-bcd4-44d0-ba9d-2390ba2abad8.png",
+    "review": "Source contact inspected: locale/time retained; quiet boundary correction, native projection remains required. Original and prior replacement bytes remain in Git history/generated_images. No pinned supersession comparison changed."
+  },
+  {
+    "ref": "environment-v1-thompson-snow-night",
+    "raceRef": "Thompson Pass \u2014 Snowline Climb",
+    "path": "/workspace/roster-combined-local/assets/campaign-art/environment-v1/thompson-snow-night.png",
+    "import": {
+      "source": "assets/campaign-art/environment-v1/thompson-snow-night.png",
+      "sourceSha256": "7909693dea78243293f290d0ee3ccf036b67b05cc4f4bcd806ab689b8d70afcc",
+      "documentSha256": "ddb225276bc9f02f20c414446b414351ea985fc52e8c440f0c10ec7dd19ff261",
+      "width": 1024,
+      "height": 341
+    },
+    "prompt": "Edit this panoramic pixel-art sky asset conservatively. Preserve Thompson snowy storm night, no moon/stars. Fade clouds into a quiet uniform dark blue-gray shade across top 16 pixels. Preserve locale, silhouette, time and composition. Horizontal wrap must be seamless. Quiet top AND bottom 16 pixel bands uniform across width, blending gradually over adjacent 8% height, no hard border or frame. Do not put textured detail at image boundary. No text/logo. Retain panoramic aspect.",
+    "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-deacfa36-d8af-47e3-8e48-98857c0be7ce.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "sourceImage": "/workspace/generated_images/exec-deacfa36-d8af-47e3-8e48-98857c0be7ce.png",
+    "review": "Source contact inspected: locale/time retained; quiet boundary correction, native projection remains required. Original and prior replacement bytes remain in Git history/generated_images. No pinned supersession comparison changed."
+  },
+  {
+    "ref": "environment-v1-littletujunga-noon",
+    "raceRef": "Little Tujunga Canyon Road",
+    "path": "/workspace/roster-combined-local/assets/campaign-art/environment-v1/littletujunga-noon.png",
+    "import": {
+      "source": "assets/campaign-art/environment-v1/littletujunga-noon.png",
+      "sourceSha256": "01c78365b1486e9e4d7df142cdfa6339bb41f0ca6aa7a36a2a01aa72c5a8fbd8",
+      "documentSha256": "0dcbebeefd3362c4202c074da98ac8901aab39bbaed882c174af9fb6f63c8eed",
+      "width": 1024,
+      "height": 341
+    },
+    "prompt": "Edit this panoramic pixel-art sky asset conservatively. Preserve Little Tujunga dry chaparral canyon noon. Replace artificial bare outer side fields with natural low rolling chaparral continuity, matching outer left/right elevations and textures. Preserve locale, silhouette, time and composition. Horizontal wrap must be seamless. Quiet top AND bottom 16 pixel bands uniform across width, blending gradually over adjacent 8% height, no hard border or frame. Do not put textured detail at image boundary. No text/logo. Retain panoramic aspect.",
+    "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-c8074428-df9b-4590-956a-fca4362f5576.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "sourceImage": "/workspace/generated_images/exec-c065b6f4-25c0-48f0-b911-b48fad147176.png",
+    "review": "Source contact inspected: locale/time retained; quiet boundary correction, native projection remains required. Original and prior replacement bytes remain in Git history/generated_images. No pinned supersession comparison changed.",
+    "beforeWrapRepairImage": "/workspace/generated_images/exec-c8074428-df9b-4590-956a-fca4362f5576.png",
+    "wrapRepairPrompt": "Fix horizontal wrapping of this panoramic background ONLY. Keep central 70% and its landmarks, weather, colors and terrain intact. Outer LEFT 15% and RIGHT 15% must meet seamlessly when tiled: matching sky color at EVERY HEIGHT, identical distant horizon elevation, matching low terrain/vegetation/water bands, no tall tree or building crossing either boundary. Use low background silhouettes at both side margins, merge seamlessly into central scene. Preserve quiet uniform top and bottom 16px bands. No frame or vertical border, no blur strip, no empty rectangles. Original pixel art, same aspect and time of day."
+  },
+  {
+    "ref": "environment-v1-moki-cedar-mesa-day",
+    "raceRef": "Moki Dugway",
+    "path": "/workspace/roster-combined-local/assets/campaign-art/environment-v1/moki-cedar-mesa-day.png",
+    "import": {
+      "source": "assets/campaign-art/environment-v1/moki-cedar-mesa-day.png",
+      "sourceSha256": "fbbc7a526932bd14b58e9d1aa5a5e4556a32f78c54afb57126c6b30388db30d0",
+      "documentSha256": "7f01d3f3203dde6fc678720f8dfdd146d948906af7d45f56fa28ed3eafe2f414",
+      "width": 1024,
+      "height": 341
+    },
+    "prompt": "Edit this panoramic pixel-art sky asset conservatively. Preserve Moki wide Cedar Mesa and distant Valley of the Gods daytime panorama. Fade foreground into uniform muted sandstone shade across bottom16 pixels; keep distant mesas. Preserve locale, silhouette, time and composition. Horizontal wrap must be seamless. Quiet top AND bottom 16 pixel bands uniform across width, blending gradually over adjacent 8% height, no hard border or frame. Do not put textured detail at image boundary. No text/logo. Retain panoramic aspect.",
+    "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-5c5722fa-441b-49ba-ae7e-a8f112a9f139.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "sourceImage": "/workspace/generated_images/exec-5c5722fa-441b-49ba-ae7e-a8f112a9f139.png",
+    "review": "Source contact inspected: locale/time retained; quiet boundary correction, native projection remains required. Original and prior replacement bytes remain in Git history/generated_images. No pinned supersession comparison changed."
+  }
+]

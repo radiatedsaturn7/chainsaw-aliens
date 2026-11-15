@@ -1,0 +1,231 @@
+{
+  "base": "24b3164e4b7765482a9b819e6968f821b452b344",
+  "artCheckpoint": "4540e34b804759896733dea3f0ff57fe65755019",
+  "artTree": "03e678d0e5eff93af1fb9e67c6a63dff6fdb726e",
+  "scope": "Local-only venue pack. No runtime, world lighting/weather, physical materials/weights, geometry, scenery, mission or car changes. No publication.",
+  "counts": {
+    "totalReachableRaces": 245,
+    "totalBound": 25,
+    "newBindings": 15,
+    "newOriginalSkyAssets": 9,
+    "reusedSkyAssets": 1,
+    "sourceReviewedTerrainLayouts": 15,
+    "effectiveLayerAuditedLayouts": 15,
+    "nativeDeviceReports": 30,
+    "manuallyReviewedCompositions": 10,
+    "newProductionDrivingAcceptances": 0,
+    "fullyAcceptedEnvironments": 0
+  },
+  "recipes": "data/race-environments/pack4-recipes.json",
+  "qa": {
+    "campaignUnits": {
+      "passed": 86,
+      "log": "/tmp/race-pack4-units.log"
+    },
+    "focusedContracts": {
+      "passed": 7,
+      "note": "Six overlap the campaign unit run; one additional selector-negative test.",
+      "log": "/tmp/race-pack4-contract-final.log"
+    },
+    "campaignBrowsers": {
+      "passed": 6,
+      "log": "/tmp/race-pack4-campaign-browser.log"
+    },
+    "nativeProjection": {
+      "passed": 30,
+      "duration": "4.8m",
+      "log": "/tmp/race-pack4-renderer-final.log",
+      "audit": "/tmp/race-pack4-native-audit.json",
+      "captures": "/tmp/race-environment-pack4-renderer-final"
+    },
+    "manifest": {
+      "passed": true,
+      "documents": 1602,
+      "assets": 16,
+      "log": "/tmp/race-pack4-manifest.log"
+    },
+    "nonvisualPreservation": {
+      "races": 245,
+      "passed": true,
+      "log": "/tmp/race-pack4-preservation.log"
+    },
+    "artDecode": "/tmp/race-pack4-art.json",
+    "visibleWarning": "UNUSED CONFIGURED ART: road-snow-patchy \u2014 Pikes Peak Highway snow mapping has no active segment; retained configuration debt."
+  },
+  "manualReview": {
+    "sheets": [
+      "/tmp/pack4-review-0.jpg",
+      "/tmp/pack4-review-5.jpg",
+      "/tmp/pack4-willow-evening.jpg"
+    ],
+    "scope": "Ten unique native sky projections inspected beside authored composites. Contact sheets are review aids; full-size original captures retained. Not terrain mesh, car or foreground acceptance.",
+    "findings": [
+      "Regional forms visible: wooded Finger Lakes plateau, Kettle Moraine meadow/woods, flat Florida facility/palms/lake, arid Mojave basin.",
+      "Daytona evening has visible vertical top-edge cloud clamp streak; pending artwork correction and reinspection despite numeric edge check passing.",
+      "Bottom boundary rows clamp into bands in sky-only view; production foreground occlusion/framing must be inspected before acceptance.",
+      "All horizontal wrap seams remain pending full manual approval; automated edge diagnostics are insufficient."
+    ]
+  },
+  "harnessCorrections": {
+    "firstAttempt": "/tmp/race-pack4-renderer.log: encoded manifest folder names absent from exact logical selector comparison; no runtime or server fix.",
+    "secondAttempt": "/tmp/race-pack4-renderer-resolved.log: helper .mjs lacked browser module MIME support in existing server; moved pure helper to Node runner.",
+    "resolution": "Exact logical or independently URI-decoded manifest-folder identity, with negative coverage. Does not prove human-name storage transport.",
+    "probe": "/tmp/race-pack4-renderer-probe.log: one passed"
+  },
+  "nightAcceptance": "No new night assets or passes. Saved requirement checks actual unchanged authored sky plus foreground on both devices; optional clear-sky moon/stars, cloud glow for storm/snow, no daylight panorama behind headlights. City authored contrast unresolved; prior City/Ohio fog evidence preserved.",
+  "baseline": "No repeat of prior proven startup failures. See pack2/pack3 evidence.",
+  "physicalSurfaceCaveat": "Inherited snow tile IDs/weights preserved despite clear weather; only explicit normal/rough visual image refs changed. Active asphalt and shoulder settings retained.",
+  "diskAvailableBytes": 4601151488,
+  "nativeReports": [
+    {
+      "race": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+      "ref": "environment-v1-watkins-noon",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-180c3-oop-independent-sky-desktop/facility-watkins-50603b2b39-state.json"
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Road Course",
+      "ref": "environment-v1-homestead-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-46045-rse-independent-sky-desktop/facility-homestead-41bc38d75f-state.json"
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Oval",
+      "ref": "environment-v1-homestead-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-477c1-al-independent-sky-handheld/facility-homestead-41bc38d75f-state.json"
+    },
+    {
+      "race": "Watkins Glen \u2014 Long Course",
+      "ref": "environment-v1-watkins-morning",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-4a4d7-rse-independent-sky-desktop/facility-watkins-4c19cda147-state.json"
+    },
+    {
+      "race": "Willow Springs \u2014 Big Willow",
+      "ref": "environment-v1-willow-morning",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-55706-ow-independent-sky-handheld/facility-willow-4c19cda147-state.json"
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Oval",
+      "ref": "environment-v1-homestead-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-564e4-val-independent-sky-desktop/facility-homestead-41bc38d75f-state.json"
+    },
+    {
+      "race": "Watkins Glen \u2014 Short Course",
+      "ref": "environment-v1-watkins-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-56a48-se-independent-sky-handheld/facility-watkins-41bc38d75f-state.json"
+    },
+    {
+      "race": "Willow Springs \u2014 Big Willow",
+      "ref": "environment-v1-willow-morning",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-5afab-low-independent-sky-desktop/facility-willow-4c19cda147-state.json"
+    },
+    {
+      "race": "Daytona Tri-Oval",
+      "ref": "skybox-daytona",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-62160-val-independent-sky-desktop/facility-daytona-50603b2b39-state.json"
+    },
+    {
+      "race": "Watkins Glen \u2014 Long Course",
+      "ref": "environment-v1-watkins-morning",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-64f1c-se-independent-sky-handheld/facility-watkins-4c19cda147-state.json"
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Modified Road Course",
+      "ref": "environment-v1-homestead-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-6e478-se-independent-sky-handheld/facility-homestead-41bc38d75f-state.json"
+    },
+    {
+      "race": "Road America \u2014 Full Course",
+      "ref": "environment-v1-road-america-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-714f8-rse-independent-sky-desktop/facility-road-america-41bc38d75f-state.json"
+    },
+    {
+      "race": "Daytona International Speedway \u2014 Stock Car Road Course",
+      "ref": "environment-v1-daytona-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-74154-rse-independent-sky-desktop/facility-daytona-41bc38d75f-state.json"
+    },
+    {
+      "race": "Road America \u2014 The Bend",
+      "ref": "environment-v1-road-america-noon",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-79482-nd-independent-sky-handheld/facility-road-america-50603b2b39-state.json"
+    },
+    {
+      "race": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+      "ref": "environment-v1-watkins-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-80600-oop-independent-sky-desktop/facility-watkins-41bc38d75f-state.json"
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Road Course",
+      "ref": "environment-v1-homestead-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-81eb2-se-independent-sky-handheld/facility-homestead-41bc38d75f-state.json"
+    },
+    {
+      "race": "Daytona Tri-Oval",
+      "ref": "skybox-daytona",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-8e9d9-al-independent-sky-handheld/facility-daytona-50603b2b39-state.json"
+    },
+    {
+      "race": "Watkins Glen \u2014 Short Course",
+      "ref": "environment-v1-watkins-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-97379-rse-independent-sky-desktop/facility-watkins-41bc38d75f-state.json"
+    },
+    {
+      "race": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+      "ref": "environment-v1-watkins-noon",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-b20db-op-independent-sky-handheld/facility-watkins-50603b2b39-state.json"
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Modified Road Course",
+      "ref": "environment-v1-homestead-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-c11c8-rse-independent-sky-desktop/facility-homestead-41bc38d75f-state.json"
+    },
+    {
+      "race": "Daytona International Speedway \u2014 Stock Car Road Course",
+      "ref": "environment-v1-daytona-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-cbf8c-se-independent-sky-handheld/facility-daytona-41bc38d75f-state.json"
+    },
+    {
+      "race": "Willow Springs \u2014 Streets of Willow",
+      "ref": "environment-v1-willow-morning",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-cd76e-ow-independent-sky-handheld/facility-willow-4c19cda147-state.json"
+    },
+    {
+      "race": "Willow Springs \u2014 Streets of Willow",
+      "ref": "environment-v1-willow-morning",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-d91ff-low-independent-sky-desktop/facility-willow-4c19cda147-state.json"
+    },
+    {
+      "race": "Road America \u2014 Full Course",
+      "ref": "environment-v1-road-america-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-da11e-se-independent-sky-handheld/facility-road-america-41bc38d75f-state.json"
+    },
+    {
+      "race": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+      "ref": "environment-v1-watkins-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-db238-op-independent-sky-handheld/facility-watkins-41bc38d75f-state.json"
+    },
+    {
+      "race": "Willow Springs \u2014 Streets \u2014 Short",
+      "ref": "environment-v1-willow-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-dcca4-ort-independent-sky-desktop/facility-willow-41bc38d75f-state.json"
+    },
+    {
+      "race": "Daytona International Speedway \u2014 Sports Car Course",
+      "ref": "skybox-daytona",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-e0e34-rse-independent-sky-desktop/facility-daytona-50603b2b39-state.json"
+    },
+    {
+      "race": "Road America \u2014 The Bend",
+      "ref": "environment-v1-road-america-noon",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-f641f-end-independent-sky-desktop/facility-road-america-50603b2b39-state.json"
+    },
+    {
+      "race": "Daytona International Speedway \u2014 Sports Car Course",
+      "ref": "skybox-daytona",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-f88f6-se-independent-sky-handheld/facility-daytona-50603b2b39-state.json"
+    },
+    {
+      "race": "Willow Springs \u2014 Streets \u2014 Short",
+      "ref": "environment-v1-willow-evening",
+      "file": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-fa1e0-rt-independent-sky-handheld/facility-willow-41bc38d75f-state.json"
+    }
+  ]
+}

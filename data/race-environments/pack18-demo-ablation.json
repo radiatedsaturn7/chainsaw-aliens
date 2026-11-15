@@ -1,0 +1,1146 @@
+{
+  "candidate": "227517e4eef509504735a23b0d130f3e1485fe71",
+  "candidateTree": "4dfc7367e1fffcb6302d2b591e281c80533b5839",
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "order": [
+    "ground-only",
+    "tiles-only",
+    "baseline",
+    "candidate"
+  ],
+  "controls": "Cold serial fresh server/browser per run,1280x720 viewport,933x640Three canvas,RTG-001,unchanged authored lighting/weather/geometry/physics/deadlines. Same normal keyboard controller and20m continuity gate; actual metres reported, no full-route claim. Supported local server memory overlays only; no saved race mutations. No concurrent heavy QA during these four runs.",
+  "rows": [
+    {
+      "variant": "ground-only",
+      "pass": true,
+      "startup": {
+        "bootMs": 5215,
+        "travelCallMs": 26122,
+        "playableWaitMs": 82791,
+        "totalToPlayableMs": 114214
+      },
+      "drive": {
+        "wallMs": 41628,
+        "simulationMs": 4033.333333333325,
+        "drawCalls": 121,
+        "drawCpuMs": 1384.299999922514,
+        "maxDrawMs": 846.4000000059605
+      },
+      "metres": 20.052247999999963,
+      "renderer": {
+        "canvas": {
+          "width": 933,
+          "height": 640
+        },
+        "memory": {
+          "geometries": 20,
+          "textures": 3
+        },
+        "render": {
+          "frame": 254,
+          "calls": 21,
+          "triangles": 52558,
+          "points": 0,
+          "lines": 0
+        },
+        "programs": 7,
+        "blend": true,
+        "sceneMeshes": [
+          {
+            "name": "",
+            "vertices": 6552
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 6552
+          },
+          {
+            "name": "",
+            "vertices": 5304
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 5304
+          },
+          {
+            "name": "",
+            "vertices": 15432
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 15432
+          },
+          {
+            "name": "",
+            "vertices": 13020
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 13020
+          },
+          {
+            "name": "",
+            "vertices": 14268
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 14268
+          },
+          {
+            "name": "",
+            "vertices": 12150
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 12150
+          },
+          {
+            "name": "",
+            "vertices": 8550
+          },
+          {
+            "name": "",
+            "vertices": 11910
+          },
+          {
+            "name": "",
+            "vertices": 6
+          },
+          {
+            "name": "",
+            "vertices": 1938
+          },
+          {
+            "name": "",
+            "vertices": 1674
+          },
+          {
+            "name": "raceDynamicDoodads"
+          },
+          {
+            "name": "terrainDecals"
+          },
+          {
+            "name": ""
+          },
+          {
+            "name": "",
+            "vertices": 4
+          },
+          {
+            "name": "raceDynamicProceduralCar"
+          },
+          {
+            "name": "race-driving-guide",
+            "vertices": 384
+          }
+        ],
+        "canvasElements": [
+          {
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      "frameIntervalsBeforePlayable": {
+        "count": 877,
+        "medianMs": 44.599999994039536,
+        "p95Ms": 351.09999999403954,
+        "maxMs": 848
+      },
+      "frameIntervalsDuringDrive": {
+        "count": 121,
+        "medianMs": 338.40000000596046,
+        "p95Ms": 396.69999998807907,
+        "maxMs": 616.9000000059605
+      },
+      "artRequests": [
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=providence",
+          "timing": {
+            "startTime": 1794760050440.367,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.617,
+            "responseStart": 103.347,
+            "responseEnd": 113.322
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=ground-temperate-grass-v1",
+          "timing": {
+            "startTime": 1794760050441.4712,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.802,
+            "responseStart": 393.17,
+            "responseEnd": 478.734
+          }
+        }
+      ],
+      "evidenceDirectory": "/tmp/race-pack18-demo-ground-only/pack18-demo-probe-Demo-Tra-3ae77-authored-foreground-and-sky"
+    },
+    {
+      "variant": "tiles-only",
+      "pass": true,
+      "startup": {
+        "bootMs": 4633,
+        "travelCallMs": 24379,
+        "playableWaitMs": 66736,
+        "totalToPlayableMs": 95830
+      },
+      "drive": {
+        "wallMs": 6093,
+        "simulationMs": 6116.400000000009,
+        "drawCalls": 26,
+        "drawCpuMs": 1379.899999961257,
+        "maxDrawMs": 561.2000000029802
+      },
+      "metres": 20.401451110839844,
+      "renderer": {
+        "canvas": {
+          "width": 933,
+          "height": 640
+        },
+        "memory": {
+          "geometries": 17,
+          "textures": 3
+        },
+        "render": {
+          "frame": 352,
+          "calls": 18,
+          "triangles": 48578,
+          "points": 0,
+          "lines": 0
+        },
+        "programs": 6,
+        "blend": true,
+        "sceneMeshes": [
+          {
+            "name": "",
+            "vertices": 6552
+          },
+          {
+            "name": "",
+            "vertices": 5304
+          },
+          {
+            "name": "",
+            "vertices": 15432
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 15432
+          },
+          {
+            "name": "",
+            "vertices": 13020
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 13020
+          },
+          {
+            "name": "",
+            "vertices": 14268
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 14268
+          },
+          {
+            "name": "",
+            "vertices": 12150
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 12150
+          },
+          {
+            "name": "",
+            "vertices": 8550
+          },
+          {
+            "name": "",
+            "vertices": 11910
+          },
+          {
+            "name": "",
+            "vertices": 6
+          },
+          {
+            "name": "",
+            "vertices": 1938
+          },
+          {
+            "name": "",
+            "vertices": 1674
+          },
+          {
+            "name": "raceDynamicDoodads"
+          },
+          {
+            "name": "terrainDecals"
+          },
+          {
+            "name": ""
+          },
+          {
+            "name": "",
+            "vertices": 4
+          },
+          {
+            "name": "raceDynamicProceduralCar"
+          }
+        ],
+        "canvasElements": [
+          {
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      "frameIntervalsBeforePlayable": {
+        "count": 944,
+        "medianMs": 48.5,
+        "p95Ms": 213.80000001192093,
+        "maxMs": 737.5
+      },
+      "frameIntervalsDuringDrive": {
+        "count": 26,
+        "medianMs": 233,
+        "p95Ms": 435.5,
+        "maxMs": 580
+      },
+      "artRequests": [
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=providence",
+          "timing": {
+            "startTime": 1794760211498.523,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.41,
+            "responseStart": 99.215,
+            "responseEnd": 103.889
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=ground-temperate-grass-v1",
+          "timing": {
+            "startTime": 1794760211499.1748,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.136,
+            "responseStart": 284.196,
+            "responseEnd": 374.307
+          }
+        }
+      ],
+      "evidenceDirectory": "/tmp/race-pack18-demo-tiles-only/pack18-demo-probe-Demo-Tra-3ae77-authored-foreground-and-sky"
+    },
+    {
+      "variant": "baseline",
+      "pass": true,
+      "startup": {
+        "bootMs": 5852,
+        "travelCallMs": 27186,
+        "playableWaitMs": 46355,
+        "totalToPlayableMs": 79490
+      },
+      "drive": {
+        "wallMs": 5486,
+        "simulationMs": 5816.5,
+        "drawCalls": 25,
+        "drawCpuMs": 820.2000000029802,
+        "maxDrawMs": 608.2999999970198
+      },
+      "metres": 21.330764770507812,
+      "renderer": {
+        "canvas": {
+          "width": 933,
+          "height": 640
+        },
+        "memory": {
+          "geometries": 14,
+          "textures": 1
+        },
+        "render": {
+          "frame": 254,
+          "calls": 15,
+          "triangles": 30316,
+          "points": 0,
+          "lines": 0
+        },
+        "programs": 6,
+        "blend": false,
+        "sceneMeshes": [
+          {
+            "name": "",
+            "vertices": 6552
+          },
+          {
+            "name": "",
+            "vertices": 5304
+          },
+          {
+            "name": "",
+            "vertices": 15432
+          },
+          {
+            "name": "",
+            "vertices": 13020
+          },
+          {
+            "name": "",
+            "vertices": 14268
+          },
+          {
+            "name": "",
+            "vertices": 12150
+          },
+          {
+            "name": "",
+            "vertices": 8550
+          },
+          {
+            "name": "",
+            "vertices": 11910
+          },
+          {
+            "name": "",
+            "vertices": 6
+          },
+          {
+            "name": "",
+            "vertices": 1938
+          },
+          {
+            "name": "",
+            "vertices": 1674
+          },
+          {
+            "name": "raceDynamicDoodads"
+          },
+          {
+            "name": "terrainDecals"
+          },
+          {
+            "name": ""
+          },
+          {
+            "name": "",
+            "vertices": 4
+          },
+          {
+            "name": "raceDynamicProceduralCar"
+          },
+          {
+            "name": "race-driving-guide",
+            "vertices": 384
+          }
+        ],
+        "canvasElements": [
+          {
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      "frameIntervalsBeforePlayable": {
+        "count": 959,
+        "medianMs": 40.1000000089407,
+        "p95Ms": 194.59999999403954,
+        "maxMs": 645
+      },
+      "frameIntervalsDuringDrive": {
+        "count": 25,
+        "medianMs": 228.5,
+        "p95Ms": 403.5,
+        "maxMs": 484.8999999910593
+      },
+      "artRequests": [
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=providence",
+          "timing": {
+            "startTime": 1794760320575.857,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.158,
+            "responseStart": 84.732,
+            "responseEnd": 110.523
+          }
+        }
+      ],
+      "evidenceDirectory": "/tmp/race-pack18-demo-baseline/pack18-demo-probe-Demo-Tra-3ae77-authored-foreground-and-sky"
+    },
+    {
+      "variant": "candidate",
+      "pass": true,
+      "startup": {
+        "bootMs": 4498,
+        "travelCallMs": 26233,
+        "playableWaitMs": 129167,
+        "totalToPlayableMs": 159988
+      },
+      "drive": {
+        "wallMs": 40482,
+        "simulationMs": 4033.333333333325,
+        "drawCalls": 121,
+        "drawCpuMs": 1929.399999961257,
+        "maxDrawMs": 864.6000000089407
+      },
+      "metres": 20.07839100000001,
+      "renderer": {
+        "canvas": {
+          "width": 933,
+          "height": 640
+        },
+        "memory": {
+          "geometries": 20,
+          "textures": 3
+        },
+        "render": {
+          "frame": 404,
+          "calls": 21,
+          "triangles": 52558,
+          "points": 0,
+          "lines": 0
+        },
+        "programs": 7,
+        "blend": true,
+        "sceneMeshes": [
+          {
+            "name": "",
+            "vertices": 6552
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 6552
+          },
+          {
+            "name": "",
+            "vertices": 5304
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 5304
+          },
+          {
+            "name": "",
+            "vertices": 15432
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 15432
+          },
+          {
+            "name": "",
+            "vertices": 13020
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 13020
+          },
+          {
+            "name": "",
+            "vertices": 14268
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 14268
+          },
+          {
+            "name": "",
+            "vertices": 12150
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 12150
+          },
+          {
+            "name": "",
+            "vertices": 8550
+          },
+          {
+            "name": "",
+            "vertices": 11910
+          },
+          {
+            "name": "",
+            "vertices": 6
+          },
+          {
+            "name": "",
+            "vertices": 1938
+          },
+          {
+            "name": "",
+            "vertices": 1674
+          },
+          {
+            "name": "raceDynamicDoodads"
+          },
+          {
+            "name": "terrainDecals"
+          },
+          {
+            "name": ""
+          },
+          {
+            "name": "",
+            "vertices": 4
+          },
+          {
+            "name": "raceDynamicProceduralCar"
+          },
+          {
+            "name": "race-driving-guide",
+            "vertices": 384
+          }
+        ],
+        "canvasElements": [
+          {
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      "frameIntervalsBeforePlayable": {
+        "count": 1122,
+        "medianMs": 42.69999998807907,
+        "p95Ms": 347.20000000298023,
+        "maxMs": 889.1999999880791
+      },
+      "frameIntervalsDuringDrive": {
+        "count": 121,
+        "medianMs": 326.79999999701977,
+        "p95Ms": 397,
+        "maxMs": 629.2000000029802
+      },
+      "artRequests": [
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=environment-v1-demo-meadow-noon",
+          "timing": {
+            "startTime": 1794760409386.581,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.771,
+            "responseStart": 139.065,
+            "responseEnd": 197.165
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=ground-temperate-grass-v1",
+          "timing": {
+            "startTime": 1794760409387.157,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.4,
+            "responseStart": 305.996,
+            "responseEnd": 733.785
+          }
+        }
+      ],
+      "evidenceDirectory": "/tmp/race-pack18-demo-candidate/pack18-demo-probe-Demo-Tra-3ae77-authored-foreground-and-sky"
+    }
+  ],
+  "findings": [
+    "Baseline has no terrain-blend material; every art variant activates it. Default-ground-only reproduces114.2s startup/41.6s drive.",
+    "Tiles-only has four terrain-blend overlays and loses textured near foreground in viewed captures; faster95.8s startup/6.1s drive is not an acceptable release substitution.",
+    "Default ground fallback adds two more terrain overlays; same viewport, six overlays add22242rendered triangles versus baseline. Frame cost is driven by activation/coverage, not number of unique grass assets (one).",
+    "Current full candidate160.0s startup/40.5s drive is worse than prior114\u2013119s samples. Additional sky/terrain interaction or frame scheduling remains unresolved; not called baseline noise.",
+    "Texture shader creates fixed512atlas and256base mip even for smaller source exports, with nine coverage neighbors and two mip samples plus lookup per neighbor. Source resizing does not remove this rendering path; prior resized experiment failed continuity and remains rejected."
+  ],
+  "visualReview": "Actual authored Demo before/after drive frames viewed for all four variants. Current day sky and foreground align; no conspicuous sky wrap in sampled straight. Tiles-only exposes flat near-ground fallback and is rejected. No new full245production acceptance; night/fog, extreme pitch and inheritedPevely constraints unchanged. PriorP1images also inspected but desktop-named image is390x844, so it is not counted as desktop proof.",
+  "remainingBlocker": "Expensive textured-terrain path is causally implicated; preciseGPU completion versus frame/simulation scheduling and additional full-candidate variance are not fully isolated. An asset-only reduction preserving complete correct terrain coverage has not been demonstrated.",
+  "nextScopedOption": {
+    "race": "Demo Track",
+    "cells": 1585,
+    "artRefs": [
+      "ground-temperate-grass-v1"
+    ],
+    "physicalIds": [
+      "grass"
+    ],
+    "groundPlane": "ground-temperate-grass-v1",
+    "uniformWeightsMaximumError": 4.440892098500626e-16,
+    "shader": "Nine neighbor coverage samples, each one lookup + two explicit mip texture samples; single shared ref still uses full blend path.",
+    "proposal": "Separate renderer optimization could bypass neighbor lookup when entire grid resolves to one material, preserving identical UV, explicit mip LOD, color/depth and world geometry. Not implemented in this art-only checkpoint; must retain full shader for mixed refs and test image equivalence."
+  },
+  "productionChanged": false,
+  "publicationReady": false,
+  "tests": {
+    "aggregateUnits": "129 passed,0 failed,0 skipped",
+    "campaignBrowser": "6 passed",
+    "loadingBrowser": "6 passed",
+    "all245Guards": "Passed exact nonvisual,material,decoded-sky and manifest guards;245routes,235decodedskies,zero skywrapwarnings,1829documents16assets.",
+    "p1ActualDesktop": "Passed20.0588m at1280x720; actual authored before/after frames inspected. This run overlapped ordinary aggregate checks, so its timing is not a matched performance comparison.",
+    "strictProductionAcceptance": "Still fails incomplete environment QA: Col de Turini. Native/short samples do not replace all-route acceptance.",
+    "coldDemoRuns": "6/6 passed unchanged20m continuity; four initial ablations/controls plus final matched clock pair."
+  },
+  "headroomBytes": 1237684224,
+  "comparisonLimits": [
+    "One fresh run per new ablation, with prior alternating baseline/candidate and sky-only/both evidence retained in pack17. No hardware-GPU generalization from SwiftShader.",
+    "All four runs passed identical >=20m gate, actual20.05\u201321.33m; not identical end pose or full-route completion.",
+    "Ground-only versus baseline isolates one visual default-ground ref. Tiles-only also differs in near-ground coverage, visibly unacceptable as release workaround.",
+    "Draw timers measure JavaScript submission, not GPU completion. Extra geometry/shader activation is observed, but allocation, rasterization, readback and frame scheduling contributions are not individually measured.",
+    "Full candidate160.0s is not dismissed as noise; prior candidates114\u2013119s and new ground-only114.2s are retained separately."
+  ],
+  "diagnosticIsolationVerified": "assertVisualOnly passed for candidate,ground-only,tiles-only against exact saved baseline Demo; no physical or other nonvisual fields changed.",
+  "runtimeClockLead": {
+    "source": "src/racing/RaceFrameBudget.js:RaceSimulationClock / advanceRaceSimulationClock; src/racing/RaceSimulation.js:live worker qualification",
+    "observation": "Ground-only and candidate drive samples:121draws and4.033333simseconds, consistent with1/30bounded clock. Baseline/tiles-only simulation approximately follows wall time. This is an inference pending direct worker/clock pair, not a confirmed fallback claim.",
+    "status": "Confirmed both final pair runs use existing bounded clock after automatic qualification rejection; same-mode regression remains."
+  },
+  "clockConfirmation": {
+    "rows": [
+      {
+        "variant": "baseline",
+        "startup": {
+          "bootMs": 5247,
+          "travelCallMs": 35392,
+          "playableWaitMs": 48813,
+          "totalToPlayableMs": 89519
+        },
+        "drive": {
+          "wallMs": 25443,
+          "simulationMs": 4099.999999999991,
+          "drawCalls": 123,
+          "drawCpuMs": 1454.4999999403954,
+          "maxDrawMs": 601
+        },
+        "workerBefore": {
+          "qualification": {
+            "qualified": false,
+            "requiredStepsPerSecond": 120,
+            "achievedStepsPerSecond": 255.29199020328605,
+            "stepBudgetMs": 8.333333333333334,
+            "p95StepMs": 10.699999988079071,
+            "backlogStart": 0,
+            "backlogEnd": 0,
+            "reasons": [
+              "single-thread p95 10.700ms > 8.333ms step budget"
+            ]
+          },
+          "requestedMode": "auto",
+          "thread": "render",
+          "bridge": false,
+          "migrationFailure": null,
+          "clockMode": "bounded",
+          "clock": {
+            "maxAdvanceSeconds": 0.03333333333333333,
+            "maxDebtSeconds": 0.06666666666666667,
+            "debtSeconds": 0.06666666666666667,
+            "discardedSeconds": 10.266199999999996,
+            "admittedSeconds": 2.033333333333336,
+            "rawSeconds": 12.366199999999996,
+            "excludedSeconds": 0.2
+          }
+        },
+        "workerAfter": {
+          "qualification": {
+            "qualified": false,
+            "requiredStepsPerSecond": 120,
+            "achievedStepsPerSecond": 255.29199020328605,
+            "stepBudgetMs": 8.333333333333334,
+            "p95StepMs": 10.699999988079071,
+            "backlogStart": 0,
+            "backlogEnd": 0,
+            "reasons": [
+              "single-thread p95 10.700ms > 8.333ms step budget"
+            ]
+          },
+          "requestedMode": "auto",
+          "thread": "render",
+          "bridge": false,
+          "migrationFailure": null,
+          "clockMode": "bounded",
+          "clock": {
+            "maxAdvanceSeconds": 0.03333333333333333,
+            "maxDebtSeconds": 0.06666666666666667,
+            "debtSeconds": 0.06666666666666667,
+            "discardedSeconds": 31.58180000000001,
+            "admittedSeconds": 6.133333333333321,
+            "rawSeconds": 37.78179999999997,
+            "excludedSeconds": 0.2
+          }
+        },
+        "renderer": {
+          "worker": {
+            "qualification": {
+              "qualified": false,
+              "requiredStepsPerSecond": 120,
+              "achievedStepsPerSecond": 255.29199020328605,
+              "stepBudgetMs": 8.333333333333334,
+              "p95StepMs": 10.699999988079071,
+              "backlogStart": 0,
+              "backlogEnd": 0,
+              "reasons": [
+                "single-thread p95 10.700ms > 8.333ms step budget"
+              ]
+            },
+            "requestedMode": "auto",
+            "thread": "render",
+            "bridge": false,
+            "migrationFailure": null,
+            "clientError": null,
+            "clockMode": "bounded",
+            "clock": {
+              "maxAdvanceSeconds": 0.03333333333333333,
+              "maxDebtSeconds": 0.06666666666666667,
+              "debtSeconds": 0.06666666666666667,
+              "discardedSeconds": 10.266199999999996,
+              "admittedSeconds": 2.033333333333336,
+              "rawSeconds": 12.366199999999996,
+              "excludedSeconds": 0.2
+            }
+          },
+          "canvas": {
+            "width": 933,
+            "height": 640
+          },
+          "memory": {
+            "geometries": 14,
+            "textures": 1
+          },
+          "render": {
+            "frame": 254,
+            "calls": 15,
+            "triangles": 30316,
+            "points": 0,
+            "lines": 0
+          },
+          "programs": 6,
+          "blend": false,
+          "sceneMeshes": [
+            {
+              "name": "",
+              "vertices": 6552
+            },
+            {
+              "name": "",
+              "vertices": 5304
+            },
+            {
+              "name": "",
+              "vertices": 15432
+            },
+            {
+              "name": "",
+              "vertices": 13020
+            },
+            {
+              "name": "",
+              "vertices": 14268
+            },
+            {
+              "name": "",
+              "vertices": 12150
+            },
+            {
+              "name": "",
+              "vertices": 8550
+            },
+            {
+              "name": "",
+              "vertices": 11910
+            },
+            {
+              "name": "",
+              "vertices": 6
+            },
+            {
+              "name": "",
+              "vertices": 1938
+            },
+            {
+              "name": "",
+              "vertices": 1674
+            },
+            {
+              "name": "raceDynamicDoodads"
+            },
+            {
+              "name": "terrainDecals"
+            },
+            {
+              "name": ""
+            },
+            {
+              "name": "",
+              "vertices": 4
+            },
+            {
+              "name": "raceDynamicProceduralCar"
+            },
+            {
+              "name": "race-driving-guide",
+              "vertices": 384
+            }
+          ],
+          "canvasElements": [
+            {
+              "width": 1280,
+              "height": 720
+            }
+          ]
+        },
+        "metres": 20.052776999999992,
+        "pass": true,
+        "evidenceDirectory": "/tmp/race-pack18-clock-baseline/pack18-demo-probe-Demo-Tra-3ae77-authored-foreground-and-sky"
+      },
+      {
+        "variant": "candidate",
+        "startup": {
+          "bootMs": 6143,
+          "travelCallMs": 30943,
+          "playableWaitMs": 86287,
+          "totalToPlayableMs": 123509
+        },
+        "drive": {
+          "wallMs": 43155,
+          "simulationMs": 3999.999999999992,
+          "drawCalls": 120,
+          "drawCpuMs": 1335.5000000298023,
+          "maxDrawMs": 956.5
+        },
+        "workerBefore": {
+          "qualification": {
+            "qualified": false,
+            "requiredStepsPerSecond": 120,
+            "achievedStepsPerSecond": 219.55905223196902,
+            "stepBudgetMs": 8.333333333333334,
+            "p95StepMs": 10.099999994039536,
+            "backlogStart": 0,
+            "backlogEnd": 0,
+            "reasons": [
+              "single-thread p95 10.100ms > 8.333ms step budget"
+            ]
+          },
+          "requestedMode": "auto",
+          "thread": "render",
+          "bridge": false,
+          "migrationFailure": null,
+          "clockMode": "bounded",
+          "clock": {
+            "maxAdvanceSeconds": 0.03333333333333333,
+            "maxDebtSeconds": 0.06666666666666667,
+            "debtSeconds": 0.06666666666666667,
+            "discardedSeconds": 20.24899999999999,
+            "admittedSeconds": 2.033333333333336,
+            "rawSeconds": 22.348999999999997,
+            "excludedSeconds": 0.3333999999999942
+          }
+        },
+        "workerAfter": {
+          "qualification": {
+            "qualified": false,
+            "requiredStepsPerSecond": 120,
+            "achievedStepsPerSecond": 219.55905223196902,
+            "stepBudgetMs": 8.333333333333334,
+            "p95StepMs": 10.099999994039536,
+            "backlogStart": 0,
+            "backlogEnd": 0,
+            "reasons": [
+              "single-thread p95 10.100ms > 8.333ms step budget"
+            ]
+          },
+          "requestedMode": "auto",
+          "thread": "render",
+          "bridge": false,
+          "migrationFailure": null,
+          "clockMode": "bounded",
+          "clock": {
+            "maxAdvanceSeconds": 0.03333333333333333,
+            "maxDebtSeconds": 0.06666666666666667,
+            "debtSeconds": 0.06666666666666667,
+            "discardedSeconds": 59.19730000000003,
+            "admittedSeconds": 6.033333333333322,
+            "rawSeconds": 65.2973,
+            "excludedSeconds": 0.3333999999999942
+          }
+        },
+        "renderer": {
+          "worker": {
+            "qualification": {
+              "qualified": false,
+              "requiredStepsPerSecond": 120,
+              "achievedStepsPerSecond": 219.55905223196902,
+              "stepBudgetMs": 8.333333333333334,
+              "p95StepMs": 10.099999994039536,
+              "backlogStart": 0,
+              "backlogEnd": 0,
+              "reasons": [
+                "single-thread p95 10.100ms > 8.333ms step budget"
+              ]
+            },
+            "requestedMode": "auto",
+            "thread": "render",
+            "bridge": false,
+            "migrationFailure": null,
+            "clientError": null,
+            "clockMode": "bounded",
+            "clock": {
+              "maxAdvanceSeconds": 0.03333333333333333,
+              "maxDebtSeconds": 0.06666666666666667,
+              "debtSeconds": 0.06666666666666667,
+              "discardedSeconds": 20.24899999999999,
+              "admittedSeconds": 2.033333333333336,
+              "rawSeconds": 22.348999999999997,
+              "excludedSeconds": 0.3333999999999942
+            }
+          },
+          "canvas": {
+            "width": 933,
+            "height": 640
+          },
+          "memory": {
+            "geometries": 20,
+            "textures": 3
+          },
+          "render": {
+            "frame": 254,
+            "calls": 21,
+            "triangles": 52558,
+            "points": 0,
+            "lines": 0
+          },
+          "programs": 7,
+          "blend": true,
+          "sceneMeshes": [
+            {
+              "name": "",
+              "vertices": 6552
+            },
+            {
+              "name": "terrain-art:blended",
+              "vertices": 6552
+            },
+            {
+              "name": "",
+              "vertices": 5304
+            },
+            {
+              "name": "terrain-art:blended",
+              "vertices": 5304
+            },
+            {
+              "name": "",
+              "vertices": 15432
+            },
+            {
+              "name": "terrain-art:blended",
+              "vertices": 15432
+            },
+            {
+              "name": "",
+              "vertices": 13020
+            },
+            {
+              "name": "terrain-art:blended",
+              "vertices": 13020
+            },
+            {
+              "name": "",
+              "vertices": 14268
+            },
+            {
+              "name": "terrain-art:blended",
+              "vertices": 14268
+            },
+            {
+              "name": "",
+              "vertices": 12150
+            },
+            {
+              "name": "terrain-art:blended",
+              "vertices": 12150
+            },
+            {
+              "name": "",
+              "vertices": 8550
+            },
+            {
+              "name": "",
+              "vertices": 11910
+            },
+            {
+              "name": "",
+              "vertices": 6
+            },
+            {
+              "name": "",
+              "vertices": 1938
+            },
+            {
+              "name": "",
+              "vertices": 1674
+            },
+            {
+              "name": "raceDynamicDoodads"
+            },
+            {
+              "name": "terrainDecals"
+            },
+            {
+              "name": ""
+            },
+            {
+              "name": "",
+              "vertices": 4
+            },
+            {
+              "name": "raceDynamicProceduralCar"
+            },
+            {
+              "name": "race-driving-guide",
+              "vertices": 384
+            }
+          ],
+          "canvasElements": [
+            {
+              "width": 1280,
+              "height": 720
+            }
+          ]
+        },
+        "metres": 20.066633000000024,
+        "pass": true,
+        "evidenceDirectory": "/tmp/race-pack18-clock-candidate/pack18-demo-probe-Demo-Tra-3ae77-authored-foreground-and-sky"
+      }
+    ],
+    "sameMode": "bounded; render thread, no worker bridge, no forced mode",
+    "qualification": "Both failed existing p95 <=8.333ms gate: baseline10.7ms,candidate10.1ms.120steps/s rate passed; no backlog. Rules unchanged.",
+    "finding": "Matched bounded-mode candidate remains33.990s slower to playable and17.712s slower over normal-input20m gate. Frame cap magnifies slower renders into slower simulation progress. Initial fast runs lack worker state, so their precise mode is not retroactively asserted.",
+    "clockSource": "src/racing/RaceFrameBudget.js:RaceSimulationClock;src/racing/RaceSimulation.js:liveWorkerQualification",
+    "safeNextStep": "Profile/optimize textured-terrain rendering, particularly the mathematically uniform one-material grid. Do not force worker qualification, raise deadlines, remove required ground art or alter physics."
+  },
+  "productionFilesChanged": [],
+  "finalConclusion": "Not ready for publication. Controlled art refs cause extra terrain rendering; matched-clock performance regression persists. No valid art-only size/ref change removes this path while retaining correct near and distant ground. No rendering/physics/deadline change shipped.",
+  "clockContactReview": {
+    "file": "pack18-clock-contact.jpg",
+    "viewed": true,
+    "finding": "Actual authored baseline and candidate opening views inspected. Candidate textured near-ground retained; no conspicuous sky wrap in these sampled poses. Poses differ; not full-route or extreme-pitch acceptance."
+  }
+}

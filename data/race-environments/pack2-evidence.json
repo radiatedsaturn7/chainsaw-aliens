@@ -1,0 +1,1714 @@
+{
+  "base": "ef6034818a76458b4314cca07afa226a2cdc0082",
+  "comparedCandidate": "b188c601f03423c76ae6033c27bfdf5b51aa362b",
+  "artCheckpoint": "74fd63463650cf1070fb637dbd15ca6fa82a2079",
+  "comparisonMethod": "Serial same Chromium/SwiftShader1280x720,120s readiness/180s first-frame/300s total; actual game travel, no runtime deadlines changed. Git-tree HTTP view avoids copied worktree. Candidate adds observational draw/warmup counters. Host CPU scheduling remains uncontrolled.",
+  "baseline": [
+    {
+      "race": "Ozark Backroads",
+      "mobile": false,
+      "commit": "ef6034818a76458b4314cca07afa226a2cdc0082",
+      "evidence": "/tmp/race-environment-baseline-comparison/race-environments-diagnosi-59ea4-desktop-baseline-comparison/diagnosis.json",
+      "ready": {
+        "ms": 2454,
+        "type": "ready",
+        "value": {
+          "ready": true,
+          "state": "loading",
+          "status": "Ready",
+          "diagnostics": null,
+          "session": null,
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "travelReturn": {
+        "ms": 86228,
+        "type": "travel-return",
+        "value": {
+          "started": true,
+          "state": {
+            "ready": true,
+            "state": "race-editor",
+            "status": "Playtesting Ozark Backroads in RTG-001",
+            "error": "",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Ozark Backroads",
+              "phase": "starting-race",
+              "progress": 0.997,
+              "elapsedMs": 71934.59999999404,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "session": {
+              "running": true,
+              "pending": true,
+              "elapsed": 0,
+              "speed": 0,
+              "intro": true,
+              "countdown": 6000,
+              "paused": false
+            },
+            "sky": "skybox-ozarks",
+            "renderer": true
+          }
+        }
+      },
+      "final": {
+        "ms": 266306,
+        "type": "final",
+        "value": {
+          "ready": true,
+          "state": "prompt",
+          "status": "Race did not present its first playable frame",
+          "error": "",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Ozark Backroads",
+            "phase": "starting-race",
+            "progress": 0.997,
+            "elapsedMs": 71934.59999999404,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "session": null,
+          "sky": "skybox-ozarks",
+          "renderer": true
+        }
+      },
+      "pageErrors": [],
+      "failedRequests": [],
+      "httpErrors": [
+        {
+          "ms": 2384,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=pixelStudioCustomPalettes",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2384,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-cached-programs",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2387,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-favorites",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2388,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-controller-map",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2388,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=wheel-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2388,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=race-haptics",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2389,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-progress",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2389,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-random-seed",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2389,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-last-tuning",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2390,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-hud-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2390,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-calibration",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2965,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 4068,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 5243,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=rtg-radio-progress",
+            "status": 404
+          }
+        }
+      ],
+      "lastPendingWarmup": [],
+      "draws": null
+    },
+    {
+      "race": "Moki Dugway",
+      "mobile": false,
+      "commit": "ef6034818a76458b4314cca07afa226a2cdc0082",
+      "evidence": "/tmp/race-environment-baseline-comparison/race-environments-diagnosi-02b7a-desktop-baseline-comparison/diagnosis.json",
+      "ready": {
+        "ms": 2824,
+        "type": "ready",
+        "value": {
+          "ready": true,
+          "state": "loading",
+          "status": "Ready",
+          "diagnostics": null,
+          "session": null,
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "travelReturn": {
+        "ms": 53676,
+        "type": "travel-return",
+        "value": {
+          "started": false,
+          "state": {
+            "ready": true,
+            "state": "race-editor",
+            "status": "Loading Moki Dugway",
+            "error": "Race preparation failed during world bake: Race preparation timed out while building terrain",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Moki Dugway",
+              "phase": "world-bake",
+              "progress": 0.12,
+              "elapsedMs": 3483.7999999970198,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "phase": "Building terrain",
+            "session": {
+              "running": false,
+              "paused": false
+            },
+            "sky": "providence",
+            "renderer": false
+          }
+        }
+      },
+      "final": {
+        "ms": 53693,
+        "type": "final",
+        "value": {
+          "ready": true,
+          "state": "race-editor",
+          "status": "Loading Moki Dugway",
+          "error": "Race preparation failed during world bake: Race preparation timed out while building terrain",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Moki Dugway",
+            "phase": "world-bake",
+            "progress": 0.12,
+            "elapsedMs": 3483.7999999970198,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "phase": "Building terrain",
+          "session": {
+            "running": false,
+            "paused": false
+          },
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "pageErrors": [],
+      "failedRequests": [],
+      "httpErrors": [
+        {
+          "ms": 2781,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=pixelStudioCustomPalettes",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2782,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-cached-programs",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2783,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-favorites",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2783,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-controller-map",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2786,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=wheel-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2786,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=race-haptics",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2786,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-progress",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2786,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-random-seed",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2786,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-last-tuning",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2786,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-hud-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2786,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-calibration",
+            "status": 404
+          }
+        },
+        {
+          "ms": 3481,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 3929,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 6148,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=rtg-radio-progress",
+            "status": 404
+          }
+        }
+      ],
+      "lastPendingWarmup": [],
+      "draws": null
+    }
+  ],
+  "candidate": [
+    {
+      "race": "Ozark Backroads",
+      "mobile": false,
+      "commit": "b188c601f03423c76ae6033c27bfdf5b51aa362b",
+      "evidence": "/tmp/race-environment-pack1-comparison/race-environments-diagnosi-59ea4-desktop-baseline-comparison/diagnosis.json",
+      "ready": {
+        "ms": 2337,
+        "type": "ready",
+        "value": {
+          "ready": true,
+          "state": "loading",
+          "status": "Ready",
+          "diagnostics": null,
+          "warmup": null,
+          "deferredArtWorker": false,
+          "session": null,
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "travelReturn": {
+        "ms": 83913,
+        "type": "travel-return",
+        "value": {
+          "started": true,
+          "state": {
+            "ready": true,
+            "state": "race-editor",
+            "status": "Playtesting Ozark Backroads in RTG-001",
+            "error": "",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Ozark Backroads",
+              "phase": "starting-race",
+              "progress": 0.997,
+              "elapsedMs": 70154.5,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "warmup": {
+              "frames": 2,
+              "surfacePrepared": false,
+              "exit": null,
+              "age": 684.8000000044703
+            },
+            "deferredArtWorker": false,
+            "session": {
+              "running": true,
+              "pending": true,
+              "elapsed": 0,
+              "speed": 0,
+              "intro": true,
+              "countdown": 6000,
+              "paused": false
+            },
+            "sky": "environment-v1-ozark-eminence-day",
+            "renderer": true
+          }
+        }
+      },
+      "final": {
+        "ms": 264127,
+        "type": "final",
+        "value": {
+          "ready": true,
+          "state": "prompt",
+          "status": "Race did not present its first playable frame",
+          "error": "",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Ozark Backroads",
+            "phase": "starting-race",
+            "progress": 0.997,
+            "elapsedMs": 70154.5,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "warmup": {
+            "frames": 9,
+            "surfacePrepared": false,
+            "exit": null,
+            "age": 180901.80000000447
+          },
+          "deferredArtWorker": false,
+          "session": null,
+          "sky": "environment-v1-ozark-eminence-day",
+          "renderer": true
+        }
+      },
+      "pageErrors": [],
+      "failedRequests": [],
+      "httpErrors": [
+        {
+          "ms": 2299,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=pixelStudioCustomPalettes",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2306,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-cached-programs",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2307,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-favorites",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2307,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-controller-map",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2308,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=wheel-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2308,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-last-tuning",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2308,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=race-haptics",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2308,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-progress",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2308,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-random-seed",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2308,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-hud-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2308,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-calibration",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2543,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 3685,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 5151,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=rtg-radio-progress",
+            "status": 404
+          }
+        }
+      ],
+      "lastPendingWarmup": [
+        {
+          "at": 86321.10000000149,
+          "status": "Playtesting Ozark Backroads in RTG-001",
+          "pending": true,
+          "deferred": false,
+          "frames": 9,
+          "surfacePrepared": false,
+          "exit": null,
+          "draws": {
+            "draw": 9,
+            "finish": 9
+          }
+        }
+      ],
+      "draws": {
+        "draw": 9,
+        "finish": 9
+      }
+    },
+    {
+      "race": "Moki Dugway",
+      "mobile": false,
+      "commit": "b188c601f03423c76ae6033c27bfdf5b51aa362b",
+      "evidence": "/tmp/race-environment-pack1-comparison/race-environments-diagnosi-02b7a-desktop-baseline-comparison/diagnosis.json",
+      "ready": {
+        "ms": 2483,
+        "type": "ready",
+        "value": {
+          "ready": true,
+          "state": "loading",
+          "status": "Ready",
+          "diagnostics": null,
+          "warmup": null,
+          "deferredArtWorker": false,
+          "session": null,
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "travelReturn": {
+        "ms": 53400,
+        "type": "travel-return",
+        "value": {
+          "started": false,
+          "state": {
+            "ready": true,
+            "state": "race-editor",
+            "status": "Loading Moki Dugway",
+            "error": "Race preparation failed during world bake: Race preparation timed out while building terrain",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Moki Dugway",
+              "phase": "world-bake",
+              "progress": 0.12,
+              "elapsedMs": 4531,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "phase": "Building terrain",
+            "warmup": null,
+            "deferredArtWorker": false,
+            "session": {
+              "running": false,
+              "paused": false
+            },
+            "sky": "providence",
+            "renderer": false
+          }
+        }
+      },
+      "final": {
+        "ms": 53499,
+        "type": "final",
+        "value": {
+          "ready": true,
+          "state": "race-editor",
+          "status": "Loading Moki Dugway",
+          "error": "Race preparation failed during world bake: Race preparation timed out while building terrain",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Moki Dugway",
+            "phase": "world-bake",
+            "progress": 0.12,
+            "elapsedMs": 4531,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "phase": "Building terrain",
+          "warmup": null,
+          "deferredArtWorker": false,
+          "session": {
+            "running": false,
+            "paused": false
+          },
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "pageErrors": [],
+      "failedRequests": [],
+      "httpErrors": [
+        {
+          "ms": 2434,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=pixelStudioCustomPalettes",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2434,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-cached-programs",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2434,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-favorites",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2434,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-controller-map",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2440,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=wheel-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2440,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=race-haptics",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2441,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-progress",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2441,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-random-seed",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2441,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-last-tuning",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2441,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-hud-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2441,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-calibration",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2933,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 4183,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 5251,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=rtg-radio-progress",
+            "status": 404
+          }
+        }
+      ],
+      "lastPendingWarmup": [],
+      "draws": {
+        "draw": 0,
+        "finish": 0
+      }
+    }
+  ],
+  "oldStaplesBaseline": [
+    {
+      "race": "Old Staples Road",
+      "mobile": false,
+      "commit": "ef6034818a76458b4314cca07afa226a2cdc0082",
+      "evidence": "/tmp/race-environment-old-staples-baseline/race-environments-diagnosi-30cea-desktop-baseline-comparison/diagnosis.json",
+      "ready": {
+        "ms": 2567,
+        "type": "ready",
+        "value": {
+          "ready": true,
+          "state": "loading",
+          "status": "Ready",
+          "diagnostics": null,
+          "warmup": null,
+          "deferredArtWorker": false,
+          "session": null,
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "travelReturn": {
+        "ms": 8050,
+        "type": "travel-return",
+        "value": {
+          "started": false,
+          "state": {
+            "ready": true,
+            "state": "race-editor",
+            "status": "Race load failed",
+            "error": "Race start failed: Race could not load: Old Staples Road",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Old Staples Road",
+              "phase": "applying-race",
+              "progress": 0.992,
+              "elapsedMs": 3141.5,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "warmup": null,
+            "deferredArtWorker": false,
+            "session": null,
+            "sky": "providence",
+            "renderer": false
+          }
+        }
+      },
+      "final": {
+        "ms": 8087,
+        "type": "final",
+        "value": {
+          "ready": true,
+          "state": "race-editor",
+          "status": "Race load failed",
+          "error": "Race start failed: Race could not load: Old Staples Road",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Old Staples Road",
+            "phase": "applying-race",
+            "progress": 0.992,
+            "elapsedMs": 3141.5,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "warmup": null,
+          "deferredArtWorker": false,
+          "session": null,
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "pageErrors": [],
+      "failedRequests": [],
+      "httpErrors": [
+        {
+          "ms": 2501,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=pixelStudioCustomPalettes",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2506,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-cached-programs",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2506,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-favorites",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2507,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-controller-map",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2508,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=wheel-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2508,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=race-haptics",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2508,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-progress",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2508,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-random-seed",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2508,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-last-tuning",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2508,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-hud-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2508,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-calibration",
+            "status": 404
+          }
+        },
+        {
+          "ms": 3021,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 4921,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 5235,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=rtg-radio-progress",
+            "status": 404
+          }
+        }
+      ],
+      "lastPendingWarmup": [],
+      "draws": {
+        "draw": 0,
+        "finish": 0
+      }
+    }
+  ],
+  "oldStaplesCandidate": [
+    {
+      "race": "Old Staples Road",
+      "mobile": true,
+      "commit": "74fd63463650cf1070fb637dbd15ca6fa82a2079",
+      "evidence": "/tmp/race-environment-pack2-driving/race-environments-diagnosi-27ece-andheld-baseline-comparison/diagnosis.json",
+      "ready": {
+        "ms": 1698,
+        "type": "ready",
+        "value": {
+          "ready": true,
+          "state": "loading",
+          "status": "Ready",
+          "diagnostics": null,
+          "warmup": null,
+          "deferredArtWorker": false,
+          "session": null,
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "travelReturn": {
+        "ms": 5017,
+        "type": "travel-return",
+        "value": {
+          "started": false,
+          "state": {
+            "ready": true,
+            "state": "race-editor",
+            "status": "Race load failed",
+            "error": "Race start failed: Race could not load: Old Staples Road",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Old Staples Road",
+              "phase": "applying-race",
+              "progress": 0.992,
+              "elapsedMs": 2713,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "warmup": null,
+            "deferredArtWorker": false,
+            "session": null,
+            "sky": "providence",
+            "renderer": false
+          }
+        }
+      },
+      "final": {
+        "ms": 5048,
+        "type": "final",
+        "value": {
+          "ready": true,
+          "state": "race-editor",
+          "status": "Race load failed",
+          "error": "Race start failed: Race could not load: Old Staples Road",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Old Staples Road",
+            "phase": "applying-race",
+            "progress": 0.992,
+            "elapsedMs": 2713,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "warmup": null,
+          "deferredArtWorker": false,
+          "session": null,
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "pageErrors": [],
+      "failedRequests": [],
+      "httpErrors": [
+        {
+          "ms": 1660,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=pixelStudioCustomPalettes",
+            "status": 404
+          }
+        },
+        {
+          "ms": 1663,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-cached-programs",
+            "status": 404
+          }
+        },
+        {
+          "ms": 1663,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-favorites",
+            "status": 404
+          }
+        },
+        {
+          "ms": 1663,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-controller-map",
+            "status": 404
+          }
+        },
+        {
+          "ms": 1664,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=wheel-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 1669,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=race-haptics",
+            "status": 404
+          }
+        },
+        {
+          "ms": 1672,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-progress",
+            "status": 404
+          }
+        },
+        {
+          "ms": 1672,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-random-seed",
+            "status": 404
+          }
+        },
+        {
+          "ms": 1672,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-last-tuning",
+            "status": 404
+          }
+        },
+        {
+          "ms": 1673,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-hud-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 1673,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-calibration",
+            "status": 404
+          }
+        },
+        {
+          "ms": 1883,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 3021,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 3121,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=rtg-radio-progress",
+            "status": 404
+          }
+        }
+      ],
+      "lastPendingWarmup": [],
+      "draws": {
+        "draw": 0,
+        "finish": 0
+      }
+    },
+    {
+      "race": "Old Staples Road",
+      "mobile": false,
+      "commit": "74fd63463650cf1070fb637dbd15ca6fa82a2079",
+      "evidence": "/tmp/race-environment-pack2-driving/race-environments-diagnosi-30cea-desktop-baseline-comparison/diagnosis.json",
+      "ready": {
+        "ms": 2302,
+        "type": "ready",
+        "value": {
+          "ready": true,
+          "state": "loading",
+          "status": "Ready",
+          "diagnostics": null,
+          "warmup": null,
+          "deferredArtWorker": false,
+          "session": null,
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "travelReturn": {
+        "ms": 6999,
+        "type": "travel-return",
+        "value": {
+          "started": false,
+          "state": {
+            "ready": true,
+            "state": "race-editor",
+            "status": "Race load failed",
+            "error": "Race start failed: Race could not load: Old Staples Road",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Old Staples Road",
+              "phase": "applying-race",
+              "progress": 0.992,
+              "elapsedMs": 3443.7000000029802,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "warmup": null,
+            "deferredArtWorker": false,
+            "session": null,
+            "sky": "providence",
+            "renderer": false
+          }
+        }
+      },
+      "final": {
+        "ms": 7100,
+        "type": "final",
+        "value": {
+          "ready": true,
+          "state": "race-editor",
+          "status": "Race load failed",
+          "error": "Race start failed: Race could not load: Old Staples Road",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Old Staples Road",
+            "phase": "applying-race",
+            "progress": 0.992,
+            "elapsedMs": 3443.7000000029802,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "warmup": null,
+          "deferredArtWorker": false,
+          "session": null,
+          "sky": "providence",
+          "renderer": false
+        }
+      },
+      "pageErrors": [],
+      "failedRequests": [],
+      "httpErrors": [
+        {
+          "ms": 2235,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=pixelStudioCustomPalettes",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2237,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-cached-programs",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2239,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-favorites",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2239,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=chainsaw-midi-controller-map",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2239,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=wheel-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2239,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=race-haptics",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2240,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-progress",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2240,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-random-seed",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2240,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-last-tuning",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2240,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-hud-settings",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2240,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=robtersession-calibration",
+            "status": 404
+          }
+        },
+        {
+          "ms": 2685,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 4138,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/vendor/soundfonts/FluidR3_GM/standard_kit-mp3.js",
+            "status": 404
+          }
+        },
+        {
+          "ms": 4499,
+          "type": "http-error",
+          "value": {
+            "url": "http://127.0.0.1:4231/__storage/file?folder=settings&name=rtg-radio-progress",
+            "status": 404
+          }
+        }
+      ],
+      "lastPendingWarmup": [],
+      "draws": {
+        "draw": 0,
+        "finish": 0
+      }
+    }
+  ],
+  "finding": "Ozark first-frame and Moki terrain timeout reproduced before art changes. Ozark candidate draws/finish both9, surfacePrepared false, deferred worker false. Old Staples baseline extra data string is selected by existing static-server payload unwrapping; underlying top-level race exists. Do not infer production-server behavior without separate evidence.",
+  "art": "Five additional sky bindings, including three generated site panoramas and two existing original locale-specific assets. Two generated ground textures, no physical material changes.",
+  "rejectedArt": [
+    "/workspace/generated_images/exec-fda1b953-0b2e-41cd-b642-b102a684a7c6.png (wrong broad river)",
+    "/workspace/generated_images/exec-ebe94e4f-9d11-4e29-ad91-d40bf6bc3543.png (cloud seam warning; replaced by imagegen edit)"
+  ],
+  "seamDiagnostics": {
+    "reports": [
+      {
+        "race": "Col de Turini",
+        "ref": "skybox-col-de-turini",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "aa5454112484922515ba308938fd58b8aa732541d2f935cf0d998af5012ee7a4",
+        "seamMeanRGB": 0.5131964809384165,
+        "seamSkyMeanRGB": 0.5082956259426848,
+        "seamMaximumRGB": 1,
+        "seam": {
+          "meanRGB": 0.5131964809384165,
+          "skyMeanRGB": 0.5082956259426848,
+          "maximumRGB": 1,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Nurburgring Nordschleife",
+        "ref": "skybox-eifel-circuit",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "26c4485d9fc5712b062b17286c2c60976d43bbe3a79f145df6a6139fab6a38af",
+        "seamMeanRGB": 0.5151515151515156,
+        "seamSkyMeanRGB": 0.5052790346907996,
+        "seamMaximumRGB": 1,
+        "seam": {
+          "meanRGB": 0.5151515151515156,
+          "skyMeanRGB": 0.5052790346907996,
+          "maximumRGB": 1,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Ouninpohja",
+        "ref": "environment-v1-ouninpohja-boreal-noon",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "fdf6c123540e4681f136f15eba90a2e894414299f3930416621732ae3185c879",
+        "seamMeanRGB": 10.1505376344086,
+        "seamSkyMeanRGB": 2.19155354449472,
+        "seamMaximumRGB": 141.66666666666666,
+        "seam": {
+          "meanRGB": 10.1505376344086,
+          "skyMeanRGB": 2.19155354449472,
+          "maximumRGB": 141.66666666666666,
+          "largeJumpFraction": 0.017595307917888565,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Ohio River Crossing",
+        "ref": "environment-v1-ohio-little-muskingum-storm",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "ea05e612402ea26710d24b9d369f1443ebb696e1eaee26cf3e12d411fb09b01a",
+        "seamMeanRGB": 5.893450635386124,
+        "seamSkyMeanRGB": 5.791855203619913,
+        "seamMaximumRGB": 39.666666666666664,
+        "seam": {
+          "meanRGB": 5.893450635386124,
+          "skyMeanRGB": 5.791855203619913,
+          "maximumRGB": 39.666666666666664,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Ozark Backroads",
+        "ref": "environment-v1-ozark-eminence-day",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "16de968bc0bda9fb7ef92f6e467095e61dd363b563cd20ed901aca06efccc465",
+        "seamMeanRGB": 5.56598240469208,
+        "seamSkyMeanRGB": 1.301659125188537,
+        "seamMaximumRGB": 69.66666666666667,
+        "seam": {
+          "meanRGB": 5.56598240469208,
+          "skyMeanRGB": 1.301659125188537,
+          "maximumRGB": 69.66666666666667,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Data Center City",
+        "ref": "environment-v1-stl-riverfront-night",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "267288e7e9974bccb063c29e52bf709543b0f38f8307f337453110e505b4630d",
+        "seamMeanRGB": 6.236559139784947,
+        "seamSkyMeanRGB": 3.886877828054299,
+        "seamMaximumRGB": 113,
+        "seam": {
+          "meanRGB": 6.236559139784947,
+          "skyMeanRGB": 3.886877828054299,
+          "maximumRGB": 113,
+          "largeJumpFraction": 0.005865102639296188,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Moki Dugway",
+        "ref": "environment-v1-moki-cedar-mesa-day",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "cc88e54f870306c5011aa3e937641624a70fea8fe14a926a1d39a644bca09d02",
+        "seamMeanRGB": 6.173998044965783,
+        "seamSkyMeanRGB": 1.6455505279034692,
+        "seamMaximumRGB": 48.333333333333336,
+        "seam": {
+          "meanRGB": 6.173998044965783,
+          "skyMeanRGB": 1.6455505279034692,
+          "maximumRGB": 48.333333333333336,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Old Staples Road",
+        "ref": "environment-v1-old-staples-woodland-day",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "d8f4fa33a9ea56e429f596a295e6f9c4add56d94ab8e9bb532bf37eced0e3e3e",
+        "seamMeanRGB": 9.199413489736068,
+        "seamSkyMeanRGB": 4.144796380090498,
+        "seamMaximumRGB": 87.66666666666667,
+        "seam": {
+          "meanRGB": 9.199413489736068,
+          "skyMeanRGB": 4.144796380090498,
+          "maximumRGB": 87.66666666666667,
+          "largeJumpFraction": 0.005865102639296188,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      }
+    ],
+    "groundReports": [
+      {
+        "ref": "environment-v1-ground-finnish-boreal-verge",
+        "width": 512,
+        "height": 512,
+        "pixelHash": "8ef8e3ac38e0c6ce4dc5b1f4b2744f3e006bff495b0eea246341ae69eaa36617",
+        "horizontal": {
+          "meanRGB": 21.752604166666675,
+          "skyMeanRGB": 21.275100401606426,
+          "maximumRGB": 82.33333333333333,
+          "largeJumpFraction": 0.001953125,
+          "numericWarning": true,
+          "visualReviewRequired": true
+        },
+        "vertical": {
+          "meanRGB": 23.16666666666665,
+          "skyMeanRGB": 23.116465863453808,
+          "maximumRGB": 98,
+          "largeJumpFraction": 0.015625,
+          "numericWarning": true,
+          "visualReviewRequired": true
+        },
+        "visualTileReviewRequired": true
+      },
+      {
+        "ref": "environment-v1-ground-ohio-wet-leaf-litter",
+        "width": 512,
+        "height": 512,
+        "pixelHash": "10535046f83f8948f664266d3a062b26c2a6760dfdbd0131b608883f0b87676c",
+        "horizontal": {
+          "meanRGB": 9.904296875,
+          "skyMeanRGB": 10.92269076305221,
+          "maximumRGB": 89.33333333333333,
+          "largeJumpFraction": 0.00390625,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "vertical": {
+          "meanRGB": 16.694010416666675,
+          "skyMeanRGB": 16.789156626506035,
+          "maximumRGB": 80.66666666666667,
+          "largeJumpFraction": 0.00390625,
+          "numericWarning": true,
+          "visualReviewRequired": true
+        },
+        "visualTileReviewRequired": true
+      },
+      {
+        "ref": "grass",
+        "width": 32,
+        "height": 32,
+        "pixelHash": "f37b5d5ab9ccd8fd0d530f79d7100e853cd88b5146cd835a30aa3ba0cbb8b35a",
+        "horizontal": {
+          "meanRGB": 2.7916666666666665,
+          "skyMeanRGB": 0,
+          "maximumRGB": 44.666666666666664,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "vertical": {
+          "meanRGB": 0,
+          "skyMeanRGB": 0,
+          "maximumRGB": 0,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualTileReviewRequired": true
+      }
+    ]
+  },
+  "acceptance": "Local incomplete checkpoint only. No route-wide acceptance. Remaining campaign-use gate and authored-composite/production horizon issues are exposed. No publication.",
+  "rendererEnvironment": {
+    "gpuDevice": "/dev/dri absent",
+    "browser": "system Chromium, ANGLE SwiftShader",
+    "productionTimeouts": "unchanged"
+  },
+  "textureDiagnosticLimit": "Ground images trigger the raw sky-derived edge diagnostic; high-frequency texture noise requires repeated-tile inspection. Not accepted merely from edge numbers.",
+  "preferredComparison": {
+    "method": "Full initialization then real GameMenu entry, G accelerator, identical serial browser/device/budgets on base and candidate; supersedes initial ready-flag-only entry above.",
+    "resultsFile": "/tmp/race-environment-menu-comparison-results.json",
+    "baselineArtifacts": "/tmp/race-environment-menu-base",
+    "candidateArtifacts": "/tmp/race-environment-menu-candidate",
+    "ozark": {
+      "baselineTravelMs": 90408,
+      "candidateTravelMs": 89504,
+      "baselineDrawFinishFrames": 10,
+      "candidateDrawFinishFrames": 11,
+      "both": "Race did not present its first playable frame; surfacePrepared false, exit null, no deferred worker, no missing art refs"
+    },
+    "moki": {
+      "baselineTravelMs": 54442,
+      "candidateTravelMs": 55257,
+      "both": "Race preparation failed during world bake: Race preparation timed out while building terrain; no draw/finish frames"
+    }
+  },
+  "playability": {
+    "Data Center City": {
+      "checkpoint": "74fd63463650cf1070fb637dbd15ca6fa82a2079",
+      "desktop": {
+        "passed": true,
+        "elapsedMs": 5049.9,
+        "speedMps": 6.41685
+      },
+      "handheld": {
+        "passed": true,
+        "elapsedMs": 2533.3,
+        "speedMps": 1.025271
+      },
+      "artifacts": "/tmp/race-environment-city-moving",
+      "limitation": "Both moving captures inspected; horizon too dark under preserved .05 night brightness. Movement only, not environment acceptance."
+    },
+    "Col de Turini": {
+      "passed": false,
+      "artifacts": "/tmp/race-environment-turini-driving",
+      "limitation": "Both sizes first-frame failure using earlier direct entry. No matching untouched-base comparison, so cause unresolved."
+    },
+    "Old Staples Road": {
+      "passed": false,
+      "limitation": "Baseline and candidate fail existing static-server transport: plain race document also has string data, which test server unwraps instead of the race object. No production behavior change; actual deployed transport not established."
+    }
+  },
+  "finalChecks": {
+    "preservation": "PASS: all 245 race nonvisual fields preserved; 8 bindings",
+    "manifest": "PASS: 1566 documents, 16 assets",
+    "units": "Initial 85: 83 passed, 2 failed. Missing providence placements array repaired as metadata; focused matching-sky test now passes. Campaign-use failure remains exposed: skybox-col-de-turini is bound to an actual free race omitted by campaign-only helper. Full suite not rerun after metadata repair.",
+    "renderer": "2 automated cases passed, 8 skies at six yaw angles per size. Raw Ohio panorama visibly draws. Authored-composite Ohio image is flat gray: harness/compositing unresolved and NOT a visual pass.",
+    "completeness": "Expected rejection: --require-complete blocks partial 8/245 coverage.",
+    "broadBrowserWorkflow": "Not run this turn."
+  },
+  "reviewedGroundRepeats": {
+    "finnish": "Native 2x2 repeat inspected: dense moss/needle texture, repeat pattern visible; numeric edge warnings retained, driving scale pending.",
+    "ohio": "Native 2x2 repeat inspected: wet brown leaf litter, repeated motif visible; vertical numeric warning retained, driving scale pending."
+  },
+  "diskAvailableBytes": 5165957120
+}

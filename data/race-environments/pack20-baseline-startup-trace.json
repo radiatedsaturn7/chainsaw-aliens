@@ -1,0 +1,875 @@
+{
+  "origin": 5334,
+  "events": [
+    {
+      "ms": 3.2999999970197678,
+      "session": false,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 2593.2000000029802,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 2769.2000000029802,
+      "phase": "module-load",
+      "progress": 0.08,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 4257.4000000059605,
+      "phase": "world-bake",
+      "progress": 0.12,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 4948.4000000059605,
+      "phase": "physics-pack",
+      "progress": 0.76,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 5293.20000000298,
+      "phase": "terrain-pack",
+      "progress": 0.84,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 5500.5,
+      "phase": "release-build",
+      "progress": 0.93,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 5896.29999999702,
+      "phase": "art-pack",
+      "progress": 0.9361111111111111,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 10163.40000000596,
+      "phase": "art-pack",
+      "progress": 0.9366666666666668,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 10674.5,
+      "phase": "art-pack",
+      "progress": 0.9372222222222223,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 11224.60000000894,
+      "phase": "art-pack",
+      "progress": 0.9377777777777778,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 12242.10000000894,
+      "phase": "art-pack",
+      "progress": 0.9383333333333334,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 13747.29999999702,
+      "phase": "art-pack",
+      "progress": 0.9388888888888889,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 18763.40000000596,
+      "phase": "art-pack",
+      "progress": 0.9394444444444445,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 20135.79999999702,
+      "phase": "art-pack",
+      "progress": 0.9400000000000001,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 22923.60000000894,
+      "phase": "art-pack",
+      "progress": 0.9405555555555556,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 23819.10000000894,
+      "phase": "art-pack",
+      "progress": 0.9411111111111111,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 23922.40000000596,
+      "phase": "art-pack",
+      "progress": 0.9416666666666667,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 24839.20000000298,
+      "phase": "art-pack",
+      "progress": 0.9422222222222223,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25215.10000000894,
+      "phase": "art-pack",
+      "progress": 0.9427777777777778,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25446.90000000596,
+      "phase": "art-pack",
+      "progress": 0.9438888888888889,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25508.70000000298,
+      "phase": "art-pack",
+      "progress": 0.9444444444444444,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25874,
+      "phase": "art-pack",
+      "progress": 0.9461111111111111,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25947.5,
+      "phase": "art-pack",
+      "progress": 0.9466666666666667,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 26026.40000000596,
+      "phase": "art-pack",
+      "progress": 0.9472222222222222,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 26468.5,
+      "phase": "art-pack",
+      "progress": 0.9477777777777777,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 26516.60000000894,
+      "phase": "art-pack",
+      "progress": 0.9483333333333334,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 26617.60000000894,
+      "phase": "art-pack",
+      "progress": 0.9488888888888889,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 26826.10000000894,
+      "phase": "art-pack",
+      "progress": 0.95,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 26895.79999999702,
+      "phase": "art-pack",
+      "progress": 0.9511111111111111,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 26975.70000000298,
+      "phase": "art-pack",
+      "progress": 0.9533333333333333,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 27315.40000000596,
+      "phase": "art-pack",
+      "progress": 0.9538888888888889,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 27578.5,
+      "phase": "transfer-header",
+      "progress": 0.96,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 27724.79999999702,
+      "phase": "transfer-complete",
+      "progress": 0.99,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 27729.5,
+      "phase": "applying-race",
+      "progress": 0.992,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 27767.29999999702,
+      "phase": "transfer-art",
+      "progress": 0.994,
+      "session": false,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 29171.40000000596,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": false,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 29824.70000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "renderFrame": 0,
+      "geometries": 0
+    },
+    {
+      "ms": 30124.79999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "renderFrame": 1,
+      "geometries": 8
+    },
+    {
+      "ms": 30132.70000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 1,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 8,
+      "renderFrame": 1,
+      "geometries": 8
+    },
+    {
+      "ms": 30155.60000000894,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 2,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 16,
+      "renderFrame": 2,
+      "geometries": 8
+    },
+    {
+      "ms": 30174.79999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 3,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 24,
+      "renderFrame": 3,
+      "geometries": 8
+    },
+    {
+      "ms": 30744.90000000596,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 4,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 32,
+      "renderFrame": 4,
+      "geometries": 8
+    },
+    {
+      "ms": 30943.20000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 5,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 40,
+      "renderFrame": 5,
+      "geometries": 8
+    },
+    {
+      "ms": 31162.70000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 6,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 48,
+      "renderFrame": 6,
+      "geometries": 8
+    },
+    {
+      "ms": 31354.90000000596,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 7,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 56,
+      "renderFrame": 7,
+      "geometries": 8
+    },
+    {
+      "ms": 31568.10000000894,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 8,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 64,
+      "renderFrame": 8,
+      "geometries": 8
+    },
+    {
+      "ms": 31750.40000000596,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 9,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 72,
+      "renderFrame": 9,
+      "geometries": 8
+    },
+    {
+      "ms": 32005.40000000596,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 10,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 80,
+      "renderFrame": 10,
+      "geometries": 8
+    },
+    {
+      "ms": 32187.70000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 11,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 88,
+      "renderFrame": 11,
+      "geometries": 8
+    },
+    {
+      "ms": 32379.40000000596,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 12,
+      "surface": true,
+      "artFrames": 1,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 12,
+      "geometries": 8
+    },
+    {
+      "ms": 32580.10000000894,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 13,
+      "surface": true,
+      "artFrames": 2,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 13,
+      "geometries": 8
+    },
+    {
+      "ms": 32775,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 14,
+      "surface": true,
+      "artFrames": 3,
+      "exit": true,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 14,
+      "geometries": 8
+    },
+    {
+      "ms": 32972.90000000596,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 15,
+      "surface": true,
+      "artFrames": 3,
+      "exit": true,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 15,
+      "geometries": 8
+    },
+    {
+      "ms": 33180.70000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 16,
+      "geometries": 8
+    },
+    {
+      "ms": 43413.29999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 72,
+      "geometries": 9
+    },
+    {
+      "ms": 48535.10000000894,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 100,
+      "geometries": 10
+    },
+    {
+      "ms": 50480.29999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 111,
+      "geometries": 11
+    },
+    {
+      "ms": 53673.5,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 127,
+      "geometries": 13
+    },
+    {
+      "ms": 69353.40000000596,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 533.3333333333333,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 209,
+      "geometries": 13
+    },
+    {
+      "ms": 72478.5,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 1000.0000000000005,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 223,
+      "geometries": 13
+    },
+    {
+      "ms": 73197.79999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 1033.3333333333337,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 224,
+      "geometries": 14
+    },
+    {
+      "ms": 76050.40000000596,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 1533.3333333333326,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 239,
+      "geometries": 14
+    },
+    {
+      "ms": 79692.60000000894,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 2416.600000000004,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 254,
+      "geometries": 14
+    }
+  ],
+  "methods": {
+    "addRaceThreeTerrainArtwork": {
+      "calls": 6,
+      "totalMs": 0.29999999701976776,
+      "maxMs": 0.20000000298023224,
+      "firstMs": 29824.5,
+      "slow": []
+    },
+    "drawRaceThreeWorldScene": {
+      "calls": 254,
+      "totalMs": 2589.999999925494,
+      "maxMs": 430.59999999403954,
+      "firstMs": 29805,
+      "slow": [
+        {
+          "atMs": 29805,
+          "ms": 319.6000000089407
+        },
+        {
+          "atMs": 47871.70000000298,
+          "ms": 25.900000005960464
+        },
+        {
+          "atMs": 48078.10000000894,
+          "ms": 22
+        },
+        {
+          "atMs": 48278.5,
+          "ms": 29.299999997019768
+        },
+        {
+          "atMs": 53256.20000000298,
+          "ms": 417.20000000298023
+        },
+        {
+          "atMs": 72767.20000000298,
+          "ms": 430.59999999403954
+        },
+        {
+          "atMs": 73762.20000000298,
+          "ms": 29.799999997019768
+        },
+        {
+          "atMs": 79665.5,
+          "ms": 27.100000008940697
+        }
+      ]
+    },
+    "finishRaceLoadingFrame": {
+      "calls": 254,
+      "totalMs": 15.000000044703484,
+      "maxMs": 2.800000011920929,
+      "firstMs": 30129.79999999702,
+      "slow": []
+    },
+    "markRaceStartupFrameRendered": {
+      "calls": 239,
+      "totalMs": 0.7999999970197678,
+      "maxMs": 0.29999999701976776,
+      "firstMs": 33180.40000000596,
+      "slow": []
+    }
+  },
+  "gpu": {
+    "texImage2D": {
+      "calls": 7,
+      "totalMs": 0.10000000894069672,
+      "maxMs": 0.10000000894069672,
+      "firstMs": 29749.79999999702,
+      "lastMs": 29749.90000000596
+    },
+    "bufferData": {
+      "calls": 44,
+      "totalMs": 5.200000002980232,
+      "maxMs": 0.5,
+      "firstMs": 29991.60000000894,
+      "lastMs": 72806.40000000596
+    },
+    "drawArrays": {
+      "calls": 2675,
+      "totalMs": 11.900000005960464,
+      "maxMs": 4.0999999940395355,
+      "firstMs": 30083.10000000894,
+      "lastMs": 79692.40000000596
+    },
+    "texSubImage2D": {
+      "calls": 254,
+      "totalMs": 26.399999976158142,
+      "maxMs": 1.3999999910593033,
+      "firstMs": 30101.60000000894,
+      "lastMs": 79692.10000000894
+    },
+    "drawElements": {
+      "calls": 254,
+      "totalMs": 0.7000000178813934,
+      "maxMs": 0.10000000894069672,
+      "firstMs": 30101.79999999702,
+      "lastMs": 79692.10000000894
+    }
+  },
+  "lastKey": "{\"phase\":\"starting-race\",\"progress\":0.997,\"session\":true,\"pending\":false,\"elapsed\":4,\"exit\":false,\"deferred\":false,\"cursor\":96,\"geometries\":14}",
+  "longTasks": [
+    {
+      "startMs": 119,
+      "duration": 53
+    },
+    {
+      "startMs": 970.7000000029802,
+      "duration": 177
+    },
+    {
+      "startMs": 1150.9000000059605,
+      "duration": 74
+    },
+    {
+      "startMs": 2256.9000000059605,
+      "duration": 200
+    },
+    {
+      "startMs": 2459.9000000059605,
+      "duration": 130
+    },
+    {
+      "startMs": 3052.1000000089407,
+      "duration": 71
+    },
+    {
+      "startMs": 3726.6000000089407,
+      "duration": 80
+    },
+    {
+      "startMs": 3815,
+      "duration": 151
+    },
+    {
+      "startMs": 3968.4000000059605,
+      "duration": 281
+    },
+    {
+      "startMs": 27600.29999999702,
+      "duration": 112
+    },
+    {
+      "startMs": 27847,
+      "duration": 53
+    },
+    {
+      "startMs": 29038.70000000298,
+      "duration": 132
+    },
+    {
+      "startMs": 29171.10000000894,
+      "duration": 247
+    },
+    {
+      "startMs": 29418.70000000298,
+      "duration": 717
+    },
+    {
+      "startMs": 53254.5,
+      "duration": 419
+    },
+    {
+      "startMs": 65461.90000000596,
+      "duration": 82
+    },
+    {
+      "startMs": 65637.90000000596,
+      "duration": 110
+    },
+    {
+      "startMs": 65830.60000000894,
+      "duration": 132
+    },
+    {
+      "startMs": 72692.60000000894,
+      "duration": 511
+    },
+    {
+      "startMs": 73234.70000000298,
+      "duration": 55
+    },
+    {
+      "startMs": 73713.20000000298,
+      "duration": 81
+    },
+    {
+      "startMs": 79203.40000000596,
+      "duration": 101
+    },
+    {
+      "startMs": 79627.79999999702,
+      "duration": 73
+    }
+  ]
+}

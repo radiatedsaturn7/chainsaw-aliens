@@ -1,0 +1,376 @@
+{
+  "parent": "a2b62170f697df53603e5f8728ce869132baa9ca",
+  "repairs": [
+    {
+      "key": "studio-annex-noon",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-8fb1c4e7-0589-4ebc-8c87-24304e69b194.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair the supplied original 2994 badge-free pixel-art game panorama. Preserve fictional industrial annex, its squat concrete workshops, cylindrical tank, small lattice mast, distant blue lake and wooded low ridges; noon blue sky and green field. Move the close left tree and factory away from outer edges into central area. Both ends must meet at identical gently wooded low ridge height and meadow, with no trees or buildings crossing either vertical edge. This is a horizontally repeating 3:1 skybox: first and last columns must match in silhouette heights and colors along their FULL height. Keep all detailed landmarks in central 70%; outer 15% on each side is matching distant scenery. The uppermost 12% is uniform sky color without clouds touching the top, and the bottommost 12% is gradually reduced-detail single-color ground, with a subtle natural transition, NO abrupt rectangular strip. Top row must be identical color across the entire width; bottom row must be identical color across entire width. Horizon at 56% image height. No borders, text, logos, sheets or vertical streaks; retain site-specific composition.",
+      "generated": "/workspace/generated_images/exec-8fb1c4e7-0589-4ebc-8c87-24304e69b194.png",
+      "oldSourceSha256": "2f0b59a10ce2c517406503fd7f4400253e3205bff1579b2ee81a67f99fd98ef8",
+      "ref": "environment-v1-studio-annex-noon",
+      "canonical": "assets/campaign-art/environment-v1/studio-annex-noon.png",
+      "newSourceSha256": "44aba098ae17e0b3792e83786e00047a8db0e9b604f94a83c3e8f88b614f6f43",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "studio-testfield-noon",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-8870f87b-fca8-4734-928b-70d3747f73b0.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair the supplied original 2994 badge-free pixel-art game panorama. Preserve fictional abandoned red-brick vehicle test field, central elevated water tower, distant rounded green hills and clear noon sky. Keep distinct from a lakeside annex. Outer ends must both be the SAME low grassy field and distant wooded ridge height; move close trees away from edges. This is a horizontally repeating 3:1 skybox: first and last columns must match in silhouette heights and colors along their FULL height. Keep all detailed landmarks in central 70%; outer 15% on each side is matching distant scenery. The uppermost 12% is uniform sky color without clouds touching the top, and the bottommost 12% is gradually reduced-detail single-color ground, with a subtle natural transition, NO abrupt rectangular strip. Top row must be identical color across the entire width; bottom row must be identical color across entire width. Horizon at 56% image height. No borders, text, logos, sheets or vertical streaks; retain site-specific composition.",
+      "generated": "/workspace/generated_images/exec-8870f87b-fca8-4734-928b-70d3747f73b0.png",
+      "oldSourceSha256": "526f645fb3d9826e679e77dcd759189a724ddba0de50d616fff22fabf056337a",
+      "ref": "environment-v1-studio-testfield-noon",
+      "canonical": "assets/campaign-art/environment-v1/studio-testfield-noon.png",
+      "newSourceSha256": "ca40b35260ff5327726854c6c7db138e6f333931b4ebd7961e1e1020859e586b",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "p1-northeast-junction-noon",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-391256eb-27f4-4c81-86c9-d023bafbf985.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair the supplied original 2994 badge-free pixel-art game panorama. Preserve northeastern brick mill junction, smokestack, trestle bridge crossing a narrow river, rounded woodland hills and clear noon. Concentrate buildings and bridge in center; both ends must meet as identical low distant wooded hill with grass at bottom. No close buildings intersecting edges. This is a horizontally repeating 3:1 skybox: first and last columns must match in silhouette heights and colors along their FULL height. Keep all detailed landmarks in central 70%; outer 15% on each side is matching distant scenery. The uppermost 12% is uniform sky color without clouds touching the top, and the bottommost 12% is gradually reduced-detail single-color ground, with a subtle natural transition, NO abrupt rectangular strip. Top row must be identical color across the entire width; bottom row must be identical color across entire width. Horizon at 56% image height. No borders, text, logos, sheets or vertical streaks; retain site-specific composition.",
+      "generated": "/workspace/generated_images/exec-391256eb-27f4-4c81-86c9-d023bafbf985.png",
+      "oldSourceSha256": "bd9be6ba55128baf1b801d249b76ad7f8fba94cd86a181e9f7adce76b21f8662",
+      "ref": "environment-v1-p1-northeast-junction-noon",
+      "canonical": "assets/campaign-art/environment-v1/p1-northeast-junction-noon.png",
+      "newSourceSha256": "83a91f7d1aba334845d07f11ae2bf891a5af422a541aa22cda758ea702942c1a",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "mountwashington-storm",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-23629397-9acd-4b5e-94e8-2d9a03ae0c25.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair this original badge-free 2994 pixel-art game panorama. Preserve its physical site and authored exposure: Mount Washington Presidential Range storm: low treeless alpine tundra, gray granite talus and folded rounded mountain ridges under heavy gray cloud. No forested lowland or buildings. Both ends must meet at the same distant low gray ridge height with identical dark storm-cloud value. It must be a horizontally seamless 3:1 panorama. First and last columns must match along the full height; all unique landmarks in central 70%, matching quiet distant scenery at both outer 15%. Horizon around 56% height. Uppermost 12% has progressively reduced detail to a fully uniform top row of sky color; no cloud/stars at boundary. Bottommost 12% gradually reduces detail to a fully uniform bottom row of natural ground color, with no abrupt flat rectangular strip or streaks. No border/text/logo/contact sheet. Make boundary continuity visually natural, not mirroring the entire picture.",
+      "generated": "/workspace/generated_images/exec-23629397-9acd-4b5e-94e8-2d9a03ae0c25.png",
+      "oldSourceSha256": "0536c7976b5e40b5fc983830d8eac54c7646764df9726a1db720266323af69e4",
+      "ref": "environment-v1-mountwashington-storm",
+      "canonical": "assets/campaign-art/environment-v1/mountwashington-storm.png",
+      "newSourceSha256": "08482e9d0db4ef3b4c8b721aeba076eee88222026bc6615c7c06675ee248d01e",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "littletujunga-noon",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-f86734c3-20c1-469d-8af7-1dbb03f5d11c.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair this original badge-free 2994 pixel-art game panorama. Preserve its physical site and authored exposure: Little Tujunga Canyon in the San Gabriels: angular close ocher chaparral ridges, yucca and scrub, layered lower distant blue ridges, clear vivid noon blue sky. Keep distinctive ridge/valley in center; both outer ends meet at identical low distant blue ridge and ocher scrub slope, not mismatched foreground peaks. It must be a horizontally seamless 3:1 panorama. First and last columns must match along the full height; all unique landmarks in central 70%, matching quiet distant scenery at both outer 15%. Horizon around 56% height. Uppermost 12% has progressively reduced detail to a fully uniform top row of sky color; no cloud/stars at boundary. Bottommost 12% gradually reduces detail to a fully uniform bottom row of natural ground color, with no abrupt flat rectangular strip or streaks. No border/text/logo/contact sheet. Make boundary continuity visually natural, not mirroring the entire picture.",
+      "generated": "/workspace/generated_images/exec-f86734c3-20c1-469d-8af7-1dbb03f5d11c.png"
+    },
+    {
+      "key": "anchorage-night",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-16d539ac-693c-4ced-8fab-8d64fc7f1056.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair this original badge-free 2994 pixel-art game panorama. Preserve its physical site and authored exposure: Anchorage clear winter night: long snowy Chugach mountain silhouette, small restrained city lights and boreal trees, snow foreground, deep navy sky with restrained faint stars, never daylight. Move foreground trees away from outer edges; both ends meet with same low distant mountain height and navy values. No bright moon is necessary. It must be a horizontally seamless 3:1 panorama. First and last columns must match along the full height; all unique landmarks in central 70%, matching quiet distant scenery at both outer 15%. Horizon around 56% height. Uppermost 12% has progressively reduced detail to a fully uniform top row of sky color; no cloud/stars at boundary. Bottommost 12% gradually reduces detail to a fully uniform bottom row of natural ground color, with no abrupt flat rectangular strip or streaks. No border/text/logo/contact sheet. Make boundary continuity visually natural, not mirroring the entire picture.",
+      "generated": "/workspace/generated_images/exec-16d539ac-693c-4ced-8fab-8d64fc7f1056.png",
+      "oldSourceSha256": "fe75d86a0ceb88c97694431cbd24411f02a017bce0c752bf6240c6685ff39d8a",
+      "ref": "environment-v1-anchorage-night",
+      "canonical": "assets/campaign-art/environment-v1/anchorage-night.png",
+      "newSourceSha256": "325afc707bac330d2a2f11bd8f298eb87c0e277b208243b968606b15fed9b352",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "miami-morning",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-de414021-2ff8-4644-b691-ee890487790c.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair supplied original logo-free 2994 pixel-art panorama: Miami Biscayne waterfront morning: distant Art Deco/modern skyline and low port cranes, blue bay, restrained warm early sunlight, palms and weathered coastal remnants. Keep skyline and close palms in central 70%. Both ends must meet at identical low bay horizon and distant shoreline; no trunks cut by edge. True horizontally repeating 3:1 skybox: matching silhouette height and color of first/last columns, matching quiet outer 15 percent ends, unique landmarks central. Horizon around 56 percent image height. Uppermost 12 percent fades naturally in detail to one uniform top-row sky color, no clouds hitting top. Bottommost 12 percent fades naturally in detail to one uniform bottom-row ground color, no sharp flat strip transition. Avoid vertical extrusion/streaks. Preserve authored time/weather palette; no labels, borders or sheets. Full repaired panorama, not a diagram.",
+      "generated": "/workspace/generated_images/exec-de414021-2ff8-4644-b691-ee890487790c.png",
+      "oldSourceSha256": "f62b3a18695ef2127a067da2efe8af387150016f2b6b4a7cdb182f08d1c00f3c",
+      "ref": "environment-v1-miami-morning",
+      "canonical": "assets/campaign-art/environment-v1/miami-morning.png",
+      "newSourceSha256": "fa80d2016910b2a09c2d72443937377f12e56d4a95232df11a1c506c5c15874f",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "richmond-evening",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-78dd2bb1-1ae0-476f-9b96-2c232b791445.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair supplied original logo-free 2994 pixel-art panorama: Richmond Virginia James River fall-line evening: central brick tobacco warehouses, small clock tower, low bridges and rocky river shoals, muted peach-purple evening. Keep masonry centralized; both ends meet with identical low wooded riverbank height, same water/rock layer colors. Do not turn this into a generic skyscraper city. True horizontally repeating 3:1 skybox: matching silhouette height and color of first/last columns, matching quiet outer 15 percent ends, unique landmarks central. Horizon around 56 percent image height. Uppermost 12 percent fades naturally in detail to one uniform top-row sky color, no clouds hitting top. Bottommost 12 percent fades naturally in detail to one uniform bottom-row ground color, no sharp flat strip transition. Avoid vertical extrusion/streaks. Preserve authored time/weather palette; no labels, borders or sheets. Full repaired panorama, not a diagram.",
+      "generated": "/workspace/generated_images/exec-78dd2bb1-1ae0-476f-9b96-2c232b791445.png",
+      "oldSourceSha256": "41b4caf6dd8f55482e846424e51b65276f46079f85b5b26a9d2a475988b766f8",
+      "ref": "environment-v1-richmond-evening",
+      "canonical": "assets/campaign-art/environment-v1/richmond-evening.png",
+      "newSourceSha256": "bcdf296295e44a2706a1d65c332cfb3e00c7f0b5c38aa88581d96475eb206ab5",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "tantalus-rain-morning",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-15cddc79-d149-4177-b4c8-1b57ae1696d5.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair supplied original logo-free 2994 pixel-art panorama: Tantalus above Honolulu in rainy morning: lush deeply folded Koolau green ridges, distant Honolulu and Diamond Head glimpsed beyond damp valley, low heavy gray rain clouds. Keep enclosing near foliage and detailed ridges central; outer ends meet with identical distant low ridge and dark green wet canopy at the same height, no cut-off close trees. True horizontally repeating 3:1 skybox: matching silhouette height and color of first/last columns, matching quiet outer 15 percent ends, unique landmarks central. Horizon around 56 percent image height. Uppermost 12 percent fades naturally in detail to one uniform top-row sky color, no clouds hitting top. Bottommost 12 percent fades naturally in detail to one uniform bottom-row ground color, no sharp flat strip transition. Avoid vertical extrusion/streaks. Preserve authored time/weather palette; no labels, borders or sheets. Full repaired panorama, not a diagram.",
+      "generated": "/workspace/generated_images/exec-15cddc79-d149-4177-b4c8-1b57ae1696d5.png",
+      "oldSourceSha256": "e65948349ee73f7b815f1c30f9381f2ae92ab47e75b7c4d7407044d599801752",
+      "ref": "environment-v1-tantalus-rain-morning",
+      "canonical": "assets/campaign-art/environment-v1/tantalus-rain-morning.png",
+      "newSourceSha256": "9395d13deca44edcf1c138aa5e7a04ea0bf62bb0765381159c218aa5baaf7864",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "charlestonsc-evening",
+      "generated": "/workspace/generated_images/exec-e05fe03a-2af0-41e7-ae48-f9b53401d915.png",
+      "prompt": "Repair Charleston evening panorama: matching low marsh/water horizon at left/right edges; central historic skyline/spires/bridge; quiet uniform top/bottom rows; preserve original pixel style and evening palette.",
+      "oldSourceSha256": "785b800b22b3a52c8bc65ca02141b7b21447a7072e06a23a83d80205237b9478",
+      "ref": "environment-v1-charlestonsc-evening",
+      "canonical": "assets/campaign-art/environment-v1/charlestonsc-evening.png",
+      "newSourceSha256": "4fd93a49f51efba2c0bb6ac050325f7e69f1fbe166232528180d4df286cf64a8",
+      "nativeMaxEdge": 512
+    }
+  ],
+  "additionalRepairs": [
+    {
+      "key": "laurel-ohiopyle-evening",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-029eadb6-29cd-49b9-8f41-9d40927e1cb9.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair boundary extrusion of this original badge-free 2994 pixel-art 3:1 panorama. Laurel Highlands PA381 near Ohiopyle: rounded wooded ridges, enclosed gorge and hemlock/late autumn hardwood forest. Keep natural tree canopy but transition smoothly into dark forest shadow at bottom, avoiding detailed treetops cut by last row. Preserve existing afternoon/evening-compatible palette without darkening it further. True horizontal wrap: identical left/right heights and colors, close details limited to central70%, matching quiet ends. Horizon about56%. Critical: uppermost12% transitions gradually to a uniform top row, bottommost15% transitions gradually in texture density and color to uniform bottom row. NO abrupt rectangle, cut-off trees, vertical stripes or streaks at top/bottom; source should naturally continue when the final row is extended. Keep distinct physical site, authored time/weather palette. No labels/borders.",
+      "generated": "/workspace/generated_images/exec-029eadb6-29cd-49b9-8f41-9d40927e1cb9.png",
+      "oldSourceSha256": "98c8ec6021bc9e574d95f5ce7481ce9af6f2178ab00a1a1937729d7d14041660",
+      "ref": "environment-v1-laurel-ohiopyle-evening",
+      "canonical": "assets/campaign-art/environment-v1/laurel-ohiopyle-evening.png",
+      "newSourceSha256": "6cdc0520fea8f3cefa0770ea5d6d7f9c8a108bf38834563921429ef0fb2a736e",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "ohio-little-muskingum-storm",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-2e2c5fda-e50b-482d-b2ed-7b9b5bfcc6f2.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair boundary extrusion of this original badge-free 2994 pixel-art 3:1 panorama. Ohio SR26 Little Muskingum narrow enclosed wooded valley under storm clouds, leafless late-season trees and small winding creek. No broad Ohio River bridge. Keep gray rain clouds central; leave a smooth dark storm-sky field at the top and dark wet forest floor at bottom. True horizontal wrap: identical left/right heights and colors, close details limited to central70%, matching quiet ends. Horizon about56%. Critical: uppermost12% transitions gradually to a uniform top row, bottommost15% transitions gradually in texture density and color to uniform bottom row. NO abrupt rectangle, cut-off trees, vertical stripes or streaks at top/bottom; source should naturally continue when the final row is extended. Keep distinct physical site, authored time/weather palette. No labels/borders.",
+      "generated": "/workspace/generated_images/exec-2e2c5fda-e50b-482d-b2ed-7b9b5bfcc6f2.png",
+      "oldSourceSha256": "aee8e31850d5e3c12400e2ee387d619ffdc301f4e5fcf370a7684e0c97a21674",
+      "ref": "environment-v1-ohio-little-muskingum-storm",
+      "canonical": "assets/campaign-art/environment-v1/ohio-little-muskingum-storm.png",
+      "newSourceSha256": "ddbb4b5cbf6d0f61a4755c64993f465741387c52422aa9c09b92523db4f2f50e",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "pikes-evening",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-79971946-9553-44de-9373-21ce1eb9fe9d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair boundary extrusion of this original badge-free 2994 pixel-art 3:1 panorama. Upper Pikes Peak: treeless pink-gray granite and talus, low distant mountain ridges, restrained peach-lavender evening sky. Keep geological texture around central horizon, softly reduce it toward bottom into natural shadowed granite tone; remove conspicuous flat rectangular bottom strip while keeping seam-safe edge color. True horizontal wrap: identical left/right heights and colors, close details limited to central70%, matching quiet ends. Horizon about56%. Critical: uppermost12% transitions gradually to a uniform top row, bottommost15% transitions gradually in texture density and color to uniform bottom row. NO abrupt rectangle, cut-off trees, vertical stripes or streaks at top/bottom; source should naturally continue when the final row is extended. Keep distinct physical site, authored time/weather palette. No labels/borders.",
+      "generated": "/workspace/generated_images/exec-79971946-9553-44de-9373-21ce1eb9fe9d.png",
+      "oldSourceSha256": "a3a742f6abb1d042d776f784b724cded4f04deb39f948b4abc23d8d575280629",
+      "ref": "environment-v1-pikes-evening",
+      "canonical": "assets/campaign-art/environment-v1/pikes-evening.png",
+      "newSourceSha256": "6f1e2e33c70317056aee4dd3cf83a5e5e0dabf2bb054683f16349ba4b6a763f3",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "angeles-evening",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-57a28cc1-32ae-4b0a-801d-7be7fcd591fe.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair original 2994 badge-free pixel-art panorama boundaries while keeping place-specific composition: Upper Angeles Crest San Gabriel angular gray granite ridge, chaparral and sparse pines, muted clear evening sky. Remove abrupt dark purple bottom strip; use a naturally shadowed chaparral apron that gradually reduces to one dark natural earth color at bottom. Horizontally repeating3:1 panorama with matching quiet outer15% ends and central70% distinctive landforms. All top-edge pixels same sky color, all bottom-edge pixels same natural ground/shadow color, reached by smooth reduction in detail across outermost12% height, never a harsh flat rectangle. No cut-off objects or vertical streaks. Horizon around56% height. Keep authored palette and atmosphere, no labels/borders.",
+      "generated": "/workspace/generated_images/exec-57a28cc1-32ae-4b0a-801d-7be7fcd591fe.png",
+      "oldSourceSha256": "db2811d70e3fdb6358811936f15026f62666309ff360b6bc9bd9161da7cf94cc",
+      "ref": "environment-v1-angeles-evening",
+      "canonical": "assets/campaign-art/environment-v1/angeles-evening.png",
+      "newSourceSha256": "03703d72b26ed467523c869d9c0439591fbbb556e5a76fb1fd59859e5b133c94",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "moki-cedar-mesa-day",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-7034ed90-9c87-40f5-8028-510c1874135c.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair original 2994 badge-free pixel-art panorama boundaries while keeping place-specific composition: Moki Dugway Cedar Mesa viewpoint over distant Valley of the Gods: red/cream sandstone mesas and buttes low on far horizon, expansive blue clear sky. Remove abrupt salmon bottom strip using naturally graded distant desert plain. Do not create close giant arches or towers. Horizontally repeating3:1 panorama with matching quiet outer15% ends and central70% distinctive landforms. All top-edge pixels same sky color, all bottom-edge pixels same natural ground/shadow color, reached by smooth reduction in detail across outermost12% height, never a harsh flat rectangle. No cut-off objects or vertical streaks. Horizon around56% height. Keep authored palette and atmosphere, no labels/borders.",
+      "generated": "/workspace/generated_images/exec-7034ed90-9c87-40f5-8028-510c1874135c.png"
+    },
+    {
+      "key": "ozark-eminence-day",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-39019e9c-7860-438d-8ba2-ef05442fd0bd.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair original 2994 badge-free pixel-art panorama boundaries while keeping place-specific composition: Missouri Ozark MO19 near Eminence: low rounded deciduous wooded hills, pale limestone bluffs and small Current River bend, late-season woodland under clear day. Not Arkansas mountains. Reduce lower forest detail into natural shadow gradually rather than a flat abruptly painted strip. Horizontally repeating3:1 panorama with matching quiet outer15% ends and central70% distinctive landforms. All top-edge pixels same sky color, all bottom-edge pixels same natural ground/shadow color, reached by smooth reduction in detail across outermost12% height, never a harsh flat rectangle. No cut-off objects or vertical streaks. Horizon around56% height. Keep authored palette and atmosphere, no labels/borders.",
+      "generated": "/workspace/generated_images/exec-39019e9c-7860-438d-8ba2-ef05442fd0bd.png",
+      "oldSourceSha256": "17ef04acd247335ad5120c291e0a2fb41443b0eebb537752c4a3532a763fa6de",
+      "ref": "environment-v1-ozark-eminence-day",
+      "canonical": "assets/campaign-art/environment-v1/ozark-eminence-day.png",
+      "newSourceSha256": "6384f3930508200928b46a66c8e8d610ea42f34b230896a86f7557f7d63a581d",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "littletujunga-noon",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-00fcbee9-1531-42a3-8a8c-09f66036df59.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Recompose this Little Tujunga Canyon panorama to FIX its remaining horizontal wrap failure, not merely repaint it. Original badge-free 2994 pixel art, noon San Gabriel chaparral, ocher canyon slopes and yucca. Make the ENTIRE LEFTMOST 20 percent and RIGHTMOST 20 percent consist of the same low distant blue ridge at exactly the same horizontal height and a uniform ocher scrub plane below it. No near ridge or valley intersects either edge. Put the characteristic close chaparral ridge and valley only in the central 60 percent, with smoothly descending sides toward those matching distant ends. At x=0 and x=width-1 every pixel's color should match its opposite edge. Topmost 15 percent must be a truly flat uniform azure color with no horizontal brightness gradient; bottommost 12 percent smoothly blends into uniform brown soil color. No abrupt rectangular color bands, no streaks. Full opaque 3:1 panorama with main horizon at56% height, retain geographical character and pixel clusters. No text or border.",
+      "generated": "/workspace/generated_images/exec-00fcbee9-1531-42a3-8a8c-09f66036df59.png",
+      "oldSourceSha256": "a4b005d704d36be567779ff7545347071bad2a205043103df372ede1819285c6",
+      "ref": "environment-v1-littletujunga-noon",
+      "canonical": "assets/campaign-art/environment-v1/littletujunga-noon.png",
+      "newSourceSha256": "d9c45bcd971ea850c0be65dfb7ad9272f85b15c005f5d3f7dda6325a6ae4e37b",
+      "nativeMaxEdge": 512
+    }
+  ],
+  "appliedRepairs": [
+    {
+      "key": "studio-annex-noon",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-8fb1c4e7-0589-4ebc-8c87-24304e69b194.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair the supplied original 2994 badge-free pixel-art game panorama. Preserve fictional industrial annex, its squat concrete workshops, cylindrical tank, small lattice mast, distant blue lake and wooded low ridges; noon blue sky and green field. Move the close left tree and factory away from outer edges into central area. Both ends must meet at identical gently wooded low ridge height and meadow, with no trees or buildings crossing either vertical edge. This is a horizontally repeating 3:1 skybox: first and last columns must match in silhouette heights and colors along their FULL height. Keep all detailed landmarks in central 70%; outer 15% on each side is matching distant scenery. The uppermost 12% is uniform sky color without clouds touching the top, and the bottommost 12% is gradually reduced-detail single-color ground, with a subtle natural transition, NO abrupt rectangular strip. Top row must be identical color across the entire width; bottom row must be identical color across entire width. Horizon at 56% image height. No borders, text, logos, sheets or vertical streaks; retain site-specific composition.",
+      "generated": "/workspace/generated_images/exec-8fb1c4e7-0589-4ebc-8c87-24304e69b194.png",
+      "oldSourceSha256": "2f0b59a10ce2c517406503fd7f4400253e3205bff1579b2ee81a67f99fd98ef8",
+      "ref": "environment-v1-studio-annex-noon",
+      "canonical": "assets/campaign-art/environment-v1/studio-annex-noon.png",
+      "newSourceSha256": "44aba098ae17e0b3792e83786e00047a8db0e9b604f94a83c3e8f88b614f6f43",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "studio-testfield-noon",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-8870f87b-fca8-4734-928b-70d3747f73b0.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair the supplied original 2994 badge-free pixel-art game panorama. Preserve fictional abandoned red-brick vehicle test field, central elevated water tower, distant rounded green hills and clear noon sky. Keep distinct from a lakeside annex. Outer ends must both be the SAME low grassy field and distant wooded ridge height; move close trees away from edges. This is a horizontally repeating 3:1 skybox: first and last columns must match in silhouette heights and colors along their FULL height. Keep all detailed landmarks in central 70%; outer 15% on each side is matching distant scenery. The uppermost 12% is uniform sky color without clouds touching the top, and the bottommost 12% is gradually reduced-detail single-color ground, with a subtle natural transition, NO abrupt rectangular strip. Top row must be identical color across the entire width; bottom row must be identical color across entire width. Horizon at 56% image height. No borders, text, logos, sheets or vertical streaks; retain site-specific composition.",
+      "generated": "/workspace/generated_images/exec-8870f87b-fca8-4734-928b-70d3747f73b0.png",
+      "oldSourceSha256": "526f645fb3d9826e679e77dcd759189a724ddba0de50d616fff22fabf056337a",
+      "ref": "environment-v1-studio-testfield-noon",
+      "canonical": "assets/campaign-art/environment-v1/studio-testfield-noon.png",
+      "newSourceSha256": "ca40b35260ff5327726854c6c7db138e6f333931b4ebd7961e1e1020859e586b",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "p1-northeast-junction-noon",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-391256eb-27f4-4c81-86c9-d023bafbf985.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair the supplied original 2994 badge-free pixel-art game panorama. Preserve northeastern brick mill junction, smokestack, trestle bridge crossing a narrow river, rounded woodland hills and clear noon. Concentrate buildings and bridge in center; both ends must meet as identical low distant wooded hill with grass at bottom. No close buildings intersecting edges. This is a horizontally repeating 3:1 skybox: first and last columns must match in silhouette heights and colors along their FULL height. Keep all detailed landmarks in central 70%; outer 15% on each side is matching distant scenery. The uppermost 12% is uniform sky color without clouds touching the top, and the bottommost 12% is gradually reduced-detail single-color ground, with a subtle natural transition, NO abrupt rectangular strip. Top row must be identical color across the entire width; bottom row must be identical color across entire width. Horizon at 56% image height. No borders, text, logos, sheets or vertical streaks; retain site-specific composition.",
+      "generated": "/workspace/generated_images/exec-391256eb-27f4-4c81-86c9-d023bafbf985.png",
+      "oldSourceSha256": "bd9be6ba55128baf1b801d249b76ad7f8fba94cd86a181e9f7adce76b21f8662",
+      "ref": "environment-v1-p1-northeast-junction-noon",
+      "canonical": "assets/campaign-art/environment-v1/p1-northeast-junction-noon.png",
+      "newSourceSha256": "83a91f7d1aba334845d07f11ae2bf891a5af422a541aa22cda758ea702942c1a",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "mountwashington-storm",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-23629397-9acd-4b5e-94e8-2d9a03ae0c25.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair this original badge-free 2994 pixel-art game panorama. Preserve its physical site and authored exposure: Mount Washington Presidential Range storm: low treeless alpine tundra, gray granite talus and folded rounded mountain ridges under heavy gray cloud. No forested lowland or buildings. Both ends must meet at the same distant low gray ridge height with identical dark storm-cloud value. It must be a horizontally seamless 3:1 panorama. First and last columns must match along the full height; all unique landmarks in central 70%, matching quiet distant scenery at both outer 15%. Horizon around 56% height. Uppermost 12% has progressively reduced detail to a fully uniform top row of sky color; no cloud/stars at boundary. Bottommost 12% gradually reduces detail to a fully uniform bottom row of natural ground color, with no abrupt flat rectangular strip or streaks. No border/text/logo/contact sheet. Make boundary continuity visually natural, not mirroring the entire picture.",
+      "generated": "/workspace/generated_images/exec-23629397-9acd-4b5e-94e8-2d9a03ae0c25.png",
+      "oldSourceSha256": "0536c7976b5e40b5fc983830d8eac54c7646764df9726a1db720266323af69e4",
+      "ref": "environment-v1-mountwashington-storm",
+      "canonical": "assets/campaign-art/environment-v1/mountwashington-storm.png",
+      "newSourceSha256": "08482e9d0db4ef3b4c8b721aeba076eee88222026bc6615c7c06675ee248d01e",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "littletujunga-noon",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-00fcbee9-1531-42a3-8a8c-09f66036df59.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Recompose this Little Tujunga Canyon panorama to FIX its remaining horizontal wrap failure, not merely repaint it. Original badge-free 2994 pixel art, noon San Gabriel chaparral, ocher canyon slopes and yucca. Make the ENTIRE LEFTMOST 20 percent and RIGHTMOST 20 percent consist of the same low distant blue ridge at exactly the same horizontal height and a uniform ocher scrub plane below it. No near ridge or valley intersects either edge. Put the characteristic close chaparral ridge and valley only in the central 60 percent, with smoothly descending sides toward those matching distant ends. At x=0 and x=width-1 every pixel's color should match its opposite edge. Topmost 15 percent must be a truly flat uniform azure color with no horizontal brightness gradient; bottommost 12 percent smoothly blends into uniform brown soil color. No abrupt rectangular color bands, no streaks. Full opaque 3:1 panorama with main horizon at56% height, retain geographical character and pixel clusters. No text or border.",
+      "generated": "/workspace/generated_images/exec-00fcbee9-1531-42a3-8a8c-09f66036df59.png",
+      "oldSourceSha256": "a4b005d704d36be567779ff7545347071bad2a205043103df372ede1819285c6",
+      "ref": "environment-v1-littletujunga-noon",
+      "canonical": "assets/campaign-art/environment-v1/littletujunga-noon.png",
+      "newSourceSha256": "d9c45bcd971ea850c0be65dfb7ad9272f85b15c005f5d3f7dda6325a6ae4e37b",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "anchorage-night",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-16d539ac-693c-4ced-8fab-8d64fc7f1056.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair this original badge-free 2994 pixel-art game panorama. Preserve its physical site and authored exposure: Anchorage clear winter night: long snowy Chugach mountain silhouette, small restrained city lights and boreal trees, snow foreground, deep navy sky with restrained faint stars, never daylight. Move foreground trees away from outer edges; both ends meet with same low distant mountain height and navy values. No bright moon is necessary. It must be a horizontally seamless 3:1 panorama. First and last columns must match along the full height; all unique landmarks in central 70%, matching quiet distant scenery at both outer 15%. Horizon around 56% height. Uppermost 12% has progressively reduced detail to a fully uniform top row of sky color; no cloud/stars at boundary. Bottommost 12% gradually reduces detail to a fully uniform bottom row of natural ground color, with no abrupt flat rectangular strip or streaks. No border/text/logo/contact sheet. Make boundary continuity visually natural, not mirroring the entire picture.",
+      "generated": "/workspace/generated_images/exec-16d539ac-693c-4ced-8fab-8d64fc7f1056.png",
+      "oldSourceSha256": "fe75d86a0ceb88c97694431cbd24411f02a017bce0c752bf6240c6685ff39d8a",
+      "ref": "environment-v1-anchorage-night",
+      "canonical": "assets/campaign-art/environment-v1/anchorage-night.png",
+      "newSourceSha256": "325afc707bac330d2a2f11bd8f298eb87c0e277b208243b968606b15fed9b352",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "miami-morning",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-de414021-2ff8-4644-b691-ee890487790c.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair supplied original logo-free 2994 pixel-art panorama: Miami Biscayne waterfront morning: distant Art Deco/modern skyline and low port cranes, blue bay, restrained warm early sunlight, palms and weathered coastal remnants. Keep skyline and close palms in central 70%. Both ends must meet at identical low bay horizon and distant shoreline; no trunks cut by edge. True horizontally repeating 3:1 skybox: matching silhouette height and color of first/last columns, matching quiet outer 15 percent ends, unique landmarks central. Horizon around 56 percent image height. Uppermost 12 percent fades naturally in detail to one uniform top-row sky color, no clouds hitting top. Bottommost 12 percent fades naturally in detail to one uniform bottom-row ground color, no sharp flat strip transition. Avoid vertical extrusion/streaks. Preserve authored time/weather palette; no labels, borders or sheets. Full repaired panorama, not a diagram.",
+      "generated": "/workspace/generated_images/exec-de414021-2ff8-4644-b691-ee890487790c.png",
+      "oldSourceSha256": "f62b3a18695ef2127a067da2efe8af387150016f2b6b4a7cdb182f08d1c00f3c",
+      "ref": "environment-v1-miami-morning",
+      "canonical": "assets/campaign-art/environment-v1/miami-morning.png",
+      "newSourceSha256": "fa80d2016910b2a09c2d72443937377f12e56d4a95232df11a1c506c5c15874f",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "richmond-evening",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-78dd2bb1-1ae0-476f-9b96-2c232b791445.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair supplied original logo-free 2994 pixel-art panorama: Richmond Virginia James River fall-line evening: central brick tobacco warehouses, small clock tower, low bridges and rocky river shoals, muted peach-purple evening. Keep masonry centralized; both ends meet with identical low wooded riverbank height, same water/rock layer colors. Do not turn this into a generic skyscraper city. True horizontally repeating 3:1 skybox: matching silhouette height and color of first/last columns, matching quiet outer 15 percent ends, unique landmarks central. Horizon around 56 percent image height. Uppermost 12 percent fades naturally in detail to one uniform top-row sky color, no clouds hitting top. Bottommost 12 percent fades naturally in detail to one uniform bottom-row ground color, no sharp flat strip transition. Avoid vertical extrusion/streaks. Preserve authored time/weather palette; no labels, borders or sheets. Full repaired panorama, not a diagram.",
+      "generated": "/workspace/generated_images/exec-78dd2bb1-1ae0-476f-9b96-2c232b791445.png",
+      "oldSourceSha256": "41b4caf6dd8f55482e846424e51b65276f46079f85b5b26a9d2a475988b766f8",
+      "ref": "environment-v1-richmond-evening",
+      "canonical": "assets/campaign-art/environment-v1/richmond-evening.png",
+      "newSourceSha256": "bcdf296295e44a2706a1d65c332cfb3e00c7f0b5c38aa88581d96475eb206ab5",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "tantalus-rain-morning",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-15cddc79-d149-4177-b4c8-1b57ae1696d5.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair supplied original logo-free 2994 pixel-art panorama: Tantalus above Honolulu in rainy morning: lush deeply folded Koolau green ridges, distant Honolulu and Diamond Head glimpsed beyond damp valley, low heavy gray rain clouds. Keep enclosing near foliage and detailed ridges central; outer ends meet with identical distant low ridge and dark green wet canopy at the same height, no cut-off close trees. True horizontally repeating 3:1 skybox: matching silhouette height and color of first/last columns, matching quiet outer 15 percent ends, unique landmarks central. Horizon around 56 percent image height. Uppermost 12 percent fades naturally in detail to one uniform top-row sky color, no clouds hitting top. Bottommost 12 percent fades naturally in detail to one uniform bottom-row ground color, no sharp flat strip transition. Avoid vertical extrusion/streaks. Preserve authored time/weather palette; no labels, borders or sheets. Full repaired panorama, not a diagram.",
+      "generated": "/workspace/generated_images/exec-15cddc79-d149-4177-b4c8-1b57ae1696d5.png",
+      "oldSourceSha256": "e65948349ee73f7b815f1c30f9381f2ae92ab47e75b7c4d7407044d599801752",
+      "ref": "environment-v1-tantalus-rain-morning",
+      "canonical": "assets/campaign-art/environment-v1/tantalus-rain-morning.png",
+      "newSourceSha256": "9395d13deca44edcf1c138aa5e7a04ea0bf62bb0765381159c218aa5baaf7864",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "charlestonsc-evening",
+      "generated": "/workspace/generated_images/exec-e05fe03a-2af0-41e7-ae48-f9b53401d915.png",
+      "prompt": "Repair Charleston evening panorama: matching low marsh/water horizon at left/right edges; central historic skyline/spires/bridge; quiet uniform top/bottom rows; preserve original pixel style and evening palette.",
+      "oldSourceSha256": "785b800b22b3a52c8bc65ca02141b7b21447a7072e06a23a83d80205237b9478",
+      "ref": "environment-v1-charlestonsc-evening",
+      "canonical": "assets/campaign-art/environment-v1/charlestonsc-evening.png",
+      "newSourceSha256": "4fd93a49f51efba2c0bb6ac050325f7e69f1fbe166232528180d4df286cf64a8",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "laurel-ohiopyle-evening",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-029eadb6-29cd-49b9-8f41-9d40927e1cb9.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair boundary extrusion of this original badge-free 2994 pixel-art 3:1 panorama. Laurel Highlands PA381 near Ohiopyle: rounded wooded ridges, enclosed gorge and hemlock/late autumn hardwood forest. Keep natural tree canopy but transition smoothly into dark forest shadow at bottom, avoiding detailed treetops cut by last row. Preserve existing afternoon/evening-compatible palette without darkening it further. True horizontal wrap: identical left/right heights and colors, close details limited to central70%, matching quiet ends. Horizon about56%. Critical: uppermost12% transitions gradually to a uniform top row, bottommost15% transitions gradually in texture density and color to uniform bottom row. NO abrupt rectangle, cut-off trees, vertical stripes or streaks at top/bottom; source should naturally continue when the final row is extended. Keep distinct physical site, authored time/weather palette. No labels/borders.",
+      "generated": "/workspace/generated_images/exec-029eadb6-29cd-49b9-8f41-9d40927e1cb9.png",
+      "oldSourceSha256": "98c8ec6021bc9e574d95f5ce7481ce9af6f2178ab00a1a1937729d7d14041660",
+      "ref": "environment-v1-laurel-ohiopyle-evening",
+      "canonical": "assets/campaign-art/environment-v1/laurel-ohiopyle-evening.png",
+      "newSourceSha256": "6cdc0520fea8f3cefa0770ea5d6d7f9c8a108bf38834563921429ef0fb2a736e",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "ohio-little-muskingum-storm",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-2e2c5fda-e50b-482d-b2ed-7b9b5bfcc6f2.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair boundary extrusion of this original badge-free 2994 pixel-art 3:1 panorama. Ohio SR26 Little Muskingum narrow enclosed wooded valley under storm clouds, leafless late-season trees and small winding creek. No broad Ohio River bridge. Keep gray rain clouds central; leave a smooth dark storm-sky field at the top and dark wet forest floor at bottom. True horizontal wrap: identical left/right heights and colors, close details limited to central70%, matching quiet ends. Horizon about56%. Critical: uppermost12% transitions gradually to a uniform top row, bottommost15% transitions gradually in texture density and color to uniform bottom row. NO abrupt rectangle, cut-off trees, vertical stripes or streaks at top/bottom; source should naturally continue when the final row is extended. Keep distinct physical site, authored time/weather palette. No labels/borders.",
+      "generated": "/workspace/generated_images/exec-2e2c5fda-e50b-482d-b2ed-7b9b5bfcc6f2.png",
+      "oldSourceSha256": "aee8e31850d5e3c12400e2ee387d619ffdc301f4e5fcf370a7684e0c97a21674",
+      "ref": "environment-v1-ohio-little-muskingum-storm",
+      "canonical": "assets/campaign-art/environment-v1/ohio-little-muskingum-storm.png",
+      "newSourceSha256": "ddbb4b5cbf6d0f61a4755c64993f465741387c52422aa9c09b92523db4f2f50e",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "pikes-evening",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-79971946-9553-44de-9373-21ce1eb9fe9d.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair boundary extrusion of this original badge-free 2994 pixel-art 3:1 panorama. Upper Pikes Peak: treeless pink-gray granite and talus, low distant mountain ridges, restrained peach-lavender evening sky. Keep geological texture around central horizon, softly reduce it toward bottom into natural shadowed granite tone; remove conspicuous flat rectangular bottom strip while keeping seam-safe edge color. True horizontal wrap: identical left/right heights and colors, close details limited to central70%, matching quiet ends. Horizon about56%. Critical: uppermost12% transitions gradually to a uniform top row, bottommost15% transitions gradually in texture density and color to uniform bottom row. NO abrupt rectangle, cut-off trees, vertical stripes or streaks at top/bottom; source should naturally continue when the final row is extended. Keep distinct physical site, authored time/weather palette. No labels/borders.",
+      "generated": "/workspace/generated_images/exec-79971946-9553-44de-9373-21ce1eb9fe9d.png",
+      "oldSourceSha256": "a3a742f6abb1d042d776f784b724cded4f04deb39f948b4abc23d8d575280629",
+      "ref": "environment-v1-pikes-evening",
+      "canonical": "assets/campaign-art/environment-v1/pikes-evening.png",
+      "newSourceSha256": "6f1e2e33c70317056aee4dd3cf83a5e5e0dabf2bb054683f16349ba4b6a763f3",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "angeles-evening",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-57a28cc1-32ae-4b0a-801d-7be7fcd591fe.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair original 2994 badge-free pixel-art panorama boundaries while keeping place-specific composition: Upper Angeles Crest San Gabriel angular gray granite ridge, chaparral and sparse pines, muted clear evening sky. Remove abrupt dark purple bottom strip; use a naturally shadowed chaparral apron that gradually reduces to one dark natural earth color at bottom. Horizontally repeating3:1 panorama with matching quiet outer15% ends and central70% distinctive landforms. All top-edge pixels same sky color, all bottom-edge pixels same natural ground/shadow color, reached by smooth reduction in detail across outermost12% height, never a harsh flat rectangle. No cut-off objects or vertical streaks. Horizon around56% height. Keep authored palette and atmosphere, no labels/borders.",
+      "generated": "/workspace/generated_images/exec-57a28cc1-32ae-4b0a-801d-7be7fcd591fe.png",
+      "oldSourceSha256": "db2811d70e3fdb6358811936f15026f62666309ff360b6bc9bd9161da7cf94cc",
+      "ref": "environment-v1-angeles-evening",
+      "canonical": "assets/campaign-art/environment-v1/angeles-evening.png",
+      "newSourceSha256": "03703d72b26ed467523c869d9c0439591fbbb556e5a76fb1fd59859e5b133c94",
+      "nativeMaxEdge": 512
+    },
+    {
+      "key": "moki-cedar-mesa-day",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-7034ed90-9c87-40f5-8028-510c1874135c.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair original 2994 badge-free pixel-art panorama boundaries while keeping place-specific composition: Moki Dugway Cedar Mesa viewpoint over distant Valley of the Gods: red/cream sandstone mesas and buttes low on far horizon, expansive blue clear sky. Remove abrupt salmon bottom strip using naturally graded distant desert plain. Do not create close giant arches or towers. Horizontally repeating3:1 panorama with matching quiet outer15% ends and central70% distinctive landforms. All top-edge pixels same sky color, all bottom-edge pixels same natural ground/shadow color, reached by smooth reduction in detail across outermost12% height, never a harsh flat rectangle. No cut-off objects or vertical streaks. Horizon around56% height. Keep authored palette and atmosphere, no labels/borders.",
+      "generated": "/workspace/generated_images/exec-170a958b-1514-4937-a961-1dd5be8dc0d7.png",
+      "finalRepair": "Uniform bottom-row-only correction, preserving previous scene.",
+      "oldSourceSha256": "ab4508b58a0c29c9e3f7a6bba13de9cbcc9566c0ce2cbd45074b9e468ca4a861",
+      "ref": "environment-v1-moki-cedar-mesa-day",
+      "canonical": "assets/campaign-art/environment-v1/moki-cedar-mesa-day.png",
+      "newSourceSha256": "11ac9c413ec3f2c13922da4af2ef9ba850dccb6b5382a1143108af3063d721ab",
+      "nativeMaxEdge": 512,
+      "finalRepairPrompt": "Make a minimal bottom-boundary repair to this exact pixel-art Moki Dugway / Valley of the Gods panorama. Preserve all sky, mesa geography and colors above the bottom 12 percent. In the bottom 12 percent, gradually simplify the distant desert plain into an even muted dusty rose earth color. The final bottom row MUST be one constant color across the full width, approximately #8d7278, with zero isolated bright or dark pixels. The last 3 percent should be this same quiet color, with a soft natural transition rather than a sharp bar. Preserve horizontal first/last column continuity, the daytime sky and 3:1 wide aspect. No words, frame, new foreground objects or other scene changes.",
+      "finalRepairHint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-170a958b-1514-4937-a961-1dd5be8dc0d7.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link."
+    },
+    {
+      "key": "ozark-eminence-day",
+      "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-39019e9c-7860-438d-8ba2-ef05442fd0bd.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "prompt": "Repair original 2994 badge-free pixel-art panorama boundaries while keeping place-specific composition: Missouri Ozark MO19 near Eminence: low rounded deciduous wooded hills, pale limestone bluffs and small Current River bend, late-season woodland under clear day. Not Arkansas mountains. Reduce lower forest detail into natural shadow gradually rather than a flat abruptly painted strip. Horizontally repeating3:1 panorama with matching quiet outer15% ends and central70% distinctive landforms. All top-edge pixels same sky color, all bottom-edge pixels same natural ground/shadow color, reached by smooth reduction in detail across outermost12% height, never a harsh flat rectangle. No cut-off objects or vertical streaks. Horizon around56% height. Keep authored palette and atmosphere, no labels/borders.",
+      "generated": "/workspace/generated_images/exec-39019e9c-7860-438d-8ba2-ef05442fd0bd.png",
+      "oldSourceSha256": "17ef04acd247335ad5120c291e0a2fb41443b0eebb537752c4a3532a763fa6de",
+      "ref": "environment-v1-ozark-eminence-day",
+      "canonical": "assets/campaign-art/environment-v1/ozark-eminence-day.png",
+      "newSourceSha256": "6384f3930508200928b46a66c8e8d610ea42f34b230896a86f7557f7d63a581d",
+      "nativeMaxEdge": 512
+    }
+  ],
+  "nativeExportOptimization": {
+    "ground-temperate-grass-v1": {
+      "before": 512,
+      "after": 256,
+      "reason": "Existing terrain blend atlas downsamples every source to256; original PNG preserved."
+    },
+    "environment-v1-demo-meadow-noon": {
+      "before": 1024,
+      "after": 512,
+      "reason": "Existing runtime sky canvas caps width512; original PNG preserved."
+    },
+    "status": "Attempted on two unchanged sources via explicit selected re-export. Failed driving continuity; exact prior native exports/settings restored, attempted bytes preserved in /tmp/pack17-reexport-attempt-preserved. The16 newly repaired skies remain512."
+  }
+}

@@ -1,0 +1,206 @@
+{
+  "base": "24b3164e4b7765482a9b819e6968f821b452b344",
+  "parentCheckpoint": "6b25f2578a10b0049ef923f6e674f0001d7b89dd",
+  "artCheckpoint": "ba3c828383405d1e4c88dbcf83dea2d4ea09eb97",
+  "artTree": "0edcaa73d11393c5e606c8f030143c63a930f2e6",
+  "scope": "Local visual-only 15-route New England pack, Daytona noon boundary repair, dedicated Sebring ground palette, QA tooling/evidence. No remote mutations, world lighting/weather/time/geometry/physics/scenery/mission/car changes, deletion or cleanup.",
+  "counts": {
+    "reachableRaces": 245,
+    "bound": 56,
+    "newBindings": 15,
+    "mainRouteBound": 8,
+    "mainRouteTotal": 11,
+    "newSkyCompositions": 15,
+    "newGroundTextures": 1,
+    "priorSkyBoundaryRepairs": 1,
+    "newSourceAndEffectiveTerrainReviewed": 15,
+    "newNativeDeviceCasesPassed": 30,
+    "repairNativeDeviceCasesPassed": 4,
+    "newCompositionsManuallyInspected": 15,
+    "actualDrivingSamplesPassed": 6,
+    "actualDrivingSamplesFailed": 1,
+    "distinctSuccessfulDrivingRaces": 4,
+    "fullyAcceptedEnvironments": 0,
+    "newPackRacesWithBothDeviceDrivingPasses": 1,
+    "newPackRacesWithAnyDrivingPass": 2
+  },
+  "qa": {
+    "units": {
+      "passed": 87,
+      "failed": 0,
+      "log": "/tmp/race-pack6-units-final.log",
+      "initialRun": "/tmp/race-pack6-units.log",
+      "initialFindings": "Initial run overlapped Sebring binding and saw an unplaced new texture; also correctly caught stale main-route placement registry. Final stable run passed after explicit tower/mount placement migration, with no assertion changes or exemptions."
+    },
+    "campaignBrowsers": {
+      "passed": 6,
+      "log": "/tmp/race-pack6-campaign-browser.log"
+    },
+    "manifest": {
+      "documents": 1630,
+      "assets": 16,
+      "log": "/tmp/race-pack6-manifest.log"
+    },
+    "nonvisual": {
+      "racesChecked": 245,
+      "log": "/tmp/race-pack6-bind-final-check.log"
+    },
+    "native": {
+      "report": "/tmp/race-pack6-native-audit.json",
+      "log": "/tmp/race-pack6-renderer.log",
+      "repairLog": "/tmp/race-pack6-repairs-native.log",
+      "contactSheets": "/tmp/race-pack6-sheets",
+      "manual": "Viewed all desktop/handheld exposure and two pitch/wrap contact sheets, plus source art. Native rendering success is not seam or gameplay acceptance."
+    },
+    "effectiveRoads": "/tmp/race-pack6-effective-road-audit.json",
+    "driving": {
+      "report": "/tmp/race-pack6-driving-audit.json",
+      "log": "/tmp/race-pack6-driving.log",
+      "directory": "/tmp/race-environment-pack6-driving"
+    },
+    "visibleWarning": "UNUSED CONFIGURED ART: road-snow-patchy — Pikes Peak Highway snow mapping has no active segment; retained configuration debt."
+  },
+  "visualIssues": {
+    "numericWrapWarnings": [
+      "RI 116 — North Smithfield Scituate",
+      "RI 102 — Victory Highway",
+      "RI 44 — Putnam Pike Glocester",
+      "Bear Notch Road — Bartlett",
+      "Hurricane Mountain Road — Conway",
+      "Pinkham Notch — NH 16"
+    ],
+    "manualPriority": [
+      "Hurricane Mountain and Loudon have conspicuous desktop wrap landform/tree-height jumps.",
+      "Other new skies retain visible safe-band transitions or small wrap/color joins; numeric non-warning is not visual approval.",
+      "Mount Washington authored native visibility opacity 1 hides the sky completely. Pinkham opacity .7263 washes it out. No exposure/weather change made.",
+      "Tower Hill authored .05 exposure makes the sky nearly black. Actual night headlights/snow were viewed together; separate sky100 diagnostic shows cloudy snowy woods, no moon or daylight panorama.",
+      "Tower Hill desktop reached real driving and moved, then final-speed assertion received -0.070110999 after straight test input left the opening bend. Do not count as a passed drive or infer a baseline cause."
+    ],
+    "remainingMainBindings": [
+      "Pikes Peak Highway",
+      "Oak Creek Canyon",
+      "Angeles Crest Highway"
+    ],
+    "nightComparisonMethod": "Tower Hill handheld authored and sky100 frames are consecutive moving frames with unchanged world lighting/weather, not a frozen pixel-matched pose. Native sky-only diagnostic pairs use exact matched yaw/viewport."
+  },
+  "daytona": {
+    "baselineCommit": "24b3164e4b7765482a9b819e6968f821b452b344",
+    "baselineRun": "/tmp/race-pack6-daytona-baseline",
+    "baselineLog": "/tmp/race-pack6-daytona-baseline.log",
+    "baselineOutcome": "One desktop comparison passed, real movement, no missing art/network/page errors. Prior pack5 candidate failure is not established as baseline; no baseline retry.",
+    "boundaryMetrics": {
+      "prior": {
+        "topRowChannelRanges": [
+          6,
+          6,
+          8
+        ],
+        "bottomRowChannelRanges": [
+          80,
+          89,
+          141
+        ]
+      },
+      "repair": {
+        "topRowChannelRanges": [
+          6,
+          4,
+          9
+        ],
+        "bottomRowChannelRanges": [
+          4,
+          6,
+          7
+        ]
+      }
+    },
+    "boundaryReview": "Former strong bottom grass/water clamp streaks reduced; low-contrast band variation remains under extreme pitch. Not claimed seamless.",
+    "currentDrive": [
+      {
+        "file": "/tmp/race-environment-pack6-driving/race-environments-driving--065ed-authored-foreground-and-sky/driving-state.json",
+        "race": "Daytona Tri-Oval",
+        "device": "desktop",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "displacementM": 41.15478662596184,
+        "elapsedMs": 7366.43333333334,
+        "speedMps": 21.105052947998047,
+        "sky": "skybox-daytona",
+        "brightness": 1,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      }
+    ],
+    "currentOutcome": "Revised candidate desktop passed, actual grandstand horizon visible, no missing-art/page/network errors. This and the one baseline pass do not establish the cause of the prior pack5 startup failure.",
+    "remainingVisual": "Foreground remains the previously bound shared green grass; broader palette/route-wide acceptance still pending. Noon bottom clamp variation is reduced, not eliminated."
+  },
+  "sebring": {
+    "scope": "Dedicated muted olive sandy grass for three layout image bindings, physical snow IDs/weights unchanged. Prior PNGs and shared grass asset retained.",
+    "nativeGroundRef": "environment-v1-ground-sebring-olive",
+    "productionReview": "Viewed retained desktop and handheld actual authored frames against prior pack5 frames. Saturated green foreground changed to muted olive/sandy grass and joins the panorama more naturally. Both current driving samples passed. Views are comparable, not pixel-matched poses; original props/lighting unchanged.",
+    "comparisonSheet": "/tmp/race-pack6-sheets/sebring-desktop-comparison.jpg"
+  },
+  "disk": {
+    "before": {
+      "base": "6b25f2578a10b0049ef923f6e674f0001d7b89dd",
+      "availableBytes": 4189663232,
+      "allocatedKiB": {
+        "originalImages": 184468,
+        "pack5NativeQA": 174056,
+        "pack5Driving": 1368,
+        "pack5RegionalDriving": 3944,
+        "pack4PitchQA": 116548,
+        "sharedGitObjects": 3706664,
+        "environmentOriginalCopies": 69896,
+        "allNativeArt": 1095708
+      },
+      "method": "df available bytes and du -s allocated KiB, not apparent bytes. Shared Git object store counted once; totals overlap and are not additive. No cleanup."
+    },
+    "after": {
+      "availableBytes": 4006813696,
+      "allocatedKiB": {
+        "originalImages": 223620,
+        "pack5NativeQA": 174056,
+        "pack5Driving": 1368,
+        "pack5RegionalDriving": 3944,
+        "priorPack4PitchQA": 116548,
+        "sharedGitObjects": 3770980,
+        "environmentSourceCopies": 105108,
+        "allNativeArt": 1111296,
+        "newNativeQA": 16344,
+        "repairNativeQA": 2092,
+        "newContactSheets": 1660,
+        "newDriving": 8904,
+        "baselineComparison": 1428
+      },
+      "paths": {
+        "originalImages": "/workspace/generated_images",
+        "pack5NativeQA": "/tmp/race-environment-pack5-renderer",
+        "pack5Driving": "/tmp/race-environment-pack5-driving",
+        "pack5RegionalDriving": "/tmp/race-environment-pack5-driving-regional",
+        "priorPack4PitchQA": "/tmp/race-environment-pack4-pitch-review",
+        "sharedGitObjects": "/workspace/chainsaw-aliens/.git/objects",
+        "environmentSourceCopies": "/workspace/roster-combined-local/assets/campaign-art/environment-v1",
+        "allNativeArt": "/workspace/roster-combined-local/data/server-storage/files/art",
+        "newNativeQA": "/tmp/race-environment-pack6-renderer",
+        "repairNativeQA": "/tmp/race-environment-pack6-repairs-native",
+        "newContactSheets": "/tmp/race-pack6-sheets",
+        "newDriving": "/tmp/race-environment-pack6-driving",
+        "baselineComparison": "/tmp/race-pack6-daytona-baseline"
+      },
+      "note": "Allocated du values, overlapping paths/shared objects are NOT additive. df available is practical overlay headroom. No cleanup/deletion performed."
+    },
+    "forecast": "Rough extrapolation of current measured pack growth, including retained source images, Git objects and compact QA; remaining bindings alone may consume about 2.3 GB. Further driving/revisions can add more. No cleanup or deletion performed.",
+    "availableByteDecrease": 182849536,
+    "remaining189AtSamePackRateBytes": 2303904154
+  },
+  "reproduce": {
+    "units": "node --test tests/unit/campaignArtIntegration.test.js tests/unit/americaCampaign.test.js tests/unit/raceTerrainTextureBlend.test.js tests/unit/raceRoadTextures.test.js tests/unit/raceDecals.test.js tests/unit/raceVisualFx.test.js tests/unit/raceEnvironmentVisualContract.test.js",
+    "native": "RACE_RENDER_COMPACT=1 RACE_RENDER_PACK=new-england-pack6 node_modules/.bin/playwright test --config race-environments-pack6-renderer-local.config.mjs --reporter=line",
+    "browser": "node_modules/.bin/playwright test tests/playwright/race-road-textures.spec.js --config race-environments-pack6-campaign-local.config.mjs --workers=1 --reporter=line",
+    "note": "Use fresh output directories on any future run to retain this evidence. No rerun required merely for this documentary checkpoint."
+  }
+}

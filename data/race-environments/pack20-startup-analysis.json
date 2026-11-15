@@ -1,0 +1,608 @@
+{
+  "production": "227517e4eef509504735a23b0d130f3e1485fe71",
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "rows": [
+    {
+      "variant": "baseline",
+      "startupWall": {
+        "bootMs": 5326,
+        "travelCallMs": 29474,
+        "playableWaitMs": 50167,
+        "totalToPlayableMs": 85057
+      },
+      "markersRelativeToTraceOrigin": {
+        "warmupFirstFrameMs": 30132.70000000298,
+        "surfacePreparedMs": 32379.40000000596,
+        "exitStartedMs": 32775,
+        "firstPresentationMs": 33180.70000000298,
+        "firstRecordedPositiveRaceElapsedMs": 69353.40000000596
+      },
+      "deferredWorkerObserved": false,
+      "warmupFrames": [
+        {
+          "ms": 30132.70000000298,
+          "frames": 1,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 8
+        },
+        {
+          "ms": 30155.60000000894,
+          "frames": 2,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 16
+        },
+        {
+          "ms": 30174.79999999702,
+          "frames": 3,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 24
+        },
+        {
+          "ms": 30744.90000000596,
+          "frames": 4,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 32
+        },
+        {
+          "ms": 30943.20000000298,
+          "frames": 5,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 40
+        },
+        {
+          "ms": 31162.70000000298,
+          "frames": 6,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 48
+        },
+        {
+          "ms": 31354.90000000596,
+          "frames": 7,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 56
+        },
+        {
+          "ms": 31568.10000000894,
+          "frames": 8,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 64
+        },
+        {
+          "ms": 31750.40000000596,
+          "frames": 9,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 72
+        },
+        {
+          "ms": 32005.40000000596,
+          "frames": 10,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 80
+        },
+        {
+          "ms": 32187.70000000298,
+          "frames": 11,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 88
+        },
+        {
+          "ms": 32379.40000000596,
+          "frames": 12,
+          "surface": true,
+          "artFrames": 1,
+          "exit": false,
+          "deferred": false,
+          "cursor": 96
+        },
+        {
+          "ms": 32580.10000000894,
+          "frames": 13,
+          "surface": true,
+          "artFrames": 2,
+          "exit": false,
+          "deferred": false,
+          "cursor": 96
+        },
+        {
+          "ms": 32775,
+          "frames": 14,
+          "surface": true,
+          "artFrames": 3,
+          "exit": true,
+          "deferred": false,
+          "cursor": 96
+        },
+        {
+          "ms": 32972.90000000596,
+          "frames": 15,
+          "surface": true,
+          "artFrames": 3,
+          "exit": true,
+          "deferred": false,
+          "cursor": 96
+        }
+      ],
+      "methodCpuSubmission": {
+        "addRaceThreeTerrainArtwork": {
+          "calls": 6,
+          "totalMs": 0.29999999701976776,
+          "maxMs": 0.20000000298023224,
+          "firstMs": 29824.5,
+          "slow": []
+        },
+        "drawRaceThreeWorldScene": {
+          "calls": 254,
+          "totalMs": 2589.999999925494,
+          "maxMs": 430.59999999403954,
+          "firstMs": 29805,
+          "slow": [
+            {
+              "atMs": 29805,
+              "ms": 319.6000000089407
+            },
+            {
+              "atMs": 47871.70000000298,
+              "ms": 25.900000005960464
+            },
+            {
+              "atMs": 48078.10000000894,
+              "ms": 22
+            },
+            {
+              "atMs": 48278.5,
+              "ms": 29.299999997019768
+            },
+            {
+              "atMs": 53256.20000000298,
+              "ms": 417.20000000298023
+            },
+            {
+              "atMs": 72767.20000000298,
+              "ms": 430.59999999403954
+            },
+            {
+              "atMs": 73762.20000000298,
+              "ms": 29.799999997019768
+            },
+            {
+              "atMs": 79665.5,
+              "ms": 27.100000008940697
+            }
+          ]
+        },
+        "finishRaceLoadingFrame": {
+          "calls": 254,
+          "totalMs": 15.000000044703484,
+          "maxMs": 2.800000011920929,
+          "firstMs": 30129.79999999702,
+          "slow": []
+        },
+        "markRaceStartupFrameRendered": {
+          "calls": 239,
+          "totalMs": 0.7999999970197678,
+          "maxMs": 0.29999999701976776,
+          "firstMs": 33180.40000000596,
+          "slow": []
+        }
+      },
+      "gpuCpuSubmission": {
+        "texImage2D": {
+          "calls": 7,
+          "totalMs": 0.10000000894069672,
+          "maxMs": 0.10000000894069672,
+          "firstMs": 29749.79999999702,
+          "lastMs": 29749.90000000596
+        },
+        "bufferData": {
+          "calls": 44,
+          "totalMs": 5.200000002980232,
+          "maxMs": 0.5,
+          "firstMs": 29991.60000000894,
+          "lastMs": 72806.40000000596
+        },
+        "drawArrays": {
+          "calls": 2675,
+          "totalMs": 11.900000005960464,
+          "maxMs": 4.0999999940395355,
+          "firstMs": 30083.10000000894,
+          "lastMs": 79692.40000000596
+        },
+        "texSubImage2D": {
+          "calls": 254,
+          "totalMs": 26.399999976158142,
+          "maxMs": 1.3999999910593033,
+          "firstMs": 30101.60000000894,
+          "lastMs": 79692.10000000894
+        },
+        "drawElements": {
+          "calls": 254,
+          "totalMs": 0.7000000178813934,
+          "maxMs": 0.10000000894069672,
+          "firstMs": 30101.79999999702,
+          "lastMs": 79692.10000000894
+        }
+      },
+      "longTaskCount": 23,
+      "longTaskTotalMs": 4042,
+      "drive": {
+        "wallMs": 5181,
+        "simulationMs": 5499.799999999988,
+        "drawCalls": 20,
+        "drawCpuMs": 868.2999999970198,
+        "maxDrawMs": 712.7000000029802
+      },
+      "workerAtReadiness": {
+        "qualification": {
+          "qualified": true,
+          "requiredStepsPerSecond": 120,
+          "achievedStepsPerSecond": 323.3629749445632,
+          "stepBudgetMs": 8.333333333333334,
+          "p95StepMs": 7.5,
+          "backlogStart": 0,
+          "backlogEnd": 0,
+          "reasons": []
+        },
+        "requestedMode": "auto",
+        "thread": "worker",
+        "bridge": true,
+        "migrationFailure": null,
+        "clientError": null,
+        "clockMode": "worker-wall",
+        "clock": {
+          "maxAdvanceSeconds": 0.03333333333333333,
+          "maxDebtSeconds": 0.06666666666666667,
+          "debtSeconds": 0,
+          "discardedSeconds": 11.566100000000004,
+          "admittedSeconds": 2.4166000000000083,
+          "rawSeconds": 13.982700000000008,
+          "excludedSeconds": 0.18339999999999418
+        }
+      },
+      "hostAggregateCpuBusyFraction": 0.7547523587257894,
+      "rawEvidenceRoot": "/tmp/race-pack20-baseline"
+    },
+    {
+      "variant": "candidate",
+      "startupWall": {
+        "bootMs": 5341,
+        "travelCallMs": 27961,
+        "playableWaitMs": 88062,
+        "totalToPlayableMs": 121493
+      },
+      "markersRelativeToTraceOrigin": {
+        "warmupFirstFrameMs": 29156.70000000298,
+        "surfacePreparedMs": 32818.29999999702,
+        "exitStartedMs": 33483,
+        "firstPresentationMs": 33847.09999999404,
+        "firstRecordedPositiveRaceElapsedMs": 99315.29999999702
+      },
+      "deferredWorkerObserved": false,
+      "warmupFrames": [
+        {
+          "ms": 29156.70000000298,
+          "frames": 1,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 8
+        },
+        {
+          "ms": 29202.29999999702,
+          "frames": 2,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 16
+        },
+        {
+          "ms": 30001.20000000298,
+          "frames": 3,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 24
+        },
+        {
+          "ms": 30009.89999999106,
+          "frames": 4,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 32
+        },
+        {
+          "ms": 30364.5,
+          "frames": 5,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 40
+        },
+        {
+          "ms": 30770.09999999404,
+          "frames": 6,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 48
+        },
+        {
+          "ms": 31095.39999999106,
+          "frames": 7,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 56
+        },
+        {
+          "ms": 31428.09999999404,
+          "frames": 8,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 64
+        },
+        {
+          "ms": 31766.20000000298,
+          "frames": 9,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 72
+        },
+        {
+          "ms": 32095.79999999702,
+          "frames": 10,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 80
+        },
+        {
+          "ms": 32420.59999999404,
+          "frames": 11,
+          "surface": false,
+          "exit": false,
+          "deferred": false,
+          "cursor": 88
+        },
+        {
+          "ms": 32818.29999999702,
+          "frames": 12,
+          "surface": true,
+          "artFrames": 1,
+          "exit": false,
+          "deferred": false,
+          "cursor": 96
+        },
+        {
+          "ms": 33149.89999999106,
+          "frames": 13,
+          "surface": true,
+          "artFrames": 2,
+          "exit": false,
+          "deferred": false,
+          "cursor": 96
+        },
+        {
+          "ms": 33483,
+          "frames": 14,
+          "surface": true,
+          "artFrames": 3,
+          "exit": true,
+          "deferred": false,
+          "cursor": 96
+        }
+      ],
+      "methodCpuSubmission": {
+        "addRaceThreeTerrainArtwork": {
+          "calls": 6,
+          "totalMs": 19.700000017881393,
+          "maxMs": 10.5,
+          "firstMs": 28699.59999999404,
+          "slow": []
+        },
+        "drawRaceThreeWorldScene": {
+          "calls": 254,
+          "totalMs": 4122.099999934435,
+          "maxMs": 903.6000000089407,
+          "firstMs": 28642.20000000298,
+          "slow": [
+            {
+              "atMs": 28642.20000000298,
+              "ms": 499.59999999403954
+            },
+            {
+              "atMs": 30333,
+              "ms": 28.799999997019768
+            },
+            {
+              "atMs": 38816.39999999106,
+              "ms": 75
+            },
+            {
+              "atMs": 70819,
+              "ms": 899.2999999970198
+            },
+            {
+              "atMs": 93545.89999999106,
+              "ms": 48
+            },
+            {
+              "atMs": 95563.70000000298,
+              "ms": 25.19999998807907
+            },
+            {
+              "atMs": 99290.29999999702,
+              "ms": 25
+            },
+            {
+              "atMs": 102623,
+              "ms": 24.299999997019768
+            },
+            {
+              "atMs": 104946.09999999404,
+              "ms": 903.6000000089407
+            },
+            {
+              "atMs": 107267.39999999106,
+              "ms": 29.5
+            },
+            {
+              "atMs": 109109.09999999404,
+              "ms": 21.299999997019768
+            },
+            {
+              "atMs": 112999,
+              "ms": 28.299999997019768
+            },
+            {
+              "atMs": 113742.09999999404,
+              "ms": 20.799999997019768
+            },
+            {
+              "atMs": 115609.29999999702,
+              "ms": 24.400000005960464
+            }
+          ]
+        },
+        "finishRaceLoadingFrame": {
+          "calls": 254,
+          "totalMs": 23.799999997019768,
+          "maxMs": 6.5,
+          "firstMs": 29150.09999999404,
+          "slow": []
+        },
+        "markRaceStartupFrameRendered": {
+          "calls": 240,
+          "totalMs": 1.0000000298023224,
+          "maxMs": 0.3999999910593033,
+          "firstMs": 33846.70000000298,
+          "slow": []
+        }
+      },
+      "gpuCpuSubmission": {
+        "texImage2D": {
+          "calls": 7,
+          "totalMs": 0.5999999940395355,
+          "maxMs": 0.29999999701976776,
+          "firstMs": 28317.29999999702,
+          "lastMs": 28318.5
+        },
+        "bufferData": {
+          "calls": 62,
+          "totalMs": 3.399999976158142,
+          "maxMs": 0.7000000029802322,
+          "firstMs": 28973.59999999404,
+          "lastMs": 104962.70000000298
+        },
+        "drawArrays": {
+          "calls": 3793,
+          "totalMs": 8.000000029802322,
+          "maxMs": 2.0999999940395355,
+          "firstMs": 29050.39999999106,
+          "lastMs": 116057.79999999702
+        },
+        "texSubImage2D": {
+          "calls": 256,
+          "totalMs": 28.80000002682209,
+          "maxMs": 0.7000000029802322,
+          "firstMs": 29081.89999999106,
+          "lastMs": 116057.20000000298
+        },
+        "drawElements": {
+          "calls": 254,
+          "totalMs": 0.699999988079071,
+          "maxMs": 0.10000000894069672,
+          "firstMs": 29114.89999999106,
+          "lastMs": 116057.5
+        }
+      },
+      "longTaskCount": 41,
+      "longTaskTotalMs": 6970,
+      "drive": {
+        "wallMs": 42933,
+        "simulationMs": 3999.999999999992,
+        "drawCalls": 120,
+        "drawCpuMs": 1681.1000000238419,
+        "maxDrawMs": 1108.699999988079
+      },
+      "workerAtReadiness": {
+        "qualification": {
+          "qualified": false,
+          "requiredStepsPerSecond": 120,
+          "achievedStepsPerSecond": 217.9242713251534,
+          "stepBudgetMs": 8.333333333333334,
+          "p95StepMs": 11.200000002980232,
+          "backlogStart": 0,
+          "backlogEnd": 0,
+          "reasons": [
+            "single-thread p95 11.200ms > 8.333ms step budget"
+          ]
+        },
+        "requestedMode": "auto",
+        "thread": "render",
+        "bridge": false,
+        "migrationFailure": null,
+        "clientError": null,
+        "clockMode": "bounded",
+        "clock": {
+          "maxAdvanceSeconds": 0.03333333333333333,
+          "maxDebtSeconds": 0.06666666666666667,
+          "debtSeconds": 0.06666666666666667,
+          "discardedSeconds": 20.915799999999997,
+          "admittedSeconds": 2.033333333333336,
+          "rawSeconds": 23.015800000000006,
+          "excludedSeconds": 0.3998999999999942
+        }
+      },
+      "hostAggregateCpuBusyFraction": 0.7805555873237343,
+      "rawEvidenceRoot": "/tmp/race-pack20-candidate"
+    }
+  ],
+  "controls": "Fresh serial servers/browsers, same1280x720 viewport,RTG-001,normal race travel,unchanged deadlines/weather; no other heavy tests or imports during pair. Passive wrappers symmetrical.",
+  "limitations": [
+    "/proc/pressure/cpu unavailable; aggregate host counters do not prove exclusive CPU or isolate other tenants.",
+    "GPU API timings measure JS submission, not GPU completion.",
+    "Automatic worker qualification diverged: baselineworker-wall,candidatebounded. Drive timing is not same-clock benchmark; usepack19same-clockpair.",
+    "Harness ready gate includes elapsedMs>2000 after presentation; must not be called pure load time. Intro/countdown stages not individually instrumented here."
+  ],
+  "finding": "No30second deferred-art hold: false across both traces. First presentation33.181svs33.847s from postboottraceorigin,while harnessready85.057svs121.493stotal. Most difference is after presentation, not separate asset startup stall. Terrain color setup19.7mscandidate versus0.3msbaseline; firstworlddraw499.6msversus319.6ms; addedCPUsubmission doesnotaccountforpostpresentationwalltime. Rendering/clock throughput remains release concern.",
+  "options": [
+    {
+      "option": "Preserve current art; independently harden and review the narrow uniform-material shader prototype",
+      "requirements": "Keep exact GPU parity, sparse/mixed behavior, original UV/mips/depth; validate repeated same-clock driving on representative GPU hardware. No broad renderer redesign or qualification/deadline changes.",
+      "status": "Not merged into production."
+    },
+    {
+      "option": "Ship art only with explicit demonstrated software-renderer performance limitation",
+      "requirements": "Owner decision needed; current turn does not publish or declare release-ready."
+    },
+    {
+      "option": "Hold for remaining visual evidence reconciliation and performance validation",
+      "status": "Current recommended state. No equivalent supported art-only Demo binding found without losing near-ground texture."
+    }
+  ]
+}

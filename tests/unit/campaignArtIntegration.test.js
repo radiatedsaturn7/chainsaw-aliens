@@ -1,7 +1,10 @@
+// Keep supersession negatives in the existing Campaign Artwork command.
+import './campaignArtSupersession.test.js';
+import {assertTerrainArtMaterial} from '../../tools/race-environments/terrain-materials.mjs';
 import {assertFenceRoadClearance,fenceRoadGap,assertFencePathGeometry} from '../helpers/campaignFenceValidation.mjs';
 import {createRaceStaticColliderWorld} from '../../src/racing/RaceSimulation.js';
 import {buildRaceFencePlacements} from '../../src/racing/RaceFences.js';
-import {placedSceneryArtRefs,validateArtworkIntent,campaignArtworkRacePaths,assertCampaignImportInventory,createSavedDoodadResolver,assertSceneryArtwork} from '../helpers/campaignArtworkValidation.mjs';
+import {authoredFreeRaceArtwork,placedSceneryArtRefs,validateArtworkIntent,campaignArtworkRacePaths,assertCampaignImportInventory,createSavedDoodadResolver,assertSceneryArtwork} from '../helpers/campaignArtworkValidation.mjs';
 import {collectSceneryArtRefs} from '../../src/racing/RaceSceneryAssets.js';
 import {applyCampaignArtCoverage} from '../../tools/campaigns/campaign_art_coverage.mjs';
 import test from 'node:test';
@@ -40,7 +43,8 @@ test('Laurel artwork uses the road ribbon, saved ground art and valid doodad def
  const textures=roadTextureSettings(race);assert.equal(textures.road.artRef,'road-asphalt-patched');
  assert.equal(textures.road.repeatWidthM,0);assert.equal(showBuiltInRoadMarkings(race),false);
  const cells=Object.values(race.road.tileMap.cells);
- assert.deepEqual(new Set(cells.map(c=>c.artRef)),new Set(['ground-frozen-forest']));
+ assert.deepEqual(new Set(cells.map(c=>c.artRef)),new Set(['environment-v1-ground-ohio-wet-leaf-litter']));
+ assert.ok(cells.length>0);for(const cell of cells)assertTerrainArtMaterial(cell,{tileId:cell.tileId});
  const props=race.scenery.filter(p=>/^(leafless|frozen-bush|gray-rock)/.test(p.doodadRef||'')||p.id.startsWith('campaign-art-laurel-'));
  assert.ok(props.length>100);
  const editor=savedEditor();
@@ -127,15 +131,15 @@ test('delivered art satisfies explicit campaign, editor and configured-unused in
  }
  const snow=read(root+manifest.folders.races[intent.configuredUnused['road-snow-patchy'].raceRef]).race;
  const configured=new Set([roadTextureSettings(snow).surfaceRoads.snow?.artRef]);
- for(const message of validateArtworkIntent(intent,imports,used,editorLoaded,configured,deferred))t.diagnostic(message);
+ for(const message of validateArtworkIntent(intent,imports,used,editorLoaded,configured,deferred,authoredFreeRaceArtwork(read('data/race-environments/free-race-art.json'),read(root+manifest.folders.menus['Game Menu']),manifest,p=>read(root+p),paths),{registry:read('data/race-environments/superseded-art.json'),manifest,read:p=>read(root+p),readBytes:p=>fs.readFileSync(p)}))t.diagnostic(message);
 });
 
 test('exposed terrain keeps material weights and the marked turnout is a usable pull-off',()=>{
- const expected={'ground-brown-dirt-v2':'dirt','ground-industrial-concrete-v2':'asphalt','ground-industrial-rubble-v2':'gravel','ground-canyon-rock-v2':'gravel','ground-gray-gravel-v2':'gravel','ground-red-gravel-v2':'gravel','ground-desert-scrub-v2':'dirt','ground-alpine-rock-v2':'gravel'};
+
  const editor=new RaceEditor({});
  for(const entry of read('data/campaigns/america/catalog.json')){
   const r=read(root+entry.documentPath).race;
-  for(const c of Object.values(r.road.tileMap.cells))if(expected[c.artRef])assert.equal(editor.normalizeRaceTileMapCell(c).tileId,expected[c.artRef]);
+  for(const c of Object.values(r.road.tileMap.cells))assertTerrainArtMaterial(c,editor.normalizeRaceTileMapCell(c));
   if(entry.sourceKey==='angeles'){
    const turnout=r.scenery.find(p=>p.id==='campaign-complete-angeles-angeles-crest-turnout-sign')?.campaignPlacement?.turnout;
    assert.ok(turnout);assert.ok(turnout.spread<=1.2);assert.ok(turnout.widthM>=6&&turnout.lengthM>=12);

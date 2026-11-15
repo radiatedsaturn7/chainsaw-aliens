@@ -1,0 +1,23 @@
+{
+  "originalSource": "skyboxes/col-de-turini.png",
+  "originalSourceSha256": "e71d3f7da4f85070b346e4473876232e7aec0a7ed2dd89bc73a8df0f884be6b4",
+  "originalNativeCommit": "227517e4eef509504735a23b0d130f3e1485fe71",
+  "generated": "/workspace/generated_images/exec-17f7af8e-cbcb-46f3-b7a2-bba74b5149bf.png",
+  "source": "assets/campaign-art/skyboxes/col-de-turini-boundary-v2.png",
+  "sha256": "ca9399b3ae31796adcb49963b4bc58b7fcba38e7b0438bd6d505d7a440d5c151",
+  "ref": "skybox-col-de-turini",
+  "maxEdge": 512,
+  "purpose": "Repair natural top/bottom extension boundaries; retain original source bytes and original native via exact Git parent; no race settings changed.",
+  "nativeReview": {
+    "desktop": true,
+    "handheld": true,
+    "evidence": "data/race-environments/pack20-turini-contact.jpg",
+    "scope": "Viewed current no-fog/native authored, wrap and extreme pitch. Conspicuous vertical extension streaks greatly reduced; faint low-contrast extension boundaries persist at extreme pitch. Snow visibility opacity1 is preserved; no driving/world-terrain acceptance."
+  },
+  "checks": {
+    "import": "Default Python initially lacked pypng; reused existing /tmp/race-environment-python dependency, then exact-ref import succeeded at512x171. Pre-import capture run not used as repaired evidence.",
+    "renderer": "Fresh post-import desktop/handheld2passed; /tmp/race-pack20-turini-repaired",
+    "originalPNGPreserved": true
+  },
+  "reviewedNativeSha256": "b4f4702f7cabd3fb0f6700590439531617f4ce3a12be8c2048ff6172e4f6b5c3"
+}

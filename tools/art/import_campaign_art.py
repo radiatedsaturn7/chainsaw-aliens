@@ -50,7 +50,9 @@ def encode(doc):return {'__chainsawStorage':'compact-v1','encoding':'json-gzip-b
 def main(argv=()):
  parser=argparse.ArgumentParser(description=__doc__)
  parser.add_argument("--only",action="append",default=[],help="Exact reviewed asset name; repeat to import a narrow batch")
+ parser.add_argument("--reexport",action="store_true",help="Re-export only explicitly selected, hash-verified native assets with current sampling settings; original PNGs are unchanged")
  args=parser.parse_args(argv)
+ if args.reexport and not args.only:parser.error("--reexport requires explicit --only selections")
  unknown=set(args.only)-set(REVIEWED.values())
  if unknown:parser.error(f"Unknown reviewed asset names: {sorted(unknown)}")
  reviewed={p:n for p,n in REVIEWED.items() if not args.only or n in args.only}
@@ -70,7 +72,7 @@ def main(argv=()):
   source=SOURCES/relative
   if not source.exists():continue
   raw=source.read_bytes()
-  if digest(raw)==previous.get(name,{}).get('sourceSha256') and (ROOT/'art'/name/'document.json').exists():continue
+  if not args.reexport and digest(raw)==previous.get(name,{}).get('sourceSha256') and (ROOT/'art'/name/'document.json').exists():continue
   try:
    w,h,rows,info=png.Reader(bytes=raw).asRGBA8();decoded[name]=(w,h,list(rows))
   except Exception as error:
@@ -82,7 +84,7 @@ def main(argv=()):
   raw=source.read_bytes();sha=digest(raw);target=ROOT/'art'/name/'document.json';old=previous.get(name,{})
   if target.exists():
    if digest(target.read_bytes())!=old.get('documentSha256'):raise RuntimeError(f'Preserve local artwork edits: {target}')
-   if sha==old.get('sourceSha256'):continue
+   if not args.reexport and sha==old.get('sourceSha256'):continue
   if name in invalid:continue
   w,h,rows=decoded.pop(name)
   max_edge=next((a.get('maxEdge',512) for a in json.loads(EXPANDED.read_text())['assets'] if a['name']==name),512) if EXPANDED.exists() else 512

@@ -1,0 +1,13 @@
+import {skySeamMetrics} from './seam.mjs';
+import fs from 'node:fs';import assert from 'node:assert/strict';import {gunzipSync} from 'node:zlib';import {createHash} from 'node:crypto';
+const decode=p=>{let d=JSON.parse(fs.readFileSync(p));return d.__chainsawStorage?JSON.parse(gunzipSync(Buffer.from(d.data,'base64'))):d;};
+const root='data/server-storage/files/',m=decode(root+'manifest.json'),l=decode('data/race-environments/ledger.json'),seen=new Map(),reports=[];
+if(process.argv.includes('--require-complete'))for(const row of l.rows){assert.ok(row.binding&&row.qa?.desktop&&row.qa?.handheld&&row.qa?.seam,`Incomplete environment QA: ${row.raceRef}`);assert.equal(row.terrainReview?.acceptance,'production-reviewed',`Incomplete terrain review: ${row.raceRef}`);}
+for(const row of l.rows.filter(r=>r.binding)){const ref=row.binding.skyboxArtRef,a=decode(root+m.folders.art[ref]),frame=a.frames[0];assert.equal(frame.length,a.width*a.height);assert.ok(frame.every(v=>typeof v==='string'&&(/^#[0-9a-f]{6}$/i.test(v)||/^#[0-9a-f]{6}ff$/i.test(v))),'Sky must be opaque');const hash=createHash('sha256').update(JSON.stringify([a.width,a.height,a.frames])).digest('hex');if(seen.has(hash))assert.equal(seen.get(hash),row.siteGroup,'Different sites cannot reuse identical pixels');seen.set(hash,row.siteGroup);const rgb=s=>[1,3,5].map(i=>parseInt(s.slice(i,i+2),16));const jumps=[];for(let y=0;y<a.height;y++){const x=rgb(frame[y*a.width]),z=rgb(frame[y*a.width+a.width-1]);jumps.push(x.reduce((n,v,i)=>n+Math.abs(v-z[i]),0)/3);}reports.push({race:row.raceRef,ref,width:a.width,height:a.height,pixelHash:hash,seamMeanRGB:jumps.reduce((a,b)=>a+b,0)/jumps.length,seamSkyMeanRGB:jumps.slice(0,Math.floor(a.height*.65)).reduce((a,b)=>a+b,0)/Math.floor(a.height*.65),seamMaximumRGB:Math.max(...jumps),seam:skySeamMetrics(frame,a.width,a.height),visualSeamReviewRequired:true});}
+const groundReports=[];
+for(const ref of [...new Set(l.rows.map(r=>r.binding?.groundPlaneArtRef).filter(Boolean))]){
+ const a=decode(root+m.folders.art[ref]),frame=a.frames[0];assert.equal(frame.length,a.width*a.height);assert.ok(frame.every(v=>typeof v==='string'&&(/^#[0-9a-f]{6}$/i.test(v)||/^#[0-9a-f]{6}ff$/i.test(v))),'Ground must be opaque');
+ const transposed=Array.from({length:frame.length},(_,i)=>frame[(i%a.height)*a.width+Math.floor(i/a.height)]);
+ groundReports.push({ref,width:a.width,height:a.height,pixelHash:createHash('sha256').update(JSON.stringify([a.width,a.height,a.frames])).digest('hex'),horizontal:skySeamMetrics(frame,a.width,a.height),vertical:skySeamMetrics(transposed,a.height,a.width),visualTileReviewRequired:true});
+}
+console.log(JSON.stringify({reports,groundReports},null,2));

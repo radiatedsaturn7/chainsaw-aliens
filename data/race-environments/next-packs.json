@@ -1,0 +1,16 @@
+{
+  "status": "work-partition-plan-not-acceptance",
+  "rules": [
+    "Assign exclusive ledger raceRefs and art refs before concurrent editing; integrate ledger edits centrally.",
+    "Verify physical site from source metadata/GPS, never infer a shared site from state or venueKey.",
+    "Review each effective terrain, rough, shoulder, road and ground visual without changing physical materials or weights.",
+    "Capture desktop and handheld production views with route heading and mid-route samples; inspect horizon wraps.",
+    "Reconcile onto then-current staging and rerun preservation before any separate race PR."
+  ],
+  "priorityOrder": [
+    {"pack":"main-route-completion","work":"Resolve first-pack startup blocker, then remaining eight main sites. Keep Tower Hill snowy night and Bayard noon exactly authored."},
+    {"pack":"existing-reference-inconsistencies","work":"Resolve Skalkaho Pass, Magruder Corridor, Tantalus Honolulu, Grand Canyon Desert View and Diamond Creek sky-field conflicts from actual site evidence; add explicit Old Staples Road sky."},
+    {"pack":"selector-only-and-legacy","work":"Review all nine uncatalogued selectors plus Col de Turini, Nordschleife and Ouninpohja. Establish same-site evidence for copies without excluding reachable test-named routes."},
+    {"pack":"remaining-geographic-sites","work":"Partition remaining catalog routes by source-confirmed physical locations, with separate authored weather/time variants where necessary. No blanket state sky assignments."}
+  ]
+}

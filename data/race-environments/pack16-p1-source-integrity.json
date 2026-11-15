@@ -1,0 +1,26 @@
+[
+  {
+    "ref": "8300 body",
+    "bytes": 11883195,
+    "sha256": "22a2addbba300f439758b09258d6f05cf6d64e372d4ae127306dab9022afd27e",
+    "identicalToBase": true,
+    "validJson": true,
+    "keys": [
+      "__chainsawStorage",
+      "encoding",
+      "data"
+    ]
+  },
+  {
+    "ref": "snowsmoke",
+    "bytes": 5756531,
+    "sha256": "8ecb53fb2b2782b786bcb480a334b0d35587a01a847f7db2cad8bc4bc98f878e",
+    "identicalToBase": true,
+    "validJson": true,
+    "keys": [
+      "__chainsawStorage",
+      "encoding",
+      "data"
+    ]
+  }
+]

@@ -1,0 +1,673 @@
+{
+  "scope": "All 245 native material atlases generated for desktop and handheld; 49 identical ref combinations reviewed as compact contacts. Initial report also includes configured but potentially hidden shoulders, not proof of their rendering. Moki gray-gravel cells superseded by final original red-gravel correction; separate final Moki native review required. No world, foreground or driving acceptance.",
+  "groups": [
+    {
+      "refs": [
+        "ground-frosted-grass-v1",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Col de Turini"
+      ]
+    },
+    {
+      "refs": [
+        "ground-plains-snow-straw-v1",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Daytona Tri-Oval",
+        "PA 711 \u2014 Normalville Champion",
+        "Jennerstown Speedway \u2014 oval",
+        "Keystone Motorsports Park \u2014 New Alexandria",
+        "Pittsburgh International Race Complex \u2014 Wampum",
+        "OH 555 \u2014 Triple Nickel",
+        "OH 550 \u2014 Barlow approach",
+        "Marietta\u2013Williamstown \u2014 I-77 river bridge",
+        "Mid-Ohio Sports Car Course \u2014 Lexington",
+        "Ozarks International Raceway \u2014 Gravois Mills",
+        "World Wide Technology Raceway \u2014 road course",
+        "World Wide Technology Raceway \u2014 oval",
+        "World Wide Technology Raceway \u2014 drag strip",
+        "MO 94 \u2014 Defiance Augusta",
+        "Gateway Kartplex \u2014 WWT complex",
+        "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+        "Old Route 66 \u2014 Shamrock McLean",
+        "Amarillo \u2014 Historic 6th Avenue alignment",
+        "Old Route 66 \u2014 Vega Adrian",
+        "Old Route 66 \u2014 Adrian Glenrio",
+        "Palo Duro Canyon \u2014 Park Road 5",
+        "Amarillo Dragway",
+        "Route 66 \u2014 Bridgeport Pony Bridge, Oklahoma",
+        "Hallett Motor Racing Circuit \u2014 Jennings, Oklahoma",
+        "Pueblo Motorsports Park \u2014 road course or drag strip",
+        "Road America \u2014 Full Course",
+        "Road America \u2014 The Bend",
+        "Virginia International Raceway \u2014 Full Course",
+        "Virginia International Raceway \u2014 North Course",
+        "Virginia International Raceway \u2014 South Course",
+        "Virginia International Raceway \u2014 Grand Course",
+        "Sebring International Raceway \u2014 Full Circuit",
+        "Sebring International Raceway \u2014 Short Circuit",
+        "Sebring International Raceway \u2014 Club Circuit",
+        "Homestead-Miami Speedway \u2014 Oval",
+        "Homestead-Miami Speedway \u2014 Road Course",
+        "Homestead-Miami Speedway \u2014 Modified Road Course",
+        "Daytona International Speedway \u2014 Sports Car Course",
+        "Daytona International Speedway \u2014 Stock Car Road Course",
+        "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+        "Mid-Ohio Sports Car Course \u2014 Short Course",
+        "Raceway Park of the Midlands",
+        "Heartland Motorsports Park",
+        "Sandia Speedway \u2014 Road Course",
+        "Theodore Roosevelt \u2014 North Unit Drive",
+        "Motorsport Park Hastings",
+        "Little Rock, AR \u2014 Landmark Run",
+        "Boise, ID \u2014 Landmark Run",
+        "Wichita, KS \u2014 Landmark Run",
+        "St. Louis, MO \u2014 Landmark Run",
+        "Billings, MT \u2014 Landmark Run",
+        "Fargo, ND \u2014 Landmark Run",
+        "Omaha, NE \u2014 Landmark Run",
+        "Oklahoma City, OK \u2014 Landmark Run",
+        "Sioux Falls, SD \u2014 Landmark Run",
+        "Cheyenne, WY \u2014 Landmark Run"
+      ]
+    },
+    {
+      "refs": [
+        "ground-temperate-grass-v1"
+      ],
+      "routes": [
+        "Demo Track",
+        "Studio Sprint",
+        "Studio Sprint Copy",
+        "buse1",
+        "Old Staples Road"
+      ]
+    },
+    {
+      "refs": [
+        "ground-alpine-rock-v2",
+        "ground-clean-snow-v2",
+        "road-snow-packed",
+        "shoulder-snowbank-edge"
+      ],
+      "routes": [
+        "Mount Washington Auto Road \u2014 point-to-point"
+      ]
+    },
+    {
+      "refs": [
+        "ground-temperate-grass-v1",
+        "asphaltRoad"
+      ],
+      "routes": [
+        "Mount Washington Auto Road \u2014 point-to-point Copy",
+        "p1"
+      ]
+    },
+    {
+      "refs": [
+        "ground-patchy-snow-leaf-v1",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Nurburgring Nordschleife",
+        "PA 381 \u2014 Ohiopyle approach",
+        "US 40 \u2014 Chalk Hill Summit",
+        "PA 31 \u2014 Donegal to Laurel Ridge",
+        "County Line Road \u2014 Seven Springs",
+        "OH 26 \u2014 Covered Bridge Scenic Byway",
+        "OH 536 \u2014 Ohio River hills",
+        "OH 676 \u2014 Western county hills",
+        "MO 19 \u2014 Eminence Current River",
+        "MO 106 \u2014 Alley Spring approach",
+        "MO 106 \u2014 Powder Mill approach",
+        "MO V \u2014 Two Rivers access",
+        "US 60 \u2014 Winona Van Buren",
+        "IL 100 \u2014 Great River Road bluffs",
+        "US 163 \u2014 Mexican Hat Monument Valley approach",
+        "US 191 \u2014 Bluff Blanding",
+        "Beaverhead Flat Road \u2014 CR 78",
+        "Watkins Glen \u2014 Long Course",
+        "Watkins Glen \u2014 Short Course",
+        "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+        "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+        "Road Atlanta \u2014 Grand Prix",
+        "Road Atlanta \u2014 Short Course",
+        "Road Atlanta \u2014 Club Course",
+        "Pig Trail \u2014 Arkansas 23",
+        "Hana Highway \u2014 Rainforest Bends",
+        "National Road \u2014 Sideling Hill",
+        "Natchez Trace \u2014 Tishomingo",
+        "Barber Motorsports Park",
+        "NCM Motorsports Park",
+        "NOLA Motorsports Park",
+        "NCCAR \u2014 Road Course",
+        "Carolina Motorsports Park",
+        "Birmingham, AL \u2014 Landmark Run",
+        "Miami, FL \u2014 Landmark Run",
+        "Atlanta, GA \u2014 Landmark Run",
+        "Louisville, KY \u2014 Landmark Run",
+        "Honolulu, HI \u2014 Landmark Run",
+        "New Orleans, LA \u2014 Landmark Run",
+        "Jackson, MS \u2014 Landmark Run",
+        "Charlotte, NC \u2014 Landmark Run",
+        "Denver, CO \u2014 Landmark Run",
+        "San Antonio, TX \u2014 Landmark Run",
+        "Charleston, SC \u2014 Landmark Run",
+        "Nashville, TN \u2014 Landmark Run",
+        "Richmond, VA \u2014 Landmark Run",
+        "Flatrock Motorclub \u2014 Club Course",
+        "Charleston, WV \u2014 Landmark Run"
+      ]
+    },
+    {
+      "refs": [
+        "ground-patchy-snow-leaf-v1",
+        "road-gravel-gray",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Ouninpohja"
+      ]
+    },
+    {
+      "refs": [
+        "ground-frosted-grass-v1"
+      ],
+      "routes": [
+        "Studio Sprint2"
+      ]
+    },
+    {
+      "refs": [
+        "ground-frosted-grass-v1",
+        "snowroad"
+      ],
+      "routes": [
+        "Tower Hill Road",
+        "Pinkham Notch \u2014 NH 16"
+      ]
+    },
+    {
+      "refs": [
+        "ground-snow-chaparral-v1",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "WeatherTech Raceway Laguna Seca",
+        "UT 316 \u2014 Goosenecks State Park Road",
+        "UT 95 \u2014 Comb Ridge Cedar Mesa",
+        "UT 276 \u2014 Halls Crossing approach",
+        "SR 179 \u2014 Red Rock Scenic Byway",
+        "Upper Lower Red Rock Loop Road",
+        "Page Springs Road",
+        "SR 89A \u2014 Mingus Mountain Jerome",
+        "Podium Club at Attesa \u2014 Casa Grande",
+        "Firebird Motorsports Park \u2014 Chandler",
+        "Angeles Forest Highway \u2014 County N3",
+        "Upper Big Tujunga Canyon Road",
+        "Big Tujunga Canyon Road",
+        "Glendora Mountain Road",
+        "Glendora Ridge Road",
+        "San Gabriel Canyon Road \u2014 SR 39",
+        "Little Tujunga Canyon Road",
+        "Willow Springs \u2014 Horse Thief Mile",
+        "In-N-Out Burger Pomona Dragstrip",
+        "Willow Springs \u2014 Big Willow",
+        "Willow Springs \u2014 Streets of Willow",
+        "Willow Springs \u2014 Streets \u2014 Short",
+        "Spring Mountain \u2014 North South",
+        "Phoenix, AZ \u2014 Landmark Run",
+        "Los Angeles, CA \u2014 Landmark Run",
+        "Las Vegas, NV \u2014 Landmark Run",
+        "Albuquerque, NM \u2014 Landmark Run"
+      ]
+    },
+    {
+      "refs": [
+        "ground-temperate-grass-v1",
+        "asphaltRoad",
+        "road-dirt-packed",
+        "road-gravel-gray"
+      ],
+      "routes": [
+        "p2loadtest"
+      ]
+    },
+    {
+      "refs": [
+        "environment-v1-ground-ohio-wet-leaf-litter",
+        "road-asphalt-patched",
+        "shoulder-asphalt-gravel"
+      ],
+      "routes": [
+        "Laurel Highlands Scenic Byway"
+      ]
+    },
+    {
+      "refs": [
+        "ground-patchy-snow-leaf-v1",
+        "road-slush",
+        "road-asphalt-wet",
+        "shoulder-asphalt-gravel"
+      ],
+      "routes": [
+        "Ohio River Crossing"
+      ]
+    },
+    {
+      "refs": [
+        "ground-frozen-forest",
+        "ground-gray-gravel-v2",
+        "road-dirt-packed",
+        "shoulder-dirt-grass",
+        "road-gravel-gray",
+        "shoulder-asphalt-gravel"
+      ],
+      "routes": [
+        "Ozark Backroads"
+      ]
+    },
+    {
+      "refs": [
+        "ground-gray-gravel-v2",
+        "ground-industrial-concrete-v2",
+        "ground-patchy-snow-leaf-v1",
+        "road-asphalt-industrial",
+        "shoulder-asphalt-gravel",
+        "road-gravel-gray"
+      ],
+      "routes": [
+        "Data Center City"
+      ]
+    },
+    {
+      "refs": [
+        "ground-brown-dirt-v2",
+        "road-asphalt-faded66",
+        "shoulder-asphalt-gravel"
+      ],
+      "routes": [
+        "Historic Route 66"
+      ]
+    },
+    {
+      "refs": [
+        "ground-alpine-snow-granite-v1",
+        "road-asphalt-worn",
+        "shoulder-asphalt-gravel"
+      ],
+      "routes": [
+        "Pikes Peak Highway"
+      ]
+    },
+    {
+      "refs": [
+        "ground-canyon-rock-v2",
+        "ground-gray-gravel-v2",
+        "road-gravel-red",
+        "ground-red-gravel-v2",
+        "road-gravel-rutted",
+        "road-dirt-packed",
+        "road-dirt-loose"
+      ],
+      "routes": [
+        "Moki Dugway"
+      ]
+    },
+    {
+      "refs": [
+        "ground-gray-gravel-v2",
+        "road-asphalt-worn",
+        "shoulder-asphalt-gravel",
+        "road-asphalt-wet"
+      ],
+      "routes": [
+        "Oak Creek Canyon"
+      ]
+    },
+    {
+      "refs": [
+        "ground-decomposed-granite-dirt-v1",
+        "road-asphalt-worn",
+        "shoulder-asphalt-gravel"
+      ],
+      "routes": [
+        "Angeles Crest Highway"
+      ]
+    },
+    {
+      "refs": [
+        "ground-temperate-grass-v1",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "RI 116 \u2014 North Smithfield Scituate",
+        "RI 102 \u2014 Victory Highway",
+        "RI 44 \u2014 Putnam Pike Glocester",
+        "Lime Rock Park \u2014 Connecticut",
+        "Palmer Motorsports Park \u2014 Massachusetts",
+        "Hurricane Mountain Road \u2014 Conway",
+        "Crawford Notch \u2014 US 302",
+        "Lime Rock Park \u2014 West Chicane",
+        "Lime Rock Park \u2014 Both Chicanes",
+        "Grafton Notch \u2014 Maine 26",
+        "Smugglers Notch \u2014 Vermont 108",
+        "Hartford, CT \u2014 Landmark Run",
+        "Portland, ME \u2014 Landmark Run",
+        "Boston, MA \u2014 Landmark Run",
+        "Manchester, NH \u2014 Landmark Run",
+        "Newark, NJ \u2014 Landmark Run",
+        "New York, NY \u2014 Landmark Run",
+        "Providence, RI \u2014 Landmark Run",
+        "Burlington, VT \u2014 Landmark Run",
+        "Tantalus \u2014 Honolulu Heights"
+      ]
+    },
+    {
+      "refs": [
+        "environment-v1-ground-sebring-olive",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Thompson Speedway \u2014 1.7-mile road course",
+        "Seekonk Speedway \u2014 oval"
+      ]
+    },
+    {
+      "refs": [
+        "environment-v1-ground-dormant-prairie",
+        "road-asphalt-worn"
+      ],
+      "routes": [
+        "I-95 \u2014 Attleboro to Warwick curves"
+      ]
+    },
+    {
+      "refs": [
+        "ground-temperate-grass-v1",
+        "road-dirt-packed"
+      ],
+      "routes": [
+        "Pachaug State Forest \u2014 public gravel access roads",
+        "Magruder Corridor \u2014 Wilderness Ridge"
+      ]
+    },
+    {
+      "refs": [
+        "environment-v1-ground-finnish-boreal-verge",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Kancamagus Highway \u2014 NH 112",
+        "Bear Notch Road \u2014 Bartlett"
+      ]
+    },
+    {
+      "refs": [
+        "environment-v1-ground-dormant-prairie",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Club Motorsports \u2014 Tamworth",
+        "New Hampshire Motor Speedway \u2014 Loudon",
+        "New England Dragway \u2014 Epping"
+      ]
+    },
+    {
+      "refs": [
+        "ground-temperate-grass-v1",
+        "road-gravel-gray"
+      ],
+      "routes": [
+        "Team O\u2019Neil-inspired Rally Stage (2994)",
+        "Skalkaho Pass \u2014 Forest Rally"
+      ]
+    },
+    {
+      "refs": [
+        "ground-patchy-snow-leaf-v1",
+        "road-gravel-gray"
+      ],
+      "routes": [
+        "Forbes State Forest \u2014 designated gravel roads",
+        "Jerktail Landing gravel road"
+      ]
+    },
+    {
+      "refs": [
+        "ground-patchy-snow-leaf-v1",
+        "road-dirt-packed"
+      ],
+      "routes": [
+        "Washington County western covered-bridge gravel loop",
+        "Burr Trail switchbacks \u2014 Capitol Reef"
+      ]
+    },
+    {
+      "refs": [
+        "ground-plains-snow-straw-v1",
+        "road-dirt-packed"
+      ],
+      "routes": [
+        "Ohio Valley Speedway \u2014 Washington, West Virginia"
+      ]
+    },
+    {
+      "refs": [
+        "ground-plains-snow-straw-v1",
+        "road-asphalt-patched",
+        "road-gravel-gray"
+      ],
+      "routes": [
+        "MO H NN \u2014 Roberts Field access",
+        "Glade Top Trail \u2014 Mark Twain National Forest"
+      ]
+    },
+    {
+      "refs": [
+        "ground-plains-snow-straw-v1",
+        "road-asphalt-worn"
+      ],
+      "routes": [
+        "I-64 \u2014 St. Louis downtown approaches",
+        "I-70 \u2014 Stan Musial Veterans Memorial Bridge"
+      ]
+    },
+    {
+      "refs": [
+        "ground-plains-snow-straw-v1",
+        "road-gravel-gray",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Old Route 66 \u2014 Groom Conway"
+      ]
+    },
+    {
+      "refs": [
+        "ground-alpine-snow-granite-v1",
+        "road-asphalt-patched",
+        "road-dirt-packed"
+      ],
+      "routes": [
+        "Gold Camp Road \u2014 Colorado Springs"
+      ]
+    },
+    {
+      "refs": [
+        "ground-alpine-snow-granite-v1",
+        "road-dirt-packed"
+      ],
+      "routes": [
+        "Phantom Canyon Road \u2014 Gold Belt Tour"
+      ]
+    },
+    {
+      "refs": [
+        "ground-alpine-snow-granite-v1",
+        "road-gravel-gray"
+      ],
+      "routes": [
+        "Shelf Road \u2014 Gold Belt Tour"
+      ]
+    },
+    {
+      "refs": [
+        "ground-alpine-snow-granite-v1",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Skyline Drive \u2014 Ca\u00f1on City",
+        "US 24 \u2014 Ute Pass Woodland Park",
+        "CO 67 \u2014 Woodland Park Cripple Creek",
+        "Garden of the Gods \u2014 paved park road",
+        "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+        "Beartooth Highway \u2014 Rock Creek Climb",
+        "Needles Highway \u2014 Granite Gates",
+        "Wind River Canyon \u2014 Canyon Walls",
+        "Salt Lake City, UT \u2014 Landmark Run"
+      ]
+    },
+    {
+      "refs": [
+        "ground-winter-snow-litter-v1",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Pikes Peak International Raceway \u2014 Fountain",
+        "Indianapolis Motor Speedway \u2014 Oval",
+        "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+        "Brandywine Valley \u2014 Montchanin Road",
+        "GingerMan Raceway",
+        "Brainerd \u2014 Competition Course",
+        "NJMP \u2014 Thunderbolt",
+        "Portland International Raceway",
+        "Pacific Raceways",
+        "Ponderosa Pine \u2014 Idaho 21",
+        "Wilmington, DE \u2014 Landmark Run",
+        "Chicago, IL \u2014 Landmark Run",
+        "Des Moines, IA \u2014 Landmark Run",
+        "Baltimore, MD \u2014 Landmark Run",
+        "Detroit, MI \u2014 Landmark Run",
+        "Anchorage, AK \u2014 Landmark Run",
+        "Indianapolis, IN \u2014 Landmark Run",
+        "Minneapolis, MN \u2014 Landmark Run",
+        "Cleveland, OH \u2014 Landmark Run",
+        "Portland, OR \u2014 Landmark Run",
+        "Philadelphia, PA \u2014 Landmark Run",
+        "Seattle, WA \u2014 Landmark Run",
+        "Milwaukee, WI \u2014 Landmark Run"
+      ]
+    },
+    {
+      "refs": [
+        "ground-snow-chaparral-v1",
+        "road-dirt-packed"
+      ],
+      "routes": [
+        "Valley of the Gods Road \u2014 San Juan CR 242",
+        "Muley Point Road \u2014 CR 241",
+        "Shafer Trail \u2014 Canyonlands National Park"
+      ]
+    },
+    {
+      "refs": [
+        "ground-snow-chaparral-v1",
+        "road-gravel-gray"
+      ],
+      "routes": [
+        "Boynton Pass Road FR 525 loop",
+        "Schnebly Hill Road \u2014 Sedona"
+      ]
+    },
+    {
+      "refs": [
+        "ground-alpine-snow-granite-v1",
+        "snowroad"
+      ],
+      "routes": [
+        "Thompson Pass \u2014 Snowline Climb"
+      ]
+    },
+    {
+      "refs": [
+        "ground-winter-snow-litter-v1",
+        "snowroad",
+        "road-gravel-gray"
+      ],
+      "routes": [
+        "Denali Highway \u2014 Tundra Gravel"
+      ]
+    },
+    {
+      "refs": [
+        "ground-alpine-rock-v2",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Chief Joseph \u2014 Dead Indian Pass"
+      ]
+    },
+    {
+      "refs": [
+        "ground-volcanic-cinder-v1",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Haleakala \u2014 Volcano Ascent"
+      ]
+    },
+    {
+      "refs": [
+        "ground-volcanic-snow-v1",
+        "road-gravel-gray",
+        "road-asphalt-patched",
+        "snowroad"
+      ],
+      "routes": [
+        "Maunakea \u2014 Cinder Summit"
+      ]
+    },
+    {
+      "refs": [
+        "ground-prairie-grass-v1",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Sandhills Journey \u2014 Open Prairie"
+      ]
+    },
+    {
+      "refs": [
+        "ground-desert-scrub-v2",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Grand Canyon \u2014 Desert View Drive"
+      ]
+    },
+    {
+      "refs": [
+        "ground-decomposed-granite-dirt-v1",
+        "road-dirt-packed"
+      ],
+      "routes": [
+        "Grand Canyon \u2014 Diamond Creek Descent"
+      ]
+    },
+    {
+      "refs": [
+        "ground-prairie-grass-v1",
+        "road-dirt-packed",
+        "road-asphalt-patched"
+      ],
+      "routes": [
+        "Bayard \u2014 Road 77 to City Park"
+      ]
+    }
+  ]
+}

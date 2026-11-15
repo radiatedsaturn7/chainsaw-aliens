@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "base": "24b3164e4b7765482a9b819e6968f821b452b344",
+  "recipes": [
+    {
+      "key": "watkins-morning",
+      "ref": "environment-v1-watkins-morning",
+      "sourceImage": "/workspace/generated_images/exec-fd060c4d-895d-4ebc-99fb-b62caceb5960.png",
+      "source": "environment-v1/watkins-morning.png",
+      "physicalSource": "tools/campaigns/raceway_sources.json",
+      "reference": "https://www.theglen.com/track-info/",
+      "sourceLimitation": "Official facility page plus exact saved source coordinates/layout; abandoned structures are original fictional 2994 interpretation.",
+      "boundaryReview": "Imagegen boundary repair; native wrap review required, not accepted from prompt alone.",
+      "preservedDraft": "/workspace/generated_images/exec-08c0d4a9-24b3-4308-b292-69854267cb53.png",
+      "regionalReference": "https://www.theglen.com/area-accommodations/"
+    },
+    {
+      "key": "watkins-evening",
+      "ref": "environment-v1-watkins-evening",
+      "sourceImage": "/workspace/generated_images/exec-baaedef9-91e5-4b84-87bb-d6a784ddbf59.png",
+      "source": "environment-v1/watkins-evening.png",
+      "physicalSource": "tools/campaigns/raceway_sources.json",
+      "reference": "https://www.theglen.com/track-info/",
+      "sourceLimitation": "Official facility page plus exact saved source coordinates/layout; abandoned structures are original fictional 2994 interpretation.",
+      "boundaryReview": "Imagegen boundary repair; native wrap review required, not accepted from prompt alone.",
+      "preservedDraft": "/workspace/generated_images/exec-228f22f7-1ab4-48c1-8c87-f63eb7fdcbe4.png",
+      "regionalReference": "https://www.theglen.com/area-accommodations/"
+    },
+    {
+      "key": "watkins-noon",
+      "ref": "environment-v1-watkins-noon",
+      "sourceImage": "/workspace/generated_images/exec-52b4fe3a-5cda-407e-8056-d5d721ec0888.png",
+      "source": "environment-v1/watkins-noon.png",
+      "physicalSource": "tools/campaigns/raceway_sources.json",
+      "reference": "https://www.theglen.com/track-info/",
+      "sourceLimitation": "Official facility page plus exact saved source coordinates/layout; abandoned structures are original fictional 2994 interpretation.",
+      "boundaryReview": "Imagegen boundary repair; native wrap review required, not accepted from prompt alone.",
+      "preservedDraft": "/workspace/generated_images/exec-f19737e4-b462-42aa-bbe6-4abe3dd42681.png",
+      "regionalReference": "https://www.theglen.com/area-accommodations/"
+    },
+    {
+      "key": "road-america-evening",
+      "ref": "environment-v1-road-america-evening",
+      "sourceImage": "/workspace/generated_images/exec-94ce247f-ea99-4c73-9b31-935d2ab70aa5.png",
+      "source": "environment-v1/road-america-evening.png",
+      "physicalSource": "tools/campaigns/raceway_sources.json",
+      "reference": "https://www.roadamerica.com/faq",
+      "sourceLimitation": "Official FAQ retrieved: wooded areas, grass, gravel, hills and Kettle Moraine setting. Track-history URL was inaccessible; no reliance on it. Future ruins are illustrative.",
+      "boundaryReview": "Imagegen boundary repair; native wrap review required, not accepted from prompt alone.",
+      "preservedDraft": "/workspace/generated_images/exec-0bed2307-4b3a-4f59-a3fb-12b7d9ce72ac.png"
+    },
+    {
+      "key": "road-america-noon",
+      "ref": "environment-v1-road-america-noon",
+      "sourceImage": "/workspace/generated_images/exec-fa6183c5-a18d-42b3-b8bd-3b6f37a3bf93.png",
+      "source": "environment-v1/road-america-noon.png",
+      "physicalSource": "tools/campaigns/raceway_sources.json",
+      "reference": "https://www.roadamerica.com/faq",
+      "sourceLimitation": "Official FAQ retrieved: wooded areas, grass, gravel, hills and Kettle Moraine setting. Track-history URL was inaccessible; no reliance on it. Future ruins are illustrative.",
+      "boundaryReview": "Imagegen boundary repair; native wrap review required, not accepted from prompt alone.",
+      "preservedDraft": "/workspace/generated_images/exec-c07b2730-7ad6-4748-8e67-d29003916124.png"
+    },
+    {
+      "key": "homestead-evening",
+      "ref": "environment-v1-homestead-evening",
+      "sourceImage": "/workspace/generated_images/exec-cc16f568-4031-451e-808b-2dd4856424c8.png",
+      "source": "environment-v1/homestead-evening.png",
+      "physicalSource": "tools/campaigns/raceway_sources.json",
+      "reference": "https://www.homesteadmiamispeedway.com/track-history/",
+      "sourceLimitation": "Official facility page plus exact saved source coordinates/layout; abandoned structures are original fictional 2994 interpretation.",
+      "boundaryReview": "Imagegen boundary repair; native wrap review required, not accepted from prompt alone.",
+      "preservedDraft": "/workspace/generated_images/exec-8813cd04-bee4-4fc5-85c0-e7efc0a426c4.png"
+    },
+    {
+      "key": "willow-morning",
+      "ref": "environment-v1-willow-morning",
+      "sourceImage": "/workspace/generated_images/exec-e01a060a-6d6c-47e0-b6ff-80ce2e478931.png",
+      "source": "environment-v1/willow-morning.png",
+      "physicalSource": "tools/campaigns/raceway_sources.json",
+      "reference": "https://willowspringsraceway.com/",
+      "sourceLimitation": "Official facility page plus exact saved source coordinates/layout; abandoned structures are original fictional 2994 interpretation.",
+      "boundaryReview": "Imagegen boundary repair; native wrap review required, not accepted from prompt alone.",
+      "preservedDraft": "/workspace/generated_images/exec-b746f004-6f01-49f0-96b5-139031ca6c6b.png",
+      "regionalReference": "https://www.speedventures.com/Events/trackinfo.aspx?id=1"
+    },
+    {
+      "key": "willow-evening",
+      "ref": "environment-v1-willow-evening",
+      "sourceImage": "/workspace/generated_images/exec-077ba05a-1a42-40bd-8e9f-63ba9406d141.png",
+      "source": "environment-v1/willow-evening.png",
+      "physicalSource": "tools/campaigns/raceway_sources.json",
+      "reference": "https://willowspringsraceway.com/",
+      "sourceLimitation": "Official facility page plus exact saved source coordinates/layout; abandoned structures are original fictional 2994 interpretation.",
+      "boundaryReview": "Imagegen boundary repair; native wrap review required, not accepted from prompt alone.",
+      "preservedDraft": "/workspace/generated_images/exec-008f4c65-c53a-4070-aa3a-b46a2bc1a6f1.png",
+      "regionalReference": "https://www.speedventures.com/Events/trackinfo.aspx?id=1"
+    },
+    {
+      "key": "daytona-evening",
+      "ref": "environment-v1-daytona-evening",
+      "sourceImage": "/workspace/generated_images/exec-f5e65a64-af35-40c3-a1f4-50eeca28f6d6.png",
+      "source": "environment-v1/daytona-evening.png",
+      "physicalSource": "tools/campaigns/raceway_sources.json",
+      "reference": "https://www.daytonainternationalspeedway.com/",
+      "sourceLimitation": "Official facility page plus exact saved source coordinates/layout; abandoned structures are original fictional 2994 interpretation.",
+      "boundaryReview": "Top cloud removed from safe boundary by imagegen; fresh native pitch/wrap evidence required.",
+      "preservedDraft": "/workspace/generated_images/exec-17bfde83-9c44-4480-b10e-8c3451f848f9.png",
+      "preservedTopEdgeDraft": "/workspace/generated_images/exec-7a2ce099-a594-4718-a0ea-fd2cf711bc33.png"
+    }
+  ],
+  "sharingPolicy": "No change to existing guard: only identical siteGroup and saved authored environment share identical sky pixels. No night variants included."
+}

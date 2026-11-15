@@ -1,0 +1,3441 @@
+{
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "parent": "03641a6d5d3abdf51d67b5de5cfd0767340f6e12",
+  "routes": [
+    {
+      "raceRef": "Col de Turini",
+      "documentPath": "races/Col de Turini/document.json",
+      "weather": "snow",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 7592
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "skybox-col-de-turini"
+      },
+      "after": {
+        "skyboxArtRef": "skybox-col-de-turini",
+        "terrainTileArtById": {
+          "grass": "ground-frosted-grass-v1"
+        },
+        "groundPlaneArtRef": "ground-frosted-grass-v1"
+      },
+      "siteContext": "col de turini  col de turini",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Daytona Tri-Oval",
+      "documentPath": "races/Daytona Tri-Oval/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 10656
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "skybox-daytona",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "skybox-daytona",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "daytona tri-oval  daytona international speedway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Mount Washington Auto Road \u2014 point-to-point",
+      "documentPath": "races/Mount Washington Auto Road %E2%80%94 point-to-point/document.json",
+      "weather": "snow",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "gravel": 8685,
+        "snow": 6712
+      },
+      "groundPlaneIntent": "gravel",
+      "before": {
+        "skyboxArtRef": "environment-v1-mount-washington-snow-noon",
+        "groundPlaneArtRef": "ground-clean-snow-v2",
+        "terrainTileArtById": {
+          "snow": "ground-clean-snow-v2",
+          "gravel": "ground-alpine-rock-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-mount-washington-snow-noon",
+        "groundPlaneArtRef": "ground-alpine-rock-v2",
+        "terrainTileArtById": {
+          "snow": "ground-clean-snow-v2",
+          "gravel": "ground-alpine-rock-v2"
+        }
+      },
+      "siteContext": "mount washington auto road \u2014 point-to-point  mount washington auto road, sargent's purchase, co\u00f6s county, new hampshire, 03589, united states",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Nurburgring Nordschleife",
+      "documentPath": "races/Nurburgring Nordschleife/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 20352
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "skybox-eifel-circuit"
+      },
+      "after": {
+        "skyboxArtRef": "skybox-eifel-circuit",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1"
+      },
+      "siteContext": "nurburgring nordschleife  nurburgring nordschleife",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Ouninpohja",
+      "documentPath": "races/Ouninpohja/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 12720
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-ouninpohja-boreal-noon",
+        "groundPlaneArtRef": "environment-v1-ground-finnish-boreal-verge",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-finnish-boreal-verge"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-ouninpohja-boreal-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "ouninpohja  ouninpohja",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Studio Sprint2",
+      "documentPath": "races/Studio Sprint2/document.json",
+      "weather": "snow",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 48133
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-studio-snowcloud-noon",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-studio-snowcloud-noon",
+        "groundPlaneArtRef": "ground-frosted-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-frosted-grass-v1"
+        }
+      },
+      "siteContext": "studio sprint2 fictional studio sprint2 hill-test setting: low undulating tree-lined grass hills and a distant worn test hangar beneath dense cold snow clouds. sparse frost in sheltered patches, grass still visible; no blue summer sky or moon. studio sprint2",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Tower Hill Road",
+      "documentPath": "races/Tower Hill Road/document.json",
+      "weather": "snow",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 7421
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-tower-hill-snow-night",
+        "groundPlaneArtRef": "ground-clean-snow-v2",
+        "terrainTileArtById": {
+          "grass": "ground-clean-snow-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-tower-hill-snow-night",
+        "groundPlaneArtRef": "ground-frosted-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-frosted-grass-v1"
+        }
+      },
+      "siteContext": "tower hill road  tower hill road, cumberland, ri",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Laurel Highlands Scenic Byway",
+      "documentPath": "races/Laurel Highlands Scenic Byway/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "dirt": 23760
+      },
+      "groundPlaneIntent": "dirt",
+      "before": {
+        "skyboxArtRef": "environment-v1-laurel-ohiopyle-evening"
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-laurel-ohiopyle-evening",
+        "terrainTileArtById": {
+          "dirt": "environment-v1-ground-ohio-wet-leaf-litter"
+        },
+        "groundPlaneArtRef": "environment-v1-ground-ohio-wet-leaf-litter"
+      },
+      "siteContext": "laurel highlands scenic byway  pa 381 ohiopyle / mill run hills and gorge approaches",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Ohio River Crossing",
+      "documentPath": "races/Ohio River Crossing/document.json",
+      "weather": "storm",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 18591,
+        "slush": 1
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-ohio-little-muskingum-storm",
+        "groundPlaneArtRef": "environment-v1-ground-ohio-wet-leaf-litter",
+        "terrainArtMap": {
+          "ground-dirty-snow-v2": "environment-v1-ground-ohio-wet-leaf-litter"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-ohio-little-muskingum-storm",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainArtMap": {
+          "ground-dirty-snow-v2": "environment-v1-ground-ohio-wet-leaf-litter"
+        },
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1",
+          "slush": "road-slush"
+        }
+      },
+      "siteContext": "ohio river crossing  ohio river crossing",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Ozark Backroads",
+      "documentPath": "races/Ozark Backroads/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "dirt": 4369,
+        "gravel": 3011
+      },
+      "groundPlaneIntent": "dirt",
+      "before": {
+        "skyboxArtRef": "environment-v1-ozark-eminence-day"
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-ozark-eminence-day",
+        "terrainTileArtById": {
+          "dirt": "ground-frozen-forest",
+          "gravel": "ground-gray-gravel-v2"
+        },
+        "groundPlaneArtRef": "ground-frozen-forest"
+      },
+      "siteContext": "ozark backroads  missouri highway19 near eminence, wooded limestone hills. brown dirt and gray gravel retained for authored abandoned-road conditions.",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Data Center City",
+      "documentPath": "races/Data Center City/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "asphalt": 2527,
+        "gravel": 5692,
+        "snow": 4701
+      },
+      "groundPlaneIntent": "gravel",
+      "before": {
+        "skyboxArtRef": "environment-v1-stl-riverfront-night"
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-stl-riverfront-night",
+        "terrainTileArtById": {
+          "asphalt": "ground-industrial-concrete-v2",
+          "gravel": "ground-gray-gravel-v2",
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "groundPlaneArtRef": "ground-gray-gravel-v2"
+      },
+      "siteContext": "data center city  north broadway/riverview/hall street mississippi riverfront; low horizon, fictional clean colorful machine campus. concrete/rubble visual bindings retained without changing authored rubble surfaces.",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Historic Route 66",
+      "documentPath": "races/Historic Route 66/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "dirt": 2970
+      },
+      "groundPlaneIntent": "dirt",
+      "before": {
+        "skyboxArtRef": "environment-v1-route66-erick-texola",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainArtMap": {
+          "ground-desert-scrub-v2": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-route66-erick-texola",
+        "groundPlaneArtRef": "ground-brown-dirt-v2",
+        "terrainArtMap": {
+          "ground-desert-scrub-v2": "environment-v1-ground-dormant-prairie"
+        },
+        "terrainTileArtById": {
+          "dirt": "ground-brown-dirt-v2"
+        }
+      },
+      "siteContext": "historic route 66  erick\u2013texola route 66 low prairie",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Moki Dugway",
+      "documentPath": "races/Moki Dugway/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "gravel": 17930
+      },
+      "groundPlaneIntent": "gravel",
+      "before": {
+        "skyboxArtRef": "environment-v1-moki-cedar-mesa-day"
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-moki-cedar-mesa-day",
+        "terrainTileArtById": {
+          "gravel": "ground-gray-gravel-v2"
+        }
+      },
+      "siteContext": "moki dugway  cedar mesa / utah261 moki dugway, layered sandstone basin. existing canyon/red-gravel visual materials retained; physical eroded surfaces unchanged.",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Oak Creek Canyon",
+      "documentPath": "races/Oak Creek Canyon/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "gravel": 7958
+      },
+      "groundPlaneIntent": "gravel",
+      "before": {
+        "skyboxArtRef": "environment-v1-oakrim-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "gravel": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-oakrim-evening",
+        "groundPlaneArtRef": "ground-gray-gravel-v2",
+        "terrainTileArtById": {
+          "gravel": "ground-gray-gravel-v2"
+        }
+      },
+      "siteContext": "oak creek canyon upper oak creek canyon near vista: ponderosa pine rim and deep forested canyon, red and tan horizontal rock strata below dark conifer rim, no saguaro or desert dunes, warm evening. oak creek canyon",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "RI 116 \u2014 North Smithfield Scituate",
+      "documentPath": "races/RI 116 %E2%80%94 North Smithfield Scituate/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 14774
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-ri116-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "grass": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-ri116-morning",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "siteContext": "ri 116 \u2014 north smithfield scituate  ri 116 \u2014 north smithfield / scituate",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Thompson Speedway \u2014 1.7-mile road course",
+      "documentPath": "races/Thompson Speedway %E2%80%94 1.7-mile road course/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 7029
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-thompson-noon",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-thompson-noon",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "grass": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "siteContext": "thompson speedway \u2014 1.7-mile road course thompson connecticut speedway, low rolling wooded northeastern connecticut hills, small disused oval bleachers at one side, modest pit roofs, low dense oak and pine tree horizon, open dormant grass infield thompson speedway \u2014 1.7-mile road course",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "RI 102 \u2014 Victory Highway",
+      "documentPath": "races/RI 102 %E2%80%94 Victory Highway/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 3480
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-ri102-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "grass": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-ri102-evening",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "siteContext": "ri 102 \u2014 victory highway  ri 102 \u2014 victory highway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Seekonk Speedway \u2014 oval",
+      "documentPath": "races/Seekonk Speedway %E2%80%94 oval/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 1295
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-seekonk-noon",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-seekonk-noon",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "grass": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "siteContext": "seekonk speedway \u2014 oval seekonk massachusetts small paved oval: flat coastal plain, compact low empty bleachers, abandoned weathered announcer booth, distant mixed suburban woodland and a few small industrial roofs, no mountains seekonk speedway \u2014 oval",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "RI 44 \u2014 Putnam Pike Glocester",
+      "documentPath": "races/RI 44 %E2%80%94 Putnam Pike Glocester/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 8016
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-ri44-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "grass": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-ri44-morning",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "siteContext": "ri 44 \u2014 putnam pike glocester  ri 44 \u2014 putnam pike / glocester",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Lime Rock Park \u2014 Connecticut",
+      "documentPath": "races/Lime Rock Park %E2%80%94 Connecticut/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 8470
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-lime-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-lime-evening",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest",
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "siteContext": "lime rock park \u2014 connecticut  lime rock park",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Kancamagus Highway \u2014 NH 112",
+      "documentPath": "races/Kancamagus Highway %E2%80%94 NH 112/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 15300
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-kancamagus-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "grass": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-kancamagus-morning",
+        "groundPlaneArtRef": "environment-v1-ground-finnish-boreal-verge",
+        "terrainTileArtById": {
+          "grass": "environment-v1-ground-finnish-boreal-verge"
+        }
+      },
+      "siteContext": "kancamagus highway \u2014 nh 112  kancamagus highway \u2014 nh 112",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Bear Notch Road \u2014 Bartlett",
+      "documentPath": "races/Bear Notch Road %E2%80%94 Bartlett/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 24492
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-bear-notch-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "grass": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-bear-notch-morning",
+        "groundPlaneArtRef": "environment-v1-ground-finnish-boreal-verge",
+        "terrainTileArtById": {
+          "grass": "environment-v1-ground-finnish-boreal-verge"
+        }
+      },
+      "siteContext": "bear notch road \u2014 bartlett  bear notch road \u2014 bartlett",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Hurricane Mountain Road \u2014 Conway",
+      "documentPath": "races/Hurricane Mountain Road %E2%80%94 Conway/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 7788
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-hurricane-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "grass": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-hurricane-evening",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "siteContext": "hurricane mountain road \u2014 conway  hurricane mountain road \u2014 conway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Crawford Notch \u2014 US 302",
+      "documentPath": "races/Crawford Notch %E2%80%94 US 302/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 15045
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-crawford-noon",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "grass": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-crawford-noon",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "siteContext": "crawford notch \u2014 us 302  crawford notch \u2014 us 302",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Pinkham Notch \u2014 NH 16",
+      "documentPath": "races/Pinkham Notch %E2%80%94 NH 16/document.json",
+      "weather": "snow",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 10890
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-pinkham-snow-noon",
+        "groundPlaneArtRef": "ground-clean-snow-v2",
+        "terrainTileArtById": {
+          "grass": "ground-clean-snow-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-pinkham-snow-noon",
+        "groundPlaneArtRef": "ground-frosted-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-frosted-grass-v1"
+        }
+      },
+      "siteContext": "pinkham notch \u2014 nh 16  pinkham notch \u2014 nh 16",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Team O\u2019Neil-inspired Rally Stage (2994)",
+      "documentPath": "races/Team O%E2%80%99Neil-inspired Rally Stage (2994)/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 24684
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-oneil-noon",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "grass": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-oneil-noon",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "siteContext": "team o\u2019neil-inspired rally stage (2994)  team o\u2019neil rally school \u2014 dalton",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "PA 381 \u2014 Ohiopyle approach",
+      "documentPath": "races/PA 381 %E2%80%94 Ohiopyle approach/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 14080
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-ohiopyle-noon",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-ohiopyle-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "pa 381 \u2014 ohiopyle approach  pa 381 \u2014 ohiopyle approach",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "PA 711 \u2014 Normalville Champion",
+      "documentPath": "races/PA 711 %E2%80%94 Normalville Champion/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 26970
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-normalville-evening",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-normalville-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "pa 711 \u2014 normalville champion  pa 711 \u2014 normalville / champion",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "US 40 \u2014 Chalk Hill Summit",
+      "documentPath": "races/US 40 %E2%80%94 Chalk Hill Summit/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 18857
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-chalk-hill-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-chalk-hill-evening",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "us 40 \u2014 chalk hill summit  us 40 \u2014 chalk hill / summit",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "PA 31 \u2014 Donegal to Laurel Ridge",
+      "documentPath": "races/PA 31 %E2%80%94 Donegal to Laurel Ridge/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 13090
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-donegal-night",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-donegal-night",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "pa 31 \u2014 donegal to laurel ridge  pa 31 \u2014 donegal to laurel ridge",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "County Line Road \u2014 Seven Springs",
+      "documentPath": "races/County Line Road %E2%80%94 Seven Springs/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 17604
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-seven-springs-night",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-seven-springs-night",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "county line road \u2014 seven springs  county line road \u2014 seven springs",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Forbes State Forest \u2014 designated gravel roads",
+      "documentPath": "races/Forbes State Forest %E2%80%94 designated gravel roads/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 20709
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-forbes-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-forbes-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "forbes state forest \u2014 designated gravel roads  forbes state forest \u2014 designated gravel roads",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Jennerstown Speedway \u2014 oval",
+      "documentPath": "races/Jennerstown Speedway %E2%80%94 oval/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 2401
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-jennerstown-night",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-jennerstown-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "jennerstown speedway \u2014 oval  jennerstown speedway \u2014 oval",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Keystone Motorsports Park \u2014 New Alexandria",
+      "documentPath": "races/Keystone Motorsports Park %E2%80%94 New Alexandria/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 10248
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-keystone-morning",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-keystone-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "keystone motorsports park \u2014 new alexandria  keystone motorsports park \u2014 new alexandria",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Pittsburgh International Race Complex \u2014 Wampum",
+      "documentPath": "races/Pittsburgh International Race Complex %E2%80%94 Wampum/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 16482
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-pitt-noon",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-pitt-noon",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "pittsburgh international race complex \u2014 wampum  pittsburgh international race complex \u2014 wampum",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "OH 26 \u2014 Covered Bridge Scenic Byway",
+      "documentPath": "races/OH 26 %E2%80%94 Covered Bridge Scenic Byway/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 26864
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-oh26-noon",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-oh26-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "oh 26 \u2014 covered bridge scenic byway  oh 26 \u2014 covered bridge scenic byway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "OH 555 \u2014 Triple Nickel",
+      "documentPath": "races/OH 555 %E2%80%94 Triple Nickel/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 15604
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-triple-nickel-evening",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-triple-nickel-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "oh 555 \u2014 triple nickel  oh 555 \u2014 triple nickel",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "OH 550 \u2014 Barlow approach",
+      "documentPath": "races/OH 550 %E2%80%94 Barlow approach/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 4698
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-barlow-morning",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-barlow-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "oh 550 \u2014 barlow approach  oh 550 \u2014 barlow approach",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "OH 536 \u2014 Ohio River hills",
+      "documentPath": "races/OH 536 %E2%80%94 Ohio River hills/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 28826
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-oh536-night",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-oh536-night",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "oh 536 \u2014 ohio river hills  oh 536 \u2014 ohio river hills",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "OH 676 \u2014 Western county hills",
+      "documentPath": "races/OH 676 %E2%80%94 Western county hills/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 25521
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-oh676-night",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-oh676-night",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "oh 676 \u2014 western county hills  oh 676 \u2014 western county hills",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Marietta\u2013Williamstown \u2014 I-77 river bridge",
+      "documentPath": "races/Marietta%E2%80%93Williamstown %E2%80%94 I-77 river bridge/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 4698
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-marietta-evening",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-marietta-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "marietta\u2013williamstown \u2014 i-77 river bridge  marietta\u2013williamstown \u2014 i-77 river bridge",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Washington County western covered-bridge gravel loop",
+      "documentPath": "races/Washington County western covered-bridge gravel loop/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 19436
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-washington-gravel-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-washington-gravel-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "washington county western covered-bridge gravel loop  washington county western covered-bridge gravel loop",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Ohio Valley Speedway \u2014 Washington, West Virginia",
+      "documentPath": "races/Ohio Valley Speedway %E2%80%94 Washington%2C West Virginia/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 1330
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-ohio-valley-night",
+        "groundPlaneArtRef": "ground-brown-dirt-v2",
+        "terrainTileArtById": {
+          "snow": "ground-brown-dirt-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-ohio-valley-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "ohio valley speedway \u2014 washington, west virginia  ohio valley speedway \u2014 washington, west virginia",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Mid-Ohio Sports Car Course \u2014 Lexington",
+      "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Lexington/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 12972
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-mid-ohio-morning",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-mid-ohio-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "mid-ohio sports car course \u2014 lexington  mid-ohio sports car course",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "MO 19 \u2014 Eminence Current River",
+      "documentPath": "races/MO 19 %E2%80%94 Eminence Current River/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 17028
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-eminence-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-eminence-evening",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "mo 19 \u2014 eminence current river  mo 19 \u2014 eminence / current river",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "MO 106 \u2014 Alley Spring approach",
+      "documentPath": "races/MO 106 %E2%80%94 Alley Spring approach/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 5940
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-alley-noon",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-alley-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "mo 106 \u2014 alley spring approach  mo 106 \u2014 alley spring approach",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "MO 106 \u2014 Powder Mill approach",
+      "documentPath": "races/MO 106 %E2%80%94 Powder Mill approach/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 8379
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-powder-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-powder-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "mo 106 \u2014 powder mill approach  mo 106 \u2014 powder mill approach",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "MO V \u2014 Two Rivers access",
+      "documentPath": "races/MO V %E2%80%94 Two Rivers access/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 7638
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-two-rivers-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-two-rivers-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "mo v \u2014 two rivers access  mo v \u2014 two rivers access",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "MO H NN \u2014 Roberts Field access",
+      "documentPath": "races/MO H NN %E2%80%94 Roberts Field access/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 17820
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-roberts-evening",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-roberts-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "mo h nn \u2014 roberts field access  mo h / nn \u2014 roberts field access",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Jerktail Landing gravel road",
+      "documentPath": "races/Jerktail Landing gravel road/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 8184
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-jerktail-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-jerktail-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "jerktail landing gravel road  jerktail landing gravel road",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "US 60 \u2014 Winona Van Buren",
+      "documentPath": "races/US 60 %E2%80%94 Winona Van Buren/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 12337
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-winona-noon",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-winona-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "us 60 \u2014 winona van buren  us 60 \u2014 winona / van buren",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Glade Top Trail \u2014 Mark Twain National Forest",
+      "documentPath": "races/Glade Top Trail %E2%80%94 Mark Twain National Forest/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 12900
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-glade-morning",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-glade-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "glade top trail \u2014 mark twain national forest  glade top trail \u2014 mark twain national forest",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Ozarks International Raceway \u2014 Gravois Mills",
+      "documentPath": "races/Ozarks International Raceway %E2%80%94 Gravois Mills/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 18328
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-oir-morning",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-oir-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "ozarks international raceway \u2014 gravois mills  ozarks international raceway \u2014 gravois mills",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "World Wide Technology Raceway \u2014 road course",
+      "documentPath": "races/World Wide Technology Raceway %E2%80%94 road course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 6206
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-gateway-noon",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-gateway-noon",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "world wide technology raceway \u2014 road course  world wide technology raceway / gateway complex",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "World Wide Technology Raceway \u2014 oval",
+      "documentPath": "races/World Wide Technology Raceway %E2%80%94 oval/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 6634
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-gateway-night",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-gateway-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "world wide technology raceway \u2014 oval  world wide technology raceway / gateway complex",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "World Wide Technology Raceway \u2014 drag strip",
+      "documentPath": "races/World Wide Technology Raceway %E2%80%94 drag strip/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 13120
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-gateway-night",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-gateway-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "world wide technology raceway \u2014 drag strip  world wide technology raceway / gateway complex",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "I-64 \u2014 St. Louis downtown approaches",
+      "documentPath": "races/I-64 %E2%80%94 St. Louis downtown approaches/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 6253
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-stl64-morning",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-stl64-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "i-64 \u2014 st. louis downtown approaches  i-64 \u2014 st. louis downtown approaches",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "I-70 \u2014 Stan Musial Veterans Memorial Bridge",
+      "documentPath": "races/I-70 %E2%80%94 Stan Musial Veterans Memorial Bridge/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 20111
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-stan-noon",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-stan-noon",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "i-70 \u2014 stan musial veterans memorial bridge  i-70 \u2014 stan musial veterans memorial bridge",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "IL 100 \u2014 Great River Road bluffs",
+      "documentPath": "races/IL 100 %E2%80%94 Great River Road bluffs/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 8000
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-alton-noon",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-alton-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "il 100 \u2014 great river road bluffs  il 100 \u2014 great river road bluffs",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "MO 94 \u2014 Defiance Augusta",
+      "documentPath": "races/MO 94 %E2%80%94 Defiance Augusta/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 26488
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-defiance-evening",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-defiance-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "mo 94 \u2014 defiance augusta  mo 94 \u2014 defiance / augusta",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Gateway Kartplex \u2014 WWT complex",
+      "documentPath": "races/Gateway Kartplex %E2%80%94 WWT complex/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 2460
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-gateway-morning",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-gateway-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "gateway kartplex \u2014 wwt complex  world wide technology raceway / gateway complex",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+      "documentPath": "races/Federated Auto Parts Raceway at I-55 %E2%80%94 Pevely/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 1364
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-pevely-evening",
+        "groundPlaneArtRef": "ground-brown-dirt-v2",
+        "terrainTileArtById": {
+          "snow": "ground-brown-dirt-v2"
+        },
+        "roadArtMap": {
+          "road-asphalt-patched": "road-dirt-packed"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-pevely-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "federated auto parts raceway at i-55 \u2014 pevely  federated auto parts raceway at i-55 \u2014 pevely",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage.",
+      "roadRemediation": {
+        "status": "restored baseline asphalt-compatible art; physical-site mismatch pending",
+        "reason": "Prior dirt visual on physical asphalt was introduced by this branch. Restore exact baseline road textures rather than conceal traction semantics. The real dirt-oval site still conflicts with preserved asphalt physics and requires separate design resolution."
+      }
+    },
+    {
+      "raceRef": "Gold Camp Road \u2014 Colorado Springs",
+      "documentPath": "races/Gold Camp Road %E2%80%94 Colorado Springs/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 22022
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-goldcamp-night",
+        "groundPlaneArtRef": "ground-gray-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-gray-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-goldcamp-night",
+        "groundPlaneArtRef": "ground-alpine-snow-granite-v1",
+        "terrainTileArtById": {
+          "snow": "ground-alpine-snow-granite-v1"
+        }
+      },
+      "siteContext": "gold camp road \u2014 colorado springs close dark weathered granite cheyenne mountain canyon with ponderosa pines and a tiny abandoned stone railroad portal to one side; layered distant city basin, clear night crescent only high center. gold camp road \u2014 colorado springs",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "documentPath": "races/Phantom Canyon Road %E2%80%94 Gold Belt Tour/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 17136
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-phantom-morning",
+        "groundPlaneArtRef": "ground-gray-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-gray-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-phantom-morning",
+        "groundPlaneArtRef": "ground-alpine-snow-granite-v1",
+        "terrainTileArtById": {
+          "snow": "ground-alpine-snow-granite-v1"
+        }
+      },
+      "siteContext": "phantom canyon road \u2014 gold belt tour enclosed rugged granite canyon, steep pale pink crags with sparse pinyon and juniper, narrow dry valley, abandoned tiny iron trestle deep below. no broad red mesas. phantom canyon road \u2014 gold belt tour",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Shelf Road \u2014 Gold Belt Tour",
+      "documentPath": "races/Shelf Road %E2%80%94 Gold Belt Tour/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 15015
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-shelf-morning",
+        "groundPlaneArtRef": "ground-gray-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-gray-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-shelf-morning",
+        "groundPlaneArtRef": "ground-alpine-snow-granite-v1",
+        "terrainTileArtById": {
+          "snow": "ground-alpine-snow-granite-v1"
+        }
+      },
+      "siteContext": "shelf road \u2014 gold belt tour tall tawny limestone canyon wall and a narrow natural window rock high in central bluff, dry creek valley with pinyon juniper, broad low distant ridge at both ends. shelf road \u2014 gold belt tour",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Skyline Drive \u2014 Ca\u00f1on City",
+      "documentPath": "races/Skyline Drive %E2%80%94 Ca%C3%B1on City/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 12276
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-skyline-night",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-skyline-night",
+        "groundPlaneArtRef": "ground-alpine-snow-granite-v1",
+        "terrainTileArtById": {
+          "snow": "ground-alpine-snow-granite-v1"
+        }
+      },
+      "siteContext": "skyline drive \u2014 ca\u00f1on city narrow tilted tan hogback ridge over broad canon city arkansas river basin; dark sparse settlement grid and low distant wet mountains, clear crescent and sparse stars. skyline drive \u2014 ca\u00f1on city",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "US 24 \u2014 Ute Pass Woodland Park",
+      "documentPath": "races/US 24 %E2%80%94 Ute Pass Woodland Park/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 30102
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-utepass-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-utepass-morning",
+        "groundPlaneArtRef": "ground-alpine-snow-granite-v1",
+        "terrainTileArtById": {
+          "snow": "ground-alpine-snow-granite-v1"
+        }
+      },
+      "siteContext": "us 24 \u2014 ute pass woodland park ponderosa-pine wooded ute pass saddle, forested green granite foothills and massive pikes peak shoulder well back left of center, scattered ruined timber structures. us 24 \u2014 ute pass / woodland park",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "documentPath": "races/CO 67 %E2%80%94 Woodland Park Cripple Creek/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 13485
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-co67-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-co67-morning",
+        "groundPlaneArtRef": "ground-alpine-snow-granite-v1",
+        "terrainTileArtById": {
+          "snow": "ground-alpine-snow-granite-v1"
+        }
+      },
+      "siteContext": "co 67 \u2014 woodland park cripple creek high rolling montane grass meadows alternating with dark ponderosa/aspen woods, distant pikes massif, tiny weathered mining headframe in central valley. co 67 \u2014 woodland park / cripple creek",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Garden of the Gods \u2014 paved park road",
+      "documentPath": "races/Garden of the Gods %E2%80%94 paved park road/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 15450
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-gardengods-night",
+        "groundPlaneArtRef": "ground-red-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-red-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-gardengods-night",
+        "groundPlaneArtRef": "ground-alpine-snow-granite-v1",
+        "terrainTileArtById": {
+          "snow": "ground-alpine-snow-granite-v1"
+        }
+      },
+      "siteContext": "garden of the gods \u2014 paved park road distinct upright red sandstone fins and tilted narrow slabs rising out of low juniper foothills, dark pikes peak mass beyond, clear starry night restrained crescent. garden of the gods \u2014 paved park road",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "documentPath": "races/Pueblo Motorsports Park %E2%80%94 road course or drag strip/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 9438
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-pueblo-evening",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-pueblo-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "pueblo motorsports park \u2014 road course or drag strip open tawny shortgrass prairie and rolling shale mesas west of pueblo, low distant wet mountain skyline, sparse abandoned paddock sheds and slim timing tower. pueblo motorsports park \u2014 road course or drag strip",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Valley of the Gods Road \u2014 San Juan CR 242",
+      "documentPath": "races/Valley of the Gods Road %E2%80%94 San Juan CR 242/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 6919
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-gods-noon",
+        "groundPlaneArtRef": "ground-red-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-red-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-gods-noon",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "valley of the gods road \u2014 san juan cr 242 isolated slender cedar mesa sandstone monoliths across broad red gravel basin, dry scrub, no city or lake. valley of the gods road \u2014 san juan cr 242",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Muley Point Road \u2014 CR 241",
+      "documentPath": "races/Muley Point Road %E2%80%94 CR 241/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 24660
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-muley-evening",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-muley-evening",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "muley point road \u2014 cr 241 elevated cedar mesa overlook over deeply incised stepped san juan canyons, distant tiny monument valley buttes and rounded navajo mountain; big open layered depth, not a close vertical wall. muley point road \u2014 cr 241",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "UT 316 \u2014 Goosenecks State Park Road",
+      "documentPath": "races/UT 316 %E2%80%94 Goosenecks State Park Road/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 18939
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-goosenecks-morning",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-goosenecks-morning",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "ut 316 \u2014 goosenecks state park road san juan entrenched meanders below flat barren tan gray limestone plateau, repeating tightly folded canyon arms with a narrow dark river far below; sparse desert scrub. ut 316 \u2014 goosenecks state park road",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "US 163 \u2014 Mexican Hat Monument Valley approach",
+      "documentPath": "races/US 163 %E2%80%94 Mexican Hat Monument Valley approach/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 18306
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-mexicanhat-morning",
+        "groundPlaneArtRef": "ground-red-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-red-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-mexicanhat-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "us 163 \u2014 mexican hat monument valley approach mexican hat approach toward distant monument valley isolated buttes; distinctive small tilted caprock formation to central right, broad dry red plain and pale low mesas. us 163 \u2014 mexican hat / monument valley approach",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "UT 95 \u2014 Comb Ridge Cedar Mesa",
+      "documentPath": "races/UT 95 %E2%80%94 Comb Ridge Cedar Mesa/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 12996
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-comb-evening",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-comb-evening",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "ut 95 \u2014 comb ridge cedar mesa long steeply tilted pale sandstone hogback of comb ridge, pinyon juniper on cedar mesa side, exposed angular white strata, not monument valley towers. ut 95 \u2014 comb ridge / cedar mesa",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "UT 276 \u2014 Halls Crossing approach",
+      "documentPath": "races/UT 276 %E2%80%94 Halls Crossing approach/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 4640
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-halls-night",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-halls-night",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "ut 276 \u2014 halls crossing approach halls crossing high desert approach: low rounded pale navajo sandstone domes and broad dry mesa ledges, small distant recessed lake powell inlet only, sparse desert shrubs. clear blue-black night, restrained thin crescent and sparse stars, no bright sunset. ut 276 \u2014 halls crossing approach",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "US 191 \u2014 Bluff Blanding",
+      "documentPath": "races/US 191 %E2%80%94 Bluff Blanding/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 10985
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-bluff-morning",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-bluff-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "us 191 \u2014 bluff blanding bluff to blanding transition: long horizontal cream sandstone bluffs and higher dark juniper mesas, scattered cottonwoods only in low drainage, tiny abandoned roadside building central. us 191 \u2014 bluff / blanding",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Shafer Trail \u2014 Canyonlands National Park",
+      "documentPath": "races/Shafer Trail %E2%80%94 Canyonlands National Park/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 15300
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-shafer-night",
+        "groundPlaneArtRef": "ground-canyon-rock-v2",
+        "terrainTileArtById": {
+          "snow": "ground-canyon-rock-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-shafer-night",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "shafer trail \u2014 canyonlands national park shafer canyon from rim: immense stacked red and pale sandstone cliffs dropping into open white rim basin; very distant winding dry track, no foreground road, sparse scrub. clear moonlit blue-gray night, crescent and sparse stars; no daylight colors. shafer trail \u2014 canyonlands national park",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Burr Trail switchbacks \u2014 Capitol Reef",
+      "documentPath": "races/Burr Trail switchbacks %E2%80%94 Capitol Reef/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 18180
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-burr-noon",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-burr-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "burr trail switchbacks \u2014 capitol reef waterpocket fold tilted white navajo sandstone fins over deep red strata and narrow fold valley, distant henry mountains small on far horizon, sparse dry plants; strong asymmetric geological fold. burr trail switchbacks \u2014 capitol reef",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "SR 179 \u2014 Red Rock Scenic Byway",
+      "documentPath": "races/SR 179 %E2%80%94 Red Rock Scenic Byway/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 6232
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-redbyway-evening",
+        "groundPlaneArtRef": "ground-red-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-red-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-redbyway-evening",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "sr 179 \u2014 red rock scenic byway sedona sr179 low juniper valley with recognizable bell-shaped red butte and broader layered courthouse mesa separated on horizon, no canyon river. sr 179 \u2014 red rock scenic byway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Upper Lower Red Rock Loop Road",
+      "documentPath": "races/Upper Lower Red Rock Loop Road/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 27477
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-redloop-morning",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-redloop-morning",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "upper lower red rock loop road red rock loop view: cathedral-like cluster of thin red spires behind greener oak creek cottonwood corridor, low juniper hills at sides, no giant lake. upper / lower red rock loop road",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Page Springs Road",
+      "documentPath": "races/Page Springs Road/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 13776
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-pagesprings-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-pagesprings-evening",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "page springs road page springs verde valley: green riparian cottonwood ribbon and modest vineyard rows among dry rolling tan hills, distant subdued mingus ridge; no red towering sedona cathedral. page springs road",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Beaverhead Flat Road \u2014 CR 78",
+      "documentPath": "races/Beaverhead Flat Road %E2%80%94 CR 78/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 19397
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-beaverflat-evening",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-beaverflat-evening",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "beaverhead flat road \u2014 cr 78 beaverhead flat broad open tawny grass and scrub bench, low juniper ridges with distant red mesas far north; unusually open sky and low topography, no close canyon walls. beaverhead flat road \u2014 cr 78",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Boynton Pass Road FR 525 loop",
+      "documentPath": "races/Boynton Pass Road FR 525 loop/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 16731
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-boynton-night",
+        "groundPlaneArtRef": "ground-red-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-red-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-boynton-night",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "boynton pass road fr 525 loop boynton pass near sedona: close broad red-sandstone mesa wall and notched saddle silhouetted above dark juniper basin. clear deep indigo night, very restrained crescent and few stars, no daylight orange. boynton pass road / fr 525 loop",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Schnebly Hill Road \u2014 Sedona",
+      "documentPath": "races/Schnebly Hill Road %E2%80%94 Sedona/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 21484
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-schnebly-noon",
+        "groundPlaneArtRef": "ground-red-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-red-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-schnebly-noon",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "schnebly hill road \u2014 sedona schnebly hill rising from sedona: rust red sandstone benches and broken ledges below massive pale mogollon rim, juniper becoming pine on higher ridge, wide distant valley seen between ledges. schnebly hill road \u2014 sedona",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "SR 89A \u2014 Mingus Mountain Jerome",
+      "documentPath": "races/SR 89A %E2%80%94 Mingus Mountain Jerome/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 17363
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-mingus-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-mingus-morning",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "sr 89a \u2014 mingus mountain jerome mingus mountain above jerome: high dark pine-covered rounded ridge, sloping chaparral and tiny abandoned hillside mining-town silhouettes, broad verde valley in distance; no monolith desert. sr 89a \u2014 mingus mountain / jerome",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Podium Club at Attesa \u2014 Casa Grande",
+      "documentPath": "races/Podium Club at Attesa %E2%80%94 Casa Grande/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 9196
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-attesa-evening",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-attesa-evening",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "podium club at attesa \u2014 casa grande attesa casa grande desert circuit: flat tan sonoran desert scrub, distant jagged low desert ranges, small abandoned paddock structures and understated barrier lines in central distance, no city skyline. podium club at attesa \u2014 casa grande",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Firebird Motorsports Park \u2014 Chandler",
+      "documentPath": "races/Firebird Motorsports Park %E2%80%94 Chandler/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 16986
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-firebird-evening",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-firebird-evening",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "firebird motorsports park \u2014 chandler chandler firebird motorsports landscape: low south mountain silhouette, distant phoenix fringe structures and palm clusters, long quiet manmade narrow lake reflecting dusk beside worn grandstands, dry flat desert. firebird motorsports park \u2014 chandler",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Upper Big Tujunga Canyon Road",
+      "documentPath": "races/Upper Big Tujunga Canyon Road/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 28525
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-uppertujunga-evening",
+        "groundPlaneArtRef": "ground-gray-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-gray-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-uppertujunga-evening",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "upper big tujunga canyon road wide high tujunga drainage framed by interlocking gray-green ridges, sparse tall conifers on cool slopes, dry wash thin light ribbon far below, no lake or city. upper big tujunga canyon road",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Big Tujunga Canyon Road",
+      "documentPath": "races/Big Tujunga Canyon Road/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 16380
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-bigtujunga-noon",
+        "groundPlaneArtRef": "ground-gray-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-gray-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-bigtujunga-noon",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "big tujunga canyon road lower big tujunga deep broad canyon with cream granite cliffs and chamise covered ridges, pale stony dry wash and scattered riparian sycamores below, clear blue noon. big tujunga canyon road",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Glendora Mountain Road",
+      "documentPath": "races/Glendora Mountain Road/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 29808
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-glendoramountain-noon",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-glendoramountain-noon",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "glendora mountain road steep foothill slopes dense with olive chaparral and yucca, gray rock outcrops, layered los angeles basin haze below, low rugged ridge sweeping center. glendora mountain road",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Glendora Ridge Road",
+      "documentPath": "races/Glendora Ridge Road/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 10679
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-glendoraridge-evening",
+        "groundPlaneArtRef": "ground-gray-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-gray-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-glendoraridge-evening",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "glendora ridge road narrow high san gabriel ridgeline with layered folded mountain bowls, distant taller mount baldy shoulder to east, oak/pine patches above chamise, warm evening. glendora ridge road",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "San Gabriel Canyon Road \u2014 SR 39",
+      "documentPath": "races/San Gabriel Canyon Road %E2%80%94 SR 39/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 14784
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-sangabriel-morning",
+        "groundPlaneArtRef": "ground-gray-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-gray-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-sangabriel-morning",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "san gabriel canyon road \u2014 sr 39 large v-shaped san gabriel canyon, pale granite wash and small restrained blue-green reservoir glimpse deep center valley, steep chaparral flanks and oak pockets. san gabriel canyon road \u2014 sr 39",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Little Tujunga Canyon Road",
+      "documentPath": "races/Little Tujunga Canyon Road/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 25900
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-littletujunga-noon",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-littletujunga-noon",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "little tujunga canyon road lower rounded dusty foothill switchback country, close sage chaparral with yucca, tan soil and isolated coast-live-oak groves in gullies, distant broad san fernando valley haze. little tujunga canyon road",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Willow Springs \u2014 Horse Thief Mile",
+      "documentPath": "races/Willow Springs %E2%80%94 Horse Thief Mile/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 3078
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-willow-night",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-willow-night",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "willow springs \u2014 horse thief mile  willow springs",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "In-N-Out Burger Pomona Dragstrip",
+      "documentPath": "races/In-N-Out Burger Pomona Dragstrip/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 16761
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-pomona-noon",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-pomona-noon",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "in-n-out burger pomona dragstrip pomona fairgrounds dragstrip venue: aged empty steel grandstands low across plain, thin palm trees and control tower without logos, distant pale san gabriel mountain wall, sunlit dry urban basin. in-n-out burger pomona dragstrip",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Old Staples Road",
+      "documentPath": "races/Old Staples Road/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 7473
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-old-staples-woodland-day",
+        "groundPlaneArtRef": "grass"
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-old-staples-woodland-day",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "siteContext": "old staples road  old staples road, cumberland, rhode island",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Watkins Glen \u2014 Long Course",
+      "documentPath": "races/Watkins Glen %E2%80%94 Long Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 8379
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-watkins-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-watkins-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "watkins glen \u2014 long course  watkins glen",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Watkins Glen \u2014 Short Course",
+      "documentPath": "races/Watkins Glen %E2%80%94 Short Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 7560
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-watkins-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-watkins-evening",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "watkins glen \u2014 short course  watkins glen",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+      "documentPath": "races/Watkins Glen %E2%80%94 Long %E2%80%94 No Inner Loop/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 8379
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-watkins-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-watkins-evening",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "watkins glen \u2014 long \u2014 no inner loop  watkins glen",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+      "documentPath": "races/Watkins Glen %E2%80%94 Short %E2%80%94 No Inner Loop/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 7560
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-watkins-noon",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-watkins-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "watkins glen \u2014 short \u2014 no inner loop  watkins glen",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Road America \u2014 Full Course",
+      "documentPath": "races/Road America %E2%80%94 Full Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 10062
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-road-america-evening",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-road-america-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "road america \u2014 full course  road america",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Road America \u2014 The Bend",
+      "documentPath": "races/Road America %E2%80%94 The Bend/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 10413
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-road-america-noon",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-road-america-noon",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "road america \u2014 the bend  road america",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Road Atlanta \u2014 Grand Prix",
+      "documentPath": "races/Road Atlanta %E2%80%94 Grand Prix/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 8432
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-road-atlanta-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-road-atlanta-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "road atlanta \u2014 grand prix  road atlanta",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Road Atlanta \u2014 Short Course",
+      "documentPath": "races/Road Atlanta %E2%80%94 Short Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 12524
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-road-atlanta-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-road-atlanta-evening",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "road atlanta \u2014 short course  road atlanta",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Road Atlanta \u2014 Club Course",
+      "documentPath": "races/Road Atlanta %E2%80%94 Club Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 3237
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-road-atlanta-night",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-road-atlanta-night",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "road atlanta \u2014 club course  road atlanta",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Virginia International Raceway \u2014 Full Course",
+      "documentPath": "races/Virginia International Raceway %E2%80%94 Full Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 11218
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-vir-morning",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-vir-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "virginia international raceway \u2014 full course  virginia international raceway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Virginia International Raceway \u2014 North Course",
+      "documentPath": "races/Virginia International Raceway %E2%80%94 North Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 13923
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-vir-morning",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-vir-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "virginia international raceway \u2014 north course  virginia international raceway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Virginia International Raceway \u2014 South Course",
+      "documentPath": "races/Virginia International Raceway %E2%80%94 South Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 8928
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-vir-night",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-vir-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "virginia international raceway \u2014 south course  virginia international raceway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Virginia International Raceway \u2014 Grand Course",
+      "documentPath": "races/Virginia International Raceway %E2%80%94 Grand Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 11218
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-vir-night",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-vir-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "virginia international raceway \u2014 grand course  virginia international raceway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Sebring International Raceway \u2014 Full Circuit",
+      "documentPath": "races/Sebring International Raceway %E2%80%94 Full Circuit/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 17324
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-sebring-night",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-sebring-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "sebring international raceway \u2014 full circuit  sebring international raceway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Sebring International Raceway \u2014 Short Circuit",
+      "documentPath": "races/Sebring International Raceway %E2%80%94 Short Circuit/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 10800
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-sebring-morning",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-sebring-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "sebring international raceway \u2014 short circuit  sebring international raceway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Sebring International Raceway \u2014 Club Circuit",
+      "documentPath": "races/Sebring International Raceway %E2%80%94 Club Circuit/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 9250
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-sebring-evening",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-sebring-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "sebring international raceway \u2014 club circuit  sebring international raceway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Homestead-Miami Speedway \u2014 Oval",
+      "documentPath": "races/Homestead-Miami Speedway %E2%80%94 Oval/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 9944
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-homestead-evening",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-homestead-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "homestead-miami speedway \u2014 oval  homestead-miami speedway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Homestead-Miami Speedway \u2014 Road Course",
+      "documentPath": "races/Homestead-Miami Speedway %E2%80%94 Road Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 8798
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-homestead-evening",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-homestead-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "homestead-miami speedway \u2014 road course  homestead-miami speedway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Homestead-Miami Speedway \u2014 Modified Road Course",
+      "documentPath": "races/Homestead-Miami Speedway %E2%80%94 Modified Road Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 7857
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-homestead-evening",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-homestead-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "homestead-miami speedway \u2014 modified road course  homestead-miami speedway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Daytona International Speedway \u2014 Sports Car Course",
+      "documentPath": "races/Daytona International Speedway %E2%80%94 Sports Car Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 10656
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "skybox-daytona",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "skybox-daytona",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "daytona international speedway \u2014 sports car course  daytona international speedway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Daytona International Speedway \u2014 Stock Car Road Course",
+      "documentPath": "races/Daytona International Speedway %E2%80%94 Stock Car Road Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 10656
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-daytona-evening",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-daytona-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "daytona international speedway \u2014 stock car road course  daytona international speedway",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Willow Springs \u2014 Big Willow",
+      "documentPath": "races/Willow Springs %E2%80%94 Big Willow/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 16218
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-willow-morning",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-willow-morning",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "willow springs \u2014 big willow  willow springs",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Willow Springs \u2014 Streets of Willow",
+      "documentPath": "races/Willow Springs %E2%80%94 Streets of Willow/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 6901
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-willow-morning",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-willow-morning",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "willow springs \u2014 streets of willow  willow springs",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Willow Springs \u2014 Streets \u2014 Short",
+      "documentPath": "races/Willow Springs %E2%80%94 Streets %E2%80%94 Short/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 5092
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-willow-evening",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-willow-evening",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
+        "terrainTileArtById": {
+          "snow": "ground-snow-chaparral-v1"
+        }
+      },
+      "siteContext": "willow springs \u2014 streets \u2014 short  willow springs",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Lime Rock Park \u2014 Both Chicanes",
+      "documentPath": "races/Lime Rock Park %E2%80%94 Both Chicanes/document.json",
+      "weather": "clear",
+      "defaultTileId": "grass",
+      "explicitMaterialCounts": {
+        "grass": 8624
+      },
+      "groundPlaneIntent": "grass",
+      "before": {
+        "skyboxArtRef": "environment-v1-lime-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-lime-evening",
+        "groundPlaneArtRef": "ground-temperate-grass-v1",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest",
+          "grass": "ground-temperate-grass-v1"
+        }
+      },
+      "siteContext": "lime rock park \u2014 both chicanes  lime rock park",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+      "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Chicane Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 12972
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-mid-ohio-morning",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-mid-ohio-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "mid-ohio sports car course \u2014 chicane course  mid-ohio sports car course",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Mid-Ohio Sports Car Course \u2014 Short Course",
+      "documentPath": "races/Mid-Ohio Sports Car Course %E2%80%94 Short Course/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 8832
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-mid-ohio-night",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-mid-ohio-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "mid-ohio sports car course \u2014 short course  mid-ohio sports car course",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Pig Trail \u2014 Arkansas 23",
+      "documentPath": "races/Pig Trail %E2%80%94 Arkansas 23/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 11418
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-pigtrail-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-pigtrail-evening",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "pig trail \u2014 arkansas 23  pig trail \u2014 arkansas 23",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "National Road \u2014 Sideling Hill",
+      "documentPath": "races/National Road %E2%80%94 Sideling Hill/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 9275
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-sideling-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-sideling-evening",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "national road \u2014 sideling hill  national road \u2014 sideling hill",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Natchez Trace \u2014 Tishomingo",
+      "documentPath": "races/Natchez Trace %E2%80%94 Tishomingo/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 21580
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-tishomingo-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-tishomingo-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "natchez trace \u2014 tishomingo  natchez trace \u2014 tishomingo",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Little Rock, AR \u2014 Landmark Run",
+      "documentPath": "races/Little Rock%2C AR %E2%80%94 Landmark Run/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 16983
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-little-rock-noon",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-little-rock-noon",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "little rock, ar \u2014 landmark run  little rock \u2014 landmark run",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "St. Louis, MO \u2014 Landmark Run",
+      "documentPath": "races/St. Louis%2C MO %E2%80%94 Landmark Run/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 22560
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-stl-landmark-morning",
+        "groundPlaneArtRef": "environment-v1-ground-sebring-olive",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-sebring-olive"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-stl-landmark-morning",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "siteContext": "st. louis, mo \u2014 landmark run  st. louis \u2014 landmark run",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Denver, CO \u2014 Landmark Run",
+      "documentPath": "races/Denver%2C CO %E2%80%94 Landmark Run/document.json",
+      "weather": "clear",
+      "defaultTileId": "snow",
+      "explicitMaterialCounts": {
+        "snow": 15228
+      },
+      "groundPlaneIntent": "snow",
+      "before": {
+        "skyboxArtRef": "environment-v1-denver-morning",
+        "groundPlaneArtRef": "ground-gray-gravel-v2",
+        "terrainTileArtById": {
+          "snow": "ground-gray-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-denver-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "siteContext": "denver, co \u2014 landmark run abandoned denver downtown from low urban street elevation: distinct mixed brick warehouses and modern stepped towers, distant blue front range only on west horizon, dry plains city not mountain valley, small muted cottonwood canopy. denver, co \u2014 landmark run",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    },
+    {
+      "raceRef": "Grand Canyon \u2014 Diamond Creek Descent",
+      "documentPath": "races/Grand Canyon %E2%80%94 Diamond Creek Descent/document.json",
+      "weather": "clear",
+      "defaultTileId": "dirt",
+      "explicitMaterialCounts": {
+        "dirt": 12482
+      },
+      "groundPlaneIntent": "dirt",
+      "before": {
+        "skyboxArtRef": "environment-v1-diamond-evening",
+        "groundPlaneArtRef": "ground-gray-gravel-v2",
+        "terrainTileArtById": {
+          "dirt": "ground-gray-gravel-v2"
+        }
+      },
+      "after": {
+        "skyboxArtRef": "environment-v1-diamond-evening",
+        "groundPlaneArtRef": "ground-decomposed-granite-dirt-v1",
+        "terrainTileArtById": {
+          "dirt": "ground-decomposed-granite-dirt-v1"
+        }
+      },
+      "siteContext": "grand canyon \u2014 diamond creek descent diamond creek descent on hualapai lands: enclosing rugged dark precambrian rock canyon below red limestone tiers, narrow gravel wash and sparse desert scrub, a glimpse of deep colorado corridor far away; no rim watchtower. grand canyon \u2014 diamond creek descent",
+      "reason": "Normal/rough refs explicitly match preserved cell IDs; ground plane follows predominant mapped substrate (default for empty maps). Original weather unchanged. Snow-weather grass receives visibly grass-bearing frost texture. Reusable turf/leaf/moss sources selected by real substrate and biome, not to waive usage."
+    }
+  ],
+  "classification": {
+    "ground-frosted-grass-v1": "grass",
+    "ground-clean-snow-v2": "snow",
+    "ground-dirty-snow-v2": "snow",
+    "ground-frozen-forest": "dirt",
+    "environment-v1-ground-ohio-wet-leaf-litter": "dirt",
+    "environment-v1-ground-finnish-boreal-verge": "grass",
+    "environment-v1-ground-dormant-prairie": "grass",
+    "environment-v1-ground-sebring-olive": "grass",
+    "road-slush": "slush",
+    "ground-volcanic-cinder-v1": "gravel",
+    "ground-volcanic-snow-v1": "snow",
+    "ground-brown-dirt-v2": "dirt",
+    "ground-industrial-concrete-v2": "asphalt",
+    "ground-industrial-rubble-v2": "gravel",
+    "ground-canyon-rock-v2": "gravel",
+    "ground-gray-gravel-v2": "gravel",
+    "ground-red-gravel-v2": "gravel",
+    "ground-desert-scrub-v2": "dirt",
+    "ground-alpine-rock-v2": "gravel",
+    "ground-alpine-snow-granite-v1": "snow",
+    "ground-decomposed-granite-dirt-v1": "dirt",
+    "ground-plains-snow-straw-v1": "snow",
+    "ground-prairie-grass-v1": "grass",
+    "ground-snow-chaparral-v1": "snow",
+    "ground-winter-snow-litter-v1": "snow",
+    "ground-patchy-snow-leaf-v1": "snow",
+    "ground-temperate-grass-v1": "grass"
+  },
+  "sourceReview": "/tmp/pack16-material-source-review.jpg",
+  "preservation": "Only supported visual ref fields; physical IDs/weights and authored environment are not changed."
+}
