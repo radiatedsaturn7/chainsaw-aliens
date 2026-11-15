@@ -459,11 +459,7 @@
       "source": "skyboxes/data-center-city.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "city"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-daytona",
@@ -545,11 +541,7 @@
       "source": "skyboxes/moki-dugway.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "moki"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-mount-washington",
@@ -597,11 +589,7 @@
       "source": "skyboxes/ozarks.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "ozark"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-palms-to-pines",
@@ -3537,6 +3525,39 @@
       "heightM": 14,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "environment-v1-moki-cedar-mesa-day",
+      "source": "environment-v1/moki-cedar-mesa-day.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "moki"
+        }
+      ]
+    },
+    {
+      "name": "environment-v1-ozark-eminence-day",
+      "source": "environment-v1/ozark-eminence-day.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "ozark"
+        }
+      ]
+    },
+    {
+      "name": "environment-v1-stl-riverfront-night",
+      "source": "environment-v1/stl-riverfront-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "city"
+        }
+      ]
     }
   ]
 }

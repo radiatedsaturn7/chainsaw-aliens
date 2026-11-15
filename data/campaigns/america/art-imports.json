@@ -3022,5 +3022,26 @@
     "documentSha256": "bbf535c7d68fc848cbc005cfa7e5715884f29d6ffbf87c7554ca4a116dc15ab5",
     "width": 512,
     "height": 341
+  },
+  "environment-v1-moki-cedar-mesa-day": {
+    "source": "assets/campaign-art/environment-v1/moki-cedar-mesa-day.png",
+    "sourceSha256": "fbbc7a526932bd14b58e9d1aa5a5e4556a32f78c54afb57126c6b30388db30d0",
+    "documentSha256": "7f01d3f3203dde6fc678720f8dfdd146d948906af7d45f56fa28ed3eafe2f414",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-ozark-eminence-day": {
+    "source": "assets/campaign-art/environment-v1/ozark-eminence-day.png",
+    "sourceSha256": "4856dc36cd6cecda9f1cee330efc48d7d05415de879ad9e169bb9f64b698d5d7",
+    "documentSha256": "f155a295d0b335ccd06b52a8f95d9cdd6c38285dbed228b06c2fbf6ec4d4fdaa",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-stl-riverfront-night": {
+    "source": "assets/campaign-art/environment-v1/stl-riverfront-night.png",
+    "sourceSha256": "cbac0c86030fee1a322432880414878eb0f9c756253a0be0566ad981fb8dbb50",
+    "documentSha256": "723ed104fef1000cc95a517a26734cff5a4dde6140bc88bac6ffde5c762008ab",
+    "width": 1024,
+    "height": 341
   }
 }

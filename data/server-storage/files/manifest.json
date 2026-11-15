@@ -757,7 +757,10 @@
       "catalog-hellebore-rs-2015-body": "art/catalog-hellebore-rs-2015-body/document.json",
       "catalog-hellebore-rs-2015-dashboard": "art/catalog-hellebore-rs-2015-dashboard/document.json",
       "catalog-ironwood-v8-2004-body": "art/catalog-ironwood-v8-2004-body/document.json",
-      "catalog-ironwood-v8-2004-dashboard": "art/catalog-ironwood-v8-2004-dashboard/document.json"
+      "catalog-ironwood-v8-2004-dashboard": "art/catalog-ironwood-v8-2004-dashboard/document.json",
+      "environment-v1-moki-cedar-mesa-day": "art/environment-v1-moki-cedar-mesa-day/document.json",
+      "environment-v1-ozark-eminence-day": "art/environment-v1-ozark-eminence-day/document.json",
+      "environment-v1-stl-riverfront-night": "art/environment-v1-stl-riverfront-night/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

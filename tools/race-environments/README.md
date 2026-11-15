@@ -1,0 +1,18 @@
+# Race environment pipeline
+
+`data/race-environments/ledger.json` covers all 245 saved races exposed by the real Game Menu selector, including 233 enabled campaign choices, three additional catalog courses and nine uncatalogued documents. Pending rows are not visual acceptance. The base is pinned to staging ef6034818; reconcile this ledger separately from the car PR.
+
+Every row starts with its own collision-free site group. A shared group requires explicit source/GPS and compatible time/weather evidence; state/chapter `venueKey` is insufficient. Before grouping layouts compare actual route bounds, authored lighting and weather. Preserve Tower Hill's snowy night and Bayard's noon. Ozark is MO-19 near Eminence. Data Center City is St. Louis riverfront, with fictional clean colorful robotic compounds.
+
+1. Research the exact row using catalog location, route GPS and primary geographic sources. Write the site, biome, horizon, season and art brief into that row. Preserve original imagegen PNGs.
+2. Add reviewed originals to `assets/campaign-art/environment-v1` and register them in `expanded-art.json`. Use the existing `tools/art/import_campaign_art.py --only REF` importer (pypng required). It retains source PNGs and uses native saved-art format at 1024px maximum for skies.
+3. Set explicit row binding. `skyboxArtRef` synchronizes both saved sky refs. Optional `groundPlaneArtRef`, `terrainArtMap` and `roadArtMap` change only references. Never run the old dressing generator: it also modifies physical materials, lighting and scenery.
+4. `node tools/race-environments/bind.mjs` checks all races against the pinned base; `--apply` preflights the entire set before writing. Exact geometry, materials/weights, physics, scenery, weather, time, lighting and mission data must match. Unexpected unplanned mutations fail.
+5. `node tools/race-environments/check-art.mjs` validates opacity/decoding and distinct pixel hashes and reports horizontal edge differences. These numbers are diagnostics, not proof of a seamless panorama. Inspect a last-edge/first-edge contact strip and actual camera wrapping before marking seam QA complete.
+6. Run `tests/unit/raceEnvironmentVisualContract.test.js`, Campaign Artwork units, manifest/assets and `tests/playwright/race-environments.spec.js`. The production harness starts the real saved race with a stock car on desktop/handheld. Extend the pack list per region; retain individual captures and state evidence. A startup screenshot is not route-wide acceptance: add mid-route/horizon-heading samples before final approval.
+
+First pack: Moki Dugway, Ozark Backroads, Data Center City. Ground/road textures are retained provisionally; their effective appearance must be checked in production. No claim of all-route completion. Five existing conflicting sky fields and Old Staples Road's missing sky remain explicitly pending outside this pack.
+
+Partition future work by verified physical sites (not broad state groups), and give each pack exclusive ledger rows/art refs. Re-run combined preservation and uniqueness checks after integration. Never publish until all reachable rows have reviewed terrain, sky, seam and desktop/handheld evidence.
+
+Reproducible production capture command: `npx playwright test --config tools/race-environments/playwright.config.mjs`. Set `RACE_QA_CHROMIUM=/usr/bin/chromium` only when using an installed system Chromium. Restrict a diagnostic run with `--grep 'ozark.*desktop'`. Keep failed capture evidence; never extend production startup deadlines or change race data to make QA pass.
