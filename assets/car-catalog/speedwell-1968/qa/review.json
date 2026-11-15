@@ -1,0 +1,13 @@
+{
+  "scopedTestsPassed": 41,
+  "browserTestsPassed": 3,
+  "manifestDocuments": 1838,
+  "manifestAssets": 16,
+  "visualReview": "All8native exterior slots and both desktop/handheld live cockpit screenshots inspected; wheel openings covered and gauges readable.",
+  "desktopDisplacementM": 37.4267373376,
+  "handheldDisplacementM": 39.192668,
+  "bothReachedGear": 3,
+  "pageErrors": [],
+  "handheldMethod": "Chromium390x844 mobile touch with real CDP touchStart/touchEnd; emulation, not physicaldevice",
+  "performanceCaveat": "Movement/gear/gauge smoke evidence, not measured acceleration or top-speed calibration"
+}

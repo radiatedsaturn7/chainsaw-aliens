@@ -1024,7 +1024,9 @@
       "catalog-meadowsweet-1992-body": "art/catalog-meadowsweet-1992-body/document.json",
       "catalog-meadowsweet-1992-dashboard": "art/catalog-meadowsweet-1992-dashboard/document.json",
       "catalog-heather-1993-body": "art/catalog-heather-1993-body/document.json",
-      "catalog-heather-1993-dashboard": "art/catalog-heather-1993-dashboard/document.json"
+      "catalog-heather-1993-dashboard": "art/catalog-heather-1993-dashboard/document.json",
+      "catalog-speedwell-1968-body": "art/catalog-speedwell-1968-body/document.json",
+      "catalog-speedwell-1968-dashboard": "art/catalog-speedwell-1968-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1124,7 +1126,8 @@
       "Sumac 40 2012": "cars/Sumac 40 2012/document.json",
       "Zinnia 16 2010": "cars/Zinnia 16 2010/document.json",
       "Meadowsweet 1992": "cars/Meadowsweet 1992/document.json",
-      "Heather 1993": "cars/Heather 1993/document.json"
+      "Heather 1993": "cars/Heather 1993/document.json",
+      "Speedwell 1968": "cars/Speedwell 1968/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
