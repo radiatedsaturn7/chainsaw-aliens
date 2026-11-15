@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "camomile-1988",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 850,
+    "gear": 1,
+    "elapsed": 2116.6333333333364,
+    "throttle": 0,
+    "camera": "first-person"
+  },
+  "moving": {
+    "id": "camomile-1988",
+    "x": -0.0026950000319629908,
+    "z": 13.205967903137207,
+    "speed": 7.16677188873291,
+    "rpm": 2750.83642578125,
+    "gear": 1,
+    "elapsed": 6449.833333333334,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "cockpit": {
+    "id": "camomile-1988",
+    "x": -0.011377999559044838,
+    "z": 31.423044204711914,
+    "speed": 12.031662940979004,
+    "rpm": 4774.23193359375,
+    "gear": 2,
+    "elapsed": 8433.033333333331,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

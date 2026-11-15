@@ -1,0 +1,36 @@
+
+Running 4 tests using 1 worker
+
+(node:9880) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:9880) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/playwright/camomile-driving.spec.js:3:34 › Camomile desktop keyboard moving gameplay (43.8s)
+  ✓  2 tests/playwright/camomile-driving.spec.js:3:34 › Camomile handheld touch moving gameplay (26.6s)
+  ✓  3 tests/playwright/camomile-preview.spec.js:6:1 › Camomile 1988 actual editor preview composites exterior/cockpit and advances production physics (27.2s)
+  ✘  4 tests/playwright/utility-static-picker.spec.js:3:29 › Camomile desktop keyboard static picker initial page, later page, cockpit and keyboard drive (2.0m)
+
+
+  1) tests/playwright/utility-static-picker.spec.js:3:29 › Camomile desktop keyboard static picker initial page, later page, cockpit and keyboard drive 
+
+    TimeoutError: page.waitForFunction: Timeout 90000ms exceeded.
+
+      16 |  // In-memory straight test route; no saved race edits or physics substitutions.
+      17 |  e.selectedRace.road.segments=[{length:1600,curve:0,elevation:0,surface:'asphalt',turn:'smooth',hazardIds:[]}];delete e.selectedRace.road.network;e.selectedRace.hazards=[];e.selectedRace.competition.aiDrivers=[];e.closeEditorMenus();e.startPlaytest(e.selectedCar.id,{hydrateCars:false,preparedWorldBake:e.buildRaceWorldBake(e.getRacePlaytestWorldBakeOptions())});g.draw();});
+    > 18 |  await page.waitForFunction(()=>{const s=window.__game.raceEditor.playtestSession;return s?.running&&!s.startupFramePending&&s.countdownRemainingMs<=0;},{},{timeout:90000});
+         |             ^
+      19 |  const sample=()=>page.evaluate(()=>{const e=window.__game.raceEditor,s=e.playtestSession;return {id:s.runtimeCar.id,x:s.worldX,z:s.worldZ,speed:s.speedMps,rpm:s.engineRpm,gear:s.gear,elapsed:s.elapsedMs,throttle:e.raceInput.throttleAxis,camera:s.cameraView};});await page.evaluate(()=>{const e=window.__game.raceEditor;e.raceInput.cameraView='first-person';e.playtestSession.cameraView='first-person';});const initial=await sample();
+      20 |  let cdp;if(mobile){await page.screenshot({path:info.outputPath('before-touch.png')});const pt=await page.evaluate(()=>{const e=window.__game.raceEditor,b=e.buttons.find(b=>b.playtestControl==='go').bounds;const c=window.__game.canvas,r=c.getBoundingClientRect();return {x:r.x+(b.x+b.w/2)*r.width/c.width,y:r.y+(b.y+b.h/2)*r.height/c.height};});cdp=await context.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...pt,id:1}]});}else await page.keyboard.down('KeyG');
+      21 |  await expect.poll(async()=>Math.abs((await sample()).speed),{timeout:30000}).toBeGreaterThan(2);await page.waitForTimeout(1800);const moving=await sample();expect(Math.hypot(moving.x-initial.x,moving.z-initial.z)).toBeGreaterThan(2);expect(moving.rpm).toBeGreaterThan(850);await page.screenshot({path:info.outputPath('moving-exterior.png')});
+        at /workspace/chainsaw-aliens/tests/playwright/utility-static-picker.spec.js:18:13
+
+    Error Context: ../../tmp/camomile-browser-results/utility-static-picker-Camo-5e704--cockpit-and-keyboard-drive/error-context.md
+
+  1 failed
+    tests/playwright/utility-static-picker.spec.js:3:29 › Camomile desktop keyboard static picker initial page, later page, cockpit and keyboard drive 
+  3 passed (3.7m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

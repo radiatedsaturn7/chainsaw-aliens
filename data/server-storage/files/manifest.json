@@ -1034,7 +1034,9 @@
       "catalog-lobelia-2005-body": "art/catalog-lobelia-2005-body/document.json",
       "catalog-lobelia-2005-dashboard": "art/catalog-lobelia-2005-dashboard/document.json",
       "catalog-gorse-2015-body": "art/catalog-gorse-2015-body/document.json",
-      "catalog-gorse-2015-dashboard": "art/catalog-gorse-2015-dashboard/document.json"
+      "catalog-gorse-2015-dashboard": "art/catalog-gorse-2015-dashboard/document.json",
+      "catalog-camomile-1988-body": "art/catalog-camomile-1988-body/document.json",
+      "catalog-camomile-1988-dashboard": "art/catalog-camomile-1988-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1139,7 +1141,8 @@
       "Tamarisk 2024": "cars/Tamarisk 2024/document.json",
       "Valerian Turbo 1992": "cars/Valerian Turbo 1992/document.json",
       "Lobelia 2005": "cars/Lobelia 2005/document.json",
-      "Gorse 2015": "cars/Gorse 2015/document.json"
+      "Gorse 2015": "cars/Gorse 2015/document.json",
+      "Camomile 1988": "cars/Camomile 1988/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
