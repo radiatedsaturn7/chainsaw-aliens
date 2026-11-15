@@ -172,7 +172,7 @@ test('world map keeps nodes and connections without title, back button, frame or
  const resources={art:()=>null,choices:()=>[{label:'Race One',value:'one'},{label:'Race Two',value:'two'}],race:ref=>({description:`Description ${ref}`})};
  for(const ref of ['one','two']){
   labels.length=0;drawMenuScreen(ctx,{x:0,y:0,w:390,h:220},doc,screen,{raceRef:ref},{resources,focus:map.id});
-  assert.ok(labels.includes(`Description ${ref}`));assert.ok(!labels.some(s=>s.includes(' · ')));
+  assert.ok(labels.join(' ').includes(`Description ${ref}`));assert.ok(labels.join(' ').includes('scrap'));
  }
  assert.ok(lines.length>0);assert.equal(strokes.length,0);
 });

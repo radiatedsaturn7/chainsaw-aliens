@@ -1,4 +1,4 @@
-import { FullscreenPrompt } from './ui/FullscreenPrompt.js?v=startup-565';
+import { FullscreenPrompt } from './ui/FullscreenPrompt.js?v=startup-566';
 
 // Keep this entry point independent of Game and its editor/module graph. The
 // HTML loading message is visible while those much larger downloads arrive.
@@ -30,6 +30,9 @@ const onError = event => {
   const target = event.target;
   // Optional image/audio failures are not a failed JavaScript startup.
   if (target && target !== window && !['SCRIPT', 'LINK'].includes(target.tagName)) return;
+  // A failed preload is only a failed optimization. The actual import below
+  // reports whether the module graph can load, with its original error.
+  if (target?.tagName === 'LINK' && target.rel === 'modulepreload') return;
   fail(event.error || event.reason || event.message
     || `Could not download ${target?.src || target?.href || 'startup resource'}`);
 };
@@ -73,3 +76,7 @@ Promise.all(stylesheetLoads).then(() => {
   stylesReady = true;
   if (!failed) void boot.fullscreenPrompt?.show();
 }).catch(fail);
+
+// Import explicitly so a dependency or syntax failure reports its real error,
+// rather than blaming main.js through a generic script-element error event.
+import('./main.js?v=startup-566').catch(fail);

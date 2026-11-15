@@ -9,7 +9,7 @@
         "slot": "turbo",
         "section": "Engine",
         "tier": "sport",
-        "price": 1200,
+        "price": 1675,
         "forSale": true,
         "modifiers": [],
         "tuning": [
@@ -45,7 +45,7 @@
         "slot": "ecu",
         "section": "Engine",
         "tier": "sport",
-        "price": 500,
+        "price": 700,
         "forSale": true,
         "modifiers": [
           {
@@ -79,7 +79,7 @@
         "slot": "weight",
         "section": "Chassis",
         "tier": "sport",
-        "price": 800,
+        "price": 1125,
         "forSale": true,
         "modifiers": [
           {
@@ -103,7 +103,7 @@
         "slot": "transmission",
         "section": "Drivetrain",
         "tier": "sport",
-        "price": 1000,
+        "price": 1400,
         "forSale": true,
         "modifiers": [
           {
@@ -241,7 +241,7 @@
         "slot": "suspension",
         "section": "Handling",
         "tier": "sport",
-        "price": 750,
+        "price": 1050,
         "forSale": true,
         "modifiers": [
           {
@@ -367,7 +367,7 @@
       "effects": [],
       "carPart": {
         "slot": "tire-pressure",
-        "price": 100,
+        "price": 150,
         "tuning": [
           {
             "field": "pressure.fl",
@@ -406,7 +406,7 @@
         "slot": "tires",
         "section": "Tires",
         "tier": "custom",
-        "price": 450,
+        "price": 675,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -443,7 +443,7 @@
         "slot": "brakes",
         "section": "Handling",
         "tier": "sport",
-        "price": 750,
+        "price": 1050,
         "forSale": true,
         "modifiers": [
           {
@@ -477,7 +477,7 @@
         "slot": "brakes",
         "section": "Handling",
         "tier": "race",
-        "price": 1500,
+        "price": 2700,
         "forSale": true,
         "modifiers": [
           {
@@ -547,7 +547,7 @@
         "slot": "turbo",
         "section": "Engine",
         "tier": "race",
-        "price": 2400,
+        "price": 4325,
         "forSale": true,
         "modifiers": [],
         "tuning": [
@@ -617,7 +617,7 @@
         "slot": "ecu",
         "section": "Engine",
         "tier": "race",
-        "price": 1200,
+        "price": 2150,
         "forSale": true,
         "modifiers": [
           {
@@ -680,7 +680,7 @@
         "slot": "intake",
         "section": "Breathing",
         "tier": "sport",
-        "price": 400,
+        "price": 550,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -709,7 +709,7 @@
         "slot": "intake",
         "section": "Breathing",
         "tier": "race",
-        "price": 900,
+        "price": 1625,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -767,7 +767,7 @@
         "slot": "exhaust",
         "section": "Breathing",
         "tier": "sport",
-        "price": 550,
+        "price": 775,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -796,7 +796,7 @@
         "slot": "exhaust",
         "section": "Breathing",
         "tier": "race",
-        "price": 1200,
+        "price": 2150,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -854,7 +854,7 @@
         "slot": "ignition",
         "section": "Engine",
         "tier": "sport",
-        "price": 300,
+        "price": 425,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -883,7 +883,7 @@
         "slot": "ignition",
         "section": "Engine",
         "tier": "race",
-        "price": 650,
+        "price": 1175,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -941,7 +941,7 @@
         "slot": "camshaft",
         "section": "Engine",
         "tier": "sport",
-        "price": 800,
+        "price": 1125,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -970,7 +970,7 @@
         "slot": "camshaft",
         "section": "Engine",
         "tier": "race",
-        "price": 1600,
+        "price": 2875,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -1020,7 +1020,7 @@
         "slot": "fuel-system",
         "section": "Engine",
         "tier": "sport",
-        "price": 500,
+        "price": 700,
         "forSale": true,
         "modifiers": [
           {
@@ -1048,7 +1048,7 @@
         "slot": "fuel-system",
         "section": "Engine",
         "tier": "race",
-        "price": 1000,
+        "price": 1800,
         "forSale": true,
         "modifiers": [
           {
@@ -1112,7 +1112,7 @@
         "slot": "weight",
         "section": "Chassis",
         "tier": "race",
-        "price": 1800,
+        "price": 3250,
         "forSale": true,
         "modifiers": [
           {
@@ -1221,7 +1221,7 @@
         "slot": "transmission",
         "section": "Drivetrain",
         "tier": "race",
-        "price": 2200,
+        "price": 3950,
         "forSale": true,
         "modifiers": [
           {
@@ -1451,7 +1451,7 @@
         "slot": "suspension",
         "section": "Handling",
         "tier": "race",
-        "price": 1600,
+        "price": 2875,
         "forSale": true,
         "modifiers": [
           {
@@ -1642,7 +1642,7 @@
         "slot": "alignment",
         "section": "Handling",
         "tier": "sport",
-        "price": 600,
+        "price": 850,
         "forSale": true,
         "modifiers": [
           {
@@ -1696,7 +1696,7 @@
         "slot": "alignment",
         "section": "Handling",
         "tier": "race",
-        "price": 1300,
+        "price": 2350,
         "forSale": true,
         "modifiers": [
           {
@@ -1789,7 +1789,7 @@
         "slot": "aero",
         "section": "Aero",
         "tier": "sport",
-        "price": 900,
+        "price": 1250,
         "forSale": true,
         "modifiers": [
           {
@@ -1838,7 +1838,7 @@
         "slot": "aero",
         "section": "Aero",
         "tier": "race",
-        "price": 1900,
+        "price": 3425,
         "forSale": true,
         "modifiers": [
           {
@@ -1913,7 +1913,7 @@
         "slot": "differential",
         "section": "Drivetrain",
         "tier": "sport",
-        "price": 1100,
+        "price": 1550,
         "forSale": true,
         "modifiers": [
           {
@@ -1952,7 +1952,7 @@
         "slot": "differential",
         "section": "Drivetrain",
         "tier": "race",
-        "price": 2100,
+        "price": 3775,
         "forSale": true,
         "modifiers": [
           {
@@ -2043,7 +2043,7 @@
         "slot": "tires",
         "section": "Tires",
         "tier": "sport",
-        "price": 500,
+        "price": 700,
         "forSale": false,
         "modifiers": [],
         "tuning": [],
@@ -2059,7 +2059,7 @@
         "slot": "tires",
         "section": "Tires",
         "tier": "race",
-        "price": 1000,
+        "price": 1800,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -2078,7 +2078,7 @@
         "slot": "tires",
         "section": "Tires",
         "tier": "custom",
-        "price": 500,
+        "price": 750,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -2094,7 +2094,7 @@
         "slot": "tires",
         "section": "Tires",
         "tier": "custom",
-        "price": 500,
+        "price": 750,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -2110,7 +2110,7 @@
         "slot": "tires",
         "section": "Tires",
         "tier": "custom",
-        "price": 450,
+        "price": 675,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -2126,7 +2126,7 @@
         "slot": "tires",
         "section": "Tires",
         "tier": "custom",
-        "price": 400,
+        "price": 600,
         "forSale": true,
         "modifiers": [],
         "tuning": [],
@@ -2142,7 +2142,7 @@
         "slot": "suspension",
         "section": "Handling",
         "tier": "custom",
-        "price": 1450,
+        "price": 2175,
         "forSale": true,
         "modifiers": [
           {
@@ -2304,7 +2304,7 @@
         "slot": "alignment",
         "section": "Handling",
         "tier": "custom",
-        "price": 1150,
+        "price": 1725,
         "forSale": false,
         "modifiers": [
           {
@@ -2376,7 +2376,7 @@
         "slot": "differential",
         "section": "Drivetrain",
         "tier": "custom",
-        "price": 1900,
+        "price": 2850,
         "forSale": true,
         "modifiers": [
           {
@@ -2481,7 +2481,7 @@
         "slot": "transmission",
         "section": "Drivetrain",
         "tier": "custom",
-        "price": 2000,
+        "price": 3000,
         "forSale": true,
         "modifiers": [
           {
@@ -2569,7 +2569,7 @@
         "slot": "aero",
         "section": "Aero",
         "tier": "custom",
-        "price": 1700,
+        "price": 2550,
         "forSale": true,
         "modifiers": [
           {
@@ -2618,7 +2618,7 @@
         "slot": "brakes",
         "section": "Handling",
         "tier": "custom",
-        "price": 1350,
+        "price": 2025,
         "forSale": false,
         "modifiers": [
           {
@@ -2657,7 +2657,7 @@
         "slot": "suspension",
         "section": "Handling",
         "tier": "custom",
-        "price": 1450,
+        "price": 2175,
         "forSale": true,
         "modifiers": [
           {
@@ -2819,7 +2819,7 @@
         "slot": "alignment",
         "section": "Handling",
         "tier": "custom",
-        "price": 1150,
+        "price": 1725,
         "forSale": false,
         "modifiers": [
           {
@@ -2891,7 +2891,7 @@
         "slot": "differential",
         "section": "Drivetrain",
         "tier": "custom",
-        "price": 1900,
+        "price": 2850,
         "forSale": true,
         "modifiers": [
           {
@@ -2996,7 +2996,7 @@
         "slot": "transmission",
         "section": "Drivetrain",
         "tier": "custom",
-        "price": 2000,
+        "price": 3000,
         "forSale": true,
         "modifiers": [
           {
@@ -3084,7 +3084,7 @@
         "slot": "aero",
         "section": "Aero",
         "tier": "custom",
-        "price": 1700,
+        "price": 2550,
         "forSale": true,
         "modifiers": [
           {
@@ -3133,7 +3133,7 @@
         "slot": "brakes",
         "section": "Handling",
         "tier": "custom",
-        "price": 1350,
+        "price": 2025,
         "forSale": false,
         "modifiers": [
           {
@@ -3172,7 +3172,7 @@
         "slot": "suspension",
         "section": "Handling",
         "tier": "custom",
-        "price": 1450,
+        "price": 2175,
         "forSale": true,
         "modifiers": [
           {
@@ -3334,7 +3334,7 @@
         "slot": "alignment",
         "section": "Handling",
         "tier": "custom",
-        "price": 1150,
+        "price": 1725,
         "forSale": false,
         "modifiers": [
           {
@@ -3406,7 +3406,7 @@
         "slot": "differential",
         "section": "Drivetrain",
         "tier": "custom",
-        "price": 1900,
+        "price": 2850,
         "forSale": true,
         "modifiers": [
           {
@@ -3511,7 +3511,7 @@
         "slot": "transmission",
         "section": "Drivetrain",
         "tier": "custom",
-        "price": 2000,
+        "price": 3000,
         "forSale": true,
         "modifiers": [
           {
@@ -3599,7 +3599,7 @@
         "slot": "aero",
         "section": "Aero",
         "tier": "custom",
-        "price": 1700,
+        "price": 2550,
         "forSale": true,
         "modifiers": [
           {
@@ -3648,7 +3648,7 @@
         "slot": "brakes",
         "section": "Handling",
         "tier": "custom",
-        "price": 1350,
+        "price": 2025,
         "forSale": false,
         "modifiers": [
           {
@@ -3687,7 +3687,7 @@
         "slot": "suspension",
         "section": "Handling",
         "tier": "custom",
-        "price": 1450,
+        "price": 2175,
         "forSale": true,
         "modifiers": [
           {
@@ -3849,7 +3849,7 @@
         "slot": "alignment",
         "section": "Handling",
         "tier": "custom",
-        "price": 1150,
+        "price": 1725,
         "forSale": false,
         "modifiers": [
           {
@@ -3921,7 +3921,7 @@
         "slot": "differential",
         "section": "Drivetrain",
         "tier": "custom",
-        "price": 1900,
+        "price": 2850,
         "forSale": true,
         "modifiers": [
           {
@@ -4026,7 +4026,7 @@
         "slot": "transmission",
         "section": "Drivetrain",
         "tier": "custom",
-        "price": 2000,
+        "price": 3000,
         "forSale": true,
         "modifiers": [
           {
@@ -4114,7 +4114,7 @@
         "slot": "aero",
         "section": "Aero",
         "tier": "custom",
-        "price": 1700,
+        "price": 2550,
         "forSale": true,
         "modifiers": [
           {
@@ -4163,7 +4163,7 @@
         "slot": "brakes",
         "section": "Handling",
         "tier": "custom",
-        "price": 1350,
+        "price": 2025,
         "forSale": false,
         "modifiers": [
           {
@@ -4224,7 +4224,7 @@
         "slot": "flywheel",
         "section": "Drivetrain",
         "tier": "sport",
-        "price": 750,
+        "price": 1050,
         "forSale": true,
         "modifiers": [
           {
@@ -4246,7 +4246,7 @@
         "slot": "flywheel",
         "section": "Drivetrain",
         "tier": "race",
-        "price": 1400,
+        "price": 2525,
         "forSale": true,
         "modifiers": [
           {
@@ -4297,7 +4297,7 @@
         "slot": "clutch",
         "section": "Drivetrain",
         "tier": "sport",
-        "price": 750,
+        "price": 1050,
         "forSale": true,
         "modifiers": [
           {
@@ -4319,7 +4319,7 @@
         "slot": "clutch",
         "section": "Drivetrain",
         "tier": "race",
-        "price": 1400,
+        "price": 2525,
         "forSale": true,
         "modifiers": [
           {
@@ -4348,7 +4348,7 @@
         "slot": "engine-swap",
         "section": "Engine",
         "tier": "custom",
-        "price": 6500,
+        "price": 9750,
         "forSale": true,
         "engineSwap": "turbo",
         "modifiers": [],
@@ -4365,7 +4365,7 @@
         "slot": "engine-swap",
         "section": "Engine",
         "tier": "custom",
-        "price": 7500,
+        "price": 11250,
         "forSale": true,
         "engineSwap": "six",
         "modifiers": [],
@@ -4382,7 +4382,7 @@
         "slot": "engine-swap",
         "section": "Engine",
         "tier": "custom",
-        "price": 9500,
+        "price": 14250,
         "forSale": true,
         "engineSwap": "v8",
         "modifiers": [],
@@ -4399,7 +4399,7 @@
         "slot": "drive-swap",
         "section": "Drivetrain",
         "tier": "custom",
-        "price": 3500,
+        "price": 5250,
         "forSale": true,
         "drivetrainSwap": "fwd",
         "modifiers": [],
@@ -4416,7 +4416,7 @@
         "slot": "drive-swap",
         "section": "Drivetrain",
         "tier": "custom",
-        "price": 4000,
+        "price": 6000,
         "forSale": true,
         "drivetrainSwap": "rwd",
         "modifiers": [],
@@ -4433,7 +4433,7 @@
         "slot": "drive-swap",
         "section": "Drivetrain",
         "tier": "custom",
-        "price": 6000,
+        "price": 9000,
         "forSale": true,
         "drivetrainSwap": "awd",
         "modifiers": [],
@@ -4477,7 +4477,7 @@
         "slot": "rigidity",
         "section": "Chassis",
         "tier": "sport",
-        "price": 1000,
+        "price": 1400,
         "forSale": true,
         "modifiers": [
           {
@@ -4504,7 +4504,7 @@
         "slot": "rigidity",
         "section": "Chassis",
         "tier": "race",
-        "price": 2000,
+        "price": 3600,
         "forSale": true,
         "modifiers": [
           {
@@ -4573,7 +4573,7 @@
         "slot": "ballast",
         "section": "Chassis",
         "tier": "sport",
-        "price": 400,
+        "price": 550,
         "forSale": true,
         "modifiers": [
           {
@@ -4608,7 +4608,7 @@
         "slot": "ballast",
         "section": "Chassis",
         "tier": "race",
-        "price": 700,
+        "price": 1250,
         "forSale": true,
         "modifiers": [
           {
@@ -4670,7 +4670,7 @@
         "slot": "cooling",
         "section": "Engine",
         "tier": "sport",
-        "price": 850,
+        "price": 1200,
         "forSale": true,
         "modifiers": [
           {
@@ -4697,7 +4697,7 @@
         "slot": "cooling",
         "section": "Engine",
         "tier": "race",
-        "price": 1600,
+        "price": 2875,
         "forSale": true,
         "modifiers": [
           {
@@ -4759,7 +4759,7 @@
         "slot": "wheels",
         "section": "Tires",
         "tier": "sport",
-        "price": 750,
+        "price": 1050,
         "forSale": true,
         "modifiers": [
           {
@@ -4781,7 +4781,7 @@
         "slot": "wheels",
         "section": "Tires",
         "tier": "race",
-        "price": 1300,
+        "price": 2350,
         "forSale": true,
         "modifiers": [
           {
@@ -4832,7 +4832,7 @@
         "slot": "driveline",
         "section": "Drivetrain",
         "tier": "sport",
-        "price": 750,
+        "price": 1050,
         "forSale": true,
         "modifiers": [
           {
@@ -4854,7 +4854,7 @@
         "slot": "driveline",
         "section": "Drivetrain",
         "tier": "race",
-        "price": 1300,
+        "price": 2350,
         "forSale": true,
         "modifiers": [
           {
@@ -4906,7 +4906,7 @@
         "slot": "skid-plates",
         "section": "Chassis",
         "tier": "sport",
-        "price": 750,
+        "price": 1050,
         "forSale": true,
         "underbodyProtection": 0.55,
         "modifiers": [
@@ -4929,7 +4929,7 @@
         "slot": "skid-plates",
         "section": "Chassis",
         "tier": "race",
-        "price": 1400,
+        "price": 2525,
         "forSale": true,
         "underbodyProtection": 0.75,
         "modifiers": [
@@ -4952,7 +4952,7 @@
         "slot": "wheel-diameter",
         "section": "Tires",
         "tier": "custom",
-        "price": 250,
+        "price": 375,
         "forSale": true,
         "modifiers": [
           {
@@ -4973,7 +4973,7 @@
         "slot": "wheel-diameter",
         "section": "Tires",
         "tier": "custom",
-        "price": 375,
+        "price": 550,
         "forSale": true,
         "modifiers": [
           {
@@ -4994,7 +4994,7 @@
         "slot": "wheel-diameter",
         "section": "Tires",
         "tier": "custom",
-        "price": 500,
+        "price": 750,
         "forSale": true,
         "modifiers": [
           {
@@ -5015,7 +5015,7 @@
         "slot": "wheel-diameter",
         "section": "Tires",
         "tier": "custom",
-        "price": 625,
+        "price": 950,
         "forSale": true,
         "modifiers": [
           {
@@ -5036,7 +5036,7 @@
         "slot": "wheel-diameter",
         "section": "Tires",
         "tier": "custom",
-        "price": 750,
+        "price": 1125,
         "forSale": true,
         "modifiers": [
           {
@@ -5057,7 +5057,7 @@
         "slot": "wheel-diameter",
         "section": "Tires",
         "tier": "custom",
-        "price": 875,
+        "price": 1300,
         "forSale": true,
         "modifiers": [
           {
@@ -5078,7 +5078,7 @@
         "slot": "wheel-diameter",
         "section": "Tires",
         "tier": "custom",
-        "price": 1000,
+        "price": 1500,
         "forSale": true,
         "modifiers": [
           {
@@ -5099,7 +5099,7 @@
         "slot": "tire-profile",
         "section": "Tires",
         "tier": "custom",
-        "price": 250,
+        "price": 375,
         "forSale": true,
         "modifiers": [
           {
@@ -5120,7 +5120,7 @@
         "slot": "tire-profile",
         "section": "Tires",
         "tier": "custom",
-        "price": 375,
+        "price": 550,
         "forSale": true,
         "modifiers": [
           {
@@ -5141,7 +5141,7 @@
         "slot": "tire-profile",
         "section": "Tires",
         "tier": "custom",
-        "price": 500,
+        "price": 750,
         "forSale": true,
         "modifiers": [
           {
@@ -5162,7 +5162,7 @@
         "slot": "tire-profile",
         "section": "Tires",
         "tier": "custom",
-        "price": 625,
+        "price": 950,
         "forSale": true,
         "modifiers": [
           {
@@ -5183,7 +5183,7 @@
         "slot": "tire-profile",
         "section": "Tires",
         "tier": "custom",
-        "price": 750,
+        "price": 1125,
         "forSale": true,
         "modifiers": [
           {
@@ -5204,7 +5204,7 @@
         "slot": "tire-profile",
         "section": "Tires",
         "tier": "custom",
-        "price": 875,
+        "price": 1300,
         "forSale": true,
         "modifiers": [
           {
@@ -5225,7 +5225,7 @@
         "slot": "tire-profile",
         "section": "Tires",
         "tier": "custom",
-        "price": 1000,
+        "price": 1500,
         "forSale": true,
         "modifiers": [
           {
@@ -5246,7 +5246,7 @@
         "slot": "wheel-offset",
         "section": "Tires",
         "tier": "custom",
-        "price": 250,
+        "price": 375,
         "forSale": true,
         "modifiers": [
           {
@@ -5267,7 +5267,7 @@
         "slot": "wheel-offset",
         "section": "Tires",
         "tier": "custom",
-        "price": 375,
+        "price": 550,
         "forSale": true,
         "modifiers": [
           {
@@ -5288,7 +5288,7 @@
         "slot": "wheel-offset",
         "section": "Tires",
         "tier": "custom",
-        "price": 500,
+        "price": 750,
         "forSale": true,
         "modifiers": [
           {
@@ -5309,7 +5309,7 @@
         "slot": "wheel-offset",
         "section": "Tires",
         "tier": "custom",
-        "price": 625,
+        "price": 950,
         "forSale": true,
         "modifiers": [
           {
@@ -5330,7 +5330,7 @@
         "slot": "wheel-offset",
         "section": "Tires",
         "tier": "custom",
-        "price": 750,
+        "price": 1125,
         "forSale": true,
         "modifiers": [
           {
@@ -5351,7 +5351,7 @@
         "slot": "wheel-offset",
         "section": "Tires",
         "tier": "custom",
-        "price": 875,
+        "price": 1300,
         "forSale": true,
         "modifiers": [
           {
@@ -5372,7 +5372,7 @@
         "slot": "wheel-offset",
         "section": "Tires",
         "tier": "custom",
-        "price": 1000,
+        "price": 1500,
         "forSale": true,
         "modifiers": [
           {

@@ -523,3 +523,12 @@ export function subtractRaceTerrainPolygonByConvexPolygon(subject = [], clipPoly
   }
   return retained.length ? retained : (pending.length ? [] : [subject]);
 }
+
+// Share the diagonal choice between emitted road faces and junction clipping.
+// Tight turns can fold the inside edge; different diagonals describe different
+// footprints there and leave duplicate faces behind after clipping.
+export function triangulateRaceSurfaceQuad([a,b,c,d]) {
+  const ac=Math.hypot(c.x-a.x,(c.z??c.y)-(a.z??a.y));
+  const bd=Math.hypot(d.x-b.x,(d.z??d.y)-(b.z??b.y));
+  return ac<=bd?[[a,b,c],[a,c,d]]:[[a,b,d],[b,c,d]];
+}

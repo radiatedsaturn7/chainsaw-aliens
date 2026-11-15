@@ -33,7 +33,7 @@ jobs:
         run: npm ci
 
       - name: Run opening, cutscene, smoke and image-import regressions
-        run: node --test tests/unit/raceFinishCutscene.test.js tests/unit/cutsceneSkip.test.js tests/unit/raceSnowClouds.test.js tests/unit/carSmoke.test.js tests/unit/raceLighting.test.js tests/unit/raceFinishPresentation.test.js tests/unit/menuResources.test.js tests/unit/menuPlayer.test.js tests/unit/pixelStudio.animatedImageImport.test.js tests/unit/pixelStudio.gifImport.test.js
+        run: node --test tests/unit/bootstrap.test.js tests/unit/raceSkyboxTexture.test.js tests/unit/campaignEconomy.test.js tests/unit/campaignGarageMenu.test.js tests/unit/campaignRegionDialogue.test.js tests/unit/raceCityJunctions.test.js tests/unit/raceFinishCutscene.test.js tests/unit/cutsceneSkip.test.js tests/unit/raceSnowClouds.test.js tests/unit/carSmoke.test.js tests/unit/raceLighting.test.js tests/unit/raceFinishPresentation.test.js tests/unit/menuResources.test.js tests/unit/menuPlayer.test.js tests/unit/pixelStudio.animatedImageImport.test.js tests/unit/pixelStudio.gifImport.test.js
 
       - name: Run handling and tire-surface regressions
         run: node --test tests/unit/handlingAssistOrientation.test.js tests/unit/tireSurfaceRuntime.test.js tests/unit/raceControllerMapping.test.js tests/unit/stabilityBrakeDirection.test.js tests/unit/stockRtgBraking.test.js tests/unit/tireSupportForce.test.js tests/unit/stockRtgYawRecovery.test.js

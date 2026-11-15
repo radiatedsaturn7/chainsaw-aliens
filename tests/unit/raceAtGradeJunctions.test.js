@@ -45,3 +45,25 @@ test('crossing at exact sample vertices is detected once, without mutating sourc
  assert.equal(original.elevation,0);
  assert.notEqual(sections[20].center,original);
 });
+
+test('close centerline endpoints without overlapping road faces are not joined',()=>{
+ const sections=[];
+ for(let z=-40;z<=40;z+=2)sections.push(section(0,z));
+ // Return along a remote loop, then stop the second arm 5m from the first
+ // centerline. Its square end does not reach the first road's 4m edge.
+ sections.push(section(50,60),section(50,0,Math.PI/2));
+ for(let x=48;x>=6;x-=2)sections.push(section(x,0,Math.PI/2));
+ assert.equal(joinRaceAtGradeCrossings(sections).length,0);
+});
+test('three visits to a junction share one surface rather than clipping only two arms',()=>{
+ const sections=crossing();
+ sections.push(section(65,65),section(-60,65),section(-60,-60),section(-40,-40,Math.PI/4,.7));
+ for(let n=-38;n<=40;n+=2)sections.push(section(n,n,Math.PI/4,.7));
+ const junctions=joinRaceAtGradeCrossings(sections),central=junctions.find(n=>Math.hypot(n.x,n.z)<1);
+ assert.ok(central);assert.equal(central.branches.length,3);
+ const mesh=buildRaceCanonicalSurfaceMesh({surfaceBake:{sections,junctions}});
+ for(const x of [-1.31,.69])for(const z of [-1.17,.83]){
+  const hits=mesh.triangles.filter(t=>inside({x,z},t.vertices));
+  assert.equal(hits.length,1);assert.equal(hits[0].region,'road');
+ }
+});

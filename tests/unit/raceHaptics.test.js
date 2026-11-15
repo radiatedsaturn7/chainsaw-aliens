@@ -84,3 +84,27 @@ test('road feedback responds to wheel load changes without a reset spike or airb
  assert.equal(raceHapticSample(s,{}).road,first.road,'new/reset history does not create a load kick');
  s.airborne=true;assert.equal(raceHapticSample(s,first.previous).road,0);
 });
+
+test('collision feedback keeps the strongest new contact and scales with impact impulse',()=>{
+ const s=session();s.vehicleDynamicsRunner.impactHistory=[];
+ const baseline=raceHapticSample(s);
+ s.vehicleDynamicsRunner.impactHistory.push({sequence:1,bodyNormalImpulseNs:700});
+ const light=raceHapticSample(s,baseline.previous);
+ s.vehicleDynamicsRunner.impactHistory.push({sequence:2,bodyNormalImpulseNs:5600},{sequence:3,bodyNormalImpulseNs:350});
+ const hard=raceHapticSample(s,light.previous);
+ assert.equal(hard.impact,.8);assert.ok(hard.impact>light.impact*4);
+ assert.equal(raceHapticSample(s,hard.previous).impact,0);
+});
+
+test('controller skid amplitude grows with measured wheel slip',()=>{
+ const amplitudes=[];
+ for(const slip of [.2,.4,.7]){
+  let output;
+  const actuator={playEffect:(_kind,value)=>{output=value;},reset(){}};
+  const h=new RaceHaptics({navigator:{getGamepads:()=>[{connected:true,vibrationActuator:actuator}]},window:null,document:null});
+  const s=session('asphalt',slip);
+  for(let i=0;i<30;i++)h.update(s,{},1/60,{active:true});
+  amplitudes.push(output.weakMagnitude);h.stop();
+ }
+ assert.ok(amplitudes[0]<amplitudes[1]);assert.ok(amplitudes[1]<amplitudes[2]);
+});
