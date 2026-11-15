@@ -18,3 +18,11 @@ test('free-race art requires an exact active binding and runtime selector, never
  assert.throws(()=>authoredFreeRaceArtwork(registry,menu,manifest,read,['free.json']),/campaign guard/);
  assert.throws(()=>authoredFreeRaceArtwork({schemaVersion:1,assets:{sky:{raceRef:'free',slot:'preload',reason:'unused'}}},menu,manifest,read,[]),/Invalid/);
 });
+
+import {resolveDiagnosticRaceChoice} from '../../tools/race-environments/selector.mjs';
+test('diagnostic selector aliases must exactly match the manifest folder and logical race',()=>{
+ assert.equal(resolveDiagnosticRaceChoice([{value:'A — B'}],'A — B','races/A %E2%80%94 B/document.json').mode,'exact-logical-name');
+ assert.equal(resolveDiagnosticRaceChoice([{value:'A %E2%80%94 B'}],'A — B','races/A %E2%80%94 B/document.json').mode,'exact-manifest-encoded-folder');
+ assert.throws(()=>resolveDiagnosticRaceChoice([{value:'other'}],'A — B','races/A %E2%80%94 B/document.json'),/absent/);
+ assert.throws(()=>resolveDiagnosticRaceChoice([{value:'other'}],'A — B','races/other/document.json'),/does not identify/);
+});

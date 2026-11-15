@@ -784,7 +784,16 @@
       "catalog-sumac-40-2012-body": "art/catalog-sumac-40-2012-body/document.json",
       "catalog-sumac-40-2012-dashboard": "art/catalog-sumac-40-2012-dashboard/document.json",
       "catalog-zinnia-16-2010-body": "art/catalog-zinnia-16-2010-body/document.json",
-      "catalog-zinnia-16-2010-dashboard": "art/catalog-zinnia-16-2010-dashboard/document.json"
+      "catalog-zinnia-16-2010-dashboard": "art/catalog-zinnia-16-2010-dashboard/document.json",
+      "environment-v1-watkins-morning": "art/environment-v1-watkins-morning/document.json",
+      "environment-v1-watkins-evening": "art/environment-v1-watkins-evening/document.json",
+      "environment-v1-watkins-noon": "art/environment-v1-watkins-noon/document.json",
+      "environment-v1-road-america-evening": "art/environment-v1-road-america-evening/document.json",
+      "environment-v1-road-america-noon": "art/environment-v1-road-america-noon/document.json",
+      "environment-v1-homestead-evening": "art/environment-v1-homestead-evening/document.json",
+      "environment-v1-willow-morning": "art/environment-v1-willow-morning/document.json",
+      "environment-v1-willow-evening": "art/environment-v1-willow-evening/document.json",
+      "environment-v1-daytona-evening": "art/environment-v1-daytona-evening/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

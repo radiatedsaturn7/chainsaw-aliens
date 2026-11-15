@@ -187,7 +187,7 @@
       "sharingEvidence": [
         "Exact daytona/oval source layout at 29.1852,-81.0705; raceway-daytona-oval; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-daytona-oval",
@@ -325,6 +325,38 @@
         "latitude": 29.1852,
         "longitude": -81.0705,
         "reference": "https://www.daytonainternationalspeedway.com/"
+      },
+      "binding": {
+        "skyboxArtRef": "skybox-daytona",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "daytona-noon",
+        "sourceImage": "assets/campaign-art/skyboxes/daytona.png",
+        "landscape": "Flat Florida grass, palms, Lake Lloyd margin and broad distant grandstands; existing noon original inspected.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "daytona",
+          "layoutKey": "oval",
+          "catalogId": "raceway-daytona-oval",
+          "latitude": 29.1852,
+          "longitude": -81.0705,
+          "reference": "https://www.daytonainternationalspeedway.com/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Flat Florida grass, palms, Lake Lloyd margin and broad distant grandstands; existing noon original inspected.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -17511,7 +17543,7 @@
       "sharingEvidence": [
         "Exact watkins/long source layout at 42.3369,-76.9272; raceway-watkins-long; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-watkins-long",
@@ -17663,6 +17695,38 @@
         "latitude": 42.3369,
         "longitude": -76.9272,
         "reference": "https://www.theglen.com/track-info/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-watkins-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "watkins-morning",
+        "sourceImage": "/workspace/generated_images/exec-fd060c4d-895d-4ebc-99fb-b62caceb5960.png",
+        "landscape": "Cold-season wooded Finger Lakes plateau, low rounded ridges, bare hardwoods/conifers; no invented lake or alpine peaks.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "watkins",
+          "layoutKey": "long",
+          "catalogId": "raceway-watkins-long",
+          "latitude": 42.3369,
+          "longitude": -76.9272,
+          "reference": "https://www.theglen.com/track-info/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Cold-season wooded Finger Lakes plateau, low rounded ridges, bare hardwoods/conifers; no invented lake or alpine peaks.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -17672,7 +17736,7 @@
       "sharingEvidence": [
         "Exact watkins/short source layout at 42.3369,-76.9272; raceway-watkins-short; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-watkins-short",
@@ -17817,6 +17881,38 @@
         "latitude": 42.3369,
         "longitude": -76.9272,
         "reference": "https://www.theglen.com/track-info/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-watkins-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "watkins-evening",
+        "sourceImage": "/workspace/generated_images/exec-baaedef9-91e5-4b84-87bb-d6a784ddbf59.png",
+        "landscape": "Cold-season wooded Finger Lakes plateau, low rounded ridges, bare hardwoods/conifers; no invented lake or alpine peaks.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "watkins",
+          "layoutKey": "short",
+          "catalogId": "raceway-watkins-short",
+          "latitude": 42.3369,
+          "longitude": -76.9272,
+          "reference": "https://www.theglen.com/track-info/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Cold-season wooded Finger Lakes plateau, low rounded ridges, bare hardwoods/conifers; no invented lake or alpine peaks.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -17826,7 +17922,7 @@
       "sharingEvidence": [
         "Exact watkins/long-no-loop source layout at 42.3369,-76.9272; raceway-watkins-long-no-loop; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-watkins-long-no-loop",
@@ -17978,6 +18074,38 @@
         "latitude": 42.3369,
         "longitude": -76.9272,
         "reference": "https://www.theglen.com/track-info/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-watkins-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "watkins-evening",
+        "sourceImage": "/workspace/generated_images/exec-baaedef9-91e5-4b84-87bb-d6a784ddbf59.png",
+        "landscape": "Cold-season wooded Finger Lakes plateau, low rounded ridges, bare hardwoods/conifers; no invented lake or alpine peaks.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "watkins",
+          "layoutKey": "long-no-loop",
+          "catalogId": "raceway-watkins-long-no-loop",
+          "latitude": 42.3369,
+          "longitude": -76.9272,
+          "reference": "https://www.theglen.com/track-info/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Cold-season wooded Finger Lakes plateau, low rounded ridges, bare hardwoods/conifers; no invented lake or alpine peaks.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -17987,7 +18115,7 @@
       "sharingEvidence": [
         "Exact watkins/short-no-loop source layout at 42.3369,-76.9272; raceway-watkins-short-no-loop; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-watkins-short-no-loop",
@@ -18132,6 +18260,38 @@
         "latitude": 42.3369,
         "longitude": -76.9272,
         "reference": "https://www.theglen.com/track-info/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-watkins-noon",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "watkins-noon",
+        "sourceImage": "/workspace/generated_images/exec-52b4fe3a-5cda-407e-8056-d5d721ec0888.png",
+        "landscape": "Cold-season wooded Finger Lakes plateau, low rounded ridges, bare hardwoods/conifers; no invented lake or alpine peaks.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "watkins",
+          "layoutKey": "short-no-loop",
+          "catalogId": "raceway-watkins-short-no-loop",
+          "latitude": 42.3369,
+          "longitude": -76.9272,
+          "reference": "https://www.theglen.com/track-info/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Cold-season wooded Finger Lakes plateau, low rounded ridges, bare hardwoods/conifers; no invented lake or alpine peaks.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -18141,7 +18301,7 @@
       "sharingEvidence": [
         "Exact road-america/full source layout at 43.7975,-87.9897; raceway-road-america-full; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-road-america-full",
@@ -18301,6 +18461,38 @@
         "latitude": 43.7975,
         "longitude": -87.9897,
         "reference": "https://www.roadamerica.com/sites/main/files/file-attachments/road_america_track_notes_2023_july_for_web.pdf"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-road-america-evening",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "road-america-evening",
+        "sourceImage": "/workspace/generated_images/exec-94ce247f-ea99-4c73-9b31-935d2ab70aa5.png",
+        "landscape": "Rolling upper-Midwest woodland and dormant meadow; replace inherited industrial concrete visual substrate.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "road-america",
+          "layoutKey": "full",
+          "catalogId": "raceway-road-america-full",
+          "latitude": 43.7975,
+          "longitude": -87.9897,
+          "reference": "https://www.roadamerica.com/sites/main/files/file-attachments/road_america_track_notes_2023_july_for_web.pdf"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Rolling upper-Midwest woodland and dormant meadow; replace inherited industrial concrete visual substrate.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -18310,7 +18502,7 @@
       "sharingEvidence": [
         "Exact road-america/bend source layout at 43.7975,-87.9897; raceway-road-america-bend; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-road-america-bend",
@@ -18470,6 +18662,38 @@
         "latitude": 43.7975,
         "longitude": -87.9897,
         "reference": "https://www.roadamerica.com/sites/main/files/file-attachments/road_america_track_notes_2023_july_for_web.pdf"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-road-america-noon",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "road-america-noon",
+        "sourceImage": "/workspace/generated_images/exec-fa6183c5-a18d-42b3-b8bd-3b6f37a3bf93.png",
+        "landscape": "Rolling upper-Midwest woodland and dormant meadow; replace inherited industrial concrete visual substrate.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "road-america",
+          "layoutKey": "bend",
+          "catalogId": "raceway-road-america-bend",
+          "latitude": 43.7975,
+          "longitude": -87.9897,
+          "reference": "https://www.roadamerica.com/sites/main/files/file-attachments/road_america_track_notes_2023_july_for_web.pdf"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Rolling upper-Midwest woodland and dormant meadow; replace inherited industrial concrete visual substrate.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -20315,7 +20539,7 @@
       "sharingEvidence": [
         "Exact homestead/oval source layout at 25.4517,-80.4098; raceway-homestead-oval; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-homestead-oval",
@@ -20453,6 +20677,38 @@
         "latitude": 25.4517,
         "longitude": -80.4098,
         "reference": "https://www.homesteadmiamispeedway.com/track-history/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-homestead-evening",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "homestead-evening",
+        "sourceImage": "/workspace/generated_images/exec-cc16f568-4031-451e-808b-2dd4856424c8.png",
+        "landscape": "Flat south Florida palms, grassy infield, lime-rock excavation lake and abandoned low grandstands/tower.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "homestead",
+          "layoutKey": "oval",
+          "catalogId": "raceway-homestead-oval",
+          "latitude": 25.4517,
+          "longitude": -80.4098,
+          "reference": "https://www.homesteadmiamispeedway.com/track-history/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Flat south Florida palms, grassy infield, lime-rock excavation lake and abandoned low grandstands/tower.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -20462,7 +20718,7 @@
       "sharingEvidence": [
         "Exact homestead/road source layout at 25.4517,-80.4098; raceway-homestead-road; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-homestead-road",
@@ -20601,6 +20857,38 @@
         "latitude": 25.4517,
         "longitude": -80.4098,
         "reference": "https://www.homesteadmiamispeedway.com/track-history/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-homestead-evening",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "homestead-evening",
+        "sourceImage": "/workspace/generated_images/exec-cc16f568-4031-451e-808b-2dd4856424c8.png",
+        "landscape": "Flat south Florida palms, grassy infield, lime-rock excavation lake and abandoned low grandstands/tower.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "homestead",
+          "layoutKey": "road",
+          "catalogId": "raceway-homestead-road",
+          "latitude": 25.4517,
+          "longitude": -80.4098,
+          "reference": "https://www.homesteadmiamispeedway.com/track-history/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Flat south Florida palms, grassy infield, lime-rock excavation lake and abandoned low grandstands/tower.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -20610,7 +20898,7 @@
       "sharingEvidence": [
         "Exact homestead/infield source layout at 25.4517,-80.4098; raceway-homestead-infield; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-homestead-infield",
@@ -20749,6 +21037,38 @@
         "latitude": 25.4517,
         "longitude": -80.4098,
         "reference": "https://www.homesteadmiamispeedway.com/track-history/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-homestead-evening",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "homestead-evening",
+        "sourceImage": "/workspace/generated_images/exec-cc16f568-4031-451e-808b-2dd4856424c8.png",
+        "landscape": "Flat south Florida palms, grassy infield, lime-rock excavation lake and abandoned low grandstands/tower.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "homestead",
+          "layoutKey": "infield",
+          "catalogId": "raceway-homestead-infield",
+          "latitude": 25.4517,
+          "longitude": -80.4098,
+          "reference": "https://www.homesteadmiamispeedway.com/track-history/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Flat south Florida palms, grassy infield, lime-rock excavation lake and abandoned low grandstands/tower.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -20758,7 +21078,7 @@
       "sharingEvidence": [
         "Exact daytona/sports-car source layout at 29.1852,-81.0705; raceway-daytona-sports-car; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-daytona-sports-car",
@@ -20903,6 +21223,38 @@
         "latitude": 29.1852,
         "longitude": -81.0705,
         "reference": "https://www.daytonainternationalspeedway.com/"
+      },
+      "binding": {
+        "skyboxArtRef": "skybox-daytona",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "daytona-noon",
+        "sourceImage": "assets/campaign-art/skyboxes/daytona.png",
+        "landscape": "Flat Florida grass, palms, Lake Lloyd margin and broad distant grandstands; existing noon original inspected.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "daytona",
+          "layoutKey": "sports-car",
+          "catalogId": "raceway-daytona-sports-car",
+          "latitude": 29.1852,
+          "longitude": -81.0705,
+          "reference": "https://www.daytonainternationalspeedway.com/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Flat Florida grass, palms, Lake Lloyd margin and broad distant grandstands; existing noon original inspected.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -20912,7 +21264,7 @@
       "sharingEvidence": [
         "Exact daytona/stock-car source layout at 29.1852,-81.0705; raceway-daytona-stock-car; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-daytona-stock-car",
@@ -21058,6 +21410,38 @@
         "latitude": 29.1852,
         "longitude": -81.0705,
         "reference": "https://www.daytonainternationalspeedway.com/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-daytona-evening",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "daytona-evening",
+        "sourceImage": "/workspace/generated_images/exec-7a2ce099-a594-4718-a0ea-fd2cf711bc33.png",
+        "landscape": "Flat Florida grass, palms, Lake Lloyd margin and broad distant grandstands; existing noon original inspected.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "daytona",
+          "layoutKey": "stock-car",
+          "catalogId": "raceway-daytona-stock-car",
+          "latitude": 29.1852,
+          "longitude": -81.0705,
+          "reference": "https://www.daytonainternationalspeedway.com/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "Flat Florida grass, palms, Lake Lloyd margin and broad distant grandstands; existing noon original inspected.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -21067,7 +21451,7 @@
       "sharingEvidence": [
         "Exact willow/big source layout at 34.872,-118.264; raceway-willow-big; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-willow-big",
@@ -21201,6 +21585,38 @@
         "latitude": 34.872,
         "longitude": -118.264,
         "reference": "https://willowspringsraceway.com/tracks/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-willow-morning",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "willow-morning",
+        "sourceImage": "/workspace/generated_images/exec-e01a060a-6d6c-47e0-b6ff-80ce2e478931.png",
+        "landscape": "High Mojave basin, tan rocky foothills, sparse scrub and low paddock structures; no red Utah mesas or snow.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "willow",
+          "layoutKey": "big",
+          "catalogId": "raceway-willow-big",
+          "latitude": 34.872,
+          "longitude": -118.264,
+          "reference": "https://willowspringsraceway.com/tracks/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "High Mojave basin, tan rocky foothills, sparse scrub and low paddock structures; no red Utah mesas or snow.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -21210,7 +21626,7 @@
       "sharingEvidence": [
         "Exact willow/streets source layout at 34.872,-118.264; raceway-willow-streets; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-willow-streets",
@@ -21346,6 +21762,38 @@
         "latitude": 34.872,
         "longitude": -118.264,
         "reference": "https://willowspringsraceway.com/tracks/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-willow-morning",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "willow-morning",
+        "sourceImage": "/workspace/generated_images/exec-e01a060a-6d6c-47e0-b6ff-80ce2e478931.png",
+        "landscape": "High Mojave basin, tan rocky foothills, sparse scrub and low paddock structures; no red Utah mesas or snow.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "willow",
+          "layoutKey": "streets",
+          "catalogId": "raceway-willow-streets",
+          "latitude": 34.872,
+          "longitude": -118.264,
+          "reference": "https://willowspringsraceway.com/tracks/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "High Mojave basin, tan rocky foothills, sparse scrub and low paddock structures; no red Utah mesas or snow.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -21355,7 +21803,7 @@
       "sharingEvidence": [
         "Exact willow/streets-short source layout at 34.872,-118.264; raceway-willow-streets-short; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-willow-streets-short",
@@ -21492,6 +21940,38 @@
         "latitude": 34.872,
         "longitude": -118.264,
         "reference": "https://willowspringsraceway.com/tracks/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-willow-evening",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "environmentPack": "venue-pack4",
+      "recipe": {
+        "key": "willow-evening",
+        "sourceImage": "/workspace/generated_images/exec-077ba05a-1a42-40bd-8e9f-63ba9406d141.png",
+        "landscape": "High Mojave basin, tan rocky foothills, sparse scrub and low paddock structures; no red Utah mesas or snow.",
+        "sourceEvidence": {
+          "source": "tools/campaigns/raceway_sources.json",
+          "sourceKey": "willow",
+          "layoutKey": "streets-short",
+          "catalogId": "raceway-willow-streets-short",
+          "latitude": 34.872,
+          "longitude": -118.264,
+          "reference": "https://willowspringsraceway.com/tracks/"
+        },
+        "sharing": "Only identical physical site and complete authored environment signature share this art. Night variants excluded.",
+        "season": "Cold-season woods/meadow for northern venues; tropical grass for Florida; arid scrub for Mojave. Original illustrative landscapes, not surveyed structure positions.",
+        "boundaryReview": "Source repaired where necessary; projected horizon/wrap review pending."
+      },
+      "terrainReview": {
+        "ground": "High Mojave basin, tan rocky foothills, sparse scrub and low paddock structures; no red Utah mesas or snow.",
+        "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
+        "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
+        "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -37738,5 +38218,12 @@
         "maxY": 1782.4021409778557
       }
     }
-  ]
+  ],
+  "nightAcceptancePolicy": {
+    "requiredView": "Actual in-game foreground and sky together at unchanged authored exposure/weather, on desktop and handheld. Diagnostic-only brightness cannot satisfy this.",
+    "clear": "Legible silhouettes and palette/exposure matching dark foreground; optional restrained moon/stars if location/weather supports them. No mandatory moon.",
+    "stormOrSnow": "Cloud glow or obscured celestial cues rather than an exposed bright disk; no daylight sky behind headlights.",
+    "light": "Restrained localized lights only where scene geography and story call for them.",
+    "fog": "Record intentional occlusion and unresolved contrast explicitly; do not count unloaded art or hidden horizon as accepted."
+  }
 }

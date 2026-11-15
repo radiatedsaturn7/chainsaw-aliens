@@ -3099,5 +3099,68 @@
     "documentSha256": "9e46d773cda5b3c17dd99e43f3d75fd3717bea5bf428f2752bfbf40ed4cdb099",
     "width": 512,
     "height": 512
+  },
+  "environment-v1-watkins-morning": {
+    "source": "assets/campaign-art/environment-v1/watkins-morning.png",
+    "sourceSha256": "8a195d7a7e5ef4401f4795139f32a764f30f8ab5a24371547de3d68397932eba",
+    "documentSha256": "11441bfd4071f052c478ca186dc4c6c3c361782aec0ef5d3cb2f499298f2135f",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-watkins-evening": {
+    "source": "assets/campaign-art/environment-v1/watkins-evening.png",
+    "sourceSha256": "102f1c505ff669c04217c4cfc2afe27258eb77f6244db5b280406ba5750dfff7",
+    "documentSha256": "e10a76c7bb67c1f3809f0d357c50532efc39fc76e22b85f773a489e3fe943917",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-watkins-noon": {
+    "source": "assets/campaign-art/environment-v1/watkins-noon.png",
+    "sourceSha256": "1eea802335db7bd5a9a3deb4af38331272649a0977301f9b6a6514177773a3bc",
+    "documentSha256": "1f268f4a72117e67316326d02cc31efebcfdc45c6e14c7ff0e9853e57af7147b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-road-america-evening": {
+    "source": "assets/campaign-art/environment-v1/road-america-evening.png",
+    "sourceSha256": "30d2f12447d63dec6e42a0d66268f805ead89028ee771de27a0a719cf57f121d",
+    "documentSha256": "b5eb1d16a21b1b540e096b928acb4f608d7868d2264c083a5ed18837a6e3c726",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-road-america-noon": {
+    "source": "assets/campaign-art/environment-v1/road-america-noon.png",
+    "sourceSha256": "3c9afdc849fc297b043af8297ca0bb4eff0869b8dbab7308d0b1c636de64ed54",
+    "documentSha256": "6bf0ff8d8f044776981f37433bf9f7037f0cdac5bef88b055e7c5062907f8241",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-homestead-evening": {
+    "source": "assets/campaign-art/environment-v1/homestead-evening.png",
+    "sourceSha256": "7deff91a4cb9aeff15d276fb278f40199396f99499b7bcde0e4291a05dfc97d0",
+    "documentSha256": "66d940c892faf163fcb36b9244b27c6101256d02da1d9f40fc6db3be78b6fa34",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-willow-morning": {
+    "source": "assets/campaign-art/environment-v1/willow-morning.png",
+    "sourceSha256": "773733216befaa46594ffbb9686b0e0da9d6795d5caf4b08068e46cb780d720d",
+    "documentSha256": "94149562513ff464b9df958d5db656b5a7b916c8a4267c0bff06b3d933652231",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-willow-evening": {
+    "source": "assets/campaign-art/environment-v1/willow-evening.png",
+    "sourceSha256": "ec7908460ec5bc4e2f0dfbab2351c2047ff342cdc453dafe6eff45c5bbd0624c",
+    "documentSha256": "c2cc268e775cc09245e3704b8496c95bfb1ad910efb897db4035da8249ef23ac",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-daytona-evening": {
+    "source": "assets/campaign-art/environment-v1/daytona-evening.png",
+    "sourceSha256": "38eb0f03bc31763a30010f4ebe05d3b0850d12c1a9cfc26fa8f2822dd4dc989b",
+    "documentSha256": "202bea02bb5b993d58e054953ce622af5fabe9474f2013d629dcdc94013f216d",
+    "width": 1024,
+    "height": 341
   }
 }

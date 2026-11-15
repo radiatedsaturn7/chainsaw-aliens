@@ -467,7 +467,7 @@
       "kind": "skybox",
       "maxEdge": 1024,
       "placements": [],
-      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+      "usageNote": "Reviewed original for exact Daytona noon layout bindings in venue-pack4."
     },
     {
       "name": "skybox-death-valley",
@@ -3615,6 +3615,78 @@
       "kind": "texture",
       "maxEdge": 512,
       "placements": []
+    },
+    {
+      "name": "environment-v1-watkins-morning",
+      "source": "environment-v1/watkins-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-watkins-evening",
+      "source": "environment-v1/watkins-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-watkins-noon",
+      "source": "environment-v1/watkins-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-road-america-evening",
+      "source": "environment-v1/road-america-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-road-america-noon",
+      "source": "environment-v1/road-america-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-homestead-evening",
+      "source": "environment-v1/homestead-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-willow-morning",
+      "source": "environment-v1/willow-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-willow-evening",
+      "source": "environment-v1/willow-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-daytona-evening",
+      "source": "environment-v1/daytona-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
     }
   ]
 }
