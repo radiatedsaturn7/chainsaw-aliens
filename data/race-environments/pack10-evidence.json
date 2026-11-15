@@ -1,0 +1,5814 @@
+{
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "parent": "1c12de08c323ba1b801ecc2f84fbfa216b7020f5",
+  "scope": "Local-only twenty distinct Front Range / San Gabriel environment bindings, including Pikes and Angeles main routes; two prior source seam repairs. All authored weather/light/time, physics/material IDs/weights, geometry/mission/scenery and production code retained. No remote writes.",
+  "counts": {
+    "reachable": 245,
+    "bound": 137,
+    "unbound": 108,
+    "mainRouteBound": 11,
+    "mainRouteTotal": 11,
+    "newBindings": 20,
+    "newCompositions": 20,
+    "sourceReviewed": 20,
+    "fourLayerAudited": 20,
+    "nativeDeviceChecks": 40,
+    "repairDeviceChecks": 4,
+    "nativeBothDevicesManuallyViewed": 20,
+    "fullNewEnvironmentAcceptance": 0,
+    "newSourceWrapWarnings": 6,
+    "decodedWarningsAcross137": 6,
+    "severelyVisibilityObscuredNewRoutes": 2,
+    "nearBlackClearNightNewRoutes": 3,
+    "productionSamplesPassed": 1,
+    "productionSamplesFailed": 1,
+    "uniqueGroundMaterialsViewed": 5
+  },
+  "checks": {
+    "unitResult": "89 passed,1 failed. Artwork-name/material inference conflicts with requested visual-only terrain changes. Test and physical data left unchanged.",
+    "terrainValidationConflict": [
+      {
+        "race": "Pikes Peak Highway",
+        "mismatches": [
+          {
+            "physicalTileId": "snow",
+            "artRef": "ground-alpine-rock-v2",
+            "testExpects": "gravel",
+            "count": 12168
+          }
+        ],
+        "physicalIdsAndWeightsEqualBaseline": true
+      },
+      {
+        "race": "Angeles Crest Highway",
+        "mismatches": [
+          {
+            "physicalTileId": "dirt",
+            "artRef": "ground-gray-gravel-v2",
+            "testExpects": "gravel",
+            "count": 5408
+          }
+        ],
+        "physicalIdsAndWeightsEqualBaseline": true
+      }
+    ],
+    "units": "/tmp/race-pack10-units.log",
+    "focused": "/tmp/race-pack10-focused.log",
+    "browser": "/tmp/race-pack10-campaign-focused.log",
+    "manifest": "{\"documents\": 1710, \"assets\": 16}\nPublished project manifest includes every current document.\n",
+    "all245Preservation": {
+      "mode": "checked",
+      "total": 245,
+      "bindings": [
+        {
+          "race": "Col de Turini",
+          "ref": "skybox-col-de-turini"
+        },
+        {
+          "race": "Daytona Tri-Oval",
+          "ref": "skybox-daytona"
+        },
+        {
+          "race": "Mount Washington Auto Road \u2014 point-to-point",
+          "ref": "environment-v1-mount-washington-snow-noon"
+        },
+        {
+          "race": "Nurburgring Nordschleife",
+          "ref": "skybox-eifel-circuit"
+        },
+        {
+          "race": "Ouninpohja",
+          "ref": "environment-v1-ouninpohja-boreal-noon"
+        },
+        {
+          "race": "Tower Hill Road",
+          "ref": "environment-v1-tower-hill-snow-night"
+        },
+        {
+          "race": "Laurel Highlands Scenic Byway",
+          "ref": "environment-v1-laurel-ohiopyle-evening"
+        },
+        {
+          "race": "Ohio River Crossing",
+          "ref": "environment-v1-ohio-little-muskingum-storm"
+        },
+        {
+          "race": "Ozark Backroads",
+          "ref": "environment-v1-ozark-eminence-day"
+        },
+        {
+          "race": "Data Center City",
+          "ref": "environment-v1-stl-riverfront-night"
+        },
+        {
+          "race": "Historic Route 66",
+          "ref": "environment-v1-route66-erick-texola"
+        },
+        {
+          "race": "Pikes Peak Highway",
+          "ref": "environment-v1-pikes-evening"
+        },
+        {
+          "race": "Moki Dugway",
+          "ref": "environment-v1-moki-cedar-mesa-day"
+        },
+        {
+          "race": "Oak Creek Canyon",
+          "ref": "environment-v1-oakrim-evening"
+        },
+        {
+          "race": "Angeles Crest Highway",
+          "ref": "environment-v1-angeles-evening"
+        },
+        {
+          "race": "RI 116 \u2014 North Smithfield Scituate",
+          "ref": "environment-v1-ri116-morning"
+        },
+        {
+          "race": "I-95 \u2014 Attleboro to Warwick curves",
+          "ref": "environment-v1-i95-noon"
+        },
+        {
+          "race": "RI 102 \u2014 Victory Highway",
+          "ref": "environment-v1-ri102-evening"
+        },
+        {
+          "race": "RI 44 \u2014 Putnam Pike Glocester",
+          "ref": "environment-v1-ri44-morning"
+        },
+        {
+          "race": "Lime Rock Park \u2014 Connecticut",
+          "ref": "environment-v1-lime-evening"
+        },
+        {
+          "race": "Kancamagus Highway \u2014 NH 112",
+          "ref": "environment-v1-kancamagus-morning"
+        },
+        {
+          "race": "Bear Notch Road \u2014 Bartlett",
+          "ref": "environment-v1-bear-notch-morning"
+        },
+        {
+          "race": "Hurricane Mountain Road \u2014 Conway",
+          "ref": "environment-v1-hurricane-evening"
+        },
+        {
+          "race": "Crawford Notch \u2014 US 302",
+          "ref": "environment-v1-crawford-noon"
+        },
+        {
+          "race": "Pinkham Notch \u2014 NH 16",
+          "ref": "environment-v1-pinkham-snow-noon"
+        },
+        {
+          "race": "Club Motorsports \u2014 Tamworth",
+          "ref": "environment-v1-tamworth-noon"
+        },
+        {
+          "race": "Team O\u2019Neil-inspired Rally Stage (2994)",
+          "ref": "environment-v1-oneil-noon"
+        },
+        {
+          "race": "New Hampshire Motor Speedway \u2014 Loudon",
+          "ref": "environment-v1-loudon-evening"
+        },
+        {
+          "race": "New England Dragway \u2014 Epping",
+          "ref": "environment-v1-epping-morning"
+        },
+        {
+          "race": "PA 381 \u2014 Ohiopyle approach",
+          "ref": "environment-v1-ohiopyle-noon"
+        },
+        {
+          "race": "PA 711 \u2014 Normalville Champion",
+          "ref": "environment-v1-normalville-evening"
+        },
+        {
+          "race": "US 40 \u2014 Chalk Hill Summit",
+          "ref": "environment-v1-chalk-hill-evening"
+        },
+        {
+          "race": "PA 31 \u2014 Donegal to Laurel Ridge",
+          "ref": "environment-v1-donegal-night"
+        },
+        {
+          "race": "County Line Road \u2014 Seven Springs",
+          "ref": "environment-v1-seven-springs-night"
+        },
+        {
+          "race": "Forbes State Forest \u2014 designated gravel roads",
+          "ref": "environment-v1-forbes-morning"
+        },
+        {
+          "race": "Jennerstown Speedway \u2014 oval",
+          "ref": "environment-v1-jennerstown-night"
+        },
+        {
+          "race": "Keystone Motorsports Park \u2014 New Alexandria",
+          "ref": "environment-v1-keystone-morning"
+        },
+        {
+          "race": "Pittsburgh International Race Complex \u2014 Wampum",
+          "ref": "environment-v1-pitt-noon"
+        },
+        {
+          "race": "OH 26 \u2014 Covered Bridge Scenic Byway",
+          "ref": "environment-v1-oh26-noon"
+        },
+        {
+          "race": "OH 555 \u2014 Triple Nickel",
+          "ref": "environment-v1-triple-nickel-evening"
+        },
+        {
+          "race": "OH 550 \u2014 Barlow approach",
+          "ref": "environment-v1-barlow-morning"
+        },
+        {
+          "race": "OH 536 \u2014 Ohio River hills",
+          "ref": "environment-v1-oh536-night"
+        },
+        {
+          "race": "OH 676 \u2014 Western county hills",
+          "ref": "environment-v1-oh676-night"
+        },
+        {
+          "race": "Marietta\u2013Williamstown \u2014 I-77 river bridge",
+          "ref": "environment-v1-marietta-evening"
+        },
+        {
+          "race": "Washington County western covered-bridge gravel loop",
+          "ref": "environment-v1-washington-gravel-morning"
+        },
+        {
+          "race": "Ohio Valley Speedway \u2014 Washington, West Virginia",
+          "ref": "environment-v1-ohio-valley-night"
+        },
+        {
+          "race": "Mid-Ohio Sports Car Course \u2014 Lexington",
+          "ref": "environment-v1-mid-ohio-morning"
+        },
+        {
+          "race": "MO 19 \u2014 Eminence Current River",
+          "ref": "environment-v1-eminence-evening"
+        },
+        {
+          "race": "MO 106 \u2014 Alley Spring approach",
+          "ref": "environment-v1-alley-noon"
+        },
+        {
+          "race": "MO 106 \u2014 Powder Mill approach",
+          "ref": "environment-v1-powder-morning"
+        },
+        {
+          "race": "MO V \u2014 Two Rivers access",
+          "ref": "environment-v1-two-rivers-morning"
+        },
+        {
+          "race": "MO H NN \u2014 Roberts Field access",
+          "ref": "environment-v1-roberts-evening"
+        },
+        {
+          "race": "Jerktail Landing gravel road",
+          "ref": "environment-v1-jerktail-morning"
+        },
+        {
+          "race": "US 60 \u2014 Winona Van Buren",
+          "ref": "environment-v1-winona-noon"
+        },
+        {
+          "race": "Glade Top Trail \u2014 Mark Twain National Forest",
+          "ref": "environment-v1-glade-morning"
+        },
+        {
+          "race": "Ozarks International Raceway \u2014 Gravois Mills",
+          "ref": "environment-v1-oir-morning"
+        },
+        {
+          "race": "World Wide Technology Raceway \u2014 road course",
+          "ref": "environment-v1-gateway-noon"
+        },
+        {
+          "race": "World Wide Technology Raceway \u2014 oval",
+          "ref": "environment-v1-gateway-night"
+        },
+        {
+          "race": "World Wide Technology Raceway \u2014 drag strip",
+          "ref": "environment-v1-gateway-night"
+        },
+        {
+          "race": "I-64 \u2014 St. Louis downtown approaches",
+          "ref": "environment-v1-stl64-morning"
+        },
+        {
+          "race": "I-70 \u2014 Stan Musial Veterans Memorial Bridge",
+          "ref": "environment-v1-stan-noon"
+        },
+        {
+          "race": "IL 100 \u2014 Great River Road bluffs",
+          "ref": "environment-v1-alton-noon"
+        },
+        {
+          "race": "MO 94 \u2014 Defiance Augusta",
+          "ref": "environment-v1-defiance-evening"
+        },
+        {
+          "race": "Gateway Kartplex \u2014 WWT complex",
+          "ref": "environment-v1-gateway-morning"
+        },
+        {
+          "race": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+          "ref": "environment-v1-pevely-evening"
+        },
+        {
+          "race": "Gold Camp Road \u2014 Colorado Springs",
+          "ref": "environment-v1-goldcamp-night"
+        },
+        {
+          "race": "Phantom Canyon Road \u2014 Gold Belt Tour",
+          "ref": "environment-v1-phantom-morning"
+        },
+        {
+          "race": "Shelf Road \u2014 Gold Belt Tour",
+          "ref": "environment-v1-shelf-morning"
+        },
+        {
+          "race": "Skyline Drive \u2014 Ca\u00f1on City",
+          "ref": "environment-v1-skyline-night"
+        },
+        {
+          "race": "US 24 \u2014 Ute Pass Woodland Park",
+          "ref": "environment-v1-utepass-morning"
+        },
+        {
+          "race": "CO 67 \u2014 Woodland Park Cripple Creek",
+          "ref": "environment-v1-co67-morning"
+        },
+        {
+          "race": "Garden of the Gods \u2014 paved park road",
+          "ref": "environment-v1-gardengods-night"
+        },
+        {
+          "race": "Pikes Peak International Raceway \u2014 Fountain",
+          "ref": "environment-v1-ppir-noon"
+        },
+        {
+          "race": "Pueblo Motorsports Park \u2014 road course or drag strip",
+          "ref": "environment-v1-pueblo-evening"
+        },
+        {
+          "race": "Valley of the Gods Road \u2014 San Juan CR 242",
+          "ref": "environment-v1-gods-noon"
+        },
+        {
+          "race": "Muley Point Road \u2014 CR 241",
+          "ref": "environment-v1-muley-evening"
+        },
+        {
+          "race": "UT 316 \u2014 Goosenecks State Park Road",
+          "ref": "environment-v1-goosenecks-morning"
+        },
+        {
+          "race": "US 163 \u2014 Mexican Hat Monument Valley approach",
+          "ref": "environment-v1-mexicanhat-morning"
+        },
+        {
+          "race": "UT 95 \u2014 Comb Ridge Cedar Mesa",
+          "ref": "environment-v1-comb-evening"
+        },
+        {
+          "race": "UT 276 \u2014 Halls Crossing approach",
+          "ref": "environment-v1-halls-night"
+        },
+        {
+          "race": "US 191 \u2014 Bluff Blanding",
+          "ref": "environment-v1-bluff-morning"
+        },
+        {
+          "race": "Shafer Trail \u2014 Canyonlands National Park",
+          "ref": "environment-v1-shafer-night"
+        },
+        {
+          "race": "Burr Trail switchbacks \u2014 Capitol Reef",
+          "ref": "environment-v1-burr-noon"
+        },
+        {
+          "race": "SR 179 \u2014 Red Rock Scenic Byway",
+          "ref": "environment-v1-redbyway-evening"
+        },
+        {
+          "race": "Upper Lower Red Rock Loop Road",
+          "ref": "environment-v1-redloop-morning"
+        },
+        {
+          "race": "Page Springs Road",
+          "ref": "environment-v1-pagesprings-evening"
+        },
+        {
+          "race": "Beaverhead Flat Road \u2014 CR 78",
+          "ref": "environment-v1-beaverflat-evening"
+        },
+        {
+          "race": "Boynton Pass Road FR 525 loop",
+          "ref": "environment-v1-boynton-night"
+        },
+        {
+          "race": "Schnebly Hill Road \u2014 Sedona",
+          "ref": "environment-v1-schnebly-noon"
+        },
+        {
+          "race": "SR 89A \u2014 Mingus Mountain Jerome",
+          "ref": "environment-v1-mingus-morning"
+        },
+        {
+          "race": "Podium Club at Attesa \u2014 Casa Grande",
+          "ref": "environment-v1-attesa-evening"
+        },
+        {
+          "race": "Firebird Motorsports Park \u2014 Chandler",
+          "ref": "environment-v1-firebird-evening"
+        },
+        {
+          "race": "Angeles Forest Highway \u2014 County N3",
+          "ref": "environment-v1-angelesforest-evening"
+        },
+        {
+          "race": "Upper Big Tujunga Canyon Road",
+          "ref": "environment-v1-uppertujunga-evening"
+        },
+        {
+          "race": "Big Tujunga Canyon Road",
+          "ref": "environment-v1-bigtujunga-noon"
+        },
+        {
+          "race": "Glendora Mountain Road",
+          "ref": "environment-v1-glendoramountain-noon"
+        },
+        {
+          "race": "Glendora Ridge Road",
+          "ref": "environment-v1-glendoraridge-evening"
+        },
+        {
+          "race": "San Gabriel Canyon Road \u2014 SR 39",
+          "ref": "environment-v1-sangabriel-morning"
+        },
+        {
+          "race": "Little Tujunga Canyon Road",
+          "ref": "environment-v1-littletujunga-noon"
+        },
+        {
+          "race": "Willow Springs \u2014 Horse Thief Mile",
+          "ref": "environment-v1-willow-night"
+        },
+        {
+          "race": "In-N-Out Burger Pomona Dragstrip",
+          "ref": "environment-v1-pomona-noon"
+        },
+        {
+          "race": "Old Staples Road",
+          "ref": "environment-v1-old-staples-woodland-day"
+        },
+        {
+          "race": "Watkins Glen \u2014 Long Course",
+          "ref": "environment-v1-watkins-morning"
+        },
+        {
+          "race": "Watkins Glen \u2014 Short Course",
+          "ref": "environment-v1-watkins-evening"
+        },
+        {
+          "race": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+          "ref": "environment-v1-watkins-evening"
+        },
+        {
+          "race": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+          "ref": "environment-v1-watkins-noon"
+        },
+        {
+          "race": "Road America \u2014 Full Course",
+          "ref": "environment-v1-road-america-evening"
+        },
+        {
+          "race": "Road America \u2014 The Bend",
+          "ref": "environment-v1-road-america-noon"
+        },
+        {
+          "race": "Road Atlanta \u2014 Grand Prix",
+          "ref": "environment-v1-road-atlanta-morning"
+        },
+        {
+          "race": "Road Atlanta \u2014 Short Course",
+          "ref": "environment-v1-road-atlanta-evening"
+        },
+        {
+          "race": "Road Atlanta \u2014 Club Course",
+          "ref": "environment-v1-road-atlanta-night"
+        },
+        {
+          "race": "Virginia International Raceway \u2014 Full Course",
+          "ref": "environment-v1-vir-morning"
+        },
+        {
+          "race": "Virginia International Raceway \u2014 North Course",
+          "ref": "environment-v1-vir-morning"
+        },
+        {
+          "race": "Virginia International Raceway \u2014 South Course",
+          "ref": "environment-v1-vir-night"
+        },
+        {
+          "race": "Virginia International Raceway \u2014 Grand Course",
+          "ref": "environment-v1-vir-night"
+        },
+        {
+          "race": "Sebring International Raceway \u2014 Full Circuit",
+          "ref": "environment-v1-sebring-night"
+        },
+        {
+          "race": "Sebring International Raceway \u2014 Short Circuit",
+          "ref": "environment-v1-sebring-morning"
+        },
+        {
+          "race": "Sebring International Raceway \u2014 Club Circuit",
+          "ref": "environment-v1-sebring-evening"
+        },
+        {
+          "race": "Homestead-Miami Speedway \u2014 Oval",
+          "ref": "environment-v1-homestead-evening"
+        },
+        {
+          "race": "Homestead-Miami Speedway \u2014 Road Course",
+          "ref": "environment-v1-homestead-evening"
+        },
+        {
+          "race": "Homestead-Miami Speedway \u2014 Modified Road Course",
+          "ref": "environment-v1-homestead-evening"
+        },
+        {
+          "race": "Daytona International Speedway \u2014 Sports Car Course",
+          "ref": "skybox-daytona"
+        },
+        {
+          "race": "Daytona International Speedway \u2014 Stock Car Road Course",
+          "ref": "environment-v1-daytona-evening"
+        },
+        {
+          "race": "Willow Springs \u2014 Big Willow",
+          "ref": "environment-v1-willow-morning"
+        },
+        {
+          "race": "Willow Springs \u2014 Streets of Willow",
+          "ref": "environment-v1-willow-morning"
+        },
+        {
+          "race": "Willow Springs \u2014 Streets \u2014 Short",
+          "ref": "environment-v1-willow-evening"
+        },
+        {
+          "race": "Lime Rock Park \u2014 Both Chicanes",
+          "ref": "environment-v1-lime-evening"
+        },
+        {
+          "race": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+          "ref": "environment-v1-mid-ohio-morning"
+        },
+        {
+          "race": "Mid-Ohio Sports Car Course \u2014 Short Course",
+          "ref": "environment-v1-mid-ohio-night"
+        },
+        {
+          "race": "Pig Trail \u2014 Arkansas 23",
+          "ref": "environment-v1-pigtrail-evening"
+        },
+        {
+          "race": "National Road \u2014 Sideling Hill",
+          "ref": "environment-v1-sideling-evening"
+        },
+        {
+          "race": "Natchez Trace \u2014 Tishomingo",
+          "ref": "environment-v1-tishomingo-morning"
+        },
+        {
+          "race": "Little Rock, AR \u2014 Landmark Run",
+          "ref": "environment-v1-little-rock-noon"
+        },
+        {
+          "race": "St. Louis, MO \u2014 Landmark Run",
+          "ref": "environment-v1-stl-landmark-morning"
+        },
+        {
+          "race": "Denver, CO \u2014 Landmark Run",
+          "ref": "environment-v1-denver-morning"
+        },
+        {
+          "race": "Grand Canyon \u2014 Desert View Drive",
+          "ref": "environment-v1-desertview-noon"
+        },
+        {
+          "race": "Grand Canyon \u2014 Diamond Creek Descent",
+          "ref": "environment-v1-diamond-evening"
+        }
+      ]
+    },
+    "nativeAudit": "/tmp/race-pack10-native-audit.json",
+    "sourceBytes": "Each original source equals managed PNG byte-for-byte; originals retained.",
+    "campaignBrowserResult": "6 passed in1.7m; explicit race-road-textures.spec.js",
+    "nativeResult": "40 passed in10.4m; audit40reports20races",
+    "repairNativeResult": "4 passed in58.7s",
+    "focusedResult": "10 passed",
+    "unusedArtDiagnostic": "UNUSED CONFIGURED ART: road-snow-patchy \u2014 Pikes Peak Highway snow mapping has no active segment; retained configuration debt.",
+    "partialBroadLaunch": "Mistaken missing spec filter selected775browser checks; stopped exact task process after3passed,1interrupted,770notrun. Partial evidence retained /tmp/race-pack10-campaign.log; correct six-case run is separate."
+  },
+  "perRouteFourLayerEvidence": [
+    {
+      "race": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-03b5e-eek-independent-sky-desktop/site-81796521387fbcf3-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-frozen-forest": 13485
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-frozen-forest": 13485
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-frozen-forest"
+      }
+    },
+    {
+      "race": "Pikes Peak International Raceway \u2014 Fountain",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-04993-in-independent-sky-handheld/site-1ea8542dba6e677f-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 5016
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 5016
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Shelf Road \u2014 Gold Belt Tour",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-058fb-ur-independent-sky-handheld/site-26b605086a4b97c7-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 15015
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 15015
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "gravel",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Big Tujunga Canyon Road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-0dc53-oad-independent-sky-desktop/site-277fd01c4b02ae7b-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 16380
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 16380
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Angeles Forest Highway \u2014 County N3",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-0df3b-N3-independent-sky-handheld/site-e4711b7efab83f45-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 17952
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 17952
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Skyline Drive \u2014 Ca\u00f1on City",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-16b92-ity-independent-sky-desktop/site-3f4662184f179d49-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 12276
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 12276
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Gold Camp Road \u2014 Colorado Springs",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-204de-ngs-independent-sky-desktop/site-906155ccfcaaf978-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 22022
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 22022
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          },
+          {
+            "surface": "dirt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "US 24 \u2014 Ute Pass Woodland Park",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-218fd-rk-independent-sky-handheld/site-d868f3e723288325-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-frozen-forest": 30102
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-frozen-forest": 30102
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-frozen-forest"
+      }
+    },
+    {
+      "race": "Glendora Ridge Road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-274d2-ad-independent-sky-handheld/site-ca5b3170d73e4f0f-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 10679
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 10679
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "US 24 \u2014 Ute Pass Woodland Park",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-3c1c8-ark-independent-sky-desktop/site-d868f3e723288325-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-frozen-forest": 30102
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-frozen-forest": 30102
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-frozen-forest"
+      }
+    },
+    {
+      "race": "Glendora Ridge Road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-49ece-oad-independent-sky-desktop/site-ca5b3170d73e4f0f-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 10679
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 10679
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Shelf Road \u2014 Gold Belt Tour",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-4ed26-our-independent-sky-desktop/site-26b605086a4b97c7-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 15015
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 15015
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "gravel",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Denver, CO \u2014 Landmark Run",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-5845c-Run-independent-sky-desktop/site-608d001ffe92f21a-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 15228
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 15228
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "In-N-Out Burger Pomona Dragstrip",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-5e418-ip-independent-sky-handheld/site-3ac18110d42d087e-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 16761
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 16761
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Garden of the Gods \u2014 paved park road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-5f20c-ad-independent-sky-handheld/site-d7bd7e4e0e2a093c-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-red-gravel-v2": 15450
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-red-gravel-v2": 15450
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-red-gravel-v2"
+      }
+    },
+    {
+      "race": "Angeles Crest Highway",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-641c4-way-independent-sky-desktop/site-3a5d9f8d30640b34-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 5408
+        },
+        "tileImageById": {
+          "dirt": {
+            "ground-gray-gravel-v2": 5408
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-worn",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "shoulder-asphalt-gravel",
+            "roughArtRef": "",
+            "repeatM": 12,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {},
+          "surfaceShoulders": {
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-dirt-grass",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-asphalt-gravel",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-snowbank-edge",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          }
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {
+              "artRef": "shoulder-asphalt-gravel",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "filterMode": "balanced",
+              "mipmaps": true
+            },
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Little Tujunga Canyon Road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-64c89-ad-independent-sky-handheld/site-bdc4c66dceb515f2-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 25900
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 25900
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-65989-ur-independent-sky-handheld/site-cdc17dfd050eb620-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 17136
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 17136
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "dirt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "San Gabriel Canyon Road \u2014 SR 39",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-6c1b6--39-independent-sky-desktop/site-71fc83180996c63f-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 14784
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 14784
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Big Tujunga Canyon Road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-78b5f-ad-independent-sky-handheld/site-277fd01c4b02ae7b-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 16380
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 16380
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-7e340-rip-independent-sky-desktop/site-e4b44163946fe00b-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 9438
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 9438
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Glendora Mountain Road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-85fe1-ad-independent-sky-handheld/site-753b50d75a485d1d-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 29808
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 29808
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Pikes Peak Highway",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-8d40d-way-independent-sky-desktop/site-3523547420c4600e-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-alpine-rock-v2": 12168
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-alpine-rock-v2": 12168
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-worn",
+            "roughArtRef": "",
+            "repeatM": 12,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "shoulder-asphalt-gravel",
+            "roughArtRef": "",
+            "repeatM": 12,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-worn",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-snow-patchy",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-dirt-grass",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-asphalt-gravel",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-snowbank-edge",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          }
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {
+              "artRef": "shoulder-asphalt-gravel",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "filterMode": "balanced",
+              "mipmaps": true
+            },
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-alpine-rock-v2"
+      }
+    },
+    {
+      "race": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-9c366-our-independent-sky-desktop/site-cdc17dfd050eb620-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 17136
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 17136
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "dirt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Upper Big Tujunga Canyon Road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-a0e0f-oad-independent-sky-desktop/site-49a5e347e08c8b85-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 28525
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 28525
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Gold Camp Road \u2014 Colorado Springs",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-a1ac1-gs-independent-sky-handheld/site-906155ccfcaaf978-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 22022
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 22022
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          },
+          {
+            "surface": "dirt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Angeles Forest Highway \u2014 County N3",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-a86b2--N3-independent-sky-desktop/site-e4711b7efab83f45-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 17952
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 17952
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Angeles Crest Highway",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-b5c75-ay-independent-sky-handheld/site-3a5d9f8d30640b34-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 5408
+        },
+        "tileImageById": {
+          "dirt": {
+            "ground-gray-gravel-v2": 5408
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-worn",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "shoulder-asphalt-gravel",
+            "roughArtRef": "",
+            "repeatM": 12,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {},
+          "surfaceShoulders": {
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-dirt-grass",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-asphalt-gravel",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-snowbank-edge",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          }
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {
+              "artRef": "shoulder-asphalt-gravel",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "filterMode": "balanced",
+              "mipmaps": true
+            },
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Denver, CO \u2014 Landmark Run",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-ca5d9-un-independent-sky-handheld/site-608d001ffe92f21a-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 15228
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 15228
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-cabe0-ip-independent-sky-handheld/site-e4b44163946fe00b-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 9438
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 9438
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Little Tujunga Canyon Road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-ceed6-oad-independent-sky-desktop/site-bdc4c66dceb515f2-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 25900
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 25900
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "In-N-Out Burger Pomona Dragstrip",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-d3d4b-rip-independent-sky-desktop/site-3ac18110d42d087e-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 16761
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 16761
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Garden of the Gods \u2014 paved park road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-d527d-oad-independent-sky-desktop/site-d7bd7e4e0e2a093c-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-red-gravel-v2": 15450
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-red-gravel-v2": 15450
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-red-gravel-v2"
+      }
+    },
+    {
+      "race": "Pikes Peak Highway",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-e3651-ay-independent-sky-handheld/site-3523547420c4600e-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-alpine-rock-v2": 12168
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-alpine-rock-v2": 12168
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-worn",
+            "roughArtRef": "",
+            "repeatM": 12,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "shoulder-asphalt-gravel",
+            "roughArtRef": "",
+            "repeatM": 12,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-worn",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-snow-patchy",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-dirt-grass",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-asphalt-gravel",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "shoulder-snowbank-edge",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          }
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {
+              "artRef": "shoulder-asphalt-gravel",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "filterMode": "balanced",
+              "mipmaps": true
+            },
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-alpine-rock-v2"
+      }
+    },
+    {
+      "race": "San Gabriel Canyon Road \u2014 SR 39",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-e5813-39-independent-sky-handheld/site-71fc83180996c63f-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 14784
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 14784
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Glendora Mountain Road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-e8a1f-oad-independent-sky-desktop/site-753b50d75a485d1d-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 29808
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 29808
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Upper Big Tujunga Canyon Road",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-e9bbb-ad-independent-sky-handheld/site-49a5e347e08c8b85-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-gray-gravel-v2": 28525
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-gray-gravel-v2": 28525
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-gray-gravel-v2"
+      }
+    },
+    {
+      "race": "Pikes Peak International Raceway \u2014 Fountain",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-f232d-ain-independent-sky-desktop/site-1ea8542dba6e677f-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 5016
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 5016
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "Skyline Drive \u2014 Ca\u00f1on City",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-f2849-ty-independent-sky-handheld/site-3f4662184f179d49-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-desert-scrub-v2": 12276
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-desert-scrub-v2": 12276
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-desert-scrub-v2"
+      }
+    },
+    {
+      "race": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "file": "/tmp/race-environment-pack10-renderer/race-environments-renderer-fe7c6-ek-independent-sky-handheld/site-81796521387fbcf3-state.json",
+      "layers": {
+        "tileImageCounts": {
+          "ground-frozen-forest": 13485
+        },
+        "tileImageById": {
+          "snow": {
+            "ground-frozen-forest": 13485
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-frozen-forest"
+      }
+    }
+  ],
+  "repairs": [
+    {
+      "key": "schnebly-noon",
+      "priorSourceImage": "/workspace/generated_images/exec-74ffa1cd-cf9f-4f59-bc19-a05f24bcb932.png",
+      "sourceImage": "/workspace/generated_images/exec-611d1a4d-7b8d-4036-a4cb-bf27a26151e4.png",
+      "ref": "environment-v1-schnebly-noon",
+      "source": "environment-v1/schnebly-noon.png",
+      "sourceSha256": "927ff20fdc7252f689b952cf9bbcaec8ef56f597c454905cfc545ae30bfc059c",
+      "beforeMetrics": {
+        "path": "/workspace/generated_images/exec-74ffa1cd-cf9f-4f59-bc19-a05f24bcb932.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 50.07780847145489,
+        "edgeMaximumRGB": 151.0,
+        "topRangeRGB": [
+          3,
+          4,
+          4
+        ],
+        "bottomRangeRGB": [
+          4,
+          8,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "afterMetrics": {
+        "path": "/workspace/generated_images/exec-611d1a4d-7b8d-4036-a4cb-bf27a26151e4.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 9.24815837937385,
+        "edgeMaximumRGB": 108.66666666666667,
+        "topRangeRGB": [
+          4,
+          5,
+          4
+        ],
+        "bottomRangeRGB": [
+          4,
+          8,
+          6
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "mingus-morning",
+      "priorSourceImage": "/workspace/generated_images/exec-a80f0fda-f702-4b8e-8ea7-f94bed025b2f.png",
+      "sourceImage": "/workspace/generated_images/exec-d42aa250-56cf-4a28-bf5b-fc154d87e99f.png",
+      "ref": "environment-v1-mingus-morning",
+      "source": "environment-v1/mingus-morning.png",
+      "sourceSha256": "1cdfc38e1a536cc3ef91d1e92277fbeed63cc45fea216db44edc36106263bcb1",
+      "beforeMetrics": {
+        "path": "/workspace/generated_images/exec-a80f0fda-f702-4b8e-8ea7-f94bed025b2f.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 29.331491712707184,
+        "edgeMaximumRGB": 160.0,
+        "topRangeRGB": [
+          7,
+          6,
+          6
+        ],
+        "bottomRangeRGB": [
+          4,
+          7,
+          6
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "afterMetrics": {
+        "path": "/workspace/generated_images/exec-d42aa250-56cf-4a28-bf5b-fc154d87e99f.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 7.005064456721915,
+        "edgeMaximumRGB": 86.33333333333333,
+        "topRangeRGB": [
+          7,
+          6,
+          4
+        ],
+        "bottomRangeRGB": [
+          3,
+          8,
+          6
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    }
+  ],
+  "repairVisualReview": "Four native device checks passed, both exposure and pitch/wrap sheets inspected; matched old/new same-renderer views show conspicuous ghosted terrain gone. Faint bands remain; no renderer change.",
+  "qualityLimits": {
+    "native": "Thin horizontal pitch lines / flat lower edge transitions remain in some images. New numeric/source warnings not auto-waived.",
+    "mainRoutes": "Pikes and Angeles both retain visibility opacity .8804997 and .42 sky brightness, strongly obscuring loaded panoramas.",
+    "night": "Gold Camp, Skyline and Garden of Gods clear .05 skies remain very dim; restrained crescent/stars are diagnostic cues only, no accepted normal foreground/sky fit inferred.",
+    "terrain": "Pikes/Colorado inherited blanket snow visual refs replaced with local substrates while physical tile IDs remain unchanged. Robotic panel textures rejected for Denver/Pomona after decoding. Existing active road and shoulder art retained; full-route terrain appearance pending.",
+    "pevely": "Prior dirt-art/asphalt-physics mismatch unchanged and unresolved."
+  },
+  "driving": {
+    "scope": "Short real-travel and driving samples only. Inspect retained authored frames separately; no route-wide or visual acceptance inferred.",
+    "successes": [
+      {
+        "file": "/tmp/race-environment-pack10-driving/race-environments-driving--79e38-authored-foreground-and-sky/driving-state.json",
+        "race": "Pikes Peak International Raceway \u2014 Fountain",
+        "device": "desktop",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "displacementM": 20.12485647192151,
+        "timing": {
+          "wallMs": 46327,
+          "simulationMs": 3999.999999999992
+        },
+        "routeProgressM": 20.11432828096414,
+        "elapsedMs": 6033.333333333323,
+        "speedMps": 7.219101,
+        "sky": "environment-v1-ppir-noon",
+        "brightness": 1,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      }
+    ],
+    "failures": [
+      {
+        "file": "/tmp/race-environment-pack10-driving/race-environments-driving--081d3-authored-foreground-and-sky/failure-state.json",
+        "race": "Angeles Crest Highway",
+        "device": "handheld",
+        "state": {
+          "state": "race-editor",
+          "status": "Loading Angeles Crest Highway",
+          "error": "Race preparation failed during world bake: Race preparation timed out while building terrain",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Angeles Crest Highway",
+            "phase": "world-bake",
+            "progress": 0.12,
+            "elapsedMs": 2826.7999999970198,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "preparation": "Building terrain",
+          "race": "New Race",
+          "sky": "providence",
+          "weather": {
+            "id": "clear",
+            "label": "Clear",
+            "visualIntensity": 0,
+            "targetIntensity": 0,
+            "buildup": 0,
+            "effectiveIntensity": 0,
+            "precipitationIntensity": 0,
+            "snowDepthInches": 0,
+            "visibilityDistanceM": null,
+            "visibilityStrength": 0,
+            "visibilityColor": "rgba(0,0,0,0)",
+            "visibilityNearAlpha": 0,
+            "visibilityFarAlpha": 0
+          },
+          "fx": {
+            "enabled": false,
+            "preset": "noon",
+            "sunEnabled": true,
+            "sunDisc": true,
+            "sunX": 0.5,
+            "sunY": 0.2,
+            "sunColor": "#fff0cf",
+            "sunSize": 0.012,
+            "sunIntensity": 0.7,
+            "lensFlare": 0.12,
+            "sunGlare": 0.45,
+            "skyBrightness": 1,
+            "tintColor": "#ffffff",
+            "tintAmount": 0,
+            "motionBlur": 0,
+            "speedLines": 0,
+            "speedLineOpacity": 1,
+            "speedLineArtRef": "",
+            "speedLineArtMode": "overlay",
+            "vignette": 0,
+            "speedStartMph": 45,
+            "speedFullMph": 130
+          },
+          "session": {
+            "running": false
+          }
+        },
+        "errors": [],
+        "network": [],
+        "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m"
+      }
+    ],
+    "successfulSamples": 1,
+    "failedSamples": 1,
+    "distinctSuccessfulRaces": 1
+  },
+  "evidence": {
+    "sources": "/workspace/generated_images",
+    "native": "/tmp/race-environment-pack10-renderer",
+    "repairs": "/tmp/race-environment-pack10-repairs-native",
+    "sheets": "/tmp/race-pack10-sheets",
+    "sourceContactSheets": [
+      "/tmp/pack10-sources-0.jpg",
+      "/tmp/pack10-sources-1.jpg",
+      "/tmp/pack10-sources-2.jpg",
+      "/tmp/pack10-sources-3.jpg"
+    ],
+    "sourceMetrics": "/tmp/pack10-source-metrics.json",
+    "terrainSourceReview": "/tmp/pack10-terrain-review.jpg",
+    "gatewayMatchedPairRetained": "/tmp/race-pack9-sheets/gateway-matched-night.jpg",
+    "nativeGroundMaterials": "/tmp/race-pack10-sheets/native-ground-materials.jpg"
+  },
+  "disk": {
+    "startAvailableBytes": 3337940992,
+    "availableBeforeCommit": 3196981248,
+    "noDeletionOrCleanup": true
+  },
+  "productionVisualReview": {
+    "PPIRDesktop": "Actual moving authored frame viewed. Road and dry ground render; horizon loaded, but mountain/grandstand read oversized in production projection. Driving passed, full visual acceptance pending artwork framing refinement.",
+    "AngelesHandheld": "Production world-bake failed: Race preparation timed out while building terrain; diagnostic progress .12, elapsed2826.8ms, no missing art/network/page errors. Failure screenshot viewed. No baseline comparison or retry; not claimed baseline-proven."
+  },
+  "remainingDecision": "Current strict unit asserts material IDs inferred from art names. Pikes snow/Angeles dirt preserved from baseline conflict with gravel inference for new art. Neither physics nor test changed. A reviewed validation-contract change using independent physical-preservation checks, or different visual binding choice, is required before release; do not disguise with new aliases or weaken checks."
+}

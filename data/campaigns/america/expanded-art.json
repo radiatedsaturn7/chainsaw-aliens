@@ -424,11 +424,7 @@
       "source": "skyboxes/angeles-crest.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "angeles"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-badlands",
@@ -588,11 +584,7 @@
       "source": "skyboxes/pikes-peak.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "pikes"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-providence-harbor",
@@ -4391,6 +4383,174 @@
       "maxEdge": 1024,
       "placements": [],
       "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pikes-evening",
+      "source": "environment-v1/pikes-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "pikes"
+        }
+      ],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-angeles-evening",
+      "source": "environment-v1/angeles-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "angeles"
+        }
+      ],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-goldcamp-night",
+      "source": "environment-v1/goldcamp-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-phantom-morning",
+      "source": "environment-v1/phantom-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-shelf-morning",
+      "source": "environment-v1/shelf-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-skyline-night",
+      "source": "environment-v1/skyline-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-utepass-morning",
+      "source": "environment-v1/utepass-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-co67-morning",
+      "source": "environment-v1/co67-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gardengods-night",
+      "source": "environment-v1/gardengods-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ppir-noon",
+      "source": "environment-v1/ppir-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pueblo-evening",
+      "source": "environment-v1/pueblo-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-angelesforest-evening",
+      "source": "environment-v1/angelesforest-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-uppertujunga-evening",
+      "source": "environment-v1/uppertujunga-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-bigtujunga-noon",
+      "source": "environment-v1/bigtujunga-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-glendoramountain-noon",
+      "source": "environment-v1/glendoramountain-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-glendoraridge-evening",
+      "source": "environment-v1/glendoraridge-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sangabriel-morning",
+      "source": "environment-v1/sangabriel-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-littletujunga-noon",
+      "source": "environment-v1/littletujunga-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pomona-noon",
+      "source": "environment-v1/pomona-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-denver-morning",
+      "source": "environment-v1/denver-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
     }
   ]
 }

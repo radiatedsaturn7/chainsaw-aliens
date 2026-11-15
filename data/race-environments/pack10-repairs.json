@@ -1,0 +1,100 @@
+[
+  {
+    "key": "schnebly-noon",
+    "priorSourceImage": "/workspace/generated_images/exec-74ffa1cd-cf9f-4f59-bc19-a05f24bcb932.png",
+    "sourceImage": "/workspace/generated_images/exec-611d1a4d-7b8d-4036-a4cb-bf27a26151e4.png",
+    "ref": "environment-v1-schnebly-noon",
+    "source": "environment-v1/schnebly-noon.png",
+    "sourceSha256": "927ff20fdc7252f689b952cf9bbcaec8ef56f597c454905cfc545ae30bfc059c",
+    "beforeMetrics": {
+      "path": "/workspace/generated_images/exec-74ffa1cd-cf9f-4f59-bc19-a05f24bcb932.png",
+      "width": 2172,
+      "height": 724,
+      "edgeMeanRGB": 50.07780847145489,
+      "edgeMaximumRGB": 151.0,
+      "topRangeRGB": [
+        3,
+        4,
+        4
+      ],
+      "bottomRangeRGB": [
+        4,
+        8,
+        5
+      ],
+      "warnings": [
+        "horizontal-wrap"
+      ],
+      "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+    },
+    "afterMetrics": {
+      "path": "/workspace/generated_images/exec-611d1a4d-7b8d-4036-a4cb-bf27a26151e4.png",
+      "width": 2172,
+      "height": 724,
+      "edgeMeanRGB": 9.24815837937385,
+      "edgeMaximumRGB": 108.66666666666667,
+      "topRangeRGB": [
+        4,
+        5,
+        4
+      ],
+      "bottomRangeRGB": [
+        4,
+        8,
+        6
+      ],
+      "warnings": [
+        "horizontal-wrap"
+      ],
+      "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+    }
+  },
+  {
+    "key": "mingus-morning",
+    "priorSourceImage": "/workspace/generated_images/exec-a80f0fda-f702-4b8e-8ea7-f94bed025b2f.png",
+    "sourceImage": "/workspace/generated_images/exec-d42aa250-56cf-4a28-bf5b-fc154d87e99f.png",
+    "ref": "environment-v1-mingus-morning",
+    "source": "environment-v1/mingus-morning.png",
+    "sourceSha256": "1cdfc38e1a536cc3ef91d1e92277fbeed63cc45fea216db44edc36106263bcb1",
+    "beforeMetrics": {
+      "path": "/workspace/generated_images/exec-a80f0fda-f702-4b8e-8ea7-f94bed025b2f.png",
+      "width": 2172,
+      "height": 724,
+      "edgeMeanRGB": 29.331491712707184,
+      "edgeMaximumRGB": 160.0,
+      "topRangeRGB": [
+        7,
+        6,
+        6
+      ],
+      "bottomRangeRGB": [
+        4,
+        7,
+        6
+      ],
+      "warnings": [
+        "horizontal-wrap"
+      ],
+      "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+    },
+    "afterMetrics": {
+      "path": "/workspace/generated_images/exec-d42aa250-56cf-4a28-bf5b-fc154d87e99f.png",
+      "width": 2172,
+      "height": 724,
+      "edgeMeanRGB": 7.005064456721915,
+      "edgeMaximumRGB": 86.33333333333333,
+      "topRangeRGB": [
+        7,
+        6,
+        4
+      ],
+      "bottomRangeRGB": [
+        3,
+        8,
+        6
+      ],
+      "warnings": [],
+      "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+    }
+  }
+]

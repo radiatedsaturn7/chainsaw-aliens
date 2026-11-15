@@ -3,7 +3,7 @@
   "recipes": [
     {
       "key": "gods-noon",
-      "raceRef": "Valley of the Gods Road — San Juan CR 242",
+      "raceRef": "Valley of the Gods Road \u2014 San Juan CR 242",
       "sourceImage": "/workspace/generated_images/exec-692d4b11-7d8f-485c-9ea1-44a0b363c63e.png",
       "brief": "Isolated slender Cedar Mesa sandstone monoliths across broad red gravel basin, dry scrub, no city or lake.",
       "ground": "ground-red-gravel-v2",
@@ -14,7 +14,7 @@
         "snow": "ground-red-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Valley of the Gods Road — San Juan CR 242",
+        "name": "Valley of the Gods Road \u2014 San Juan CR 242",
         "lat": 37.29,
         "lon": -109.83,
         "country": "us"
@@ -49,7 +49,7 @@
     },
     {
       "key": "muley-evening",
-      "raceRef": "Muley Point Road — CR 241",
+      "raceRef": "Muley Point Road \u2014 CR 241",
       "sourceImage": "/workspace/generated_images/exec-1828147c-e448-4b09-ba9d-aa987de1e19b.png",
       "brief": "Elevated Cedar Mesa overlook over deeply incised stepped San Juan canyons, distant tiny Monument Valley buttes and rounded Navajo Mountain; big open layered depth, not a close vertical wall.",
       "ground": "ground-desert-scrub-v2",
@@ -60,7 +60,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "Muley Point Road — CR 241",
+        "name": "Muley Point Road \u2014 CR 241",
         "lat": 37.25,
         "lon": -109.98,
         "country": "us"
@@ -99,7 +99,7 @@
     },
     {
       "key": "goosenecks-morning",
-      "raceRef": "UT 316 — Goosenecks State Park Road",
+      "raceRef": "UT 316 \u2014 Goosenecks State Park Road",
       "sourceImage": "/workspace/generated_images/exec-e72b2615-30cd-4686-a341-9bc86f250f08.png",
       "brief": "San Juan entrenched meanders below flat barren tan gray limestone plateau, repeating tightly folded canyon arms with a narrow dark river far below; sparse desert scrub.",
       "ground": "ground-desert-scrub-v2",
@@ -110,7 +110,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "UT 316 — Goosenecks State Park Road",
+        "name": "UT 316 \u2014 Goosenecks State Park Road",
         "lat": 37.18,
         "lon": -109.92,
         "country": "us"
@@ -149,7 +149,7 @@
     },
     {
       "key": "mexicanhat-morning",
-      "raceRef": "US 163 — Mexican Hat Monument Valley approach",
+      "raceRef": "US 163 \u2014 Mexican Hat Monument Valley approach",
       "sourceImage": "/workspace/generated_images/exec-24142322-dab6-42d5-a2e1-0b5f203b3c10.png",
       "brief": "Mexican Hat approach toward distant Monument Valley isolated buttes; distinctive small tilted caprock formation to central right, broad dry red plain and pale low mesas.",
       "ground": "ground-red-gravel-v2",
@@ -160,7 +160,7 @@
         "snow": "ground-red-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "US 163 — Mexican Hat / Monument Valley approach",
+        "name": "US 163 \u2014 Mexican Hat / Monument Valley approach",
         "lat": 37.1014683,
         "lon": -109.9908441,
         "country": "us"
@@ -196,7 +196,7 @@
     },
     {
       "key": "comb-evening",
-      "raceRef": "UT 95 — Comb Ridge Cedar Mesa",
+      "raceRef": "UT 95 \u2014 Comb Ridge Cedar Mesa",
       "sourceImage": "/workspace/generated_images/exec-79765d06-3060-4520-88d6-ceb8da71df95.png",
       "brief": "Long steeply tilted pale sandstone hogback of Comb Ridge, pinyon juniper on Cedar Mesa side, exposed angular white strata, not Monument Valley towers.",
       "ground": "ground-desert-scrub-v2",
@@ -207,7 +207,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "UT 95 — Comb Ridge / Cedar Mesa",
+        "name": "UT 95 \u2014 Comb Ridge / Cedar Mesa",
         "lat": 37.54,
         "lon": -109.73,
         "country": "us"
@@ -247,7 +247,7 @@
     },
     {
       "key": "halls-night",
-      "raceRef": "UT 276 — Halls Crossing approach",
+      "raceRef": "UT 276 \u2014 Halls Crossing approach",
       "sourceImage": "/workspace/generated_images/exec-76dabb4d-17b4-4d7b-8d3f-9f4df08d334f.png",
       "brief": "Halls Crossing high desert approach: low rounded pale Navajo sandstone domes and broad dry mesa ledges, small distant recessed Lake Powell inlet only, sparse desert shrubs. Clear blue-black night, restrained thin crescent and sparse stars, no bright sunset.",
       "ground": "ground-desert-scrub-v2",
@@ -258,7 +258,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "UT 276 — Halls Crossing approach",
+        "name": "UT 276 \u2014 Halls Crossing approach",
         "lat": 37.451041,
         "lon": -110.6919999,
         "country": "us"
@@ -298,7 +298,7 @@
     },
     {
       "key": "bluff-morning",
-      "raceRef": "US 191 — Bluff Blanding",
+      "raceRef": "US 191 \u2014 Bluff Blanding",
       "sourceImage": "/workspace/generated_images/exec-23268fa5-14c2-43c9-9491-d52fb24f9bb1.png",
       "brief": "Bluff to Blanding transition: long horizontal cream sandstone bluffs and higher dark juniper mesas, scattered cottonwoods only in low drainage, tiny abandoned roadside building central.",
       "ground": "ground-desert-scrub-v2",
@@ -309,7 +309,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "US 191 — Bluff / Blanding",
+        "name": "US 191 \u2014 Bluff / Blanding",
         "lat": 37.42,
         "lon": -109.47,
         "country": "us"
@@ -345,7 +345,7 @@
     },
     {
       "key": "shafer-night",
-      "raceRef": "Shafer Trail — Canyonlands National Park",
+      "raceRef": "Shafer Trail \u2014 Canyonlands National Park",
       "sourceImage": "/workspace/generated_images/exec-b7d7fac2-c67d-4abe-8b62-b8f84fbb0422.png",
       "brief": "Shafer Canyon from rim: immense stacked red and pale sandstone cliffs dropping into open White Rim basin; very distant winding dry track, no foreground road, sparse scrub. Clear moonlit blue-gray night, crescent and sparse stars; no daylight colors.",
       "ground": "ground-canyon-rock-v2",
@@ -356,7 +356,7 @@
         "snow": "ground-canyon-rock-v2"
       },
       "sourceOrigin": {
-        "name": "Shafer Trail — Canyonlands National Park",
+        "name": "Shafer Trail \u2014 Canyonlands National Park",
         "lat": 38.46,
         "lon": -109.8,
         "country": "us"
@@ -391,7 +391,7 @@
     },
     {
       "key": "burr-noon",
-      "raceRef": "Burr Trail switchbacks — Capitol Reef",
+      "raceRef": "Burr Trail switchbacks \u2014 Capitol Reef",
       "sourceImage": "/workspace/generated_images/exec-3b8d2385-7860-47ff-bd2b-267c18b39bc6.png",
       "brief": "Waterpocket Fold tilted white Navajo sandstone fins over deep red strata and narrow fold valley, distant Henry Mountains small on far horizon, sparse dry plants; strong asymmetric geological fold.",
       "ground": "ground-desert-scrub-v2",
@@ -402,7 +402,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "Burr Trail switchbacks — Capitol Reef",
+        "name": "Burr Trail switchbacks \u2014 Capitol Reef",
         "lat": 37.85,
         "lon": -111.03,
         "country": "us"
@@ -499,7 +499,7 @@
     },
     {
       "key": "redbyway-evening",
-      "raceRef": "SR 179 — Red Rock Scenic Byway",
+      "raceRef": "SR 179 \u2014 Red Rock Scenic Byway",
       "sourceImage": "/workspace/generated_images/exec-51861eaf-448c-4e9e-bf5d-1d674e0486aa.png",
       "brief": "Sedona SR179 low juniper valley with recognizable bell-shaped red butte and broader layered courthouse mesa separated on horizon, no canyon river.",
       "ground": "ground-red-gravel-v2",
@@ -510,7 +510,7 @@
         "snow": "ground-red-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "SR 179 — Red Rock Scenic Byway",
+        "name": "SR 179 \u2014 Red Rock Scenic Byway",
         "lat": 34.8,
         "lon": -111.77,
         "country": "us"
@@ -639,7 +639,7 @@
     },
     {
       "key": "beaverflat-evening",
-      "raceRef": "Beaverhead Flat Road — CR 78",
+      "raceRef": "Beaverhead Flat Road \u2014 CR 78",
       "sourceImage": "/workspace/generated_images/exec-c4e46397-1691-41be-9073-e5460d37efc0.png",
       "brief": "Beaverhead Flat broad open tawny grass and scrub bench, low juniper ridges with distant red mesas far north; unusually open sky and low topography, no close canyon walls.",
       "ground": "ground-desert-scrub-v2",
@@ -650,7 +650,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "Beaverhead Flat Road — CR 78",
+        "name": "Beaverhead Flat Road \u2014 CR 78",
         "lat": 34.73,
         "lon": -111.81,
         "country": "us"
@@ -733,8 +733,8 @@
     },
     {
       "key": "schnebly-noon",
-      "raceRef": "Schnebly Hill Road — Sedona",
-      "sourceImage": "/workspace/generated_images/exec-74ffa1cd-cf9f-4f59-bc19-a05f24bcb932.png",
+      "raceRef": "Schnebly Hill Road \u2014 Sedona",
+      "sourceImage": "/workspace/generated_images/exec-611d1a4d-7b8d-4036-a4cb-bf27a26151e4.png",
       "brief": "Schnebly Hill rising from Sedona: rust red sandstone benches and broken ledges below massive pale Mogollon rim, juniper becoming pine on higher ridge, wide distant valley seen between ledges.",
       "ground": "ground-red-gravel-v2",
       "brightness": 1,
@@ -744,7 +744,7 @@
         "snow": "ground-red-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Schnebly Hill Road — Sedona",
+        "name": "Schnebly Hill Road \u2014 Sedona",
         "lat": 34.87,
         "lon": -111.72,
         "country": "us"
@@ -776,12 +776,27 @@
         "originalRetained": "/workspace/generated_images/exec-74ffa1cd-cf9f-4f59-bc19-a05f24bcb932.png",
         "priorSourceRetained": null,
         "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-74ffa1cd-cf9f-4f59-bc19-a05f24bcb932.png",
+          "sourceSha256": "4969221c3c410b3b6c1dac0c07cc3a415567804dadcaed18437ea239c32cf414",
+          "evidence": "pack9 retained evidence"
+        }
+      ],
+      "sourceSha256": "927ff20fdc7252f689b952cf9bbcaec8ef56f597c454905cfc545ae30bfc059c",
+      "provenance": {
+        "tool": "image_gen edit",
+        "sourceImage": "/workspace/generated_images/exec-611d1a4d-7b8d-4036-a4cb-bf27a26151e4.png",
+        "priorSourceImage": "/workspace/generated_images/exec-74ffa1cd-cf9f-4f59-bc19-a05f24bcb932.png",
+        "sourceSha256": "927ff20fdc7252f689b952cf9bbcaec8ef56f597c454905cfc545ae30bfc059c",
+        "review": "Source viewed; native wrap/pitch verification pending."
       }
     },
     {
       "key": "mingus-morning",
-      "raceRef": "SR 89A — Mingus Mountain Jerome",
-      "sourceImage": "/workspace/generated_images/exec-a80f0fda-f702-4b8e-8ea7-f94bed025b2f.png",
+      "raceRef": "SR 89A \u2014 Mingus Mountain Jerome",
+      "sourceImage": "/workspace/generated_images/exec-d42aa250-56cf-4a28-bf5b-fc154d87e99f.png",
       "brief": "Mingus Mountain above Jerome: high dark pine-covered rounded ridge, sloping chaparral and tiny abandoned hillside mining-town silhouettes, broad Verde Valley in distance; no monolith desert.",
       "ground": "ground-frozen-forest",
       "brightness": 0.65,
@@ -791,7 +806,7 @@
         "snow": "ground-frozen-forest"
       },
       "sourceOrigin": {
-        "name": "SR 89A — Mingus Mountain / Jerome",
+        "name": "SR 89A \u2014 Mingus Mountain / Jerome",
         "lat": 34.69,
         "lon": -112.14,
         "country": "us"
@@ -823,11 +838,26 @@
         "originalRetained": "/workspace/generated_images/exec-a80f0fda-f702-4b8e-8ea7-f94bed025b2f.png",
         "priorSourceRetained": null,
         "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-a80f0fda-f702-4b8e-8ea7-f94bed025b2f.png",
+          "sourceSha256": "67eaf2ebd739bcf902b296c09c981f8d321e0f13831d4ef3d8c82ab07f9c03ac",
+          "evidence": "pack9 retained evidence"
+        }
+      ],
+      "sourceSha256": "1cdfc38e1a536cc3ef91d1e92277fbeed63cc45fea216db44edc36106263bcb1",
+      "provenance": {
+        "tool": "image_gen edit",
+        "sourceImage": "/workspace/generated_images/exec-d42aa250-56cf-4a28-bf5b-fc154d87e99f.png",
+        "priorSourceImage": "/workspace/generated_images/exec-a80f0fda-f702-4b8e-8ea7-f94bed025b2f.png",
+        "sourceSha256": "1cdfc38e1a536cc3ef91d1e92277fbeed63cc45fea216db44edc36106263bcb1",
+        "review": "Source viewed; native wrap/pitch verification pending."
       }
     },
     {
       "key": "attesa-evening",
-      "raceRef": "Podium Club at Attesa — Casa Grande",
+      "raceRef": "Podium Club at Attesa \u2014 Casa Grande",
       "sourceImage": "/workspace/generated_images/exec-3dc25c22-a495-4be5-a66b-e667bf5846d7.png",
       "brief": "Attesa Casa Grande desert circuit: flat tan Sonoran desert scrub, distant jagged low desert ranges, small abandoned paddock structures and understated barrier lines in central distance, no city skyline.",
       "ground": "ground-desert-scrub-v2",
@@ -838,7 +868,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "Podium Club at Attesa — Casa Grande",
+        "name": "Podium Club at Attesa \u2014 Casa Grande",
         "lat": 32.8176383,
         "lon": -111.8347568,
         "country": "us"
@@ -874,7 +904,7 @@
     },
     {
       "key": "firebird-evening",
-      "raceRef": "Firebird Motorsports Park — Chandler",
+      "raceRef": "Firebird Motorsports Park \u2014 Chandler",
       "sourceImage": "/workspace/generated_images/exec-4f6159c7-a543-49bb-97a5-65335130f330.png",
       "brief": "Chandler Firebird motorsports landscape: low South Mountain silhouette, distant Phoenix fringe structures and palm clusters, long quiet manmade narrow lake reflecting dusk beside worn grandstands, dry flat desert.",
       "ground": "ground-desert-scrub-v2",
@@ -885,7 +915,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "Firebird Motorsports Park — Chandler",
+        "name": "Firebird Motorsports Park \u2014 Chandler",
         "lat": 33.27,
         "lon": -111.97,
         "country": "us"
@@ -921,7 +951,7 @@
     },
     {
       "key": "desertview-noon",
-      "raceRef": "Grand Canyon — Desert View Drive",
+      "raceRef": "Grand Canyon \u2014 Desert View Drive",
       "sourceImage": "/workspace/generated_images/exec-ff128abb-7b70-4b71-ad2d-461a879486bf.png",
       "brief": "Grand Canyon east rim: expansive layered pale Kaibab rim, deep crimson and purple inner canyon, distant Painted Desert to one side, pinyon juniper rim vegetation, tiny weathered stone watchtower near center only.",
       "ground": "ground-desert-scrub-v2",
@@ -932,7 +962,7 @@
         "dirt": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "Grand Canyon — Desert View Drive",
+        "name": "Grand Canyon \u2014 Desert View Drive",
         "lat": 35.995,
         "lon": -111.97,
         "country": "us"
@@ -977,7 +1007,7 @@
     },
     {
       "key": "diamond-evening",
-      "raceRef": "Grand Canyon — Diamond Creek Descent",
+      "raceRef": "Grand Canyon \u2014 Diamond Creek Descent",
       "sourceImage": "/workspace/generated_images/exec-2094a483-8a6d-4ff0-b788-1840d8ecd782.png",
       "brief": "Diamond Creek descent on Hualapai lands: enclosing rugged dark Precambrian rock canyon below red limestone tiers, narrow gravel wash and sparse desert scrub, a glimpse of deep Colorado corridor far away; no rim watchtower.",
       "ground": "ground-gray-gravel-v2",
@@ -988,7 +1018,7 @@
         "dirt": "ground-gray-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Grand Canyon — Diamond Creek Descent",
+        "name": "Grand Canyon \u2014 Diamond Creek Descent",
         "lat": 35.665,
         "lon": -113.37,
         "country": "us"
