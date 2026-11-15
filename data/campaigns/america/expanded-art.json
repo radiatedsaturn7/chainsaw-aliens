@@ -559,11 +559,7 @@
       "source": "skyboxes/oak-creek.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "oak"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-ohio-river-crossing",
@@ -4223,6 +4219,178 @@
       "maxEdge": 1024,
       "placements": [],
       "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gods-noon",
+      "source": "environment-v1/gods-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-muley-evening",
+      "source": "environment-v1/muley-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-goosenecks-morning",
+      "source": "environment-v1/goosenecks-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mexicanhat-morning",
+      "source": "environment-v1/mexicanhat-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-comb-evening",
+      "source": "environment-v1/comb-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-halls-night",
+      "source": "environment-v1/halls-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-bluff-morning",
+      "source": "environment-v1/bluff-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-shafer-night",
+      "source": "environment-v1/shafer-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-burr-noon",
+      "source": "environment-v1/burr-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oakrim-evening",
+      "source": "environment-v1/oakrim-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "oak"
+        }
+      ],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-redbyway-evening",
+      "source": "environment-v1/redbyway-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-redloop-morning",
+      "source": "environment-v1/redloop-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pagesprings-evening",
+      "source": "environment-v1/pagesprings-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-beaverflat-evening",
+      "source": "environment-v1/beaverflat-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-boynton-night",
+      "source": "environment-v1/boynton-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-schnebly-noon",
+      "source": "environment-v1/schnebly-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mingus-morning",
+      "source": "environment-v1/mingus-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-attesa-evening",
+      "source": "environment-v1/attesa-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-firebird-evening",
+      "source": "environment-v1/firebird-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-desertview-noon",
+      "source": "environment-v1/desertview-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-diamond-evening",
+      "source": "environment-v1/diamond-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
     }
   ]
 }

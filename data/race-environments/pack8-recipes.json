@@ -806,7 +806,7 @@
       "raceRef": "Gateway Kartplex — WWT complex",
       "ref": "environment-v1-gateway-morning",
       "source": "environment-v1/gateway-morning.png",
-      "sourceImage": "/workspace/generated_images/exec-3117f571-326a-4653-bdaf-3b344abca15a.png",
+      "sourceImage": "/workspace/generated_images/exec-6640ca94-723c-44af-9d65-8978d32deb64.png",
       "landscape": "SAME exact Gateway/WWT facility in Madison Illinois, viewed from Kartplex within oval: empty low grandstands, flat infield and small pit buildings, industrial horizon and distant compact St Louis skyline/tiny Gateway Arch. Morning palette, restrained abandonment, no mountains.",
       "references": [
         "https://www.gatewaykartplex.com/facility"
@@ -844,11 +844,11 @@
       "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
       "artProvenance": {
         "tool": "image_gen.imagegen",
-        "originalRetained": "/workspace/generated_images/exec-3117f571-326a-4653-bdaf-3b344abca15a.png",
-        "sourceSha256": "2c478c7a9c13afdeaf9097d8f6b6187f2a9c9d08a5ef1e8f0866f59029a89db3",
+        "originalRetained": "/workspace/generated_images/exec-6640ca94-723c-44af-9d65-8978d32deb64.png",
+        "sourceSha256": "9ee70751fabb4d5575098c64e55714a633fba7a5723d637fe21c405ef124010f",
         "brief": "SAME exact Gateway/WWT facility in Madison Illinois, viewed from Kartplex within oval: empty low grandstands, flat infield and small pit buildings, industrial horizon and distant compact St Louis skyline/tiny Gateway Arch. Morning palette, restrained abandonment, no mountains.",
-        "priorSourceRetained": "/workspace/generated_images/exec-799ad0c2-176d-4858-8259-3fec5a219772.png",
-        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+        "priorSourceRetained": "/workspace/generated_images/exec-3117f571-326a-4653-bdaf-3b344abca15a.png",
+        "manualSourceReview": "Pack9 revised source viewed; pack8 native screenshots remain historical; current native review pending."
       }
     },
     {

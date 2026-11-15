@@ -7,10 +7,11 @@ roots.forEach(walk);
 const successes=[],failures=[];
 for(const file of files){const d=JSON.parse(fs.readFileSync(file));if(file.endsWith('failure-state.json')){failures.push({file,...d});continue;}
  const row=ledger.rows.find(r=>r.raceRef===d.race),a=d.before.session,b=d.after.session;assert.ok(row?.binding);
+ if(fs.existsSync(path.join(path.dirname(file),'failure-state.json')))continue; // A later diagnostic assertion can fail after movement was recorded.
  const displacementM=Math.hypot(b.worldX-a.worldX,b.worldZ-a.worldZ);assert.ok(displacementM>.5,'No measured movement');
  assert.ok(b.running&&!b.pending&&b.elapsed>2000&&b.speed>1,'Not a live driving sample');assert.equal(d.after.sky,row.binding.skyboxArtRef);
  assert.equal(d.after.fx.skyBrightness,row.authoredEnvironment.visualFx.skyBrightness,'Authored capture exposure differs');assert.equal(d.after.weather.id,row.authoredEnvironment.weather,'Authored weather differs');
  const png=fs.readFileSync(path.join(path.dirname(file),'authored-driving-b.png')),viewport={width:png.readUInt32BE(16),height:png.readUInt32BE(20)};
- successes.push({file,race:d.race,device:d.device||'See captured viewport and runner case',viewport,displacementM,elapsedMs:b.elapsed,speedMps:b.speed,sky:d.after.sky,brightness:d.after.fx.skyBrightness,missingArtRefs:d.after.diagnostics?.missingArtRefs,errors:d.errors,network:d.network});
+ successes.push({file,race:d.race,device:d.device||'See captured viewport and runner case',viewport,displacementM,timing:d.timing,routeProgressM:d.distanceTelemetry?.progress,elapsedMs:b.elapsed,speedMps:b.speed,sky:d.after.sky,brightness:d.after.fx.skyBrightness,missingArtRefs:d.after.diagnostics?.missingArtRefs,errors:d.errors,network:d.network});
 }
 console.log(JSON.stringify({scope:'Short real-travel and driving samples only. Inspect retained authored frames separately; no route-wide or visual acceptance inferred.',successes,failures,successfulSamples:successes.length,failedSamples:failures.length,distinctSuccessfulRaces:new Set(successes.map(r=>r.race)).size},null,2));

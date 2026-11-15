@@ -1,0 +1,1035 @@
+{
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "recipes": [
+    {
+      "key": "gods-noon",
+      "raceRef": "Valley of the Gods Road — San Juan CR 242",
+      "sourceImage": "/workspace/generated_images/exec-692d4b11-7d8f-485c-9ea1-44a0b363c63e.png",
+      "brief": "Isolated slender Cedar Mesa sandstone monoliths across broad red gravel basin, dry scrub, no city or lake.",
+      "ground": "ground-red-gravel-v2",
+      "brightness": 1,
+      "ref": "environment-v1-gods-noon",
+      "source": "environment-v1/gods-noon.png",
+      "tiles": {
+        "snow": "ground-red-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Valley of the Gods Road — San Juan CR 242",
+        "lat": 37.29,
+        "lon": -109.83,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H09-S01.json",
+      "catalog": [
+        {
+          "id": "H09-S01",
+          "hubStage": 9,
+          "startGps": {
+            "lat": 37.286150500000005,
+            "lon": -109.85319695
+          },
+          "finishGps": {
+            "lat": 37.313942,
+            "lon": -109.8577245
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "https://www.blm.gov/visit/valley-gods"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "01a8337b97e2d6f7f6f80b7707d070629ebe5a812e62b7e682a827c4bae19bfb",
+        "originalRetained": "/workspace/generated_images/exec-692d4b11-7d8f-485c-9ea1-44a0b363c63e.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "muley-evening",
+      "raceRef": "Muley Point Road — CR 241",
+      "sourceImage": "/workspace/generated_images/exec-1828147c-e448-4b09-ba9d-aa987de1e19b.png",
+      "brief": "Elevated Cedar Mesa overlook over deeply incised stepped San Juan canyons, distant tiny Monument Valley buttes and rounded Navajo Mountain; big open layered depth, not a close vertical wall.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 0.42,
+      "ref": "environment-v1-muley-evening",
+      "source": "environment-v1/muley-evening.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "Muley Point Road — CR 241",
+        "lat": 37.25,
+        "lon": -109.98,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H09-S02.json",
+      "catalog": [
+        {
+          "id": "H09-S02",
+          "hubStage": 9,
+          "startGps": {
+            "lat": 37.2672682,
+            "lon": -109.964421
+          },
+          "finishGps": {
+            "lat": 37.234992633333334,
+            "lon": -109.9924529
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://www.nps.gov/places/muley-point.htm"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "32199573d17cea0ff4efbb6b71fdf71632d1e031cd15257bb6905f953776ad8a",
+        "originalRetained": "/workspace/generated_images/exec-1828147c-e448-4b09-ba9d-aa987de1e19b.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      },
+      "previousGroundReview": {
+        "ref": "ground-canyon-rock-v2",
+        "finding": "Decoded orange rock was unsuitable for pale plateau/rim or dark basement-rock locality."
+      }
+    },
+    {
+      "key": "goosenecks-morning",
+      "raceRef": "UT 316 — Goosenecks State Park Road",
+      "sourceImage": "/workspace/generated_images/exec-e72b2615-30cd-4686-a341-9bc86f250f08.png",
+      "brief": "San Juan entrenched meanders below flat barren tan gray limestone plateau, repeating tightly folded canyon arms with a narrow dark river far below; sparse desert scrub.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 0.65,
+      "ref": "environment-v1-goosenecks-morning",
+      "source": "environment-v1/goosenecks-morning.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "UT 316 — Goosenecks State Park Road",
+        "lat": 37.18,
+        "lon": -109.92,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H09-S03.json",
+      "catalog": [
+        {
+          "id": "H09-S03",
+          "hubStage": 9,
+          "startGps": {
+            "lat": 37.1757946,
+            "lon": -109.9262088
+          },
+          "finishGps": {
+            "lat": 37.19898472857143,
+            "lon": -109.87963344285714
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://stateparks.utah.gov/parks/goosenecks/"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "2ecb7b5a1f28755ff05d77ea901d03771bfebb0b760c45202e140d2238835065",
+        "originalRetained": "/workspace/generated_images/exec-e72b2615-30cd-4686-a341-9bc86f250f08.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      },
+      "previousGroundReview": {
+        "ref": "ground-canyon-rock-v2",
+        "finding": "Decoded orange rock was unsuitable for pale plateau/rim or dark basement-rock locality."
+      }
+    },
+    {
+      "key": "mexicanhat-morning",
+      "raceRef": "US 163 — Mexican Hat Monument Valley approach",
+      "sourceImage": "/workspace/generated_images/exec-24142322-dab6-42d5-a2e1-0b5f203b3c10.png",
+      "brief": "Mexican Hat approach toward distant Monument Valley isolated buttes; distinctive small tilted caprock formation to central right, broad dry red plain and pale low mesas.",
+      "ground": "ground-red-gravel-v2",
+      "brightness": 0.65,
+      "ref": "environment-v1-mexicanhat-morning",
+      "source": "environment-v1/mexicanhat-morning.png",
+      "tiles": {
+        "snow": "ground-red-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "US 163 — Mexican Hat / Monument Valley approach",
+        "lat": 37.1014683,
+        "lon": -109.9908441,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H09-S04.json",
+      "catalog": [
+        {
+          "id": "H09-S04",
+          "hubStage": 9,
+          "startGps": {
+            "lat": 37.09182774583333,
+            "lon": -110.00522591250001
+          },
+          "finishGps": {
+            "lat": 37.029735478947366,
+            "lon": -110.12032176842106
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://www.blm.gov/visit/valley-gods",
+        "https://www.nps.gov/thingstodo/driving-the-burr-trail.htm"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "db412e483348882993758f22051dc0da9b45198851e01ba881763ffb43d390b0",
+        "originalRetained": "/workspace/generated_images/exec-24142322-dab6-42d5-a2e1-0b5f203b3c10.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "comb-evening",
+      "raceRef": "UT 95 — Comb Ridge Cedar Mesa",
+      "sourceImage": "/workspace/generated_images/exec-79765d06-3060-4520-88d6-ceb8da71df95.png",
+      "brief": "Long steeply tilted pale sandstone hogback of Comb Ridge, pinyon juniper on Cedar Mesa side, exposed angular white strata, not Monument Valley towers.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 0.42,
+      "ref": "environment-v1-comb-evening",
+      "source": "environment-v1/comb-evening.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "UT 95 — Comb Ridge / Cedar Mesa",
+        "lat": 37.54,
+        "lon": -109.73,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H09-S05.json",
+      "catalog": [
+        {
+          "id": "H09-S05",
+          "hubStage": 9,
+          "startGps": {
+            "lat": 37.557292857142855,
+            "lon": -109.78800578571429
+          },
+          "finishGps": {
+            "lat": 37.5115551,
+            "lon": -109.6564681
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://www.blm.gov/visit/valley-gods",
+        "https://www.nps.gov/thingstodo/driving-the-burr-trail.htm"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "4b7365e87fe60aaae40b926bec1c7bf4e54f32ae1c5934f536ae1c38fd25583e",
+        "originalRetained": "/workspace/generated_images/exec-79765d06-3060-4520-88d6-ceb8da71df95.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      },
+      "previousGroundReview": {
+        "ref": "ground-canyon-rock-v2",
+        "finding": "Decoded orange rock was unsuitable for pale plateau/rim or dark basement-rock locality."
+      }
+    },
+    {
+      "key": "halls-night",
+      "raceRef": "UT 276 — Halls Crossing approach",
+      "sourceImage": "/workspace/generated_images/exec-76dabb4d-17b4-4d7b-8d3f-9f4df08d334f.png",
+      "brief": "Halls Crossing high desert approach: low rounded pale Navajo sandstone domes and broad dry mesa ledges, small distant recessed Lake Powell inlet only, sparse desert shrubs. Clear blue-black night, restrained thin crescent and sparse stars, no bright sunset.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 0.05,
+      "ref": "environment-v1-halls-night",
+      "source": "environment-v1/halls-night.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "UT 276 — Halls Crossing approach",
+        "lat": 37.451041,
+        "lon": -110.6919999,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H09-S06.json",
+      "catalog": [
+        {
+          "id": "H09-S06",
+          "hubStage": 9,
+          "startGps": {
+            "lat": 37.4576174,
+            "lon": -110.587425
+          },
+          "finishGps": {
+            "lat": 37.4536396,
+            "lon": -110.712795
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://www.blm.gov/visit/valley-gods",
+        "https://www.nps.gov/thingstodo/driving-the-burr-trail.htm"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "51b0ee7bb52ae19aaca4af60e39bdcda4ee60c1a852d6c35e72fa6704110c6b7",
+        "originalRetained": "/workspace/generated_images/exec-76dabb4d-17b4-4d7b-8d3f-9f4df08d334f.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      },
+      "previousGroundReview": {
+        "ref": "ground-canyon-rock-v2",
+        "finding": "Decoded orange rock was unsuitable for pale plateau/rim or dark basement-rock locality."
+      }
+    },
+    {
+      "key": "bluff-morning",
+      "raceRef": "US 191 — Bluff Blanding",
+      "sourceImage": "/workspace/generated_images/exec-23268fa5-14c2-43c9-9491-d52fb24f9bb1.png",
+      "brief": "Bluff to Blanding transition: long horizontal cream sandstone bluffs and higher dark juniper mesas, scattered cottonwoods only in low drainage, tiny abandoned roadside building central.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 0.65,
+      "ref": "environment-v1-bluff-morning",
+      "source": "environment-v1/bluff-morning.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "US 191 — Bluff / Blanding",
+        "lat": 37.42,
+        "lon": -109.47,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H09-S07.json",
+      "catalog": [
+        {
+          "id": "H09-S07",
+          "hubStage": 9,
+          "startGps": {
+            "lat": 37.4417184,
+            "lon": -109.4686055
+          },
+          "finishGps": {
+            "lat": 37.3311742,
+            "lon": -109.519856
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://www.blm.gov/visit/valley-gods",
+        "https://www.nps.gov/thingstodo/driving-the-burr-trail.htm"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "3252bd20b7dbc9d04217380ca74a5b1042d7a9ad6fce4683ae0d9a3dfc5a1d88",
+        "originalRetained": "/workspace/generated_images/exec-23268fa5-14c2-43c9-9491-d52fb24f9bb1.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "shafer-night",
+      "raceRef": "Shafer Trail — Canyonlands National Park",
+      "sourceImage": "/workspace/generated_images/exec-b7d7fac2-c67d-4abe-8b62-b8f84fbb0422.png",
+      "brief": "Shafer Canyon from rim: immense stacked red and pale sandstone cliffs dropping into open White Rim basin; very distant winding dry track, no foreground road, sparse scrub. Clear moonlit blue-gray night, crescent and sparse stars; no daylight colors.",
+      "ground": "ground-canyon-rock-v2",
+      "brightness": 0.05,
+      "ref": "environment-v1-shafer-night",
+      "source": "environment-v1/shafer-night.png",
+      "tiles": {
+        "snow": "ground-canyon-rock-v2"
+      },
+      "sourceOrigin": {
+        "name": "Shafer Trail — Canyonlands National Park",
+        "lat": 38.46,
+        "lon": -109.8,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H09-S08.json",
+      "catalog": [
+        {
+          "id": "H09-S08",
+          "hubStage": 9,
+          "startGps": {
+            "lat": 38.4523789,
+            "lon": -109.81587114999999
+          },
+          "finishGps": {
+            "lat": 38.4558231,
+            "lon": -109.8188293
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://www.nps.gov/thingstodo/experience-the-shafer-trail.htm"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "da4510f50fbb029b582e23de259750cd1ff3995c63c39b2c1a6911894ad0d6ad",
+        "originalRetained": "/workspace/generated_images/exec-b7d7fac2-c67d-4abe-8b62-b8f84fbb0422.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "burr-noon",
+      "raceRef": "Burr Trail switchbacks — Capitol Reef",
+      "sourceImage": "/workspace/generated_images/exec-3b8d2385-7860-47ff-bd2b-267c18b39bc6.png",
+      "brief": "Waterpocket Fold tilted white Navajo sandstone fins over deep red strata and narrow fold valley, distant Henry Mountains small on far horizon, sparse dry plants; strong asymmetric geological fold.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 1,
+      "ref": "environment-v1-burr-noon",
+      "source": "environment-v1/burr-noon.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "Burr Trail switchbacks — Capitol Reef",
+        "lat": 37.85,
+        "lon": -111.03,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H09-S09.json",
+      "catalog": [
+        {
+          "id": "H09-S09",
+          "hubStage": 9,
+          "startGps": {
+            "lat": 37.8487958,
+            "lon": -111.03078024999999
+          },
+          "finishGps": {
+            "lat": 37.85352605,
+            "lon": -111.017016
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "https://www.nps.gov/thingstodo/driving-the-burr-trail.htm"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "5aef6a0ae48fff67176f8056d2ffbd7a34e28dc7aed27cbd66fb529921cab458",
+        "originalRetained": "/workspace/generated_images/exec-3b8d2385-7860-47ff-bd2b-267c18b39bc6.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      },
+      "previousGroundReview": {
+        "ref": "ground-canyon-rock-v2",
+        "finding": "Decoded orange rock was unsuitable for pale plateau/rim or dark basement-rock locality."
+      }
+    },
+    {
+      "key": "oakrim-evening",
+      "raceRef": "Oak Creek Canyon",
+      "sourceImage": "/workspace/generated_images/exec-f57f2740-43c0-47f5-afba-b4e2da69fbba.png",
+      "brief": "Upper Oak Creek canyon near Vista: ponderosa pine rim and deep forested canyon, red and tan horizontal rock strata below dark conifer rim, no saguaro or desert dunes, warm evening.",
+      "ground": "ground-frozen-forest",
+      "brightness": 0.42,
+      "ref": "environment-v1-oakrim-evening",
+      "source": "environment-v1/oakrim-evening.png",
+      "tiles": {
+        "gravel": "ground-frozen-forest"
+      },
+      "sourceOrigin": {
+        "name": "Oak Creek Canyon",
+        "lat": 35,
+        "lon": -111.74,
+        "country": "us"
+      },
+      "sourceSnapshot": null,
+      "catalog": [
+        {
+          "id": "america-middle-oak",
+          "location": {
+            "place": "Oak Creek Canyon, Arizona",
+            "lat": 35.0234889,
+            "lon": -111.7361826
+          },
+          "startGps": {
+            "lat": 35.0295629,
+            "lon": -111.7354401
+          },
+          "finishGps": {
+            "lat": 34.9579645,
+            "lon": -111.7539382
+          }
+        }
+      ],
+      "references": [
+        "https://research.fs.usda.gov/rmrs/rnas/locations/oak-creek-canyon"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "ae34a9ab2ee44ac6d60718fe7a3fb7327469830d7907af1dad3e27481f1f0c17",
+        "originalRetained": "/workspace/generated_images/exec-f57f2740-43c0-47f5-afba-b4e2da69fbba.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      },
+      "mainRoutePlacementMigration": {
+        "from": "skybox-oak-creek",
+        "to": "environment-v1-oakrim-evening",
+        "placements": [
+          {
+            "race": "oak"
+          }
+        ]
+      }
+    },
+    {
+      "key": "redbyway-evening",
+      "raceRef": "SR 179 — Red Rock Scenic Byway",
+      "sourceImage": "/workspace/generated_images/exec-51861eaf-448c-4e9e-bf5d-1d674e0486aa.png",
+      "brief": "Sedona SR179 low juniper valley with recognizable bell-shaped red butte and broader layered courthouse mesa separated on horizon, no canyon river.",
+      "ground": "ground-red-gravel-v2",
+      "brightness": 0.42,
+      "ref": "environment-v1-redbyway-evening",
+      "source": "environment-v1/redbyway-evening.png",
+      "tiles": {
+        "snow": "ground-red-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "SR 179 — Red Rock Scenic Byway",
+        "lat": 34.8,
+        "lon": -111.77,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H10-S01.json",
+      "catalog": [
+        {
+          "id": "H10-S01",
+          "hubStage": 10,
+          "startGps": {
+            "lat": 34.77386421666667,
+            "lon": -111.76368323333332
+          },
+          "finishGps": {
+            "lat": 34.8359513,
+            "lon": -111.7771651
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://research.fs.usda.gov/treesearch/42698",
+        "https://trails-staging.friendsoftheforestsedona.org/trail-guides/"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "5508a0f02f51000ee104fd8872cf4bcf933e841869e0d296d7992488240fc0d3",
+        "originalRetained": "/workspace/generated_images/exec-51861eaf-448c-4e9e-bf5d-1d674e0486aa.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "redloop-morning",
+      "raceRef": "Upper Lower Red Rock Loop Road",
+      "sourceImage": "/workspace/generated_images/exec-91f4e038-7361-47e1-9023-be4c1c2ecf2b.png",
+      "brief": "Red Rock Loop view: Cathedral-like cluster of thin red spires behind greener Oak Creek cottonwood corridor, low juniper hills at sides, no giant lake.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 0.65,
+      "ref": "environment-v1-redloop-morning",
+      "source": "environment-v1/redloop-morning.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "Upper / Lower Red Rock Loop Road",
+        "lat": 34.83,
+        "lon": -111.84,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H10-S02.json",
+      "catalog": [
+        {
+          "id": "H10-S02",
+          "hubStage": 10,
+          "startGps": {
+            "lat": 34.8467562,
+            "lon": -111.8281371
+          },
+          "finishGps": {
+            "lat": 34.821832,
+            "lon": -111.8295979
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://research.fs.usda.gov/treesearch/42698",
+        "https://trails-staging.friendsoftheforestsedona.org/trail-guides/"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "526d9aec083602e3c9a8eca9da4d037bbe0bc69217292acb6ab3ef9db45fcd98",
+        "originalRetained": "/workspace/generated_images/exec-91f4e038-7361-47e1-9023-be4c1c2ecf2b.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "pagesprings-evening",
+      "raceRef": "Page Springs Road",
+      "sourceImage": "/workspace/generated_images/exec-aa8faadb-09f3-493a-8358-7d545e91d9cd.png",
+      "brief": "Page Springs Verde Valley: green riparian cottonwood ribbon and modest vineyard rows among dry rolling tan hills, distant subdued Mingus ridge; no red towering Sedona cathedral.",
+      "ground": "ground-frozen-forest",
+      "brightness": 0.42,
+      "ref": "environment-v1-pagesprings-evening",
+      "source": "environment-v1/pagesprings-evening.png",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "sourceOrigin": {
+        "name": "Page Springs Road",
+        "lat": 34.79,
+        "lon": -111.89,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H10-S03.json",
+      "catalog": [
+        {
+          "id": "H10-S03",
+          "hubStage": 10,
+          "startGps": {
+            "lat": 34.7898543,
+            "lon": -111.91234109999999
+          },
+          "finishGps": {
+            "lat": 34.740027,
+            "lon": -111.889504
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://www.azgfd.com/location/page-springs-hatchery/"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "21d43cfb3020f7276bce47971afa49941ce5fb3c989c8dbf638e2c1e24473690",
+        "originalRetained": "/workspace/generated_images/exec-aa8faadb-09f3-493a-8358-7d545e91d9cd.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "beaverflat-evening",
+      "raceRef": "Beaverhead Flat Road — CR 78",
+      "sourceImage": "/workspace/generated_images/exec-c4e46397-1691-41be-9073-e5460d37efc0.png",
+      "brief": "Beaverhead Flat broad open tawny grass and scrub bench, low juniper ridges with distant red mesas far north; unusually open sky and low topography, no close canyon walls.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 0.42,
+      "ref": "environment-v1-beaverflat-evening",
+      "source": "environment-v1/beaverflat-evening.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "Beaverhead Flat Road — CR 78",
+        "lat": 34.73,
+        "lon": -111.81,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H10-S04.json",
+      "catalog": [
+        {
+          "id": "H10-S04",
+          "hubStage": 10,
+          "startGps": {
+            "lat": 34.7338377,
+            "lon": -111.7767705
+          },
+          "finishGps": {
+            "lat": 34.6906287,
+            "lon": -111.853494
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://research.fs.usda.gov/treesearch/42698",
+        "https://trails-staging.friendsoftheforestsedona.org/trail-guides/"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "19b59a1fe060892d90f9702a38307db91d59744aaa3d1d3eeb04a6e9f2729e98",
+        "originalRetained": "/workspace/generated_images/exec-c4e46397-1691-41be-9073-e5460d37efc0.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "boynton-night",
+      "raceRef": "Boynton Pass Road FR 525 loop",
+      "sourceImage": "/workspace/generated_images/exec-c9e8d66d-7fe0-4083-b1f9-c5d6173923e3.png",
+      "brief": "Boynton Pass near Sedona: close broad red-sandstone mesa wall and notched saddle silhouetted above dark juniper basin. Clear deep indigo night, very restrained crescent and few stars, no daylight orange.",
+      "ground": "ground-red-gravel-v2",
+      "brightness": 0.05,
+      "ref": "environment-v1-boynton-night",
+      "source": "environment-v1/boynton-night.png",
+      "tiles": {
+        "snow": "ground-red-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Boynton Pass Road / FR 525 loop",
+        "lat": 34.89,
+        "lon": -111.91,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H10-S05.json",
+      "catalog": [
+        {
+          "id": "H10-S05",
+          "hubStage": 10,
+          "startGps": {
+            "lat": 34.9048856,
+            "lon": -111.9121027
+          },
+          "finishGps": {
+            "lat": 34.9356881,
+            "lon": -111.9304403
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://research.fs.usda.gov/treesearch/42698",
+        "https://trails-staging.friendsoftheforestsedona.org/trail-guides/"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "11e51ff9a8a6da13423d9865824a5ec7d91391cf3c43746b78250846b946a3e7",
+        "originalRetained": "/workspace/generated_images/exec-c9e8d66d-7fe0-4083-b1f9-c5d6173923e3.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "schnebly-noon",
+      "raceRef": "Schnebly Hill Road — Sedona",
+      "sourceImage": "/workspace/generated_images/exec-74ffa1cd-cf9f-4f59-bc19-a05f24bcb932.png",
+      "brief": "Schnebly Hill rising from Sedona: rust red sandstone benches and broken ledges below massive pale Mogollon rim, juniper becoming pine on higher ridge, wide distant valley seen between ledges.",
+      "ground": "ground-red-gravel-v2",
+      "brightness": 1,
+      "ref": "environment-v1-schnebly-noon",
+      "source": "environment-v1/schnebly-noon.png",
+      "tiles": {
+        "snow": "ground-red-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Schnebly Hill Road — Sedona",
+        "lat": 34.87,
+        "lon": -111.72,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H10-S06.json",
+      "catalog": [
+        {
+          "id": "H10-S06",
+          "hubStage": 10,
+          "startGps": {
+            "lat": 34.87152085,
+            "lon": -111.71589725
+          },
+          "finishGps": {
+            "lat": 34.8840432,
+            "lon": -111.7099654
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "https://research.fs.usda.gov/treesearch/42698",
+        "https://trails-staging.friendsoftheforestsedona.org/trail-guides/"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "4969221c3c410b3b6c1dac0c07cc3a415567804dadcaed18437ea239c32cf414",
+        "originalRetained": "/workspace/generated_images/exec-74ffa1cd-cf9f-4f59-bc19-a05f24bcb932.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "mingus-morning",
+      "raceRef": "SR 89A — Mingus Mountain Jerome",
+      "sourceImage": "/workspace/generated_images/exec-a80f0fda-f702-4b8e-8ea7-f94bed025b2f.png",
+      "brief": "Mingus Mountain above Jerome: high dark pine-covered rounded ridge, sloping chaparral and tiny abandoned hillside mining-town silhouettes, broad Verde Valley in distance; no monolith desert.",
+      "ground": "ground-frozen-forest",
+      "brightness": 0.65,
+      "ref": "environment-v1-mingus-morning",
+      "source": "environment-v1/mingus-morning.png",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "sourceOrigin": {
+        "name": "SR 89A — Mingus Mountain / Jerome",
+        "lat": 34.69,
+        "lon": -112.14,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H10-S07.json",
+      "catalog": [
+        {
+          "id": "H10-S07",
+          "hubStage": 10,
+          "startGps": {
+            "lat": 34.6855052,
+            "lon": -112.1700549
+          },
+          "finishGps": {
+            "lat": 34.715474,
+            "lon": -112.15304578
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://research.fs.usda.gov/treesearch/42698",
+        "https://trails-staging.friendsoftheforestsedona.org/trail-guides/"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "67eaf2ebd739bcf902b296c09c981f8d321e0f13831d4ef3d8c82ab07f9c03ac",
+        "originalRetained": "/workspace/generated_images/exec-a80f0fda-f702-4b8e-8ea7-f94bed025b2f.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "attesa-evening",
+      "raceRef": "Podium Club at Attesa — Casa Grande",
+      "sourceImage": "/workspace/generated_images/exec-3dc25c22-a495-4be5-a66b-e667bf5846d7.png",
+      "brief": "Attesa Casa Grande desert circuit: flat tan Sonoran desert scrub, distant jagged low desert ranges, small abandoned paddock structures and understated barrier lines in central distance, no city skyline.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 0.42,
+      "ref": "environment-v1-attesa-evening",
+      "source": "environment-v1/attesa-evening.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "Podium Club at Attesa — Casa Grande",
+        "lat": 32.8176383,
+        "lon": -111.8347568,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H10-S08.json",
+      "catalog": [
+        {
+          "id": "H10-S08",
+          "hubStage": 10,
+          "startGps": {
+            "lat": 32.815395188888886,
+            "lon": -111.8394983
+          },
+          "finishGps": {
+            "lat": 32.815395188888886,
+            "lon": -111.8394983
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://www.podiumclub.com/directions",
+        "https://www.podiumclub.com/attesaproject"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "03792d0ff017dc9f16cc5660ba9c0e4b14e42f4a5a0d11e578f00f3407615830",
+        "originalRetained": "/workspace/generated_images/exec-3dc25c22-a495-4be5-a66b-e667bf5846d7.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-d5c6f1e7-6c90-41f9-befa-d18c8858a58f.png",
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "firebird-evening",
+      "raceRef": "Firebird Motorsports Park — Chandler",
+      "sourceImage": "/workspace/generated_images/exec-4f6159c7-a543-49bb-97a5-65335130f330.png",
+      "brief": "Chandler Firebird motorsports landscape: low South Mountain silhouette, distant Phoenix fringe structures and palm clusters, long quiet manmade narrow lake reflecting dusk beside worn grandstands, dry flat desert.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 0.42,
+      "ref": "environment-v1-firebird-evening",
+      "source": "environment-v1/firebird-evening.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "Firebird Motorsports Park — Chandler",
+        "lat": 33.27,
+        "lon": -111.97,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H10-S09.json",
+      "catalog": [
+        {
+          "id": "H10-S09",
+          "hubStage": 10,
+          "startGps": {
+            "lat": 33.2708594,
+            "lon": -111.9707444
+          },
+          "finishGps": {
+            "lat": 33.26782744471227,
+            "lon": -111.96838263877949
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://nhra.com/news/2025/sunday-news-and-notes-nhra-arizona-nationals",
+        "https://www.nhra.com/news/2018/phoenix-top-fuel-wonderland"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "180b7ba8aa67091d955737ee1c4503090a948b8ff3714b2b8687244b2a38f3bf",
+        "originalRetained": "/workspace/generated_images/exec-4f6159c7-a543-49bb-97a5-65335130f330.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-5189a94a-6669-4225-806f-810db39ecf50.png",
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      }
+    },
+    {
+      "key": "desertview-noon",
+      "raceRef": "Grand Canyon — Desert View Drive",
+      "sourceImage": "/workspace/generated_images/exec-ff128abb-7b70-4b71-ad2d-461a879486bf.png",
+      "brief": "Grand Canyon east rim: expansive layered pale Kaibab rim, deep crimson and purple inner canyon, distant Painted Desert to one side, pinyon juniper rim vegetation, tiny weathered stone watchtower near center only.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 1,
+      "ref": "environment-v1-desertview-noon",
+      "source": "environment-v1/desertview-noon.png",
+      "tiles": {
+        "dirt": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "Grand Canyon — Desert View Drive",
+        "lat": 35.995,
+        "lon": -111.97,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-desert-view.json",
+      "catalog": [
+        {
+          "id": "detour-desert-view",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 10,
+          "location": {
+            "lat": 35.995,
+            "lon": -111.97
+          },
+          "startGps": {
+            "lat": 35.98426055,
+            "lon": -111.94003475000001
+          },
+          "finishGps": {
+            "lat": 36.0089757,
+            "lon": -111.8054626
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "https://home.nps.gov/grca/planyourvisit/desert-view.htm"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "e2d6783fe6b9d730043e3157449628604fcb442da2456e1eab98733c512ab7b1",
+        "originalRetained": "/workspace/generated_images/exec-ff128abb-7b70-4b71-ad2d-461a879486bf.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      },
+      "previousGroundReview": {
+        "ref": "ground-canyon-rock-v2",
+        "finding": "Decoded orange rock was unsuitable for pale plateau/rim or dark basement-rock locality."
+      }
+    },
+    {
+      "key": "diamond-evening",
+      "raceRef": "Grand Canyon — Diamond Creek Descent",
+      "sourceImage": "/workspace/generated_images/exec-2094a483-8a6d-4ff0-b788-1840d8ecd782.png",
+      "brief": "Diamond Creek descent on Hualapai lands: enclosing rugged dark Precambrian rock canyon below red limestone tiers, narrow gravel wash and sparse desert scrub, a glimpse of deep Colorado corridor far away; no rim watchtower.",
+      "ground": "ground-gray-gravel-v2",
+      "brightness": 0.42,
+      "ref": "environment-v1-diamond-evening",
+      "source": "environment-v1/diamond-evening.png",
+      "tiles": {
+        "dirt": "ground-gray-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Grand Canyon — Diamond Creek Descent",
+        "lat": 35.665,
+        "lon": -113.37,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-diamond-creek.json",
+      "catalog": [
+        {
+          "id": "detour-diamond-creek",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 10,
+          "location": {
+            "lat": 35.665,
+            "lon": -113.37
+          },
+          "startGps": {
+            "lat": 35.693348,
+            "lon": -113.4032184
+          },
+          "finishGps": {
+            "lat": 35.7654774,
+            "lon": -113.371506
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://home.nps.gov/grca/planyourvisit/overview-diamond-ck.htm"
+      ],
+      "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "b930814e60b2b1d93ca3c313b9b212b216f648d52ecde24f77cf3d01d6c6cc27",
+        "originalRetained": "/workspace/generated_images/exec-2094a483-8a6d-4ff0-b788-1840d8ecd782.png",
+        "priorSourceRetained": null,
+        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+      },
+      "previousGroundReview": {
+        "ref": "ground-canyon-rock-v2",
+        "finding": "Decoded orange rock was unsuitable for pale plateau/rim or dark basement-rock locality."
+      }
+    }
+  ]
+}
