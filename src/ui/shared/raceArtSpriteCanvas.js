@@ -14,7 +14,7 @@ export function hydrateRaceArtSpriteShared(artRef = '') {
   if (cached) return Promise.resolve(cached);
   const pending = pendingArtHydrations.get(clean);
   if (pending) return pending;
-  const hydration = hydrateProjectFilePayload('art', clean)
+  const hydration = hydrateProjectFilePayload('art', clean, {hydrateDependencies:false})
     .catch(() => null)
     .finally(() => pendingArtHydrations.delete(clean));
   pendingArtHydrations.set(clean, hydration);

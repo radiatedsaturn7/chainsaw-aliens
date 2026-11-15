@@ -782,3 +782,24 @@ test('reopening a warm project asset reuses the parsed payload without another l
  try{assert.equal(await hydrateProjectFilePayload('art','Warm sprite'),cached);assert.equal(copies,0);}
  finally{JSON.parse=parse;JSON.stringify=stringify;clearCachedProjectFilesForTests();}
 });
+
+test('static sprite downloads do not parse a second copy of the decoded pixel document',async()=>{
+ clearCachedProjectFilesForTests();
+ const originalFetch=globalThis.fetch,parse=JSON.parse;
+ const marker='static-pixel-memory-regression';let duplicateParses=0;
+ globalThis.fetch=async url=>{
+  const path=String(url);
+  if(path.startsWith('/__storage/'))return {ok:false,status:404,json:async()=>({error:'HTTP 404'})};
+  if(path.endsWith('/manifest.json'))return {ok:true,json:async()=>({folders:{art:{[marker]:`art/${marker}/document.json`}}})};
+  if(path.endsWith('/metadata.json'))return {ok:true,json:async()=>({savedAt:123})};
+  if(path.endsWith('/document.json'))return {ok:true,json:async()=>({name:marker,width:1,height:1,frames:[['#ffffff']]})};
+  throw Error(`Unexpected request: ${path}`);
+ };
+ JSON.parse=(raw,...args)=>{if(typeof raw==='string'&&raw.includes(marker)&&raw.includes('frames'))duplicateParses++;return parse(raw,...args);};
+ try{
+  const result=await hydrateProjectFile('art',marker);
+  assert.equal(result.data.frames[0][0],'#ffffff');
+  assert.equal(result.storageSource,'static');
+  assert.equal(duplicateParses,0);
+ }finally{JSON.parse=parse;globalThis.fetch=originalFetch;clearCachedProjectFilesForTests();}
+});

@@ -146,3 +146,54 @@ test('showroom entry prepares the visible page instead of decoding the entire ca
   assert.deepEqual([...requested].sort(),['Car 10','Car 11','Car 8','Car 9']);
  }finally{globalThis.document=previous;}
 });
+
+test('car sheets decode sequentially into one renderer cache, including shared sheets',async()=>{
+ const {resetProjectFilesForTests}=await import('../../src/ui/projectFiles.js');
+ const previous=globalThis.document,decoded=[];
+ globalThis.document={createElement:()=>({getContext:()=>({createImageData(w,h){decoded.push(w);return {data:new Uint8ClampedArray(w*h*4)};},putImageData(){}})})};
+ resetProjectFilesForTests();
+ try{
+  for(const [ref,width] of [['sheet-a',1],['sheet-b',2]])saveProjectFile('art',ref,{width,height:1,frames:Array.from({length:3},()=>Array(width).fill('#ffffff'))});
+  const editor={},resources=new MenuResources({carEditor:editor});
+  const tasks=['sheet-a','sheet-b','sheet-a'].map(ref=>resources.request(`car-art:${ref}`,()=>resources.prepareCarArt(ref)));
+  await Promise.all(tasks);
+  assert.deepEqual(decoded,[1,1,1,2,2,2],'large pixel sheets must not decode concurrently');
+  assert.equal(editor.raceArtSpriteCache.size,6);
+  assert.equal(resources.artCache.size,0,'car frames must not be duplicated in the menu cache');
+  await resources.prepareCarArt('sheet-a');
+  assert.equal(decoded.length,6,'reopening must reuse decoded frames');
+ }finally{globalThis.document=previous;resetProjectFilesForTests();}
+});
+
+test('static showroom fetches only its four cars, without cockpit or smoke dependencies',async()=>{
+ const {resetProjectFilesForTests}=await import('../../src/ui/projectFiles.js');
+ const {hydrateServerStorage}=await import('../../src/ui/serverStorage.js');
+ const {normalizeMenuDocument}=await import('../../src/menus/MenuDocument.js');
+ const previousDocument=globalThis.document,previousFetch=globalThis.fetch,downloads=[];
+ const names=Array.from({length:60},(_,i)=>`Car ${String(i).padStart(2,'0')}`);
+ const ctx=new Proxy({measureText:()=>({width:20})},{get:(o,k)=>k in o?o[k]:()=>{},set:(o,k,v)=>(o[k]=v,true)});
+ globalThis.document={createElement:()=>({getContext:()=>ctx})};
+ resetProjectFilesForTests();
+ globalThis.fetch=async url=>{
+  const path=decodeURIComponent(String(url));
+  if(path.startsWith('/__storage/'))return {ok:false,status:404,json:async()=>({error:'HTTP 404'})};
+  if(path.endsWith('/manifest.json'))return {ok:true,json:async()=>({folders:{cars:Object.fromEntries(names.map(name=>[name,`cars/${name}/document.json`])),art:{'huge-smoke':'art/huge-smoke/document.json'}}})};
+  if(path.endsWith('/metadata.json'))return {ok:true,json:async()=>({savedAt:123})};
+  if(path.includes('/cars/')&&path.endsWith('/document.json')){
+   const name=path.split('/').at(-2);downloads.push(name);
+   return {ok:true,json:async()=>({name,art:{smoke:{snow:'huge-smoke'}}})};
+  }
+  throw Error(`Unexpected asset download: ${path}`);
+ };
+ try{
+  await hydrateServerStorage({folder:'cars'});
+  const resources=new MenuResources({carEditor:{normalizeLoadedCarDocument:x=>x,collectRaceCarArtRefs:()=>[],getRaceCarProjectedArtRef:()=>({artRef:''})}});
+  resources.carPreview.draw=()=>true;
+  const doc=normalizeMenuDocument({screens:[{id:'cars',elements:[{id:'showroom',type:'car-showroom',binding:'carRef',maxVisible:4}]}]});
+  const before=resources.choices('cars').map(c=>c.value);
+  await resources.prepareScreen(doc,doc.screens[0],{carRef:'Car 09'});
+  assert.deepEqual(downloads.sort(),['Car 08','Car 09','Car 10','Car 11']);
+  assert.equal(resources.errors.size,0);
+  assert.deepEqual(resources.choices('cars').map(c=>c.value),before,'downloads must not reshuffle the carousel');
+ }finally{globalThis.document=previousDocument;globalThis.fetch=previousFetch;resetProjectFilesForTests();}
+});

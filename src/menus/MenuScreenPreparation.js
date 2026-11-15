@@ -2,9 +2,6 @@ import {resolveMenuBackground} from './MenuDocument.js';
 import {menuElementVisible} from './MenuLayout.js';
 import {drawMenuScreen} from './MenuRenderer.js';
 import {showroomPage} from './MenuGarageWidgets.js';
-import {listProjectFiles,loadProjectFile,hydrateProjectFilePayload} from '../ui/projectFiles.js';
-import {getArtDocumentFrames} from '../ui/shared/artDocumentPixels.js';
-import {getRaceArtSpriteCanvasShared} from '../ui/shared/raceArtSpriteCanvas.js';
 
 const yieldFrame=()=>new Promise(resolve=>setTimeout(resolve,0));
 // Returns null without a drawing surface (headless callers); otherwise resolves
@@ -27,10 +24,7 @@ export function prepareMenuScreen(resources,document,screen,parameters,{bounds={
     const carRefs=new Set(),liveCarRefs=new Set();
     const screenCar=ref=>liveCarRefs.has(ref)?resources.car(ref):resources.stockCar(ref);
     if(elements.some(e=>e.type==='car-showroom')){
-      // Enumeration must never issue synchronous XHR while drawing the fade.
-      await Promise.all(listProjectFiles('cars',{includeSystem:true}).map(entry=>resources.request(`car:${entry.name}`,async()=>{
-        if(!loadProjectFile('cars',entry.name,{allowSyncFetch:false}))await hydrateProjectFilePayload('cars',entry.name);
-      })));
+      // The manifest supplies names; hydrate only this page, not the catalog.
       const choices=resources.choices('cars',document,parameters);
       for(const element of elements.filter(e=>e.type==='car-showroom')){
         for(const choice of showroomPage(choices,parameters[element.binding],element.maxVisible).entries){
@@ -56,14 +50,7 @@ export function prepareMenuScreen(resources,document,screen,parameters,{bounds={
       for(const artRef of resources.exteriorArtRefs(readyCar)){
         if(!isCurrent())return;
         if(preparedRefs.has(artRef))continue;preparedRefs.add(artRef);
-        await art(artRef);
-        const data=loadProjectFile('art',artRef,{allowSyncFetch:false})?.data;
-        const count=getArtDocumentFrames(data).frames.length||1;
-        for(let frameIndex=0;frameIndex<count;frameIndex++){
-          getRaceArtSpriteCanvasShared(artRef,{frameIndex,cache:resources.game.carEditor.raceArtSpriteCache,allowSyncFetch:false});
-          await yieldFrame();
-          if(!isCurrent())return;
-        }
+        await resources.request(`car-art:${artRef}`,()=>resources.prepareCarArt(artRef));
       }
     }
     // Drawing may discover dependent assets (garage-installed tires, map race
