@@ -518,6 +518,37 @@
       "races": 245,
       "passed": true,
       "log": "/tmp/race-pack3-preservation-final.log"
+    },
+    "sky100": {
+      "passed": 2,
+      "failed": 0,
+      "races": 4,
+      "log": "/tmp/race-pack3-sky100.log",
+      "artifacts": "/tmp/race-environment-pack3-sky100"
+    },
+    "merged": {
+      "base": "24b3164e4b7765482a9b819e6968f821b452b344",
+      "units": {
+        "passed": 86,
+        "failed": 0,
+        "log": "/tmp/race-pack3-merged-units.log"
+      },
+      "campaignBrowsers": {
+        "passed": 6,
+        "failed": 0,
+        "log": "/tmp/race-pack3-merged-browser.log",
+        "artifacts": "/tmp/race-pack3-merged-campaign-browser"
+      },
+      "manifest": {
+        "documents": 1593,
+        "assets": 16,
+        "log": "/tmp/race-pack3-merged-manifest.log"
+      },
+      "preservation": {
+        "races": 245,
+        "passed": true,
+        "log": "/tmp/race-pack3-merged-preservation.log"
+      }
     }
   },
   "matchedRenderMeasurements": [
@@ -948,5 +979,388 @@
     "First unit invocation overlapped the final Route66 binding and saw old registry/new race bytes; retained log /tmp/race-pack3-units.log. Final immutable art checkpoint rerun passed all 86.",
     "First matched control changed only settings.artRef, which runtime direct skyboxArtRef overrides. Corrected both temporary refs and asserted effective ref; final raw means differ and full-weather comparison is valid. Earlier captures retained."
   ],
-  "diskAvailableBytes": 4991500288
+  "diskAvailableBytes": 4904050688,
+  "integration": {
+    "verifiedLiveStaging": "24b3164e4b7765482a9b819e6968f821b452b344",
+    "merge": "ccb60212a0d38b5989dcffa70f4aaae0126397ed",
+    "conflict": "manifest.json only; exact recursive three-way union retained every entry from both parents; conflicts other than additive/equal/base-preserving changes would abort.",
+    "raceAndSharedRuntimeDeltaFromPriorBase": "None in landed staging batch.",
+    "carDiffAgainstNewStaging": "Empty; paused newer cars excluded."
+  },
+  "currentBase": "24b3164e4b7765482a9b819e6968f821b452b344",
+  "route66Driving": [
+    {
+      "commit": "fc34261932b269bcd37773089cf7f02f6a26756f",
+      "mobile": false,
+      "path": "/tmp/race-pack3-route66-driving/race-environments-diagnosi-02d58-desktop-baseline-comparison/diagnosis.json",
+      "events": [
+        {
+          "ms": 6463,
+          "type": "ready",
+          "value": {
+            "ready": true,
+            "state": "menu-player",
+            "status": "Ready",
+            "diagnostics": null,
+            "warmup": null,
+            "deferredArtWorker": false,
+            "session": null,
+            "sky": "providence",
+            "renderer": false
+          }
+        },
+        {
+          "ms": 99226,
+          "type": "travel-return",
+          "value": {
+            "started": true,
+            "state": {
+              "ready": true,
+              "state": "race-editor",
+              "status": "Playtesting Historic Route 66 in RTG-001",
+              "error": "",
+              "diagnostics": {
+                "requestId": 1,
+                "cacheKey": "",
+                "raceName": "Historic Route 66",
+                "phase": "starting-race",
+                "progress": 0.997,
+                "elapsedMs": 80439.89999999851,
+                "missingArtRefs": [],
+                "status": "running"
+              },
+              "warmup": {
+                "frames": 2,
+                "surfacePrepared": false,
+                "exit": null,
+                "age": 389.69999999552965
+              },
+              "deferredArtWorker": false,
+              "session": {
+                "running": true,
+                "pending": true,
+                "elapsed": 0,
+                "speed": 0,
+                "intro": true,
+                "countdown": 6000,
+                "paused": false
+              },
+              "sky": "environment-v1-route66-erick-texola",
+              "renderer": true
+            }
+          }
+        },
+        {
+          "ms": 102598,
+          "type": "final",
+          "value": {
+            "ready": true,
+            "state": "prompt",
+            "status": "Race did not present its first playable frame",
+            "error": "",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Historic Route 66",
+              "phase": "starting-race",
+              "progress": 0.997,
+              "elapsedMs": 80439.89999999851,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "warmup": {
+              "frames": 9,
+              "surfacePrepared": false,
+              "exit": null,
+              "age": 3773.39999999851
+            },
+            "deferredArtWorker": false,
+            "session": null,
+            "sky": "environment-v1-route66-erick-texola",
+            "renderer": true
+          }
+        }
+      ]
+    },
+    {
+      "commit": "fc34261932b269bcd37773089cf7f02f6a26756f",
+      "mobile": true,
+      "path": "/tmp/race-pack3-route66-driving/race-environments-diagnosi-c50ce-andheld-baseline-comparison/diagnosis.json",
+      "events": [
+        {
+          "ms": 5065,
+          "type": "ready",
+          "value": {
+            "ready": true,
+            "state": "menu-player",
+            "status": "Ready",
+            "diagnostics": null,
+            "warmup": null,
+            "deferredArtWorker": false,
+            "session": null,
+            "sky": "providence",
+            "renderer": false
+          }
+        },
+        {
+          "ms": 96794,
+          "type": "travel-return",
+          "value": {
+            "started": true,
+            "state": {
+              "ready": true,
+              "state": "race-editor",
+              "status": "Playtesting Historic Route 66 in RTG-001",
+              "error": "",
+              "diagnostics": {
+                "requestId": 1,
+                "cacheKey": "",
+                "raceName": "Historic Route 66",
+                "phase": "starting-race",
+                "progress": 0.997,
+                "elapsedMs": 77636.79999999702,
+                "missingArtRefs": [],
+                "status": "running"
+              },
+              "warmup": {
+                "frames": 2,
+                "surfacePrepared": false,
+                "exit": null,
+                "age": 886.8000000044703
+              },
+              "deferredArtWorker": false,
+              "session": {
+                "running": true,
+                "pending": true,
+                "elapsed": 0,
+                "speed": 0,
+                "intro": true,
+                "countdown": 6000,
+                "paused": false
+              },
+              "sky": "environment-v1-route66-erick-texola",
+              "renderer": true
+            }
+          }
+        },
+        {
+          "ms": 97924,
+          "type": "final",
+          "value": {
+            "ready": true,
+            "state": "prompt",
+            "status": "Race did not present its first playable frame",
+            "error": "",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Historic Route 66",
+              "phase": "starting-race",
+              "progress": 0.997,
+              "elapsedMs": 77636.79999999702,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "warmup": {
+              "frames": 2,
+              "surfacePrepared": false,
+              "exit": null,
+              "age": 2024.2000000029802
+            },
+            "deferredArtWorker": false,
+            "session": null,
+            "sky": "environment-v1-route66-erick-texola",
+            "renderer": true
+          }
+        }
+      ]
+    }
+  ],
+  "route66DrivingInterpretation": "Both devices failed first playable frame with missingArtRefs empty; no moving acceptance. No matched Route66 baseline run this pass, so baseline causation is not claimed for this route.",
+  "sky100Authorization": "Rob 2026-11-15 06:07 UTC: diagnostic-only separate sky brightness; no release/default/world/weather change.",
+  "sky100Measurements": [
+    {
+      "race": "Historic Route 66",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-8181ef4f052d27bd-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 125,
+            "max": 152,
+            "mean": 138.6224002849003
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 32,
+            "max": 250,
+            "mean": 154.71902421652422
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 0.8804996959946955
+    },
+    {
+      "race": "Laurel Highlands Scenic Byway",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-791513cf0aa0fbeb-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 116,
+            "max": 155,
+            "mean": 138.48050925925926
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 10,
+            "max": 255,
+            "mean": 151.54357193732193
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 0.8804996959946955
+    },
+    {
+      "race": "Ohio River Crossing",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-fcd5f9509ef8055c-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 129,
+            "max": 142,
+            "mean": 136
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 18,
+            "max": 253,
+            "mean": 82.71700142450142
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 1
+    },
+    {
+      "race": "Data Center City",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-73a10-ent-sky-compositor-handheld/stl-riverfront-night-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 114,
+            "max": 154,
+            "mean": 126.1627849002849
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 0,
+            "max": 255,
+            "mean": 46.42508547008547
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.05,
+      "visibilityOpacity": 0.8804996959946955
+    },
+    {
+      "race": "Historic Route 66",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-8181ef4f052d27bd-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 125,
+            "max": 153,
+            "mean": 138.58952528211805
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 24,
+            "max": 253,
+            "mean": 154.37061848958334
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 0.8804996959946955
+    },
+    {
+      "race": "Laurel Highlands Scenic Byway",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-791513cf0aa0fbeb-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 116,
+            "max": 155,
+            "mean": 138.16442274305555
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 5,
+            "max": 255,
+            "mean": 148.25769205729168
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 0.8804996959946955
+    },
+    {
+      "race": "Ohio River Crossing",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-fcd5f9509ef8055c-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 129,
+            "max": 142,
+            "mean": 136
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 17,
+            "max": 253,
+            "mean": 77.77849663628473
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 1
+    },
+    {
+      "race": "Data Center City",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-2ff25-dent-sky-compositor-desktop/stl-riverfront-night-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 114,
+            "max": 154,
+            "mean": 126.00858127170139
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 0,
+            "max": 255,
+            "mean": 45.01014105902778
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.05,
+      "visibilityOpacity": 0.8804996959946955
+    }
+  ],
+  "sky100Review": "Desktop City 100%-brightness/with-weather and raw/no-fog captures inspected: clean colorful night riverfront is present in raw art and visible but heavily washed by authored fog at 100%. Laurel same matched pair inspected. No production-view acceptance; paired diagnostic renders preserve world lighting/weather and restore authored sky brightness. Both automated sizes passed for four focus races. Handheld City raw/with-weather pair also inspected with the same outcome.",
+  "nextCheckpoint": [
+    "Continue remaining physical-site packs using source coordinates/layout evidence and shared suitable substrates; 235 rows still unbound.",
+    "Keep sky-only art/framing review separate from authored full scene and actual moving desktop/handheld acceptance.",
+    "Preserve baseline startup evidence; do not patch runtime deadlines in this art branch.",
+    "A production sky-display visibility policy remains a separate unresolved decision; diagnostic-only brightness authorization is not a changed release default."
+  ]
 }

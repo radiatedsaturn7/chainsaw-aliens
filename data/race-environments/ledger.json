@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "base": "ef6034818a76458b4314cca07afa226a2cdc0082",
+  "base": "24b3164e4b7765482a9b819e6968f821b452b344",
   "policy": "All245 selector-reachable saved races included; no state/chapter grouping. Shared sites need explicit GPS/source plus compatible authored environment evidence. Pending means not accepted.",
   "rows": [
     {
@@ -1940,7 +1940,17 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "rawNativeDesktop": true,
+          "rawNativeHandheld": true,
+          "nearWrapYawPairInspected": [
+            -0.01,
+            0.01
+          ],
+          "evidence": "/tmp/race-environment-pack3-final-renderer",
+          "scope": "Source composition and raw native sky projection inspected; no jump observed across sampled near-zero pair. Vertical edge clamping below art remains visible in sky-only diagnostic; actual driving ground coverage and all headings not accepted."
+        }
       },
       "physicalSiteLabel": "PA 381 Ohiopyle / Mill Run hills and gorge approaches",
       "siteEvidenceStatus": "saved-route-gps-and-osm-ways-reviewed",
@@ -2706,7 +2716,17 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "rawNativeDesktop": true,
+          "rawNativeHandheld": true,
+          "nearWrapYawPairInspected": [
+            -0.01,
+            0.01
+          ],
+          "evidence": "/tmp/race-environment-pack3-final-renderer",
+          "scope": "Source composition and raw native sky projection inspected; no jump observed across sampled near-zero pair. Vertical edge clamping below art remains visible in sky-only diagnostic; actual driving ground coverage and all headings not accepted."
+        }
       },
       "physicalSiteLabel": "Erick–Texola Route 66 low prairie",
       "siteEvidenceStatus": "saved-route-gps-and-source-segment-reviewed",
