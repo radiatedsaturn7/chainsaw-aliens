@@ -1,0 +1,48 @@
+{
+  "parent": "c2d6fe143ea49756c42d9f424086bbd15df7a692",
+  "preservedProductionCheckpoint": "227517e4eef509504735a23b0d130f3e1485fe71",
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "changes": [
+    "One revised Turini panorama source/native export at512x171; original PNG preserved unchanged",
+    "Evidence-class release ledger and reproducible reconciler",
+    "Bounded matched startup trace; no runtime shader or race settings changes"
+  ],
+  "tests": {
+    "units": "129passed0failed0skipped",
+    "preservation": 245,
+    "materials": {
+      "total": 245,
+      "mismatchRaceCount": 0,
+      "unclassifiedRaceCount": 0,
+      "roadProblemCount": 0,
+      "groundProblemCount": 0
+    },
+    "art": {
+      "routes": 245,
+      "decodedUniqueSkies": 235,
+      "numericWrapWarnings": 0
+    },
+    "manifest": "{\"documents\": 1829, \"assets\": 16}\nPublished project manifest includes every current document.\n",
+    "nativeTurini": "Fresh post-import2passed; bothdevice raw/authored/wrap/pitch captures viewed",
+    "matchedDemo": "Both cold traced runs passed20m. Timing instrumentation adds overhead; no deferred-art hold observed. Qualification differed, so not clean drive-speed comparison.",
+    "notRerun": "Campaign road-texture browser suite and loading suite unchanged and not rerun this turn; prior6+6pass retained. Strict all-complete ledger remains unset; no blanket promotion."
+  },
+  "releaseLedger": {
+    "routes": 245,
+    "historicalBothDeviceCaptures": 245,
+    "explicitNativeReviewRecords": 45,
+    "materialReviewRecords": 245,
+    "routesWithShortMovingSamples": 22,
+    "shortMovingSamples": 44,
+    "failedAttempts": 20
+  },
+  "remaining": [
+    "Demo post-presentation software-renderer throughput regression remains; prior uniform prototype is isolated, not production.",
+    "Turini major streaks reduced, faint extreme-pitch extension boundary remains; authored snowopacity1 and matched desktop firstframefailure retained.",
+    "Historical native capture/pack review and latestsame-ref artwork review are distinct; no full-route driving requirement introduced.",
+    "Pevely retains inherited asphalt behavior."
+  ],
+  "releaseOptions": "See pack20-startup-analysis.json; recommend hold release pending performance decision and specific latest-visual reconciliation. No independent30second deferred-art stall warrants a watchdog change.",
+  "publicationReady": false,
+  "headroomBytes": 1215168512
+}

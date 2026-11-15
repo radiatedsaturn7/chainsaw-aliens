@@ -444,9 +444,9 @@
     },
     {
       "name": "skybox-col-de-turini",
-      "source": "skyboxes/col-de-turini.png",
+      "source": "skyboxes/col-de-turini-boundary-v2.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
       "usageNote": "Free-race site binding: Col de Turini; see data/race-environments/ledger.json."
     },

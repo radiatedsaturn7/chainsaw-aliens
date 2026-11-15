@@ -1190,11 +1190,11 @@
     "height": 341
   },
   "skybox-col-de-turini": {
-    "source": "assets/campaign-art/skyboxes/col-de-turini.png",
-    "sourceSha256": "e71d3f7da4f85070b346e4473876232e7aec0a7ed2dd89bc73a8df0f884be6b4",
-    "documentSha256": "0022940e564bfd9b7489772d2b42d17877a9d1dc462ccc6bbbe74d29acb635d2",
-    "width": 1024,
-    "height": 341
+    "source": "assets/campaign-art/skyboxes/col-de-turini-boundary-v2.png",
+    "sourceSha256": "ca9399b3ae31796adcb49963b4bc58b7fcba38e7b0438bd6d505d7a440d5c151",
+    "documentSha256": "b4f4702f7cabd3fb0f6700590439531617f4ce3a12be8c2048ff6172e4f6b5c3",
+    "width": 512,
+    "height": 171
   },
   "skybox-data-center-city": {
     "source": "assets/campaign-art/skyboxes/data-center-city.png",
