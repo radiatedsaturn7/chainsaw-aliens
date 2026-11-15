@@ -9,13 +9,13 @@ const sites={
  'road-atlanta':['ground-frozen-forest','Rolling northeast Georgia park-like hills, pine/hardwood slopes and red-clay patches.','https://www.roadatlanta.com/track-info/about-mrra/track-map'],
  'sebring':['grass','Flat Florida former airfield, low hangars, palms/pine silhouettes and sandy grass.','https://www.sebringraceway.com/track-history/'],
  'mid-ohio':['environment-v1-ground-dormant-prairie','Lexington natural-terrain Ohio circuit; low wooded farm ridge and rolling meadow.','https://www.midohio.com/news/mo-history'],
- 'lime':['ground-frozen-forest','Northwest Connecticut natural-terrain valley, rounded wooded hills and meadow.','https://limerock.com/']
+ 'lime':['ground-frozen-forest','Northwest Connecticut natural-terrain valley, rounded wooded hills and meadow.','https://limerock.com/lime-rock-park-introduces-new-live-track-conditions-camera/']
 };
 for(const recipe of pack.recipes){
  const site=recipe.key.replace(/-(night|morning|evening)$/,'');
  recipe.landscape=sites[site][1];recipe.reference=sites[site][2];
  recipe.sourceEvidence='Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.';
- recipe.sourceLimitation=site==='lime'?'Official page inaccessible in web tool; exact installed source coordinates and regional natural-terrain geography retained.':'Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.';
+ recipe.sourceLimitation='Operator source describes site character; season and abandoned buildings are original art interpretation.';
  recipe.boundaries='Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.';
  fs.copyFileSync(recipe.sourceImage,'assets/campaign-art/'+recipe.source);
  if(!expanded.assets.some(a=>a.name===recipe.ref))expanded.assets.push({name:recipe.ref,source:recipe.source,kind:'skybox',maxEdge:1024,placements:[],usageNote:'Exact venue-pack5 saved race bindings in race-environments ledger.'});

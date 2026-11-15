@@ -1,0 +1,444 @@
+{
+  "base": "24b3164e4b7765482a9b819e6968f821b452b344",
+  "parentCheckpoint": "7f22f9e42eb03ddb8206b705c9e3b5079bb9220c",
+  "artCheckpoint": "e0c61a3d1e86454a02101c8ae9f6f2f802ae3622",
+  "artTree": "ade64f0af6f3b26a85841e1a649b1df2504417c4",
+  "scope": "Local-only visual art/bindings and QA tooling. No game runtime, world lighting/weather/time, physical materials/weights, geometry, scenery, mission, cars, remote refs or main changes. No deletion or cleanup.",
+  "counts": {
+    "reachableRaces": 245,
+    "bound": 41,
+    "newBindings": 16,
+    "newSkyAssets": 12,
+    "newNightLayouts": 6,
+    "newNightCompositions": 5,
+    "sourceAndEffectiveTerrainReviewedLayouts": 16,
+    "newNativeDeviceCasesPassed": 32,
+    "priorRepresentativeNativeCasesPassed": 10,
+    "priorLayoutsCoveredByExactSameArtEnvironmentEvidence": 15,
+    "newCompositionsManuallyInspected": 12,
+    "priorCompositionsBoundaryInspected": 10,
+    "actualDrivingSamplesPassed": 7,
+    "actualDrivingSamplesFailed": 1,
+    "distinctRacesWithDrivingSamples": 4,
+    "newPackRacesWithBothDeviceDrivingSamples": 3,
+    "fullyAcceptedEnvironments": 0
+  },
+  "recipes": "data/race-environments/pack5-recipes.json",
+  "daytonaRepair": {
+    "originalsRetained": true,
+    "sourceMetrics": {
+      "old": {
+        "topRowChannelRanges": [
+          112,
+          56,
+          37
+        ],
+        "bottomRowChannelRanges": [
+          87,
+          63,
+          46
+        ]
+      },
+      "repaired": {
+        "topRowChannelRanges": [
+          8,
+          5,
+          9
+        ],
+        "bottomRowChannelRanges": [
+          5,
+          8,
+          8
+        ]
+      },
+      "note": "Texture clamp input diagnostics only, not native visual acceptance."
+    },
+    "nativeFinding": "The former conspicuous cloud column at the top edge is absent in fresh native projection and both tested pitch extremes. Minor low-contrast boundary variation is not claimed perfectly uniform.",
+    "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-74154-rse-independent-sky-desktop/facility-daytona-41bc38d75f-state.json"
+  },
+  "qa": {
+    "units": {
+      "passed": 87,
+      "failed": 0,
+      "log": "/tmp/race-pack5-units.log"
+    },
+    "campaignBrowsers": {
+      "passed": 6,
+      "log": "/tmp/race-pack5-campaign-browser.log"
+    },
+    "nativeNew": {
+      "passed": 32,
+      "log": "/tmp/race-pack5-renderer.log",
+      "audit": "/tmp/race-pack5-native-audit.json"
+    },
+    "nativePrior": {
+      "passed": 10,
+      "log": "/tmp/race-pack5-prior-pitch.log"
+    },
+    "manifest": {
+      "documents": 1614,
+      "assets": 16,
+      "passed": true,
+      "log": "/tmp/race-pack5-manifest.log"
+    },
+    "allRaceNonvisualPreflight": {
+      "races": 245,
+      "passed": true,
+      "log": "/tmp/race-pack5-bind.log",
+      "note": "bind --apply validates all bound and untouched races against the pinned base before writing."
+    },
+    "artDecodeOpacityUniqueness": {
+      "boundReports": 41,
+      "numericSeamWarnings": 0,
+      "log": "/tmp/race-pack5-art-final.json",
+      "note": "Numeric diagnostics never establish visual acceptance."
+    },
+    "configuredUnusedWarning": "road-snow-patchy remains visible: Pikes Peak mapping has no active segment."
+  },
+  "driving": {
+    "scope": "Short real-travel and driving samples only. Inspect retained authored frames separately; no route-wide or visual acceptance inferred.",
+    "successes": [
+      {
+        "file": "/tmp/race-environment-pack5-driving/race-environments-driving--3d1ea-authored-foreground-and-sky/driving-state.json",
+        "race": "Willow Springs — Horse Thief Mile",
+        "device": "See captured viewport and runner case",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "displacementM": 0.8965915409175161,
+        "elapsedMs": 3533.333333333338,
+        "speedMps": 2.278673,
+        "sky": "environment-v1-willow-night",
+        "brightness": 0.05,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-environment-pack5-driving/race-environments-driving--742e6-authored-foreground-and-sky/driving-state.json",
+        "race": "Willow Springs — Horse Thief Mile",
+        "device": "See captured viewport and runner case",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "displacementM": 0.5536440424677241,
+        "elapsedMs": 2600.0000000000005,
+        "speedMps": 2.317617,
+        "sky": "environment-v1-willow-night",
+        "brightness": 0.05,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-environment-pack5-driving/race-environments-driving--b81f4-authored-foreground-and-sky/driving-state.json",
+        "race": "Daytona Tri-Oval",
+        "device": "See captured viewport and runner case",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "displacementM": 1.5853764649183624,
+        "elapsedMs": 3066.6666666666692,
+        "speedMps": 4.452291,
+        "sky": "skybox-daytona",
+        "brightness": 1,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-environment-pack5-driving-regional/race-environments-driving--11308-authored-foreground-and-sky/driving-state.json",
+        "race": "Virginia International Raceway — South Course",
+        "device": "See captured viewport and runner case",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "displacementM": 1.2127888936315463,
+        "elapsedMs": 2933.3333333333353,
+        "speedMps": 3.706015,
+        "sky": "environment-v1-vir-night",
+        "brightness": 0.05,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-environment-pack5-driving-regional/race-environments-driving--2acf2-authored-foreground-and-sky/driving-state.json",
+        "race": "Sebring International Raceway — Short Circuit",
+        "device": "See captured viewport and runner case",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "displacementM": 1.188770571419904,
+        "elapsedMs": 2966.666666666669,
+        "speedMps": 3.688449,
+        "sky": "environment-v1-sebring-morning",
+        "brightness": 0.65,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-environment-pack5-driving-regional/race-environments-driving--a912f-authored-foreground-and-sky/driving-state.json",
+        "race": "Sebring International Raceway — Short Circuit",
+        "device": "See captured viewport and runner case",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "displacementM": 50.40867415763983,
+        "elapsedMs": 7849.699999999995,
+        "speedMps": 23.714414596557617,
+        "sky": "environment-v1-sebring-morning",
+        "brightness": 0.65,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-environment-pack5-driving-regional/race-environments-driving--bc006-authored-foreground-and-sky/driving-state.json",
+        "race": "Virginia International Raceway — South Course",
+        "device": "See captured viewport and runner case",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "displacementM": 64.91859713780113,
+        "elapsedMs": 8066.43333333334,
+        "speedMps": 26.980440139770508,
+        "sky": "environment-v1-vir-night",
+        "brightness": 0.05,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      }
+    ],
+    "failures": [
+      {
+        "file": "/tmp/race-environment-pack5-driving/race-environments-driving--065ed-authored-foreground-and-sky/failure-state.json",
+        "race": "Daytona Tri-Oval",
+        "state": {
+          "state": "prompt",
+          "status": "Race did not present its first playable frame",
+          "error": "",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Daytona Tri-Oval",
+            "phase": "starting-race",
+            "progress": 0.997,
+            "elapsedMs": 48374.30000000447,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "race": "Daytona Tri-Oval",
+          "sky": "skybox-daytona",
+          "weather": {
+            "id": "clear",
+            "label": "Clear",
+            "visualIntensity": 0,
+            "targetIntensity": 0,
+            "buildup": 0,
+            "effectiveIntensity": 0,
+            "precipitationIntensity": 0,
+            "snowDepthInches": 0,
+            "visibilityDistanceM": null,
+            "visibilityStrength": 0,
+            "visibilityColor": "rgba(0,0,0,0)",
+            "visibilityNearAlpha": 0,
+            "visibilityFarAlpha": 0
+          },
+          "fx": {
+            "enabled": true,
+            "preset": "noon",
+            "sunEnabled": true,
+            "sunDisc": true,
+            "sunX": 0.5,
+            "sunY": 0.08,
+            "sunColor": "#fff5dc",
+            "sunSize": 0.012,
+            "sunIntensity": 0.8,
+            "lensFlare": 0.12,
+            "sunGlare": 0.45,
+            "skyBrightness": 1,
+            "tintColor": "#ffffff",
+            "tintAmount": 0,
+            "motionBlur": 0.16,
+            "speedLines": 0.08,
+            "speedLineOpacity": 1,
+            "speedLineArtRef": "",
+            "speedLineArtMode": "overlay",
+            "vignette": 0.1,
+            "speedStartMph": 45,
+            "speedFullMph": 130
+          },
+          "session": null
+        },
+        "errors": [],
+        "network": [],
+        "error": "Error: page.waitForFunction: Error: Race left startup for prompt: Race did not present its first playable frame\n    at eval (eval at predicate (eval at evaluate (:290:30)), <anonymous>:4:56)\n    at predicate (eval at evaluate (:290:30), <anonymous>:7:23)\n    at next (eval at evaluate (:290:30), <anonymous>:29:29)"
+      }
+    ],
+    "successfulSamples": 7,
+    "failedSamples": 1,
+    "distinctSuccessfulRaces": 4
+  },
+  "drivingLogs": [
+    "/tmp/race-pack5-driving.log",
+    "/tmp/race-pack5-driving-regional.log"
+  ],
+  "authoredVisualFindings": {
+    "Willow Springs — Horse Thief Mile": "Desktop and handheld actual frames viewed. Road/headlights visible, moon and rocky sky silhouette not legible at .05. Runtime passes; night appearance pending.",
+    "Virginia International Raceway — South Course": "Desktop and handheld actual authored plus 100% sky-only-exposure frames viewed. Navy woodland matches dark foreground in diagnostic, no daylight panorama; authored .05 loses detail. Diagnostic frames are consecutive moving scenes, NOT pixel-matched poses. Exposure restoration asserted.",
+    "Sebring International Raceway — Short Circuit": "Both device authored frames viewed, including on-road start and desktop off-road continuation. Flat airfield sky visible at morning .65; grass foreground greener than olive panorama substrate, palette join pending. No route-wide handling/clearance claim.",
+    "Daytona Tri-Oval": "Handheld authored driving viewed: flat grandstand horizon coherent with daylight foreground. Desktop failed first-playable-frame watchdog at preparation .997 with no missing-art/network/page errors. No repeat or bypass; baseline causality unproven."
+  },
+  "nightCues": {
+    "willow-night": "clear: modest crescent and sparse stars above rocky basin",
+    "road-atlanta-night": "clear: subdued moon and tiny localized amber structure light",
+    "vir-night": "clear: sparse stars, no moon, restrained barn window",
+    "sebring-night": "clear: sparse stars, no moon, tiny airfield marker lights",
+    "mid-ohio-night": "clear: small half moon, sparse stars and low restrained clouds",
+    "limitation": "All six added night layouts are clear. Storm/snow cloud-glow acceptance remains required for future weather variants, not claimed here. Native visibility opacity is zero for this pack; .05 exposure alone limits theoretical full-source contrast to 12.75 RGB levels. Existing City/Ohio authored fog findings remain separate and untouched."
+  },
+  "priorSameSiteBoundaryEvidence": [
+    {
+      "ref": "skybox-daytona",
+      "siteGroup": "facility-daytona-50603b2b39",
+      "representative": "Daytona Tri-Oval",
+      "sameArtAndAuthoredEnvironmentLayouts": [
+        "Daytona Tri-Oval",
+        "Daytona International Speedway — Sports Car Course"
+      ],
+      "scope": "Native sky art/framing only; never substitutes for driving acceptance.",
+      "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-62160-val-independent-sky-desktop/facility-daytona-50603b2b39-state.json"
+    },
+    {
+      "ref": "environment-v1-watkins-morning",
+      "siteGroup": "facility-watkins-4c19cda147",
+      "representative": "Watkins Glen — Long Course",
+      "sameArtAndAuthoredEnvironmentLayouts": [
+        "Watkins Glen — Long Course"
+      ],
+      "scope": "Native sky art/framing only; never substitutes for driving acceptance.",
+      "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-4a4d7-rse-independent-sky-desktop/facility-watkins-4c19cda147-state.json"
+    },
+    {
+      "ref": "environment-v1-watkins-evening",
+      "siteGroup": "facility-watkins-41bc38d75f",
+      "representative": "Watkins Glen — Short Course",
+      "sameArtAndAuthoredEnvironmentLayouts": [
+        "Watkins Glen — Short Course",
+        "Watkins Glen — Long — No Inner Loop"
+      ],
+      "scope": "Native sky art/framing only; never substitutes for driving acceptance.",
+      "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-97379-rse-independent-sky-desktop/facility-watkins-41bc38d75f-state.json"
+    },
+    {
+      "ref": "environment-v1-watkins-noon",
+      "siteGroup": "facility-watkins-50603b2b39",
+      "representative": "Watkins Glen — Short — No Inner Loop",
+      "sameArtAndAuthoredEnvironmentLayouts": [
+        "Watkins Glen — Short — No Inner Loop"
+      ],
+      "scope": "Native sky art/framing only; never substitutes for driving acceptance.",
+      "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-180c3-oop-independent-sky-desktop/facility-watkins-50603b2b39-state.json"
+    },
+    {
+      "ref": "environment-v1-road-america-evening",
+      "siteGroup": "facility-road-america-41bc38d75f",
+      "representative": "Road America — Full Course",
+      "sameArtAndAuthoredEnvironmentLayouts": [
+        "Road America — Full Course"
+      ],
+      "scope": "Native sky art/framing only; never substitutes for driving acceptance.",
+      "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-714f8-rse-independent-sky-desktop/facility-road-america-41bc38d75f-state.json"
+    },
+    {
+      "ref": "environment-v1-road-america-noon",
+      "siteGroup": "facility-road-america-50603b2b39",
+      "representative": "Road America — The Bend",
+      "sameArtAndAuthoredEnvironmentLayouts": [
+        "Road America — The Bend"
+      ],
+      "scope": "Native sky art/framing only; never substitutes for driving acceptance.",
+      "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-f641f-end-independent-sky-desktop/facility-road-america-50603b2b39-state.json"
+    },
+    {
+      "ref": "environment-v1-homestead-evening",
+      "siteGroup": "facility-homestead-41bc38d75f",
+      "representative": "Homestead-Miami Speedway — Oval",
+      "sameArtAndAuthoredEnvironmentLayouts": [
+        "Homestead-Miami Speedway — Oval",
+        "Homestead-Miami Speedway — Road Course",
+        "Homestead-Miami Speedway — Modified Road Course"
+      ],
+      "scope": "Native sky art/framing only; never substitutes for driving acceptance.",
+      "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-564e4-val-independent-sky-desktop/facility-homestead-41bc38d75f-state.json"
+    },
+    {
+      "ref": "environment-v1-daytona-evening",
+      "siteGroup": "facility-daytona-41bc38d75f",
+      "representative": "Daytona International Speedway — Stock Car Road Course",
+      "sameArtAndAuthoredEnvironmentLayouts": [
+        "Daytona International Speedway — Stock Car Road Course"
+      ],
+      "scope": "Native sky art/framing only; never substitutes for driving acceptance.",
+      "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-74154-rse-independent-sky-desktop/facility-daytona-41bc38d75f-state.json"
+    },
+    {
+      "ref": "environment-v1-willow-morning",
+      "siteGroup": "facility-willow-4c19cda147",
+      "representative": "Willow Springs — Big Willow",
+      "sameArtAndAuthoredEnvironmentLayouts": [
+        "Willow Springs — Big Willow",
+        "Willow Springs — Streets of Willow"
+      ],
+      "scope": "Native sky art/framing only; never substitutes for driving acceptance.",
+      "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-5afab-low-independent-sky-desktop/facility-willow-4c19cda147-state.json"
+    },
+    {
+      "ref": "environment-v1-willow-evening",
+      "siteGroup": "facility-willow-41bc38d75f",
+      "representative": "Willow Springs — Streets — Short",
+      "sameArtAndAuthoredEnvironmentLayouts": [
+        "Willow Springs — Streets — Short"
+      ],
+      "scope": "Native sky art/framing only; never substitutes for driving acceptance.",
+      "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-dcca4-ort-independent-sky-desktop/facility-willow-41bc38d75f-state.json"
+    }
+  ],
+  "boundaryLimitations": [
+    "Several older skies show bottom-row color streaks when diagnostic pitch exposes the clamped lower region, especially Daytona noon and Willow. Needs art cleanup or proof of occlusion across real camera limits.",
+    "New safe-band originals reduce strong streaks but subtle low-contrast vertical banding remains in isolated extreme-pitch views.",
+    "Same-site native evidence may cover identical art/environment layouts; driving success is never inferred for another layout."
+  ],
+  "reviewSheets": [
+    "/tmp/pack5-prior-boundaries-0.jpg",
+    "/tmp/pack5-prior-boundaries-5.jpg",
+    "/tmp/pack5-prior-native-pitch-0.jpg",
+    "/tmp/pack5-prior-native-pitch-5.jpg",
+    "/tmp/pack5-native-pairs-0.jpg",
+    "/tmp/pack5-native-pairs-4.jpg",
+    "/tmp/pack5-native-pairs-8.jpg",
+    "/tmp/pack5-mid-ohio-night-pair.jpg",
+    "/tmp/pack5-native-boundaries-0.jpg",
+    "/tmp/pack5-native-boundaries-4.jpg",
+    "/tmp/pack5-native-boundaries-8.jpg",
+    "/tmp/pack5-night-headings.jpg"
+  ],
+  "environment": "Local Node 24 and system Chromium with ANGLE SwiftShader; no remote CI dispatched. Production browser samples serial; native diagnostics independent of production startup.",
+  "resolvedDependency": "Initial plain Python import failed: ModuleNotFoundError: No module named png. Existing /tmp/race-environment-python dependency used through PYTHONPATH; missing-art preflight prevented race writes until successful native import.",
+  "diskAvailableBytes": 4197924864,
+  "nextWork": [
+    "Resolve older lower-edge texture artifacts with art-only changes or real camera evidence.",
+    "Improve Sebring terrain/panorama palette join without changing physical surfaces.",
+    "Keep authored night readability unresolved until a permitted sky-display exposure approach is reviewed; diagnostic 100% is not a release default.",
+    "Continue remaining physical-site packs and production samples; 204 race bindings still pending."
+  ]
+}

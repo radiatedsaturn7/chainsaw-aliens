@@ -20,7 +20,7 @@ for(const name of names)for(const mobile of [false,true])test.describe(`${name} 
    await page.screenshot({path:info.outputPath('authored-driving-a.png')});await page.waitForTimeout(2000);await page.keyboard.up('g');
    const after=await snapshot();await page.screenshot({path:info.outputPath('authored-driving-b.png')});
    expect(Math.hypot(after.session.worldX-before.session.worldX,after.session.worldZ-before.session.worldZ)).toBeGreaterThan(.5);expect(after.sky).toBe(row.binding.skyboxArtRef);expect(after.session.elapsed).toBeGreaterThan(before.session.elapsed);expect(after.session.speed).toBeGreaterThan(1);
-   fs.writeFileSync(info.outputPath('driving-state.json'),JSON.stringify({race:name,selector,before,after,errors,network,note:'Actual production travel and real update/draw loop; authored captures have no sky brightness, weather or world lighting override. Short drive sample, not route-wide approval.'},null,2));
+   fs.writeFileSync(info.outputPath('driving-state.json'),JSON.stringify({race:name,device:mobile?'handheld':'desktop',selector,before,after,errors,network,note:'Actual production travel and real update/draw loop; authored captures have no sky brightness, weather or world lighting override. Short drive sample, not route-wide approval.'},null,2));
    // Separately authorized sky-only exposure diagnostic, restored immediately.
    if(process.env.RACE_DRIVE_SKY_DIAGNOSTIC==='1'){
     const saved=await page.evaluate(()=>{const e=window.__game.raceEditor,fx=structuredClone(e.selectedRace.visualFx);e.selectedRace.visualFx={...fx,skyBrightness:1};return fx;});
@@ -28,6 +28,6 @@ for(const name of names)for(const mobile of [false,true])test.describe(`${name} 
     finally{await page.evaluate(fx=>{window.__game.raceEditor.selectedRace.visualFx=fx;},saved);}
     expect((await snapshot()).fx.skyBrightness).toBe(after.fx.skyBrightness);
    }
-  }catch(error){fs.writeFileSync(info.outputPath('failure-state.json'),JSON.stringify({race:name,state:await snapshot().catch(()=>null),errors,network,error:String(error)},null,2));await page.screenshot({path:info.outputPath('failure.png')}).catch(()=>{});throw error;}
+  }catch(error){fs.writeFileSync(info.outputPath('failure-state.json'),JSON.stringify({race:name,device:mobile?'handheld':'desktop',state:await snapshot().catch(()=>null),errors,network,error:String(error)},null,2));await page.screenshot({path:info.outputPath('failure.png')}).catch(()=>{});throw error;}
  });
 });

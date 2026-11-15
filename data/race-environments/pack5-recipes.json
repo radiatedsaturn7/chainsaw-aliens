@@ -130,9 +130,9 @@
       "source": "environment-v1/lime-evening.png",
       "sourceImage": "/workspace/generated_images/exec-4cb7f1e6-2308-40b1-8230-c5c7d8e5952f.png",
       "landscape": "Northwest Connecticut natural-terrain valley, rounded wooded hills and meadow.",
-      "reference": "https://limerock.com/",
+      "reference": "https://limerock.com/lime-rock-park-introduces-new-live-track-conditions-camera/",
       "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
-      "sourceLimitation": "Official page inaccessible in web tool; exact installed source coordinates and regional natural-terrain geography retained.",
+      "sourceLimitation": "Official operator describes rolling Berkshire hills; season and abandoned buildings are original art interpretation.",
       "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory."
     }
   ]

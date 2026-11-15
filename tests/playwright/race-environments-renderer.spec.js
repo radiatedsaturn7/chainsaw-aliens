@@ -56,9 +56,10 @@ for(const selectedRow of selected)for(const mobile of deviceModes)test(`${select
      diagnostic[mode]={stats:stats(c),png:c.toDataURL('image/png').split(',')[1]};
     }
     for(const horizonRatio of [.35,.8])for(const yaw of [-.01,.01]){
+     const hillPitch=horizonRatio<.5?-.2:.2;
      const c=document.createElement('canvas');c.width=width;c.height=height;
-     if(!e.drawRaceSkyboxArt(c.getContext('2d'),{x:0,y:0,w:width,h:height},{horizon:height*horizonRatio,normalizedCameraYaw:yaw}))throw Error('Pitch/wrap diagnostic missing');
-     diagnostic[`pitch-${horizonRatio}-yaw-${yaw}`]={stats:stats(c),png:c.toDataURL('image/png').split(',')[1]};
+     if(!e.drawRaceSkyboxArt(c.getContext('2d'),{x:0,y:0,w:width,h:height},{horizon:height*horizonRatio,normalizedCameraYaw:yaw,hillPitch}))throw Error('Pitch/wrap diagnostic missing');
+     diagnostic[`pitch-${horizonRatio}-yaw-${yaw}`]={horizonRatio,hillPitch,yaw,stats:stats(c),png:c.toDataURL('image/png').split(',')[1]};
     }
    }finally{e.selectedRace.visualFx=savedFx;}
    if(JSON.stringify(e.getRaceWeatherState())!==savedWeather)throw Error('Diagnostic changed weather');

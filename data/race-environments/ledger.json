@@ -295,6 +295,41 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Daytona Tri-Oval",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-62160-val-independent-sky-desktop/facility-daytona-50603b2b39-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
+        },
+        "productionSamples": {
+          "successes": [
+            {
+              "file": "/tmp/race-environment-pack5-driving/race-environments-driving--b81f4-authored-foreground-and-sky/driving-state.json",
+              "race": "Daytona Tri-Oval",
+              "device": "See captured viewport and runner case",
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "displacementM": 1.5853764649183624,
+              "elapsedMs": 3066.6666666666692,
+              "speedMps": 4.452291,
+              "sky": "skybox-daytona",
+              "brightness": 1,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            }
+          ],
+          "failures": [
+            {
+              "file": "/tmp/race-environment-pack5-driving/race-environments-driving--065ed-authored-foreground-and-sky/failure-state.json",
+              "error": "Error: page.waitForFunction: Error: Race left startup for prompt: Race did not present its first playable frame\n    at eval (eval at predicate (eval at evaluate (:290:30)), <anonymous>:4:56)\n    at predicate (eval at evaluate (:290:30), <anonymous>:7:23)\n    at next (eval at evaluate (:290:30), <anonymous>:29:29)",
+              "baselineStatus": "Not compared against untouched base; do not label a proven baseline failure."
+            }
+          ],
+          "scope": "Short real travel/driving samples; full-route desktop/handheld QA booleans remain pending."
         }
       },
       "physicalSiteLabel": "Daytona International Speedway",
@@ -4709,7 +4744,16 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-141c4-ut-independent-sky-handheld/facility-lime-41bc38d75f-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-1ab72-cut-independent-sky-desktop/facility-lime-41bc38d75f-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        }
       },
       "physicalSiteLabel": "Lime Rock Park",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -4769,9 +4813,9 @@
         "source": "environment-v1/lime-evening.png",
         "sourceImage": "/workspace/generated_images/exec-4cb7f1e6-2308-40b1-8230-c5c7d8e5952f.png",
         "landscape": "Northwest Connecticut natural-terrain valley, rounded wooded hills and meadow.",
-        "reference": "https://limerock.com/",
+        "reference": "https://limerock.com/lime-rock-park-introduces-new-live-track-conditions-camera/",
         "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
-        "sourceLimitation": "Official page inaccessible in web tool; exact installed source coordinates and regional natural-terrain geography retained.",
+        "sourceLimitation": "Official operator describes rolling Berkshire hills; season and abandoned buildings are original art interpretation.",
         "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
         "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
       },
@@ -4780,7 +4824,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -8609,7 +8654,16 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-152a3-on-independent-sky-handheld/facility-mid-ohio-4c19cda147-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-5c3a7-ton-independent-sky-desktop/facility-mid-ohio-4c19cda147-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        }
       },
       "physicalSiteLabel": "Mid-Ohio Sports Car Course",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -8673,7 +8727,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -17345,7 +17400,63 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-9d594-le-independent-sky-handheld/facility-willow-a8ccedb566-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-f134c-ile-independent-sky-desktop/facility-willow-a8ccedb566-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        },
+        "nightExposureReview": {
+          "authoredSkyBrightness": 0.05,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrastRGB": 12.75,
+          "status": "pending-legibility-at-authored-exposure",
+          "finding": "Loaded clear-night art becomes nearly black; source cues are visible in 100% diagnostic. No shipping exposure or weather change."
+        },
+        "productionSamples": {
+          "successes": [
+            {
+              "file": "/tmp/race-environment-pack5-driving/race-environments-driving--3d1ea-authored-foreground-and-sky/driving-state.json",
+              "race": "Willow Springs — Horse Thief Mile",
+              "device": "See captured viewport and runner case",
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "displacementM": 0.8965915409175161,
+              "elapsedMs": 3533.333333333338,
+              "speedMps": 2.278673,
+              "sky": "environment-v1-willow-night",
+              "brightness": 0.05,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            },
+            {
+              "file": "/tmp/race-environment-pack5-driving/race-environments-driving--742e6-authored-foreground-and-sky/driving-state.json",
+              "race": "Willow Springs — Horse Thief Mile",
+              "device": "See captured viewport and runner case",
+              "viewport": {
+                "width": 1280,
+                "height": 720
+              },
+              "displacementM": 0.5536440424677241,
+              "elapsedMs": 2600.0000000000005,
+              "speedMps": 2.317617,
+              "sky": "environment-v1-willow-night",
+              "brightness": 0.05,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            }
+          ],
+          "failures": [],
+          "scope": "Short real travel/driving samples; full-route desktop/handheld QA booleans remain pending."
+        }
       },
       "physicalSiteLabel": "Willow Springs",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -17404,7 +17515,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -17740,6 +17852,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Watkins Glen — Long Course",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-4a4d7-rse-independent-sky-desktop/facility-watkins-4c19cda147-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Watkins Glen",
@@ -17941,6 +18059,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Watkins Glen — Short Course",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-97379-rse-independent-sky-desktop/facility-watkins-41bc38d75f-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Watkins Glen",
@@ -18135,6 +18259,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Watkins Glen — Short Course",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-97379-rse-independent-sky-desktop/facility-watkins-41bc38d75f-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Watkins Glen",
@@ -18336,6 +18466,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Watkins Glen — Short — No Inner Loop",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-180c3-oop-independent-sky-desktop/facility-watkins-50603b2b39-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Watkins Glen",
@@ -18530,6 +18666,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Road America — Full Course",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-714f8-rse-independent-sky-desktop/facility-road-america-41bc38d75f-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Road America",
@@ -18739,6 +18881,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Road America — The Bend",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-f641f-end-independent-sky-desktop/facility-road-america-50603b2b39-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Road America",
@@ -18941,7 +19089,16 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-528cb-ix-independent-sky-handheld/facility-road-atlanta-4c19cda147-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-e6b2f-rix-independent-sky-desktop/facility-road-atlanta-4c19cda147-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        }
       },
       "physicalSiteLabel": "Road Atlanta",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -19003,7 +19160,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -19114,7 +19272,16 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-4b7b9-se-independent-sky-handheld/facility-road-atlanta-41bc38d75f-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-f9fef-rse-independent-sky-desktop/facility-road-atlanta-41bc38d75f-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        }
       },
       "physicalSiteLabel": "Road Atlanta",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -19177,7 +19344,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -19288,7 +19456,23 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-4fdb1-rse-independent-sky-desktop/facility-road-atlanta-a8ccedb566-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-85dac-se-independent-sky-handheld/facility-road-atlanta-a8ccedb566-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        },
+        "nightExposureReview": {
+          "authoredSkyBrightness": 0.05,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrastRGB": 12.75,
+          "status": "pending-legibility-at-authored-exposure",
+          "finding": "Loaded clear-night art becomes nearly black; source cues are visible in 100% diagnostic. No shipping exposure or weather change."
+        }
       },
       "physicalSiteLabel": "Road Atlanta",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -19348,7 +19532,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -19459,7 +19644,16 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-e5023-rse-independent-sky-desktop/facility-vir-4c19cda147-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-fc8a9-se-independent-sky-handheld/facility-vir-4c19cda147-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        }
       },
       "physicalSiteLabel": "Virginia International Raceway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -19534,7 +19728,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -19645,7 +19840,16 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-53e77-se-independent-sky-handheld/facility-vir-4c19cda147-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-ae8a7-rse-independent-sky-desktop/facility-vir-4c19cda147-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        }
       },
       "physicalSiteLabel": "Virginia International Raceway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -19720,7 +19924,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -19831,7 +20036,63 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-b18c4-se-independent-sky-handheld/facility-vir-a8ccedb566-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-cc68a-rse-independent-sky-desktop/facility-vir-a8ccedb566-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        },
+        "nightExposureReview": {
+          "authoredSkyBrightness": 0.05,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrastRGB": 12.75,
+          "status": "pending-legibility-at-authored-exposure",
+          "finding": "Loaded clear-night art becomes nearly black; source cues are visible in 100% diagnostic. No shipping exposure or weather change."
+        },
+        "productionSamples": {
+          "successes": [
+            {
+              "file": "/tmp/race-environment-pack5-driving-regional/race-environments-driving--11308-authored-foreground-and-sky/driving-state.json",
+              "race": "Virginia International Raceway — South Course",
+              "device": "See captured viewport and runner case",
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "displacementM": 1.2127888936315463,
+              "elapsedMs": 2933.3333333333353,
+              "speedMps": 3.706015,
+              "sky": "environment-v1-vir-night",
+              "brightness": 0.05,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            },
+            {
+              "file": "/tmp/race-environment-pack5-driving-regional/race-environments-driving--bc006-authored-foreground-and-sky/driving-state.json",
+              "race": "Virginia International Raceway — South Course",
+              "device": "See captured viewport and runner case",
+              "viewport": {
+                "width": 1280,
+                "height": 720
+              },
+              "displacementM": 64.91859713780113,
+              "elapsedMs": 8066.43333333334,
+              "speedMps": 26.980440139770508,
+              "sky": "environment-v1-vir-night",
+              "brightness": 0.05,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            }
+          ],
+          "failures": [],
+          "scope": "Short real travel/driving samples; full-route desktop/handheld QA booleans remain pending."
+        }
       },
       "physicalSiteLabel": "Virginia International Raceway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -19899,7 +20160,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -20010,7 +20272,23 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-855f3-se-independent-sky-handheld/facility-vir-a8ccedb566-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-a570a-rse-independent-sky-desktop/facility-vir-a8ccedb566-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        },
+        "nightExposureReview": {
+          "authoredSkyBrightness": 0.05,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrastRGB": 12.75,
+          "status": "pending-legibility-at-authored-exposure",
+          "finding": "Loaded clear-night art becomes nearly black; source cues are visible in 100% diagnostic. No shipping exposure or weather change."
+        }
       },
       "physicalSiteLabel": "Virginia International Raceway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -20089,7 +20367,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -20200,7 +20479,23 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-659d9-uit-independent-sky-desktop/facility-sebring-a8ccedb566-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-88712-it-independent-sky-handheld/facility-sebring-a8ccedb566-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        },
+        "nightExposureReview": {
+          "authoredSkyBrightness": 0.05,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrastRGB": 12.75,
+          "status": "pending-legibility-at-authored-exposure",
+          "finding": "Loaded clear-night art becomes nearly black; source cues are visible in 100% diagnostic. No shipping exposure or weather change."
+        }
       },
       "physicalSiteLabel": "Sebring International Raceway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -20277,7 +20572,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -20388,7 +20684,56 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-52781-it-independent-sky-handheld/facility-sebring-4c19cda147-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-ca58e-uit-independent-sky-desktop/facility-sebring-4c19cda147-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        },
+        "productionSamples": {
+          "successes": [
+            {
+              "file": "/tmp/race-environment-pack5-driving-regional/race-environments-driving--2acf2-authored-foreground-and-sky/driving-state.json",
+              "race": "Sebring International Raceway — Short Circuit",
+              "device": "See captured viewport and runner case",
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "displacementM": 1.188770571419904,
+              "elapsedMs": 2966.666666666669,
+              "speedMps": 3.688449,
+              "sky": "environment-v1-sebring-morning",
+              "brightness": 0.65,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            },
+            {
+              "file": "/tmp/race-environment-pack5-driving-regional/race-environments-driving--a912f-authored-foreground-and-sky/driving-state.json",
+              "race": "Sebring International Raceway — Short Circuit",
+              "device": "See captured viewport and runner case",
+              "viewport": {
+                "width": 1280,
+                "height": 720
+              },
+              "displacementM": 50.40867415763983,
+              "elapsedMs": 7849.699999999995,
+              "speedMps": 23.714414596557617,
+              "sky": "environment-v1-sebring-morning",
+              "brightness": 0.65,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            }
+          ],
+          "failures": [],
+          "scope": "Short real travel/driving samples; full-route desktop/handheld QA booleans remain pending."
+        }
       },
       "physicalSiteLabel": "Sebring International Raceway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -20455,7 +20800,9 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true,
+        "productionFinding": "Both actual device views inspected. Grass image is visible but greener than the olive panorama ground; palette join remains pending."
       }
     },
     {
@@ -20566,7 +20913,16 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-0f938-it-independent-sky-handheld/facility-sebring-41bc38d75f-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-bb985-uit-independent-sky-desktop/facility-sebring-41bc38d75f-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        }
       },
       "physicalSiteLabel": "Sebring International Raceway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -20637,7 +20993,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -21056,6 +21413,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Homestead-Miami Speedway — Oval",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-564e4-val-independent-sky-desktop/facility-homestead-41bc38d75f-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Homestead-Miami Speedway",
@@ -21243,6 +21606,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Homestead-Miami Speedway — Oval",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-564e4-val-independent-sky-desktop/facility-homestead-41bc38d75f-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Homestead-Miami Speedway",
@@ -21431,6 +21800,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Homestead-Miami Speedway — Oval",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-564e4-val-independent-sky-desktop/facility-homestead-41bc38d75f-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Homestead-Miami Speedway",
@@ -21619,6 +21994,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Daytona Tri-Oval",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-62160-val-independent-sky-desktop/facility-daytona-50603b2b39-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Daytona International Speedway",
@@ -21812,7 +22193,13 @@
           "reviewed": true,
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
-          "result": "pending-top-edge-clamp-artifact"
+          "result": "top-cloud-stretch-corrected-in-native-pitch-review; full gameplay/framing pending"
+        },
+        "boundaryReview": {
+          "representative": "Daytona International Speedway — Stock Car Road Course",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-74154-rse-independent-sky-desktop/facility-daytona-41bc38d75f-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Daytona International Speedway",
@@ -22008,6 +22395,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Willow Springs — Big Willow",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-5afab-low-independent-sky-desktop/facility-willow-4c19cda147-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Willow Springs",
@@ -22191,6 +22584,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Willow Springs — Big Willow",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-5afab-low-independent-sky-desktop/facility-willow-4c19cda147-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Willow Springs",
@@ -22376,6 +22775,12 @@
           "deviceReports": 2,
           "captureRoot": "/tmp/race-environment-pack4-renderer-final",
           "result": "regional-composition-visible; wrap and gameplay pending"
+        },
+        "boundaryReview": {
+          "representative": "Willow Springs — Streets — Short",
+          "report": "/tmp/race-environment-pack4-pitch-review/race-environments-renderer-dcca4-ort-independent-sky-desktop/facility-willow-41bc38d75f-state.json",
+          "scope": "Exact same art and complete authored environment; desktop native boundary evidence only, not substituted driving acceptance.",
+          "finding": "Top cloud streak removed in repaired Daytona evening. Lower clamp streaking remains in several older skies, notably Daytona noon and Willow; normal-camera occlusion or art repair pending."
         }
       },
       "physicalSiteLabel": "Willow Springs",
@@ -22710,7 +23115,16 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-0187c-es-independent-sky-handheld/facility-lime-41bc38d75f-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-58cac-nes-independent-sky-desktop/facility-lime-41bc38d75f-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        }
       },
       "physicalSiteLabel": "Lime Rock Park",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -22770,9 +23184,9 @@
         "source": "environment-v1/lime-evening.png",
         "sourceImage": "/workspace/generated_images/exec-4cb7f1e6-2308-40b1-8230-c5c7d8e5952f.png",
         "landscape": "Northwest Connecticut natural-terrain valley, rounded wooded hills and meadow.",
-        "reference": "https://limerock.com/",
+        "reference": "https://limerock.com/lime-rock-park-introduces-new-live-track-conditions-camera/",
         "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
-        "sourceLimitation": "Official page inaccessible in web tool; exact installed source coordinates and regional natural-terrain geography retained.",
+        "sourceLimitation": "Official operator describes rolling Berkshire hills; season and abandoned buildings are original art interpretation.",
         "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
         "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
       },
@@ -22781,7 +23195,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -22892,7 +23307,16 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-2fa7b-rse-independent-sky-desktop/facility-mid-ohio-4c19cda147-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-a63d7-se-independent-sky-handheld/facility-mid-ohio-4c19cda147-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        }
       },
       "physicalSiteLabel": "Mid-Ohio Sports Car Course",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -22956,7 +23380,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -23067,7 +23492,23 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native art/framing and authored sky-only exposure, not full driving acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-0753e-rse-independent-sky-desktop/facility-mid-ohio-a8ccedb566-state.json",
+            "/tmp/race-environment-pack5-renderer/race-environments-renderer-224ea-se-independent-sky-handheld/facility-mid-ohio-a8ccedb566-state.json"
+          ],
+          "manualReview": "All 12 unique compositions and pitch/wrap pairs inspected; all five night compositions additionally inspected across six raw headings. Minor boundary banding remains visible in isolated extreme-pitch views."
+        },
+        "nightExposureReview": {
+          "authoredSkyBrightness": 0.05,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrastRGB": 12.75,
+          "status": "pending-legibility-at-authored-exposure",
+          "finding": "Loaded clear-night art becomes nearly black; source cues are visible in 100% diagnostic. No shipping exposure or weather change."
+        }
       },
       "physicalSiteLabel": "Mid-Ohio Sports Car Course",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -23130,7 +23571,8 @@
         "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
         "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
         "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
