@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "meadowsweet-1992",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 850,
+    "gear": 1,
+    "elapsed": 1099.9333333333318,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "meadowsweet-1992",
+    "x": 0,
+    "z": 31.531525,
+    "speed": 17.059444,
+    "rpm": 4778.931462,
+    "gear": 2,
+    "elapsed": 5233.2,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "meadowsweet-1992",
+    "x": 0,
+    "z": 57.283103,
+    "speed": 21.399118,
+    "rpm": 5999.573976,
+    "gear": 2,
+    "elapsed": 6566.399999999994,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}
