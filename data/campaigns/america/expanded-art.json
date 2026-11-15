@@ -4055,6 +4055,174 @@
       "maxEdge": 1024,
       "placements": [],
       "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-eminence-evening",
+      "source": "environment-v1/eminence-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-alley-noon",
+      "source": "environment-v1/alley-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-powder-morning",
+      "source": "environment-v1/powder-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-two-rivers-morning",
+      "source": "environment-v1/two-rivers-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-roberts-evening",
+      "source": "environment-v1/roberts-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-jerktail-morning",
+      "source": "environment-v1/jerktail-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-winona-noon",
+      "source": "environment-v1/winona-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-glade-morning",
+      "source": "environment-v1/glade-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oir-morning",
+      "source": "environment-v1/oir-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gateway-noon",
+      "source": "environment-v1/gateway-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gateway-night",
+      "source": "environment-v1/gateway-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-stl64-morning",
+      "source": "environment-v1/stl64-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-stan-noon",
+      "source": "environment-v1/stan-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-alton-noon",
+      "source": "environment-v1/alton-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-defiance-evening",
+      "source": "environment-v1/defiance-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gateway-morning",
+      "source": "environment-v1/gateway-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pevely-evening",
+      "source": "environment-v1/pevely-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pigtrail-evening",
+      "source": "environment-v1/pigtrail-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-tishomingo-morning",
+      "source": "environment-v1/tishomingo-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-little-rock-noon",
+      "source": "environment-v1/little-rock-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-stl-landmark-morning",
+      "source": "environment-v1/stl-landmark-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
     }
   ]
 }

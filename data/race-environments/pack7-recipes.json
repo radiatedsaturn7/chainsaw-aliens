@@ -241,7 +241,7 @@
       "raceRef": "Forbes State Forest — designated gravel roads",
       "ref": "environment-v1-forbes-morning",
       "source": "environment-v1/forbes-morning.png",
-      "sourceImage": "/workspace/generated_images/exec-156be7f9-9b2c-4d35-99d0-d22d14d8d159.png",
+      "sourceImage": "/workspace/generated_images/exec-f65fc237-1111-492e-9ee6-462e1791e330.png",
       "landscape": "Pennsylvania Forbes State Forest rolling sandstone uplands, layered hardwood/hemlock forest and central exposed blocky gray rock ledges, small mossy woodland opening with leaf litter and gravel, soft clear morning. No snow, no giant mountains, no buildings or lake.",
       "reference": "https://www.pa.gov/agencies/dcnr/recreation/where-to-go/state-forests/find-a-forest/forbes/sightseeing",
       "sourceEvidence": {
@@ -274,13 +274,13 @@
       "tiles": {
         "snow": "ground-frozen-forest"
       },
-      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "boundaries": "Matching outer horizon and colors; clear upper sky and low-detail bottom closure. Source metrics and native review recorded in pack8 evidence.",
       "artProvenance": {
         "tool": "image_gen.imagegen",
-        "originalRetained": "/workspace/generated_images/exec-156be7f9-9b2c-4d35-99d0-d22d14d8d159.png",
-        "sourceSha256": "33e30bd8784ab4ba99be7463a2b9170a044448399108581961e1b7e9bcff610e",
-        "originalBrief": "Pennsylvania Forbes State Forest rolling sandstone uplands, layered hardwood/hemlock forest and central exposed blocky gray rock ledges, small mossy woodland opening with leaf litter and gravel, soft clear morning. No snow, no giant mountains, no buildings or lake.",
-        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+        "originalRetained": "/workspace/generated_images/exec-f65fc237-1111-492e-9ee6-462e1791e330.png",
+        "sourceSha256": "688bc4b12aebd6ece9fcd4a10010d77461dea5492f2ee0b20f11ae856df39b8a",
+        "revisionOf": "/workspace/generated_images/exec-156be7f9-9b2c-4d35-99d0-d22d14d8d159.png",
+        "manualSourceReview": "Viewed repair contact sheet; source top/bottom and side metrics improved. Native review separate."
       }
     },
     {
@@ -335,7 +335,7 @@
       "raceRef": "Keystone Motorsports Park — New Alexandria",
       "ref": "environment-v1-keystone-morning",
       "source": "environment-v1/keystone-morning.png",
-      "sourceImage": "/workspace/generated_images/exec-8a9711b1-6014-4173-a33b-6bfe29a7ef97.png",
+      "sourceImage": "/workspace/generated_images/exec-50709a3e-a6cf-45f1-96b1-26c13c56d12f.png",
       "landscape": "New Alexandria Pennsylvania drag-racing facility, low long empty bleachers, timing tower and paddock sheds in center, gently rolling wooded hills behind, muted morning mist in valley and clear sky, dry olive grass. No snow or giant stadium bowl.",
       "reference": "https://keystoneracewaypark.com/directions/",
       "sourceEvidence": {
@@ -368,13 +368,13 @@
       "tiles": {
         "snow": "environment-v1-ground-sebring-olive"
       },
-      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "boundaries": "Matching outer horizon and colors; clear upper sky and low-detail bottom closure. Source metrics and native review recorded in pack8 evidence.",
       "artProvenance": {
         "tool": "image_gen.imagegen",
-        "originalRetained": "/workspace/generated_images/exec-8a9711b1-6014-4173-a33b-6bfe29a7ef97.png",
-        "sourceSha256": "23b4719f96bcd793b880aeaf859eec55acee7094cd87351ccc09a6abdf450528",
-        "originalBrief": "New Alexandria Pennsylvania drag-racing facility, low long empty bleachers, timing tower and paddock sheds in center, gently rolling wooded hills behind, muted morning mist in valley and clear sky, dry olive grass. No snow or giant stadium bowl.",
-        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+        "originalRetained": "/workspace/generated_images/exec-50709a3e-a6cf-45f1-96b1-26c13c56d12f.png",
+        "sourceSha256": "e7246abda4acd47dc8d6f5e08ac68e86e23e2a97ac6eb584311872361eeedc0b",
+        "revisionOf": "/workspace/generated_images/exec-8a9711b1-6014-4173-a33b-6bfe29a7ef97.png",
+        "manualSourceReview": "Viewed repair contact sheet; source top/bottom and side metrics improved. Native review separate."
       }
     },
     {
@@ -805,7 +805,7 @@
       "raceRef": "National Road — Sideling Hill",
       "ref": "environment-v1-sideling-evening",
       "source": "environment-v1/sideling-evening.png",
-      "sourceImage": "/workspace/generated_images/exec-c61f1e96-a15c-4779-bb65-0b386a526110.png",
+      "sourceImage": "/workspace/generated_images/exec-ef1a5a10-8b31-4732-b587-52b9f509d6e1.png",
       "landscape": "Western Maryland National Road region near Sideling Hill, long folded Appalachian sandstone/shale wooded ridgeline with a central modest layered gray-brown rock exposure, broad forested valley depth, clear warm evening. Do NOT depict the famous interstate roadcut as the route itself; no huge manmade cut, no snow, no alpine peaks.",
       "reference": "https://www.mgs.md.gov/geology/geology_tour/sideling_hill.html",
       "sourceEvidence": {
@@ -836,13 +836,13 @@
       "tiles": {
         "snow": "ground-frozen-forest"
       },
-      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "boundaries": "Matching outer horizon and colors; clear upper sky and low-detail bottom closure. Source metrics and native review recorded in pack8 evidence.",
       "artProvenance": {
         "tool": "image_gen.imagegen",
-        "originalRetained": "/workspace/generated_images/exec-c61f1e96-a15c-4779-bb65-0b386a526110.png",
-        "sourceSha256": "a2989efbfb091262c31d92d1a25ca13adcb173cf57d5db89ed1409634f2f3974",
-        "originalBrief": "Western Maryland National Road region near Sideling Hill, long folded Appalachian sandstone/shale wooded ridgeline with a central modest layered gray-brown rock exposure, broad forested valley depth, clear warm evening. Do NOT depict the famous interstate roadcut as the route itself; no huge manmade cut, no snow, no alpine peaks.",
-        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+        "originalRetained": "/workspace/generated_images/exec-ef1a5a10-8b31-4732-b587-52b9f509d6e1.png",
+        "sourceSha256": "7fdaa678216fbbfea9eb52685e494c4aedffc8afbe820b8f60bc4b37226ee61f",
+        "revisionOf": "/workspace/generated_images/exec-c61f1e96-a15c-4779-bb65-0b386a526110.png",
+        "manualSourceReview": "Viewed repair contact sheet; source top/bottom and side metrics improved. Native review separate."
       }
     }
   ]

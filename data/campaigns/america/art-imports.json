@@ -3396,8 +3396,8 @@
   },
   "environment-v1-forbes-morning": {
     "source": "assets/campaign-art/environment-v1/forbes-morning.png",
-    "sourceSha256": "33e30bd8784ab4ba99be7463a2b9170a044448399108581961e1b7e9bcff610e",
-    "documentSha256": "7ae2622c00820e8a3d4c577675bb72b3d4662bd4430ad7100ed237658cc3dbf6",
+    "sourceSha256": "688bc4b12aebd6ece9fcd4a10010d77461dea5492f2ee0b20f11ae856df39b8a",
+    "documentSha256": "a7e61aaddab5fa737848324d3a141ff809f79749e2308648ca712a038e100624",
     "width": 1024,
     "height": 342
   },
@@ -3410,8 +3410,8 @@
   },
   "environment-v1-keystone-morning": {
     "source": "assets/campaign-art/environment-v1/keystone-morning.png",
-    "sourceSha256": "23b4719f96bcd793b880aeaf859eec55acee7094cd87351ccc09a6abdf450528",
-    "documentSha256": "fdf823991ec652fcd80b8edcade2d2054d73660766786cbe4d1307f8d1230918",
+    "sourceSha256": "e7246abda4acd47dc8d6f5e08ac68e86e23e2a97ac6eb584311872361eeedc0b",
+    "documentSha256": "ad84f7297d332958a74cf1125cb8a128079a114d744082bbf7e5c79a965c6c2c",
     "width": 1024,
     "height": 341
   },
@@ -3480,8 +3480,155 @@
   },
   "environment-v1-sideling-evening": {
     "source": "assets/campaign-art/environment-v1/sideling-evening.png",
-    "sourceSha256": "a2989efbfb091262c31d92d1a25ca13adcb173cf57d5db89ed1409634f2f3974",
-    "documentSha256": "b98ad13be6dcdb2fbc1bf605e64007c711a4846f276e4ca3cf490efb05e8b673",
+    "sourceSha256": "7fdaa678216fbbfea9eb52685e494c4aedffc8afbe820b8f60bc4b37226ee61f",
+    "documentSha256": "01a441a10a156b2cc795365663f159d0ff357fafd1cab5a32c7637a6a6d6d493",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-eminence-evening": {
+    "source": "assets/campaign-art/environment-v1/eminence-evening.png",
+    "sourceSha256": "cde0655dea8225b29dbfd9ff498349d4c04a1d9dd1be627ff6858b1e9e10b516",
+    "documentSha256": "05cfb52a4d19d3773cc8f9aec8d183eb265b5b48b86dafe2635be0baf10d4131",
+    "width": 1024,
+    "height": 350
+  },
+  "environment-v1-alley-noon": {
+    "source": "assets/campaign-art/environment-v1/alley-noon.png",
+    "sourceSha256": "5542ab6819910974fc87b31d1601dbbff6617bafdc3d148b89dd589e026706e8",
+    "documentSha256": "892bb572bcbdedc5c2b984775e89fd87595d9b5adb060efe11d43c2426ae7800",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-powder-morning": {
+    "source": "assets/campaign-art/environment-v1/powder-morning.png",
+    "sourceSha256": "5cdcb65cf3faa35eee8f49138393eb58e309d0f84f956cf6db515878fd9faa30",
+    "documentSha256": "082ec5b79626baded3aa559700f91406cc7600ece4c599e787b9c679d9a5c72b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-two-rivers-morning": {
+    "source": "assets/campaign-art/environment-v1/two-rivers-morning.png",
+    "sourceSha256": "d5d39a3b5151a8d167a4e9cb79abe629ea44ccb93cf762185e649267d1176ac7",
+    "documentSha256": "1ae4adb0e86f664c99149e775565ac6af822f8f3722afba2b1499d90693929f8",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-roberts-evening": {
+    "source": "assets/campaign-art/environment-v1/roberts-evening.png",
+    "sourceSha256": "45b9d7acf771f59977afd27b9076db1da04fa879190173381c9c3a71650757dd",
+    "documentSha256": "34ee7174e984978ab21e0b32a4e492239e3d2ec361f987cc25580ad4ea6ef639",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-jerktail-morning": {
+    "source": "assets/campaign-art/environment-v1/jerktail-morning.png",
+    "sourceSha256": "8148b9d46986a977127aecaf9c86a58a72c7df40df45c5df9c55bff197a7a67e",
+    "documentSha256": "1bd58159a246216d6d6d1f3d1747481449df1075b08b510f6357bd61e3d7da35",
+    "width": 1024,
+    "height": 350
+  },
+  "environment-v1-winona-noon": {
+    "source": "assets/campaign-art/environment-v1/winona-noon.png",
+    "sourceSha256": "0705f4e2187ef88c1318e021b6c3c6d4c8393c93fa634f6f41fe610e15327ba7",
+    "documentSha256": "c02c321efc2d63127acfb026eca05e74fd191b586eed5607473826c2d869981b",
+    "width": 1024,
+    "height": 342
+  },
+  "environment-v1-glade-morning": {
+    "source": "assets/campaign-art/environment-v1/glade-morning.png",
+    "sourceSha256": "068f2c17a5392259681d9adb8816e226779bcec41a06ba56f5a87e80bf927b3d",
+    "documentSha256": "504458366e4c5c758f3522705171c5cd8c09b836c622bea6e4938808f5cd1a9b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-oir-morning": {
+    "source": "assets/campaign-art/environment-v1/oir-morning.png",
+    "sourceSha256": "d92de4ee64df6f340af1c0e8f37c45adb38192d091cf7009e04217d490b338c8",
+    "documentSha256": "7780f932283d6665894f8199e112cd9016c44a93412b8be9f08f4d1b23a0b487",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-gateway-noon": {
+    "source": "assets/campaign-art/environment-v1/gateway-noon.png",
+    "sourceSha256": "2609f5e6b8cd06189aca6f82d914af3768981703df87781a2279a47ebf810b66",
+    "documentSha256": "f2231060b2bdd779c406de4b002b69b342c72b6c71ee43b8175eee29d01c18d8",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-gateway-night": {
+    "source": "assets/campaign-art/environment-v1/gateway-night.png",
+    "sourceSha256": "61a0b1df3b65105fbf2dd0b4a46901f5eafc1719a0ec52a164a14a7d1b5a206f",
+    "documentSha256": "8e639c8514068733ed715342f369b595f8ef1f5e34b4c1f709e0891efd3b9194",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-stl64-morning": {
+    "source": "assets/campaign-art/environment-v1/stl64-morning.png",
+    "sourceSha256": "64fc16cf6cea0f675da803b0b33d2de34beab2fd991311714fd3f83b6ba454ba",
+    "documentSha256": "d1068a749a2f265933086b0a6cd922fafbbd421c03b5970efed03db4b0231802",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-stan-noon": {
+    "source": "assets/campaign-art/environment-v1/stan-noon.png",
+    "sourceSha256": "c230777ade315a66fa7eb76b2254d03cdc4ffdb3dd9203d811a136272256cc53",
+    "documentSha256": "38f6724c15c4e2bbe71424995940a9fe2a900af51db7137814140234b15acbaf",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-alton-noon": {
+    "source": "assets/campaign-art/environment-v1/alton-noon.png",
+    "sourceSha256": "7f939a13ec8a28325c03a3afabb0dba8dd047cda1118a1d81dea435d48d07beb",
+    "documentSha256": "4d6cc60c635a66a6ec185c98ed75e37295ee2bd7968c03de6c33a1d3afc5529f",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-defiance-evening": {
+    "source": "assets/campaign-art/environment-v1/defiance-evening.png",
+    "sourceSha256": "1fee7ee6a4f49d833c5d53d425c0e97c2c4b003b4c5d5c647dff9d7256f206bd",
+    "documentSha256": "676db2a593df3f185f17fff02d3d2f26735d1a1364cd2bc3c33442ec988d468b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-gateway-morning": {
+    "source": "assets/campaign-art/environment-v1/gateway-morning.png",
+    "sourceSha256": "2c478c7a9c13afdeaf9097d8f6b6187f2a9c9d08a5ef1e8f0866f59029a89db3",
+    "documentSha256": "39491caafff6a379514252c416848f2b29897ea32cda321107d94654288f1e45",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-pevely-evening": {
+    "source": "assets/campaign-art/environment-v1/pevely-evening.png",
+    "sourceSha256": "02058cc6b3e4f4ef7aa8630b97465f60b09822da47443e01bbd9fdd70fe2c699",
+    "documentSha256": "7afcbafc04e8a88d7b073376d03b81ba4e20ac805469e9d68dc330bf0d0d9606",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-pigtrail-evening": {
+    "source": "assets/campaign-art/environment-v1/pigtrail-evening.png",
+    "sourceSha256": "0506da25faf76d483693308a9e0181ce196a46beb8452ccbbdb8d34d765ffd0a",
+    "documentSha256": "ea57113974ff268b629878d42344d7c42339b0574dd28dd9a1cc48ee473558a6",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-tishomingo-morning": {
+    "source": "assets/campaign-art/environment-v1/tishomingo-morning.png",
+    "sourceSha256": "90c0ac5dba74bf865f4025d5212a105c0da751526a54bd181024d21e8a9146b0",
+    "documentSha256": "f6c4038855997f6053f48edd4660c2cf4e9244fe0ac1f3aaa038e4af28ddb438",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-little-rock-noon": {
+    "source": "assets/campaign-art/environment-v1/little-rock-noon.png",
+    "sourceSha256": "92a95498a40cc99c1db3e34035e7bd344d904098d7ca7fb5d0c18eedb70317ef",
+    "documentSha256": "3c52d59a223183be52a77c148fb9001f20bcf05bddf5c0014e26aa2d96ce3d86",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-stl-landmark-morning": {
+    "source": "assets/campaign-art/environment-v1/stl-landmark-morning.png",
+    "sourceSha256": "2be26bb1634088062dc918e1290deee85bbf0047717f47602e3c7adfd9db330f",
+    "documentSha256": "8029cc628e51685d841ecd083033b9ba637f973bce2e8983dfb0ccb7bbfad202",
     "width": 1024,
     "height": 341
   }
