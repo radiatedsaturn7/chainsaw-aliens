@@ -1,0 +1,40 @@
+{
+  "campaignPaths": 233,
+  "unused": [
+    "ground-dirty-snow-v2",
+    "ground-industrial-rubble-v2",
+    "ground-red-gravel-v2",
+    "skybox-angeles-crest",
+    "skybox-data-center-city",
+    "skybox-laurel-highlands",
+    "skybox-moki-dugway",
+    "skybox-mount-washington",
+    "skybox-oak-creek",
+    "skybox-ohio-river-crossing",
+    "skybox-ozarks",
+    "skybox-pikes-peak",
+    "skybox-route-66",
+    "skybox-tower-hill",
+    "skybox-bayard-noon-2994"
+  ],
+  "verifiedSupersessionCandidates": [
+    "skybox-angeles-crest",
+    "skybox-data-center-city",
+    "skybox-laurel-highlands",
+    "skybox-moki-dugway",
+    "skybox-mount-washington",
+    "skybox-oak-creek",
+    "skybox-ohio-river-crossing",
+    "skybox-ozarks",
+    "skybox-pikes-peak",
+    "skybox-route-66",
+    "skybox-tower-hill",
+    "skybox-bayard-noon-2994"
+  ],
+  "unresolvedUnused": [
+    "ground-dirty-snow-v2",
+    "ground-industrial-rubble-v2",
+    "ground-red-gravel-v2"
+  ],
+  "note": "Same authoritative 233 campaign-path usage scope, genuine placement resolver and free/editor scopes as existing gate. Supersession hashes checked by unit before usage assertion. No terrain exemptions added."
+}

@@ -1,0 +1,106 @@
+{
+  "base": "ef6034818a76458b4314cca07afa226a2cdc0082",
+  "status": "local-incomplete-visual-acceptance",
+  "coverage": {
+    "ledgerRows": 245,
+    "boundRaces": [
+      "Moki Dugway",
+      "Ozark Backroads",
+      "Data Center City"
+    ],
+    "productionAccepted": 0
+  },
+  "preservation": {
+    "all245ExactNonvisualComparison": "passed",
+    "unchangedUnboundDocuments": 242,
+    "terrainReferences": "retained; visual suitability remains provisional"
+  },
+  "assets": {
+    "reports": [
+      {
+        "race": "Ozark Backroads",
+        "ref": "environment-v1-ozark-eminence-day",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "16de968bc0bda9fb7ef92f6e467095e61dd363b563cd20ed901aca06efccc465",
+        "seamMeanRGB": 5.56598240469208,
+        "seamSkyMeanRGB": 1.301659125188537,
+        "seamMaximumRGB": 69.66666666666667,
+        "seam": {
+          "meanRGB": 5.56598240469208,
+          "skyMeanRGB": 1.301659125188537,
+          "maximumRGB": 69.66666666666667,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Data Center City",
+        "ref": "environment-v1-stl-riverfront-night",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "267288e7e9974bccb063c29e52bf709543b0f38f8307f337453110e505b4630d",
+        "seamMeanRGB": 6.236559139784947,
+        "seamSkyMeanRGB": 3.886877828054299,
+        "seamMaximumRGB": 113,
+        "seam": {
+          "meanRGB": 6.236559139784947,
+          "skyMeanRGB": 3.886877828054299,
+          "maximumRGB": 113,
+          "largeJumpFraction": 0.005865102639296188,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Moki Dugway",
+        "ref": "environment-v1-moki-cedar-mesa-day",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "cc88e54f870306c5011aa3e937641624a70fea8fe14a926a1d39a644bca09d02",
+        "seamMeanRGB": 6.173998044965783,
+        "seamSkyMeanRGB": 1.6455505279034692,
+        "seamMaximumRGB": 48.333333333333336,
+        "seam": {
+          "meanRGB": 6.173998044965783,
+          "skyMeanRGB": 1.6455505279034692,
+          "maximumRGB": 48.333333333333336,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      }
+    ]
+  },
+  "visualReview": {
+    "originalPanoramas": "inspected: distinct Cedar Mesa, MO-19 Eminence and flat Mississippi riverfront robotic campus",
+    "seams": "edge contact strip inspected; cloud/terrain discontinuities remain possible, camera-wrap acceptance pending",
+    "desktop": "City startup smoke test passed and real frame inspected; speed zero and authored darkness prevent sky/horizon acceptance. Ozark failed first playable frame; Moki failed terrain preparation.",
+    "handheld": "City real production frame inspected at390x844; correct native handheld viewport and new sky ref loaded, but speed0 and dark horizon mean no moving/sky acceptance."
+  },
+  "browserEvidence": {
+    "initialLog": "/tmp/race-environments-browser.log",
+    "correctedMokiLog": "/tmp/race-environments-one.log",
+    "regionalLog": "/tmp/race-environments-regional.log",
+    "ozarkFailure": "/tmp/race-environments-pack1-regional/race-environments-ozark-fa-52b90-n-environment-ozark-desktop/failure.png",
+    "seamContact": "/tmp/race-environments-seams.png",
+    "cityDesktop": "/tmp/race-environments-pack1-regional/race-environments-city-fal-3046b-on-environment-city-desktop/city-desktop.png",
+    "cityHandheld": "/tmp/race-environments-pack1-city-handheld/race-environments-city-tru-36e01-n-environment-city-handheld/city-handheld.png",
+    "cityHandheldState": "/tmp/race-environments-pack1-city-handheld/race-environments-city-tru-36e01-n-environment-city-handheld/city-state.json"
+  },
+  "blocker": "Ozark startRaceTravel returned true with no missing art, then game displayed Race did not present its first playable frame. Moki returned false during terrain preparation. No baseline browser comparison establishes whether these are existing runtime or environment limitations; no production timeout or world-data workaround applied.",
+  "checks": {
+    "manifest": "1561 documents / 16 assets passed",
+    "units": "83/83 passed; Campaign Artwork unit commands plus three visual-contract negatives; zero skipped",
+    "regionalDesktop": "1 startup smoke passed (City), 1 failed (Ozark); neither accepted for complete moving environment QA",
+    "unitLog": "/tmp/race-environments-units-final.log",
+    "preservationLog": "/tmp/race-environments-preservation-final.log",
+    "cityHandheld": "1 startup smoke passed; recorded1133.33ms session, speed0, newskyref, night/clear/brightness0.05 retained, renderer true",
+    "existingDiagnostic": "UNUSED CONFIGURED ART: road-snow-patchy \u2014 Pikes Peak Highway snow mapping has no active segment; retained configuration debt."
+  },
+  "remaining": "Resolve production startup and inspect desktop/handheld + route-heading frames; decide terrain changes from views; finish remaining242 sites and five existing ref conflicts plus Old Staples fallback. No full-coverage or release readiness claim."
+}

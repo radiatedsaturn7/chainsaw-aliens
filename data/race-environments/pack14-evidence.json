@@ -1,0 +1,913 @@
+{
+  "schemaVersion": 1,
+  "parentCheckpoint": "01a46ef0bb99cfee395d80b44199ca87058bfddd",
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "pack": "south-greatlakes-pack14",
+  "coverage": {
+    "totalRaces": 245,
+    "assigned": 225,
+    "remaining": 20,
+    "newBindings": 24,
+    "newUniqueSkies": 24,
+    "newSourceImagesInspected": 24,
+    "newNativeDeviceCases": 48,
+    "newBothDeviceRoutesInspected": 24,
+    "olderRepairNativeCases": 8,
+    "fullRouteAcceptanceAdded": 0,
+    "comparisonNativeCases": 8,
+    "nativeCaseExecutions": 64,
+    "newTerrainMaterialCheckedRoutes": 24,
+    "materialCellsChecked": {
+      "snow": 373782,
+      "total": 373782
+    },
+    "authoredLowExposureNightRoutes": 8,
+    "authoredHazeRoutes": 0,
+    "allBoundDecodedSkies": 225,
+    "allBoundUniqueDecodedSkies": 215,
+    "shortProductionPasses": 2,
+    "cleanShortProductionSamples": 1,
+    "shortProductionSamplesWithNetworkCaveat": 1
+  },
+  "status": "Saved bounded local checkpoint; 225 assigned, full-scope publication gate remains incomplete.",
+  "checks": {
+    "initialUnits": {
+      "passed": 111,
+      "failed": 1,
+      "log": "/tmp/pack14-units.tap",
+      "failure": "Campaign art has no actual placement: skybox-data-center-city; specific documented supersession added after source/native comparison, no guard changed."
+    },
+    "campaignBrowser": {
+      "passed": 6,
+      "log": "/tmp/pack14-campaign.log"
+    },
+    "native": {
+      "passed": 64,
+      "failed": 0,
+      "new": 48,
+      "repairs": 8,
+      "comparison": 8
+    },
+    "nativeAudit": "/tmp/pack14-native-audit.json",
+    "decodedArt": "/tmp/pack14-final-art.json",
+    "preservation": "/tmp/pack14-preservation.json",
+    "secondFullUnits": {
+      "passed": 111,
+      "failed": 1,
+      "log": "/tmp/pack14-final-units.tap",
+      "failure": "Intent guard next exposed skybox-ozarks after the Data Center retirement. Both now have specific source/native comparisons; final intent plus supersession negatives rerun separately. Other 111 tests unchanged and green."
+    },
+    "manifest": {
+      "documents": 1806,
+      "assets": 16,
+      "log": "/tmp/pack14-final-manifest.log"
+    },
+    "finalFocusedIntent": {
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/tmp/pack14-intent-final.tap",
+      "command": "node --test --test-name-pattern='delivered art satisfies|supersession' tests/unit/campaignArtIntegration.test.js",
+      "scope": "Failed actual-use gate plus all 15 supersession tests rerun after the two registry records; remaining 111 tests from the second full run were green. No final single all-112 command rerun after registry-only repair."
+    },
+    "visibleSnowDiagnostic": true
+  },
+  "visualEvidence": {
+    "sourceContacts": [
+      "/tmp/pack14-source-0.jpg",
+      "/tmp/pack14-source-1.jpg",
+      "/tmp/pack14-source-2.jpg",
+      "/tmp/pack14-source-3.jpg"
+    ],
+    "sourceRepairs": "/tmp/pack14-new-edge-repairs.jpg",
+    "olderRepairs": "/tmp/pack14-repairs-new.jpg",
+    "sourceFindings": "24 site compositions inspected; seven unnatural blue lower bands corrected and reinspected before import. NOLA uses illustrative delta/cypress surroundings rather than surveyed circuit architecture. Snow-coded southern cells are preserved, not a climate claim. All native wrap/framing and authored exposure checks pending.",
+    "nightRule": "Clear night variants selectively retain restrained stars/crescents and navy palette. Authored .05 remains unchanged; visibility is not inferred from raw artwork.",
+    "newSheets": "/tmp/pack14-sheets/",
+    "nativeGroundRepeats": "/tmp/pack14-native-materials.jpg",
+    "boundaryComparison": [
+      {
+        "ref": "environment-v1-boise-night",
+        "before": {
+          "topRangeRGB": [
+            2,
+            2,
+            3
+          ],
+          "bottomRangeRGB": [
+            17,
+            19,
+            32
+          ],
+          "wrapMeanRGB": 4.700879765395895
+        },
+        "after": {
+          "topRangeRGB": [
+            2,
+            2,
+            3
+          ],
+          "bottomRangeRGB": [
+            3,
+            3,
+            3
+          ],
+          "wrapMeanRGB": 3.675464320625611
+        }
+      },
+      {
+        "ref": "environment-v1-thompson-snow-night",
+        "before": {
+          "topRangeRGB": [
+            15,
+            20,
+            25
+          ],
+          "bottomRangeRGB": [
+            3,
+            4,
+            5
+          ],
+          "wrapMeanRGB": 2.7829912023460412
+        },
+        "after": {
+          "topRangeRGB": [
+            3,
+            4,
+            4
+          ],
+          "bottomRangeRGB": [
+            4,
+            4,
+            5
+          ],
+          "wrapMeanRGB": 2.975562072336266
+        }
+      },
+      {
+        "ref": "environment-v1-littletujunga-noon",
+        "before": {
+          "topRangeRGB": [
+            5,
+            4,
+            2
+          ],
+          "bottomRangeRGB": [
+            4,
+            5,
+            5
+          ],
+          "wrapMeanRGB": 8.764418377321602
+        },
+        "after": {
+          "topRangeRGB": [
+            6,
+            6,
+            3
+          ],
+          "bottomRangeRGB": [
+            5,
+            4,
+            5
+          ],
+          "wrapMeanRGB": 14.250244379276637
+        }
+      },
+      {
+        "ref": "environment-v1-moki-cedar-mesa-day",
+        "before": {
+          "topRangeRGB": [
+            7,
+            5,
+            4
+          ],
+          "bottomRangeRGB": [
+            173,
+            113,
+            52
+          ],
+          "wrapMeanRGB": 6.173998044965788
+        },
+        "after": {
+          "topRangeRGB": [
+            5,
+            6,
+            5
+          ],
+          "bottomRangeRGB": [
+            4,
+            5,
+            5
+          ],
+          "wrapMeanRGB": 4.5444770283479965
+        }
+      }
+    ],
+    "allNumericSkyWarnings": [
+      "Little Tujunga Canyon Road"
+    ],
+    "newNumericSkyWarnings": [],
+    "qualityLimits": [
+      "Little Tujunga side vegetation improves bare fields but wrap mean worsened 8.7644 to 14.2502 RGB; numeric warning and visual wrap risk remain open.",
+      "Clamped upper/lower bands and faint columns remain on native extreme-pitch views, including Moki. Boundary correction reduces severity, not full seamlessness acceptance.",
+      "Eight new authored .05 night views remain nearly black; raw100 visible moons/stars are diagnostic only.",
+      "Older Thompson is fully fog-occluded; Moki haze opacity .8804997 remains. Neither is an unloaded-art claim.",
+      "Full-route production acceptance remains pending; no qa flags promoted.",
+      "Native original/current Ozark comparison reveals pronounced active lower-edge columns; keep as older release-quality debt, not a new gameplay failure or accepted seam."
+    ],
+    "datacenterComparison": "data/race-environments/data-center-review.jpg",
+    "ozarkComparison": "data/race-environments/ozark-review.jpg"
+  },
+  "remainingRaces": [
+    "Demo Track",
+    "Mount Washington Auto Road \u2014 point-to-point Copy",
+    "Studio Sprint",
+    "Studio Sprint Copy",
+    "Studio Sprint2",
+    "buse1",
+    "p1",
+    "p2loadtest",
+    "Hana Highway \u2014 Rainforest Bends",
+    "Miami, FL \u2014 Landmark Run",
+    "Anchorage, AK \u2014 Landmark Run",
+    "Honolulu, HI \u2014 Landmark Run",
+    "San Antonio, TX \u2014 Landmark Run",
+    "Charleston, SC \u2014 Landmark Run",
+    "Richmond, VA \u2014 Landmark Run",
+    "Charleston, WV \u2014 Landmark Run",
+    "Denali Highway \u2014 Tundra Gravel",
+    "Tantalus \u2014 Honolulu Heights",
+    "Haleakala \u2014 Volcano Ascent",
+    "Maunakea \u2014 Cinder Summit"
+  ],
+  "disk": {
+    "startAvailableBytes": 2350657536,
+    "preCommitAvailableBytes": 2136838144,
+    "availableAfterStagingBytes": 2042540032,
+    "growthSinceStartBytes": 308117504,
+    "forecast": "This pack consumed about 0.29 GiB including original generations, imports, QA and Git staging. At similar pace another 20 bindings could consume roughly 0.24 GiB before extra polish/final QA; not a guarantee. Reserve headroom and preserve all originals."
+  },
+  "retainedOriginals": "All generated sources and prior QA retained; original sky supersession files and pinned historical comparisons unchanged.",
+  "routes": [
+    {
+      "race": "GingerMan Raceway",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-0a18c-ay-independent-sky-handheld/site-91b730232d2edaba-state.json",
+      "ref": "environment-v1-gingerman-evening",
+      "skyBrightness": 0.42,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 9592
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-297db-rse-independent-sky-desktop/facility-indianapolis-41bc38d75f-state.json",
+      "ref": "environment-v1-indyroad-evening",
+      "skyBrightness": 0.42,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 6720
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "NCM Motorsports Park",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-2e2bf-rk-independent-sky-handheld/site-1e4427ffcce2292f-state.json",
+      "ref": "environment-v1-ncm-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 15476
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Indianapolis Motor Speedway \u2014 Oval",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-2ea2b-val-independent-sky-desktop/facility-indianapolis-a8ccedb566-state.json",
+      "ref": "environment-v1-indyoval-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 7488
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Atlanta, GA \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-3c75b-un-independent-sky-handheld/site-6f5b30be5456f7e1-state.json",
+      "ref": "environment-v1-atlanta-evening",
+      "skyBrightness": 0.42,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 20125
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Chicago, IL \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-45a25-Run-independent-sky-desktop/site-18f72d527e5df19a-state.json",
+      "ref": "environment-v1-chicago-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 13300
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Carolina Motorsports Park",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-4c272-ark-independent-sky-desktop/site-236b9640b6e31d49-state.json",
+      "ref": "environment-v1-carolinapark-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 10856
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Birmingham, AL \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-56a30-Run-independent-sky-desktop/site-8fbef84f052f150c-state.json",
+      "ref": "environment-v1-birmingham-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 21306
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "NCCAR \u2014 Road Course",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-71d4a-se-independent-sky-handheld/site-3a5aa14c138a5399-state.json",
+      "ref": "environment-v1-nccar-morning",
+      "skyBrightness": 0.65,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 7139
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Atlanta, GA \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-94fce-Run-independent-sky-desktop/site-6f5b30be5456f7e1-state.json",
+      "ref": "environment-v1-atlanta-evening",
+      "skyBrightness": 0.42,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 20125
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "NOLA Motorsports Park",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-a03c5-rk-independent-sky-handheld/site-7a77be5321a89d09-state.json",
+      "ref": "environment-v1-nola-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 8927
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Carolina Motorsports Park",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-a3f8d-rk-independent-sky-handheld/site-236b9640b6e31d49-state.json",
+      "ref": "environment-v1-carolinapark-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 10856
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Indianapolis Motor Speedway \u2014 Oval",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-a5b76-al-independent-sky-handheld/facility-indianapolis-a8ccedb566-state.json",
+      "ref": "environment-v1-indyoval-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 7488
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Birmingham, AL \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-abc6a-un-independent-sky-handheld/site-8fbef84f052f150c-state.json",
+      "ref": "environment-v1-birmingham-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 21306
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "NCCAR \u2014 Road Course",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-b563b-rse-independent-sky-desktop/site-3a5aa14c138a5399-state.json",
+      "ref": "environment-v1-nccar-morning",
+      "skyBrightness": 0.65,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 7139
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "NCM Motorsports Park",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-b7b64-ark-independent-sky-desktop/site-1e4427ffcce2292f-state.json",
+      "ref": "environment-v1-ncm-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 15476
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "NOLA Motorsports Park",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-c032d-ark-independent-sky-desktop/site-7a77be5321a89d09-state.json",
+      "ref": "environment-v1-nola-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 8927
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Brainerd \u2014 Competition Course",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-c1f40-se-independent-sky-handheld/site-a2afa1a045dcd258-state.json",
+      "ref": "environment-v1-brainerd-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 15255
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Brainerd \u2014 Competition Course",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-dff97-rse-independent-sky-desktop/site-a2afa1a045dcd258-state.json",
+      "ref": "environment-v1-brainerd-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 15255
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Chicago, IL \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-e4e66-un-independent-sky-handheld/site-18f72d527e5df19a-state.json",
+      "ref": "environment-v1-chicago-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 13300
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-e86c0-se-independent-sky-handheld/facility-indianapolis-41bc38d75f-state.json",
+      "ref": "environment-v1-indyroad-evening",
+      "skyBrightness": 0.42,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 6720
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "GingerMan Raceway",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-a/race-environments-renderer-ec27b-way-independent-sky-desktop/site-91b730232d2edaba-state.json",
+      "ref": "environment-v1-gingerman-evening",
+      "skyBrightness": 0.42,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 9592
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Minneapolis, MN \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-05c3b-un-independent-sky-handheld/site-057af482cd61c0ab-state.json",
+      "ref": "environment-v1-minneapolis-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 30929
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Indianapolis, IN \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-068ec-un-independent-sky-handheld/site-fe73b02344865b7a-state.json",
+      "ref": "environment-v1-indianapoliscity-morning",
+      "skyBrightness": 0.65,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 16038
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Des Moines, IA \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-1cab9-un-independent-sky-handheld/site-48a69f289b41065e-state.json",
+      "ref": "environment-v1-desmoines-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 12905
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Nashville, TN \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-2434f-Run-independent-sky-desktop/site-801a87f5aebb72dd-state.json",
+      "ref": "environment-v1-nashville-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 18492
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Milwaukee, WI \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-38b76-Run-independent-sky-desktop/site-711d3f6b0ea42407-state.json",
+      "ref": "environment-v1-milwaukee-morning",
+      "skyBrightness": 0.65,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 20349
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Detroit, MI \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-58cc0-Run-independent-sky-desktop/site-c5f1aa302a17a49e-state.json",
+      "ref": "environment-v1-detroit-morning",
+      "skyBrightness": 0.65,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 25308
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Louisville, KY \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-612aa-un-independent-sky-handheld/site-a55d00ac69a1e402-state.json",
+      "ref": "environment-v1-louisville-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 18240
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Charlotte, NC \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-65563-un-independent-sky-handheld/site-748cb3ba26739e14-state.json",
+      "ref": "environment-v1-charlotte-morning",
+      "skyBrightness": 0.65,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 20352
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Minneapolis, MN \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-65783-Run-independent-sky-desktop/site-057af482cd61c0ab-state.json",
+      "ref": "environment-v1-minneapolis-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 30929
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Jackson, MS \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-71691-un-independent-sky-handheld/site-99d091992ba9491f-state.json",
+      "ref": "environment-v1-jackson-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 10287
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Jackson, MS \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-79961-Run-independent-sky-desktop/site-99d091992ba9491f-state.json",
+      "ref": "environment-v1-jackson-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 10287
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Detroit, MI \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-86976-un-independent-sky-handheld/site-c5f1aa302a17a49e-state.json",
+      "ref": "environment-v1-detroit-morning",
+      "skyBrightness": 0.65,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 25308
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Flatrock Motorclub \u2014 Club Course",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-8a345-rse-independent-sky-desktop/site-fd0df59bcbdae7a7-state.json",
+      "ref": "environment-v1-flatrock-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 14319
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Nashville, TN \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-90516-un-independent-sky-handheld/site-801a87f5aebb72dd-state.json",
+      "ref": "environment-v1-nashville-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 18492
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Louisville, KY \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-a3351-Run-independent-sky-desktop/site-a55d00ac69a1e402-state.json",
+      "ref": "environment-v1-louisville-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 18240
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Cleveland, OH \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-b7023-Run-independent-sky-desktop/site-8832609ac0b53a91-state.json",
+      "ref": "environment-v1-cleveland-evening",
+      "skyBrightness": 0.42,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 16704
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Cleveland, OH \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-c6ca5-un-independent-sky-handheld/site-8832609ac0b53a91-state.json",
+      "ref": "environment-v1-cleveland-evening",
+      "skyBrightness": 0.42,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 16704
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Charlotte, NC \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-ca066-Run-independent-sky-desktop/site-748cb3ba26739e14-state.json",
+      "ref": "environment-v1-charlotte-morning",
+      "skyBrightness": 0.65,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 20352
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Flatrock Motorclub \u2014 Club Course",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-dd0f7-se-independent-sky-handheld/site-fd0df59bcbdae7a7-state.json",
+      "ref": "environment-v1-flatrock-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 14319
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Des Moines, IA \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-f3ffc-Run-independent-sky-desktop/site-48a69f289b41065e-state.json",
+      "ref": "environment-v1-desmoines-night",
+      "skyBrightness": 0.05,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 12905
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Milwaukee, WI \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-f42a4-un-independent-sky-handheld/site-711d3f6b0ea42407-state.json",
+      "ref": "environment-v1-milwaukee-morning",
+      "skyBrightness": 0.65,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 20349
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Indianapolis, IN \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-b/race-environments-renderer-f4340-Run-independent-sky-desktop/site-fe73b02344865b7a-state.json",
+      "ref": "environment-v1-indianapoliscity-morning",
+      "skyBrightness": 0.65,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 16038
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Barber Motorsports Park",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-final/race-environments-renderer-3c8a3-rk-independent-sky-handheld/site-2df0d586d8e95bd2-state.json",
+      "ref": "environment-v1-barber-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 10735
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "New Orleans, LA \u2014 Landmark Run",
+      "device": "handheld",
+      "file": "/tmp/race-pack14-native-final/race-environments-renderer-80804-un-independent-sky-handheld/site-6bbf3e59bf508848-state.json",
+      "ref": "environment-v1-neworleans-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 22940
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "New Orleans, LA \u2014 Landmark Run",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-final/race-environments-renderer-8e0d5-Run-independent-sky-desktop/site-6bbf3e59bf508848-state.json",
+      "ref": "environment-v1-neworleans-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 22940
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    },
+    {
+      "race": "Barber Motorsports Park",
+      "device": "desktop",
+      "file": "/tmp/race-pack14-native-final/race-environments-renderer-ab8b7-ark-independent-sky-desktop/site-2df0d586d8e95bd2-state.json",
+      "ref": "environment-v1-barber-noon",
+      "skyBrightness": 1,
+      "visibilityOpacity": 0,
+      "materialCells": {
+        "snow": 10735
+      },
+      "visualReview": "Native raw/authored plus low/high pitch wrap sheet viewed; semantic material eligible, boundary polish/full-route driving pending."
+    }
+  ],
+  "retirements": [
+    {
+      "ref": "skybox-data-center-city",
+      "replacement": "environment-v1-stl-riverfront-night",
+      "formerInheritedRoutes": [
+        "Indianapolis Motor Speedway \u2014 Oval",
+        "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+        "NCM Motorsports Park",
+        "Brainerd \u2014 Competition Course",
+        "Chicago, IL \u2014 Landmark Run",
+        "Des Moines, IA \u2014 Landmark Run",
+        "Louisville, KY \u2014 Landmark Run",
+        "Indianapolis, IN \u2014 Landmark Run",
+        "Minneapolis, MN \u2014 Landmark Run",
+        "Nashville, TN \u2014 Landmark Run",
+        "Milwaukee, WI \u2014 Landmark Run"
+      ],
+      "scope": "Explicit existing schema, unchanged original source/native hashes, actual active replacement, original and current both devices compared; all negative guard coverage retained."
+    },
+    {
+      "ref": "skybox-ozarks",
+      "replacement": "environment-v1-ozark-eminence-day",
+      "scope": "Original regionally plausible autumn scene; explicit active winter Eminence site composition choice, both native sizes reviewed, original hashes retained; active extrusion/haze not accepted."
+    }
+  ],
+  "driving": {
+    "summary": "/tmp/pack14-driving-summary.json",
+    "log": "/tmp/pack14-driving.log",
+    "scope": "Two short normal-input movement gates passed. Not route-wide playability or performance approval. No deadlines or distances changed.",
+    "samples": [
+      {
+        "race": "GingerMan Raceway",
+        "device": "desktop",
+        "state": "/tmp/race-pack14-driving/race-environments-driving--55f42-authored-foreground-and-sky/driving-state.json",
+        "distanceM": 20.01319872037239,
+        "timing": {
+          "wallMs": 87615,
+          "simulationMs": 3999.999999999992
+        },
+        "pageErrors": [],
+        "network": [],
+        "missingArtRefs": [],
+        "viewed": true,
+        "matchedPair": "/tmp/race-pack14-driving/race-environments-driving--55f42-authored-foreground-and-sky/matched-pair.json",
+        "acceptance": "Short dusk foreground/sky sample visually coherent; no page/network errors."
+      },
+      {
+        "race": "NCM Motorsports Park",
+        "device": "handheld",
+        "state": "/tmp/race-pack14-driving/race-environments-driving--02c9b-authored-foreground-and-sky/driving-state.json",
+        "distanceM": 20.20221284856129,
+        "timing": {
+          "wallMs": 47799,
+          "simulationMs": 4366.666666666655
+        },
+        "pageErrors": [],
+        "network": [
+          {
+            "url": "http://127.0.0.1:4323/__storage/file?folder=art&name=dirtsmoke",
+            "error": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          },
+          {
+            "url": "http://127.0.0.1:4323/__storage/file?folder=art&name=snowsmoke",
+            "error": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          }
+        ],
+        "missingArtRefs": [],
+        "viewed": true,
+        "matchedPair": "/tmp/race-pack14-driving/race-environments-driving--02c9b-authored-foreground-and-sky/matched-pair.json",
+        "acceptance": "Short night movement passed, authored sky nearly black; paused100 shows navy horizon. dirtsmoke/snowsmoke requests aborted despite no reported missingArtRefs; not a clean asset/network acceptance."
+      }
+    ]
+  },
+  "branchPayload": {
+    "changedFilesIncludingCurrentIndex": 989,
+    "workingFileBytesNotTransferSize": 861240722,
+    "runtimeSourceChanges": [],
+    "note": "Full race-only branch includes earlier validation/helpers, tools, evidence and original images. Working-file bytes are not Git upload size; no large transport artifact created."
+  },
+  "liveStagingVerified": "2dd6bff9928437c115a16e8d9aab62a4b60443df"
+}

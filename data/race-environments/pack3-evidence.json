@@ -1,0 +1,1366 @@
+{
+  "base": "ef6034818a76458b4314cca07afa226a2cdc0082",
+  "artCheckpoint": "fc34261932b269bcd37773089cf7f02f6a26756f",
+  "scope": "Local only; no runtime, weather, geometry, material, lighting or deadline changes. Prior baseline failures retained in pack2-evidence.json.",
+  "bindings": 10,
+  "fullyAcceptedEnvironments": 0,
+  "freeRacePolicy": "Separate exact art-to-race/slot registry, checked against shipped selector and actual saved placement, excludes enabled campaign paths. Negative coverage rejects missing selectors, unregistered races, changed/unused slots and campaign diversion.",
+  "siteGrouping": {
+    "method": "Exact raceway source layout + installed catalog identity or explicit existingSideId. Full authored environment splits variants. Other races retain independent groups; no proximity/state inference.",
+    "sites": [
+      {
+        "site": "watkins",
+        "coordinates": [
+          42.3369,
+          -76.9272
+        ],
+        "races": [
+          "Watkins Glen \u2014 Long Course",
+          "Watkins Glen \u2014 Short Course",
+          "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+          "Watkins Glen \u2014 Short \u2014 No Inner Loop"
+        ],
+        "environmentVariants": 3
+      },
+      {
+        "site": "road-america",
+        "coordinates": [
+          43.7975,
+          -87.9897
+        ],
+        "races": [
+          "Road America \u2014 Full Course",
+          "Road America \u2014 The Bend"
+        ],
+        "environmentVariants": 2
+      },
+      {
+        "site": "road-atlanta",
+        "coordinates": [
+          34.1495,
+          -83.8131
+        ],
+        "races": [
+          "Road Atlanta \u2014 Grand Prix",
+          "Road Atlanta \u2014 Short Course",
+          "Road Atlanta \u2014 Club Course"
+        ],
+        "environmentVariants": 3
+      },
+      {
+        "site": "vir",
+        "coordinates": [
+          36.561,
+          -79.204
+        ],
+        "races": [
+          "Virginia International Raceway \u2014 Full Course",
+          "Virginia International Raceway \u2014 North Course",
+          "Virginia International Raceway \u2014 South Course",
+          "Virginia International Raceway \u2014 Grand Course"
+        ],
+        "environmentVariants": 2
+      },
+      {
+        "site": "sebring",
+        "coordinates": [
+          27.454,
+          -81.349
+        ],
+        "races": [
+          "Sebring International Raceway \u2014 Full Circuit",
+          "Sebring International Raceway \u2014 Short Circuit",
+          "Sebring International Raceway \u2014 Club Circuit"
+        ],
+        "environmentVariants": 3
+      },
+      {
+        "site": "indianapolis",
+        "coordinates": [
+          39.795,
+          -86.234
+        ],
+        "races": [
+          "Indianapolis Motor Speedway \u2014 Oval",
+          "Indianapolis Motor Speedway \u2014 Grand Prix Road Course"
+        ],
+        "environmentVariants": 2
+      },
+      {
+        "site": "homestead",
+        "coordinates": [
+          25.4517,
+          -80.4098
+        ],
+        "races": [
+          "Homestead-Miami Speedway \u2014 Oval",
+          "Homestead-Miami Speedway \u2014 Road Course",
+          "Homestead-Miami Speedway \u2014 Modified Road Course"
+        ],
+        "environmentVariants": 1
+      },
+      {
+        "site": "daytona",
+        "coordinates": [
+          29.1852,
+          -81.0705
+        ],
+        "races": [
+          "Daytona Tri-Oval",
+          "Daytona International Speedway \u2014 Sports Car Course",
+          "Daytona International Speedway \u2014 Stock Car Road Course"
+        ],
+        "environmentVariants": 2
+      },
+      {
+        "site": "laguna",
+        "coordinates": [
+          36.584,
+          -121.753
+        ],
+        "races": [
+          "WeatherTech Raceway Laguna Seca"
+        ],
+        "environmentVariants": 1
+      },
+      {
+        "site": "willow",
+        "coordinates": [
+          34.872,
+          -118.264
+        ],
+        "races": [
+          "Willow Springs \u2014 Big Willow",
+          "Willow Springs \u2014 Streets of Willow",
+          "Willow Springs \u2014 Streets \u2014 Short",
+          "Willow Springs \u2014 Horse Thief Mile"
+        ],
+        "environmentVariants": 3
+      },
+      {
+        "site": "lime",
+        "coordinates": [
+          41.928,
+          -73.38
+        ],
+        "races": [
+          "Lime Rock Park \u2014 Connecticut",
+          "Lime Rock Park \u2014 West Chicane",
+          "Lime Rock Park \u2014 Both Chicanes"
+        ],
+        "environmentVariants": 2
+      },
+      {
+        "site": "mid-ohio",
+        "coordinates": [
+          40.689,
+          -82.635
+        ],
+        "races": [
+          "Mid-Ohio Sports Car Course \u2014 Lexington",
+          "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+          "Mid-Ohio Sports Car Course \u2014 Short Course"
+        ],
+        "environmentVariants": 2
+      },
+      {
+        "site": "nordschleife",
+        "coordinates": [
+          50.36,
+          6.96
+        ],
+        "races": [
+          "Nurburgring Nordschleife"
+        ],
+        "environmentVariants": 1
+      },
+      {
+        "site": "gateway",
+        "coordinates": [
+          38.65,
+          -90.135
+        ],
+        "races": [
+          "World Wide Technology Raceway \u2014 road course",
+          "World Wide Technology Raceway \u2014 oval",
+          "World Wide Technology Raceway \u2014 drag strip",
+          "Gateway Kartplex \u2014 WWT complex"
+        ],
+        "environmentVariants": 3
+      }
+    ]
+  },
+  "seams": {
+    "reports": [
+      {
+        "race": "Col de Turini",
+        "ref": "skybox-col-de-turini",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "aa5454112484922515ba308938fd58b8aa732541d2f935cf0d998af5012ee7a4",
+        "seamMeanRGB": 0.5131964809384165,
+        "seamSkyMeanRGB": 0.5082956259426848,
+        "seamMaximumRGB": 1,
+        "seam": {
+          "meanRGB": 0.5131964809384165,
+          "skyMeanRGB": 0.5082956259426848,
+          "maximumRGB": 1,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Nurburgring Nordschleife",
+        "ref": "skybox-eifel-circuit",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "26c4485d9fc5712b062b17286c2c60976d43bbe3a79f145df6a6139fab6a38af",
+        "seamMeanRGB": 0.5151515151515156,
+        "seamSkyMeanRGB": 0.5052790346907996,
+        "seamMaximumRGB": 1,
+        "seam": {
+          "meanRGB": 0.5151515151515156,
+          "skyMeanRGB": 0.5052790346907996,
+          "maximumRGB": 1,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Ouninpohja",
+        "ref": "environment-v1-ouninpohja-boreal-noon",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "fdf6c123540e4681f136f15eba90a2e894414299f3930416621732ae3185c879",
+        "seamMeanRGB": 10.1505376344086,
+        "seamSkyMeanRGB": 2.19155354449472,
+        "seamMaximumRGB": 141.66666666666666,
+        "seam": {
+          "meanRGB": 10.1505376344086,
+          "skyMeanRGB": 2.19155354449472,
+          "maximumRGB": 141.66666666666666,
+          "largeJumpFraction": 0.017595307917888565,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Laurel Highlands Scenic Byway",
+        "ref": "environment-v1-laurel-ohiopyle-evening",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "84d15645b904c6432b23df8632d3e233185bfe4ee444ad5bba454296de9c99d5",
+        "seamMeanRGB": 9.422287390029318,
+        "seamSkyMeanRGB": 3.389140271493212,
+        "seamMaximumRGB": 86.33333333333333,
+        "seam": {
+          "meanRGB": 9.422287390029318,
+          "skyMeanRGB": 3.389140271493212,
+          "maximumRGB": 86.33333333333333,
+          "largeJumpFraction": 0.005865102639296188,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Ohio River Crossing",
+        "ref": "environment-v1-ohio-little-muskingum-storm",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "ea05e612402ea26710d24b9d369f1443ebb696e1eaee26cf3e12d411fb09b01a",
+        "seamMeanRGB": 5.893450635386124,
+        "seamSkyMeanRGB": 5.791855203619913,
+        "seamMaximumRGB": 39.666666666666664,
+        "seam": {
+          "meanRGB": 5.893450635386124,
+          "skyMeanRGB": 5.791855203619913,
+          "maximumRGB": 39.666666666666664,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Ozark Backroads",
+        "ref": "environment-v1-ozark-eminence-day",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "16de968bc0bda9fb7ef92f6e467095e61dd363b563cd20ed901aca06efccc465",
+        "seamMeanRGB": 5.56598240469208,
+        "seamSkyMeanRGB": 1.301659125188537,
+        "seamMaximumRGB": 69.66666666666667,
+        "seam": {
+          "meanRGB": 5.56598240469208,
+          "skyMeanRGB": 1.301659125188537,
+          "maximumRGB": 69.66666666666667,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Data Center City",
+        "ref": "environment-v1-stl-riverfront-night",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "267288e7e9974bccb063c29e52bf709543b0f38f8307f337453110e505b4630d",
+        "seamMeanRGB": 6.236559139784947,
+        "seamSkyMeanRGB": 3.886877828054299,
+        "seamMaximumRGB": 113,
+        "seam": {
+          "meanRGB": 6.236559139784947,
+          "skyMeanRGB": 3.886877828054299,
+          "maximumRGB": 113,
+          "largeJumpFraction": 0.005865102639296188,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Historic Route 66",
+        "ref": "environment-v1-route66-erick-texola",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "4ca5991348254c8e901c2504be2d43f14022c1cee040d4dfb476ad0b5c4380df",
+        "seamMeanRGB": 5.022482893450636,
+        "seamSkyMeanRGB": 1.6983408748114621,
+        "seamMaximumRGB": 39.666666666666664,
+        "seam": {
+          "meanRGB": 5.022482893450636,
+          "skyMeanRGB": 1.6983408748114621,
+          "maximumRGB": 39.666666666666664,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Moki Dugway",
+        "ref": "environment-v1-moki-cedar-mesa-day",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "cc88e54f870306c5011aa3e937641624a70fea8fe14a926a1d39a644bca09d02",
+        "seamMeanRGB": 6.173998044965783,
+        "seamSkyMeanRGB": 1.6455505279034692,
+        "seamMaximumRGB": 48.333333333333336,
+        "seam": {
+          "meanRGB": 6.173998044965783,
+          "skyMeanRGB": 1.6455505279034692,
+          "maximumRGB": 48.333333333333336,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      },
+      {
+        "race": "Old Staples Road",
+        "ref": "environment-v1-old-staples-woodland-day",
+        "width": 1024,
+        "height": 341,
+        "pixelHash": "d8f4fa33a9ea56e429f596a295e6f9c4add56d94ab8e9bb532bf37eced0e3e3e",
+        "seamMeanRGB": 9.199413489736068,
+        "seamSkyMeanRGB": 4.144796380090498,
+        "seamMaximumRGB": 87.66666666666667,
+        "seam": {
+          "meanRGB": 9.199413489736068,
+          "skyMeanRGB": 4.144796380090498,
+          "maximumRGB": 87.66666666666667,
+          "largeJumpFraction": 0.005865102639296188,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualSeamReviewRequired": true
+      }
+    ],
+    "groundReports": [
+      {
+        "ref": "environment-v1-ground-finnish-boreal-verge",
+        "width": 512,
+        "height": 512,
+        "pixelHash": "8ef8e3ac38e0c6ce4dc5b1f4b2744f3e006bff495b0eea246341ae69eaa36617",
+        "horizontal": {
+          "meanRGB": 21.752604166666675,
+          "skyMeanRGB": 21.275100401606426,
+          "maximumRGB": 82.33333333333333,
+          "largeJumpFraction": 0.001953125,
+          "numericWarning": true,
+          "visualReviewRequired": true
+        },
+        "vertical": {
+          "meanRGB": 23.16666666666665,
+          "skyMeanRGB": 23.116465863453808,
+          "maximumRGB": 98,
+          "largeJumpFraction": 0.015625,
+          "numericWarning": true,
+          "visualReviewRequired": true
+        },
+        "visualTileReviewRequired": true
+      },
+      {
+        "ref": "environment-v1-ground-ohio-wet-leaf-litter",
+        "width": 512,
+        "height": 512,
+        "pixelHash": "10535046f83f8948f664266d3a062b26c2a6760dfdbd0131b608883f0b87676c",
+        "horizontal": {
+          "meanRGB": 9.904296875,
+          "skyMeanRGB": 10.92269076305221,
+          "maximumRGB": 89.33333333333333,
+          "largeJumpFraction": 0.00390625,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "vertical": {
+          "meanRGB": 16.694010416666675,
+          "skyMeanRGB": 16.789156626506035,
+          "maximumRGB": 80.66666666666667,
+          "largeJumpFraction": 0.00390625,
+          "numericWarning": true,
+          "visualReviewRequired": true
+        },
+        "visualTileReviewRequired": true
+      },
+      {
+        "ref": "environment-v1-ground-dormant-prairie",
+        "width": 512,
+        "height": 512,
+        "pixelHash": "33337a856624d1e05c710448c83f4fea48f052659e0a72368afada62765a0880",
+        "horizontal": {
+          "meanRGB": 32.27213541666668,
+          "skyMeanRGB": 32.745983935742956,
+          "maximumRGB": 171,
+          "largeJumpFraction": 0.07421875,
+          "numericWarning": true,
+          "visualReviewRequired": true
+        },
+        "vertical": {
+          "meanRGB": 32.03059895833333,
+          "skyMeanRGB": 33.7670682730924,
+          "maximumRGB": 130.66666666666666,
+          "largeJumpFraction": 0.072265625,
+          "numericWarning": true,
+          "visualReviewRequired": true
+        },
+        "visualTileReviewRequired": true
+      },
+      {
+        "ref": "grass",
+        "width": 32,
+        "height": 32,
+        "pixelHash": "f37b5d5ab9ccd8fd0d530f79d7100e853cd88b5146cd835a30aa3ba0cbb8b35a",
+        "horizontal": {
+          "meanRGB": 2.7916666666666665,
+          "skyMeanRGB": 0,
+          "maximumRGB": 44.666666666666664,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "vertical": {
+          "meanRGB": 0,
+          "skyMeanRGB": 0,
+          "maximumRGB": 0,
+          "largeJumpFraction": 0,
+          "numericWarning": false,
+          "visualReviewRequired": true
+        },
+        "visualTileReviewRequired": true
+      }
+    ]
+  },
+  "exposureDiagnosis": {
+    "method": "Matched native raw and full parallax captures at unchanged authored settings, actual visibility and composite-target diagnostics. Known existing providence sky uses BOTH temporary diagnostic refs; both restored. No saved race altered by diagnostic.",
+    "Ohio": "900m visibility: skyVisibilityOpacity=1, zero transmitted sky contrast; flat gray is intentional distant-sky extinction, not failed PNG loading.",
+    "City": "2200m visibility gives opacity .8804996959946955; .05 sky brightness limits full 255-level artwork contrast to 1.523628876067633. Asset brightening alone cannot make horizon readable.",
+    "proposalNotImplemented": "If readable distant horizons are required under these authored settings, a separately approved sky-display contrast/visibility policy is needed. It must not change world lighting, fog, weather, physics or mission behavior. No proposal code implemented in this pass."
+  },
+  "limits": [
+    "Independent sky compositing is not driving or route-wide terrain acceptance.",
+    "Newly authored prairie and woodland imagery is source-grounded illustration, not a claim that every building or tree is surveyed.",
+    "Free-race selector reachability is distinct from Old Staples known baseline test-server transport failure."
+  ],
+  "checks": {
+    "units": {
+      "passed": 86,
+      "failed": 0,
+      "log": "/tmp/race-pack3-final-units.log",
+      "snowDiagnosticVisible": true
+    },
+    "campaignBrowsers": {
+      "passed": 6,
+      "failed": 0,
+      "log": "/tmp/race-pack3-campaign-browser.log",
+      "environment": "System Chromium/ANGLE SwiftShader; same workflow spec and one worker; local launch config only"
+    },
+    "independentRenderer": {
+      "passed": 2,
+      "bindings": 10,
+      "yawsPerSize": 6,
+      "artifacts": "/tmp/race-environment-pack3-final-renderer",
+      "note": "Real MenuResources choices verified for every bound ref. No driving acceptance."
+    },
+    "manifest": {
+      "documents": 1569,
+      "assets": 16,
+      "log": "/tmp/race-pack3-manifest.log"
+    },
+    "preservation": {
+      "races": 245,
+      "passed": true,
+      "log": "/tmp/race-pack3-preservation-final.log"
+    },
+    "sky100": {
+      "passed": 2,
+      "failed": 0,
+      "races": 4,
+      "log": "/tmp/race-pack3-sky100.log",
+      "artifacts": "/tmp/race-environment-pack3-sky100"
+    },
+    "merged": {
+      "base": "24b3164e4b7765482a9b819e6968f821b452b344",
+      "units": {
+        "passed": 86,
+        "failed": 0,
+        "log": "/tmp/race-pack3-merged-units.log"
+      },
+      "campaignBrowsers": {
+        "passed": 6,
+        "failed": 0,
+        "log": "/tmp/race-pack3-merged-browser.log",
+        "artifacts": "/tmp/race-pack3-merged-campaign-browser"
+      },
+      "manifest": {
+        "documents": 1593,
+        "assets": 16,
+        "log": "/tmp/race-pack3-merged-manifest.log"
+      },
+      "preservation": {
+        "races": 245,
+        "passed": true,
+        "log": "/tmp/race-pack3-merged-preservation.log"
+      }
+    }
+  },
+  "matchedRenderMeasurements": [
+    {
+      "race": "Historic Route 66",
+      "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-8181ef4f052d27bd-state.json",
+      "weather": {
+        "id": "clear",
+        "label": "Clear",
+        "visualIntensity": 0,
+        "targetIntensity": 0,
+        "buildup": 0,
+        "effectiveIntensity": 0,
+        "precipitationIntensity": 0,
+        "snowDepthInches": 0,
+        "visibilityDistanceM": 2200,
+        "visibilityStrength": 0,
+        "visibilityColor": "rgba(0,0,0,0)",
+        "visibilityNearAlpha": 0,
+        "visibilityFarAlpha": 0
+      },
+      "visibilityOpacity": 0.8804996959946955,
+      "maximumArtworkContrast": 12.798482558968116,
+      "controls": [
+        {
+          "artRef": "environment-v1-route66-erick-texola",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 32,
+            "max": 250,
+            "mean": 154.71902421652422
+          },
+          "compositeStats": {
+            "min": 52,
+            "max": 64,
+            "mean": 58.14971153846154
+          }
+        },
+        {
+          "artRef": "providence",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 89.65845441595441
+          },
+          "compositeStats": {
+            "min": 48,
+            "max": 65,
+            "mean": 55.04659188034188
+          }
+        }
+      ],
+      "compositeTargetRedirected": false
+    },
+    {
+      "race": "Laurel Highlands Scenic Byway",
+      "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-791513cf0aa0fbeb-state.json",
+      "weather": {
+        "id": "clear",
+        "label": "Clear",
+        "visualIntensity": 0,
+        "targetIntensity": 0,
+        "buildup": 0,
+        "effectiveIntensity": 0,
+        "precipitationIntensity": 0,
+        "snowDepthInches": 0,
+        "visibilityDistanceM": 2200,
+        "visibilityStrength": 0,
+        "visibilityColor": "rgba(0,0,0,0)",
+        "visibilityNearAlpha": 0,
+        "visibilityFarAlpha": 0
+      },
+      "visibilityOpacity": 0.8804996959946955,
+      "maximumArtworkContrast": 12.798482558968116,
+      "controls": [
+        {
+          "artRef": "environment-v1-laurel-ohiopyle-evening",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 10,
+            "max": 255,
+            "mean": 151.54357193732193
+          },
+          "compositeStats": {
+            "min": 49,
+            "max": 65,
+            "mean": 58.09673076923077
+          }
+        },
+        {
+          "artRef": "providence",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 89.65845441595441
+          },
+          "compositeStats": {
+            "min": 48,
+            "max": 65,
+            "mean": 55.04659188034188
+          }
+        }
+      ],
+      "compositeTargetRedirected": false
+    },
+    {
+      "race": "Ohio River Crossing",
+      "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-fcd5f9509ef8055c-state.json",
+      "weather": {
+        "id": "storm",
+        "label": "Storm",
+        "visualIntensity": 0.85,
+        "targetIntensity": 0.85,
+        "buildup": 0,
+        "effectiveIntensity": 0,
+        "precipitationIntensity": 0.85,
+        "snowDepthInches": 0,
+        "visibilityDistanceM": 900,
+        "visibilityStrength": 0.8030000082013435,
+        "visibilityColor": "39,52,62",
+        "visibilityNearAlpha": 0.02007500020503359,
+        "visibilityFarAlpha": 0.7227000073812092
+      },
+      "visibilityOpacity": 1,
+      "maximumArtworkContrast": 0,
+      "controls": [
+        {
+          "artRef": "environment-v1-ohio-little-muskingum-storm",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 18,
+            "max": 253,
+            "mean": 82.71700142450142
+          },
+          "compositeStats": {
+            "min": 54,
+            "max": 60,
+            "mean": 57
+          }
+        },
+        {
+          "artRef": "providence",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 89.62199074074074
+          },
+          "compositeStats": {
+            "min": 54,
+            "max": 60,
+            "mean": 57
+          }
+        }
+      ],
+      "compositeTargetRedirected": false
+    },
+    {
+      "race": "Data Center City",
+      "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/stl-riverfront-night-state.json",
+      "weather": {
+        "id": "clear",
+        "label": "Clear",
+        "visualIntensity": 0,
+        "targetIntensity": 0,
+        "buildup": 0,
+        "effectiveIntensity": 0,
+        "precipitationIntensity": 0,
+        "snowDepthInches": 0,
+        "visibilityDistanceM": 2200,
+        "visibilityStrength": 0,
+        "visibilityColor": "rgba(0,0,0,0)",
+        "visibilityNearAlpha": 0,
+        "visibilityFarAlpha": 0
+      },
+      "visibilityOpacity": 0.8804996959946955,
+      "maximumArtworkContrast": 1.523628876067633,
+      "controls": [
+        {
+          "artRef": "environment-v1-stl-riverfront-night",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 46.42508547008547
+          },
+          "compositeStats": {
+            "min": 6,
+            "max": 8,
+            "mean": 6.430876068376068
+          }
+        },
+        {
+          "artRef": "providence",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 89.60252136752136
+          },
+          "compositeStats": {
+            "min": 6,
+            "max": 8,
+            "mean": 6.708603988603989
+          }
+        }
+      ],
+      "compositeTargetRedirected": false
+    },
+    {
+      "race": "Historic Route 66",
+      "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-8181ef4f052d27bd-state.json",
+      "weather": {
+        "id": "clear",
+        "label": "Clear",
+        "visualIntensity": 0,
+        "targetIntensity": 0,
+        "buildup": 0,
+        "effectiveIntensity": 0,
+        "precipitationIntensity": 0,
+        "snowDepthInches": 0,
+        "visibilityDistanceM": 2200,
+        "visibilityStrength": 0,
+        "visibilityColor": "rgba(0,0,0,0)",
+        "visibilityNearAlpha": 0,
+        "visibilityFarAlpha": 0
+      },
+      "visibilityOpacity": 0.8804996959946955,
+      "maximumArtworkContrast": 12.798482558968116,
+      "controls": [
+        {
+          "artRef": "environment-v1-route66-erick-texola",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 24,
+            "max": 253,
+            "mean": 154.37061848958334
+          },
+          "compositeStats": {
+            "min": 52,
+            "max": 64,
+            "mean": 58.135441080729166
+          }
+        },
+        {
+          "artRef": "providence",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 85.01906792534722
+          },
+          "compositeStats": {
+            "min": 48,
+            "max": 64,
+            "mean": 54.83912814670139
+          }
+        }
+      ],
+      "compositeTargetRedirected": false
+    },
+    {
+      "race": "Laurel Highlands Scenic Byway",
+      "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-791513cf0aa0fbeb-state.json",
+      "weather": {
+        "id": "clear",
+        "label": "Clear",
+        "visualIntensity": 0,
+        "targetIntensity": 0,
+        "buildup": 0,
+        "effectiveIntensity": 0,
+        "precipitationIntensity": 0,
+        "snowDepthInches": 0,
+        "visibilityDistanceM": 2200,
+        "visibilityStrength": 0,
+        "visibilityColor": "rgba(0,0,0,0)",
+        "visibilityNearAlpha": 0,
+        "visibilityFarAlpha": 0
+      },
+      "visibilityOpacity": 0.8804996959946955,
+      "maximumArtworkContrast": 12.798482558968116,
+      "controls": [
+        {
+          "artRef": "environment-v1-laurel-ohiopyle-evening",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 5,
+            "max": 255,
+            "mean": 148.25769205729168
+          },
+          "compositeStats": {
+            "min": 49,
+            "max": 65,
+            "mean": 57.96611707899306
+          }
+        },
+        {
+          "artRef": "providence",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 85.01906792534722
+          },
+          "compositeStats": {
+            "min": 48,
+            "max": 64,
+            "mean": 54.83912814670139
+          }
+        }
+      ],
+      "compositeTargetRedirected": false
+    },
+    {
+      "race": "Ohio River Crossing",
+      "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-fcd5f9509ef8055c-state.json",
+      "weather": {
+        "id": "storm",
+        "label": "Storm",
+        "visualIntensity": 0.85,
+        "targetIntensity": 0.85,
+        "buildup": 0,
+        "effectiveIntensity": 0,
+        "precipitationIntensity": 0.85,
+        "snowDepthInches": 0,
+        "visibilityDistanceM": 900,
+        "visibilityStrength": 0.8030000082013435,
+        "visibilityColor": "39,52,62",
+        "visibilityNearAlpha": 0.02007500020503359,
+        "visibilityFarAlpha": 0.7227000073812092
+      },
+      "visibilityOpacity": 1,
+      "maximumArtworkContrast": 0,
+      "controls": [
+        {
+          "artRef": "environment-v1-ohio-little-muskingum-storm",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 17,
+            "max": 253,
+            "mean": 77.77849663628473
+          },
+          "compositeStats": {
+            "min": 54,
+            "max": 60,
+            "mean": 57
+          }
+        },
+        {
+          "artRef": "providence",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 84.99692762586805
+          },
+          "compositeStats": {
+            "min": 54,
+            "max": 60,
+            "mean": 57
+          }
+        }
+      ],
+      "compositeTargetRedirected": false
+    },
+    {
+      "race": "Data Center City",
+      "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/stl-riverfront-night-state.json",
+      "weather": {
+        "id": "clear",
+        "label": "Clear",
+        "visualIntensity": 0,
+        "targetIntensity": 0,
+        "buildup": 0,
+        "effectiveIntensity": 0,
+        "precipitationIntensity": 0,
+        "snowDepthInches": 0,
+        "visibilityDistanceM": 2200,
+        "visibilityStrength": 0,
+        "visibilityColor": "rgba(0,0,0,0)",
+        "visibilityNearAlpha": 0,
+        "visibilityFarAlpha": 0
+      },
+      "visibilityOpacity": 0.8804996959946955,
+      "maximumArtworkContrast": 1.523628876067633,
+      "controls": [
+        {
+          "artRef": "environment-v1-stl-riverfront-night",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 45.01014105902778
+          },
+          "compositeStats": {
+            "min": 6,
+            "max": 8,
+            "mean": 6.423987630208333
+          }
+        },
+        {
+          "artRef": "providence",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 84.98506673177083
+          },
+          "compositeStats": {
+            "min": 6,
+            "max": 8,
+            "mean": 6.681113823784722
+          }
+        }
+      ],
+      "compositeTargetRedirected": false
+    }
+  ],
+  "visualInspection": {
+    "newSources": "Cold-season Laurel source inspected; initial summer foliage draft retained but not bound. Prairie horizon and dormant loam/grass source inspected.",
+    "nativeProjection": "Laurel and Route66 native raw panoramas inspected across desktop/handheld-sized diagnostic frames. Native vertical edge clamping visible below artwork; full driving ground/horizon coverage still required.",
+    "ground": "Prairie native 2x2 repeated texture inspected: no prominent straight seam, repeated motif and actual driving scale still need scene review.",
+    "fullComposite": "Laurel and Route66 preserve silhouettes only faintly under existing 2200m visibility/evening .42. Ohio extinguishes all distant art; City near-black. No route-wide environment QA flags granted."
+  },
+  "orchestrationNotes": [
+    "First unit invocation overlapped the final Route66 binding and saw old registry/new race bytes; retained log /tmp/race-pack3-units.log. Final immutable art checkpoint rerun passed all 86.",
+    "First matched control changed only settings.artRef, which runtime direct skyboxArtRef overrides. Corrected both temporary refs and asserted effective ref; final raw means differ and full-weather comparison is valid. Earlier captures retained."
+  ],
+  "diskAvailableBytes": 4904050688,
+  "integration": {
+    "verifiedLiveStaging": "24b3164e4b7765482a9b819e6968f821b452b344",
+    "merge": "ccb60212a0d38b5989dcffa70f4aaae0126397ed",
+    "conflict": "manifest.json only; exact recursive three-way union retained every entry from both parents; conflicts other than additive/equal/base-preserving changes would abort.",
+    "raceAndSharedRuntimeDeltaFromPriorBase": "None in landed staging batch.",
+    "carDiffAgainstNewStaging": "Empty; paused newer cars excluded."
+  },
+  "currentBase": "24b3164e4b7765482a9b819e6968f821b452b344",
+  "route66Driving": [
+    {
+      "commit": "fc34261932b269bcd37773089cf7f02f6a26756f",
+      "mobile": false,
+      "path": "/tmp/race-pack3-route66-driving/race-environments-diagnosi-02d58-desktop-baseline-comparison/diagnosis.json",
+      "events": [
+        {
+          "ms": 6463,
+          "type": "ready",
+          "value": {
+            "ready": true,
+            "state": "menu-player",
+            "status": "Ready",
+            "diagnostics": null,
+            "warmup": null,
+            "deferredArtWorker": false,
+            "session": null,
+            "sky": "providence",
+            "renderer": false
+          }
+        },
+        {
+          "ms": 99226,
+          "type": "travel-return",
+          "value": {
+            "started": true,
+            "state": {
+              "ready": true,
+              "state": "race-editor",
+              "status": "Playtesting Historic Route 66 in RTG-001",
+              "error": "",
+              "diagnostics": {
+                "requestId": 1,
+                "cacheKey": "",
+                "raceName": "Historic Route 66",
+                "phase": "starting-race",
+                "progress": 0.997,
+                "elapsedMs": 80439.89999999851,
+                "missingArtRefs": [],
+                "status": "running"
+              },
+              "warmup": {
+                "frames": 2,
+                "surfacePrepared": false,
+                "exit": null,
+                "age": 389.69999999552965
+              },
+              "deferredArtWorker": false,
+              "session": {
+                "running": true,
+                "pending": true,
+                "elapsed": 0,
+                "speed": 0,
+                "intro": true,
+                "countdown": 6000,
+                "paused": false
+              },
+              "sky": "environment-v1-route66-erick-texola",
+              "renderer": true
+            }
+          }
+        },
+        {
+          "ms": 102598,
+          "type": "final",
+          "value": {
+            "ready": true,
+            "state": "prompt",
+            "status": "Race did not present its first playable frame",
+            "error": "",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Historic Route 66",
+              "phase": "starting-race",
+              "progress": 0.997,
+              "elapsedMs": 80439.89999999851,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "warmup": {
+              "frames": 9,
+              "surfacePrepared": false,
+              "exit": null,
+              "age": 3773.39999999851
+            },
+            "deferredArtWorker": false,
+            "session": null,
+            "sky": "environment-v1-route66-erick-texola",
+            "renderer": true
+          }
+        }
+      ]
+    },
+    {
+      "commit": "fc34261932b269bcd37773089cf7f02f6a26756f",
+      "mobile": true,
+      "path": "/tmp/race-pack3-route66-driving/race-environments-diagnosi-c50ce-andheld-baseline-comparison/diagnosis.json",
+      "events": [
+        {
+          "ms": 5065,
+          "type": "ready",
+          "value": {
+            "ready": true,
+            "state": "menu-player",
+            "status": "Ready",
+            "diagnostics": null,
+            "warmup": null,
+            "deferredArtWorker": false,
+            "session": null,
+            "sky": "providence",
+            "renderer": false
+          }
+        },
+        {
+          "ms": 96794,
+          "type": "travel-return",
+          "value": {
+            "started": true,
+            "state": {
+              "ready": true,
+              "state": "race-editor",
+              "status": "Playtesting Historic Route 66 in RTG-001",
+              "error": "",
+              "diagnostics": {
+                "requestId": 1,
+                "cacheKey": "",
+                "raceName": "Historic Route 66",
+                "phase": "starting-race",
+                "progress": 0.997,
+                "elapsedMs": 77636.79999999702,
+                "missingArtRefs": [],
+                "status": "running"
+              },
+              "warmup": {
+                "frames": 2,
+                "surfacePrepared": false,
+                "exit": null,
+                "age": 886.8000000044703
+              },
+              "deferredArtWorker": false,
+              "session": {
+                "running": true,
+                "pending": true,
+                "elapsed": 0,
+                "speed": 0,
+                "intro": true,
+                "countdown": 6000,
+                "paused": false
+              },
+              "sky": "environment-v1-route66-erick-texola",
+              "renderer": true
+            }
+          }
+        },
+        {
+          "ms": 97924,
+          "type": "final",
+          "value": {
+            "ready": true,
+            "state": "prompt",
+            "status": "Race did not present its first playable frame",
+            "error": "",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Historic Route 66",
+              "phase": "starting-race",
+              "progress": 0.997,
+              "elapsedMs": 77636.79999999702,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "warmup": {
+              "frames": 2,
+              "surfacePrepared": false,
+              "exit": null,
+              "age": 2024.2000000029802
+            },
+            "deferredArtWorker": false,
+            "session": null,
+            "sky": "environment-v1-route66-erick-texola",
+            "renderer": true
+          }
+        }
+      ]
+    }
+  ],
+  "route66DrivingInterpretation": "Both devices failed first playable frame with missingArtRefs empty; no moving acceptance. No matched Route66 baseline run this pass, so baseline causation is not claimed for this route.",
+  "sky100Authorization": "Rob 2026-11-15 06:07 UTC: diagnostic-only separate sky brightness; no release/default/world/weather change.",
+  "sky100Measurements": [
+    {
+      "race": "Historic Route 66",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-8181ef4f052d27bd-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 125,
+            "max": 152,
+            "mean": 138.6224002849003
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 32,
+            "max": 250,
+            "mean": 154.71902421652422
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 0.8804996959946955
+    },
+    {
+      "race": "Laurel Highlands Scenic Byway",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-791513cf0aa0fbeb-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 116,
+            "max": 155,
+            "mean": 138.48050925925926
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 10,
+            "max": 255,
+            "mean": 151.54357193732193
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 0.8804996959946955
+    },
+    {
+      "race": "Ohio River Crossing",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-fcd5f9509ef8055c-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 129,
+            "max": 142,
+            "mean": 136
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 18,
+            "max": 253,
+            "mean": 82.71700142450142
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 1
+    },
+    {
+      "race": "Data Center City",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-73a10-ent-sky-compositor-handheld/stl-riverfront-night-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 114,
+            "max": 154,
+            "mean": 126.1627849002849
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 0,
+            "max": 255,
+            "mean": 46.42508547008547
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.05,
+      "visibilityOpacity": 0.8804996959946955
+    },
+    {
+      "race": "Historic Route 66",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-8181ef4f052d27bd-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 125,
+            "max": 153,
+            "mean": 138.58952528211805
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 24,
+            "max": 253,
+            "mean": 154.37061848958334
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 0.8804996959946955
+    },
+    {
+      "race": "Laurel Highlands Scenic Byway",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-791513cf0aa0fbeb-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 116,
+            "max": 155,
+            "mean": 138.16442274305555
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 5,
+            "max": 255,
+            "mean": 148.25769205729168
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 0.8804996959946955
+    },
+    {
+      "race": "Ohio River Crossing",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-fcd5f9509ef8055c-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 129,
+            "max": 142,
+            "mean": 136
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 17,
+            "max": 253,
+            "mean": 77.77849663628473
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.42,
+      "visibilityOpacity": 1
+    },
+    {
+      "race": "Data Center City",
+      "path": "/tmp/race-environment-pack3-sky100/race-environments-renderer-2ff25-dent-sky-compositor-desktop/stl-riverfront-night-state.json",
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 114,
+            "max": 154,
+            "mean": 126.00858127170139
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 0,
+            "max": 255,
+            "mean": 45.01014105902778
+          }
+        }
+      },
+      "authoredSkyBrightness": 0.05,
+      "visibilityOpacity": 0.8804996959946955
+    }
+  ],
+  "sky100Review": "Desktop City 100%-brightness/with-weather and raw/no-fog captures inspected: clean colorful night riverfront is present in raw art and visible but heavily washed by authored fog at 100%. Laurel same matched pair inspected. No production-view acceptance; paired diagnostic renders preserve world lighting/weather and restore authored sky brightness. Both automated sizes passed for four focus races. Handheld City raw/with-weather pair also inspected with the same outcome.",
+  "nextCheckpoint": [
+    "Continue remaining physical-site packs using source coordinates/layout evidence and shared suitable substrates; 235 rows still unbound.",
+    "Keep sky-only art/framing review separate from authored full scene and actual moving desktop/handheld acceptance.",
+    "Preserve baseline startup evidence; do not patch runtime deadlines in this art branch.",
+    "A production sky-display visibility policy remains a separate unresolved decision; diagnostic-only brightness authorization is not a changed release default."
+  ]
+}

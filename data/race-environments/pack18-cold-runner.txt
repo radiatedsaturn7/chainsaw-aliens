@@ -1,0 +1,12 @@
+#!/bin/bash
+cd /workspace/roster-combined-local || exit 1
+for variant in ground-only tiles-only; do
+ RACE_PROBE_VARIANT=$variant RACE_PROBE_SNAPSHOT=$variant RACE_DRIVE_NAMES='Demo Track' RACE_DRIVE_DISTANCE=20 node_modules/.bin/playwright test tests/playwright/pack18-demo-probe.spec.js --grep desktop --config race-environments-pack16-candidate-local.config.mjs --workers=1 --reporter=line --output /tmp/race-pack18-demo-$variant > /tmp/pack18-demo-$variant.log 2>&1
+ echo "$variant exit=$?"
+done
+for variant in baseline candidate; do
+ ledger=data/race-environments/ledger.json
+ if [ "$variant" = baseline ]; then ledger=/tmp/pack16-baseline-ledger.json; fi
+ RACE_PROBE_LEDGER=$ledger RACE_PROBE_SNAPSHOT=$variant RACE_DRIVE_NAMES='Demo Track' RACE_DRIVE_DISTANCE=20 node_modules/.bin/playwright test tests/playwright/pack18-demo-probe.spec.js --grep desktop --config race-environments-pack16-$variant-local.config.mjs --workers=1 --reporter=line --output /tmp/race-pack18-demo-$variant > /tmp/pack18-demo-$variant.log 2>&1
+ echo "$variant exit=$?"
+done

@@ -1156,9 +1156,9 @@
     "groundRenderer": "webgl-track",
     "groundTextureBaseWorldM": 1.002,
     "groundTextureFilterMode": "balanced",
-    "skyboxArtRef": "providence",
+    "skyboxArtRef": "environment-v1-buse-testing-hills-noon",
     "skyboxSettings": {
-      "artRef": "providence",
+      "artRef": "environment-v1-buse-testing-hills-noon",
       "offsetXTurns": 0,
       "offsetYRatio": 0
     },
@@ -1267,6 +1267,7 @@
         "rejected": 0,
         "refs": {}
       }
-    }
+    },
+    "groundPlaneArtRef": "ground-temperate-grass-v1"
   }
 }

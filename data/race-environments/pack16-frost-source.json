@@ -1,0 +1,10 @@
+{
+  "sourceImage": "/workspace/generated_images/exec-82c08f0e-5cd2-4e4e-989c-98f362262b0d.png",
+  "prompt": "Original badge-free 2994 pixel-art seamless top-down terrain tile, frosted winter grass substrate. Mostly recognizable flattened olive-gray grass blades and dry straw tufts, interwoven with thin irregular white frost and small connected snow patches covering about 35 percent. Clearly grass underneath, not a pure snow sheet, not gravel, no rocks, no road, no text. Cool neutral white frost, natural low-contrast olive turf, no dramatic lighting or shadows. Square seamless repeat on all four edges. Suitable for snowy wooded roadside turf in Rhode Island, New Hampshire and Maritime Alps while grass ground physics remains unchanged.",
+  "material": "grass",
+  "weatherCover": "visible thin frost and patchy snow; not a snow-physics substitute",
+  "originalBytes": 3966513,
+  "originalSha256": "7f17c81e239ca5fe24a12eb501df39446f7f9bf38b02f9f21a7ae046bd4ba027",
+  "canonicalSource": "assets/campaign-art/environment-v1/ground-frosted-grass-v1.png",
+  "canonicalSha256": "7f17c81e239ca5fe24a12eb501df39446f7f9bf38b02f9f21a7ae046bd4ba027"
+}

@@ -1,0 +1,278 @@
+{
+  "schemaVersion": 1,
+  "parentCheckpoint": "93d37c54bb96e59f376de129277d7ad02b4f7b7b",
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "liveBaseCheck": {
+    "method": "git ls-remote origin refs/heads/staging",
+    "sha": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+    "phase": "Read-only checked again at final local checkpoint; same exact staging SHA, no reconciliation required."
+  },
+  "pack": "plains-route66-pack12",
+  "coverage": {
+    "totalRaces": 245,
+    "assigned": 177,
+    "remaining": 68,
+    "newBindings": 20,
+    "newUniqueSkies": 20,
+    "newSourcesManuallyInspected": 20,
+    "newNativeDeviceCases": 40,
+    "newRacesBothNativeDevicesInspected": 20,
+    "newTerrainMaterialCheckedRoutes": 20,
+    "existingSnowRoutes": 18,
+    "existingGrassRoutes": 2,
+    "newAuthoredNightLowExposureRoutes": 4,
+    "newAuthoredHazeRoutes": 2,
+    "fullRouteAcceptanceAdded": 0,
+    "newPackShortProductionSamples": 2,
+    "totalTurnShortProductionPasses": 4,
+    "totalTurnShortProductionFailures": 1
+  },
+  "changes": {
+    "terrain": "Three original material-specific textures: snow/chaparral for 17,952 existing Angeles Forest snow cells; prairie snow/straw for 18 existing snow routes; mixed prairie grass for Sandhills and Bayard. No tile IDs/weights/physics changed.",
+    "roadShoulder": "Every new route active ribbon mapping audited: patched asphalt, gray gravel on Groom gravel segments, packed dirt on Bayard dirt segments. Existing shoulders hidden; no surface or road/shoulder settings changed.",
+    "sky": "Twenty distinct geographic compositions; corrected rejected nighttime daytime drafts and exaggerated plains mesas before import. Original/rejected images retained.",
+    "ppir": "Low distant mountain profile retained; winter field transition and quiet pale bottom boundary materially reduce native extrusion. No renderer change.",
+    "supersession": "Explicit audited skybox-tower-hill and skybox-bayard-noon-2994 records with actual replacement bindings and pinned source/native/review bytes; no generic exemption. Bayard original remains geographically plausible, superseded for local composition specificity.",
+    "qaOnly": "One-race in-memory comparison override; reject silently missing requested QA routes; allow exact multiple base-capture directories without duplicate render runs."
+  },
+  "checks": {
+    "units": {
+      "passed": 112,
+      "failed": 0,
+      "skipped": 0,
+      "log": "/tmp/race-pack12-units.tap",
+      "command": "node --test tests/unit/campaignArtIntegration.test.js tests/unit/americaCampaign.test.js tests/unit/raceTerrainTextureBlend.test.js tests/unit/raceRoadTextures.test.js tests/unit/raceDecals.test.js tests/unit/raceVisualFx.test.js tests/unit/raceEnvironmentVisualContract.test.js tests/unit/raceEnvironmentDrivingControls.test.js",
+      "diagnostics": [
+        "SUPERSEDED ART PRESERVED: skybox-tower-hill",
+        "SUPERSEDED ART PRESERVED: skybox-bayard-noon-2994",
+        "UNUSED CONFIGURED ART: road-snow-patchy"
+      ]
+    },
+    "campaignBrowser": {
+      "passed": 6,
+      "failed": 0,
+      "log": "/tmp/race-pack12-campaign.log",
+      "command": "node_modules/.bin/playwright test tests/playwright/race-road-textures.spec.js --config race-environments-pack12-campaign-local.config.mjs --workers=1 --reporter=line --output /tmp/race-pack12-campaign-browser",
+      "environment": "System Chromium, fresh local port 4305; same six workflow tests."
+    },
+    "manifest": {
+      "documents": 1757,
+      "assets": 16,
+      "passed": true,
+      "log": "/tmp/race-pack12-final-manifest.log"
+    },
+    "preservation": {
+      "races": 245,
+      "passed": true,
+      "report": "/tmp/race-pack12-preservation.json",
+      "scope": "All saved race documents compared with exact base; only allowed art refs differ. Final later changes were image bytes, review/QA metadata and tests, not race semantics."
+    },
+    "native": {
+      "newRoutesAudit": "/tmp/race-pack12-native-audit.json",
+      "newCases": 40,
+      "angelesCorrectionCases": 2,
+      "ppirFinalCorrectionCases": 2,
+      "towerCurrentComparisonCases": 2,
+      "preservedOriginalComparisonCases": 4,
+      "supersededPpirWinterCases": 2,
+      "sourceHashDecodeUniqueness": "/tmp/race-pack12-final-art.json"
+    }
+  },
+  "visualReview": {
+    "sheets": "/tmp/pack12-sheets/",
+    "allSixteenNewRouteSheetsViewed": true,
+    "bayardBothDeviceComparison": "data/race-environments/bayard-review.jpg",
+    "towerBothDeviceComparison": "data/race-environments/tower-hill-review.jpg",
+    "correctiveSheets": "/tmp/pack12-repair-sheets/",
+    "ppirFinalSheets": "/tmp/pack12-sheets/ppir-final-*",
+    "night": "Clear sites use restrained moon/stars selectively; Tower Hill snow uses cloud/snow woodland. Authored .05 skies remain nearly hidden, distinct from unloaded art; no brightness/weather edits.",
+    "haze": "Bayard and Sandhills retain measured native visibilityOpacity 0.4507491389305336; not treated as a missing asset.",
+    "newNumericWrapWarnings": 0,
+    "oldNumericWrapWarnings": [
+      "Oak Creek Canyon",
+      "US 191 — Bluff Blanding",
+      "Shafer Trail — Canyonlands National Park",
+      "Page Springs Road",
+      "Little Tujunga Canyon Road",
+      "Grand Canyon — Desert View Drive"
+    ],
+    "boundaryLimit": "New sky sources still show extended boundary rows in raw extreme-pitch diagnostics. These are reviewed quality gaps, not complete seam acceptance; normal driving coverage is separately listed.",
+    "seamCorrections": [
+      {
+        "ref": "environment-v1-omaha-evening",
+        "beforeMeanRGB": 26.84261974584557,
+        "afterMeanRGB": 14.03812316715541,
+        "beforeWarning": true,
+        "afterWarning": false
+      },
+      {
+        "ref": "environment-v1-oklahomacity-evening",
+        "beforeMeanRGB": 21.71749755620725,
+        "afterMeanRGB": 8.231671554252197,
+        "beforeWarning": true,
+        "afterWarning": false
+      },
+      {
+        "ref": "environment-v1-ppir-noon",
+        "beforeMeanRGB": 6.675464320625614,
+        "afterMeanRGB": 3.8250244379276648,
+        "beforeWarning": false,
+        "afterWarning": false
+      }
+    ],
+    "terrainRepeatsViewed": [
+      "/tmp/pack12-native-ground-repeat.jpg",
+      "/tmp/pack12-plains-snow-native-repeat.jpg"
+    ],
+    "productionObservation": "Bayard noon and PPIR winter horizon fit sampled foreground; neither exposes the diagnostic lower extrusion columns at that normal pose. Groom/Tower night frames intentionally remain dark; no sky readability pass."
+  },
+  "productionDriving": {
+    "summary": "/tmp/race-pack12-final-driving-summary.json",
+    "successfulSamples": [
+      {
+        "file": "/tmp/race-pack12-tower-driving/race-environments-driving--51f1a-authored-foreground-and-sky/driving-state.json",
+        "race": "Tower Hill Road",
+        "device": "handheld",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "displacementM": 19.85160369408162,
+        "timing": {
+          "wallMs": 49408,
+          "simulationMs": 4099.999999999991
+        },
+        "routeProgressM": 20.07923498216953,
+        "elapsedMs": 6133.333333333322,
+        "speedMps": 7.306043,
+        "sky": "environment-v1-tower-hill-snow-night",
+        "brightness": 0.05,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": [
+          {
+            "url": "http://127.0.0.1:4293/__storage/file?folder=art&name=burnoutsmoke",
+            "error": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          }
+        ]
+      },
+      {
+        "file": "/tmp/race-pack12-regional-driving/race-environments-driving--5fe8b-authored-foreground-and-sky/driving-state.json",
+        "race": "Old Route 66 — Groom Conway",
+        "device": "handheld",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "displacementM": 20.228754555460405,
+        "timing": {
+          "wallMs": 42979,
+          "simulationMs": 5766.666666666642
+        },
+        "routeProgressM": 20.006436762585825,
+        "elapsedMs": 7799.999999999974,
+        "speedMps": 6.654597,
+        "sky": "environment-v1-groom-conway-night",
+        "brightness": 0.05,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-pack12-regional-driving/race-environments-driving--79e38-authored-foreground-and-sky/driving-state.json",
+        "race": "Pikes Peak International Raceway — Fountain",
+        "device": "desktop",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "displacementM": 25.01872453451814,
+        "timing": {
+          "wallMs": 7597,
+          "simulationMs": 5949.800000000003
+        },
+        "routeProgressM": 25.005329731899522,
+        "elapsedMs": 8499.699999999995,
+        "speedMps": 10.81475830078125,
+        "sky": "environment-v1-ppir-noon",
+        "brightness": 1,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-pack12-regional-driving/race-environments-driving--84b92-authored-foreground-and-sky/driving-state.json",
+        "race": "Bayard — Road 77 to City Park",
+        "device": "desktop",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "displacementM": 20.576940122944567,
+        "timing": {
+          "wallMs": 8160,
+          "simulationMs": 5299.700000000012
+        },
+        "routeProgressM": 20.54088683747201,
+        "elapsedMs": 8666.233333333357,
+        "speedMps": 14.183387756347656,
+        "sky": "environment-v1-bayard-noon",
+        "brightness": 1,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      }
+    ],
+    "failures": [
+      {
+        "file": "/tmp/race-pack12-tower-driving/race-environments-driving--9c620-authored-foreground-and-sky/failure-state.json",
+        "race": "Tower Hill Road",
+        "device": "desktop",
+        "error": "Error: Normal-input route progress\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m20\u001b[39m\nReceived:    \u001b[31m18.764371192746122\u001b[39m",
+        "note": "Tower Hill desktop moved 18.764 m without corridor failure but missed 20 m / 90 s; no required missing art or page errors."
+      }
+    ],
+    "regionalRunner": {
+      "passed": 3,
+      "failed": 0,
+      "log": "/tmp/race-pack12-regional-driving.log"
+    },
+    "towerRunner": {
+      "passed": 1,
+      "failed": 1,
+      "log": "/tmp/race-pack12-tower-driving.log"
+    },
+    "reviewedAuthoredImages": [
+      "/tmp/pack12-bayard-driving.jpg",
+      "/tmp/pack12-groom-night-pair.jpg",
+      "/tmp/pack12-ppir-final-driving.jpg",
+      "/tmp/pack12-tower-handheld-pair.jpg",
+      "/tmp/pack12-tower-driving-failure.jpg"
+    ],
+    "scope": "Four bounded successful movement samples, not full-route approval. Normal night skies remain nearly hidden. Tower handheld had one aborted burnoutsmoke fetch; regional samples had no page/network errors or missing required art."
+  },
+  "retainedEvidence": [
+    "/tmp/race-pack12-native",
+    "/tmp/race-pack12-repairs-native",
+    "/tmp/race-pack12-ppir-native",
+    "/tmp/race-pack12-ppir-final-native",
+    "/tmp/race-pack12-tower-original",
+    "/tmp/race-pack12-tower-current",
+    "/tmp/race-pack12-bayard-original",
+    "/tmp/race-pack12-tower-driving",
+    "/tmp/race-pack12-regional-driving",
+    "/workspace/generated_images"
+  ],
+  "intermediateFailure": "Pre-binding intent probe correctly rejected newly imported but not-yet-placed ground-snow-chaparral-v1. Final 112-test suite passes after real binding; no guard relaxed.",
+  "remaining": "68 unassigned routes, older seam warnings/terrain debts and broader production/night visibility review remain. No publication or full-project acceptance.",
+  "storage": {
+    "parentReportedStartFreeGiB": 2.712,
+    "measuredPrecommitFreeBytes": 2731053056,
+    "cleanupPerformed": false,
+    "forecast": "Approximately 0.2–0.3 GiB per comparable 20-route pack including retained art/QA/Git; remaining 68 routes likely 0.7–1.1 GiB before extra repair iterations. Estimate only; continue measuring and preserve rollback space."
+  },
+  "remoteWrites": false,
+  "runtimeChanges": false
+}

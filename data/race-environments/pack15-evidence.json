@@ -1,0 +1,341 @@
+{
+  "schemaVersion": 1,
+  "parentCheckpoint": "6363c65a831ac5fb35ea4b13d976ae1e2bc37d52",
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "pack": "islands-legacy-final-pack15",
+  "status": "full binding coverage; global visual/material release gates remain blocked",
+  "coverage": {
+    "totalRaces": 245,
+    "assigned": 245,
+    "remainingUnbound": 0,
+    "uniqueActiveDecodedSkies": 235,
+    "newBindings": 20,
+    "newSourceImagesInspected": 20,
+    "newTerrainTextures": 2,
+    "newMaterialCells": 283541,
+    "emptyDefaultGrassMaps": 4,
+    "fullRouteAcceptanceAdded": 0,
+    "newNativeDeviceCases": 40,
+    "newBothDeviceRoutesInspected": 20,
+    "olderRepairNativeCases": 4,
+    "nativeCaseExecutions": 44,
+    "authoredFogRoutes": 7
+  },
+  "checks": {
+    "preservation": "PASS all245 against exact base",
+    "manifest": "PASS1828 documents16 assets",
+    "decodedArt": "PASS245 opaque decoded skies235 unique hashes;10 documented same-site/layout reuses",
+    "campaignBrowser": "PASS6",
+    "strictReleaseGate": "FAIL Incomplete environment QA: Col de Turini; no flags bypassed",
+    "materialAudit": "FAIL37 known mismatched routes plus95 unclassified routes; disjoint;113 declared cell-material-clean routes are not full visual acceptance",
+    "nativeRenderer": "PASS40 final-pack cases and4 repair cases; all44 manually inspected, visual defects remain",
+    "fullUnits": "FAIL112 pass1 fail113 total0 skip; Campaign art has no actual placement: skybox-angeles-crest",
+    "loadingBrowser": "FAIL1 P1 desktop art transfer;5 passed including portrait P1,3 loading layouts and depth",
+    "representativeDriving": "1 passed1 failed: Haleakala handheld20.1188m; Demo desktop continuity rejection"
+  },
+  "knownMaterialRegression": {
+    "introducedCells": 544295,
+    "introducedNormalRoughSlots": 1088590,
+    "alreadyPresentSlots": 0,
+    "evidence": "pack15-material-blockers.json"
+  },
+  "pending": {
+    "fullUnits": false,
+    "nativeFinal20": false,
+    "nativeRepairs": false,
+    "loadingBrowser": false,
+    "representativeDriving": false
+  },
+  "wrapWarnings": [
+    "Mount Washington Auto Road \u2014 point-to-point Copy",
+    "Studio Sprint",
+    "Studio Sprint Copy",
+    "p1",
+    "Little Tujunga Canyon Road",
+    "Miami, FL \u2014 Landmark Run",
+    "Anchorage, AK \u2014 Landmark Run",
+    "Charleston, SC \u2014 Landmark Run",
+    "Richmond, VA \u2014 Landmark Run",
+    "Tantalus \u2014 Honolulu Heights"
+  ],
+  "repairMetrics": [
+    {
+      "key": "littletujunga-noon",
+      "before": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 13.17034990791897,
+        "edgeMaximumRGB": 125.66666666666667,
+        "topRangeRGB": [
+          12,
+          8,
+          10
+        ],
+        "bottomRangeRGB": [
+          4,
+          4,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "after": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 15.962246777163903,
+        "edgeMaximumRGB": 119.0,
+        "topRangeRGB": [
+          11,
+          6,
+          5
+        ],
+        "bottomRangeRGB": [
+          4,
+          6,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "ozark-eminence-day",
+      "before": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 4.5621546961325965,
+        "edgeMaximumRGB": 44.333333333333336,
+        "topRangeRGB": [
+          7,
+          3,
+          11
+        ],
+        "bottomRangeRGB": [
+          137,
+          115,
+          97
+        ],
+        "warnings": [
+          "bottom-row-extrusion"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "after": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 3.5801104972375692,
+        "edgeMaximumRGB": 44.333333333333336,
+        "topRangeRGB": [
+          6,
+          4,
+          10
+        ],
+        "bottomRangeRGB": [
+          4,
+          5,
+          6
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    }
+  ],
+  "artReview": "All20 source panoramas,2 material sources,40 native raw100/authored/pitch device cases and4 repair cases viewed. Ten active skies trigger numeric wrap warnings, with visible joins and top/bottom bands on multiple others. All route-wide/seam QA flags remain unpromoted. Night0.05 and weather fog are intentional authored constraints, not unloaded art.",
+  "publication": "No push, PR or dispatch; conditional authority is not exercised because global polish/material gates fail.",
+  "preserved": "All original generated images, prior QA, snapshots and paused car work; no deletion, cleanup, runtime, geometry, physics, lighting, weather, main or staging writes.",
+  "nativeEvidence": "/tmp/pack15-native-audit.json",
+  "contactSheets": [
+    "/tmp/pack15-sheets/repairs-exposure-0.jpg",
+    "/tmp/pack15-sheets/new-exposure-3.jpg",
+    "/tmp/pack15-sheets/new-edges-2.jpg",
+    "/tmp/pack15-sheets/new-edges-0.jpg",
+    "/tmp/pack15-sheets/new-exposure-0.jpg",
+    "/tmp/pack15-sheets/new-exposure-1.jpg",
+    "/tmp/pack15-sheets/new-edges-1.jpg",
+    "/tmp/pack15-sheets/repairs-edges-0.jpg",
+    "/tmp/pack15-sheets/new-edges-3.jpg",
+    "/tmp/pack15-sheets/new-exposure-2.jpg"
+  ],
+  "loadingFailure": {
+    "message": "Required artwork could not load: 8300 body, snowsmoke",
+    "phase": "transfer-art",
+    "progress": 0.975,
+    "elapsedMs": 78520.6,
+    "assets": [
+      {
+        "ref": "8300 body",
+        "path": "data/server-storage/files/art/8300 body/document.json",
+        "bytes": 11883195,
+        "identicalToBase": true
+      },
+      {
+        "ref": "snowsmoke",
+        "path": "data/server-storage/files/art/snowsmoke/document.json",
+        "bytes": 5756531,
+        "identicalToBase": true
+      }
+    ],
+    "baselineClaim": "Files unchanged from staging; no untouched-baseline runtime reproduction in this pass. Do not label the failed run baseline-proven.",
+    "portrait": "Passed, started true, missingArtRefs empty, elapsed74541ms"
+  },
+  "unplacedImportedSkies": [
+    "skybox-angeles-crest",
+    "skybox-laurel-highlands",
+    "skybox-mount-washington",
+    "skybox-ohio-river-crossing",
+    "skybox-pikes-peak",
+    "skybox-route-66"
+  ],
+  "usageGateDecision": "Six original skies lost their final inherited placements. All original source/native bytes remain exact. No supersession added without matched original/replacement review; guard remains red, no fake placements or allowlist.",
+  "historicalNativeInventory": {
+    "totalRaces": 245,
+    "historicalReportsFound": 595,
+    "bothDeviceCurrentRef": 245,
+    "scope": "Historical current-reference capture inventory only, not proof of latest same-ref image revision or manual acceptance. Same-ref revisions require dated repair evidence; no acceptance flags changed.",
+    "path": "/tmp/pack15-all-native-inventory.json"
+  },
+  "demoDrivingFailure": {
+    "scope": "Loaded and moved, but rejected by continuity guard before20m; not startup failure or accepted sample.",
+    "trace": "/tmp/race-pack15-driving/race-environments-driving--778f6-authored-foreground-and-sky/distance-trace.json",
+    "frame": "/tmp/race-pack15-driving/race-environments-driving--778f6-authored-foreground-and-sky/failure.png",
+    "elapsedMs": 6666.333333333333,
+    "speedMps": 9.629878044128418,
+    "running": true,
+    "startupFramePending": false,
+    "errors": [],
+    "network": [],
+    "baselineStatus": "Not reproduced on untouched base; do not claim baseline-proven."
+  },
+  "logs": {
+    "fullUnits": "/tmp/pack15-units.tap",
+    "manifest": "/tmp/pack15-manifest.log",
+    "preservation": "/tmp/pack15-preservation.json",
+    "decodedArt": "/tmp/pack15-art.json",
+    "strictReleaseGate": "/tmp/pack15-release-gate.log",
+    "campaignBrowser": "/tmp/pack15-campaign.log",
+    "loadingBrowser": "/tmp/pack15-loading.log",
+    "nativeA": "/tmp/pack15-native-a.log",
+    "nativeB": "/tmp/pack15-native-b.log",
+    "nativeRepairs": "/tmp/pack15-native-repairs.log",
+    "driving": "/tmp/pack15-driving.log",
+    "materialAudit": "/tmp/pack15-material-coverage-final.json"
+  },
+  "disk": {
+    "startingAvailableBytes": 2042167296,
+    "afterStagingAvailableBytes": 1810452480,
+    "scope": "Measured filesystem available bytes; no cleanup or deletion. Final measure reported with checkpoint.",
+    "finalBeforeCommitAvailableBytes": 1813090304
+  },
+  "drivingSummary": {
+    "scope": "Short real-travel and driving samples only. Inspect retained authored frames separately; no route-wide or visual acceptance inferred.",
+    "successes": [
+      {
+        "file": "/tmp/race-pack15-driving/race-environments-driving--ce7e0-authored-foreground-and-sky/driving-state.json",
+        "race": "Haleakala \u2014 Volcano Ascent",
+        "device": "handheld",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "displacementM": 20.071693248132533,
+        "timing": {
+          "wallMs": 72615,
+          "simulationMs": 4133.333333333324
+        },
+        "routeProgressM": 20.118783989490975,
+        "elapsedMs": 6166.666666666655,
+        "speedMps": 7.381027,
+        "sky": "environment-v1-haleakala-morning",
+        "brightness": 0.65,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      }
+    ],
+    "failures": [
+      {
+        "file": "/tmp/race-pack15-driving/race-environments-driving--778f6-authored-foreground-and-sky/failure-state.json",
+        "race": "Demo Track",
+        "device": "desktop",
+        "state": {
+          "state": "race-editor",
+          "status": "Playtesting Demo Track in RTG-001",
+          "error": "",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Demo Track",
+            "phase": "starting-race",
+            "progress": 0.997,
+            "elapsedMs": 25585.69999998808,
+            "missingArtRefs": [],
+            "status": "presented",
+            "firstPlayableFrameAt": 1794752800573
+          },
+          "race": "Demo Track",
+          "sky": "environment-v1-demo-meadow-noon",
+          "weather": {
+            "id": "clear",
+            "label": "Clear",
+            "visualIntensity": 0,
+            "targetIntensity": 0,
+            "buildup": 0,
+            "effectiveIntensity": 0,
+            "precipitationIntensity": 0,
+            "snowDepthInches": 0,
+            "visibilityDistanceM": null,
+            "visibilityStrength": 0,
+            "visibilityColor": "rgba(0,0,0,0)",
+            "visibilityNearAlpha": 0,
+            "visibilityFarAlpha": 0
+          },
+          "fx": {
+            "enabled": false,
+            "preset": "noon",
+            "sunEnabled": true,
+            "sunDisc": true,
+            "sunX": 0.5,
+            "sunY": 0.2,
+            "sunColor": "#fff0cf",
+            "sunSize": 0.012,
+            "sunIntensity": 0.7,
+            "lensFlare": 0.12,
+            "sunGlare": 0.45,
+            "skyBrightness": 1,
+            "tintColor": "#ffffff",
+            "tintAmount": 0,
+            "motionBlur": 0,
+            "speedLines": 0,
+            "speedLineOpacity": 1,
+            "speedLineArtRef": "",
+            "speedLineArtMode": "overlay",
+            "vignette": 0,
+            "speedStartMph": 45,
+            "speedFullMph": 130
+          },
+          "session": {
+            "running": true,
+            "pending": false,
+            "elapsed": 6666.333333333333,
+            "speed": 9.629878044128418,
+            "worldX": 0.0009130000253207982,
+            "worldZ": -92.46928405761719,
+            "camera": "third-person"
+          }
+        },
+        "errors": [],
+        "network": [],
+        "error": "AssertionError [ERR_ASSERTION]: World reset or teleport"
+      }
+    ],
+    "successfulSamples": 1,
+    "failedSamples": 1,
+    "distinctSuccessfulRaces": 1
+  },
+  "drivingVisualReview": "Haleakala authored moving frame and same-pose paused .65/sky100 pair viewed: muted cinder slope and gray-blue horizon, no full-route acceptance. Demo failure frame shows loaded grass/sky and running car, but continuity assertion failed.",
+  "matchedPair": "/tmp/pack15-haleakala-matched-pair.jpg"
+}

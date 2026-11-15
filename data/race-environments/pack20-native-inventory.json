@@ -1,0 +1,3193 @@
+{
+  "totalRaces": 245,
+  "historicalReportsFound": 595,
+  "bothDeviceCurrentRef": 245,
+  "scope": "Historical current-reference capture inventory only, not proof of latest same-ref image revision or manual acceptance. Same-ref revisions require dated repair evidence; no acceptance flags changed.",
+  "rows": [
+    {
+      "race": "Col de Turini",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-1ebbc90566342c0b-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-1ebbc90566342c0b-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Daytona Tri-Oval",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-repairs-native/race-environments-renderer-62160-val-independent-sky-desktop/facility-daytona-50603b2b39-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-repairs-native/race-environments-renderer-8e9d9-al-independent-sky-handheld/facility-daytona-50603b2b39-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Demo Track",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-32634-ack-independent-sky-desktop/site-81f0740150bdd13f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-6ed79-ck-independent-sky-handheld/site-81f0740150bdd13f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Mount Washington Auto Road \u2014 point-to-point",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-9e9c1-int-independent-sky-desktop/site-0a68d934985ab307-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-cc633-nt-independent-sky-handheld/site-0a68d934985ab307-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Mount Washington Auto Road \u2014 point-to-point Copy",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-93e33-opy-independent-sky-desktop/site-af086b4ab458d226-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-7f380-py-independent-sky-handheld/site-af086b4ab458d226-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Nurburgring Nordschleife",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/facility-nordschleife-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/facility-nordschleife-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Ouninpohja",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-4a3a8465fc834db9-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-4a3a8465fc834db9-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Studio Sprint",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-aa963-int-independent-sky-desktop/site-456872ebce92f3df-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-87260-nt-independent-sky-handheld/site-456872ebce92f3df-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Studio Sprint Copy",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-006ea-opy-independent-sky-desktop/site-f5c7b0c80ccaed90-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-98f11-py-independent-sky-handheld/site-f5c7b0c80ccaed90-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Studio Sprint2",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-96550-nt2-independent-sky-desktop/site-24c1bc8192f25476-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-9065f-t2-independent-sky-handheld/site-24c1bc8192f25476-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Tower Hill Road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-d52e3-oad-independent-sky-desktop/site-5a5854749acbb495-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-ca1a7-ad-independent-sky-handheld/site-5a5854749acbb495-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "WeatherTech Raceway Laguna Seca",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-3bec6-eca-independent-sky-desktop/facility-laguna-a8ccedb566-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-c9f44-ca-independent-sky-handheld/facility-laguna-a8ccedb566-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "buse1",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-buse1-independent-sky-desktop/site-17ea1aac9a920747-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-buse1-independent-sky-handheld/site-17ea1aac9a920747-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "p1",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-p1-independent-sky-desktop/site-f64551fcd6f07823-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-p1-independent-sky-handheld/site-f64551fcd6f07823-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "p2loadtest",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-c78bd-est-independent-sky-desktop/site-52108990a32ae764-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-43d4b-st-independent-sky-handheld/site-52108990a32ae764-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Laurel Highlands Scenic Byway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-791513cf0aa0fbeb-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-791513cf0aa0fbeb-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Ohio River Crossing",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-fcd5f9509ef8055c-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-fcd5f9509ef8055c-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Ozark Backroads",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-repairs/race-environments-renderer-7aec3-ads-independent-sky-desktop/ozark-eminence-day-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-repairs/race-environments-renderer-64982-ds-independent-sky-handheld/ozark-eminence-day-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Data Center City",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/stl-riverfront-night-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/stl-riverfront-night-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Historic Route 66",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-8181ef4f052d27bd-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-8181ef4f052d27bd-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Pikes Peak Highway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-repairs-native/race-environments-renderer-8d40d-way-independent-sky-desktop/site-3523547420c4600e-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-repairs-native/race-environments-renderer-e3651-ay-independent-sky-handheld/site-3523547420c4600e-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Moki Dugway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-final/race-environments-renderer-3b365-way-independent-sky-desktop/moki-cedar-mesa-day-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-final/race-environments-renderer-21095-ay-independent-sky-handheld/moki-cedar-mesa-day-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Oak Creek Canyon",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-8b480-yon-independent-sky-desktop/site-89b70e2c2e4e7a94-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-f796f-on-independent-sky-handheld/site-89b70e2c2e4e7a94-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Angeles Crest Highway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-repairs-native/race-environments-renderer-641c4-way-independent-sky-desktop/site-3a5d9f8d30640b34-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-repairs-native/race-environments-renderer-b5c75-ay-independent-sky-handheld/site-3a5d9f8d30640b34-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "RI 116 \u2014 North Smithfield Scituate",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-1add2-ate-independent-sky-desktop/site-931ca89b7a891ab6-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-89ab3-te-independent-sky-handheld/site-931ca89b7a891ab6-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Thompson Speedway \u2014 1.7-mile road course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-642dc-rse-independent-sky-desktop/site-221391234fac4087-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-199be-se-independent-sky-handheld/site-221391234fac4087-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "I-95 \u2014 Attleboro to Warwick curves",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-c86b6-ves-independent-sky-desktop/site-15ddb8bf02ebb77a-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-c8d28-es-independent-sky-handheld/site-15ddb8bf02ebb77a-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "RI 102 \u2014 Victory Highway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-eb9bb-way-independent-sky-desktop/site-810746e752ff427f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-8e55d-ay-independent-sky-handheld/site-810746e752ff427f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Pachaug State Forest \u2014 public gravel access roads",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-ca655-ads-independent-sky-desktop/site-4377bec11798e430-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-d638f-ds-independent-sky-handheld/site-4377bec11798e430-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Seekonk Speedway \u2014 oval",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-5abac-val-independent-sky-desktop/site-74b77eb0a353758c-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-ebee3-al-independent-sky-handheld/site-74b77eb0a353758c-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "RI 44 \u2014 Putnam Pike Glocester",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-64fc1-ter-independent-sky-desktop/site-407f8b96bd290ca5-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-2996a-er-independent-sky-handheld/site-407f8b96bd290ca5-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Lime Rock Park \u2014 Connecticut",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-1ab72-cut-independent-sky-desktop/facility-lime-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-141c4-ut-independent-sky-handheld/facility-lime-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Palmer Motorsports Park \u2014 Massachusetts",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-358bf-tts-independent-sky-desktop/site-03abcca56f0f5592-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-d4148-ts-independent-sky-handheld/site-03abcca56f0f5592-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Kancamagus Highway \u2014 NH 112",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-41a98-112-independent-sky-desktop/site-dfcb58ea4510984b-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-7026c-12-independent-sky-handheld/site-dfcb58ea4510984b-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Bear Notch Road \u2014 Bartlett",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-0740b-ett-independent-sky-desktop/site-996a00e2fcbb5289-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-4555a-tt-independent-sky-handheld/site-996a00e2fcbb5289-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Hurricane Mountain Road \u2014 Conway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-66612-way-independent-sky-desktop/site-affc31958020fbaf-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-94fba-ay-independent-sky-handheld/site-affc31958020fbaf-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Crawford Notch \u2014 US 302",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-df1e9-302-independent-sky-desktop/site-8bddb6a4b297a267-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-ae137-02-independent-sky-handheld/site-8bddb6a4b297a267-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Pinkham Notch \u2014 NH 16",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-2daa3--16-independent-sky-desktop/site-d4f3647ae10043c0-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-a6024-16-independent-sky-handheld/site-d4f3647ae10043c0-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Club Motorsports \u2014 Tamworth",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-d3466-rth-independent-sky-desktop/site-b77b2426c4ac70c2-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-f6570-th-independent-sky-handheld/site-b77b2426c4ac70c2-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Team O\u2019Neil-inspired Rally Stage (2994)",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-376bb-994-independent-sky-desktop/site-6f08eb24ddcc4294-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-40dfe-94-independent-sky-handheld/site-6f08eb24ddcc4294-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "New Hampshire Motor Speedway \u2014 Loudon",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-b12df-don-independent-sky-desktop/site-2e5bd5e7faad72ca-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-510ae-on-independent-sky-handheld/site-2e5bd5e7faad72ca-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "New England Dragway \u2014 Epping",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-3e5b6-ing-independent-sky-desktop/site-5ce2409ff8a9c529-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-renderer/race-environments-renderer-00506-ng-independent-sky-handheld/site-5ce2409ff8a9c529-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "PA 381 \u2014 Ohiopyle approach",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-76b06-ach-independent-sky-desktop/site-ea45982cd0691d1d-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-63d40-ch-independent-sky-handheld/site-ea45982cd0691d1d-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "PA 711 \u2014 Normalville Champion",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-d6f0f-ion-independent-sky-desktop/site-0c07fa38fb04f09c-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-46f50-on-independent-sky-handheld/site-0c07fa38fb04f09c-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "US 40 \u2014 Chalk Hill Summit",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-3ed57-mit-independent-sky-desktop/site-d200c051d2de088c-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-dbf2c-it-independent-sky-handheld/site-d200c051d2de088c-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "PA 31 \u2014 Donegal to Laurel Ridge",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-e508c-dge-independent-sky-desktop/site-972e17deb852af50-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-db525-ge-independent-sky-handheld/site-972e17deb852af50-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "County Line Road \u2014 Seven Springs",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-471f2-ngs-independent-sky-desktop/site-f7da332c258efcfe-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-5f5ff-gs-independent-sky-handheld/site-f7da332c258efcfe-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Forbes State Forest \u2014 designated gravel roads",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-repairs-native/race-environments-renderer-35386-ads-independent-sky-desktop/site-970130995788e0e1-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-repairs-native/race-environments-renderer-52073-ds-independent-sky-handheld/site-970130995788e0e1-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Jennerstown Speedway \u2014 oval",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-05b1b-val-independent-sky-desktop/site-8094a0b0d3afc061-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-28f8d-al-independent-sky-handheld/site-8094a0b0d3afc061-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Keystone Motorsports Park \u2014 New Alexandria",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-repairs-native/race-environments-renderer-8736a-ria-independent-sky-desktop/site-7602d0e9bdf75459-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-repairs-native/race-environments-renderer-df521-ia-independent-sky-handheld/site-7602d0e9bdf75459-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Pittsburgh International Race Complex \u2014 Wampum",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-6470b-pum-independent-sky-desktop/site-b863ba89a6b16f08-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-a3b41-um-independent-sky-handheld/site-b863ba89a6b16f08-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "OH 26 \u2014 Covered Bridge Scenic Byway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-94a03-way-independent-sky-desktop/site-ce967576740b91ba-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-72638-ay-independent-sky-handheld/site-ce967576740b91ba-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "OH 555 \u2014 Triple Nickel",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-bff09-kel-independent-sky-desktop/site-810d6d9e4e9b3ddc-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-d6ef6-el-independent-sky-handheld/site-810d6d9e4e9b3ddc-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "OH 550 \u2014 Barlow approach",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-d49ac-ach-independent-sky-desktop/site-962dcdad0505b546-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-11ccb-ch-independent-sky-handheld/site-962dcdad0505b546-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "OH 536 \u2014 Ohio River hills",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-7ecd9-lls-independent-sky-desktop/site-46654cec16ae2e4b-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-c6a8d-ls-independent-sky-handheld/site-46654cec16ae2e4b-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "OH 676 \u2014 Western county hills",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-616a4-lls-independent-sky-desktop/site-b0105dc9624aeb55-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-b827d-ls-independent-sky-handheld/site-b0105dc9624aeb55-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Marietta\u2013Williamstown \u2014 I-77 river bridge",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-723e6-dge-independent-sky-desktop/site-85f359605453a4d3-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-6f7cb-ge-independent-sky-handheld/site-85f359605453a4d3-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Washington County western covered-bridge gravel loop",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-534fb-oop-independent-sky-desktop/site-2282df3a3baec807-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-3412a-op-independent-sky-handheld/site-2282df3a3baec807-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Ohio Valley Speedway \u2014 Washington, West Virginia",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-c1988-nia-independent-sky-desktop/site-e25b27253b7705c1-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack7-renderer/race-environments-renderer-28b7c-ia-independent-sky-handheld/site-e25b27253b7705c1-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Mid-Ohio Sports Car Course \u2014 Lexington",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-5c3a7-ton-independent-sky-desktop/facility-mid-ohio-4c19cda147-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-152a3-on-independent-sky-handheld/facility-mid-ohio-4c19cda147-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "MO 19 \u2014 Eminence Current River",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-2e5ce-ver-independent-sky-desktop/site-6f7ee9926494c5dd-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-6008d-er-independent-sky-handheld/site-6f7ee9926494c5dd-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "MO 106 \u2014 Alley Spring approach",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-0ac37-ach-independent-sky-desktop/site-609064f37aca1fb7-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-bb229-ch-independent-sky-handheld/site-609064f37aca1fb7-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "MO 106 \u2014 Powder Mill approach",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-c4787-ach-independent-sky-desktop/site-3424a58af1a064f0-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-58bef-ch-independent-sky-handheld/site-3424a58af1a064f0-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "MO V \u2014 Two Rivers access",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-eb3f1-ess-independent-sky-desktop/site-64c6850d56553d64-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-f091d-ss-independent-sky-handheld/site-64c6850d56553d64-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "MO H NN \u2014 Roberts Field access",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-c9c5b-ess-independent-sky-desktop/site-28d57b9433a11920-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-65506-ss-independent-sky-handheld/site-28d57b9433a11920-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Jerktail Landing gravel road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-a6a1b-oad-independent-sky-desktop/site-b84493071fee21ca-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-eea05-ad-independent-sky-handheld/site-b84493071fee21ca-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "US 60 \u2014 Winona Van Buren",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-1e534-ren-independent-sky-desktop/site-4371a2e6ea253028-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-dcf51-en-independent-sky-handheld/site-4371a2e6ea253028-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Glade Top Trail \u2014 Mark Twain National Forest",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-fb5db-est-independent-sky-desktop/site-d82c5ca31f178e1b-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-61fb5-st-independent-sky-handheld/site-d82c5ca31f178e1b-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Ozarks International Raceway \u2014 Gravois Mills",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-d30f4-lls-independent-sky-desktop/site-b21506fb96eb02cd-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-b4f49-ls-independent-sky-handheld/site-b21506fb96eb02cd-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "World Wide Technology Raceway \u2014 road course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-97ea1-rse-independent-sky-desktop/facility-gateway-50603b2b39-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-bc572-se-independent-sky-handheld/facility-gateway-50603b2b39-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "World Wide Technology Raceway \u2014 oval",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-e70fa-val-independent-sky-desktop/facility-gateway-a8ccedb566-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-1cd38-al-independent-sky-handheld/facility-gateway-a8ccedb566-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "World Wide Technology Raceway \u2014 drag strip",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-d90ac-rip-independent-sky-desktop/facility-gateway-a8ccedb566-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-d3077-ip-independent-sky-handheld/facility-gateway-a8ccedb566-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "I-64 \u2014 St. Louis downtown approaches",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-c57d7-hes-independent-sky-desktop/site-7728fb281937918e-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-59ba0-es-independent-sky-handheld/site-7728fb281937918e-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "I-70 \u2014 Stan Musial Veterans Memorial Bridge",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-e77a2-dge-independent-sky-desktop/site-c7f00861949723bf-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-160db-ge-independent-sky-handheld/site-c7f00861949723bf-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "IL 100 \u2014 Great River Road bluffs",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-138a2-ffs-independent-sky-desktop/site-72a95d1b5b2b1923-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-97ab2-fs-independent-sky-handheld/site-72a95d1b5b2b1923-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "MO 94 \u2014 Defiance Augusta",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-28c9b-sta-independent-sky-desktop/site-d33be2e789a2ea03-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-40060-ta-independent-sky-handheld/site-d33be2e789a2ea03-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Gateway Kartplex \u2014 WWT complex",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-repairs-native/race-environments-renderer-b28e0-lex-independent-sky-desktop/facility-gateway-4c19cda147-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-repairs-native/race-environments-renderer-71c12-ex-independent-sky-handheld/facility-gateway-4c19cda147-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-74cc9-ely-independent-sky-desktop/site-6a38c943710afccb-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-57033-ly-independent-sky-handheld/site-6a38c943710afccb-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Old Route 66 \u2014 Shamrock McLean",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-8e305-ean-independent-sky-desktop/site-c39fb30133bf59a1-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-9089c-an-independent-sky-handheld/site-c39fb30133bf59a1-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Old Route 66 \u2014 Groom Conway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-e13b2-way-independent-sky-desktop/site-b162812f9b65fa16-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-b0fdf-ay-independent-sky-handheld/site-b162812f9b65fa16-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Amarillo \u2014 Historic 6th Avenue alignment",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-2126b-ent-independent-sky-desktop/site-7cc80bc12a0a8444-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-7e1e1-nt-independent-sky-handheld/site-7cc80bc12a0a8444-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Old Route 66 \u2014 Vega Adrian",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-37fe7-ian-independent-sky-desktop/site-92f69a857d2f218c-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-f3f88-an-independent-sky-handheld/site-92f69a857d2f218c-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Old Route 66 \u2014 Adrian Glenrio",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-ebd08-rio-independent-sky-desktop/site-285ed697fa66294d-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-c732e-io-independent-sky-handheld/site-285ed697fa66294d-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Palo Duro Canyon \u2014 Park Road 5",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-08b61-d-5-independent-sky-desktop/site-6e59eaf3604323d1-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-4a708--5-independent-sky-handheld/site-6e59eaf3604323d1-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Amarillo Dragway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-e9e96-way-independent-sky-desktop/site-d37a086c816470d5-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-19d0f-ay-independent-sky-handheld/site-d37a086c816470d5-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Route 66 \u2014 Bridgeport Pony Bridge, Oklahoma",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-15ca5-oma-independent-sky-desktop/site-439e4445088459ca-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-7054f-ma-independent-sky-handheld/site-439e4445088459ca-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Hallett Motor Racing Circuit \u2014 Jennings, Oklahoma",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-aaeb4-oma-independent-sky-desktop/site-236e80a57d83e64a-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-0a800-ma-independent-sky-handheld/site-236e80a57d83e64a-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Gold Camp Road \u2014 Colorado Springs",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-204de-ngs-independent-sky-desktop/site-906155ccfcaaf978-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-a1ac1-gs-independent-sky-handheld/site-906155ccfcaaf978-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-9c366-our-independent-sky-desktop/site-cdc17dfd050eb620-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-65989-ur-independent-sky-handheld/site-cdc17dfd050eb620-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Shelf Road \u2014 Gold Belt Tour",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-4ed26-our-independent-sky-desktop/site-26b605086a4b97c7-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-058fb-ur-independent-sky-handheld/site-26b605086a4b97c7-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Skyline Drive \u2014 Ca\u00f1on City",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-16b92-ity-independent-sky-desktop/site-3f4662184f179d49-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-f2849-ty-independent-sky-handheld/site-3f4662184f179d49-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "US 24 \u2014 Ute Pass Woodland Park",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-3c1c8-ark-independent-sky-desktop/site-d868f3e723288325-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-218fd-rk-independent-sky-handheld/site-d868f3e723288325-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-03b5e-eek-independent-sky-desktop/site-81796521387fbcf3-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-fe7c6-ek-independent-sky-handheld/site-81796521387fbcf3-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Garden of the Gods \u2014 paved park road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-d527d-oad-independent-sky-desktop/site-d7bd7e4e0e2a093c-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-5f20c-ad-independent-sky-handheld/site-d7bd7e4e0e2a093c-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Pikes Peak International Raceway \u2014 Fountain",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-ppir-final-native/race-environments-renderer-f232d-ain-independent-sky-desktop/site-1ea8542dba6e677f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-ppir-final-native/race-environments-renderer-04993-in-independent-sky-handheld/site-1ea8542dba6e677f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-7e340-rip-independent-sky-desktop/site-e4b44163946fe00b-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-cabe0-ip-independent-sky-handheld/site-e4b44163946fe00b-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Valley of the Gods Road \u2014 San Juan CR 242",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-5eedc-242-independent-sky-desktop/site-35b1b320d8f54b67-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-f84dc-42-independent-sky-handheld/site-35b1b320d8f54b67-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Muley Point Road \u2014 CR 241",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-1febc-241-independent-sky-desktop/site-033e9a76320cf0fc-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-6a543-41-independent-sky-handheld/site-033e9a76320cf0fc-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "UT 316 \u2014 Goosenecks State Park Road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-1c2e1-oad-independent-sky-desktop/site-ab8b6b6cf346c866-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-b2f74-ad-independent-sky-handheld/site-ab8b6b6cf346c866-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "US 163 \u2014 Mexican Hat Monument Valley approach",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-f0e92-ach-independent-sky-desktop/site-b7b73301af0f9960-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-51ef6-ch-independent-sky-handheld/site-b7b73301af0f9960-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "UT 95 \u2014 Comb Ridge Cedar Mesa",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-d8d3c-esa-independent-sky-desktop/site-10c403e94ba88c6f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-9afd4-sa-independent-sky-handheld/site-10c403e94ba88c6f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "UT 276 \u2014 Halls Crossing approach",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-dcbd2-ach-independent-sky-desktop/site-33a27248a35a988d-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-f5d62-ch-independent-sky-handheld/site-33a27248a35a988d-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "US 191 \u2014 Bluff Blanding",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-5861e-ing-independent-sky-desktop/site-d47c24ae2aacbd9e-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-4afd3-ng-independent-sky-handheld/site-d47c24ae2aacbd9e-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Shafer Trail \u2014 Canyonlands National Park",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-50c0f-ark-independent-sky-desktop/site-5f666c63d5369660-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-6243d-rk-independent-sky-handheld/site-5f666c63d5369660-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Burr Trail switchbacks \u2014 Capitol Reef",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-f5cd6-eef-independent-sky-desktop/site-6def4e54ef86c467-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-6d847-ef-independent-sky-handheld/site-6def4e54ef86c467-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "SR 179 \u2014 Red Rock Scenic Byway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-c34ef-way-independent-sky-desktop/site-005bb170476d94f6-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-e166f-ay-independent-sky-handheld/site-005bb170476d94f6-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Upper Lower Red Rock Loop Road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-05384-oad-independent-sky-desktop/site-73c69631446ccef6-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-14563-ad-independent-sky-handheld/site-73c69631446ccef6-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Page Springs Road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-11280-oad-independent-sky-desktop/site-d631df8c7dba05f0-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-d92a7-ad-independent-sky-handheld/site-d631df8c7dba05f0-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Beaverhead Flat Road \u2014 CR 78",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-e0f2a--78-independent-sky-desktop/site-e0d9ff95a939a46d-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-f2c80-78-independent-sky-handheld/site-e0d9ff95a939a46d-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Boynton Pass Road FR 525 loop",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-6ea2a-oop-independent-sky-desktop/site-ec69bf07716bd507-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-7fff6-op-independent-sky-handheld/site-ec69bf07716bd507-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Schnebly Hill Road \u2014 Sedona",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-repairs-native/race-environments-renderer-83f2e-ona-independent-sky-desktop/site-d428e61a2c362a15-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-repairs-native/race-environments-renderer-f5013-na-independent-sky-handheld/site-d428e61a2c362a15-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "SR 89A \u2014 Mingus Mountain Jerome",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-repairs-native/race-environments-renderer-b62e5-ome-independent-sky-desktop/site-c7a857d009b62bb3-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-repairs-native/race-environments-renderer-0734e-me-independent-sky-handheld/site-c7a857d009b62bb3-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Podium Club at Attesa \u2014 Casa Grande",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-9c468-nde-independent-sky-desktop/site-bc3da45495f16d3f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-245ed-de-independent-sky-handheld/site-bc3da45495f16d3f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Firebird Motorsports Park \u2014 Chandler",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-ff208-ler-independent-sky-desktop/site-a17a7ee8466cc956-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-renderer/race-environments-renderer-0bf37-er-independent-sky-handheld/site-a17a7ee8466cc956-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Angeles Forest Highway \u2014 County N3",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-repairs-native/race-environments-renderer-a86b2--N3-independent-sky-desktop/site-e4711b7efab83f45-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-repairs-native/race-environments-renderer-0df3b-N3-independent-sky-handheld/site-e4711b7efab83f45-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Upper Big Tujunga Canyon Road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-a0e0f-oad-independent-sky-desktop/site-49a5e347e08c8b85-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-e9bbb-ad-independent-sky-handheld/site-49a5e347e08c8b85-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Big Tujunga Canyon Road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-0dc53-oad-independent-sky-desktop/site-277fd01c4b02ae7b-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-78b5f-ad-independent-sky-handheld/site-277fd01c4b02ae7b-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Glendora Mountain Road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-e8a1f-oad-independent-sky-desktop/site-753b50d75a485d1d-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-85fe1-ad-independent-sky-handheld/site-753b50d75a485d1d-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Glendora Ridge Road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-49ece-oad-independent-sky-desktop/site-ca5b3170d73e4f0f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-274d2-ad-independent-sky-handheld/site-ca5b3170d73e4f0f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "San Gabriel Canyon Road \u2014 SR 39",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-6c1b6--39-independent-sky-desktop/site-71fc83180996c63f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-e5813-39-independent-sky-handheld/site-71fc83180996c63f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Little Tujunga Canyon Road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-repairs/race-environments-renderer-ceed6-oad-independent-sky-desktop/site-bdc4c66dceb515f2-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-repairs/race-environments-renderer-64c89-ad-independent-sky-handheld/site-bdc4c66dceb515f2-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Willow Springs \u2014 Horse Thief Mile",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-f134c-ile-independent-sky-desktop/facility-willow-a8ccedb566-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-9d594-le-independent-sky-handheld/facility-willow-a8ccedb566-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "In-N-Out Burger Pomona Dragstrip",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-d3d4b-rip-independent-sky-desktop/site-3ac18110d42d087e-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-5e418-ip-independent-sky-handheld/site-3ac18110d42d087e-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Old Staples Road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-2ff25-dent-sky-compositor-desktop/site-ee77123d64fe8992-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack3-final-renderer/race-environments-renderer-73a10-ent-sky-compositor-handheld/site-ee77123d64fe8992-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Watkins Glen \u2014 Long Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-4a4d7-rse-independent-sky-desktop/facility-watkins-4c19cda147-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-64f1c-se-independent-sky-handheld/facility-watkins-4c19cda147-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Watkins Glen \u2014 Short Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-97379-rse-independent-sky-desktop/facility-watkins-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-56a48-se-independent-sky-handheld/facility-watkins-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-80600-oop-independent-sky-desktop/facility-watkins-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-db238-op-independent-sky-handheld/facility-watkins-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-180c3-oop-independent-sky-desktop/facility-watkins-50603b2b39-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-b20db-op-independent-sky-handheld/facility-watkins-50603b2b39-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Road America \u2014 Full Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-714f8-rse-independent-sky-desktop/facility-road-america-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-da11e-se-independent-sky-handheld/facility-road-america-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Road America \u2014 The Bend",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-f641f-end-independent-sky-desktop/facility-road-america-50603b2b39-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-79482-nd-independent-sky-handheld/facility-road-america-50603b2b39-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Road Atlanta \u2014 Grand Prix",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-e6b2f-rix-independent-sky-desktop/facility-road-atlanta-4c19cda147-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-528cb-ix-independent-sky-handheld/facility-road-atlanta-4c19cda147-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Road Atlanta \u2014 Short Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-f9fef-rse-independent-sky-desktop/facility-road-atlanta-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-4b7b9-se-independent-sky-handheld/facility-road-atlanta-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Road Atlanta \u2014 Club Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-4fdb1-rse-independent-sky-desktop/facility-road-atlanta-a8ccedb566-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-85dac-se-independent-sky-handheld/facility-road-atlanta-a8ccedb566-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Virginia International Raceway \u2014 Full Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-e5023-rse-independent-sky-desktop/facility-vir-4c19cda147-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-fc8a9-se-independent-sky-handheld/facility-vir-4c19cda147-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Virginia International Raceway \u2014 North Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-ae8a7-rse-independent-sky-desktop/facility-vir-4c19cda147-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-53e77-se-independent-sky-handheld/facility-vir-4c19cda147-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Virginia International Raceway \u2014 South Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-cc68a-rse-independent-sky-desktop/facility-vir-a8ccedb566-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-b18c4-se-independent-sky-handheld/facility-vir-a8ccedb566-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Virginia International Raceway \u2014 Grand Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-a570a-rse-independent-sky-desktop/facility-vir-a8ccedb566-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-855f3-se-independent-sky-handheld/facility-vir-a8ccedb566-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Sebring International Raceway \u2014 Full Circuit",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-659d9-uit-independent-sky-desktop/facility-sebring-a8ccedb566-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-88712-it-independent-sky-handheld/facility-sebring-a8ccedb566-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Sebring International Raceway \u2014 Short Circuit",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack6-repairs-native/race-environments-renderer-ca58e-uit-independent-sky-desktop/facility-sebring-4c19cda147-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack6-repairs-native/race-environments-renderer-52781-it-independent-sky-handheld/facility-sebring-4c19cda147-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Sebring International Raceway \u2014 Club Circuit",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-bb985-uit-independent-sky-desktop/facility-sebring-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-0f938-it-independent-sky-handheld/facility-sebring-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Indianapolis Motor Speedway \u2014 Oval",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-2ea2b-val-independent-sky-desktop/facility-indianapolis-a8ccedb566-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-a5b76-al-independent-sky-handheld/facility-indianapolis-a8ccedb566-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-297db-rse-independent-sky-desktop/facility-indianapolis-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-e86c0-se-independent-sky-handheld/facility-indianapolis-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Oval",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-564e4-val-independent-sky-desktop/facility-homestead-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-477c1-al-independent-sky-handheld/facility-homestead-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Road Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-46045-rse-independent-sky-desktop/facility-homestead-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-81eb2-se-independent-sky-handheld/facility-homestead-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Modified Road Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-c11c8-rse-independent-sky-desktop/facility-homestead-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-6e478-se-independent-sky-handheld/facility-homestead-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Daytona International Speedway \u2014 Sports Car Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-e0e34-rse-independent-sky-desktop/facility-daytona-50603b2b39-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-f88f6-se-independent-sky-handheld/facility-daytona-50603b2b39-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Daytona International Speedway \u2014 Stock Car Road Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-74154-rse-independent-sky-desktop/facility-daytona-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-cbf8c-se-independent-sky-handheld/facility-daytona-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Willow Springs \u2014 Big Willow",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-5afab-low-independent-sky-desktop/facility-willow-4c19cda147-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-55706-ow-independent-sky-handheld/facility-willow-4c19cda147-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Willow Springs \u2014 Streets of Willow",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-d91ff-low-independent-sky-desktop/facility-willow-4c19cda147-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-cd76e-ow-independent-sky-handheld/facility-willow-4c19cda147-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Willow Springs \u2014 Streets \u2014 Short",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-dcca4-ort-independent-sky-desktop/facility-willow-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack4-renderer-final/race-environments-renderer-fa1e0-rt-independent-sky-handheld/facility-willow-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Lime Rock Park \u2014 West Chicane",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-7c21f-ane-independent-sky-desktop/facility-lime-50603b2b39-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-a721f-ne-independent-sky-handheld/facility-lime-50603b2b39-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Lime Rock Park \u2014 Both Chicanes",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-58cac-nes-independent-sky-desktop/facility-lime-41bc38d75f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-0187c-es-independent-sky-handheld/facility-lime-41bc38d75f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-2fa7b-rse-independent-sky-desktop/facility-mid-ohio-4c19cda147-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-a63d7-se-independent-sky-handheld/facility-mid-ohio-4c19cda147-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Mid-Ohio Sports Car Course \u2014 Short Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-0753e-rse-independent-sky-desktop/facility-mid-ohio-a8ccedb566-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack5-renderer/race-environments-renderer-224ea-se-independent-sky-handheld/facility-mid-ohio-a8ccedb566-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-79c6c-imb-independent-sky-desktop/site-216b9cad691d1390-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-1f9ad-mb-independent-sky-handheld/site-216b9cad691d1390-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Pig Trail \u2014 Arkansas 23",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-4381a--23-independent-sky-desktop/site-78f0fe9c94a11f29-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-20ac5-23-independent-sky-handheld/site-78f0fe9c94a11f29-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Brandywine Valley \u2014 Montchanin Road",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-ad06d-oad-independent-sky-desktop/site-bb4fb2890971812e-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-4b3f2-ad-independent-sky-handheld/site-bb4fb2890971812e-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Hana Highway \u2014 Rainforest Bends",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-9cf5d-nds-independent-sky-desktop/site-7cd23d44d23189c0-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-ceb87-ds-independent-sky-handheld/site-7cd23d44d23189c0-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Grafton Notch \u2014 Maine 26",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-f42a9--26-independent-sky-desktop/site-d9cc2cc3ede4adad-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-3f2d2-26-independent-sky-handheld/site-d9cc2cc3ede4adad-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "National Road \u2014 Sideling Hill",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-repairs-native/race-environments-renderer-05280-ill-independent-sky-desktop/site-2c1fd8d13734f0b2-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-repairs-native/race-environments-renderer-6dfa5-ll-independent-sky-handheld/site-2c1fd8d13734f0b2-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Natchez Trace \u2014 Tishomingo",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-3e867-ngo-independent-sky-desktop/site-a49d702c7d874e77-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-19ae8-go-independent-sky-handheld/site-a49d702c7d874e77-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Beartooth Highway \u2014 Rock Creek Climb",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-4f65c-imb-independent-sky-desktop/site-d5026e3f3babb2fe-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-e6b86-mb-independent-sky-handheld/site-d5026e3f3babb2fe-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Barber Motorsports Park",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-final/race-environments-renderer-ab8b7-ark-independent-sky-desktop/site-2df0d586d8e95bd2-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-final/race-environments-renderer-3c8a3-rk-independent-sky-handheld/site-2df0d586d8e95bd2-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Raceway Park of the Midlands",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-716e8-nds-independent-sky-desktop/site-9b84115eeed7a083-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-abdbf-ds-independent-sky-handheld/site-9b84115eeed7a083-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Heartland Motorsports Park",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-e7cea-ark-independent-sky-desktop/site-f46e8bc2b4606bbc-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-55501-rk-independent-sky-handheld/site-f46e8bc2b4606bbc-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "NCM Motorsports Park",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-b7b64-ark-independent-sky-desktop/site-1e4427ffcce2292f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-2e2bf-rk-independent-sky-handheld/site-1e4427ffcce2292f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "NOLA Motorsports Park",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-c032d-ark-independent-sky-desktop/site-7a77be5321a89d09-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-a03c5-rk-independent-sky-handheld/site-7a77be5321a89d09-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "GingerMan Raceway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-ec27b-way-independent-sky-desktop/site-91b730232d2edaba-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-0a18c-ay-independent-sky-handheld/site-91b730232d2edaba-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Brainerd \u2014 Competition Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-dff97-rse-independent-sky-desktop/site-a2afa1a045dcd258-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-c1f40-se-independent-sky-handheld/site-a2afa1a045dcd258-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Spring Mountain \u2014 North South",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-308d9-uth-independent-sky-desktop/site-a7d4aa2554113a6e-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-3f7ef-th-independent-sky-handheld/site-a7d4aa2554113a6e-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "NJMP \u2014 Thunderbolt",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-6c908-olt-independent-sky-desktop/site-c041aab7eb129987-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-f5d53-lt-independent-sky-handheld/site-c041aab7eb129987-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Sandia Speedway \u2014 Road Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-d9347-rse-independent-sky-desktop/site-855447c8432138fc-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-08487-se-independent-sky-handheld/site-855447c8432138fc-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "NCCAR \u2014 Road Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-b563b-rse-independent-sky-desktop/site-3a5aa14c138a5399-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-71d4a-se-independent-sky-handheld/site-3a5aa14c138a5399-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Theodore Roosevelt \u2014 North Unit Drive",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-c7f51-ive-independent-sky-desktop/site-0a44617d8ce6d04d-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-b4503-ve-independent-sky-handheld/site-0a44617d8ce6d04d-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Needles Highway \u2014 Granite Gates",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-a254b-tes-independent-sky-desktop/site-713f04892f9e7ccc-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-597b5-es-independent-sky-handheld/site-713f04892f9e7ccc-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Smugglers Notch \u2014 Vermont 108",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-9032c-108-independent-sky-desktop/site-a487c1e38b5678d4-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-6dc27-08-independent-sky-handheld/site-a487c1e38b5678d4-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Wind River Canyon \u2014 Canyon Walls",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-4fd88-lls-independent-sky-desktop/site-e52ed6fb5f7b9b45-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-d9553-ls-independent-sky-handheld/site-e52ed6fb5f7b9b45-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Motorsport Park Hastings",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-16a5b-ngs-independent-sky-desktop/site-a01ccf954dc1eb8f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-6252e-gs-independent-sky-handheld/site-a01ccf954dc1eb8f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Portland International Raceway",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-38f72-way-independent-sky-desktop/site-c905b19ae7b993f1-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-1d1b5-ay-independent-sky-handheld/site-c905b19ae7b993f1-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Carolina Motorsports Park",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-4c272-ark-independent-sky-desktop/site-236b9640b6e31d49-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-a3f8d-rk-independent-sky-handheld/site-236b9640b6e31d49-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Pacific Raceways",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-554e9-ays-independent-sky-desktop/site-af274355a1afb3ad-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-9699e-ys-independent-sky-handheld/site-af274355a1afb3ad-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Ponderosa Pine \u2014 Idaho 21",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-4d988--21-independent-sky-desktop/site-af7c737aa09bdaf5-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-b9aa3-21-independent-sky-handheld/site-af7c737aa09bdaf5-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Birmingham, AL \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-56a30-Run-independent-sky-desktop/site-8fbef84f052f150c-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-abc6a-un-independent-sky-handheld/site-8fbef84f052f150c-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Phoenix, AZ \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-4db68-Run-independent-sky-desktop/site-c862046bbb9c22a4-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-b4735-un-independent-sky-handheld/site-c862046bbb9c22a4-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Los Angeles, CA \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-9a5e9-Run-independent-sky-desktop/site-dfe391e6a8375f3f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-d1d64-un-independent-sky-handheld/site-dfe391e6a8375f3f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Hartford, CT \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-bcb58-Run-independent-sky-desktop/site-dc75e0e04643379e-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-7618e-un-independent-sky-handheld/site-dc75e0e04643379e-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Wilmington, DE \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-ac847-Run-independent-sky-desktop/site-57f19d99e17eb2bd-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-cde9d-un-independent-sky-handheld/site-57f19d99e17eb2bd-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Miami, FL \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-a376d-Run-independent-sky-desktop/site-5109a6bdde2bfc10-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-a/race-environments-renderer-575cd-un-independent-sky-handheld/site-5109a6bdde2bfc10-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Atlanta, GA \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-94fce-Run-independent-sky-desktop/site-6f5b30be5456f7e1-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-3c75b-un-independent-sky-handheld/site-6f5b30be5456f7e1-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Chicago, IL \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-45a25-Run-independent-sky-desktop/site-18f72d527e5df19a-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-a/race-environments-renderer-e4e66-un-independent-sky-handheld/site-18f72d527e5df19a-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Des Moines, IA \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-f3ffc-Run-independent-sky-desktop/site-48a69f289b41065e-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-1cab9-un-independent-sky-handheld/site-48a69f289b41065e-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Louisville, KY \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-a3351-Run-independent-sky-desktop/site-a55d00ac69a1e402-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-612aa-un-independent-sky-handheld/site-a55d00ac69a1e402-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Baltimore, MD \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-2effb-Run-independent-sky-desktop/site-727739080f4edf00-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-31bb8-un-independent-sky-handheld/site-727739080f4edf00-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Detroit, MI \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-58cc0-Run-independent-sky-desktop/site-c5f1aa302a17a49e-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-86976-un-independent-sky-handheld/site-c5f1aa302a17a49e-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Anchorage, AK \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-0b4fb-Run-independent-sky-desktop/site-c22955a9bacbba73-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-ae294-un-independent-sky-handheld/site-c22955a9bacbba73-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Little Rock, AR \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-0c598-Run-independent-sky-desktop/site-f5f47a1aa540e675-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-c53d9-un-independent-sky-handheld/site-f5f47a1aa540e675-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Boise, ID \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-final/race-environments-renderer-4a7a8-Run-independent-sky-desktop/site-d8c9960fb4ef0df7-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-final/race-environments-renderer-1b510-un-independent-sky-handheld/site-d8c9960fb4ef0df7-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Wichita, KS \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-b8c18-Run-independent-sky-desktop/site-879d7801409b1a84-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-5d98d-un-independent-sky-handheld/site-879d7801409b1a84-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Portland, ME \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-814e4-Run-independent-sky-desktop/site-be2bff47e0136b6f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-ab64c-un-independent-sky-handheld/site-be2bff47e0136b6f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Honolulu, HI \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-c3f4d-Run-independent-sky-desktop/site-a1f7d35a406767d9-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-a85e1-un-independent-sky-handheld/site-a1f7d35a406767d9-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Indianapolis, IN \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-f4340-Run-independent-sky-desktop/site-fe73b02344865b7a-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-068ec-un-independent-sky-handheld/site-fe73b02344865b7a-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "New Orleans, LA \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-final/race-environments-renderer-8e0d5-Run-independent-sky-desktop/site-6bbf3e59bf508848-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-final/race-environments-renderer-80804-un-independent-sky-handheld/site-6bbf3e59bf508848-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Boston, MA \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-d9db2-Run-independent-sky-desktop/site-6ccb0a86ebef8c91-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-16f61-un-independent-sky-handheld/site-6ccb0a86ebef8c91-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Minneapolis, MN \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-65783-Run-independent-sky-desktop/site-057af482cd61c0ab-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-05c3b-un-independent-sky-handheld/site-057af482cd61c0ab-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Jackson, MS \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-79961-Run-independent-sky-desktop/site-99d091992ba9491f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-71691-un-independent-sky-handheld/site-99d091992ba9491f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "St. Louis, MO \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-01bbb-Run-independent-sky-desktop/site-0c5d5fef0282a090-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack8-renderer/race-environments-renderer-03d91-un-independent-sky-handheld/site-0c5d5fef0282a090-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Billings, MT \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-6be7b-Run-independent-sky-desktop/site-730824111f7d9bed-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-dd8a3-un-independent-sky-handheld/site-730824111f7d9bed-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Las Vegas, NV \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-2e8ec-Run-independent-sky-desktop/site-41f11c9a14aa9721-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-fe0fd-un-independent-sky-handheld/site-41f11c9a14aa9721-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Manchester, NH \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-6fe58-Run-independent-sky-desktop/site-e051a868b62fe758-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-e3ff4-un-independent-sky-handheld/site-e051a868b62fe758-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Newark, NJ \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-43836-Run-independent-sky-desktop/site-52261b0d7b65ac63-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-42751-un-independent-sky-handheld/site-52261b0d7b65ac63-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Albuquerque, NM \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-d20d8-Run-independent-sky-desktop/site-3ee589081f632bf5-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-2ec36-un-independent-sky-handheld/site-3ee589081f632bf5-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Charlotte, NC \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-ca066-Run-independent-sky-desktop/site-748cb3ba26739e14-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-65563-un-independent-sky-handheld/site-748cb3ba26739e14-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Fargo, ND \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-047f9-Run-independent-sky-desktop/site-f94d734970ec32dc-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-c2d58-un-independent-sky-handheld/site-f94d734970ec32dc-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Cleveland, OH \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-b7023-Run-independent-sky-desktop/site-8832609ac0b53a91-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-c6ca5-un-independent-sky-handheld/site-8832609ac0b53a91-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Denver, CO \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-5845c-Run-independent-sky-desktop/site-608d001ffe92f21a-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack10-renderer/race-environments-renderer-ca5d9-un-independent-sky-handheld/site-608d001ffe92f21a-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Omaha, NE \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-a5aab-Run-independent-sky-desktop/site-ed3ce9339abe5cb5-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-ce9a9-un-independent-sky-handheld/site-ed3ce9339abe5cb5-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "New York, NY \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-06002-Run-independent-sky-desktop/site-3be06da06fef8f5d-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-be4b2-un-independent-sky-handheld/site-3be06da06fef8f5d-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Oklahoma City, OK \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-f2ab3-Run-independent-sky-desktop/site-81ce2ad172102837-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-03ebd-un-independent-sky-handheld/site-81ce2ad172102837-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "San Antonio, TX \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-399f3-Run-independent-sky-desktop/site-5f5ac78c36de132d-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-ffad4-un-independent-sky-handheld/site-5f5ac78c36de132d-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Portland, OR \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-a8121-Run-independent-sky-desktop/site-2ed7e10939e122a4-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-21d13-un-independent-sky-handheld/site-2ed7e10939e122a4-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Providence, RI \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-1cb05-Run-independent-sky-desktop/site-af447d0223704431-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-16cb8-un-independent-sky-handheld/site-af447d0223704431-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Philadelphia, PA \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-92a5c-Run-independent-sky-desktop/site-373f1863a333c2ae-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-44a95-un-independent-sky-handheld/site-373f1863a333c2ae-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Charleston, SC \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-f0970-Run-independent-sky-desktop/site-e3b0e114c719d39f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-a6df7-un-independent-sky-handheld/site-e3b0e114c719d39f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Sioux Falls, SD \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-ca4ab-Run-independent-sky-desktop/site-7bd4bd348e420804-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-52364-un-independent-sky-handheld/site-7bd4bd348e420804-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Nashville, TN \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-2434f-Run-independent-sky-desktop/site-801a87f5aebb72dd-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-90516-un-independent-sky-handheld/site-801a87f5aebb72dd-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Salt Lake City, UT \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-7ee96-Run-independent-sky-desktop/site-fab32f74536d94b7-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-7ba71-un-independent-sky-handheld/site-fab32f74536d94b7-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Burlington, VT \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-c1f6d-Run-independent-sky-desktop/site-f5f8b5a09fba2177-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack11-renderer/race-environments-renderer-b9e5e-un-independent-sky-handheld/site-f5f8b5a09fba2177-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Richmond, VA \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-a02d6-Run-independent-sky-desktop/site-f86a23e25c2cac55-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-d4b43-un-independent-sky-handheld/site-f86a23e25c2cac55-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Flatrock Motorclub \u2014 Club Course",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-8a345-rse-independent-sky-desktop/site-fd0df59bcbdae7a7-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-dd0f7-se-independent-sky-handheld/site-fd0df59bcbdae7a7-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Seattle, WA \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-41997-Run-independent-sky-desktop/site-5a18b9dbf0b936ae-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-0e971-un-independent-sky-handheld/site-5a18b9dbf0b936ae-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Charleston, WV \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-9aa75-Run-independent-sky-desktop/site-1a5f89f9794417e3-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-86c38-un-independent-sky-handheld/site-1a5f89f9794417e3-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Milwaukee, WI \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-38b76-Run-independent-sky-desktop/site-711d3f6b0ea42407-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-b/race-environments-renderer-f42a4-un-independent-sky-handheld/site-711d3f6b0ea42407-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Cheyenne, WY \u2014 Landmark Run",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-c8589-Run-independent-sky-desktop/site-23b5d8cf3290299f-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-8f510-un-independent-sky-handheld/site-23b5d8cf3290299f-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Thompson Pass \u2014 Snowline Climb",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack14-native-final/race-environments-renderer-12197-imb-independent-sky-desktop/site-632a07716f4a2dcd-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack14-native-final/race-environments-renderer-26ac9-mb-independent-sky-handheld/site-632a07716f4a2dcd-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Denali Highway \u2014 Tundra Gravel",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-879e5-vel-independent-sky-desktop/site-8870f7e6d7a1ad92-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-0af91-el-independent-sky-handheld/site-8870f7e6d7a1ad92-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Skalkaho Pass \u2014 Forest Rally",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-045db-lly-independent-sky-desktop/site-bc9aed0343ff98ae-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-f2329-ly-independent-sky-handheld/site-bc9aed0343ff98ae-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Magruder Corridor \u2014 Wilderness Ridge",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-acc27-dge-independent-sky-desktop/site-e94228a91f6d3858-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-a/race-environments-renderer-000a0-ge-independent-sky-handheld/site-e94228a91f6d3858-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Chief Joseph \u2014 Dead Indian Pass",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-f1381-ass-independent-sky-desktop/site-78690b80d5ccdac6-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-native-b/race-environments-renderer-322ac-ss-independent-sky-handheld/site-78690b80d5ccdac6-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Tantalus \u2014 Honolulu Heights",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-e77f7-hts-independent-sky-desktop/site-9355ce47e2414978-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-9bfc6-ts-independent-sky-handheld/site-9355ce47e2414978-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Haleakala \u2014 Volcano Ascent",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-f29be-ent-independent-sky-desktop/site-16532ce2e70c3a9d-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-39d4b-nt-independent-sky-handheld/site-16532ce2e70c3a9d-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Maunakea \u2014 Cinder Summit",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-138f0-mit-independent-sky-desktop/site-15b1ac599d7224a9-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack15-native-b/race-environments-renderer-824cc-it-independent-sky-handheld/site-15b1ac599d7224a9-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Sandhills Journey \u2014 Open Prairie",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-587a2-rie-independent-sky-desktop/site-22f5f1c9744860a0-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-native/race-environments-renderer-7126d-ie-independent-sky-handheld/site-22f5f1c9744860a0-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Grand Canyon \u2014 Desert View Drive",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-38d4f-ive-independent-sky-desktop/site-d92c7a2faac3d653-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-26b1c-ve-independent-sky-handheld/site-d92c7a2faac3d653-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Grand Canyon \u2014 Diamond Creek Descent",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-b21a6-ent-independent-sky-desktop/site-e6e5b74e38580cc8-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-environment-pack9-terrain-native/race-environments-renderer-1e36a-nt-independent-sky-handheld/site-e6e5b74e38580cc8-state.json",
+          "refMatches": true
+        }
+      }
+    },
+    {
+      "race": "Bayard \u2014 Road 77 to City Park",
+      "devices": {
+        "desktop": {
+          "path": "/tmp/race-pack12-repairs-native/race-environments-renderer-5b377-ark-independent-sky-desktop/site-9402a31481461910-state.json",
+          "refMatches": true
+        },
+        "handheld": {
+          "path": "/tmp/race-pack12-repairs-native/race-environments-renderer-4078f-rk-independent-sky-handheld/site-9402a31481461910-state.json",
+          "refMatches": true
+        }
+      }
+    }
+  ]
+}

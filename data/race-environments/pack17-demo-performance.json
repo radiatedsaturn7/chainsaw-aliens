@@ -1,0 +1,4441 @@
+{
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "initialCandidate": "a2b62170f697df53603e5f8728ce869132baa9ca",
+  "order": [
+    "candidate-1",
+    "baseline-1",
+    "candidate-2",
+    "baseline-2",
+    "sky-only",
+    "terrain-only",
+    "unchanged-export-control"
+  ],
+  "rows": [
+    {
+      "snapshot": "sky-only",
+      "scope": "Alternating cold serial matched browser/viewport, fixed 20m normal-input work, unchanged continuity/deadlines. Passive draw wrapper measures CPU submission, not GPU completion.",
+      "startup": {
+        "bootMs": 5050,
+        "travelCallMs": 28436,
+        "playableWaitMs": 47263,
+        "totalToPlayableMs": 80829
+      },
+      "drive": {
+        "wallMs": 23530,
+        "simulationMs": 4066.666666666658,
+        "drawCalls": 122,
+        "drawCpuMs": 1205.599999934435,
+        "maxDrawMs": 637.0999999940395
+      },
+      "file": "/tmp/race-pack17-demo-sky-only/pack17-demo-probe-Demo-Tra-6a617-authored-foreground-and-sky/performance-phases.json",
+      "artRequests": [
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756616507.6548,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.15,
+            "responseStart": 639.068,
+            "responseEnd": 730.4
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8582%20tires%203",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756617533.237,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.217,
+            "responseStart": 921.521,
+            "responseEnd": 1091.295
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=loadingscreen",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756619713.5168,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 35.418,
+            "responseStart": 357.155,
+            "responseEnd": 415.452
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=environment-v1-demo-meadow-noon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756621686.042,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.651,
+            "responseStart": 214.474,
+            "responseEnd": 314.285
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=apron",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756621686.474,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.568,
+            "responseStart": 230.939,
+            "responseEnd": 235.101
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=taillight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756622839.216,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.259,
+            "responseStart": 2000.805,
+            "responseEnd": 2297.229
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756622837.094,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.348,
+            "responseStart": 2241.588,
+            "responseEnd": 2943.254
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8300%20body",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756621686.905,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.19,
+            "responseStart": 3024.417,
+            "responseEnd": 4784.656
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=headlight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756625597.7312,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.027,
+            "responseStart": 341.744,
+            "responseEnd": 895.975
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=turnsignal-amber",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756626411.669,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.903,
+            "responseStart": 231.066,
+            "responseEnd": 1927.06
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=waterspray",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756628376.801,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.363,
+            "responseStart": 2751.905,
+            "responseEnd": 4377.334
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=burnoutsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756628349.948,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.417,
+            "responseStart": 1585.363,
+            "responseEnd": 5509.632
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=dirtsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756628770.437,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.723,
+            "responseStart": 3426.407,
+            "responseEnd": 6606.552
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=speedometerbg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756637049.132,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.446,
+            "responseStart": 230.702,
+            "responseEnd": 250.069
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756635312.337,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.353,
+            "responseStart": 1576.566,
+            "responseEnd": 2294.951
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=gravelsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756633871.511,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.93,
+            "responseStart": 778.27,
+            "responseEnd": 3760.014
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=lapBackground",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756637574.692,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.398,
+            "responseStart": 276.962,
+            "responseEnd": 2075.855
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=map",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756639631.347,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.394,
+            "responseStart": 368.353,
+            "responseEnd": 402.523
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=greenGauge",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756639637.4863,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.405,
+            "responseStart": 386.888,
+            "responseEnd": 389.628
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8801",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756639875.9229,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.317,
+            "responseStart": 173.651,
+            "responseEnd": 180.144
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=carbodybg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756640413.336,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.288,
+            "responseStart": 170.269,
+            "responseEnd": 206.344
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=hoodicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756640485.8088,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.969,
+            "responseStart": 131.312,
+            "responseEnd": 135.941
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=rearicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756640486.274,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.565,
+            "responseStart": 148.957,
+            "responseEnd": 151.433
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=lefticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756640842.1748,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.272,
+            "responseStart": 66.163,
+            "responseEnd": 68.531
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=righticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756640919.739,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.336,
+            "responseStart": 32.371,
+            "responseEnd": 42.749
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=engineicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756640919.954,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.204,
+            "responseStart": 212.525,
+            "responseEnd": 256.71
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=transmissionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756640947.0742,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.25,
+            "responseStart": 301.019,
+            "responseEnd": 530.925
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=tireicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756640997.8171,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.207,
+            "responseStart": 375.522,
+            "responseEnd": 543.286
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=suspensionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756641483.3223,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.401,
+            "responseStart": 264.31,
+            "responseEnd": 292.721
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicators",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756641692.771,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.311,
+            "responseStart": 234.319,
+            "responseEnd": 248.305
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-low-fuel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756641771.9622,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.239,
+            "responseStart": 159.771,
+            "responseEnd": 161.741
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-high-beams",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756641915.7222,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.59,
+            "responseStart": 16.25,
+            "responseEnd": 19.664
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-headlights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756642118.757,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.323,
+            "responseStart": 2.817,
+            "responseEnd": 6.821
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-turn-left",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756642121.358,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.412,
+            "responseStart": 3.867,
+            "responseEnd": 6.036
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-aux-lights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756642120.3342,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.189,
+            "responseStart": 3.072,
+            "responseEnd": 7.022
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-turn-right",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756642131.233,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.526,
+            "responseStart": 2.387,
+            "responseEnd": 5.088
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=rtginterior",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756642131.508,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.35,
+            "responseStart": 154.388,
+            "responseEnd": 174.617
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=windshieldwiper",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756642136.363,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.165,
+            "responseStart": 463.253,
+            "responseEnd": 466.992
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=steeringwheel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756642131.661,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.235,
+            "responseStart": 443.9,
+            "responseEnd": 489.556
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowcloud",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756643050.3118,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.982,
+            "responseStart": 271.829,
+            "responseEnd": 314.549
+          }
+        }
+      ]
+    },
+    {
+      "snapshot": "candidate-1",
+      "scope": "Alternating cold serial matched browser/viewport, fixed 20m normal-input work, unchanged continuity/deadlines. Passive draw wrapper measures CPU submission, not GPU completion.",
+      "startup": {
+        "bootMs": 5255,
+        "travelCallMs": 27424,
+        "playableWaitMs": 86203,
+        "totalToPlayableMs": 118969
+      },
+      "drive": {
+        "wallMs": 6469,
+        "simulationMs": 6233.199999999997,
+        "drawCalls": 15,
+        "drawCpuMs": 1148.9000000357628,
+        "maxDrawMs": 991.2000000029802
+      },
+      "file": "/tmp/race-pack17-demo-candidate-1/pack17-demo-probe-Demo-Tra-6a617-authored-foreground-and-sky/performance-phases.json",
+      "artRequests": [
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755955728.5518,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.192,
+            "responseStart": 689.609,
+            "responseEnd": 752.405
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8582%20tires%203",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755956826.266,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.198,
+            "responseStart": 765.499,
+            "responseEnd": 962.557
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=loadingscreen",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755959039.573,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 57.205,
+            "responseStart": 364.042,
+            "responseEnd": 453.982
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=apron",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755960821.9768,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.766,
+            "responseStart": 193.005,
+            "responseEnd": 196.242
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=environment-v1-demo-meadow-noon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755960821.218,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.454,
+            "responseStart": 180.298,
+            "responseEnd": 219.666
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=ground-temperate-grass-v1",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755960822.272,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.499,
+            "responseStart": 378.552,
+            "responseEnd": 800.41
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755961574.6208,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.297,
+            "responseStart": 2646.345,
+            "responseEnd": 2845.123
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=taillight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755962292.406,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.32,
+            "responseStart": 2106.074,
+            "responseEnd": 2531.221
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8300%20body",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755961233.577,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.34,
+            "responseStart": 2410.243,
+            "responseEnd": 4668.153
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=headlight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755965370.5652,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.484,
+            "responseStart": 446.252,
+            "responseEnd": 983.108
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=turnsignal-amber",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755965893.7258,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.446,
+            "responseStart": 379.249,
+            "responseEnd": 1649.069
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=waterspray",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755967570.578,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.283,
+            "responseStart": 1554.81,
+            "responseEnd": 3031.129
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=burnoutsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755967433.343,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.612,
+            "responseStart": 983.685,
+            "responseEnd": 3278.85
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=dirtsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755967807.749,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.464,
+            "responseStart": 2410.404,
+            "responseEnd": 4934.29
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=speedometerbg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755974402.357,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.411,
+            "responseStart": 249.083,
+            "responseEnd": 387.501
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=gravelsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755971547.944,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.678,
+            "responseStart": 988.971,
+            "responseEnd": 3572.517
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=lapBackground",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755975100.004,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.43,
+            "responseStart": 237.049,
+            "responseEnd": 1725.581
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755972717.8362,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.541,
+            "responseStart": 1358.535,
+            "responseEnd": 4404.03
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=greenGauge",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755977121.391,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.341,
+            "responseStart": 186.166,
+            "responseEnd": 188.933
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=map",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755976809.1072,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.356,
+            "responseStart": 477.63,
+            "responseEnd": 1625.075
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8801",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755978399.923,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.568,
+            "responseStart": 50.308,
+            "responseEnd": 54.119
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=hoodicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755978811.972,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.323,
+            "responseStart": 16.295,
+            "responseEnd": 17.98
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=carbodybg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755978433.665,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.215,
+            "responseStart": 250.289,
+            "responseEnd": 406.24
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=rearicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755978836.553,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.259,
+            "responseStart": 13.94,
+            "responseEnd": 15.958
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=lefticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755979071.342,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.291,
+            "responseStart": 40.262,
+            "responseEnd": 53.744
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=righticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755979086.272,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.348,
+            "responseStart": 91.676,
+            "responseEnd": 93.814
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=engineicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755979096.436,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.181,
+            "responseStart": 226.791,
+            "responseEnd": 276.309
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=tireicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755979215.113,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.313,
+            "responseStart": 175.066,
+            "responseEnd": 411.315
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=transmissionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755979172.574,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.188,
+            "responseStart": 265.324,
+            "responseEnd": 463.791
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=suspensionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755979643.733,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.258,
+            "responseStart": 193.765,
+            "responseEnd": 292.392
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-low-fuel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755979927.925,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.338,
+            "responseStart": 209.106,
+            "responseEnd": 212.249
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-high-beams",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755980183.443,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.419,
+            "responseStart": 3.536,
+            "responseEnd": 4.77
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicators",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755979927.663,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.497,
+            "responseStart": 201.597,
+            "responseEnd": 280.933
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-headlights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755980202.7112,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.541,
+            "responseStart": 5.968,
+            "responseEnd": 8.42
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-aux-lights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755980213.8,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.18,
+            "responseStart": 2.218,
+            "responseEnd": 3.348
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-turn-left",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755980338.95,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.605,
+            "responseStart": 3.02,
+            "responseEnd": 4.118
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-turn-right",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755980340.0427,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.381,
+            "responseStart": 5.516,
+            "responseEnd": 6.741
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=rtginterior",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755980340.2979,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.191,
+            "responseStart": 146.734,
+            "responseEnd": 159.526
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=windshieldwiper",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755980354.7039,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.204,
+            "responseStart": 164.604,
+            "responseEnd": 168.212
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=steeringwheel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755980351.673,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.189,
+            "responseStart": 375.734,
+            "responseEnd": 402.108
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowcloud",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794755981099.812,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.324,
+            "responseStart": 254.468,
+            "responseEnd": 296.971
+          }
+        }
+      ]
+    },
+    {
+      "snapshot": "unchanged-export-control",
+      "scope": "Alternating cold serial matched browser/viewport, fixed 20m normal-input work, unchanged continuity/deadlines. Passive draw wrapper measures CPU submission, not GPU completion.",
+      "startup": {
+        "bootMs": 5058,
+        "travelCallMs": 25840,
+        "playableWaitMs": 81951,
+        "totalToPlayableMs": 112943
+      },
+      "drive": {
+        "wallMs": 42232,
+        "simulationMs": 4033.333333333325,
+        "drawCalls": 121,
+        "drawCpuMs": 1525.6000000089407,
+        "maxDrawMs": 903.7000000029802
+      },
+      "file": "/tmp/race-pack17-demo-optimized-candidate/pack17-demo-probe-Demo-Tra-6a617-authored-foreground-and-sky/performance-phases.json",
+      "artRequests": [
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757090835.1152,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.308,
+            "responseStart": 752.036,
+            "responseEnd": 809.584
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8582%20tires%203",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757092001.91,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.18,
+            "responseStart": 617.834,
+            "responseEnd": 738.356
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=loadingscreen",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757093803.521,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 90.763,
+            "responseStart": 291.876,
+            "responseEnd": 412.166
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=environment-v1-demo-meadow-noon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757095118.104,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.72,
+            "responseStart": 157.697,
+            "responseEnd": 213.808
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=apron",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757095124.615,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.208,
+            "responseStart": 171.064,
+            "responseEnd": 173.79
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=ground-temperate-grass-v1",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757095126.496,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.174,
+            "responseStart": 485.111,
+            "responseEnd": 610.464
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757095752.43,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.176,
+            "responseStart": 2255.627,
+            "responseEnd": 2325.151
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=taillight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757095990.456,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.22,
+            "responseStart": 2241.2,
+            "responseEnd": 2719.167
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=headlight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757098679.9329,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.568,
+            "responseStart": 429.936,
+            "responseEnd": 497.101
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=turnsignal-amber",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757099042.8228,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 5.14,
+            "responseStart": 349.507,
+            "responseEnd": 447.459
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8300%20body",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757095719.798,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.255,
+            "responseStart": 2011.36,
+            "responseEnd": 3771.945
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=waterspray",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757101440.5042,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 2.452,
+            "responseStart": 1554.434,
+            "responseEnd": 3755.488
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=burnoutsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757099449.1492,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.325,
+            "responseStart": 1473.444,
+            "responseEnd": 5890.334
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=dirtsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757101442.535,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 9.247,
+            "responseStart": 3205.783,
+            "responseEnd": 5707.698
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=speedometerbg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757108420.2979,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.987,
+            "responseStart": 301.987,
+            "responseEnd": 390.919
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757107144.495,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.145,
+            "responseStart": 1446.292,
+            "responseEnd": 1767.778
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=gravelsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757106358.634,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.73,
+            "responseStart": 1143.602,
+            "responseEnd": 4169.735
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=lapBackground",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757109211.3042,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.396,
+            "responseStart": 260.109,
+            "responseEnd": 1596.066
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=greenGauge",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757111844.2922,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.382,
+            "responseStart": 34.18,
+            "responseEnd": 36.946
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=map",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757110522.079,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.007,
+            "responseStart": 402.474,
+            "responseEnd": 1530.869
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8801",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757112017.6448,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.31,
+            "responseStart": 25.425,
+            "responseEnd": 32.353
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=carbodybg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757112070.6492,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.397,
+            "responseStart": 161.755,
+            "responseEnd": 378.423
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=hoodicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757112427.8718,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.941,
+            "responseStart": 20.004,
+            "responseEnd": 26.356
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=rearicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757112428.556,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.395,
+            "responseStart": 45.042,
+            "responseEnd": 46.762
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=lefticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757112652.645,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 3.532,
+            "responseStart": 35.267,
+            "responseEnd": 37.75
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=righticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757112687.4712,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.762,
+            "responseStart": 24.157,
+            "responseEnd": 29.614
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=engineicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757112687.761,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.531,
+            "responseStart": 183.2,
+            "responseEnd": 211.874
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=transmissionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757112725.091,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.255,
+            "responseStart": 225.289,
+            "responseEnd": 447.525
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=tireicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757112750.275,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.217,
+            "responseStart": 289.663,
+            "responseEnd": 530.153
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=suspensionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757113186.6028,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.285,
+            "responseStart": 158.637,
+            "responseEnd": 522.566
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-low-fuel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757113709.0762,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.31,
+            "responseStart": 120.816,
+            "responseEnd": 125.194
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicators",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757113520.555,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.05,
+            "responseStart": 296.816,
+            "responseEnd": 426.425
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-high-beams",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757113938.038,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.355,
+            "responseStart": 3.767,
+            "responseEnd": 4.636
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-headlights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757114130.461,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.351,
+            "responseStart": 2.967,
+            "responseEnd": 5.186
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-aux-lights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757114134.031,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.774,
+            "responseStart": 3.383,
+            "responseEnd": 5.739
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-turn-left",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757114134.4602,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.461,
+            "responseStart": 3.438,
+            "responseEnd": 6.013
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-turn-right",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757114138.469,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.381,
+            "responseStart": 1.484,
+            "responseEnd": 2.261
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=rtginterior",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757114147.6829,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.714,
+            "responseStart": 130.169,
+            "responseEnd": 148.065
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=steeringwheel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757114147.9548,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.562,
+            "responseStart": 386.934,
+            "responseEnd": 437.055
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=windshieldwiper",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757114148.225,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.36,
+            "responseStart": 400.916,
+            "responseEnd": 404.097
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowcloud",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794757115015.958,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.791,
+            "responseStart": 256.73,
+            "responseEnd": 313.403
+          }
+        }
+      ],
+      "correction": "Importer source-hash fast path skipped changed maxEdge settings. This run used unchanged Demo native dimensions and is NOT export-optimization evidence."
+    },
+    {
+      "snapshot": "candidate-2",
+      "scope": "Alternating cold serial matched browser/viewport, fixed 20m normal-input work, unchanged continuity/deadlines. Passive draw wrapper measures CPU submission, not GPU completion.",
+      "startup": {
+        "bootMs": 4339,
+        "travelCallMs": 25216,
+        "playableWaitMs": 84160,
+        "totalToPlayableMs": 113808
+      },
+      "drive": {
+        "wallMs": 43334,
+        "simulationMs": 4033.333333333325,
+        "drawCalls": 121,
+        "drawCpuMs": 1380.9999999701977,
+        "maxDrawMs": 1181.9000000059605
+      },
+      "file": "/tmp/race-pack17-demo-candidate-2/pack17-demo-probe-Demo-Tra-6a617-authored-foreground-and-sky/performance-phases.json",
+      "artRequests": [
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756177552.9658,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.349,
+            "responseStart": 549.421,
+            "responseEnd": 595.44
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8582%20tires%203",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756178406.977,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.216,
+            "responseStart": 501.579,
+            "responseEnd": 567.752
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=loadingscreen",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756180083.0432,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 6.1,
+            "responseStart": 210.617,
+            "responseEnd": 253.089
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=apron",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756181457.8562,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.405,
+            "responseStart": 228.633,
+            "responseEnd": 236.541
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=environment-v1-demo-meadow-noon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756181457.55,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.73,
+            "responseStart": 224.257,
+            "responseEnd": 269.595
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=ground-temperate-grass-v1",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756181458.012,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.308,
+            "responseStart": 471.288,
+            "responseEnd": 672.669
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756182108.0251,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.429,
+            "responseStart": 2601.28,
+            "responseEnd": 2731.69
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=taillight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756182616.738,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 3.599,
+            "responseStart": 2304.29,
+            "responseEnd": 2815.584
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=headlight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756185411.844,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.036,
+            "responseStart": 204.574,
+            "responseEnd": 363.104
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8300%20body",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756181716.053,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.99,
+            "responseStart": 2454.883,
+            "responseEnd": 4332.239
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=turnsignal-amber",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756185725.7368,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.424,
+            "responseStart": 248.853,
+            "responseEnd": 333.937
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=burnoutsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756186037.668,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.646,
+            "responseStart": 1756.378,
+            "responseEnd": 4602.416
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=waterspray",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756187882.916,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.321,
+            "responseStart": 1316.62,
+            "responseEnd": 4349.652
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=dirtsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756187883.858,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.504,
+            "responseStart": 2610.464,
+            "responseEnd": 5705.54
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=gravelsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756192141.9922,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.975,
+            "responseStart": 1050.89,
+            "responseEnd": 3215.68
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=speedometerbg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756195149.076,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.743,
+            "responseStart": 176.84,
+            "responseEnd": 208.368
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756193552.9878,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.559,
+            "responseStart": 1077.623,
+            "responseEnd": 2060.448
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=lapBackground",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756196780.477,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.55,
+            "responseStart": 319.062,
+            "responseEnd": 942.357
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=greenGauge",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756197709.716,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 3.379,
+            "responseStart": 25.363,
+            "responseEnd": 31.682
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=map",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756196781.6738,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.374,
+            "responseStart": 769.511,
+            "responseEnd": 1139.046
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8801",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756197922.8088,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.263,
+            "responseStart": 31.45,
+            "responseEnd": 48.481
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=carbodybg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756198039.698,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.249,
+            "responseStart": 190.841,
+            "responseEnd": 321.073
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=hoodicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756198335.116,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.73,
+            "responseStart": 35.382,
+            "responseEnd": 42.625
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=rearicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756198377.092,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.247,
+            "responseStart": 13.505,
+            "responseEnd": 17.028
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=lefticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756198547.7158,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.349,
+            "responseStart": 43.028,
+            "responseEnd": 48.789
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=righticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756198579.603,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 7.23,
+            "responseStart": 59.538,
+            "responseEnd": 62.942
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=engineicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756198579.927,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 7.08,
+            "responseStart": 260.325,
+            "responseEnd": 306.482
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=tireicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756198698.866,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.411,
+            "responseStart": 203.394,
+            "responseEnd": 411.456
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=transmissionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756198627.488,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.623,
+            "responseStart": 319.579,
+            "responseEnd": 482.916
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=suspensionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756199110.282,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.268,
+            "responseStart": 222.481,
+            "responseEnd": 298.959
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-low-fuel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756199404.319,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.351,
+            "responseStart": 248.286,
+            "responseEnd": 250.134
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicators",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756199403.684,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.908,
+            "responseStart": 232.999,
+            "responseEnd": 284.327
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-high-beams",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756199672.5312,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.259,
+            "responseStart": 6.351,
+            "responseEnd": 7.767
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-headlights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756199839.884,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.431,
+            "responseStart": 2.002,
+            "responseEnd": 3.471
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-aux-lights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756199842.6567,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.176,
+            "responseStart": 1.226,
+            "responseEnd": 4.495
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-turn-left",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756199844.418,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.316,
+            "responseStart": 2.1,
+            "responseEnd": 3.138
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-turn-right",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756199849.872,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.383,
+            "responseStart": 1.656,
+            "responseEnd": 2.552
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=rtginterior",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756199850.101,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.238,
+            "responseStart": 100.379,
+            "responseEnd": 131.328
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=steeringwheel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756199872.265,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.166,
+            "responseStart": 423.431,
+            "responseEnd": 464.649
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=windshieldwiper",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756199873.7832,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 2.996,
+            "responseStart": 446.81,
+            "responseEnd": 454.955
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowcloud",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756200796.0042,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.434,
+            "responseStart": 219.776,
+            "responseEnd": 294.209
+          }
+        }
+      ]
+    },
+    {
+      "snapshot": "baseline-2",
+      "scope": "Alternating cold serial matched browser/viewport, fixed 20m normal-input work, unchanged continuity/deadlines. Passive draw wrapper measures CPU submission, not GPU completion.",
+      "startup": {
+        "bootMs": 5340,
+        "travelCallMs": 28170,
+        "playableWaitMs": 49021,
+        "totalToPlayableMs": 82600
+      },
+      "drive": {
+        "wallMs": 5824,
+        "simulationMs": 5916.399999999994,
+        "drawCalls": 23,
+        "drawCpuMs": 811.4000000059605,
+        "maxDrawMs": 596
+      },
+      "file": "/tmp/race-pack17-demo-baseline-2/pack17-demo-probe-Demo-Tra-6a617-authored-foreground-and-sky/performance-phases.json",
+      "artRequests": [
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756342698.0132,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.228,
+            "responseStart": 730.087,
+            "responseEnd": 828.851
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=8582%20tires%203",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756343821.1519,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.32,
+            "responseStart": 751.188,
+            "responseEnd": 817.276
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=loadingscreen",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756345766.5251,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 39.943,
+            "responseStart": 252.567,
+            "responseEnd": 307.914
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=providence",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756347482.333,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.464,
+            "responseStart": 113.501,
+            "responseEnd": 117.916
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=apron",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756347482.644,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.409,
+            "responseStart": 121.367,
+            "responseEnd": 122.308
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=taillight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756347843.871,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.431,
+            "responseStart": 2851.879,
+            "responseEnd": 2893.647
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756347843.576,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.529,
+            "responseStart": 3135.258,
+            "responseEnd": 3370.454
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=headlight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756351087.695,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.388,
+            "responseStart": 206.272,
+            "responseEnd": 907.72
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=turnsignal-amber",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756351991.166,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.485,
+            "responseStart": 215.019,
+            "responseEnd": 415.009
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=8300%20body",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756347482.9568,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.136,
+            "responseStart": 2987.629,
+            "responseEnd": 4919.177
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=dirtsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756354387.145,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.455,
+            "responseStart": 2804.262,
+            "responseEnd": 3408.987
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=burnoutsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756352387.212,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.367,
+            "responseStart": 1529.137,
+            "responseEnd": 5608.895
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=waterspray",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756354350.696,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.519,
+            "responseStart": 1173.163,
+            "responseEnd": 3648.369
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=speedometerbg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756361485.283,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.044,
+            "responseStart": 1299.283,
+            "responseEnd": 1359.874
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=gravelsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756359284.311,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.367,
+            "responseStart": 1261.975,
+            "responseEnd": 4020.718
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=snowsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756361484.663,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.668,
+            "responseStart": 1057.028,
+            "responseEnd": 1842.081
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=lapBackground",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756363297.2,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 3.425,
+            "responseStart": 238.559,
+            "responseEnd": 2046.26
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=greenGauge",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756365326.797,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.014,
+            "responseStart": 407.071,
+            "responseEnd": 410.423
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=map",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756365326.347,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.032,
+            "responseStart": 380.472,
+            "responseEnd": 453.622
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=8801",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756365584.531,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.357,
+            "responseStart": 185.856,
+            "responseEnd": 188.078
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=carbodybg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756365990.327,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.314,
+            "responseStart": 226.091,
+            "responseEnd": 289.738
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=hoodicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756366238.71,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.336,
+            "responseStart": 31.723,
+            "responseEnd": 33.532
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=rearicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756366250.134,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.349,
+            "responseStart": 35,
+            "responseEnd": 38.151
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=lefticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756366558.2659,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.441,
+            "responseStart": 34.218,
+            "responseEnd": 37.61
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=righticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756366579.7908,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.649,
+            "responseStart": 35.601,
+            "responseEnd": 44.801
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=engineicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756366580.213,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.315,
+            "responseStart": 136.177,
+            "responseEnd": 162.779
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=transmissionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756366627.9348,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.231,
+            "responseStart": 150.396,
+            "responseEnd": 369.093
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=tireicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756366675.5212,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.216,
+            "responseStart": 145.504,
+            "responseEnd": 328.802
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=suspensionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756367003.019,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.367,
+            "responseStart": 134.535,
+            "responseEnd": 257.935
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-low-fuel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756367253.5298,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.36,
+            "responseStart": 238.823,
+            "responseEnd": 241.557
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-high-beams",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756367471.7488,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.314,
+            "responseStart": 22.289,
+            "responseEnd": 23.526
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicators",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756367253.149,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.61,
+            "responseStart": 238.643,
+            "responseEnd": 254.122
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-headlights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756367702.423,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.392,
+            "responseStart": 2.737,
+            "responseEnd": 4.123
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-aux-lights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756367704.368,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.238,
+            "responseStart": 2.363,
+            "responseEnd": 4.09
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-turn-left",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756367704.822,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.193,
+            "responseStart": 2.252,
+            "responseEnd": 3.237
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-turn-right",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756367716.897,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.19,
+            "responseStart": 3.252,
+            "responseEnd": 4.579
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=rtginterior",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756367719.713,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.746,
+            "responseStart": 132.353,
+            "responseEnd": 166.674
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=windshieldwiper",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756367722.507,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.206,
+            "responseStart": 570.645,
+            "responseEnd": 583.433
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=steeringwheel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756367719.991,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.567,
+            "responseStart": 524.37,
+            "responseEnd": 588.323
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=snowcloud",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756368734.495,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.029,
+            "responseStart": 351.993,
+            "responseEnd": 388.592
+          }
+        }
+      ]
+    },
+    {
+      "snapshot": "terrain-only",
+      "scope": "Alternating cold serial matched browser/viewport, fixed 20m normal-input work, unchanged continuity/deadlines. Passive draw wrapper measures CPU submission, not GPU completion.",
+      "startup": {
+        "bootMs": 4454,
+        "travelCallMs": 25959,
+        "playableWaitMs": 84677,
+        "totalToPlayableMs": 115175
+      },
+      "drive": {
+        "wallMs": 41468,
+        "simulationMs": 4033.333333333325,
+        "drawCalls": 121,
+        "drawCpuMs": 1736.8999999463558,
+        "maxDrawMs": 936.8999999910593
+      },
+      "file": "/tmp/race-pack17-demo-terrain-only/pack17-demo-probe-Demo-Tra-6a617-authored-foreground-and-sky/performance-phases.json",
+      "artRequests": [
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756725486.0662,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.227,
+            "responseStart": 324.561,
+            "responseEnd": 393.249
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8582%20tires%203",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756726128.1729,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.253,
+            "responseStart": 503.054,
+            "responseEnd": 581.791
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=loadingscreen",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756727693.528,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 14.16,
+            "responseStart": 214.992,
+            "responseEnd": 252.325
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=providence",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756729408.954,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.778,
+            "responseStart": 92.951,
+            "responseEnd": 103.996
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=apron",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756729410.002,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 7.655,
+            "responseStart": 98.395,
+            "responseEnd": 101.185
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=ground-temperate-grass-v1",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756729410.339,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 10.569,
+            "responseStart": 239.958,
+            "responseEnd": 289.029
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756729645.2651,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.379,
+            "responseStart": 347.983,
+            "responseEnd": 2402.822
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=taillight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756730285.8948,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.903,
+            "responseStart": 2019.059,
+            "responseEnd": 2761.998
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8300%20body",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756729644.738,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.689,
+            "responseStart": 2384.586,
+            "responseEnd": 3855.975
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=headlight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756733015.718,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.698,
+            "responseStart": 408.112,
+            "responseEnd": 494.421
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=turnsignal-amber",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756733418.804,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.325,
+            "responseStart": 179.859,
+            "responseEnd": 2115.612
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=burnoutsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756735477.556,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 9.351,
+            "responseStart": 1254.079,
+            "responseEnd": 4132.946
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=waterspray",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756735486.631,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.457,
+            "responseStart": 2319.965,
+            "responseEnd": 5438.454
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=dirtsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756735881.5278,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.334,
+            "responseStart": 3418.576,
+            "responseEnd": 6067.26
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=speedometerbg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756743696.0752,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.422,
+            "responseStart": 235.681,
+            "responseEnd": 276.433
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=gravelsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756740924.391,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.038,
+            "responseStart": 1165.516,
+            "responseEnd": 3254.914
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=lapBackground",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756744178.082,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.431,
+            "responseStart": 195.811,
+            "responseEnd": 1113.18
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756741935.073,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.625,
+            "responseStart": 1365.165,
+            "responseEnd": 3362.33
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=greenGauge",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756746817.924,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 2.817,
+            "responseStart": 20.106,
+            "responseEnd": 26.551
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=map",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756745247.282,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.702,
+            "responseStart": 446.561,
+            "responseEnd": 1603.223
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8801",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756746821.269,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.246,
+            "responseStart": 32.234,
+            "responseEnd": 35.734
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=carbodybg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756747279.5862,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.763,
+            "responseStart": 150.255,
+            "responseEnd": 164.844
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=hoodicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756747283.73,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.247,
+            "responseStart": 158.596,
+            "responseEnd": 162.767
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=rearicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756747299.305,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.266,
+            "responseStart": 150.791,
+            "responseEnd": 153.967
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=lefticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756747743.904,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.343,
+            "responseStart": 28.994,
+            "responseEnd": 35.709
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=righticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756747757.966,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.351,
+            "responseStart": 37.583,
+            "responseEnd": 39.344
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=engineicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756747773.3438,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.263,
+            "responseStart": 142.592,
+            "responseEnd": 240.256
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=transmissionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756747829.83,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.198,
+            "responseStart": 161.836,
+            "responseEnd": 200.484
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=tireicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756747885.4558,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.263,
+            "responseStart": 163.933,
+            "responseEnd": 585.896
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=suspensionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756748475.6,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.703,
+            "responseStart": 129.068,
+            "responseEnd": 149.885
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-low-fuel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756748617.311,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.456,
+            "responseStart": 153.364,
+            "responseEnd": 154.317
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicators",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756748477.984,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.555,
+            "responseStart": 257.07,
+            "responseEnd": 332.114
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-high-beams",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756748802.178,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 4.296,
+            "responseStart": 5.679,
+            "responseEnd": 6.926
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-headlights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756749002.6772,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.262,
+            "responseStart": 2.319,
+            "responseEnd": 3.959
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-aux-lights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756749004.899,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.621,
+            "responseStart": 3.634,
+            "responseEnd": 5.562
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-turn-left",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756749008.827,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.204,
+            "responseStart": 1.233,
+            "responseEnd": 3.846
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=indicator-turn-right",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756749015.272,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.396,
+            "responseStart": 1.002,
+            "responseEnd": 2.371
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=rtginterior",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756749020.998,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.172,
+            "responseStart": 106.548,
+            "responseEnd": 115.656
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=windshieldwiper",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756749023.595,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.296,
+            "responseStart": 307.11,
+            "responseEnd": 313.926
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=steeringwheel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756749023.26,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.543,
+            "responseStart": 294.8,
+            "responseEnd": 355.429
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowcloud",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756749692.331,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.309,
+            "responseStart": 322.648,
+            "responseEnd": 416.784
+          }
+        }
+      ]
+    },
+    {
+      "snapshot": "baseline-1",
+      "scope": "Alternating cold serial matched browser/viewport, fixed 20m normal-input work, unchanged continuity/deadlines. Passive draw wrapper measures CPU submission, not GPU completion.",
+      "startup": {
+        "bootMs": 5387,
+        "travelCallMs": 27514,
+        "playableWaitMs": 47421,
+        "totalToPlayableMs": 80402
+      },
+      "drive": {
+        "wallMs": 5134,
+        "simulationMs": 5016.5,
+        "drawCalls": 22,
+        "drawCpuMs": 710.3000000119209,
+        "maxDrawMs": 532.2000000029802
+      },
+      "file": "/tmp/race-pack17-demo-baseline-1/pack17-demo-probe-Demo-Tra-6a617-authored-foreground-and-sky/performance-phases.json",
+      "artRequests": [
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756087349.9192,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.354,
+            "responseStart": 473.387,
+            "responseEnd": 505.801
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=8582%20tires%203",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756088177.846,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.211,
+            "responseStart": 669.883,
+            "responseEnd": 778.045
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=loadingscreen",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756090249.832,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.201,
+            "responseStart": 273.792,
+            "responseEnd": 337.46
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=providence",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756091702.162,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.102,
+            "responseStart": 53.645,
+            "responseEnd": 57.307
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=apron",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756091702.667,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.7,
+            "responseStart": 54.626,
+            "responseEnd": 56.429
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=taillight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756092074.7778,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.423,
+            "responseStart": 2537.624,
+            "responseEnd": 2585.967
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=catalog-tarmac-semislick",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756092074.42,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.652,
+            "responseStart": 3057.642,
+            "responseEnd": 3341.386
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=headlight",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756095270.6619,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.406,
+            "responseStart": 299.849,
+            "responseEnd": 881.699
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=8300%20body",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756091702.898,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.677,
+            "responseStart": 2603.221,
+            "responseEnd": 4609.367
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=turnsignal-amber",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756096137.251,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.3,
+            "responseStart": 393.479,
+            "responseEnd": 2237.733
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=burnoutsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756096991.187,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 4.628,
+            "responseStart": 1245.799,
+            "responseEnd": 4693.472
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=waterspray",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756098376.9028,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.284,
+            "responseStart": 1197.508,
+            "responseEnd": 3322.946
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=dirtsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756098651.866,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.379,
+            "responseStart": 2375.203,
+            "responseEnd": 5630.787
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=speedometerbg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756105484.615,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.847,
+            "responseStart": 1241.635,
+            "responseEnd": 1260.708
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=gravelsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756104273.0469,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.796,
+            "responseStart": 1436.189,
+            "responseEnd": 3123.19
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=snowsmoke",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756104281.432,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.186,
+            "responseStart": 2290.143,
+            "responseEnd": 3309.989
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=lapBackground",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756107387.543,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 3.92,
+            "responseStart": 160.942,
+            "responseEnd": 2811.226
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=greenGauge",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756110209.5872,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.322,
+            "responseStart": 24.648,
+            "responseEnd": 34.142
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=map",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756108880.5898,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.641,
+            "responseStart": 350.029,
+            "responseEnd": 1556.837
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=8801",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756110437.679,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.273,
+            "responseStart": 17.818,
+            "responseEnd": 35.707
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=carbodybg",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756110572.695,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 7.403,
+            "responseStart": 151.478,
+            "responseEnd": 301.557
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=hoodicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756110832.1782,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.328,
+            "responseStart": 11.012,
+            "responseEnd": 16.571
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=rearicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756110875.397,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.26,
+            "responseStart": 15.172,
+            "responseEnd": 18.085
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=lefticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756111083.214,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 4.607,
+            "responseStart": 31.577,
+            "responseEnd": 33.823
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=righticon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756111083.599,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 4.33,
+            "responseStart": 86.836,
+            "responseEnd": 88.382
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=engineicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756111093.06,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.243,
+            "responseStart": 239.863,
+            "responseEnd": 254.719
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=transmissionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756111200.397,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.229,
+            "responseStart": 275.658,
+            "responseEnd": 365.162
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=tireicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756111270.546,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.217,
+            "responseStart": 269.008,
+            "responseEnd": 303.507
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=suspensionicon",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756111550.801,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.248,
+            "responseStart": 95.583,
+            "responseEnd": 346.791
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicators",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756111890.533,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.84,
+            "responseStart": 157.377,
+            "responseEnd": 167.845
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-low-fuel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756111891.0198,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.525,
+            "responseStart": 164.729,
+            "responseEnd": 166.383
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-high-beams",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756112033.427,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.24,
+            "responseStart": 39.071,
+            "responseEnd": 40.29
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-headlights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756112273.527,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.36,
+            "responseStart": 4.239,
+            "responseEnd": 6.221
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-aux-lights",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756112276.866,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.633,
+            "responseStart": 5.883,
+            "responseEnd": 11.912
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-turn-left",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756112277.151,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 1.653,
+            "responseStart": 7.949,
+            "responseEnd": 11.813
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=indicator-turn-right",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756112285.839,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.621,
+            "responseStart": 3.741,
+            "responseEnd": 6.257
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=rtginterior",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756112295.819,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.496,
+            "responseStart": 116.045,
+            "responseEnd": 130.512
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=windshieldwiper",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756112298.355,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.194,
+            "responseStart": 375.428,
+            "responseEnd": 377.719
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=steeringwheel",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756112296.1208,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.294,
+            "responseStart": 332.205,
+            "responseEnd": 435.574
+          }
+        },
+        {
+          "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=snowcloud",
+          "type": "fetch",
+          "timing": {
+            "startTime": 1794756113112.268,
+            "domainLookupStart": -1,
+            "domainLookupEnd": -1,
+            "connectStart": -1,
+            "secureConnectionStart": -1,
+            "connectEnd": -1,
+            "requestStart": 0.339,
+            "responseStart": 258.765,
+            "responseEnd": 314.139
+          }
+        }
+      ]
+    }
+  ],
+  "finding": "Matched alternating cold runs establish slower candidate startup after terrain activation: 113.8\u2013119.0s versus baseline80.4\u201382.6s; sky-only80.8s, terrain-only115.2s. Drive latency varies and remains unresolved. Actual smaller-export experiment failed continuity, so both native exports were restored, not accepted. The earlier optimized label was a skipped-import control, explicitly corrected. No baseline-noise claim or runtime/deadline changes.",
+  "limits": "One20m drive per run with identical normal-input controller and viewport1280x720; same stock car and fresh server/browser. Draw timings measure CPU submission only, not GPU completion. No full-route proof.",
+  "actualReexportAttempt": {
+    "nativeDimensions": {
+      "ground-temperate-grass-v1": [
+        256,
+        256
+      ],
+      "environment-v1-demo-meadow-noon": [
+        512,
+        171
+      ]
+    },
+    "result": "Failed unchanged routeProgressDelta continuity assertion: World reset or teleport. No completed 20m timing. No retry or relaxed threshold.",
+    "evidence": "/tmp/race-pack17-demo-actual-reexport",
+    "retainedAttempt": "/tmp/pack17-reexport-attempt-preserved",
+    "releaseAction": "Restored exact prior known native exports and sampling settings for these two assets; originals and failed exports retained. No claimed performance fix."
+  },
+  "phaseAttribution": {
+    "travelCallMs": "Candidate25.2\u201327.4s versus baseline27.5\u201328.2s; not the measured startup delta.",
+    "afterTravelToPlayableMs": "Candidate84.2\u201386.2s versus baseline47.4\u201349.0s. Sky-only47.3s, terrain-only84.7s.",
+    "artTransfers": "Measured Demo sky requests220\u2013270ms and grass673\u2013800ms in original candidate; terrain-only grass289ms. Far below34s startup delta. These are browser request durations, not decoder/GPU time.",
+    "drawCPU": "Candidate slow sample1.381s total JS draw submission for43.334s wall /4.033s simulation, versus baseline0.710\u20130.811s submission for5.134\u20135.824s wall. GPU completion and event-loop/simulation waiting not fully separated.",
+    "conclusion": "Terrain activation causes a repeatable preparation/frame scheduling regression in this software-rendering environment; pure network transfer does not explain it. Source density causality not proved. No engine patch or unsupported baseline-noise claim."
+  }
+}

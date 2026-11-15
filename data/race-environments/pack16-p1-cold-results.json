@@ -1,0 +1,165 @@
+{
+  "scope": "Cold serial P1 desktop, fresh server per snapshot, no concurrent heavy rendering. Original assertion/deadline/criticality unchanged.",
+  "snapshots": {
+    "baseline": {
+      "passed": true,
+      "start": {
+        "started": true,
+        "messages": [],
+        "status": "Playtesting p1 in RTG-001",
+        "diagnostics": {
+          "requestId": 1,
+          "cacheKey": "",
+          "raceName": "p1",
+          "phase": "starting-race",
+          "progress": 0.997,
+          "elapsedMs": 24805.60000000894,
+          "missingArtRefs": [],
+          "status": "running"
+        }
+      },
+      "transport": {
+        "snapshot": "baseline",
+        "scope": "Passive request/response and worker ResourceTiming capture. Response bytes are retained as received; JSON parsing is after test execution. No deadlines, fetch concurrency, art criticality, simulation or weather overrides.",
+        "events": [
+          {
+            "event": "request",
+            "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=8300%20body",
+            "method": "GET",
+            "type": "fetch",
+            "atMs": 15595
+          },
+          {
+            "event": "request",
+            "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=snowsmoke",
+            "method": "GET",
+            "type": "fetch",
+            "atMs": 26982
+          }
+        ],
+        "responses": [
+          {
+            "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=8300%20body",
+            "status": 200,
+            "timing": {
+              "startTime": 1794754826134.908,
+              "domainLookupStart": -1,
+              "domainLookupEnd": -1,
+              "connectStart": -1,
+              "secureConnectionStart": -1,
+              "connectEnd": -1,
+              "requestStart": 0.442,
+              "responseStart": 1970.518,
+              "responseEnd": 3891.023
+            },
+            "bodyError": "Error: Error: response.body: Protocol error (Network.getResponseBody): Request content was evicted from inspector cache"
+          },
+          {
+            "url": "http://127.0.0.1:4351/__storage/file?folder=art&name=snowsmoke",
+            "status": 200,
+            "timing": {
+              "startTime": 1794754837523.621,
+              "domainLookupStart": -1,
+              "domainLookupEnd": -1,
+              "connectStart": -1,
+              "secureConnectionStart": -1,
+              "connectEnd": -1,
+              "requestStart": 0.778,
+              "responseStart": 854.352,
+              "responseEnd": 1544.928
+            },
+            "bodyError": "Error: Error: response.body: Protocol error (Network.getResponseBody): Request content was evicted from inspector cache"
+          }
+        ],
+        "workers": [
+          "http://127.0.0.1:4351/src/ui/raceWorldBakeWorker.js"
+        ],
+        "workerResources": []
+      },
+      "log": "/tmp/pack16-baseline-p1-cold.log"
+    },
+    "candidate": {
+      "passed": true,
+      "start": {
+        "started": true,
+        "messages": [],
+        "status": "Playtesting p1 in RTG-001",
+        "diagnostics": {
+          "requestId": 1,
+          "cacheKey": "",
+          "raceName": "p1",
+          "phase": "starting-race",
+          "progress": 0.997,
+          "elapsedMs": 24530.59999999404,
+          "missingArtRefs": [],
+          "status": "running"
+        }
+      },
+      "transport": {
+        "snapshot": "candidate",
+        "scope": "Passive request/response and worker ResourceTiming capture. Response bytes are retained as received; JSON parsing is after test execution. No deadlines, fetch concurrency, art criticality, simulation or weather overrides.",
+        "events": [
+          {
+            "event": "request",
+            "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8300%20body",
+            "method": "GET",
+            "type": "fetch",
+            "atMs": 14336
+          },
+          {
+            "event": "request",
+            "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowsmoke",
+            "method": "GET",
+            "type": "fetch",
+            "atMs": 25123
+          }
+        ],
+        "responses": [
+          {
+            "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=8300%20body",
+            "status": 200,
+            "timing": {
+              "startTime": 1794754909135.347,
+              "domainLookupStart": -1,
+              "domainLookupEnd": -1,
+              "connectStart": -1,
+              "secureConnectionStart": -1,
+              "connectEnd": -1,
+              "requestStart": 0.541,
+              "responseStart": 1762.05,
+              "responseEnd": 2723.249
+            },
+            "bodyError": "Error: Error: response.body: Protocol error (Network.getResponseBody): Request content was evicted from inspector cache"
+          },
+          {
+            "url": "http://127.0.0.1:4353/__storage/file?folder=art&name=snowsmoke",
+            "status": 200,
+            "timing": {
+              "startTime": 1794754919911.536,
+              "domainLookupStart": -1,
+              "domainLookupEnd": -1,
+              "connectStart": -1,
+              "secureConnectionStart": -1,
+              "connectEnd": -1,
+              "requestStart": 1.002,
+              "responseStart": 1200.746,
+              "responseEnd": 3087.342
+            },
+            "bodyError": "Error: Error: response.body: Protocol error (Network.getResponseBody): Request content was evicted from inspector cache"
+          }
+        ],
+        "workers": [
+          "http://127.0.0.1:4353/src/ui/raceWorldBakeWorker.js"
+        ],
+        "workerResources": []
+      },
+      "log": "/tmp/pack16-candidate-p1-cold.log"
+    }
+  },
+  "limitations": [
+    "Chromium inspector response bodies evicted; wire payload validity not captured. Source JSON is separately valid and byte-identical.",
+    "No worker ResourceTiming entries captured; startup runtime diagnostics provide aggregate transfer success only.",
+    "Unrelated browser 404 messages occurred; no named asset fallback request was observed in captured events.",
+    "One matched pass each does not prove the earlier intermittent failure is resolved or baseline-caused."
+  ]
+}

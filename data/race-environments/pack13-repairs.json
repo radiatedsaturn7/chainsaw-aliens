@@ -1,0 +1,453 @@
+{
+  "schemaVersion": 1,
+  "repairs": [
+    {
+      "ref": "environment-v1-oakrim-evening",
+      "raceRef": "Oak Creek Canyon",
+      "priorSourceImage": "/workspace/generated_images/exec-f57f2740-43c0-47f5-afba-b4e2da69fbba.png",
+      "sourceImage": "/workspace/generated_images/exec-8e201fbf-eb94-4721-99b8-cffda6207ba7.png",
+      "sourceSha256": "0e31accffd621e943b03814b15e670484c8d669aed0aab1830831df95771b890",
+      "prompt": "Repair this exact original pixel-art panorama for Oak Creek Canyon, preserving its place, terrain geology, vegetation, structures and existing time-of-day palette. Fix horizontal 360-degree wrap: both outer edges must have matching horizon elevation, sky colors and distant land colors; move tall near trees/cliffs inward from edges rather than change the place. Preserve central recognisable composition. Fade the bottom5% texture gently into a single quiet matching local earth/dark-ground color across the bottommost row, and make the topmost row uniform matching sky color, so clamped pixels don't become long striped extensions. No hard frame, border or contrasting band. Preserve 3:1 panoramic pixel-art, original weather/time, no text/logos/new road or large objects. Do not turn night into daylight or daylight into night.",
+      "before": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 15.78268876611418,
+        "edgeMaximumRGB": 128.0,
+        "topRangeRGB": [
+          3,
+          8,
+          9
+        ],
+        "bottomRangeRGB": [
+          5,
+          6,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "after": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 4.4788213627992635,
+        "edgeMaximumRGB": 56.0,
+        "topRangeRGB": [
+          4,
+          8,
+          10
+        ],
+        "bottomRangeRGB": [
+          5,
+          8,
+          6
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceReview": "Viewed original and revised source; native wrap and authored review pending.",
+      "nativeReports": [
+        "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-8b480-yon-independent-sky-desktop/site-89b70e2c2e4e7a94-state.json",
+        "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-f796f-on-independent-sky-handheld/site-89b70e2c2e4e7a94-state.json"
+      ],
+      "nativeReviewed": true,
+      "nativeFinding": "Both authored and diagnostic exposure plus pitch/wrap captures viewed. Quieter boundary extension; subtle bands remain under extreme pitch. Native image evidence only, not new driving acceptance. Authored fog obscures horizon.",
+      "decodedAfter": {
+        "meanRGB": 4.564027370478984,
+        "skyMeanRGB": 2.7285067873303173,
+        "maximumRGB": 68.33333333333333,
+        "largeJumpFraction": 0,
+        "numericWarning": false,
+        "visualReviewRequired": true
+      },
+      "decodedBefore": {
+        "meanRGB": 15.786901270772226,
+        "skyMeanRGB": 18.711915535444945,
+        "maximumRGB": 126.33333333333333,
+        "largeJumpFraction": 0.0469208211143695,
+        "numericWarning": true,
+        "visualReviewRequired": true
+      }
+    },
+    {
+      "ref": "environment-v1-bluff-morning",
+      "raceRef": "US 191 \u2014 Bluff Blanding",
+      "priorSourceImage": "/workspace/generated_images/exec-23268fa5-14c2-43c9-9491-d52fb24f9bb1.png",
+      "sourceImage": "/workspace/generated_images/exec-093a42ce-c40a-4621-b5ad-e9cf5daaae73.png",
+      "sourceSha256": "f01eb88c3f256bd49dfbe6f0e6e3227d5ad05b7fd9b67f40540bed5e91969b50",
+      "prompt": "Repair this exact original pixel-art panorama for US 191 \u2014 Bluff Blanding, preserving its place, terrain geology, vegetation, structures and existing time-of-day palette. Fix horizontal 360-degree wrap: both outer edges must have matching horizon elevation, sky colors and distant land colors; move tall near trees/cliffs inward from edges rather than change the place. Preserve central recognisable composition. Fade the bottom5% texture gently into a single quiet matching local earth/dark-ground color across the bottommost row, and make the topmost row uniform matching sky color, so clamped pixels don't become long striped extensions. No hard frame, border or contrasting band. Preserve 3:1 panoramic pixel-art, original weather/time, no text/logos/new road or large objects. Do not turn night into daylight or daylight into night.",
+      "before": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 16.095303867403317,
+        "edgeMaximumRGB": 140.0,
+        "topRangeRGB": [
+          10,
+          5,
+          6
+        ],
+        "bottomRangeRGB": [
+          3,
+          6,
+          6
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "after": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 7.910681399631676,
+        "edgeMaximumRGB": 76.33333333333333,
+        "topRangeRGB": [
+          12,
+          6,
+          5
+        ],
+        "bottomRangeRGB": [
+          4,
+          7,
+          5
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceReview": "Viewed original and revised source; native wrap and authored review pending.",
+      "nativeReports": [
+        "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-5861e-ing-independent-sky-desktop/site-d47c24ae2aacbd9e-state.json",
+        "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-4afd3-ng-independent-sky-handheld/site-d47c24ae2aacbd9e-state.json"
+      ],
+      "nativeReviewed": true,
+      "nativeFinding": "Both authored and diagnostic exposure plus pitch/wrap captures viewed. Quieter boundary extension; subtle bands remain under extreme pitch. Native image evidence only, not new driving acceptance.",
+      "decodedAfter": {
+        "meanRGB": 8.207233626588467,
+        "skyMeanRGB": 8.736048265460031,
+        "maximumRGB": 82,
+        "largeJumpFraction": 0.002932551319648094,
+        "numericWarning": false,
+        "visualReviewRequired": true
+      },
+      "decodedBefore": {
+        "meanRGB": 16.674486803519063,
+        "skyMeanRGB": 22.546003016591253,
+        "maximumRGB": 137.33333333333334,
+        "largeJumpFraction": 0.07917888563049853,
+        "numericWarning": true,
+        "visualReviewRequired": true
+      }
+    },
+    {
+      "ref": "environment-v1-shafer-night",
+      "raceRef": "Shafer Trail \u2014 Canyonlands National Park",
+      "priorSourceImage": "/workspace/generated_images/exec-b7d7fac2-c67d-4abe-8b62-b8f84fbb0422.png",
+      "sourceImage": "/workspace/generated_images/exec-5057719b-cd7f-4a8e-8716-f72d9bfcbb89.png",
+      "sourceSha256": "b3a5e7c9181d2898577dba5b74afb5a7e75e6e9143ab3aeddfaa72c1ea2c4b03",
+      "prompt": "Repair this exact original pixel-art panorama for Shafer Trail \u2014 Canyonlands National Park, preserving its place, terrain geology, vegetation, structures and existing time-of-day palette. Fix horizontal 360-degree wrap: both outer edges must have matching horizon elevation, sky colors and distant land colors; move tall near trees/cliffs inward from edges rather than change the place. Preserve central recognisable composition. Fade the bottom5% texture gently into a single quiet matching local earth/dark-ground color across the bottommost row, and make the topmost row uniform matching sky color, so clamped pixels don't become long striped extensions. No hard frame, border or contrasting band. Preserve 3:1 panoramic pixel-art, original weather/time, no text/logos/new road or large objects. Do not turn night into daylight or daylight into night.",
+      "before": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 12.680478821362799,
+        "edgeMaximumRGB": 70.66666666666667,
+        "topRangeRGB": [
+          6,
+          5,
+          6
+        ],
+        "bottomRangeRGB": [
+          4,
+          7,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "after": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 3.445672191528545,
+        "edgeMaximumRGB": 45.333333333333336,
+        "topRangeRGB": [
+          5,
+          5,
+          9
+        ],
+        "bottomRangeRGB": [
+          5,
+          6,
+          4
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceReview": "Viewed original and revised source; native wrap and authored review pending.",
+      "nativeReports": [
+        "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-50c0f-ark-independent-sky-desktop/site-5f666c63d5369660-state.json",
+        "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-6243d-rk-independent-sky-handheld/site-5f666c63d5369660-state.json"
+      ],
+      "nativeReviewed": true,
+      "nativeFinding": "Both authored and diagnostic exposure plus pitch/wrap captures viewed. Quieter boundary extension; subtle bands remain under extreme pitch. Native image evidence only, not new driving acceptance. Authored night nearly black; crescent visible in diagnostic only.",
+      "decodedAfter": {
+        "meanRGB": 3.987292277614861,
+        "skyMeanRGB": 2.6304675716440418,
+        "maximumRGB": 45.666666666666664,
+        "largeJumpFraction": 0,
+        "numericWarning": false,
+        "visualReviewRequired": true
+      },
+      "decodedBefore": {
+        "meanRGB": 13.008797653958936,
+        "skyMeanRGB": 14.707390648567124,
+        "maximumRGB": 62.333333333333336,
+        "largeJumpFraction": 0,
+        "numericWarning": true,
+        "visualReviewRequired": true
+      }
+    },
+    {
+      "ref": "environment-v1-pagesprings-evening",
+      "raceRef": "Page Springs Road",
+      "priorSourceImage": "/workspace/generated_images/exec-aa8faadb-09f3-493a-8358-7d545e91d9cd.png",
+      "sourceImage": "/workspace/generated_images/exec-86acc14d-f0d4-4aec-b35e-efe0b519a6d5.png",
+      "sourceSha256": "dd88e11ee449bca6105e1bc06f022d833611e9dd52091f707fd1da16fff9fd58",
+      "prompt": "Repair this exact original pixel-art panorama for Page Springs Road, preserving its place, terrain geology, vegetation, structures and existing time-of-day palette. Fix horizontal 360-degree wrap: both outer edges must have matching horizon elevation, sky colors and distant land colors; move tall near trees/cliffs inward from edges rather than change the place. Preserve central recognisable composition. Fade the bottom5% texture gently into a single quiet matching local earth/dark-ground color across the bottommost row, and make the topmost row uniform matching sky color, so clamped pixels don't become long striped extensions. No hard frame, border or contrasting band. Preserve 3:1 panoramic pixel-art, original weather/time, no text/logos/new road or large objects. Do not turn night into daylight or daylight into night.",
+      "before": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 15.105432780847146,
+        "edgeMaximumRGB": 113.0,
+        "topRangeRGB": [
+          7,
+          6,
+          12
+        ],
+        "bottomRangeRGB": [
+          4,
+          6,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "after": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 6.081031307550645,
+        "edgeMaximumRGB": 54.0,
+        "topRangeRGB": [
+          5,
+          4,
+          13
+        ],
+        "bottomRangeRGB": [
+          4,
+          7,
+          7
+        ],
+        "warnings": [
+          "top-row-extrusion"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceReview": "Viewed original and revised source; native wrap and authored review pending.",
+      "nativeReports": [
+        "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-d92a7-ad-independent-sky-handheld/site-d631df8c7dba05f0-state.json",
+        "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-11280-oad-independent-sky-desktop/site-d631df8c7dba05f0-state.json"
+      ],
+      "nativeReviewed": true,
+      "nativeFinding": "Both authored and diagnostic exposure plus pitch/wrap captures viewed. Quieter boundary extension; subtle bands remain under extreme pitch. Native image evidence only, not new driving acceptance.",
+      "decodedAfter": {
+        "meanRGB": 5.944281524926683,
+        "skyMeanRGB": 5.128205128205126,
+        "maximumRGB": 59.333333333333336,
+        "largeJumpFraction": 0,
+        "numericWarning": false,
+        "visualReviewRequired": true
+      },
+      "decodedBefore": {
+        "meanRGB": 16.715542521994113,
+        "skyMeanRGB": 18.333333333333336,
+        "maximumRGB": 129.66666666666666,
+        "largeJumpFraction": 0.020527859237536656,
+        "numericWarning": true,
+        "visualReviewRequired": true
+      }
+    },
+    {
+      "ref": "environment-v1-littletujunga-noon",
+      "raceRef": "Little Tujunga Canyon Road",
+      "priorSourceImage": "/workspace/generated_images/exec-03047722-3bd5-4112-b126-c74dd19651b5.png",
+      "sourceImage": "/workspace/generated_images/exec-aa9ca82e-cfbc-4c13-83da-1ac2383769d9.png",
+      "sourceSha256": "01c78365b1486e9e4d7df142cdfa6339bb41f0ca6aa7a36a2a01aa72c5a8fbd8",
+      "prompt": "Repair this exact original pixel-art panorama for Little Tujunga Canyon Road, preserving its place, terrain geology, vegetation, structures and existing time-of-day palette. Fix horizontal 360-degree wrap: both outer edges must have matching horizon elevation, sky colors and distant land colors; move tall near trees/cliffs inward from edges rather than change the place. Preserve central recognisable composition. Fade the bottom5% texture gently into a single quiet matching local earth/dark-ground color across the bottommost row, and make the topmost row uniform matching sky color, so clamped pixels don't become long striped extensions. No hard frame, border or contrasting band. Preserve 3:1 panoramic pixel-art, original weather/time, no text/logos/new road or large objects. Do not turn night into daylight or daylight into night.",
+      "before": {
+        "width": 2144,
+        "height": 733,
+        "edgeMeanRGB": 19.272851296043655,
+        "edgeMaximumRGB": 138.0,
+        "topRangeRGB": [
+          10,
+          5,
+          5
+        ],
+        "bottomRangeRGB": [
+          4,
+          6,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "after": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 8.392725598526702,
+        "edgeMaximumRGB": 108.66666666666667,
+        "topRangeRGB": [
+          13,
+          5,
+          5
+        ],
+        "bottomRangeRGB": [
+          5,
+          7,
+          6
+        ],
+        "warnings": [
+          "horizontal-wrap",
+          "top-row-extrusion"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceReview": "Viewed original and revised source; native wrap and authored review pending.",
+      "nativeReports": [
+        "/tmp/race-pack13-littletujunga-final/race-environments-renderer-ceed6-oad-independent-sky-desktop/site-bdc4c66dceb515f2-state.json",
+        "/tmp/race-pack13-littletujunga-final/race-environments-renderer-64c89-ad-independent-sky-handheld/site-bdc4c66dceb515f2-state.json"
+      ],
+      "nativeReviewed": true,
+      "nativeFinding": "Final desktop and handheld authored/raw/pitch views inspected. Vertical wrap step reduced and native numeric warning cleared. Broad bare edge strip and mild top/bottom clamped bands remain art-polish gaps, not full seam acceptance.",
+      "supersededFirstRevision": {
+        "sourceImage": "/workspace/generated_images/exec-cd8bd1e0-4fa0-4176-8d35-b3c113c08408.png",
+        "metrics": {
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 21.580570902394108,
+          "edgeMaximumRGB": 121.0,
+          "topRangeRGB": [
+            11,
+            6,
+            5
+          ],
+          "bottomRangeRGB": [
+            5,
+            6,
+            5
+          ],
+          "warnings": [
+            "horizontal-wrap"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        },
+        "nativeReports": [
+          "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-ceed6-oad-independent-sky-desktop/site-bdc4c66dceb515f2-state.json",
+          "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-64c89-ad-independent-sky-handheld/site-bdc4c66dceb515f2-state.json"
+        ]
+      },
+      "decodedAfter": {
+        "meanRGB": 8.764418377321604,
+        "skyMeanRGB": 9.464555052790343,
+        "maximumRGB": 126,
+        "largeJumpFraction": 0.008797653958944282,
+        "numericWarning": false,
+        "visualReviewRequired": true
+      },
+      "decodedBefore": {
+        "meanRGB": 20.460000000000004,
+        "skyMeanRGB": 16.46989720998532,
+        "maximumRGB": 141.66666666666666,
+        "largeJumpFraction": 0.06285714285714286,
+        "numericWarning": true,
+        "visualReviewRequired": true
+      }
+    },
+    {
+      "ref": "environment-v1-desertview-noon",
+      "raceRef": "Grand Canyon \u2014 Desert View Drive",
+      "priorSourceImage": "/workspace/generated_images/exec-ff128abb-7b70-4b71-ad2d-461a879486bf.png",
+      "sourceImage": "/workspace/generated_images/exec-0a9e13b1-baf6-473b-9894-9d0879660a81.png",
+      "sourceSha256": "e7356a87484cae0d51be815b5d005a7f4f9d3a5437454f3a90ea684391b86e43",
+      "prompt": "Repair this exact original pixel-art panorama for Grand Canyon \u2014 Desert View Drive, preserving its place, terrain geology, vegetation, structures and existing time-of-day palette. Fix horizontal 360-degree wrap: both outer edges must have matching horizon elevation, sky colors and distant land colors; move tall near trees/cliffs inward from edges rather than change the place. Preserve central recognisable composition. Fade the bottom5% texture gently into a single quiet matching local earth/dark-ground color across the bottommost row, and make the topmost row uniform matching sky color, so clamped pixels don't become long striped extensions. No hard frame, border or contrasting band. Preserve 3:1 panoramic pixel-art, original weather/time, no text/logos/new road or large objects. Do not turn night into daylight or daylight into night.",
+      "before": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 18.909760589318598,
+        "edgeMaximumRGB": 112.66666666666667,
+        "topRangeRGB": [
+          3,
+          7,
+          5
+        ],
+        "bottomRangeRGB": [
+          4,
+          8,
+          7
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "after": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 14.764272559852671,
+        "edgeMaximumRGB": 152.66666666666666,
+        "topRangeRGB": [
+          3,
+          8,
+          5
+        ],
+        "bottomRangeRGB": [
+          5,
+          7,
+          7
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceReview": "Viewed original and revised source; native wrap and authored review pending.",
+      "nativeReports": [
+        "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-26b1c-ve-independent-sky-handheld/site-d92c7a2faac3d653-state.json",
+        "/tmp/race-pack13-repairs-native-exact/race-environments-renderer-38d4f-ive-independent-sky-desktop/site-d92c7a2faac3d653-state.json"
+      ],
+      "nativeReviewed": true,
+      "nativeFinding": "Both authored and diagnostic exposure plus pitch/wrap captures viewed. Quieter boundary extension; subtle bands remain under extreme pitch. Native image evidence only, not new driving acceptance.",
+      "decodedAfter": {
+        "meanRGB": 15.547409579667637,
+        "skyMeanRGB": 7.944193061840121,
+        "maximumRGB": 158.33333333333334,
+        "largeJumpFraction": 0.0469208211143695,
+        "numericWarning": false,
+        "visualReviewRequired": true
+      },
+      "decodedBefore": {
+        "meanRGB": 19.31280547409581,
+        "skyMeanRGB": 15.663650075414782,
+        "maximumRGB": 112.33333333333333,
+        "largeJumpFraction": 0.05865102639296188,
+        "numericWarning": true,
+        "visualReviewRequired": true
+      }
+    }
+  ]
+}

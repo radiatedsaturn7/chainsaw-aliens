@@ -1,0 +1,1945 @@
+{
+  "schemaVersion": 1,
+  "pack": "western-mountains-pacific-pack13",
+  "recipes": [
+    {
+      "key": "lagunaseca-night",
+      "raceRef": "WeatherTech Raceway Laguna Seca",
+      "ref": "environment-v1-lagunaseca-night",
+      "source": "environment-v1/lagunaseca-night.png",
+      "brief": "Rounded inland Monterey oak savanna hills around Laguna Seca, sparse broad-canopy coast live oaks, distant low empty grandstands and tiny paddock tower nestled in a dry bowl; no ocean in immediate background.",
+      "lightingInstruction": "DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. A small subdued crescent moon is appropriate, never a bright disk.",
+      "brightness": 0.05,
+      "ground": "ground-snow-chaparral-v1",
+      "tiles": {
+        "snow": "ground-snow-chaparral-v1"
+      },
+      "sourceOrigin": {
+        "name": "WeatherTech Raceway Laguna Seca",
+        "lat": 36.584,
+        "lon": -121.753,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/laguna.json",
+      "catalog": [
+        {
+          "id": "raceway-laguna-full",
+          "venueKey": "laguna",
+          "venueName": "WeatherTech Raceway Laguna Seca",
+          "hubStage": 11,
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/raceways/sources/laguna.json",
+        "https://www.countyofmonterey.gov/government/departments-i-z/public-works-facilities-parks/county-parks/list-of-county-parks"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-8eb84b01-53c0-4bc3-8c5f-288d8ec30de5.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "a95b747cc34f71a6db091f9b5175f9b6d66d4e05d004a18126c1e15d3feedc11",
+        "originalRetained": "/workspace/generated_images/exec-8eb84b01-53c0-4bc3-8c5f-288d8ec30de5.png",
+        "prompt": "Create one ORIGINAL 3:1 horizontal pixel-art panoramic skybox for abandoned2994 racing game. Exact scene: Rounded inland Monterey oak savanna hills around Laguna Seca, sparse broad-canopy coast live oaks, distant low empty grandstands and tiny paddock tower nestled in a dry bowl; no ocean in immediate background. LIGHTING MANDATORY: DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. A small subdued crescent moon is appropriate, never a bright disk. Winter snow on low ground and ledges, exposed steep rock; sparse local dormant vegetation. Quiet sky above distant horizon around60% image height. Local landforms must be distinct and believable, structures far away. No cars, close road, text or logos. Horizontally seamless: both edges match sky colors and terrain height, near features kept central. Engine clamps edge pixels: bottommost row MUST be uniform #263247, lower8% quiet flat matching ground with texture fading into it above, topmost row uniform matching sky. No contrasting border or hard stripe; smooth natural transition to quiet boundary. Clear readable pixel forms at512x192, not generic repeated mountains.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 11.696132596685082,
+        "edgeMaximumRGB": 101.0,
+        "topRangeRGB": [
+          4,
+          4,
+          4
+        ],
+        "bottomRangeRGB": [
+          6,
+          3,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "hatcher-noon",
+      "raceRef": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+      "ref": "environment-v1-hatcher-noon",
+      "source": "environment-v1/hatcher-noon.png",
+      "brief": "Palmer-Fishhook approach in Talkeetna Mountains: deeply folded dark gray alpine ridges, broad snow-filled valley, sparse spruce low down and tiny abandoned mine timber structures far away; no giant city or invented lake.",
+      "lightingInstruction": "Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars.",
+      "brightness": 1,
+      "ground": "ground-alpine-snow-granite-v1",
+      "tiles": {
+        "snow": "ground-alpine-snow-granite-v1"
+      },
+      "sourceOrigin": {
+        "name": "Hatcher Pass \u2014 Palmer-Fishhook Climb",
+        "lat": 61.738,
+        "lon": -149.24,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-ak.json",
+      "catalog": [
+        {
+          "id": "state-ak",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 61.738,
+            "lon": -149.24
+          },
+          "startGps": {
+            "lat": 61.6940099,
+            "lon": -149.2417031
+          },
+          "finishGps": {
+            "lat": 61.754168533333335,
+            "lon": -149.23085640000002
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/state-ak.json",
+        "https://dnr.alaska.gov/parks/aspunits/matsu/hatcherpassema.htm"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-fc124268-a729-4f1b-b13f-98efa6b4d3b4.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "9e37107e6a81cb0b99057055ba81ee44a2f2b3c8ddac4b52cf74dfe3872c10b7",
+        "originalRetained": "/workspace/generated_images/exec-fc124268-a729-4f1b-b13f-98efa6b4d3b4.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-9e90af33-1652-45a6-9645-8e244aeb26c2.png",
+        "prompt": "Edit this exact Hatcher Pass \u2014 Palmer-Fishhook Climb panorama, preserving recognizable geography, city structures, time and palette. Correct wrap boundaries: leftmost and rightmost 12% need the SAME land/sky horizon height and matching forms/colors, avoiding vertical joins. Move nearby trees or cliffs away from both edges. Preserve the central 75% composition. Fix bottom extension: bottom 5% fades naturally to one quiet appropriate ground color, EXACT SAME color across entire last row, no grass, branch, rock, snow, or building interrupting last row. No abrupt horizontal band. Topmost row also quiet uniform sky. Preserve Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars. Original pixel art, no text, 3:1 panoramic ratio.",
+        "review": "Revised source viewed; native acceptance separate."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 4.3126151012891345,
+        "edgeMaximumRGB": 76.33333333333333,
+        "topRangeRGB": [
+          10,
+          6,
+          8
+        ],
+        "bottomRangeRGB": [
+          6,
+          7,
+          6
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-9e90af33-1652-45a6-9645-8e244aeb26c2.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "91abd4a74af699156ef8e72d3521a933c83f5ab75ad0e9a291030ad04ca8b157",
+            "originalRetained": "/workspace/generated_images/exec-9e90af33-1652-45a6-9645-8e244aeb26c2.png",
+            "prompt": "Create one ORIGINAL 3:1 horizontal pixel-art panoramic skybox for abandoned2994 racing game. Exact scene: Palmer-Fishhook approach in Talkeetna Mountains: deeply folded dark gray alpine ridges, broad snow-filled valley, sparse spruce low down and tiny abandoned mine timber structures far away; no giant city or invented lake. LIGHTING MANDATORY: Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars. Winter snow on low ground and ledges, exposed steep rock; sparse local dormant vegetation. Quiet sky above distant horizon around60% image height. Local landforms must be distinct and believable, structures far away. No cars, close road, text or logos. Horizontally seamless: both edges match sky colors and terrain height, near features kept central. Engine clamps edge pixels: bottommost row MUST be uniform #d9e0e8, lower8% quiet flat matching ground with texture fading into it above, topmost row uniform matching sky. No contrasting border or hard stripe; smooth natural transition to quiet boundary. Clear readable pixel forms at512x192, not generic repeated mountains.",
+            "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+          },
+          "sourceBoundaryMetrics": {
+            "width": 2172,
+            "height": 724,
+            "edgeMeanRGB": 17.93462246777164,
+            "edgeMaximumRGB": 153.33333333333334,
+            "topRangeRGB": [
+              10,
+              5,
+              8
+            ],
+            "bottomRangeRGB": [
+              5,
+              7,
+              6
+            ],
+            "warnings": [
+              "horizontal-wrap"
+            ],
+            "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+          }
+        }
+      ]
+    },
+    {
+      "key": "beartooth-noon",
+      "raceRef": "Beartooth Highway \u2014 Rock Creek Climb",
+      "ref": "environment-v1-beartooth-noon",
+      "source": "environment-v1/beartooth-noon.png",
+      "brief": "Rock Creek climb below Beartooth Plateau: gray granite shoulders, high broad alpine plateau rims above deep forested glacial valley, patchy exposed talus and extensive alpine snow; distinguish plateau from pointed Himalayas.",
+      "lightingInstruction": "Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars.",
+      "brightness": 1,
+      "ground": "ground-alpine-snow-granite-v1",
+      "tiles": {
+        "snow": "ground-alpine-snow-granite-v1"
+      },
+      "sourceOrigin": {
+        "name": "Beartooth Highway \u2014 Rock Creek Climb",
+        "lat": 45.068,
+        "lon": -109.411,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-mt.json",
+      "catalog": [
+        {
+          "id": "state-mt",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 8,
+          "location": {
+            "lat": 45.068,
+            "lon": -109.411
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/state-mt.json",
+        "https://www.recreation.gov/gateways/13571"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-bee8bd7c-377d-49a5-9f94-79a45c81b284.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "15625942c5908800f19905e2c651721daf2a5c1a84965a6e6fdbf7876464b0d3",
+        "originalRetained": "/workspace/generated_images/exec-bee8bd7c-377d-49a5-9f94-79a45c81b284.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-fe6cb63c-5b62-4154-bf85-0b5e919727b8.png",
+        "prompt": "Edit this exact Beartooth Highway \u2014 Rock Creek Climb panorama, preserving recognizable geography, city structures, time and palette. Correct wrap boundaries: leftmost and rightmost 12% need the SAME land/sky horizon height and matching forms/colors, avoiding vertical joins. Move nearby trees or cliffs away from both edges. Preserve the central 75% composition. Fix bottom extension: bottom 5% fades naturally to one quiet appropriate ground color, EXACT SAME color across entire last row, no grass, branch, rock, snow, or building interrupting last row. No abrupt horizontal band. Topmost row also quiet uniform sky. Preserve Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars. Original pixel art, no text, 3:1 panoramic ratio.",
+        "review": "Revised source viewed; native acceptance separate."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 7.696132596685083,
+        "edgeMaximumRGB": 136.0,
+        "topRangeRGB": [
+          10,
+          6,
+          5
+        ],
+        "bottomRangeRGB": [
+          5,
+          7,
+          6
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-fe6cb63c-5b62-4154-bf85-0b5e919727b8.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "61deb4b87844c6f2a010d312980957718cadbd5325c9e8cba5810ae6ac045548",
+            "originalRetained": "/workspace/generated_images/exec-fe6cb63c-5b62-4154-bf85-0b5e919727b8.png",
+            "prompt": "Create one ORIGINAL 3:1 horizontal pixel-art panoramic skybox for abandoned2994 racing game. Exact scene: Rock Creek climb below Beartooth Plateau: gray granite shoulders, high broad alpine plateau rims above deep forested glacial valley, patchy exposed talus and extensive alpine snow; distinguish plateau from pointed Himalayas. LIGHTING MANDATORY: Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars. Winter snow on low ground and ledges, exposed steep rock; sparse local dormant vegetation. Quiet sky above distant horizon around60% image height. Local landforms must be distinct and believable, structures far away. No cars, close road, text or logos. Horizontally seamless: both edges match sky colors and terrain height, near features kept central. Engine clamps edge pixels: bottommost row MUST be uniform #d9e0e8, lower8% quiet flat matching ground with texture fading into it above, topmost row uniform matching sky. No contrasting border or hard stripe; smooth natural transition to quiet boundary. Clear readable pixel forms at512x192, not generic repeated mountains.",
+            "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+          },
+          "sourceBoundaryMetrics": {
+            "width": 2172,
+            "height": 724,
+            "edgeMeanRGB": 31.941528545119706,
+            "edgeMaximumRGB": 186.0,
+            "topRangeRGB": [
+              8,
+              4,
+              8
+            ],
+            "bottomRangeRGB": [
+              5,
+              7,
+              6
+            ],
+            "warnings": [
+              "horizontal-wrap"
+            ],
+            "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+          }
+        }
+      ]
+    },
+    {
+      "key": "springmountain-morning",
+      "raceRef": "Spring Mountain \u2014 North South",
+      "ref": "environment-v1-springmountain-morning",
+      "source": "environment-v1/springmountain-morning.png",
+      "brief": "Pahrump Spring Mountain race venue: broad low Mojave valley with distant pale stratified limestone mountain ramparts and sparse creosote, tiny flat circuit buildings; mountain range well back, not a canyon wall.",
+      "lightingInstruction": "Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars.",
+      "brightness": 0.65,
+      "ground": "ground-snow-chaparral-v1",
+      "tiles": {
+        "snow": "ground-snow-chaparral-v1"
+      },
+      "sourceOrigin": {
+        "name": "Spring Mountain \u2014 North South",
+        "lat": 36.17,
+        "lon": -115.912,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-nv.json",
+      "catalog": [
+        {
+          "id": "state-nv",
+          "venueKey": "state-nv",
+          "venueName": "Spring Mountain \u2014 North South",
+          "hubStage": 11,
+          "location": {
+            "lat": 36.17,
+            "lon": -115.912
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/state-nv.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-3e98610b-40ac-4531-b295-262bb3766856.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "9c3000a2e1b99a21bcbb1a937f0e04e0232835972694a026986c7c62aef71c31",
+        "originalRetained": "/workspace/generated_images/exec-3e98610b-40ac-4531-b295-262bb3766856.png",
+        "prompt": "Create one ORIGINAL 3:1 horizontal pixel-art panoramic skybox for abandoned2994 racing game. Exact scene: Pahrump Spring Mountain race venue: broad low Mojave valley with distant pale stratified limestone mountain ramparts and sparse creosote, tiny flat circuit buildings; mountain range well back, not a canyon wall. LIGHTING MANDATORY: Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Winter snow on low ground and ledges, exposed steep rock; sparse local dormant vegetation. Quiet sky above distant horizon around60% image height. Local landforms must be distinct and believable, structures far away. No cars, close road, text or logos. Horizontally seamless: both edges match sky colors and terrain height, near features kept central. Engine clamps edge pixels: bottommost row MUST be uniform #c6cdd6, lower8% quiet flat matching ground with texture fading into it above, topmost row uniform matching sky. No contrasting border or hard stripe; smooth natural transition to quiet boundary. Clear readable pixel forms at512x192, not generic repeated mountains.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 11.029005524861878,
+        "edgeMaximumRGB": 91.0,
+        "topRangeRGB": [
+          5,
+          7,
+          7
+        ],
+        "bottomRangeRGB": [
+          5,
+          6,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "sandia-noon",
+      "raceRef": "Sandia Speedway \u2014 Road Course",
+      "ref": "environment-v1-sandia-noon",
+      "source": "environment-v1/sandia-noon.png",
+      "brief": "Sandia Speedway west of Albuquerque: open Rio Grande basin mesa with distant long rose-gray Sandia escarpment eastward, low dry grass and tiny oval/circuit structures; not red Monument Valley buttes.",
+      "lightingInstruction": "Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars.",
+      "brightness": 1,
+      "ground": "ground-plains-snow-straw-v1",
+      "tiles": {
+        "snow": "ground-plains-snow-straw-v1"
+      },
+      "sourceOrigin": {
+        "name": "Sandia Speedway \u2014 Road Course",
+        "lat": 35.028,
+        "lon": -106.858,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-nm.json",
+      "catalog": [
+        {
+          "id": "state-nm",
+          "venueKey": "state-nm",
+          "venueName": "Sandia Speedway \u2014 Road Course",
+          "hubStage": 9,
+          "location": {
+            "lat": 35.028,
+            "lon": -106.858
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/state-nm.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-e64b5b43-1564-408c-86bb-6c3fa8819e8a.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "ac1a2f0fde7a7bccf655b457ae237ac3037be1edc71478affd5e7224beab06f9",
+        "originalRetained": "/workspace/generated_images/exec-e64b5b43-1564-408c-86bb-6c3fa8819e8a.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-f2c44f44-fc0b-4b72-9053-cf2fa5882fbf.png",
+        "prompt": "Correct ONLY panorama wrap/boundary composition in this exact Sandia Speedway, New Mexico: distant long Sandia escarpment and snowy basin circuit under clear noon pixel art. Both outermost left and right strips must be visually identical: quiet blue sky to exactly 60% image height, then same low distant gray-brown ridge silhouette at exactly same height and shade, then same quiet local ground color. No near hills, trees, structures or prominent features in either outer 10%; blend naturally into unchanged central scene. This is a circular panorama, so the left/right join must have zero noticeable vertical step. Keep original time and regional identity. Uniform blue topmost row and quiet uniform ground bottommost row; no texture touching those boundary rows. No frame. 3:1, no text/logos.",
+        "review": "Second boundary correction source viewed; final native review pending."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 7.334714548802946,
+        "edgeMaximumRGB": 97.33333333333333,
+        "topRangeRGB": [
+          11,
+          5,
+          10
+        ],
+        "bottomRangeRGB": [
+          6,
+          6,
+          6
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-f2c44f44-fc0b-4b72-9053-cf2fa5882fbf.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "4cef51bb6ec7bc82dcd87fd2513b3c1de7f91c354546cb1e66f8c39e75b22b9a",
+            "originalRetained": "/workspace/generated_images/exec-f2c44f44-fc0b-4b72-9053-cf2fa5882fbf.png",
+            "prompt": "Create one ORIGINAL 3:1 horizontal pixel-art panoramic skybox for abandoned2994 racing game. Exact scene: Sandia Speedway west of Albuquerque: open Rio Grande basin mesa with distant long rose-gray Sandia escarpment eastward, low dry grass and tiny oval/circuit structures; not red Monument Valley buttes. LIGHTING MANDATORY: Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars. Winter snow on low ground and ledges, exposed steep rock; sparse local dormant vegetation. Quiet sky above distant horizon around60% image height. Local landforms must be distinct and believable, structures far away. No cars, close road, text or logos. Horizontally seamless: both edges match sky colors and terrain height, near features kept central. Engine clamps edge pixels: bottommost row MUST be uniform #d9e0e8, lower8% quiet flat matching ground with texture fading into it above, topmost row uniform matching sky. No contrasting border or hard stripe; smooth natural transition to quiet boundary. Clear readable pixel forms at512x192, not generic repeated mountains.",
+            "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+          },
+          "sourceBoundaryMetrics": {
+            "width": 2172,
+            "height": 724,
+            "edgeMeanRGB": 15.717771639042356,
+            "edgeMaximumRGB": 105.66666666666667,
+            "topRangeRGB": [
+              9,
+              4,
+              10
+            ],
+            "bottomRangeRGB": [
+              6,
+              6,
+              4
+            ],
+            "warnings": [
+              "horizontal-wrap"
+            ],
+            "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+          }
+        }
+      ]
+    },
+    {
+      "key": "needles-noon",
+      "raceRef": "Needles Highway \u2014 Granite Gates",
+      "ref": "environment-v1-needles-noon",
+      "source": "environment-v1/needles-noon.png",
+      "brief": "Black Hills Needles Highway: slender weathered gray granite spires above rolling ponderosa pine ridges, a few rounded granite shoulders, intimate forested mountain scale rather than vast alpine glacier.",
+      "lightingInstruction": "Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars.",
+      "brightness": 1,
+      "ground": "ground-alpine-snow-granite-v1",
+      "tiles": {
+        "snow": "ground-alpine-snow-granite-v1"
+      },
+      "sourceOrigin": {
+        "name": "Needles Highway \u2014 Granite Gates",
+        "lat": 43.85,
+        "lon": -103.531,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-sd.json",
+      "catalog": [
+        {
+          "id": "state-sd",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 8,
+          "location": {
+            "lat": 43.85,
+            "lon": -103.531
+          },
+          "startGps": {
+            "lat": 43.841719025,
+            "lon": -103.56288775
+          },
+          "finishGps": {
+            "lat": 43.823784100000005,
+            "lon": -103.4930061
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/state-sd.json",
+        "https://www.travelsouthdakota.com/state-park/things-to-do/scenic-drives/needles-highway-explore-natural-wonder-custer-state-park"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-6608a060-28ea-4128-9fa5-d10e1c4e4751.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "4ba6ce3144d274f6cc973aacd94921a62b14aa292fafd6de959b71b796b3ab70",
+        "originalRetained": "/workspace/generated_images/exec-6608a060-28ea-4128-9fa5-d10e1c4e4751.png",
+        "prompt": "Create one ORIGINAL 3:1 horizontal pixel-art panoramic skybox for abandoned2994 racing game. Exact scene: Black Hills Needles Highway: slender weathered gray granite spires above rolling ponderosa pine ridges, a few rounded granite shoulders, intimate forested mountain scale rather than vast alpine glacier. LIGHTING MANDATORY: Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars. Winter snow on low ground and ledges, exposed steep rock; sparse local dormant vegetation. Quiet sky above distant horizon around60% image height. Local landforms must be distinct and believable, structures far away. No cars, close road, text or logos. Horizontally seamless: both edges match sky colors and terrain height, near features kept central. Engine clamps edge pixels: bottommost row MUST be uniform #d9e0e8, lower8% quiet flat matching ground with texture fading into it above, topmost row uniform matching sky. No contrasting border or hard stripe; smooth natural transition to quiet boundary. Clear readable pixel forms at512x192, not generic repeated mountains.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 8.591620626151013,
+        "edgeMaximumRGB": 141.66666666666666,
+        "topRangeRGB": [
+          10,
+          4,
+          8
+        ],
+        "bottomRangeRGB": [
+          5,
+          6,
+          6
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "windriver-morning",
+      "raceRef": "Wind River Canyon \u2014 Canyon Walls",
+      "ref": "environment-v1-windriver-morning",
+      "source": "environment-v1/windriver-morning.png",
+      "brief": "Wind River Canyon Wyoming: steep dark Precambrian basement canyon walls below stratified pale limestone caps, narrow winding river valley glimpsed far below and sparse sagebrush benches; distinctive folded canyon, no red Utah mesas.",
+      "lightingInstruction": "Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars.",
+      "brightness": 0.65,
+      "ground": "ground-alpine-snow-granite-v1",
+      "tiles": {
+        "snow": "ground-alpine-snow-granite-v1"
+      },
+      "sourceOrigin": {
+        "name": "Wind River Canyon \u2014 Canyon Walls",
+        "lat": 43.658,
+        "lon": -108.204,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-wy.json",
+      "catalog": [
+        {
+          "id": "state-wy",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 8,
+          "location": {
+            "lat": 43.658,
+            "lon": -108.204
+          },
+          "startGps": {
+            "lat": 43.62206643333334,
+            "lon": -108.22153845333334
+          },
+          "finishGps": {
+            "lat": 43.6979186,
+            "lon": -108.1768812
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/state-wy.json",
+        "https://doi.org/10.1306/3D933092-16B1-11D7-8645000102C1865D"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-cde63cb9-ca13-4cd2-9c00-072953d19f6a.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "6002510af86673e4210f86d1f2aaf1eafb765e7b7026e605af69a043aeca995a",
+        "originalRetained": "/workspace/generated_images/exec-cde63cb9-ca13-4cd2-9c00-072953d19f6a.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Wind River Canyon Wyoming: steep dark Precambrian basement canyon walls below stratified pale limestone caps, narrow winding river valley glimpsed far below and sparse sagebrush benches; distinctive folded canyon, no red Utah mesas. Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Existing route snow substrate: modest snow patches and pale winter ground, never change region into generic mountains. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching height, colors and forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet pale winter color blended naturally with terrain, uniform final row. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2170,
+        "height": 725,
+        "edgeMeanRGB": 13.450574712643677,
+        "edgeMaximumRGB": 148.0,
+        "topRangeRGB": [
+          5,
+          6,
+          8
+        ],
+        "bottomRangeRGB": [
+          7,
+          8,
+          8
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "portlandraceway-morning",
+      "raceRef": "Portland International Raceway",
+      "ref": "environment-v1-portlandraceway-morning",
+      "source": "environment-v1/portlandraceway-morning.png",
+      "brief": "Portland International Raceway at Delta Park: very flat Columbia floodplain, deciduous cottonwood lines, distant low industrial roofs and tiny circuit paddock, faint low Cascade profile well away; no immediate steep hills.",
+      "lightingInstruction": "Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars.",
+      "brightness": 0.65,
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "sourceOrigin": {
+        "name": "Portland International Raceway",
+        "lat": 45.596,
+        "lon": -122.696,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-or.json",
+      "catalog": [
+        {
+          "id": "state-or",
+          "venueKey": "state-or",
+          "venueName": "Portland International Raceway",
+          "hubStage": 11,
+          "location": {
+            "lat": 45.596,
+            "lon": -122.696
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/state-or.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-bc0291d5-a7d6-4ea8-95f8-f959b2b9b843.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "a71271f06a2623339f9b35f3aa062c65ef81e32d52fc7e7c0c46f3fd0e453e20",
+        "originalRetained": "/workspace/generated_images/exec-bc0291d5-a7d6-4ea8-95f8-f959b2b9b843.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-a1a85a91-1233-4c6b-8136-29affc8f3dcf.png",
+        "prompt": "Edit this exact Portland International Raceway panorama, preserving recognizable geography, city structures, time and palette. Correct wrap boundaries: leftmost and rightmost 12% need the SAME land/sky horizon height and matching forms/colors, avoiding vertical joins. Move nearby trees or cliffs away from both edges. Preserve the central 75% composition. Fix bottom extension: bottom 5% fades naturally to one quiet appropriate ground color, EXACT SAME color across entire last row, no grass, branch, rock, snow, or building interrupting last row. No abrupt horizontal band. Topmost row also quiet uniform sky. Preserve Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Original pixel art, no text, 3:1 panoramic ratio.",
+        "review": "Revised source viewed; native acceptance separate."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 7.9930939226519335,
+        "edgeMaximumRGB": 92.66666666666667,
+        "topRangeRGB": [
+          7,
+          7,
+          6
+        ],
+        "bottomRangeRGB": [
+          5,
+          8,
+          7
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-a1a85a91-1233-4c6b-8136-29affc8f3dcf.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "5df7f1bb566f1caae839965b96c1b3b55372d21d3fdde234eb14588370aa9723",
+            "originalRetained": "/workspace/generated_images/exec-a1a85a91-1233-4c6b-8136-29affc8f3dcf.png",
+            "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Portland International Raceway at Delta Park: very flat Columbia floodplain, deciduous cottonwood lines, distant low industrial roofs and tiny circuit paddock, faint low Cascade profile well away; no immediate steep hills. Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Existing route snow substrate: modest snow patches and pale winter ground, never change region into generic mountains. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching height, colors and forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet pale winter color blended naturally with terrain, uniform final row. No text, logos, cars or close road. Distinct location composition.",
+            "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+          },
+          "sourceBoundaryMetrics": {
+            "width": 2170,
+            "height": 725,
+            "edgeMeanRGB": 13.821149425287357,
+            "edgeMaximumRGB": 147.66666666666666,
+            "topRangeRGB": [
+              11,
+              8,
+              8
+            ],
+            "bottomRangeRGB": [
+              36,
+              24,
+              15
+            ],
+            "warnings": [
+              "horizontal-wrap",
+              "bottom-row-extrusion"
+            ],
+            "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+          }
+        }
+      ]
+    },
+    {
+      "key": "pacificraceways-evening",
+      "raceRef": "Pacific Raceways",
+      "ref": "environment-v1-pacificraceways-evening",
+      "source": "environment-v1/pacificraceways-evening.png",
+      "brief": "Pacific Raceways near Kent Washington: dense Douglas fir forest around low rolling Puget Sound upland, small distant drag/race grandstand gaps, barely visible pale distant Cascades; forest-dominated, not downtown Seattle.",
+      "lightingInstruction": "Readable muted EVENING warm horizon and blue-lavender upper sky, no star field and no dark night exposure.",
+      "brightness": 0.42,
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "sourceOrigin": {
+        "name": "Pacific Raceways",
+        "lat": 47.32,
+        "lon": -122.141,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-wa.json",
+      "catalog": [
+        {
+          "id": "state-wa",
+          "venueKey": "state-wa",
+          "venueName": "Pacific Raceways",
+          "hubStage": 11,
+          "location": {
+            "lat": 47.32,
+            "lon": -122.141
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/state-wa.json",
+        "https://pacificraceways.com/road-course-track-map/"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-c8c116e1-f06f-4d1f-8285-7fa78ae9c0c1.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "892c8260bb5b36f423df8d7c3f8f54d320128725a12336e9baca9dc8d2275293",
+        "originalRetained": "/workspace/generated_images/exec-c8c116e1-f06f-4d1f-8285-7fa78ae9c0c1.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Pacific Raceways near Kent Washington: dense Douglas fir forest around low rolling Puget Sound upland, small distant drag/race grandstand gaps, barely visible pale distant Cascades; forest-dominated, not downtown Seattle. Readable muted EVENING warm horizon and blue-lavender upper sky, no star field and no dark night exposure. Existing route snow substrate: modest snow patches and pale winter ground, never change region into generic mountains. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching height, colors and forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet pale winter color blended naturally with terrain, uniform final row. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 5.540055248618785,
+        "edgeMaximumRGB": 73.33333333333333,
+        "topRangeRGB": [
+          7,
+          4,
+          10
+        ],
+        "bottomRangeRGB": [
+          7,
+          7,
+          9
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "idaho21-noon",
+      "raceRef": "Ponderosa Pine \u2014 Idaho 21",
+      "ref": "environment-v1-idaho21-noon",
+      "source": "environment-v1/idaho21-noon.png",
+      "brief": "Idaho21 Ponderosa Pine scenic route near Boise National Forest: ochre-gray granitic canyon slopes with open ponderosa pine stands, a narrow wooded river valley and rounded forested ridges; no Yellowstone geysers.",
+      "lightingInstruction": "Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars.",
+      "brightness": 1,
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "sourceOrigin": {
+        "name": "Ponderosa Pine \u2014 Idaho 21",
+        "lat": 43.822,
+        "lon": -115.846,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-id.json",
+      "catalog": [
+        {
+          "id": "state-id",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 9,
+          "location": {
+            "lat": 43.822,
+            "lon": -115.846
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/state-id.json",
+        "https://visitidaho.org/things-to-do/scenic-byways-backcountry-drives/ponderosa-pine-scenic-byway/"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-3f36a893-8bbf-4571-b1e2-6936dfabaa40.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "bb0bb02f4c22783d9a8deed2501a148bce9c1db4146db19124f907adec6831d4",
+        "originalRetained": "/workspace/generated_images/exec-3f36a893-8bbf-4571-b1e2-6936dfabaa40.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Idaho21 Ponderosa Pine scenic route near Boise National Forest: ochre-gray granitic canyon slopes with open ponderosa pine stands, a narrow wooded river valley and rounded forested ridges; no Yellowstone geysers. Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars. Existing route snow substrate: modest snow patches and pale winter ground, never change region into generic mountains. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching height, colors and forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet pale winter color blended naturally with terrain, uniform final row. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 12.849907918968693,
+        "edgeMaximumRGB": 120.0,
+        "topRangeRGB": [
+          9,
+          5,
+          5
+        ],
+        "bottomRangeRGB": [
+          7,
+          7,
+          7
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "phoenix-morning",
+      "raceRef": "Phoenix, AZ \u2014 Landmark Run",
+      "ref": "environment-v1-phoenix-morning",
+      "source": "environment-v1/phoenix-morning.png",
+      "brief": "Phoenix central Sonoran basin: distinct low blocky city skyline, long dry mountain ridges and isolated rounded desert butte silhouettes, sparse saguaro far away, broad flat valley; distant original futuristic ruins, no logos.",
+      "lightingInstruction": "Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars.",
+      "brightness": 0.65,
+      "ground": "ground-snow-chaparral-v1",
+      "tiles": {
+        "snow": "ground-snow-chaparral-v1"
+      },
+      "sourceOrigin": {
+        "name": "Phoenix \u2014 Landmark Run",
+        "lat": 33.45,
+        "lon": -112.078,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-az.json",
+      "catalog": [
+        {
+          "id": "city-az",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 10,
+          "location": {
+            "lat": 33.45,
+            "lon": -112.078
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/city-az.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-02263de7-ce61-450a-9617-7f4fc1f4ba0e.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "b8488a4bc3778c4a849a53c5ffdb86689e6b1ef03996a31c6d355ae78cf88133",
+        "originalRetained": "/workspace/generated_images/exec-02263de7-ce61-450a-9617-7f4fc1f4ba0e.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Phoenix central Sonoran basin: distinct low blocky city skyline, long dry mountain ridges and isolated rounded desert butte silhouettes, sparse saguaro far away, broad flat valley; distant original futuristic ruins, no logos. Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Existing route snow substrate: modest snow patches and pale winter ground, never change region into generic mountains. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching height, colors and forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet pale winter color blended naturally with terrain, uniform final row. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 10.08011049723757,
+        "edgeMaximumRGB": 128.66666666666666,
+        "topRangeRGB": [
+          11,
+          8,
+          6
+        ],
+        "bottomRangeRGB": [
+          10,
+          10,
+          10
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "losangeles-night",
+      "raceRef": "Los Angeles, CA \u2014 Landmark Run",
+      "ref": "environment-v1-losangeles-night",
+      "source": "environment-v1/losangeles-night.png",
+      "brief": "Los Angeles downtown basin: compact diverse tower cluster framed by broad distant San Gabriel mountain ridge, lower industrial roofscape and occasional thin palm silhouette, restrained localized amber ruined-city glows; no Hollywood text.",
+      "lightingInstruction": "DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. Sparse faint stars, no prominent moon disk; keep local light restrained.",
+      "brightness": 0.05,
+      "ground": "ground-snow-chaparral-v1",
+      "tiles": {
+        "snow": "ground-snow-chaparral-v1"
+      },
+      "sourceOrigin": {
+        "name": "Los Angeles \u2014 Landmark Run",
+        "lat": 34.052,
+        "lon": -118.248,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ca.json",
+      "catalog": [
+        {
+          "id": "city-ca",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 34.052,
+            "lon": -118.248
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/city-ca.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-f70a9c68-b20f-45df-bf97-0d79b7aebea2.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "01b847155fde0e3b018fd451e2938c15f99519c23411eabf1b8ac473fe66f8d6",
+        "originalRetained": "/workspace/generated_images/exec-f70a9c68-b20f-45df-bf97-0d79b7aebea2.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Los Angeles downtown basin: compact diverse tower cluster framed by broad distant San Gabriel mountain ridge, lower industrial roofscape and occasional thin palm silhouette, restrained localized amber ruined-city glows; no Hollywood text. DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. Sparse faint stars, no prominent moon disk; keep local light restrained. Existing route snow substrate: modest snow patches and pale winter ground, never change region into generic mountains. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching height, colors and forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet pale winter color blended naturally with terrain, uniform final row. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 5.357734806629834,
+        "edgeMaximumRGB": 82.66666666666667,
+        "topRangeRGB": [
+          4,
+          5,
+          4
+        ],
+        "bottomRangeRGB": [
+          4,
+          4,
+          7
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "boise-night",
+      "raceRef": "Boise, ID \u2014 Landmark Run",
+      "ref": "environment-v1-boise-night",
+      "source": "environment-v1/boise-night.png",
+      "brief": "Boise valley skyline of modest midrise buildings under bare rounded foothills rising gently behind, Boise River cottonwood ribbon, quiet inland city silhouette; subdued blue-black sky and sparse stars, no huge spires.",
+      "lightingInstruction": "DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. A small subdued crescent moon is appropriate, never a bright disk.",
+      "brightness": 0.05,
+      "ground": "ground-plains-snow-straw-v1",
+      "tiles": {
+        "snow": "ground-plains-snow-straw-v1"
+      },
+      "sourceOrigin": {
+        "name": "Boise \u2014 Landmark Run",
+        "lat": 43.615,
+        "lon": -116.203,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-id.json",
+      "catalog": [
+        {
+          "id": "city-id",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 9,
+          "location": {
+            "lat": 43.615,
+            "lon": -116.203
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/city-id.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-61619a30-7eb9-4665-93a1-8e75ab345d2a.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "dd07b68288ffb8a26974d3cc8617e341589d94eef41ba09f85aaee36126c2379",
+        "originalRetained": "/workspace/generated_images/exec-61619a30-7eb9-4665-93a1-8e75ab345d2a.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Boise valley skyline of modest midrise buildings under bare rounded foothills rising gently behind, Boise River cottonwood ribbon, quiet inland city silhouette; subdued blue-black sky and sparse stars, no huge spires. DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. A small subdued crescent moon is appropriate, never a bright disk. Existing route snow substrate: modest snow patches and winter ground. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet winter ground blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 4.233425414364641,
+        "edgeMaximumRGB": 41.666666666666664,
+        "topRangeRGB": [
+          3,
+          4,
+          4
+        ],
+        "bottomRangeRGB": [
+          18,
+          19,
+          34
+        ],
+        "warnings": [
+          "bottom-row-extrusion"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "billings-morning",
+      "raceRef": "Billings, MT \u2014 Landmark Run",
+      "ref": "environment-v1-billings-morning",
+      "source": "environment-v1/billings-morning.png",
+      "brief": "Billings Yellowstone valley: long pale sandstone Rimrocks escarpment above a modest downtown and rail/industrial silhouettes, broad river cottonwood corridor, flat valley floor; no alpine peak immediately over town.",
+      "lightingInstruction": "Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars.",
+      "brightness": 0.65,
+      "ground": "ground-plains-snow-straw-v1",
+      "tiles": {
+        "snow": "ground-plains-snow-straw-v1"
+      },
+      "sourceOrigin": {
+        "name": "Billings \u2014 Landmark Run",
+        "lat": 45.783,
+        "lon": -108.506,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-mt.json",
+      "catalog": [
+        {
+          "id": "city-mt",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 8,
+          "location": {
+            "lat": 45.783,
+            "lon": -108.506
+          },
+          "startGps": {
+            "lat": 45.790948533333335,
+            "lon": -108.52287393333333
+          },
+          "finishGps": {
+            "lat": 45.77393342,
+            "lon": -108.497718515
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/city-mt.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-edce8e0f-6875-4490-89c2-9281bcbead99.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "b3e9773aa33fc6f4d59b751b278a14c01814d47b26f18c7c99549335dff9e054",
+        "originalRetained": "/workspace/generated_images/exec-edce8e0f-6875-4490-89c2-9281bcbead99.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-fedd8627-143d-46ea-a101-ceeeaaf0d264.png",
+        "prompt": "Edit this exact Billings, MT \u2014 Landmark Run panorama, preserving recognizable geography, city structures, time and palette. Correct wrap boundaries: leftmost and rightmost 12% need the SAME land/sky horizon height and matching forms/colors, avoiding vertical joins. Move nearby trees or cliffs away from both edges. Preserve the central 75% composition. Fix bottom extension: bottom 5% fades naturally to one quiet appropriate ground color, EXACT SAME color across entire last row, no grass, branch, rock, snow, or building interrupting last row. No abrupt horizontal band. Topmost row also quiet uniform sky. Preserve Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Original pixel art, no text, 3:1 panoramic ratio.",
+        "review": "Revised source viewed; native acceptance separate."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 7.745856353591161,
+        "edgeMaximumRGB": 134.33333333333334,
+        "topRangeRGB": [
+          8,
+          6,
+          5
+        ],
+        "bottomRangeRGB": [
+          7,
+          7,
+          10
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-fedd8627-143d-46ea-a101-ceeeaaf0d264.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "0da4b45d3f8206e54f4844d437e9c57cadebaedd8505e2819cc3038306920214",
+            "originalRetained": "/workspace/generated_images/exec-fedd8627-143d-46ea-a101-ceeeaaf0d264.png",
+            "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Billings Yellowstone valley: long pale sandstone Rimrocks escarpment above a modest downtown and rail/industrial silhouettes, broad river cottonwood corridor, flat valley floor; no alpine peak immediately over town. Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Existing route snow substrate: modest snow patches and winter ground. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet winter ground blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+            "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+          },
+          "sourceBoundaryMetrics": {
+            "width": 2172,
+            "height": 724,
+            "edgeMeanRGB": 10.546040515653775,
+            "edgeMaximumRGB": 114.33333333333333,
+            "topRangeRGB": [
+              10,
+              6,
+              6
+            ],
+            "bottomRangeRGB": [
+              119,
+              128,
+              171
+            ],
+            "warnings": [
+              "horizontal-wrap",
+              "bottom-row-extrusion"
+            ],
+            "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+          }
+        }
+      ]
+    },
+    {
+      "key": "lasvegas-morning",
+      "raceRef": "Las Vegas, NV \u2014 Landmark Run",
+      "ref": "environment-v1-lasvegas-morning",
+      "source": "environment-v1/lasvegas-morning.png",
+      "brief": "Las Vegas broad Mojave valley: original ruined varied resort-scale silhouettes and modest downtown structures below distant Spring Mountains, desert basin and sparse scrub; no real casino names, replicas or logos.",
+      "lightingInstruction": "Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars.",
+      "brightness": 0.65,
+      "ground": "ground-snow-chaparral-v1",
+      "tiles": {
+        "snow": "ground-snow-chaparral-v1"
+      },
+      "sourceOrigin": {
+        "name": "Las Vegas \u2014 Landmark Run",
+        "lat": 36.176,
+        "lon": -115.136,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-nv.json",
+      "catalog": [
+        {
+          "id": "city-nv",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 10,
+          "location": {
+            "lat": 36.176,
+            "lon": -115.136
+          },
+          "startGps": {
+            "lat": 36.1628998,
+            "lon": -115.14775755000001
+          },
+          "finishGps": {
+            "lat": 36.1883832,
+            "lon": -115.12806093333333
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/city-nv.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-f5931170-4b3b-4730-b2a1-b2ee58d5fc10.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "8725e801e3487086b52f2a0027575ca4c90869665d43b3b807c1c8dbbd8953b1",
+        "originalRetained": "/workspace/generated_images/exec-f5931170-4b3b-4730-b2a1-b2ee58d5fc10.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-1c34fd44-bcd4-47dd-966e-9363f4a49554.png",
+        "prompt": "Edit this exact Las Vegas, NV \u2014 Landmark Run panorama, preserving recognizable geography, city structures, time and palette. Correct wrap boundaries: leftmost and rightmost 12% need the SAME land/sky horizon height and matching forms/colors, avoiding vertical joins. Move nearby trees or cliffs away from both edges. Preserve the central 75% composition. Fix bottom extension: bottom 5% fades naturally to one quiet appropriate ground color, EXACT SAME color across entire last row, no grass, branch, rock, snow, or building interrupting last row. No abrupt horizontal band. Topmost row also quiet uniform sky. Preserve Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Original pixel art, no text, 3:1 panoramic ratio.",
+        "review": "Revised source viewed; native acceptance separate."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 3.8324125230202575,
+        "edgeMaximumRGB": 86.0,
+        "topRangeRGB": [
+          5,
+          5,
+          8
+        ],
+        "bottomRangeRGB": [
+          5,
+          5,
+          6
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-1c34fd44-bcd4-47dd-966e-9363f4a49554.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "4f8da22a237478479485b5b125b24c09374071021f0052a1f5a0e5887e9cfc68",
+            "originalRetained": "/workspace/generated_images/exec-1c34fd44-bcd4-47dd-966e-9363f4a49554.png",
+            "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Las Vegas broad Mojave valley: original ruined varied resort-scale silhouettes and modest downtown structures below distant Spring Mountains, desert basin and sparse scrub; no real casino names, replicas or logos. Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Existing route snow substrate: modest snow patches and winter ground. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet winter ground blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+            "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+          },
+          "sourceBoundaryMetrics": {
+            "width": 2172,
+            "height": 724,
+            "edgeMeanRGB": 7.459944751381215,
+            "edgeMaximumRGB": 115.33333333333333,
+            "topRangeRGB": [
+              6,
+              5,
+              6
+            ],
+            "bottomRangeRGB": [
+              58,
+              55,
+              63
+            ],
+            "warnings": [
+              "bottom-row-extrusion"
+            ],
+            "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+          }
+        }
+      ]
+    },
+    {
+      "key": "albuquerque-night",
+      "raceRef": "Albuquerque, NM \u2014 Landmark Run",
+      "ref": "environment-v1-albuquerque-night",
+      "source": "environment-v1/albuquerque-night.png",
+      "brief": "Albuquerque Rio Grande valley: low adobe/blocky urban forms and a few midrise towers beneath long serrated Sandia mountain silhouette, cottonwood river ribbon and sparse desert shrubs; very restrained local amber light, no sci-fi megacity.",
+      "lightingInstruction": "DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. Sparse faint stars, no prominent moon disk; keep local light restrained.",
+      "brightness": 0.05,
+      "ground": "ground-snow-chaparral-v1",
+      "tiles": {
+        "snow": "ground-snow-chaparral-v1"
+      },
+      "sourceOrigin": {
+        "name": "Albuquerque \u2014 Landmark Run",
+        "lat": 35.09,
+        "lon": -106.658,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-nm.json",
+      "catalog": [
+        {
+          "id": "city-nm",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 9,
+          "location": {
+            "lat": 35.09,
+            "lon": -106.658
+          },
+          "startGps": {
+            "lat": 35.102317649999996,
+            "lon": -106.6742783
+          },
+          "finishGps": {
+            "lat": 35.06961236666667,
+            "lon": -106.64615136666666
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/city-nm.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-075f11d3-5212-4e5f-98e7-ce61bbcfa2ac.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "4bdd6ba0df4e127ce30e00025e9f4e6a65805e850f8216f1dd830304afedc7d3",
+        "originalRetained": "/workspace/generated_images/exec-075f11d3-5212-4e5f-98e7-ce61bbcfa2ac.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Albuquerque Rio Grande valley: low adobe/blocky urban forms and a few midrise towers beneath long serrated Sandia mountain silhouette, cottonwood river ribbon and sparse desert shrubs; very restrained local amber light, no sci-fi megacity. DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. Sparse faint stars, no prominent moon disk; keep local light restrained. Existing route snow substrate: modest snow patches and winter ground. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet winter ground blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 3.798342541436464,
+        "edgeMaximumRGB": 67.66666666666667,
+        "topRangeRGB": [
+          5,
+          5,
+          6
+        ],
+        "bottomRangeRGB": [
+          10,
+          7,
+          9
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "portlandcity-morning",
+      "raceRef": "Portland, OR \u2014 Landmark Run",
+      "ref": "environment-v1-portlandcity-morning",
+      "source": "environment-v1/portlandcity-morning.png",
+      "brief": "Portland Oregon Willamette river city: compact west-bank downtown, low steel bridge silhouettes, layered wooded West Hills and a very distant small snowy volcanic peak in a clear gap, river foreground far away; no Seattle needle.",
+      "lightingInstruction": "Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars.",
+      "brightness": 0.65,
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "sourceOrigin": {
+        "name": "Portland, OR \u2014 Landmark Run",
+        "lat": 45.523,
+        "lon": -122.678,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-or.json",
+      "catalog": [
+        {
+          "id": "city-or",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 45.523,
+            "lon": -122.678
+          },
+          "startGps": {
+            "lat": 45.5293013,
+            "lon": -122.67468475
+          },
+          "finishGps": {
+            "lat": 45.51167863333333,
+            "lon": -122.6889975
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/city-or.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-cb57c5e0-2cb8-4b6e-b3db-77b5eca6b4e9.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "e0b8f3458fd9ffff158eabdc1bb518a2d32eac1181b46c528ac3cb82b1185060",
+        "originalRetained": "/workspace/generated_images/exec-cb57c5e0-2cb8-4b6e-b3db-77b5eca6b4e9.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-e1fb2c98-b035-4f10-9b2d-303312c7c5e1.png",
+        "prompt": "Edit this exact Portland, OR \u2014 Landmark Run panorama, preserving recognizable geography, city structures, time and palette. Correct wrap boundaries: leftmost and rightmost 12% need the SAME land/sky horizon height and matching forms/colors, avoiding vertical joins. Move nearby trees or cliffs away from both edges. Preserve the central 75% composition. Fix bottom extension: bottom 5% fades naturally to one quiet appropriate ground color, EXACT SAME color across entire last row, no grass, branch, rock, snow, or building interrupting last row. No abrupt horizontal band. Topmost row also quiet uniform sky. Preserve Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Original pixel art, no text, 3:1 panoramic ratio.",
+        "review": "Revised source viewed; native acceptance separate."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 4.645027624309392,
+        "edgeMaximumRGB": 50.666666666666664,
+        "topRangeRGB": [
+          5,
+          6,
+          5
+        ],
+        "bottomRangeRGB": [
+          8,
+          5,
+          9
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-e1fb2c98-b035-4f10-9b2d-303312c7c5e1.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "4995ae5b140206023cae9e6faabcb69ff417ce5695869953d7b3fd6a82e6a5ae",
+            "originalRetained": "/workspace/generated_images/exec-e1fb2c98-b035-4f10-9b2d-303312c7c5e1.png",
+            "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Portland Oregon Willamette river city: compact west-bank downtown, low steel bridge silhouettes, layered wooded West Hills and a very distant small snowy volcanic peak in a clear gap, river foreground far away; no Seattle needle. Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Existing route snow substrate: modest snow patches and winter ground. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet winter ground blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+            "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+          },
+          "sourceBoundaryMetrics": {
+            "width": 2172,
+            "height": 724,
+            "edgeMeanRGB": 16.778084714548804,
+            "edgeMaximumRGB": 205.0,
+            "topRangeRGB": [
+              6,
+              6,
+              8
+            ],
+            "bottomRangeRGB": [
+              90,
+              112,
+              167
+            ],
+            "warnings": [
+              "horizontal-wrap",
+              "bottom-row-extrusion"
+            ],
+            "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+          }
+        }
+      ]
+    },
+    {
+      "key": "saltlake-night",
+      "raceRef": "Salt Lake City, UT \u2014 Landmark Run",
+      "ref": "environment-v1-saltlake-night",
+      "source": "environment-v1/saltlake-night.png",
+      "brief": "Salt Lake valley grid of low-to-midrise buildings with a few tall downtown blocks, steep distant Wasatch Front rising as a long jagged eastern wall, bare winter foothills and sparse cottonwoods, restrained city glow; no lake directly downtown.",
+      "lightingInstruction": "DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. Sparse faint stars, no prominent moon disk; keep local light restrained.",
+      "brightness": 0.05,
+      "ground": "ground-alpine-snow-granite-v1",
+      "tiles": {
+        "snow": "ground-alpine-snow-granite-v1"
+      },
+      "sourceOrigin": {
+        "name": "Salt Lake City, UT \u2014 Landmark Run",
+        "lat": 40.764,
+        "lon": -111.89,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ut.json",
+      "catalog": [
+        {
+          "id": "city-ut",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 9,
+          "location": {
+            "lat": 40.764,
+            "lon": -111.89
+          },
+          "startGps": {
+            "lat": 40.78021635555556,
+            "lon": -111.9076041
+          },
+          "finishGps": {
+            "lat": 40.75456372,
+            "lon": -111.88250354
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/city-ut.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-b175c683-cb5f-461d-9598-17bd9d5ddd94.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "5be6e0ebbba672a341f29120d0736f8bebf93438914da03eea95cc2fb0a5bb84",
+        "originalRetained": "/workspace/generated_images/exec-b175c683-cb5f-461d-9598-17bd9d5ddd94.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-4030cac9-38ad-4360-a44b-ceacf52044ec.png",
+        "prompt": "Edit this exact Salt Lake City, UT \u2014 Landmark Run panorama, preserving recognizable geography, city structures, time and palette. Correct wrap boundaries: leftmost and rightmost 12% need the SAME land/sky horizon height and matching forms/colors, avoiding vertical joins. Move nearby trees or cliffs away from both edges. Preserve the central 75% composition. Fix bottom extension: bottom 5% fades naturally to one quiet appropriate ground color, EXACT SAME color across entire last row, no grass, branch, rock, snow, or building interrupting last row. No abrupt horizontal band. Topmost row also quiet uniform sky. Preserve DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. Sparse faint stars, no prominent moon disk; keep local light restrained. Original pixel art, no text, 3:1 panoramic ratio.",
+        "review": "Revised source viewed; native acceptance separate."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 3.9180478821362796,
+        "edgeMaximumRGB": 54.0,
+        "topRangeRGB": [
+          4,
+          4,
+          5
+        ],
+        "bottomRangeRGB": [
+          4,
+          6,
+          7
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-4030cac9-38ad-4360-a44b-ceacf52044ec.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "548a3088d47dafb5b471f71cf2444345ad53a6f6238e989bf2a94d51c7e5545f",
+            "originalRetained": "/workspace/generated_images/exec-4030cac9-38ad-4360-a44b-ceacf52044ec.png",
+            "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Salt Lake valley grid of low-to-midrise buildings with a few tall downtown blocks, steep distant Wasatch Front rising as a long jagged eastern wall, bare winter foothills and sparse cottonwoods, restrained city glow; no lake directly downtown. DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. Sparse faint stars, no prominent moon disk; keep local light restrained. Existing route snow substrate: modest snow patches and winter ground. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet winter ground blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+            "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+          },
+          "sourceBoundaryMetrics": {
+            "width": 2172,
+            "height": 724,
+            "edgeMeanRGB": 8.63305709023941,
+            "edgeMaximumRGB": 97.33333333333333,
+            "topRangeRGB": [
+              4,
+              4,
+              5
+            ],
+            "bottomRangeRGB": [
+              21,
+              21,
+              40
+            ],
+            "warnings": [
+              "horizontal-wrap",
+              "bottom-row-extrusion"
+            ],
+            "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+          }
+        }
+      ]
+    },
+    {
+      "key": "seattle-night",
+      "raceRef": "Seattle, WA \u2014 Landmark Run",
+      "ref": "environment-v1-seattle-night",
+      "source": "environment-v1/seattle-night.png",
+      "brief": "Seattle Puget Sound skyline: compact original tower cluster and slender saucer observation-tower motif, layered dark evergreen hills and distant Olympic ridge across water glimpse, scattered restrained warm windows, maritime navy night; not inland desert.",
+      "lightingInstruction": "DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. Sparse faint stars, no prominent moon disk; keep local light restrained.",
+      "brightness": 0.05,
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "sourceOrigin": {
+        "name": "Seattle, WA \u2014 Landmark Run",
+        "lat": 47.608,
+        "lon": -122.337,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-wa.json",
+      "catalog": [
+        {
+          "id": "city-wa",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 47.608,
+            "lon": -122.337
+          },
+          "startGps": {
+            "lat": 47.6185874,
+            "lon": -122.3567489
+          },
+          "finishGps": {
+            "lat": 47.592886629999995,
+            "lon": -122.32418363
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/city-wa.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-6a5bb0d7-a69c-4f1a-81f4-c14562bfb4e8.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "17eff1465baa26be7cbba6c9c1c95f3dcb67ea3219154f5ab1ec4a02107e58f9",
+        "originalRetained": "/workspace/generated_images/exec-6a5bb0d7-a69c-4f1a-81f4-c14562bfb4e8.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Seattle Puget Sound skyline: compact original tower cluster and slender saucer observation-tower motif, layered dark evergreen hills and distant Olympic ridge across water glimpse, scattered restrained warm windows, maritime navy night; not inland desert. DARK NIGHT, subdued navy sky, restrained stars only if clear; never daylight. Sparse faint stars, no prominent moon disk; keep local light restrained. Ground substrate snow: reflect that material convincingly. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet substrate color blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 5.209484346224677,
+        "edgeMaximumRGB": 55.333333333333336,
+        "topRangeRGB": [
+          5,
+          6,
+          6
+        ],
+        "bottomRangeRGB": [
+          7,
+          6,
+          7
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "cheyenne-morning",
+      "raceRef": "Cheyenne, WY \u2014 Landmark Run",
+      "ref": "environment-v1-cheyenne-morning",
+      "source": "environment-v1/cheyenne-morning.png",
+      "brief": "Cheyenne high plains: broad windswept rolling prairie horizon, low historic brick town roofline with station clock-tower motif and distant grain/rail infrastructure, no immediate mountains, dry shortgrass.",
+      "lightingInstruction": "Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars.",
+      "brightness": 0.65,
+      "ground": "ground-plains-snow-straw-v1",
+      "tiles": {
+        "snow": "ground-plains-snow-straw-v1"
+      },
+      "sourceOrigin": {
+        "name": "Cheyenne, WY \u2014 Landmark Run",
+        "lat": 41.14,
+        "lon": -104.814,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-wy.json",
+      "catalog": [
+        {
+          "id": "city-wy",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 8,
+          "location": {
+            "lat": 41.14,
+            "lon": -104.814
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/state-expansion/sources/city-wy.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-f676827f-29e7-47dd-8bdd-e398f7925c66.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "bce355d036b4f8e67e32215a3f0d7a3cdb2d65746e29be35ff385002fd8f38b4",
+        "originalRetained": "/workspace/generated_images/exec-f676827f-29e7-47dd-8bdd-e398f7925c66.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Cheyenne high plains: broad windswept rolling prairie horizon, low historic brick town roofline with station clock-tower motif and distant grain/rail infrastructure, no immediate mountains, dry shortgrass. Clear soft MORNING pale blue sky with modest warm horizon, daylight, no moon or stars. Ground substrate snow: reflect that material convincingly. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet substrate color blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 9.667587476979742,
+        "edgeMaximumRGB": 114.33333333333333,
+        "topRangeRGB": [
+          6,
+          7,
+          8
+        ],
+        "bottomRangeRGB": [
+          5,
+          8,
+          8
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "thompson-snow-night",
+      "raceRef": "Thompson Pass \u2014 Snowline Climb",
+      "ref": "environment-v1-thompson-snow-night",
+      "source": "environment-v1/thompson-snow-night.png",
+      "brief": "Thompson Pass Chugach snowline near Valdez: sweeping treeless snow-covered glacial saddle, steep dark alpine rock faces and soft snow-filled gullies, heavily clouded snow-night sky with diffuse cloud glow. No moon disk, no stars, no aurora.",
+      "lightingInstruction": "SNOWY NIGHT, dark blue-gray cloudy sky, diffuse cloud glow, NO moon, stars or aurora.",
+      "brightness": 0.05,
+      "ground": "ground-alpine-snow-granite-v1",
+      "tiles": {
+        "snow": "ground-alpine-snow-granite-v1"
+      },
+      "sourceOrigin": {
+        "name": "Thompson Pass \u2014 Snowline Climb",
+        "lat": 61.13,
+        "lon": -145.82,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-thompson.json",
+      "catalog": [
+        {
+          "id": "detour-thompson",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 61.13,
+            "lon": -145.82
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/wilderness/sources/detour-thompson.json",
+        "https://www.valdezalaska.org/discover/explore-the-region/navigating-the-area/thompson-pass/"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-9161192f-3ef4-46ea-9923-601f9eaf6a34.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "7909693dea78243293f290d0ee3ccf036b67b05cc4f4bcd806ab689b8d70afcc",
+        "originalRetained": "/workspace/generated_images/exec-9161192f-3ef4-46ea-9923-601f9eaf6a34.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Thompson Pass Chugach snowline near Valdez: sweeping treeless snow-covered glacial saddle, steep dark alpine rock faces and soft snow-filled gullies, heavily clouded snow-night sky with diffuse cloud glow. No moon disk, no stars, no aurora. SNOWY NIGHT, dark blue-gray cloudy sky, diffuse cloud glow, NO moon, stars or aurora. Ground substrate snow: reflect that material convincingly. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet substrate color blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 3.0552486187845305,
+        "edgeMaximumRGB": 59.666666666666664,
+        "topRangeRGB": [
+          16,
+          19,
+          25
+        ],
+        "bottomRangeRGB": [
+          7,
+          5,
+          6
+        ],
+        "warnings": [
+          "top-row-extrusion"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "skalkaho-evening",
+      "raceRef": "Skalkaho Pass \u2014 Forest Rally",
+      "ref": "environment-v1-skalkaho-evening",
+      "source": "environment-v1/skalkaho-evening.png",
+      "brief": "Skalkaho Sapphire Mountains: dense spruce and subalpine fir slopes, rounded dark forest ridges with small grassy meadow openings, a narrow waterfall hinted far down a wooded notch, no sweeping desert or giant glacier.",
+      "lightingInstruction": "Readable muted EVENING warm horizon and blue-lavender upper sky, no star field and no dark night exposure.",
+      "brightness": 0.42,
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "sourceOrigin": {
+        "name": "Skalkaho Pass \u2014 Forest Rally",
+        "lat": 46.252,
+        "lon": -113.79,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-skalkaho.json",
+      "catalog": [
+        {
+          "id": "detour-skalkaho",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 9,
+          "location": {
+            "lat": 46.252,
+            "lon": -113.79
+          },
+          "startGps": {
+            "lat": 46.244942333333334,
+            "lon": -113.83647506666667
+          },
+          "finishGps": {
+            "lat": 46.249823,
+            "lon": -113.776218
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/wilderness/sources/detour-skalkaho.json",
+        "https://visitmt.com/listing/skalkaho-pass-12543"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-988710ae-a6b6-4aba-9c1f-07bb61db6d7a.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "49c03b6a837999bf31c81dcce2e297ecbb16322f3dcd689714a76acae645aa4b",
+        "originalRetained": "/workspace/generated_images/exec-988710ae-a6b6-4aba-9c1f-07bb61db6d7a.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Skalkaho Sapphire Mountains: dense spruce and subalpine fir slopes, rounded dark forest ridges with small grassy meadow openings, a narrow waterfall hinted far down a wooded notch, no sweeping desert or giant glacier. Readable muted EVENING warm horizon and blue-lavender upper sky, no star field and no dark night exposure. Ground substrate grass: reflect that material convincingly. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet substrate color blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 4.3264272559852675,
+        "edgeMaximumRGB": 74.0,
+        "topRangeRGB": [
+          5,
+          4,
+          11
+        ],
+        "bottomRangeRGB": [
+          5,
+          3,
+          5
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "magruder-evening",
+      "raceRef": "Magruder Corridor \u2014 Wilderness Ridge",
+      "ref": "environment-v1-magruder-evening",
+      "source": "environment-v1/magruder-evening.png",
+      "brief": "Magruder Corridor wilderness ridge between Selway-Bitterroot and Frank Church country: receding blue-green forested mountain folds, sparse tall burned snags on remote ridge, small grassy openings and rugged granite ridge edges, no town or highway.",
+      "lightingInstruction": "Readable muted EVENING warm horizon and blue-lavender upper sky, no star field and no dark night exposure.",
+      "brightness": 0.42,
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "sourceOrigin": {
+        "name": "Magruder Corridor \u2014 Wilderness Ridge",
+        "lat": 45.7,
+        "lon": -115,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-magruder.json",
+      "catalog": [
+        {
+          "id": "detour-magruder",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 9,
+          "location": {
+            "lat": 45.7,
+            "lon": -115
+          },
+          "startGps": {
+            "lat": 45.7151447,
+            "lon": -115.0255593
+          },
+          "finishGps": {
+            "lat": 45.7213455,
+            "lon": -115.0748261
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/wilderness/sources/detour-magruder.json"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-9cf70751-ab0d-420f-adde-b4b62965b4ae.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "876783cc4c4d6664df2ba268f1521e4852f6e79bb512ec16ac8da7b85429a679",
+        "originalRetained": "/workspace/generated_images/exec-9cf70751-ab0d-420f-adde-b4b62965b4ae.png",
+        "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Magruder Corridor wilderness ridge between Selway-Bitterroot and Frank Church country: receding blue-green forested mountain folds, sparse tall burned snags on remote ridge, small grassy openings and rugged granite ridge edges, no town or highway. Readable muted EVENING warm horizon and blue-lavender upper sky, no star field and no dark night exposure. Ground substrate grass: reflect that material convincingly. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet substrate color blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+        "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 3.844843462246777,
+        "edgeMaximumRGB": 34.666666666666664,
+        "topRangeRGB": [
+          5,
+          4,
+          10
+        ],
+        "bottomRangeRGB": [
+          5,
+          4,
+          5
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "chiefjoseph-noon",
+      "raceRef": "Chief Joseph \u2014 Dead Indian Pass",
+      "ref": "environment-v1-chiefjoseph-noon",
+      "source": "environment-v1/chiefjoseph-noon.png",
+      "brief": "Dead Indian Pass on Chief Joseph Highway: broad dramatic Absaroka mountain ridges above Sunlight Basin, mixed dark volcanic rock and pale exposed talus shoulders, scattered conifers, sage and distant high summit snow only; near rocky gravel ground stays exposed.",
+      "lightingInstruction": "Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars.",
+      "brightness": 1,
+      "ground": "ground-alpine-rock-v2",
+      "tiles": {
+        "gravel": "ground-alpine-rock-v2"
+      },
+      "sourceOrigin": {
+        "name": "Chief Joseph \u2014 Dead Indian Pass",
+        "lat": 44.75,
+        "lon": -109.39,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-chief-joseph.json",
+      "catalog": [
+        {
+          "id": "detour-chief-joseph",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 8,
+          "location": {
+            "lat": 44.75,
+            "lon": -109.39
+          },
+          "startGps": {
+            "lat": 44.77126265,
+            "lon": -109.42553805
+          },
+          "finishGps": {
+            "lat": 44.75410638571429,
+            "lon": -109.38417094285714
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "data/campaigns/america/wilderness/sources/detour-chief-joseph.json",
+        "https://www.recreation.gov/gateways/13573"
+      ],
+      "sourceLimitation": "Exact saved GPS/source identifies site. Composition and abandoned2994 structures are original, not surveyed views. Snow visual substrate follows unchanged existing snow material; it does not claim present-day weather.",
+      "sourceImage": "/workspace/generated_images/exec-b5dbbad6-9293-4e5b-9522-b6ff5d0251c8.png",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "8d1d5ba5bddd7f1c7ed4bb223e46cb6821ab4a634ee972ed75e06fe57ef65f4e",
+        "originalRetained": "/workspace/generated_images/exec-b5dbbad6-9293-4e5b-9522-b6ff5d0251c8.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-6bff3ddb-98da-45ea-b94e-b64a99231fc7.png",
+        "prompt": "Edit this exact Chief Joseph \u2014 Dead Indian Pass panorama, preserving recognizable geography, city structures, time and palette. Correct wrap boundaries: leftmost and rightmost 12% need the SAME land/sky horizon height and matching forms/colors, avoiding vertical joins. Move nearby trees or cliffs away from both edges. Preserve the central 75% composition. Fix bottom extension: bottom 5% fades naturally to one quiet appropriate ground color, EXACT SAME color across entire last row, no grass, branch, rock, snow, or building interrupting last row. No abrupt horizontal band. Topmost row also quiet uniform sky. Preserve Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars. Original pixel art, no text, 3:1 panoramic ratio.",
+        "review": "Revised source viewed; native acceptance separate."
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 5.362338858195212,
+        "edgeMaximumRGB": 84.0,
+        "topRangeRGB": [
+          10,
+          5,
+          7
+        ],
+        "bottomRangeRGB": [
+          6,
+          7,
+          6
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-6bff3ddb-98da-45ea-b94e-b64a99231fc7.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "4125cf85334810c6a2d31c07d11243e0176d0b9969a6a44deafc9fd633ffafda",
+            "originalRetained": "/workspace/generated_images/exec-6bff3ddb-98da-45ea-b94e-b64a99231fc7.png",
+            "prompt": "Original badge-free 2994 pixel-art racing panorama, wide 3:1 image. Dead Indian Pass on Chief Joseph Highway: broad dramatic Absaroka mountain ridges above Sunlight Basin, mixed dark volcanic rock and pale exposed talus shoulders, scattered conifers, sage and distant high summit snow only; near rocky gravel ground stays exposed. Bright CLEAR MIDDAY blue sky, white daylight, no moon or stars. Ground substrate gravel: reflect that material convincingly. Horizon about 60% down, quiet sky above. Seamless horizontal wrapping: matching heights/colors/forms at left/right edges, no close feature touching edges. Opaque uniform top boundary blending naturally into sky; lower 8% quiet substrate color blended naturally with terrain and uniform last row, appropriately dark under night lighting. No text, logos, cars or close road. Distinct location composition.",
+            "review": "Source image viewed for site/time/substrate; native and driving acceptance recorded separately."
+          },
+          "sourceBoundaryMetrics": {
+            "width": 2172,
+            "height": 724,
+            "edgeMeanRGB": 9.376611418047883,
+            "edgeMaximumRGB": 112.33333333333333,
+            "topRangeRGB": [
+              8,
+              4,
+              6
+            ],
+            "bottomRangeRGB": [
+              61,
+              51,
+              45
+            ],
+            "warnings": [
+              "horizontal-wrap",
+              "bottom-row-extrusion"
+            ],
+            "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+          }
+        }
+      ]
+    }
+  ],
+  "groundAssets": []
+}

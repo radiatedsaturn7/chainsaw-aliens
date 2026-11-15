@@ -1,0 +1,1100 @@
+{
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "recipes": [
+    {
+      "key": "eminence-evening",
+      "raceRef": "MO 19 — Eminence Current River",
+      "ref": "environment-v1-eminence-evening",
+      "source": "environment-v1/eminence-evening.png",
+      "sourceImage": "/workspace/generated_images/exec-5e9086ed-a635-4d04-af48-6bdc388b8f7c.png",
+      "landscape": "MO19 north of Eminence Missouri, broad rounded oak-pine ridge descending to the Current River valley, small pale dolomite bluff glimpsed through trees, abandoned low timber river outfitter in central left. Distinct open rolling ridge, no Arkansas mountains or big city.",
+      "references": [
+        "https://www.nps.gov/ozar/learn/nature/geologicformations.htm"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "MO 19 — Eminence / Current River",
+          "lat": 37.43,
+          "lon": -91.43,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H05-S01.json",
+        "catalog": [
+          {
+            "id": "H05-S01",
+            "hubStage": 5,
+            "startGps": {
+              "lat": 37.3636128,
+              "lon": -91.4273456
+            },
+            "finishGps": {
+              "lat": 37.421383,
+              "lon": -91.468125
+            },
+            "lightingPreset": "evening"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-5e9086ed-a635-4d04-af48-6bdc388b8f7c.png",
+        "sourceSha256": "cde0655dea8225b29dbfd9ff498349d4c04a1d9dd1be627ff6858b1e9e10b516",
+        "brief": "MO19 north of Eminence Missouri, broad rounded oak-pine ridge descending to the Current River valley, small pale dolomite bluff glimpsed through trees, abandoned low timber river outfitter in central left. Distinct open rolling ridge, no Arkansas mountains or big city.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "alley-noon",
+      "raceRef": "MO 106 — Alley Spring approach",
+      "ref": "environment-v1-alley-noon",
+      "source": "environment-v1/alley-noon.png",
+      "sourceImage": "/workspace/generated_images/exec-0bcac1d2-4a99-4d9e-972a-4ba2c34c84a1.png",
+      "landscape": "Alley Spring approach on MO106 west of Eminence: enclosed low wooded Jacks Fork valley, layered pale dolomite ledges, small glimpse of turquoise spring-fed water and distant weathered red mill-like timber structure central right. Not a huge waterfall or alpine landscape.",
+      "references": [
+        "https://www.nps.gov/ozar/learn/nature/geologicformations.htm"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "MO 106 — Alley Spring approach",
+          "lat": 37.15,
+          "lon": -91.4,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H05-S02.json",
+        "catalog": [
+          {
+            "id": "H05-S02",
+            "hubStage": 5,
+            "startGps": {
+              "lat": 37.1457229,
+              "lon": -91.3934988
+            },
+            "finishGps": {
+              "lat": 37.1479466,
+              "lon": -91.4819358
+            },
+            "lightingPreset": "noon"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-0bcac1d2-4a99-4d9e-972a-4ba2c34c84a1.png",
+        "sourceSha256": "5542ab6819910974fc87b31d1601dbbff6617bafdc3d148b89dd589e026706e8",
+        "brief": "Alley Spring approach on MO106 west of Eminence: enclosed low wooded Jacks Fork valley, layered pale dolomite ledges, small glimpse of turquoise spring-fed water and distant weathered red mill-like timber structure central right. Not a huge waterfall or alpine landscape.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "powder-morning",
+      "raceRef": "MO 106 — Powder Mill approach",
+      "ref": "environment-v1-powder-morning",
+      "source": "environment-v1/powder-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-66b322a7-aabb-40a1-b268-d83e82734ed6.png",
+      "landscape": "Powder Mill approach MO106 Current River Missouri: a broad wooded river bend with pale gravel bar and low broken dolomite escarpment behind, very small abandoned low river research/outfitter shed. No giant lake.",
+      "references": [
+        "https://www.nps.gov/ozar/learn/nature/geologicformations.htm"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "MO 106 — Powder Mill approach",
+          "lat": 37.17,
+          "lon": -91.25,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H05-S03.json",
+        "catalog": [
+          {
+            "id": "H05-S03",
+            "hubStage": 5,
+            "startGps": {
+              "lat": 37.1592787,
+              "lon": -91.2038291
+            },
+            "finishGps": {
+              "lat": 37.1514205,
+              "lon": -91.2852032
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-66b322a7-aabb-40a1-b268-d83e82734ed6.png",
+        "sourceSha256": "5cdcb65cf3faa35eee8f49138393eb58e309d0f84f956cf6db515878fd9faa30",
+        "brief": "Powder Mill approach MO106 Current River Missouri: a broad wooded river bend with pale gravel bar and low broken dolomite escarpment behind, very small abandoned low river research/outfitter shed. No giant lake.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "two-rivers-morning",
+      "raceRef": "MO V — Two Rivers access",
+      "ref": "environment-v1-two-rivers-morning",
+      "source": "environment-v1/two-rivers-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-3b3c3002-cd39-46ab-9636-a974423da2e4.png",
+      "landscape": "Two Rivers access Missouri, wooded low ridges around the confluence of the Current and Jacks Fork, two narrow spring-fed river channels glimpsed between gravel bars in middle distance, dense riverside sycamore and oak, tiny weathered shelter. Unlike Powder Mill single bend, emphasize branching low valley.",
+      "references": [
+        "https://www.nps.gov/ozar/learn/nature/geologicformations.htm"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "MO V — Two Rivers access",
+          "lat": 37.2,
+          "lon": -91.25,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H05-S04.json",
+        "catalog": [
+          {
+            "id": "H05-S04",
+            "hubStage": 5,
+            "startGps": {
+              "lat": 37.1556212,
+              "lon": -91.2755124
+            },
+            "finishGps": {
+              "lat": 37.1887949,
+              "lon": -91.2766387
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-3b3c3002-cd39-46ab-9636-a974423da2e4.png",
+        "sourceSha256": "d5d39a3b5151a8d167a4e9cb79abe629ea44ccb93cf762185e649267d1176ac7",
+        "brief": "Two Rivers access Missouri, wooded low ridges around the confluence of the Current and Jacks Fork, two narrow spring-fed river channels glimpsed between gravel bars in middle distance, dense riverside sycamore and oak, tiny weathered shelter. Unlike Powder Mill single bend, emphasize branching low valley.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "roberts-evening",
+      "raceRef": "MO H NN — Roberts Field access",
+      "ref": "environment-v1-roberts-evening",
+      "source": "environment-v1/roberts-evening.png",
+      "sourceImage": "/workspace/generated_images/exec-632382de-3474-4b39-b167-d2c5f2c57870.png",
+      "landscape": "Roberts Field access near Current River Missouri: quiet open grassy riverside field enclosed by low oak wooded hills, one pale dolomite shoulder and abandoned farm fence/barn central. River only a slim distant glint, no large mountains.",
+      "references": [
+        "https://www.nps.gov/ozar/learn/nature/geologicformations.htm"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "MO H / NN — Roberts Field access",
+          "lat": 37.12,
+          "lon": -91.19,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H05-S05.json",
+        "catalog": [
+          {
+            "id": "H05-S05",
+            "hubStage": 5,
+            "startGps": {
+              "lat": 37.10478855,
+              "lon": -91.2077648
+            },
+            "finishGps": {
+              "lat": 37.1431124,
+              "lon": -91.2416925
+            },
+            "lightingPreset": "evening"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-632382de-3474-4b39-b167-d2c5f2c57870.png",
+        "sourceSha256": "45b9d7acf771f59977afd27b9076db1da04fa879190173381c9c3a71650757dd",
+        "brief": "Roberts Field access near Current River Missouri: quiet open grassy riverside field enclosed by low oak wooded hills, one pale dolomite shoulder and abandoned farm fence/barn central. River only a slim distant glint, no large mountains.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "jerktail-morning",
+      "raceRef": "Jerktail Landing gravel road",
+      "ref": "environment-v1-jerktail-morning",
+      "source": "environment-v1/jerktail-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-612ae821-e9a9-4c40-b722-a72f4b8272db.png",
+      "landscape": "Jerktail Landing Missouri: intimate forested Current River access, low near oak and shortleaf pine ridge, pale gravel river landing and dark wooded valley opening center-left, small ruined canoe shelter. No alpine peaks.",
+      "references": [
+        "https://www.nps.gov/ozar/learn/nature/geologicformations.htm"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "Jerktail Landing gravel road",
+          "lat": 37.24,
+          "lon": -91.33,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H05-S06.json",
+        "catalog": [
+          {
+            "id": "H05-S06",
+            "hubStage": 5,
+            "startGps": {
+              "lat": 37.25282075,
+              "lon": -91.3954789
+            },
+            "finishGps": {
+              "lat": 37.257275050000004,
+              "lon": -91.36116195
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-612ae821-e9a9-4c40-b722-a72f4b8272db.png",
+        "sourceSha256": "8148b9d46986a977127aecaf9c86a58a72c7df40df45c5df9c55bff197a7a67e",
+        "brief": "Jerktail Landing Missouri: intimate forested Current River access, low near oak and shortleaf pine ridge, pale gravel river landing and dark wooded valley opening center-left, small ruined canoe shelter. No alpine peaks.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "winona-noon",
+      "raceRef": "US 60 — Winona Van Buren",
+      "ref": "environment-v1-winona-noon",
+      "source": "environment-v1/winona-noon.png",
+      "sourceImage": "/workspace/generated_images/exec-8abaf488-d77b-464a-a824-a588c70963e2.png",
+      "landscape": "US60 Winona to Van Buren Missouri, broad low forested Ozark highway ridge, long horizontal pale road-cut rock layers and a distant derelict rural service station, mixed shortleaf pine and oak. No major river foreground or snowy mountains.",
+      "references": [
+        "https://www.nps.gov/ozar/learn/nature/geologicformations.htm"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "US 60 — Winona / Van Buren",
+          "lat": 37.0097738,
+          "lon": -91.3234669,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H05-S07.json",
+        "catalog": [
+          {
+            "id": "H05-S07",
+            "hubStage": 5,
+            "startGps": {
+              "lat": 36.9507869,
+              "lon": -91.1714166
+            },
+            "finishGps": {
+              "lat": 36.987433599999996,
+              "lon": -91.29404599
+            },
+            "lightingPreset": "noon"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-8abaf488-d77b-464a-a824-a588c70963e2.png",
+        "sourceSha256": "0705f4e2187ef88c1318e021b6c3c6d4c8393c93fa634f6f41fe610e15327ba7",
+        "brief": "US60 Winona to Van Buren Missouri, broad low forested Ozark highway ridge, long horizontal pale road-cut rock layers and a distant derelict rural service station, mixed shortleaf pine and oak. No major river foreground or snowy mountains.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "glade-morning",
+      "raceRef": "Glade Top Trail — Mark Twain National Forest",
+      "ref": "environment-v1-glade-morning",
+      "source": "environment-v1/glade-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-8db78ac8-cff5-408b-b088-a664558dd64f.png",
+      "landscape": "Glade Top Trail Mark Twain National Forest Missouri: open dolomite bald knobs and broad rolling upland vistas, tawny prairie grasses on pale flat rock outcrops, scattered red cedar and oak clumps, distant layered low ridges, abandoned small fire lookout low on central ridge. Not dense forest everywhere.",
+      "references": [
+        "https://mdc.mo.gov/discover-nature/places/natural-areas/ava-glades-natural-area"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "Glade Top Trail — Mark Twain National Forest",
+          "lat": 36.6715964,
+          "lon": -92.8147636,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H05-S08.json",
+        "catalog": [
+          {
+            "id": "H05-S08",
+            "hubStage": 5,
+            "startGps": {
+              "lat": 36.719494,
+              "lon": -92.780394
+            },
+            "finishGps": {
+              "lat": 36.680618,
+              "lon": -92.798048
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-8db78ac8-cff5-408b-b088-a664558dd64f.png",
+        "sourceSha256": "068f2c17a5392259681d9adb8816e226779bcec41a06ba56f5a87e80bf927b3d",
+        "brief": "Glade Top Trail Mark Twain National Forest Missouri: open dolomite bald knobs and broad rolling upland vistas, tawny prairie grasses on pale flat rock outcrops, scattered red cedar and oak clumps, distant layered low ridges, abandoned small fire lookout low on central ridge. Not dense forest everywhere.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "oir-morning",
+      "raceRef": "Ozarks International Raceway — Gravois Mills",
+      "ref": "environment-v1-oir-morning",
+      "source": "environment-v1/oir-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-49057642-3955-4668-9a4b-f81782935cf9.png",
+      "landscape": "Ozarks International Raceway Gravois Mills Missouri: hilly wooded racing facility cut into oak ridges, rolling green slopes with pale exposed rock cuts, tiny distant empty pit garages and control box, abandoned restrained condition. No urban skyline, lake or grand alpine peak.",
+      "references": [
+        "https://ozarksinternationalraceway.com/"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "Ozarks International Raceway — Gravois Mills",
+          "lat": 38.2758834,
+          "lon": -92.8867072,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H05-S09.json",
+        "catalog": [
+          {
+            "id": "H05-S09",
+            "hubStage": 5,
+            "startGps": {
+              "lat": 38.2762144,
+              "lon": -92.88511310000001
+            },
+            "finishGps": {
+              "lat": 38.2762144,
+              "lon": -92.88511310000001
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-49057642-3955-4668-9a4b-f81782935cf9.png",
+        "sourceSha256": "d92de4ee64df6f340af1c0e8f37c45adb38192d091cf7009e04217d490b338c8",
+        "brief": "Ozarks International Raceway Gravois Mills Missouri: hilly wooded racing facility cut into oak ridges, rolling green slopes with pale exposed rock cuts, tiny distant empty pit garages and control box, abandoned restrained condition. No urban skyline, lake or grand alpine peak.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "gateway-noon",
+      "raceRef": "World Wide Technology Raceway — road course",
+      "ref": "environment-v1-gateway-noon",
+      "source": "environment-v1/gateway-noon.png",
+      "sourceImage": "/workspace/generated_images/exec-c07de288-0fb7-49fe-9d36-6328579f8edc.png",
+      "landscape": "World Wide Technology Raceway Madison Illinois on flat Mississippi floodplain, weathered low empty grandstand and oval banking, small pit buildings and rail-industrial silhouettes, distant compact St Louis skyline and tiny Gateway Arch toward center-right. All structures far away, no giant bridge or mountains.",
+      "references": [
+        "https://www.gatewaykartplex.com/facility"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "World Wide Technology Raceway — road course",
+          "lat": 38.65,
+          "lon": -90.135,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H06-S01.json",
+        "catalog": [
+          {
+            "id": "H06-S01",
+            "hubStage": 6,
+            "startGps": {
+              "lat": 38.653464775,
+              "lon": -90.135446425
+            },
+            "finishGps": {
+              "lat": 38.653464775,
+              "lon": -90.135446425
+            },
+            "lightingPreset": "noon"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-c07de288-0fb7-49fe-9d36-6328579f8edc.png",
+        "sourceSha256": "2609f5e6b8cd06189aca6f82d914af3768981703df87781a2279a47ebf810b66",
+        "brief": "World Wide Technology Raceway Madison Illinois on flat Mississippi floodplain, weathered low empty grandstand and oval banking, small pit buildings and rail-industrial silhouettes, distant compact St Louis skyline and tiny Gateway Arch toward center-right. All structures far away, no giant bridge or mountains.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "gateway-night",
+      "raceRef": "World Wide Technology Raceway — oval",
+      "ref": "environment-v1-gateway-night",
+      "source": "environment-v1/gateway-night.png",
+      "sourceImage": "/workspace/generated_images/exec-727554fc-cceb-43a2-9965-1aa732c562d2.png",
+      "landscape": "SAME exact World Wide Technology Raceway physical place: flat Mississippi floodplain, empty low grandstand/oval banking, pit buildings, distant compact St Louis skyline and tiny Gateway Arch. Clear NIGHT with restrained steel-blue silhouette, sparse stars, small crescent optional, only a few dim amber maintenance lights. No daylight sky or brightly floodlit stands.",
+      "references": [
+        "https://www.gatewaykartplex.com/facility"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "World Wide Technology Raceway — oval",
+          "lat": 38.65,
+          "lon": -90.135,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H06-S02.json",
+        "catalog": [
+          {
+            "id": "H06-S02",
+            "hubStage": 6,
+            "startGps": {
+              "lat": 38.6520702,
+              "lon": -90.1341055
+            },
+            "finishGps": {
+              "lat": 38.6520702,
+              "lon": -90.1341055
+            },
+            "lightingPreset": "night"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-727554fc-cceb-43a2-9965-1aa732c562d2.png",
+        "sourceSha256": "61a0b1df3b65105fbf2dd0b4a46901f5eafc1719a0ec52a164a14a7d1b5a206f",
+        "brief": "SAME exact World Wide Technology Raceway physical place: flat Mississippi floodplain, empty low grandstand/oval banking, pit buildings, distant compact St Louis skyline and tiny Gateway Arch. Clear NIGHT with restrained steel-blue silhouette, sparse stars, small crescent optional, only a few dim amber maintenance lights. No daylight sky or brightly floodlit stands.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "gateway-night",
+      "raceRef": "World Wide Technology Raceway — drag strip",
+      "ref": "environment-v1-gateway-night",
+      "source": "environment-v1/gateway-night.png",
+      "sourceImage": "/workspace/generated_images/exec-727554fc-cceb-43a2-9965-1aa732c562d2.png",
+      "landscape": "SAME exact World Wide Technology Raceway physical place: flat Mississippi floodplain, empty low grandstand/oval banking, pit buildings, distant compact St Louis skyline and tiny Gateway Arch. Clear NIGHT with restrained steel-blue silhouette, sparse stars, small crescent optional, only a few dim amber maintenance lights. No daylight sky or brightly floodlit stands.",
+      "references": [
+        "https://www.gatewaykartplex.com/facility"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "World Wide Technology Raceway — drag strip",
+          "lat": 38.65,
+          "lon": -90.135,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H06-S03.json",
+        "catalog": [
+          {
+            "id": "H06-S03",
+            "hubStage": 6,
+            "startGps": {
+              "lat": 38.654533,
+              "lon": -90.1396468
+            },
+            "finishGps": {
+              "lat": 38.65104302307613,
+              "lon": -90.13842393351831
+            },
+            "lightingPreset": "night"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-727554fc-cceb-43a2-9965-1aa732c562d2.png",
+        "sourceSha256": "61a0b1df3b65105fbf2dd0b4a46901f5eafc1719a0ec52a164a14a7d1b5a206f",
+        "brief": "SAME exact World Wide Technology Raceway physical place: flat Mississippi floodplain, empty low grandstand/oval banking, pit buildings, distant compact St Louis skyline and tiny Gateway Arch. Clear NIGHT with restrained steel-blue silhouette, sparse stars, small crescent optional, only a few dim amber maintenance lights. No daylight sky or brightly floodlit stands.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "stl64-morning",
+      "raceRef": "I-64 — St. Louis downtown approaches",
+      "ref": "environment-v1-stl64-morning",
+      "source": "environment-v1/stl64-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-4d4ab2e6-0aba-4df2-a349-9ecde11b60b0.png",
+      "landscape": "I64 St Louis downtown western approaches: low layered red-brick warehouse roofs and weathered industrial tanks in front of downtown towers, slim Gateway Arch far right of central cluster, flat Mississippi basin, overgrown abandoned rail corridor. No mountain range. Separate viewpoint from river bridge and downtown landmark loop.",
+      "references": [
+        "https://www.nps.gov/jeff/planyourvisit/gateway-arch.htm"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "I-64 — St. Louis downtown approaches",
+          "lat": 38.625,
+          "lon": -90.2,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H06-S04.json",
+        "catalog": [
+          {
+            "id": "H06-S04",
+            "hubStage": 6,
+            "startGps": {
+              "lat": 38.6296783,
+              "lon": -90.2704475
+            },
+            "finishGps": {
+              "lat": 38.6227212,
+              "lon": -90.1648784
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-4d4ab2e6-0aba-4df2-a349-9ecde11b60b0.png",
+        "sourceSha256": "64fc16cf6cea0f675da803b0b33d2de34beab2fd991311714fd3f83b6ba454ba",
+        "brief": "I64 St Louis downtown western approaches: low layered red-brick warehouse roofs and weathered industrial tanks in front of downtown towers, slim Gateway Arch far right of central cluster, flat Mississippi basin, overgrown abandoned rail corridor. No mountain range. Separate viewpoint from river bridge and downtown landmark loop.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "stan-noon",
+      "raceRef": "I-70 — Stan Musial Veterans Memorial Bridge",
+      "ref": "environment-v1-stan-noon",
+      "source": "environment-v1/stan-noon.png",
+      "sourceImage": "/workspace/generated_images/exec-12022e69-d2d0-481c-bc02-3c074cc1a36c.png",
+      "landscape": "I70 Stan Musial Veterans Memorial Bridge St Louis Mississippi crossing: wide horizontal muddy river with low industrial banks, distinctive TWO tall cable-stayed bridge pylons and restrained cable fans in central composition, modest downtown skyline off to one side. Flat basin, no suspension bridge or mountains.",
+      "references": [
+        "https://www.modot.org/node/41213"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "I-70 — Stan Musial Veterans Memorial Bridge",
+          "lat": 38.65,
+          "lon": -90.18,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H06-S05.json",
+        "catalog": [
+          {
+            "id": "H06-S05",
+            "hubStage": 6,
+            "startGps": {
+              "lat": 38.6399136,
+              "lon": -90.1345161
+            },
+            "finishGps": {
+              "lat": 38.670187,
+              "lon": -90.2022514
+            },
+            "lightingPreset": "noon"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-12022e69-d2d0-481c-bc02-3c074cc1a36c.png",
+        "sourceSha256": "c230777ade315a66fa7eb76b2254d03cdc4ffdb3dd9203d811a136272256cc53",
+        "brief": "I70 Stan Musial Veterans Memorial Bridge St Louis Mississippi crossing: wide horizontal muddy river with low industrial banks, distinctive TWO tall cable-stayed bridge pylons and restrained cable fans in central composition, modest downtown skyline off to one side. Flat basin, no suspension bridge or mountains.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "alton-noon",
+      "raceRef": "IL 100 — Great River Road bluffs",
+      "ref": "environment-v1-alton-noon",
+      "source": "environment-v1/alton-noon.png",
+      "sourceImage": "/workspace/generated_images/exec-8b3ccb70-4ac0-4780-aa7b-95800f35aace.png",
+      "landscape": "Illinois100 Great River Road near Alton and Elsah: long cream limestone bluffs topped by deciduous woodland, broad Mississippi water glimpsed below in middle distance, tiny weathered riverside brick settlement at cliff foot. Not Ozark stream or mountainous gorge.",
+      "references": [
+        "https://www.enjoyillinois.com/public/places-to-go/great-rivers-country/things-to-do-near-alton/"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "IL 100 — Great River Road bluffs",
+          "lat": 38.94,
+          "lon": -90.3,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H06-S06.json",
+        "catalog": [
+          {
+            "id": "H06-S06",
+            "hubStage": 6,
+            "startGps": {
+              "lat": 38.9510944,
+              "lon": -90.3623611
+            },
+            "finishGps": {
+              "lat": 38.9368535,
+              "lon": -90.3244619
+            },
+            "lightingPreset": "noon"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-8b3ccb70-4ac0-4780-aa7b-95800f35aace.png",
+        "sourceSha256": "7f939a13ec8a28325c03a3afabb0dba8dd047cda1118a1d81dea435d48d07beb",
+        "brief": "Illinois100 Great River Road near Alton and Elsah: long cream limestone bluffs topped by deciduous woodland, broad Mississippi water glimpsed below in middle distance, tiny weathered riverside brick settlement at cliff foot. Not Ozark stream or mountainous gorge.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "defiance-evening",
+      "raceRef": "MO 94 — Defiance Augusta",
+      "ref": "environment-v1-defiance-evening",
+      "source": "environment-v1/defiance-evening.png",
+      "sourceImage": "/workspace/generated_images/exec-358f1bf6-28de-4ec4-ac50-2170010309c0.png",
+      "landscape": "MO94 Defiance Augusta wine country: gentle Missouri River valley hills, broad vineyards in orderly muted rows on central slopes, oak woodland, weathered stone farm cellar and distant thin floodplain river glint. Low rounded terrain, no alpine vineyard or huge cliffs.",
+      "references": [
+        "https://mostateparks.com/page/katy-trail-state-park/general-information-katy-trail"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "MO 94 — Defiance / Augusta",
+          "lat": 38.64,
+          "lon": -90.8,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H06-S07.json",
+        "catalog": [
+          {
+            "id": "H06-S07",
+            "hubStage": 6,
+            "startGps": {
+              "lat": 38.64465333333333,
+              "lon": -90.77510913333333
+            },
+            "finishGps": {
+              "lat": 38.58248897142857,
+              "lon": -90.84038014285714
+            },
+            "lightingPreset": "evening"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-358f1bf6-28de-4ec4-ac50-2170010309c0.png",
+        "sourceSha256": "1fee7ee6a4f49d833c5d53d425c0e97c2c4b003b4c5d5c647dff9d7256f206bd",
+        "brief": "MO94 Defiance Augusta wine country: gentle Missouri River valley hills, broad vineyards in orderly muted rows on central slopes, oak woodland, weathered stone farm cellar and distant thin floodplain river glint. Low rounded terrain, no alpine vineyard or huge cliffs.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "gateway-morning",
+      "raceRef": "Gateway Kartplex — WWT complex",
+      "ref": "environment-v1-gateway-morning",
+      "source": "environment-v1/gateway-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-6640ca94-723c-44af-9d65-8978d32deb64.png",
+      "landscape": "SAME exact Gateway/WWT facility in Madison Illinois, viewed from Kartplex within oval: empty low grandstands, flat infield and small pit buildings, industrial horizon and distant compact St Louis skyline/tiny Gateway Arch. Morning palette, restrained abandonment, no mountains.",
+      "references": [
+        "https://www.gatewaykartplex.com/facility"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "Gateway Kartplex — WWT complex",
+          "lat": 38.65,
+          "lon": -90.135,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H06-S08.json",
+        "catalog": [
+          {
+            "id": "H06-S08",
+            "hubStage": 6,
+            "startGps": {
+              "lat": 38.647676700000005,
+              "lon": -90.1339654
+            },
+            "finishGps": {
+              "lat": 38.647676700000005,
+              "lon": -90.1339654
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-6640ca94-723c-44af-9d65-8978d32deb64.png",
+        "sourceSha256": "9ee70751fabb4d5575098c64e55714a633fba7a5723d637fe21c405ef124010f",
+        "brief": "SAME exact Gateway/WWT facility in Madison Illinois, viewed from Kartplex within oval: empty low grandstands, flat infield and small pit buildings, industrial horizon and distant compact St Louis skyline/tiny Gateway Arch. Morning palette, restrained abandonment, no mountains.",
+        "priorSourceRetained": "/workspace/generated_images/exec-3117f571-326a-4653-bdaf-3b344abca15a.png",
+        "manualSourceReview": "Pack9 revised source viewed; pack8 native screenshots remain historical; current native review pending."
+      }
+    },
+    {
+      "key": "pevely-evening",
+      "raceRef": "Federated Auto Parts Raceway at I-55 — Pevely",
+      "ref": "environment-v1-pevely-evening",
+      "source": "environment-v1/pevely-evening.png",
+      "sourceImage": "/workspace/generated_images/exec-5da1b3c7-e999-4262-955f-b60cd843821a.png",
+      "landscape": "I55 Raceway Pevely Missouri, small high-banked reddish dirt oval in a low wooded hollow, empty modest steel bleachers and control box, wooded Jefferson County rolling hills. Abandoned overgrown atmosphere. No giant paved superspeedway.",
+      "references": [
+        "https://worldofoutlaws.com/schedule/event-info/?event=4549477"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "Federated Auto Parts Raceway at I-55 — Pevely",
+          "lat": 38.28,
+          "lon": -90.41,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H06-S09.json",
+        "catalog": [
+          {
+            "id": "H06-S09",
+            "hubStage": 6,
+            "startGps": {
+              "lat": 38.270890439999995,
+              "lon": -90.39979493999999
+            },
+            "finishGps": {
+              "lat": 38.270890439999995,
+              "lon": -90.39979493999999
+            },
+            "lightingPreset": "evening"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas. Real facility dirt oval depicted visually; existing authored asphalt physical surface remains unchanged and is explicitly unresolved data-policy debt.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "ground-brown-dirt-v2",
+      "tiles": {
+        "snow": "ground-brown-dirt-v2"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-5da1b3c7-e999-4262-955f-b60cd843821a.png",
+        "sourceSha256": "02058cc6b3e4f4ef7aa8630b97465f60b09822da47443e01bbd9fdd70fe2c699",
+        "brief": "I55 Raceway Pevely Missouri, small high-banked reddish dirt oval in a low wooded hollow, empty modest steel bleachers and control box, wooded Jefferson County rolling hills. Abandoned overgrown atmosphere. No giant paved superspeedway.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      },
+      "roadArtMap": {
+        "road-asphalt-patched": "road-dirt-packed"
+      }
+    },
+    {
+      "key": "pigtrail-evening",
+      "raceRef": "Pig Trail — Arkansas 23",
+      "ref": "environment-v1-pigtrail-evening",
+      "source": "environment-v1/pigtrail-evening.png",
+      "sourceImage": "/workspace/generated_images/exec-07d5f06b-f967-4a35-94aa-d881a7f5f30e.png",
+      "landscape": "Arkansas23 Pig Trail near Cass/Brashears: densely wooded Boston Mountains folded ridges, darker higher sandstone ledges, tight enclosed forest valley, weathered remote timber homestead. Distinct from low Missouri dolomite valleys; no river bridge or alpine peaks.",
+      "references": [
+        "https://www.recreation.gov/gateways/13806"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "Pig Trail — Arkansas 23",
+          "lat": 35.672,
+          "lon": -93.816,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/state-expansion/sources/state-ar.json",
+        "catalog": [
+          {
+            "id": "state-ar",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 5,
+            "location": {
+              "lat": 35.672,
+              "lon": -93.816
+            },
+            "lightingPreset": "evening"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-07d5f06b-f967-4a35-94aa-d881a7f5f30e.png",
+        "sourceSha256": "0506da25faf76d483693308a9e0181ce196a46beb8452ccbbdb8d34d765ffd0a",
+        "brief": "Arkansas23 Pig Trail near Cass/Brashears: densely wooded Boston Mountains folded ridges, darker higher sandstone ledges, tight enclosed forest valley, weathered remote timber homestead. Distinct from low Missouri dolomite valleys; no river bridge or alpine peaks.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "tishomingo-morning",
+      "raceRef": "Natchez Trace — Tishomingo",
+      "ref": "environment-v1-tishomingo-morning",
+      "source": "environment-v1/tishomingo-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-3b14db14-fc32-46cf-a249-5116894a0370.png",
+      "landscape": "Natchez Trace Parkway Tishomingo Mississippi: low Appalachian foothills with mossy sandstone boulders, ferny wooded hollow, oak/pine canopy and small Bear Creek-like stream glimpse, weathered low stone shelter. No Mississippi delta swamp, no huge peaks or big river bridge.",
+      "references": [
+        "https://www.mdwfp.com/parks-destinations/park/tishomingo-state-park"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "Natchez Trace — Tishomingo",
+          "lat": 34.602,
+          "lon": -88.215,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/state-expansion/sources/state-ms.json",
+        "catalog": [
+          {
+            "id": "state-ms",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 5,
+            "location": {
+              "lat": 34.602,
+              "lon": -88.215
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-3b14db14-fc32-46cf-a249-5116894a0370.png",
+        "sourceSha256": "90c0ac5dba74bf865f4025d5212a105c0da751526a54bd181024d21e8a9146b0",
+        "brief": "Natchez Trace Parkway Tishomingo Mississippi: low Appalachian foothills with mossy sandstone boulders, ferny wooded hollow, oak/pine canopy and small Bear Creek-like stream glimpse, weathered low stone shelter. No Mississippi delta swamp, no huge peaks or big river bridge.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "little-rock-noon",
+      "raceRef": "Little Rock, AR — Landmark Run",
+      "ref": "environment-v1-little-rock-noon",
+      "source": "environment-v1/little-rock-noon.png",
+      "sourceImage": "/workspace/generated_images/exec-99f7b4f5-76a1-4d90-acb2-17cd5cf07002.png",
+      "landscape": "Little Rock Arkansas downtown river district: broad Arkansas River in middle distance, low wooded hills beyond, compact skyline of simple rectangular civic towers and low red-brick warehouse blocks, small low steel pedestrian bridge segment central. Restrained overgrown abandoned 2994 city, no Gateway Arch or mountains.",
+      "references": [
+        "https://littlerock.gov/parks-and-recreation/parks-classifications/regional-parks/riverfront/"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "Little Rock — Landmark Run",
+          "lat": 34.745,
+          "lon": -92.283,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/state-expansion/sources/city-ar.json",
+        "catalog": [
+          {
+            "id": "city-ar",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 5,
+            "location": {
+              "lat": 34.745,
+              "lon": -92.283
+            },
+            "lightingPreset": "noon"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-99f7b4f5-76a1-4d90-acb2-17cd5cf07002.png",
+        "sourceSha256": "92a95498a40cc99c1db3e34035e7bd344d904098d7ca7fb5d0c18eedb70317ef",
+        "brief": "Little Rock Arkansas downtown river district: broad Arkansas River in middle distance, low wooded hills beyond, compact skyline of simple rectangular civic towers and low red-brick warehouse blocks, small low steel pedestrian bridge segment central. Restrained overgrown abandoned 2994 city, no Gateway Arch or mountains.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    },
+    {
+      "key": "stl-landmark-morning",
+      "raceRef": "St. Louis, MO — Landmark Run",
+      "ref": "environment-v1-stl-landmark-morning",
+      "source": "environment-v1/stl-landmark-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-af109bc7-5215-4a1d-8897-210e4986ede0.png",
+      "landscape": "St Louis downtown landmark loop: close layered old red-brick urban rooftops, compact civic/downtown skyline and slender Gateway Arch behind toward central left, weathered industrial riverfront and low water horizon, flat basin. Distinct from I64 distant approach and cable-stayed crossing. Abandoned city, no colorful robotic data center treatment.",
+      "references": [
+        "https://www.nps.gov/jeff/planyourvisit/gateway-arch.htm"
+      ],
+      "sourceEvidence": {
+        "origin": {
+          "name": "St. Louis — Landmark Run",
+          "lat": 38.635,
+          "lon": -90.215,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/state-expansion/sources/city-mo.json",
+        "catalog": [
+          {
+            "id": "city-mo",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 6,
+            "location": {
+              "lat": 38.635,
+              "lon": -90.215
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Installed GPS/source establishes distinct route. Sources support regional geology/facility context; abandoned structures and panorama are original interpretation, not surveyed replicas.",
+      "sharing": "Only WWT oval and drag share identical night composition: exact saved facility origin and identical authored environment. Other rows retain their existing individual site or exposure group.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching simple outer silhouettes and sky color; upper18% clear uniform sky; lower18% smooth low-detail closure. Sampling metrics do not award visual acceptance.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-af109bc7-5215-4a1d-8897-210e4986ede0.png",
+        "sourceSha256": "2be26bb1634088062dc918e1290deee85bbf0047717f47602e3c7adfd9db330f",
+        "brief": "St Louis downtown landmark loop: close layered old red-brick urban rooftops, compact civic/downtown skyline and slender Gateway Arch behind toward central left, weathered industrial riverfront and low water horizon, flat basin. Distinct from I64 distant approach and cable-stayed crossing. Abandoned city, no colorful robotic data center treatment.",
+        "priorSourceRetained": null,
+        "manualSourceReview": "All 21 original compositions viewed in contact sheets. Gateway morning invented arches removed before import."
+      }
+    }
+  ]
+}

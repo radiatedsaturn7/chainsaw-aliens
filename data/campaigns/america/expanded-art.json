@@ -424,11 +424,7 @@
       "source": "skyboxes/angeles-crest.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "angeles"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-badlands",
@@ -448,22 +444,18 @@
     },
     {
       "name": "skybox-col-de-turini",
-      "source": "skyboxes/col-de-turini.png",
+      "source": "skyboxes/col-de-turini-boundary-v2.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
-      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+      "usageNote": "Free-race site binding: Col de Turini; see data/race-environments/ledger.json."
     },
     {
       "name": "skybox-data-center-city",
       "source": "skyboxes/data-center-city.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "city"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-daytona",
@@ -471,7 +463,7 @@
       "kind": "skybox",
       "maxEdge": 1024,
       "placements": [],
-      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+      "usageNote": "Reviewed original for exact Daytona noon layout bindings in venue-pack4."
     },
     {
       "name": "skybox-death-valley",
@@ -487,7 +479,7 @@
       "kind": "skybox",
       "maxEdge": 1024,
       "placements": [],
-      "deferredReason": "Saved skybox for a location outside the current eleven-race campaign."
+      "usageNote": "Free-race site binding: Nurburgring Nordschleife; see data/race-environments/ledger.json."
     },
     {
       "name": "skybox-finnish-lakes",
@@ -534,33 +526,21 @@
       "source": "skyboxes/laurel-highlands.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "laurel"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-moki-dugway",
       "source": "skyboxes/moki-dugway.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "moki"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-mount-washington",
       "source": "skyboxes/mount-washington.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "mount"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-natchez",
@@ -575,33 +555,21 @@
       "source": "skyboxes/oak-creek.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "oak"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-ohio-river-crossing",
       "source": "skyboxes/ohio-river-crossing.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "ohio"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-ozarks",
       "source": "skyboxes/ozarks.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "ozark"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-palms-to-pines",
@@ -616,11 +584,7 @@
       "source": "skyboxes/pikes-peak.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "pikes"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-providence-harbor",
@@ -635,11 +599,7 @@
       "source": "skyboxes/route-66.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "route66"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-sawtooth",
@@ -662,11 +622,7 @@
       "source": "skyboxes/tower-hill.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "tower"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "expanded-bush-blackberry-bramble-01",
@@ -2097,7 +2053,8 @@
       "name": "providence",
       "source": "skyboxes/providence-2994.png",
       "kind": "skybox",
-      "maxEdge": 512
+      "maxEdge": 512,
+      "placements": []
     },
     {
       "name": "skybox-bayard-noon-2994",
@@ -3537,6 +3494,2015 @@
       "heightM": 14,
       "kind": "sprite",
       "placements": []
+    },
+    {
+      "name": "environment-v1-moki-cedar-mesa-day",
+      "source": "environment-v1/moki-cedar-mesa-day.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [
+        {
+          "race": "moki"
+        }
+      ]
+    },
+    {
+      "name": "environment-v1-ozark-eminence-day",
+      "source": "environment-v1/ozark-eminence-day.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [
+        {
+          "race": "ozark"
+        }
+      ]
+    },
+    {
+      "name": "environment-v1-stl-riverfront-night",
+      "source": "environment-v1/stl-riverfront-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "city"
+        }
+      ]
+    },
+    {
+      "name": "environment-v1-ohio-little-muskingum-storm",
+      "source": "environment-v1/ohio-little-muskingum-storm.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [
+        {
+          "race": "ohio"
+        }
+      ]
+    },
+    {
+      "name": "environment-v1-ouninpohja-boreal-noon",
+      "source": "environment-v1/ouninpohja-boreal-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-old-staples-woodland-day",
+      "source": "environment-v1/old-staples-woodland-day.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-ground-ohio-wet-leaf-litter",
+      "source": "environment-v1/ground-ohio-wet-leaf-litter.png",
+      "kind": "texture",
+      "maxEdge": 512,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-ground-finnish-boreal-verge",
+      "source": "environment-v1/ground-finnish-boreal-verge.png",
+      "kind": "texture",
+      "maxEdge": 512,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-laurel-ohiopyle-evening",
+      "source": "environment-v1/laurel-ohiopyle-evening.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [
+        {
+          "race": "laurel"
+        }
+      ]
+    },
+    {
+      "name": "environment-v1-route66-erick-texola",
+      "source": "environment-v1/route66-erick-texola.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "route66"
+        }
+      ]
+    },
+    {
+      "name": "environment-v1-ground-dormant-prairie",
+      "source": "environment-v1/ground-dormant-prairie.png",
+      "kind": "texture",
+      "maxEdge": 512,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-watkins-morning",
+      "source": "environment-v1/watkins-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-watkins-evening",
+      "source": "environment-v1/watkins-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-watkins-noon",
+      "source": "environment-v1/watkins-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-road-america-evening",
+      "source": "environment-v1/road-america-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-road-america-noon",
+      "source": "environment-v1/road-america-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-homestead-evening",
+      "source": "environment-v1/homestead-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-willow-morning",
+      "source": "environment-v1/willow-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-willow-evening",
+      "source": "environment-v1/willow-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-daytona-evening",
+      "source": "environment-v1/daytona-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-willow-night",
+      "source": "environment-v1/willow-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-vir-night",
+      "source": "environment-v1/vir-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-road-atlanta-night",
+      "source": "environment-v1/road-atlanta-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sebring-night",
+      "source": "environment-v1/sebring-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mid-ohio-night",
+      "source": "environment-v1/mid-ohio-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-vir-morning",
+      "source": "environment-v1/vir-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-road-atlanta-morning",
+      "source": "environment-v1/road-atlanta-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-road-atlanta-evening",
+      "source": "environment-v1/road-atlanta-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sebring-morning",
+      "source": "environment-v1/sebring-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sebring-evening",
+      "source": "environment-v1/sebring-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mid-ohio-morning",
+      "source": "environment-v1/mid-ohio-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-lime-evening",
+      "source": "environment-v1/lime-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-tower-hill-snow-night",
+      "source": "environment-v1/tower-hill-snow-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "tower"
+        }
+      ],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mount-washington-snow-noon",
+      "source": "environment-v1/mount-washington-snow-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "mount"
+        }
+      ],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pinkham-snow-noon",
+      "source": "environment-v1/pinkham-snow-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-kancamagus-morning",
+      "source": "environment-v1/kancamagus-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-bear-notch-morning",
+      "source": "environment-v1/bear-notch-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hurricane-evening",
+      "source": "environment-v1/hurricane-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-crawford-noon",
+      "source": "environment-v1/crawford-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-tamworth-noon",
+      "source": "environment-v1/tamworth-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oneil-noon",
+      "source": "environment-v1/oneil-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-loudon-evening",
+      "source": "environment-v1/loudon-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-epping-morning",
+      "source": "environment-v1/epping-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ri116-morning",
+      "source": "environment-v1/ri116-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ri102-evening",
+      "source": "environment-v1/ri102-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ri44-morning",
+      "source": "environment-v1/ri44-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-i95-noon",
+      "source": "environment-v1/i95-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ground-sebring-olive",
+      "source": "environment-v1/ground-sebring-olive.png",
+      "kind": "texture",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Three Sebring layouts only, muted sandy olive airfield grass image; physical materials unchanged."
+    },
+    {
+      "name": "environment-v1-ohiopyle-noon",
+      "source": "environment-v1/ohiopyle-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-normalville-evening",
+      "source": "environment-v1/normalville-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-chalk-hill-evening",
+      "source": "environment-v1/chalk-hill-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-donegal-night",
+      "source": "environment-v1/donegal-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-seven-springs-night",
+      "source": "environment-v1/seven-springs-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-forbes-morning",
+      "source": "environment-v1/forbes-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-jennerstown-night",
+      "source": "environment-v1/jennerstown-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-keystone-morning",
+      "source": "environment-v1/keystone-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pitt-noon",
+      "source": "environment-v1/pitt-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oh26-noon",
+      "source": "environment-v1/oh26-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-triple-nickel-evening",
+      "source": "environment-v1/triple-nickel-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-barlow-morning",
+      "source": "environment-v1/barlow-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oh536-night",
+      "source": "environment-v1/oh536-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oh676-night",
+      "source": "environment-v1/oh676-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-marietta-evening",
+      "source": "environment-v1/marietta-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-washington-gravel-morning",
+      "source": "environment-v1/washington-gravel-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ohio-valley-night",
+      "source": "environment-v1/ohio-valley-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sideling-evening",
+      "source": "environment-v1/sideling-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-eminence-evening",
+      "source": "environment-v1/eminence-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-alley-noon",
+      "source": "environment-v1/alley-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-powder-morning",
+      "source": "environment-v1/powder-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-two-rivers-morning",
+      "source": "environment-v1/two-rivers-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-roberts-evening",
+      "source": "environment-v1/roberts-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-jerktail-morning",
+      "source": "environment-v1/jerktail-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-winona-noon",
+      "source": "environment-v1/winona-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-glade-morning",
+      "source": "environment-v1/glade-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oir-morning",
+      "source": "environment-v1/oir-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gateway-noon",
+      "source": "environment-v1/gateway-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gateway-night",
+      "source": "environment-v1/gateway-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-stl64-morning",
+      "source": "environment-v1/stl64-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-stan-noon",
+      "source": "environment-v1/stan-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-alton-noon",
+      "source": "environment-v1/alton-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-defiance-evening",
+      "source": "environment-v1/defiance-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gateway-morning",
+      "source": "environment-v1/gateway-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pevely-evening",
+      "source": "environment-v1/pevely-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pigtrail-evening",
+      "source": "environment-v1/pigtrail-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-tishomingo-morning",
+      "source": "environment-v1/tishomingo-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-little-rock-noon",
+      "source": "environment-v1/little-rock-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-stl-landmark-morning",
+      "source": "environment-v1/stl-landmark-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Ozark riverlands pack8 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gods-noon",
+      "source": "environment-v1/gods-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-muley-evening",
+      "source": "environment-v1/muley-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-goosenecks-morning",
+      "source": "environment-v1/goosenecks-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mexicanhat-morning",
+      "source": "environment-v1/mexicanhat-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-comb-evening",
+      "source": "environment-v1/comb-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-halls-night",
+      "source": "environment-v1/halls-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-bluff-morning",
+      "source": "environment-v1/bluff-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-shafer-night",
+      "source": "environment-v1/shafer-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-burr-noon",
+      "source": "environment-v1/burr-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oakrim-evening",
+      "source": "environment-v1/oakrim-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "oak"
+        }
+      ],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-redbyway-evening",
+      "source": "environment-v1/redbyway-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-redloop-morning",
+      "source": "environment-v1/redloop-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pagesprings-evening",
+      "source": "environment-v1/pagesprings-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-beaverflat-evening",
+      "source": "environment-v1/beaverflat-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-boynton-night",
+      "source": "environment-v1/boynton-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-schnebly-noon",
+      "source": "environment-v1/schnebly-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mingus-morning",
+      "source": "environment-v1/mingus-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-attesa-evening",
+      "source": "environment-v1/attesa-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-firebird-evening",
+      "source": "environment-v1/firebird-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-desertview-noon",
+      "source": "environment-v1/desertview-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-diamond-evening",
+      "source": "environment-v1/diamond-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact canyon-country pack9 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pikes-evening",
+      "source": "environment-v1/pikes-evening.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [
+        {
+          "race": "pikes"
+        }
+      ],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-angeles-evening",
+      "source": "environment-v1/angeles-evening.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [
+        {
+          "race": "angeles"
+        }
+      ],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-goldcamp-night",
+      "source": "environment-v1/goldcamp-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-phantom-morning",
+      "source": "environment-v1/phantom-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-shelf-morning",
+      "source": "environment-v1/shelf-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-skyline-night",
+      "source": "environment-v1/skyline-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-utepass-morning",
+      "source": "environment-v1/utepass-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-co67-morning",
+      "source": "environment-v1/co67-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gardengods-night",
+      "source": "environment-v1/gardengods-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ppir-noon",
+      "source": "environment-v1/ppir-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pueblo-evening",
+      "source": "environment-v1/pueblo-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-angelesforest-evening",
+      "source": "environment-v1/angelesforest-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-uppertujunga-evening",
+      "source": "environment-v1/uppertujunga-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-bigtujunga-noon",
+      "source": "environment-v1/bigtujunga-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-glendoramountain-noon",
+      "source": "environment-v1/glendoramountain-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-glendoraridge-evening",
+      "source": "environment-v1/glendoraridge-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sangabriel-morning",
+      "source": "environment-v1/sangabriel-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-littletujunga-noon",
+      "source": "environment-v1/littletujunga-noon.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pomona-noon",
+      "source": "environment-v1/pomona-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-denver-morning",
+      "source": "environment-v1/denver-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "ground-alpine-snow-granite-v1",
+      "source": "environment-v1/ground-alpine-snow-granite-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Material-specific race environment terrain; exact existing physical material preserved."
+    },
+    {
+      "name": "ground-decomposed-granite-dirt-v1",
+      "source": "environment-v1/ground-decomposed-granite-dirt-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Material-specific race environment terrain; exact existing physical material preserved."
+    },
+    {
+      "name": "ground-winter-snow-litter-v1",
+      "source": "environment-v1/ground-winter-snow-litter-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Compacted winter snow with sparse dead vegetation on preserved snow-material terrain in Northeast routes and Fountain."
+    },
+    {
+      "name": "ground-temperate-grass-v1",
+      "source": "environment-v1/ground-temperate-grass-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Material-specific grass or snow for Northeast existing physical cells."
+    },
+    {
+      "name": "environment-v1-thompson-noon",
+      "source": "environment-v1/thompson-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pachaug-evening",
+      "source": "environment-v1/pachaug-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-seekonk-noon",
+      "source": "environment-v1/seekonk-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-palmer-night",
+      "source": "environment-v1/palmer-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-limerock-west-noon",
+      "source": "environment-v1/limerock-west-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-brandywine-noon",
+      "source": "environment-v1/brandywine-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-grafton-noon",
+      "source": "environment-v1/grafton-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-smugglers-noon",
+      "source": "environment-v1/smugglers-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-njmp-night",
+      "source": "environment-v1/njmp-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hartford-night",
+      "source": "environment-v1/hartford-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-wilmington-dawn",
+      "source": "environment-v1/wilmington-dawn.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-baltimore-evening",
+      "source": "environment-v1/baltimore-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-portlandme-night",
+      "source": "environment-v1/portlandme-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-boston-night",
+      "source": "environment-v1/boston-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-manchester-noon",
+      "source": "environment-v1/manchester-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-newark-night",
+      "source": "environment-v1/newark-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-newyork-dawn",
+      "source": "environment-v1/newyork-dawn.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-providence-noon",
+      "source": "environment-v1/providence-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-philadelphia-dawn",
+      "source": "environment-v1/philadelphia-dawn.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-burlington-evening",
+      "source": "environment-v1/burlington-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "ground-snow-chaparral-v1",
+      "source": "ground/snow-chaparral-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Angeles Forest existing snow material: snow with sparse chaparral twigs and granite grains, not dry scrub."
+    },
+    {
+      "name": "ground-plains-snow-straw-v1",
+      "source": "environment-v1/ground-plains-snow-straw-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Material-specific grass or snow for Great Plains existing physical cells."
+    },
+    {
+      "name": "ground-prairie-grass-v1",
+      "source": "environment-v1/ground-prairie-grass-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Material-specific grass or snow for Great Plains existing physical cells."
+    },
+    {
+      "name": "environment-v1-shamrock-mclean-noon",
+      "source": "environment-v1/shamrock-mclean-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-groom-conway-night",
+      "source": "environment-v1/groom-conway-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-amarillo-sixth-noon",
+      "source": "environment-v1/amarillo-sixth-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-vega-adrian-night",
+      "source": "environment-v1/vega-adrian-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-adrian-glenrio-noon",
+      "source": "environment-v1/adrian-glenrio-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-paloduro-night",
+      "source": "environment-v1/paloduro-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-amarillo-dragway-noon",
+      "source": "environment-v1/amarillo-dragway-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-bridgeport-pony-clear",
+      "source": "environment-v1/bridgeport-pony-clear.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hallett-evening",
+      "source": "environment-v1/hallett-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-midlands-noon",
+      "source": "environment-v1/midlands-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-heartland-evening",
+      "source": "environment-v1/heartland-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-theodore-north-clear",
+      "source": "environment-v1/theodore-north-clear.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hastings-evening",
+      "source": "environment-v1/hastings-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-wichita-evening",
+      "source": "environment-v1/wichita-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-fargo-noon",
+      "source": "environment-v1/fargo-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-omaha-evening",
+      "source": "environment-v1/omaha-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oklahomacity-evening",
+      "source": "environment-v1/oklahomacity-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-siouxfalls-night",
+      "source": "environment-v1/siouxfalls-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sandhills-evening",
+      "source": "environment-v1/sandhills-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-bayard-noon",
+      "source": "environment-v1/bayard-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-lagunaseca-night",
+      "source": "environment-v1/lagunaseca-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hatcher-noon",
+      "source": "environment-v1/hatcher-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-beartooth-noon",
+      "source": "environment-v1/beartooth-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-springmountain-morning",
+      "source": "environment-v1/springmountain-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sandia-noon",
+      "source": "environment-v1/sandia-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-needles-noon",
+      "source": "environment-v1/needles-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-windriver-morning",
+      "source": "environment-v1/windriver-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-portlandraceway-morning",
+      "source": "environment-v1/portlandraceway-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pacificraceways-evening",
+      "source": "environment-v1/pacificraceways-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-idaho21-noon",
+      "source": "environment-v1/idaho21-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-phoenix-morning",
+      "source": "environment-v1/phoenix-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-losangeles-night",
+      "source": "environment-v1/losangeles-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-boise-night",
+      "source": "environment-v1/boise-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-billings-morning",
+      "source": "environment-v1/billings-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-lasvegas-morning",
+      "source": "environment-v1/lasvegas-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-albuquerque-night",
+      "source": "environment-v1/albuquerque-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-portlandcity-morning",
+      "source": "environment-v1/portlandcity-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-saltlake-night",
+      "source": "environment-v1/saltlake-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-seattle-night",
+      "source": "environment-v1/seattle-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-cheyenne-morning",
+      "source": "environment-v1/cheyenne-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-thompson-snow-night",
+      "source": "environment-v1/thompson-snow-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-skalkaho-evening",
+      "source": "environment-v1/skalkaho-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-magruder-evening",
+      "source": "environment-v1/magruder-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-chiefjoseph-noon",
+      "source": "environment-v1/chiefjoseph-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "ground-patchy-snow-leaf-v1",
+      "source": "environment-v1/ground-patchy-snow-leaf-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Patchy snow and deciduous leaf litter for existing snow physical cells; no physics changes."
+    },
+    {
+      "name": "environment-v1-indyoval-night",
+      "source": "environment-v1/indyoval-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-indyroad-evening",
+      "source": "environment-v1/indyroad-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-barber-noon",
+      "source": "environment-v1/barber-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ncm-night",
+      "source": "environment-v1/ncm-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-nola-noon",
+      "source": "environment-v1/nola-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gingerman-evening",
+      "source": "environment-v1/gingerman-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-brainerd-noon",
+      "source": "environment-v1/brainerd-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-nccar-morning",
+      "source": "environment-v1/nccar-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-carolinapark-noon",
+      "source": "environment-v1/carolinapark-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-birmingham-night",
+      "source": "environment-v1/birmingham-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-atlanta-evening",
+      "source": "environment-v1/atlanta-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-chicago-night",
+      "source": "environment-v1/chicago-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-desmoines-night",
+      "source": "environment-v1/desmoines-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-louisville-night",
+      "source": "environment-v1/louisville-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-detroit-morning",
+      "source": "environment-v1/detroit-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-indianapoliscity-morning",
+      "source": "environment-v1/indianapoliscity-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-neworleans-noon",
+      "source": "environment-v1/neworleans-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-minneapolis-noon",
+      "source": "environment-v1/minneapolis-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-jackson-noon",
+      "source": "environment-v1/jackson-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-charlotte-morning",
+      "source": "environment-v1/charlotte-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-cleveland-evening",
+      "source": "environment-v1/cleveland-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-nashville-night",
+      "source": "environment-v1/nashville-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-flatrock-night",
+      "source": "environment-v1/flatrock-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-milwaukee-morning",
+      "source": "environment-v1/milwaukee-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "ground-volcanic-cinder-v1",
+      "source": "environment-v1/ground-volcanic-cinder-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Explicit volcanic substrate: gravel cinder or snow/cinder according to declared asset identity; physical cells unchanged."
+    },
+    {
+      "name": "ground-volcanic-snow-v1",
+      "source": "environment-v1/ground-volcanic-snow-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Explicit volcanic substrate: gravel cinder or snow/cinder according to declared asset identity; physical cells unchanged."
+    },
+    {
+      "name": "environment-v1-demo-meadow-noon",
+      "source": "environment-v1/demo-meadow-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mountwashington-storm",
+      "source": "environment-v1/mountwashington-storm.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-studio-testfield-noon",
+      "source": "environment-v1/studio-testfield-noon.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-studio-annex-noon",
+      "source": "environment-v1/studio-annex-noon.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-studio-snowcloud-noon",
+      "source": "environment-v1/studio-snowcloud-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-buse-testing-hills-noon",
+      "source": "environment-v1/buse-testing-hills-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-p1-northeast-junction-noon",
+      "source": "environment-v1/p1-northeast-junction-noon.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-p2-rain-night",
+      "source": "environment-v1/p2-rain-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hana-rainforest-night",
+      "source": "environment-v1/hana-rainforest-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-miami-morning",
+      "source": "environment-v1/miami-morning.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-anchorage-night",
+      "source": "environment-v1/anchorage-night.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-honolulu-night",
+      "source": "environment-v1/honolulu-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sanantonio-night",
+      "source": "environment-v1/sanantonio-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-charlestonsc-evening",
+      "source": "environment-v1/charlestonsc-evening.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-richmond-evening",
+      "source": "environment-v1/richmond-evening.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-charlestonwv-night",
+      "source": "environment-v1/charlestonwv-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-denalihighway-snow-morning",
+      "source": "environment-v1/denalihighway-snow-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-tantalus-rain-morning",
+      "source": "environment-v1/tantalus-rain-morning.png",
+      "kind": "skybox",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-haleakala-morning",
+      "source": "environment-v1/haleakala-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-maunakea-snow-evening",
+      "source": "environment-v1/maunakea-snow-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "ground-frosted-grass-v1",
+      "source": "environment-v1/ground-frosted-grass-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Visible grass substrate with thin frost/snow cover for preserved grass cells under authored snow weather; explicit pack16 per-route mappings."
     }
   ]
 }

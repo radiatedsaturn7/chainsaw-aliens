@@ -1,0 +1,995 @@
+{
+  "origin": 5370.20000000298,
+  "events": [
+    {
+      "ms": 4.299999997019768,
+      "session": false,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 2801.8999999910593,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 2927.5,
+      "phase": "race-fetch",
+      "progress": 0.06,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 2972.5999999940395,
+      "phase": "module-load",
+      "progress": 0.08,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 4326.399999991059,
+      "phase": "world-bake",
+      "progress": 0.12,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 4744.5,
+      "phase": "physics-pack",
+      "progress": 0.76,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 5010.5,
+      "phase": "terrain-pack",
+      "progress": 0.84,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 5112.5999999940395,
+      "phase": "release-build",
+      "progress": 0.93,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 5474.5,
+      "phase": "art-pack",
+      "progress": 0.9355405405405406,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 5874.20000000298,
+      "phase": "art-pack",
+      "progress": 0.9360810810810811,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 6230,
+      "phase": "art-pack",
+      "progress": 0.9366216216216217,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 9313,
+      "phase": "art-pack",
+      "progress": 0.9371621621621622,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 9739.70000000298,
+      "phase": "art-pack",
+      "progress": 0.9377027027027027,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 10196.89999999106,
+      "phase": "art-pack",
+      "progress": 0.9382432432432433,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 10492.29999999702,
+      "phase": "art-pack",
+      "progress": 0.9387837837837838,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 13842.59999999404,
+      "phase": "art-pack",
+      "progress": 0.9393243243243243,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 16337.29999999702,
+      "phase": "art-pack",
+      "progress": 0.9398648648648649,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 17410.70000000298,
+      "phase": "art-pack",
+      "progress": 0.9404054054054054,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 20320.89999999106,
+      "phase": "art-pack",
+      "progress": 0.9409459459459459,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 21794.09999999404,
+      "phase": "art-pack",
+      "progress": 0.9414864864864865,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 21953.20000000298,
+      "phase": "art-pack",
+      "progress": 0.942027027027027,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 23219.89999999106,
+      "phase": "art-pack",
+      "progress": 0.9425675675675675,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 23465.20000000298,
+      "phase": "art-pack",
+      "progress": 0.9431081081081081,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 23604.29999999702,
+      "phase": "art-pack",
+      "progress": 0.9436486486486486,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 23919.79999999702,
+      "phase": "art-pack",
+      "progress": 0.9447297297297297,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 24249,
+      "phase": "art-pack",
+      "progress": 0.9452702702702703,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 24314.39999999106,
+      "phase": "art-pack",
+      "progress": 0.9463513513513514,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 24417.20000000298,
+      "phase": "art-pack",
+      "progress": 0.9474324324324325,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 24714.79999999702,
+      "phase": "art-pack",
+      "progress": 0.947972972972973,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 24995,
+      "phase": "art-pack",
+      "progress": 0.9485135135135135,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25001.70000000298,
+      "phase": "art-pack",
+      "progress": 0.9490540540540541,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25217.29999999702,
+      "phase": "art-pack",
+      "progress": 0.9495945945945946,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25254.5,
+      "phase": "art-pack",
+      "progress": 0.9501351351351351,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25313.59999999404,
+      "phase": "art-pack",
+      "progress": 0.9512162162162162,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25342.59999999404,
+      "phase": "art-pack",
+      "progress": 0.9533783783783784,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25737.70000000298,
+      "phase": "art-pack",
+      "progress": 0.9539189189189189,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 25789.29999999702,
+      "phase": "art-pack",
+      "progress": 0.9544594594594594,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 26060.29999999702,
+      "phase": "transfer-header",
+      "progress": 0.96,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 26280.09999999404,
+      "phase": "transfer-complete",
+      "progress": 0.99,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 26291,
+      "phase": "applying-race",
+      "progress": 0.992,
+      "session": true,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 26362.09999999404,
+      "phase": "transfer-art",
+      "progress": 0.994,
+      "session": false,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 27912.70000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": false,
+      "exit": false,
+      "deferred": false
+    },
+    {
+      "ms": 28710.09999999404,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "renderFrame": 0,
+      "geometries": 0
+    },
+    {
+      "ms": 29141.79999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "renderFrame": 1,
+      "geometries": 10
+    },
+    {
+      "ms": 29156.70000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 1,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 8,
+      "renderFrame": 1,
+      "geometries": 10
+    },
+    {
+      "ms": 29202.29999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 2,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 16,
+      "renderFrame": 2,
+      "geometries": 10
+    },
+    {
+      "ms": 30001.20000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 3,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 24,
+      "renderFrame": 3,
+      "geometries": 10
+    },
+    {
+      "ms": 30009.89999999106,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 4,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 32,
+      "renderFrame": 4,
+      "geometries": 10
+    },
+    {
+      "ms": 30364.5,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 5,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 40,
+      "renderFrame": 5,
+      "geometries": 10
+    },
+    {
+      "ms": 30770.09999999404,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 6,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 48,
+      "renderFrame": 6,
+      "geometries": 10
+    },
+    {
+      "ms": 31095.39999999106,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 7,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 56,
+      "renderFrame": 7,
+      "geometries": 10
+    },
+    {
+      "ms": 31428.09999999404,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 8,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 64,
+      "renderFrame": 8,
+      "geometries": 10
+    },
+    {
+      "ms": 31766.20000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 9,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 72,
+      "renderFrame": 9,
+      "geometries": 10
+    },
+    {
+      "ms": 32095.79999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 10,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 80,
+      "renderFrame": 10,
+      "geometries": 10
+    },
+    {
+      "ms": 32420.59999999404,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 11,
+      "surface": false,
+      "exit": false,
+      "deferred": false,
+      "cursor": 88,
+      "renderFrame": 11,
+      "geometries": 10
+    },
+    {
+      "ms": 32818.29999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 12,
+      "surface": true,
+      "artFrames": 1,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 12,
+      "geometries": 10
+    },
+    {
+      "ms": 33149.89999999106,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 13,
+      "surface": true,
+      "artFrames": 2,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 13,
+      "geometries": 10
+    },
+    {
+      "ms": 33483,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": true,
+      "elapsed": 0,
+      "frames": 14,
+      "surface": true,
+      "artFrames": 3,
+      "exit": true,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 14,
+      "geometries": 10
+    },
+    {
+      "ms": 33847.09999999404,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 15,
+      "geometries": 10
+    },
+    {
+      "ms": 52588,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 72,
+      "geometries": 12
+    },
+    {
+      "ms": 61711.70000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 100,
+      "geometries": 14
+    },
+    {
+      "ms": 65544.29999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 111,
+      "geometries": 16
+    },
+    {
+      "ms": 71718.29999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 0,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 127,
+      "geometries": 19
+    },
+    {
+      "ms": 99315.29999999702,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 533.3333333333333,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 209,
+      "geometries": 19
+    },
+    {
+      "ms": 104576.59999999404,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 1000.0000000000005,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 223,
+      "geometries": 19
+    },
+    {
+      "ms": 105849.70000000298,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 1033.3333333333337,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 224,
+      "geometries": 20
+    },
+    {
+      "ms": 110517,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 1533.3333333333326,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 239,
+      "geometries": 20
+    },
+    {
+      "ms": 116057.89999999106,
+      "phase": "starting-race",
+      "progress": 0.997,
+      "session": true,
+      "pending": false,
+      "elapsed": 2033.3333333333314,
+      "exit": false,
+      "deferred": false,
+      "cursor": 96,
+      "renderFrame": 254,
+      "geometries": 20
+    }
+  ],
+  "methods": {
+    "addRaceThreeTerrainArtwork": {
+      "calls": 6,
+      "totalMs": 19.700000017881393,
+      "maxMs": 10.5,
+      "firstMs": 28699.59999999404,
+      "slow": []
+    },
+    "drawRaceThreeWorldScene": {
+      "calls": 254,
+      "totalMs": 4122.099999934435,
+      "maxMs": 903.6000000089407,
+      "firstMs": 28642.20000000298,
+      "slow": [
+        {
+          "atMs": 28642.20000000298,
+          "ms": 499.59999999403954
+        },
+        {
+          "atMs": 30333,
+          "ms": 28.799999997019768
+        },
+        {
+          "atMs": 38816.39999999106,
+          "ms": 75
+        },
+        {
+          "atMs": 70819,
+          "ms": 899.2999999970198
+        },
+        {
+          "atMs": 93545.89999999106,
+          "ms": 48
+        },
+        {
+          "atMs": 95563.70000000298,
+          "ms": 25.19999998807907
+        },
+        {
+          "atMs": 99290.29999999702,
+          "ms": 25
+        },
+        {
+          "atMs": 102623,
+          "ms": 24.299999997019768
+        },
+        {
+          "atMs": 104946.09999999404,
+          "ms": 903.6000000089407
+        },
+        {
+          "atMs": 107267.39999999106,
+          "ms": 29.5
+        },
+        {
+          "atMs": 109109.09999999404,
+          "ms": 21.299999997019768
+        },
+        {
+          "atMs": 112999,
+          "ms": 28.299999997019768
+        },
+        {
+          "atMs": 113742.09999999404,
+          "ms": 20.799999997019768
+        },
+        {
+          "atMs": 115609.29999999702,
+          "ms": 24.400000005960464
+        }
+      ]
+    },
+    "finishRaceLoadingFrame": {
+      "calls": 254,
+      "totalMs": 23.799999997019768,
+      "maxMs": 6.5,
+      "firstMs": 29150.09999999404,
+      "slow": []
+    },
+    "markRaceStartupFrameRendered": {
+      "calls": 240,
+      "totalMs": 1.0000000298023224,
+      "maxMs": 0.3999999910593033,
+      "firstMs": 33846.70000000298,
+      "slow": []
+    }
+  },
+  "gpu": {
+    "texImage2D": {
+      "calls": 7,
+      "totalMs": 0.5999999940395355,
+      "maxMs": 0.29999999701976776,
+      "firstMs": 28317.29999999702,
+      "lastMs": 28318.5
+    },
+    "bufferData": {
+      "calls": 62,
+      "totalMs": 3.399999976158142,
+      "maxMs": 0.7000000029802322,
+      "firstMs": 28973.59999999404,
+      "lastMs": 104962.70000000298
+    },
+    "drawArrays": {
+      "calls": 3793,
+      "totalMs": 8.000000029802322,
+      "maxMs": 2.0999999940395355,
+      "firstMs": 29050.39999999106,
+      "lastMs": 116057.79999999702
+    },
+    "texSubImage2D": {
+      "calls": 256,
+      "totalMs": 28.80000002682209,
+      "maxMs": 0.7000000029802322,
+      "firstMs": 29081.89999999106,
+      "lastMs": 116057.20000000298
+    },
+    "drawElements": {
+      "calls": 254,
+      "totalMs": 0.699999988079071,
+      "maxMs": 0.10000000894069672,
+      "firstMs": 29114.89999999106,
+      "lastMs": 116057.5
+    }
+  },
+  "lastKey": "{\"phase\":\"starting-race\",\"progress\":0.997,\"session\":true,\"pending\":false,\"elapsed\":4,\"exit\":false,\"deferred\":false,\"cursor\":96,\"geometries\":20}",
+  "longTasks": [
+    {
+      "startMs": 1190,
+      "duration": 232
+    },
+    {
+      "startMs": 1427.8999999910593,
+      "duration": 97
+    },
+    {
+      "startMs": 2330.7999999970198,
+      "duration": 56
+    },
+    {
+      "startMs": 2387.7000000029802,
+      "duration": 277
+    },
+    {
+      "startMs": 2667.3999999910593,
+      "duration": 131
+    },
+    {
+      "startMs": 3246.2999999970198,
+      "duration": 74
+    },
+    {
+      "startMs": 3899.7999999970198,
+      "duration": 128
+    },
+    {
+      "startMs": 4029.8999999910593,
+      "duration": 288
+    },
+    {
+      "startMs": 26114.89999999106,
+      "duration": 153
+    },
+    {
+      "startMs": 27764.79999999702,
+      "duration": 147
+    },
+    {
+      "startMs": 27912.20000000298,
+      "duration": 134
+    },
+    {
+      "startMs": 28046.89999999106,
+      "duration": 1120
+    },
+    {
+      "startMs": 38805.39999999106,
+      "duration": 90
+    },
+    {
+      "startMs": 70816.5,
+      "duration": 906
+    },
+    {
+      "startMs": 92619.70000000298,
+      "duration": 177
+    },
+    {
+      "startMs": 93019.70000000298,
+      "duration": 134
+    },
+    {
+      "startMs": 93365.89999999106,
+      "duration": 230
+    },
+    {
+      "startMs": 94515.39999999106,
+      "duration": 73
+    },
+    {
+      "startMs": 94836.09999999404,
+      "duration": 55
+    },
+    {
+      "startMs": 95531.20000000298,
+      "duration": 66
+    },
+    {
+      "startMs": 96258.70000000298,
+      "duration": 52
+    },
+    {
+      "startMs": 96948.70000000298,
+      "duration": 62
+    },
+    {
+      "startMs": 98828.79999999702,
+      "duration": 78
+    },
+    {
+      "startMs": 99262.29999999702,
+      "duration": 61
+    },
+    {
+      "startMs": 100309.5,
+      "duration": 97
+    },
+    {
+      "startMs": 102498.59999999404,
+      "duration": 168
+    },
+    {
+      "startMs": 104518,
+      "duration": 61
+    },
+    {
+      "startMs": 104902.79999999702,
+      "duration": 952
+    },
+    {
+      "startMs": 106032.39999999106,
+      "duration": 73
+    },
+    {
+      "startMs": 106444.29999999702,
+      "duration": 55
+    },
+    {
+      "startMs": 106848.29999999702,
+      "duration": 70
+    },
+    {
+      "startMs": 107225.5,
+      "duration": 77
+    },
+    {
+      "startMs": 108330.09999999404,
+      "duration": 84
+    },
+    {
+      "startMs": 109070.59999999404,
+      "duration": 68
+    },
+    {
+      "startMs": 109436.20000000298,
+      "duration": 52
+    },
+    {
+      "startMs": 110134.89999999106,
+      "duration": 53
+    },
+    {
+      "startMs": 112978,
+      "duration": 66
+    },
+    {
+      "startMs": 113721,
+      "duration": 52
+    },
+    {
+      "startMs": 114068.70000000298,
+      "duration": 73
+    },
+    {
+      "startMs": 115141.09999999404,
+      "duration": 54
+    },
+    {
+      "startMs": 115549.29999999702,
+      "duration": 94
+    }
+  ]
+}

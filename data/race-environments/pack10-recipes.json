@@ -1,0 +1,1455 @@
+{
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "recipes": [
+    {
+      "key": "pikes-evening",
+      "raceRef": "Pikes Peak Highway",
+      "brief": "Treeless upper Pikes Peak pink-gray granite rounded shoulders and talus, alpine tundra sparse, far ranges and eastern plains. No forest at summit or fantasy sharp Alps.",
+      "ground": "ground-alpine-snow-granite-v1",
+      "brightness": 0.42,
+      "sourceImage": "/workspace/generated_images/exec-1cb1f9f0-da4b-4547-b84e-d3bd20e9e696.png",
+      "ref": "environment-v1-pikes-evening",
+      "source": "environment-v1/pikes-evening.png",
+      "tiles": {
+        "snow": "ground-alpine-snow-granite-v1"
+      },
+      "sourceOrigin": {
+        "name": "Pikes Peak Highway",
+        "lat": 38.86,
+        "lon": -105.04,
+        "country": "us"
+      },
+      "sourceSnapshot": null,
+      "catalog": [
+        {
+          "id": "america-middle-pikes",
+          "location": {
+            "place": "Pikes Peak, Colorado",
+            "lat": 38.8669027,
+            "lon": -105.0630189
+          },
+          "startGps": {
+            "lat": 38.8832431,
+            "lon": -105.0714257
+          },
+          "finishGps": {
+            "lat": 38.848686199999996,
+            "lon": -105.054035
+          }
+        }
+      ],
+      "references": [
+        "https://www.visitcos.com/things-to-do/pikes-peak/"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "a3a742f6abb1d042d776f784b724cded4f04deb39f948b4abc23d8d575280629",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-1cb1f9f0-da4b-4547-b84e-d3bd20e9e696.png",
+        "sourceSha256": "a3a742f6abb1d042d776f784b724cded4f04deb39f948b4abc23d8d575280629",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "mainRoutePlacementMigration": {
+        "from": "skybox-pikes-peak",
+        "to": "environment-v1-pikes-evening",
+        "placements": [
+          {
+            "race": "pikes"
+          }
+        ]
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-1cb1f9f0-da4b-4547-b84e-d3bd20e9e696.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 2.6137200736648247,
+        "edgeMaximumRGB": 35.333333333333336,
+        "topRangeRGB": [
+          3,
+          4,
+          3
+        ],
+        "bottomRangeRGB": [
+          5,
+          4,
+          4
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "materialCorrection": "Actual snow/dirt texture replaces rock/gravel visual; underlying IDs and weights unchanged."
+    },
+    {
+      "key": "angeles-evening",
+      "raceRef": "Angeles Crest Highway",
+      "brief": "High San Gabriel gray angular folded ridges, scattered Jeffrey pines on higher slopes, chaparral below, deep hazy southern valleys. No red sandstone desert.",
+      "ground": "ground-decomposed-granite-dirt-v1",
+      "brightness": 0.42,
+      "sourceImage": "/workspace/generated_images/exec-bb11dde1-1599-4fe6-ad60-edfc1ea48f1d.png",
+      "ref": "environment-v1-angeles-evening",
+      "source": "environment-v1/angeles-evening.png",
+      "tiles": {
+        "dirt": "ground-decomposed-granite-dirt-v1"
+      },
+      "sourceOrigin": {
+        "name": "Angeles Crest Highway",
+        "lat": 34.29,
+        "lon": -118.05,
+        "country": "us"
+      },
+      "sourceSnapshot": null,
+      "catalog": [
+        {
+          "id": "america-middle-angeles",
+          "location": {
+            "place": "San Gabriel Mountains, California",
+            "lat": 34.2585694,
+            "lon": -118.1045935
+          },
+          "startGps": {
+            "lat": 34.2675849,
+            "lon": -118.137443
+          },
+          "finishGps": {
+            "lat": 34.27140143333333,
+            "lon": -118.05702813333333
+          }
+        }
+      ],
+      "references": [
+        "https://www.csun.edu/science/geoscience/fieldtrips/san-gabriel-mts/communities.html",
+        "https://research.fs.usda.gov/psw/rnas/locations/fern-canyon"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "db2811d70e3fdb6358811936f15026f62666309ff360b6bc9bd9161da7cf94cc",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-bb11dde1-1599-4fe6-ad60-edfc1ea48f1d.png",
+        "sourceSha256": "db2811d70e3fdb6358811936f15026f62666309ff360b6bc9bd9161da7cf94cc",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "mainRoutePlacementMigration": {
+        "from": "skybox-angeles-crest",
+        "to": "environment-v1-angeles-evening",
+        "placements": [
+          {
+            "race": "angeles"
+          }
+        ]
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-bb11dde1-1599-4fe6-ad60-edfc1ea48f1d.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 2.5488029465930016,
+        "edgeMaximumRGB": 34,
+        "topRangeRGB": [
+          7,
+          4,
+          10
+        ],
+        "bottomRangeRGB": [
+          3,
+          5,
+          5
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "materialCorrection": "Actual snow/dirt texture replaces rock/gravel visual; underlying IDs and weights unchanged."
+    },
+    {
+      "key": "goldcamp-night",
+      "raceRef": "Gold Camp Road \u2014 Colorado Springs",
+      "brief": "Close dark weathered granite Cheyenne Mountain canyon with ponderosa pines and a tiny abandoned stone railroad portal to one side; layered distant city basin, clear night crescent only high center.",
+      "ground": "ground-gray-gravel-v2",
+      "brightness": 0.05,
+      "sourceImage": "/workspace/generated_images/exec-cf7b1386-06ea-4e89-aa49-a08449e290cd.png",
+      "ref": "environment-v1-goldcamp-night",
+      "source": "environment-v1/goldcamp-night.png",
+      "tiles": {
+        "snow": "ground-gray-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Gold Camp Road \u2014 Colorado Springs",
+        "lat": 38.79,
+        "lon": -104.9,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H08-S01.json",
+      "catalog": [
+        {
+          "id": "H08-S01",
+          "hubStage": 8,
+          "startGps": {
+            "lat": 38.7906535,
+            "lon": -104.9040135
+          },
+          "finishGps": {
+            "lat": 38.8076836,
+            "lon": -104.8782831
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://trails.colorado.gov/trails/gold-camp-road-20571"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "857d4ce7da7a6e1e7036d300ca04d2662f5f777a9e3fd7cb6422a30d8c79279f",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-cf7b1386-06ea-4e89-aa49-a08449e290cd.png",
+        "sourceSha256": "857d4ce7da7a6e1e7036d300ca04d2662f5f777a9e3fd7cb6422a30d8c79279f",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-cf7b1386-06ea-4e89-aa49-a08449e290cd.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 1.934622467771639,
+        "edgeMaximumRGB": 50.666666666666664,
+        "topRangeRGB": [
+          2,
+          3,
+          4
+        ],
+        "bottomRangeRGB": [
+          3,
+          6,
+          6
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "rejectedGroundCandidate": {
+        "ref": "ground-brown-dirt-v2",
+        "reason": "Decoded source unsuitable: industrial textures are colorful robotic panels, or orange clay inconsistent with granite canyon."
+      }
+    },
+    {
+      "key": "phantom-morning",
+      "raceRef": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "brief": "Enclosed rugged granite canyon, steep pale pink crags with sparse pinyon and juniper, narrow dry valley, abandoned tiny iron trestle deep below. No broad red mesas.",
+      "ground": "ground-gray-gravel-v2",
+      "brightness": 0.65,
+      "sourceImage": "/workspace/generated_images/exec-eef12b5b-ed03-40eb-80cc-ab871bd6643d.png",
+      "ref": "environment-v1-phantom-morning",
+      "source": "environment-v1/phantom-morning.png",
+      "tiles": {
+        "snow": "ground-gray-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Phantom Canyon Road \u2014 Gold Belt Tour",
+        "lat": 38.61,
+        "lon": -105.12,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H08-S02.json",
+      "catalog": [
+        {
+          "id": "H08-S02",
+          "hubStage": 8,
+          "startGps": {
+            "lat": 38.62845,
+            "lon": -105.1213378
+          },
+          "finishGps": {
+            "lat": 38.6120863,
+            "lon": -105.13295536666666
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://www.blm.gov/visit/gold-belt-back-country-byway",
+        "https://www.codot.gov/travel/coloradobyways/south-central/gold-belt"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "873654c1d7262136797bc890395a03596e46f4f38bde17bf8d2b697e206e4d3f",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-eef12b5b-ed03-40eb-80cc-ab871bd6643d.png",
+        "sourceSha256": "873654c1d7262136797bc890395a03596e46f4f38bde17bf8d2b697e206e4d3f",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-eef12b5b-ed03-40eb-80cc-ab871bd6643d.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 7.377532228360957,
+        "edgeMaximumRGB": 95,
+        "topRangeRGB": [
+          8,
+          3,
+          8
+        ],
+        "bottomRangeRGB": [
+          4,
+          5,
+          4
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "shelf-morning",
+      "raceRef": "Shelf Road \u2014 Gold Belt Tour",
+      "brief": "Tall tawny limestone canyon wall and a narrow natural window rock high in central bluff, dry creek valley with pinyon juniper, broad low distant ridge at both ends.",
+      "ground": "ground-gray-gravel-v2",
+      "brightness": 0.65,
+      "sourceImage": "/workspace/generated_images/exec-1adaae3e-185c-46e1-b98e-1e55601284c5.png",
+      "ref": "environment-v1-shelf-morning",
+      "source": "environment-v1/shelf-morning.png",
+      "tiles": {
+        "snow": "ground-gray-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Shelf Road \u2014 Gold Belt Tour",
+        "lat": 38.65,
+        "lon": -105.23,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H08-S03.json",
+      "catalog": [
+        {
+          "id": "H08-S03",
+          "hubStage": 8,
+          "startGps": {
+            "lat": 38.67878125,
+            "lon": -105.2109965
+          },
+          "finishGps": {
+            "lat": 38.6960419,
+            "lon": -105.2034858
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://www.blm.gov/visit/gold-belt-back-country-byway",
+        "https://www.codot.gov/travel/coloradobyways/south-central/gold-belt"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "5dfbd30c663834fcf9c08a55e89d5a1c2a280c03a915ca21f58b1c91cc9ac943",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-1adaae3e-185c-46e1-b98e-1e55601284c5.png",
+        "sourceSha256": "5dfbd30c663834fcf9c08a55e89d5a1c2a280c03a915ca21f58b1c91cc9ac943",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-1adaae3e-185c-46e1-b98e-1e55601284c5.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 5.574585635359116,
+        "edgeMaximumRGB": 81.33333333333333,
+        "topRangeRGB": [
+          8,
+          4,
+          8
+        ],
+        "bottomRangeRGB": [
+          4,
+          5,
+          3
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "skyline-night",
+      "raceRef": "Skyline Drive \u2014 Ca\u00f1on City",
+      "brief": "Narrow tilted tan hogback ridge over broad Canon City Arkansas River basin; dark sparse settlement grid and low distant Wet Mountains, clear crescent and sparse stars.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 0.05,
+      "sourceImage": "/workspace/generated_images/exec-5366d015-af42-4e8a-ac2f-4627c348c358.png",
+      "ref": "environment-v1-skyline-night",
+      "source": "environment-v1/skyline-night.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "Skyline Drive \u2014 Ca\u00f1on City",
+        "lat": 38.46,
+        "lon": -105.25,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H08-S04.json",
+      "catalog": [
+        {
+          "id": "H08-S04",
+          "hubStage": 8,
+          "startGps": {
+            "lat": 38.4724789,
+            "lon": -105.2584117
+          },
+          "finishGps": {
+            "lat": 38.4489557,
+            "lon": -105.24747296666666
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://www.canoncity.org/370/Skyline-Drive"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "cf545f5fed8eaafe0cfb9cd12e6f09729464c97b8d868410305ec3c2452feb0e",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-5366d015-af42-4e8a-ac2f-4627c348c358.png",
+        "sourceSha256": "cf545f5fed8eaafe0cfb9cd12e6f09729464c97b8d868410305ec3c2452feb0e",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-5366d015-af42-4e8a-ac2f-4627c348c358.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 3.014732965009208,
+        "edgeMaximumRGB": 49.666666666666664,
+        "topRangeRGB": [
+          3,
+          3,
+          4
+        ],
+        "bottomRangeRGB": [
+          3,
+          5,
+          5
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "utepass-morning",
+      "raceRef": "US 24 \u2014 Ute Pass Woodland Park",
+      "brief": "Ponderosa-pine wooded Ute Pass saddle, forested green granite foothills and massive Pikes Peak shoulder well back left of center, scattered ruined timber structures.",
+      "ground": "ground-frozen-forest",
+      "brightness": 0.65,
+      "sourceImage": "/workspace/generated_images/exec-fa578f5c-48e0-4d4b-ba86-701eebfa6bfe.png",
+      "ref": "environment-v1-utepass-morning",
+      "source": "environment-v1/utepass-morning.png",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "sourceOrigin": {
+        "name": "US 24 \u2014 Ute Pass / Woodland Park",
+        "lat": 38.91,
+        "lon": -104.98,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H08-S05.json",
+      "catalog": [
+        {
+          "id": "H08-S05",
+          "hubStage": 8,
+          "startGps": {
+            "lat": 38.8737262,
+            "lon": -104.928346
+          },
+          "finishGps": {
+            "lat": 38.9270881,
+            "lon": -104.9976586
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://www.blm.gov/visit/gold-belt-back-country-byway",
+        "https://www.codot.gov/travel/coloradobyways/south-central/gold-belt"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "eefa29a06764ca690d43ea240a59a10752d6996dbd7fec26fd8720005edd9f97",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-fa578f5c-48e0-4d4b-ba86-701eebfa6bfe.png",
+        "sourceSha256": "eefa29a06764ca690d43ea240a59a10752d6996dbd7fec26fd8720005edd9f97",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-fa578f5c-48e0-4d4b-ba86-701eebfa6bfe.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 5.301104972375691,
+        "edgeMaximumRGB": 56.333333333333336,
+        "topRangeRGB": [
+          5,
+          5,
+          6
+        ],
+        "bottomRangeRGB": [
+          5,
+          4,
+          5
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "co67-morning",
+      "raceRef": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "brief": "High rolling montane grass meadows alternating with dark ponderosa/aspen woods, distant Pikes massif, tiny weathered mining headframe in central valley.",
+      "ground": "ground-frozen-forest",
+      "brightness": 0.65,
+      "sourceImage": "/workspace/generated_images/exec-b62856b2-66ef-4585-bf01-4daa81b5c17c.png",
+      "ref": "environment-v1-co67-morning",
+      "source": "environment-v1/co67-morning.png",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "sourceOrigin": {
+        "name": "CO 67 \u2014 Woodland Park / Cripple Creek",
+        "lat": 38.83,
+        "lon": -105.14,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H08-S06.json",
+      "catalog": [
+        {
+          "id": "H08-S06",
+          "hubStage": 8,
+          "startGps": {
+            "lat": 38.856994549999996,
+            "lon": -105.15292925
+          },
+          "finishGps": {
+            "lat": 38.8169947,
+            "lon": -105.1313049
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://www.blm.gov/visit/gold-belt-back-country-byway",
+        "https://www.codot.gov/travel/coloradobyways/south-central/gold-belt"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "e5842c5026bd50745d3c63a860c675ea22f876e9e35a2b65fe4c3b9eb604f57b",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-b62856b2-66ef-4585-bf01-4daa81b5c17c.png",
+        "sourceSha256": "e5842c5026bd50745d3c63a860c675ea22f876e9e35a2b65fe4c3b9eb604f57b",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-b62856b2-66ef-4585-bf01-4daa81b5c17c.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 9.35451197053407,
+        "edgeMaximumRGB": 110.33333333333333,
+        "topRangeRGB": [
+          8,
+          4,
+          9
+        ],
+        "bottomRangeRGB": [
+          5,
+          4,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "gardengods-night",
+      "raceRef": "Garden of the Gods \u2014 paved park road",
+      "brief": "Distinct upright red sandstone fins and tilted narrow slabs rising out of low juniper foothills, dark Pikes Peak mass beyond, clear starry night restrained crescent.",
+      "ground": "ground-red-gravel-v2",
+      "brightness": 0.05,
+      "sourceImage": "/workspace/generated_images/exec-54261e77-1eee-4c16-9d8e-563788084f23.png",
+      "ref": "environment-v1-gardengods-night",
+      "source": "environment-v1/gardengods-night.png",
+      "tiles": {
+        "snow": "ground-red-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Garden of the Gods \u2014 paved park road",
+        "lat": 38.88,
+        "lon": -104.88,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H08-S07.json",
+      "catalog": [
+        {
+          "id": "H08-S07",
+          "hubStage": 8,
+          "startGps": {
+            "lat": 38.8678581,
+            "lon": -104.8880079
+          },
+          "finishGps": {
+            "lat": 38.8815734,
+            "lon": -104.88069780000001
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://pubs.geoscienceworld.org/gsa/books/edited-volume/881/chapter-abstract/3925493/Garden-of-the-Gods-at-Colorado-SpringsPaleozoic"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "6355c39d81170784c0ccc262b60edce62c539d3aaef208cf9faac567e8e1ab48",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-54261e77-1eee-4c16-9d8e-563788084f23.png",
+        "sourceSha256": "6355c39d81170784c0ccc262b60edce62c539d3aaef208cf9faac567e8e1ab48",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-54261e77-1eee-4c16-9d8e-563788084f23.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 1.977900552486188,
+        "edgeMaximumRGB": 51.666666666666664,
+        "topRangeRGB": [
+          3,
+          3,
+          4
+        ],
+        "bottomRangeRGB": [
+          4,
+          5,
+          5
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "ppir-noon",
+      "raceRef": "Pikes Peak International Raceway \u2014 Fountain",
+      "brief": "Fountain shortgrass plain with a low distant Pikes Peak massif and tiny low grandstands; angular scale corrected after actual production driving comparison. Clear noon preserved.",
+      "ground": "ground-winter-snow-litter-v1",
+      "brightness": 1,
+      "sourceImage": "/workspace/generated_images/exec-8927300f-113b-4342-aee0-93984ed2624b.png",
+      "ref": "environment-v1-ppir-noon",
+      "source": "environment-v1/ppir-noon.png",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "sourceOrigin": {
+        "name": "Pikes Peak International Raceway \u2014 Fountain",
+        "lat": 38.59,
+        "lon": -104.68,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H08-S08.json",
+      "catalog": [
+        {
+          "id": "H08-S08",
+          "hubStage": 8,
+          "startGps": {
+            "lat": 38.5911673,
+            "lon": -104.67781535
+          },
+          "finishGps": {
+            "lat": 38.5911673,
+            "lon": -104.67781535
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "https://www.ppir.com/contactus"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "b01963fa1989f085d39ac71f62bf37ab5839991e79b49aec38ea60cb7747220f",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-8927300f-113b-4342-aee0-93984ed2624b.png",
+        "sourceSha256": "b01963fa1989f085d39ac71f62bf37ab5839991e79b49aec38ea60cb7747220f",
+        "sourceReviewed": true,
+        "reason": "Quiet pale snow boundary fades texture before last row to reduce native extrusion. Horizon and winter transition retained."
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-8927300f-113b-4342-aee0-93984ed2624b.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 4.332872928176796,
+        "edgeMaximumRGB": 53.333333333333336,
+        "topRangeRGB": [
+          12,
+          6,
+          5
+        ],
+        "bottomRangeRGB": [
+          6,
+          6,
+          5
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png",
+        {
+          "sourceImage": "/workspace/generated_images/exec-ca6b9c00-b82e-488a-81fe-d6b36183214f.png",
+          "sourceSha256": "895fb45cf73ccde46f03c65d95e7a252064a7b81c8166b0607d2b2aadc4382a6",
+          "reason": "Pack12 winter-field transition supersedes dry yellow prairie; original retained."
+        },
+        {
+          "sourceImage": "/workspace/generated_images/exec-17ca43e3-196d-4a88-b0cb-da5f1b9241bd.png",
+          "sourceSha256": "b9740976e4ac1c5563b2afc03a8a3488786de541f55624936f5beb6f4c5ee7f3",
+          "reason": "Winter color transition retained but bottom extrusion reduced in later image_gen revision; prior bytes preserved."
+        }
+      ],
+      "revisionNote": "Reduced distant massif and grandstand angular size; quiet sky; removed solid bottom strip. Production fit pending.",
+      "materialCorrection": "Existing Fountain snow cells now display compacted winter snow with embedded dead vegetation, not dry scrub. No material ID/weight changes. Clear weather and distant shortgrass panorama retained; foreground fit rechecked."
+    },
+    {
+      "key": "pueblo-evening",
+      "raceRef": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "brief": "Open tawny shortgrass prairie and rolling shale mesas west of Pueblo, low distant Wet Mountain skyline, sparse abandoned paddock sheds and slim timing tower.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 0.42,
+      "priorSourceImage": "/workspace/generated_images/exec-6f5030bd-b34d-486b-abbf-daa0931022d1.png",
+      "sourceImage": "/workspace/generated_images/exec-b02f2fdf-1f07-44d6-9df1-fc1a85708386.png",
+      "ref": "environment-v1-pueblo-evening",
+      "source": "environment-v1/pueblo-evening.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "Pueblo Motorsports Park \u2014 road course or drag strip",
+        "lat": 38.31,
+        "lon": -104.67,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H08-S09.json",
+      "catalog": [
+        {
+          "id": "H08-S09",
+          "hubStage": 8,
+          "startGps": {
+            "lat": 38.30489791666667,
+            "lon": -104.67321410000001
+          },
+          "finishGps": {
+            "lat": 38.30489791666667,
+            "lon": -104.67321410000001
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://racepmp.com/"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "d70a689490efb533754387fe82915c96238d6f3d25851fedd5ab3ecca8a45022",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-b02f2fdf-1f07-44d6-9df1-fc1a85708386.png",
+        "sourceSha256": "d70a689490efb533754387fe82915c96238d6f3d25851fedd5ab3ecca8a45022",
+        "sourceReviewed": true,
+        "priorSourceImage": "/workspace/generated_images/exec-6f5030bd-b34d-486b-abbf-daa0931022d1.png"
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-b02f2fdf-1f07-44d6-9df1-fc1a85708386.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 4.420349907918969,
+        "edgeMaximumRGB": 35.666666666666664,
+        "topRangeRGB": [
+          7,
+          6,
+          10
+        ],
+        "bottomRangeRGB": [
+          5,
+          5,
+          4
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "angelesforest-evening",
+      "raceRef": "Angeles Forest Highway \u2014 County N3",
+      "brief": "North slope San Gabriel uplift with broad dry brush-filled basin and sage green chaparral ridges, weathered gray granite cuts, scattered pine pockets and distant Antelope Valley opening.",
+      "ground": "ground-snow-chaparral-v1",
+      "brightness": 0.42,
+      "sourceImage": "/workspace/generated_images/exec-f44e9c8e-e0bc-4bf7-8f85-bf0c727a8ed9.png",
+      "ref": "environment-v1-angelesforest-evening",
+      "source": "environment-v1/angelesforest-evening.png",
+      "tiles": {
+        "snow": "ground-snow-chaparral-v1"
+      },
+      "sourceOrigin": {
+        "name": "Angeles Forest Highway \u2014 County N3",
+        "lat": 34.34,
+        "lon": -118.12,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H11-S01.json",
+      "catalog": [
+        {
+          "id": "H11-S01",
+          "hubStage": 11,
+          "startGps": {
+            "lat": 34.3918205,
+            "lon": -118.0813467
+          },
+          "finishGps": {
+            "lat": 34.3462878,
+            "lon": -118.109947
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://www.csun.edu/science/geoscience/fieldtrips/san-gabriel-mts/communities.html",
+        "https://research.fs.usda.gov/psw/rnas/locations/fern-canyon"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "a02f027046fb71aa98faa4fd74d609e9f38711f7253c6cda774fffa884a7c06c",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-f44e9c8e-e0bc-4bf7-8f85-bf0c727a8ed9.png",
+        "sourceSha256": "a02f027046fb71aa98faa4fd74d609e9f38711f7253c6cda774fffa884a7c06c",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-f44e9c8e-e0bc-4bf7-8f85-bf0c727a8ed9.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 8.030386740331492,
+        "edgeMaximumRGB": 69,
+        "topRangeRGB": [
+          4,
+          4,
+          7
+        ],
+        "bottomRangeRGB": [
+          4,
+          4,
+          4
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "uppertujunga-evening",
+      "raceRef": "Upper Big Tujunga Canyon Road",
+      "brief": "Wide high Tujunga drainage framed by interlocking gray-green ridges, sparse tall conifers on cool slopes, dry wash thin light ribbon far below, no lake or city.",
+      "ground": "ground-gray-gravel-v2",
+      "brightness": 0.42,
+      "sourceImage": "/workspace/generated_images/exec-54a7bfc2-5c36-4fa8-aaeb-9962337d9dc6.png",
+      "ref": "environment-v1-uppertujunga-evening",
+      "source": "environment-v1/uppertujunga-evening.png",
+      "tiles": {
+        "snow": "ground-gray-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Upper Big Tujunga Canyon Road",
+        "lat": 34.3,
+        "lon": -118.08,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H11-S02.json",
+      "catalog": [
+        {
+          "id": "H11-S02",
+          "hubStage": 11,
+          "startGps": {
+            "lat": 34.308386125,
+            "lon": -118.076425175
+          },
+          "finishGps": {
+            "lat": 34.273473975,
+            "lon": -118.0427184
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://www.csun.edu/science/geoscience/fieldtrips/san-gabriel-mts/communities.html",
+        "https://research.fs.usda.gov/psw/rnas/locations/fern-canyon"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "27165a289dbe642233364a4f218ae4ecb81d6b21ab70c70eb0a4488b2757e928",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-54a7bfc2-5c36-4fa8-aaeb-9962337d9dc6.png",
+        "sourceSha256": "27165a289dbe642233364a4f218ae4ecb81d6b21ab70c70eb0a4488b2757e928",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-54a7bfc2-5c36-4fa8-aaeb-9962337d9dc6.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 1.683241252302026,
+        "edgeMaximumRGB": 14.333333333333334,
+        "topRangeRGB": [
+          4,
+          4,
+          8
+        ],
+        "bottomRangeRGB": [
+          4,
+          4,
+          4
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "bigtujunga-noon",
+      "raceRef": "Big Tujunga Canyon Road",
+      "brief": "Lower Big Tujunga deep broad canyon with cream granite cliffs and chamise covered ridges, pale stony dry wash and scattered riparian sycamores below, clear blue noon.",
+      "ground": "ground-gray-gravel-v2",
+      "brightness": 1,
+      "sourceImage": "/workspace/generated_images/exec-527d8f68-59e9-490a-97c5-36fc362fb47d.png",
+      "ref": "environment-v1-bigtujunga-noon",
+      "source": "environment-v1/bigtujunga-noon.png",
+      "tiles": {
+        "snow": "ground-gray-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Big Tujunga Canyon Road",
+        "lat": 34.29,
+        "lon": -118.23,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H11-S03.json",
+      "catalog": [
+        {
+          "id": "H11-S03",
+          "hubStage": 11,
+          "startGps": {
+            "lat": 34.3028058,
+            "lon": -118.2559542
+          },
+          "finishGps": {
+            "lat": 34.28334194999999,
+            "lon": -118.201255
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "https://www.csun.edu/science/geoscience/fieldtrips/san-gabriel-mts/communities.html",
+        "https://research.fs.usda.gov/psw/rnas/locations/fern-canyon"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "374d397ab8202576b76563c24c6a94b5780db9e7471e1174b73b034a0ea970fd",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-527d8f68-59e9-490a-97c5-36fc362fb47d.png",
+        "sourceSha256": "374d397ab8202576b76563c24c6a94b5780db9e7471e1174b73b034a0ea970fd",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-527d8f68-59e9-490a-97c5-36fc362fb47d.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 10.393646408839778,
+        "edgeMaximumRGB": 88.33333333333333,
+        "topRangeRGB": [
+          9,
+          6,
+          5
+        ],
+        "bottomRangeRGB": [
+          5,
+          4,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "glendoramountain-noon",
+      "raceRef": "Glendora Mountain Road",
+      "brief": "Steep foothill slopes dense with olive chaparral and yucca, gray rock outcrops, layered Los Angeles basin haze below, low rugged ridge sweeping center.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 1,
+      "sourceImage": "/workspace/generated_images/exec-6257a724-6c95-44aa-979c-621a004574bf.png",
+      "ref": "environment-v1-glendoramountain-noon",
+      "source": "environment-v1/glendoramountain-noon.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "Glendora Mountain Road",
+        "lat": 34.19,
+        "lon": -117.82,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H11-S04.json",
+      "catalog": [
+        {
+          "id": "H11-S04",
+          "hubStage": 11,
+          "startGps": {
+            "lat": 34.2129104,
+            "lon": -117.7994728
+          },
+          "finishGps": {
+            "lat": 34.2281616,
+            "lon": -117.7828782
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "https://www.csun.edu/science/geoscience/fieldtrips/san-gabriel-mts/communities.html",
+        "https://research.fs.usda.gov/psw/rnas/locations/fern-canyon"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "d15ef55d7c80460b0fee70d98dc4ce6e5893ed71a67cdbcf76825d8cce94be06",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-6257a724-6c95-44aa-979c-621a004574bf.png",
+        "sourceSha256": "d15ef55d7c80460b0fee70d98dc4ce6e5893ed71a67cdbcf76825d8cce94be06",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-6257a724-6c95-44aa-979c-621a004574bf.png",
+        "width": 2144,
+        "height": 733,
+        "edgeMeanRGB": 7.63256025466121,
+        "edgeMaximumRGB": 81.66666666666667,
+        "topRangeRGB": [
+          10,
+          4,
+          6
+        ],
+        "bottomRangeRGB": [
+          5,
+          5,
+          5
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "glendoraridge-evening",
+      "raceRef": "Glendora Ridge Road",
+      "brief": "Narrow high San Gabriel ridgeline with layered folded mountain bowls, distant taller Mount Baldy shoulder to east, oak/pine patches above chamise, warm evening.",
+      "ground": "ground-gray-gravel-v2",
+      "brightness": 0.42,
+      "sourceImage": "/workspace/generated_images/exec-ce6a6834-6bbb-493d-9748-d7ccf9199d8b.png",
+      "ref": "environment-v1-glendoraridge-evening",
+      "source": "environment-v1/glendoraridge-evening.png",
+      "tiles": {
+        "snow": "ground-gray-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Glendora Ridge Road",
+        "lat": 34.23,
+        "lon": -117.73,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H11-S05.json",
+      "catalog": [
+        {
+          "id": "H11-S05",
+          "hubStage": 11,
+          "startGps": {
+            "lat": 34.219403166666666,
+            "lon": -117.71120619999999
+          },
+          "finishGps": {
+            "lat": 34.21984416666667,
+            "lon": -117.742927
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://www.csun.edu/science/geoscience/fieldtrips/san-gabriel-mts/communities.html",
+        "https://research.fs.usda.gov/psw/rnas/locations/fern-canyon"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "ce949d3f4a0a1465fc4a52122faa707df1285f154b4b96a1aa7fffcb029ae88a",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-ce6a6834-6bbb-493d-9748-d7ccf9199d8b.png",
+        "sourceSha256": "ce949d3f4a0a1465fc4a52122faa707df1285f154b4b96a1aa7fffcb029ae88a",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-ce6a6834-6bbb-493d-9748-d7ccf9199d8b.png",
+        "width": 2144,
+        "height": 733,
+        "edgeMeanRGB": 5.144156434743064,
+        "edgeMaximumRGB": 87.66666666666667,
+        "topRangeRGB": [
+          4,
+          4,
+          9
+        ],
+        "bottomRangeRGB": [
+          5,
+          4,
+          5
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "sangabriel-morning",
+      "raceRef": "San Gabriel Canyon Road \u2014 SR 39",
+      "brief": "Large V-shaped San Gabriel canyon, pale granite wash and small restrained blue-green reservoir glimpse deep center valley, steep chaparral flanks and oak pockets.",
+      "ground": "ground-gray-gravel-v2",
+      "brightness": 0.65,
+      "sourceImage": "/workspace/generated_images/exec-e41e4cc7-43ec-4402-98f3-42cfadac0edc.png",
+      "ref": "environment-v1-sangabriel-morning",
+      "source": "environment-v1/sangabriel-morning.png",
+      "tiles": {
+        "snow": "ground-gray-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "San Gabriel Canyon Road \u2014 SR 39",
+        "lat": 34.22,
+        "lon": -117.86,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H11-S06.json",
+      "catalog": [
+        {
+          "id": "H11-S06",
+          "hubStage": 11,
+          "startGps": {
+            "lat": 34.22909905,
+            "lon": -117.84614416666666
+          },
+          "finishGps": {
+            "lat": 34.1945097,
+            "lon": -117.8636988
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://www.csun.edu/science/geoscience/fieldtrips/san-gabriel-mts/communities.html",
+        "https://research.fs.usda.gov/psw/rnas/locations/fern-canyon"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "0e0c0cfeb497ac6c4341cae40e4307caf8dcad44eedce649017df310fbd384fe",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-e41e4cc7-43ec-4402-98f3-42cfadac0edc.png",
+        "sourceSha256": "0e0c0cfeb497ac6c4341cae40e4307caf8dcad44eedce649017df310fbd384fe",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-e41e4cc7-43ec-4402-98f3-42cfadac0edc.png",
+        "width": 2144,
+        "height": 733,
+        "edgeMeanRGB": 4.797635288767621,
+        "edgeMaximumRGB": 33,
+        "topRangeRGB": [
+          7,
+          5,
+          8
+        ],
+        "bottomRangeRGB": [
+          4,
+          6,
+          5
+        ],
+        "warnings": [],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    },
+    {
+      "key": "littletujunga-noon",
+      "raceRef": "Little Tujunga Canyon Road",
+      "brief": "Lower rounded dusty foothill switchback country, close sage chaparral with yucca, tan soil and isolated coast-live-oak groves in gullies, distant broad San Fernando valley haze.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 1,
+      "sourceImage": "/workspace/generated_images/exec-aa9ca82e-cfbc-4c13-83da-1ac2383769d9.png",
+      "ref": "environment-v1-littletujunga-noon",
+      "source": "environment-v1/littletujunga-noon.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "Little Tujunga Canyon Road",
+        "lat": 34.33,
+        "lon": -118.37,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H11-S07.json",
+      "catalog": [
+        {
+          "id": "H11-S07",
+          "hubStage": 11,
+          "startGps": {
+            "lat": 34.3324309,
+            "lon": -118.3429053
+          },
+          "finishGps": {
+            "lat": 34.3434729,
+            "lon": -118.3564461
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "https://www.csun.edu/science/geoscience/fieldtrips/san-gabriel-mts/communities.html",
+        "https://research.fs.usda.gov/psw/rnas/locations/fern-canyon"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "7a881f029d7f74922631b7561e75ead8a3b7a1a354f19a9b7d3fdd0e4a17f6e3",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-03047722-3bd5-4112-b126-c74dd19651b5.png",
+        "sourceSha256": "7a881f029d7f74922631b7561e75ead8a3b7a1a354f19a9b7d3fdd0e4a17f6e3",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 8.392725598526702,
+        "edgeMaximumRGB": 108.66666666666667,
+        "topRangeRGB": [
+          13,
+          5,
+          5
+        ],
+        "bottomRangeRGB": [
+          5,
+          7,
+          6
+        ],
+        "warnings": [
+          "horizontal-wrap",
+          "top-row-extrusion"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-03047722-3bd5-4112-b126-c74dd19651b5.png",
+          "artProvenance": null,
+          "checkpoint": "822179b1a673954a98104120082993e233cb0109"
+        },
+        {
+          "sourceImage": "/workspace/generated_images/exec-cd8bd1e0-4fa0-4176-8d35-b3c113c08408.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "bc4e2d77232940f1dc881ee94a78b9017f4f34d3562b93688769619d6d24a554",
+            "originalRetained": "/workspace/generated_images/exec-cd8bd1e0-4fa0-4176-8d35-b3c113c08408.png",
+            "priorSourceRetained": "/workspace/generated_images/exec-03047722-3bd5-4112-b126-c74dd19651b5.png",
+            "review": "Viewed original and revised source; native wrap and authored review pending."
+          },
+          "sourceBoundaryMetrics": {
+            "path": "/workspace/generated_images/exec-03047722-3bd5-4112-b126-c74dd19651b5.png",
+            "width": 2144,
+            "height": 733,
+            "edgeMeanRGB": 19.272851296043655,
+            "edgeMaximumRGB": 138,
+            "topRangeRGB": [
+              10,
+              5,
+              5
+            ],
+            "bottomRangeRGB": [
+              4,
+              6,
+              5
+            ],
+            "warnings": [
+              "horizontal-wrap"
+            ],
+            "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+          }
+        }
+      ],
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "01c78365b1486e9e4d7df142cdfa6339bb41f0ca6aa7a36a2a01aa72c5a8fbd8",
+        "originalRetained": "/workspace/generated_images/exec-aa9ca82e-cfbc-4c13-83da-1ac2383769d9.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-cd8bd1e0-4fa0-4176-8d35-b3c113c08408.png",
+        "prompt": "Correct ONLY panorama wrap/boundary composition in this exact Little Tujunga Canyon, gray-green chaparral rounded San Gabriel foothills with distant urban basin under clear noon pixel art. Both outermost left and right strips must be visually identical: quiet blue sky to exactly 60% image height, then same low distant gray-brown ridge silhouette at exactly same height and shade, then same quiet local ground color. No near hills, trees, structures or prominent features in either outer 10%; blend naturally into unchanged central scene. This is a circular panorama, so the left/right join must have zero noticeable vertical step. Keep original time and regional identity. Uniform blue topmost row and quiet uniform ground bottommost row; no texture touching those boundary rows. No frame. 3:1, no text/logos.",
+        "review": "Second boundary correction source viewed; final native review pending."
+      }
+    },
+    {
+      "key": "pomona-noon",
+      "raceRef": "In-N-Out Burger Pomona Dragstrip",
+      "brief": "Pomona fairgrounds dragstrip venue: aged empty steel grandstands low across plain, thin palm trees and control tower without logos, distant pale San Gabriel mountain wall, sunlit dry urban basin.",
+      "ground": "ground-desert-scrub-v2",
+      "brightness": 1,
+      "sourceImage": "/workspace/generated_images/exec-4dbb79f6-4d1c-459d-86e1-d2c104416253.png",
+      "ref": "environment-v1-pomona-noon",
+      "source": "environment-v1/pomona-noon.png",
+      "tiles": {
+        "snow": "ground-desert-scrub-v2"
+      },
+      "sourceOrigin": {
+        "name": "In-N-Out Burger Pomona Dragstrip",
+        "lat": 34.09,
+        "lon": -117.77,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H11-S09.json",
+      "catalog": [
+        {
+          "id": "H11-S09",
+          "hubStage": 11,
+          "startGps": {
+            "lat": 34.095262,
+            "lon": -117.769576
+          },
+          "finishGps": {
+            "lat": 34.092173618363304,
+            "lon": -117.77185235730084
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "https://www.nhra.com/news/2026/championships-line-historic-75th-anniversary-season-concludes-pomona"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "d99cfa44b1d591103880499f2d6afc7e2f18218be1706172c6e802f759579e2d",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-4dbb79f6-4d1c-459d-86e1-d2c104416253.png",
+        "sourceSha256": "d99cfa44b1d591103880499f2d6afc7e2f18218be1706172c6e802f759579e2d",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-4dbb79f6-4d1c-459d-86e1-d2c104416253.png",
+        "width": 2144,
+        "height": 733,
+        "edgeMeanRGB": 11.484765802637563,
+        "edgeMaximumRGB": 119.33333333333333,
+        "topRangeRGB": [
+          11,
+          6,
+          5
+        ],
+        "bottomRangeRGB": [
+          4,
+          6,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "rejectedGroundCandidate": {
+        "ref": "ground-industrial-concrete-v2",
+        "reason": "Decoded source unsuitable: industrial textures are colorful robotic panels, or orange clay inconsistent with granite canyon."
+      }
+    },
+    {
+      "key": "denver-morning",
+      "raceRef": "Denver, CO \u2014 Landmark Run",
+      "brief": "Abandoned Denver downtown from low urban street elevation: distinct mixed brick warehouses and modern stepped towers, distant blue Front Range only on west horizon, dry plains city not mountain valley, small muted cottonwood canopy.",
+      "ground": "ground-gray-gravel-v2",
+      "brightness": 0.65,
+      "sourceImage": "/workspace/generated_images/exec-0b607251-b83a-4d69-a6bd-950c724f49e9.png",
+      "ref": "environment-v1-denver-morning",
+      "source": "environment-v1/denver-morning.png",
+      "tiles": {
+        "snow": "ground-gray-gravel-v2"
+      },
+      "sourceOrigin": {
+        "name": "Denver, CO \u2014 Landmark Run",
+        "lat": 39.748,
+        "lon": -104.994,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-co.json",
+      "catalog": [
+        {
+          "id": "city-co",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 8,
+          "location": {
+            "lat": 39.748,
+            "lon": -104.994
+          },
+          "startGps": {
+            "lat": 39.7613179,
+            "lon": -105.0052423
+          },
+          "finishGps": {
+            "lat": 39.732052100000004,
+            "lon": -104.97817203333334
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://visitdenver.com/about-denver/denver-digital-puzzles/denver-skyline/"
+      ],
+      "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
+      "sourceSha256": "65c369fcb71e3dc5e58c0ff1d85244c37008471b1a08e15f145b36f0e5818919",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-0b607251-b83a-4d69-a6bd-950c724f49e9.png",
+        "sourceSha256": "65c369fcb71e3dc5e58c0ff1d85244c37008471b1a08e15f145b36f0e5818919",
+        "sourceReviewed": true,
+        "priorSourceImage": null
+      },
+      "sourceBoundaryMetrics": {
+        "path": "/workspace/generated_images/exec-0b607251-b83a-4d69-a6bd-950c724f49e9.png",
+        "width": 2144,
+        "height": 733,
+        "edgeMeanRGB": 7.7894497498863124,
+        "edgeMaximumRGB": 99.66666666666667,
+        "topRangeRGB": [
+          11,
+          4,
+          10
+        ],
+        "bottomRangeRGB": [
+          4,
+          6,
+          5
+        ],
+        "warnings": [
+          "horizontal-wrap"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "rejectedGroundCandidate": {
+        "ref": "ground-industrial-rubble-v2",
+        "reason": "Decoded source unsuitable: industrial textures are colorful robotic panels, or orange clay inconsistent with granite canyon."
+      }
+    }
+  ]
+}

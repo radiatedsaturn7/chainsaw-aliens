@@ -1,0 +1,75 @@
+{
+  "assets": [
+    {
+      "key": "ground-alpine-snow-granite-v1",
+      "prompt": "Original seamless top-down pixel-art game terrain texture, opaque square 512x512. Material is WIND-SCOURED COMPACTED ALPINE SNOW with embedded pale pink-gray granite grit: clearly snow/icy crust, irregular fine granular white and muted blue-gray hard snow surfaces covering majority, exposed embedded small granite flecks, low contrast. Not bare rock, not soft fluffy blanket snow, no individual giant boulders. No perspective/horizon/shadows with directional depth, no text. Repeat seamlessly in both axes with matching edge colors and feature scale; crisp tiny pixels, natural non-grid irregularity. Intended Pikes Peak snow-material ground, physically still snow.",
+      "sourceImage": "/workspace/generated_images/exec-7165bac4-c5d1-4256-9b72-6bc19ffbbacc.png",
+      "source": "environment-v1/ground-alpine-snow-granite-v1.png",
+      "sourceSha256": "42ae8cdd00297ecd53ea3c68c59b851be132a020787c5da1cce4706a9924e047",
+      "sourceReviewed": true
+    },
+    {
+      "key": "ground-decomposed-granite-dirt-v1",
+      "prompt": "Original seamless top-down pixel-art game terrain texture, opaque square512x512. Material is DRY COMPACTED DECOMPOSED-GRANITE DIRT for San Gabriel Mountains: predominantly fine muted tan-gray dusty earth matrix, tiny embedded mica/quartz grains, subtle sandy compacted crust; no loose large gravel, no snow, no grass or robot panels. Flat ground, no perspective, horizon or text. Natural low-contrast fine-scale texture. Repeat seamlessly both axes, matching edge rows/columns, crisp small pixels, no grid pattern.",
+      "sourceImage": "/workspace/generated_images/exec-2b720f63-f200-4960-b4fe-95c7df4ceb96.png",
+      "source": "environment-v1/ground-decomposed-granite-dirt-v1.png",
+      "sourceSha256": "903c4523fb7eb5146d4e60ff8de21632dbcf7f540ea873de1797f1fc39ad65db",
+      "sourceReviewed": true
+    }
+  ],
+  "ppir": {
+    "sourceImage": "/workspace/generated_images/exec-ca6b9c00-b82e-488a-81fe-d6b36183214f.png",
+    "priorSource": "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png",
+    "productionSample": "/tmp/race-environment-pack11-ppir-final-driving",
+    "viewedComparison": "/tmp/race-pack11-ppir-before-after.jpg",
+    "routeProgressM": 22.63729727759932,
+    "timing": {
+      "wallMs": 7622,
+      "simulationMs": 5549.799999999988
+    },
+    "assessment": "Final desktop frame viewed: distant mountain scale corrected, snow cells now honest. Dry prairie/snow foreground transition remains a visual refinement; no full-route acceptance.",
+    "priorTerrainDrive": {
+      "productionSample": "/tmp/race-environment-pack11-ppir-driving",
+      "routeProgressM": 25.871249102057675,
+      "timing": {
+        "wallMs": 8458,
+        "simulationMs": 6033.100000000006
+      }
+    },
+    "snowCellsCorrected": 5016,
+    "currentGround": "ground-winter-snow-litter-v1"
+  },
+  "validation": "Terrain semantic tests and negatives pass; full 92-check run has 91 passes and one independent unused campaign-art failure.",
+  "negativeCoverage": {
+    "file": "tests/unit/raceEnvironmentVisualContract.test.js",
+    "cases": "Snow/gravel, dirt/gravel and grass/snow swaps rejected for both artRef and roughArtRef; 20 Northeast rows must all have declared material refs and nonempty cells."
+  },
+  "preserved": "IDs, weights, surfaces, geometry, lighting, weather, scenery, runtime and metadata guarded across all 245 against exact base.",
+  "remainingGate": {
+    "campaignPaths": 233,
+    "unused": [
+      "skybox-tower-hill"
+    ],
+    "removedLastInheritedUses": [
+      "Thompson Speedway — 1.7-mile road course",
+      "Pachaug State Forest — public gravel access roads",
+      "Seekonk Speedway — oval",
+      "Palmer Motorsports Park — Massachusetts",
+      "Lime Rock Park — West Chicane",
+      "Hartford, CT — Landmark Run",
+      "Boston, MA — Landmark Run",
+      "Manchester, NH — Landmark Run",
+      "Newark, NJ — Landmark Run",
+      "New York, NY — Landmark Run",
+      "Providence, RI — Landmark Run"
+    ],
+    "decision": "No waiver, fictitious placement or intent reclassification applied. Need a deliberate retained-legacy/editor retirement policy with actual editor coverage, or a genuine appropriate playable use; reusing snowy Tower Hill sky on unrelated places solely to satisfy the test is not acceptable."
+  },
+  "allRaceReadback": {
+    "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+    "checked": 245,
+    "bound": 157,
+    "evidence": "/tmp/race-pack11-final-preservation.json"
+  },
+  "materialNativeReview": "/tmp/race-pack11-sheets/material-native-repeats.jpg"
+}

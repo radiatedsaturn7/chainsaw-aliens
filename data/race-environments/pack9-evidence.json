@@ -1,0 +1,881 @@
+{
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "parentCheckpoint": "034def37d55522fd23cce68ea25bafc021d69bd5",
+  "scope": "Local-only 21 distinct canyon-country bindings and Kartplex source repair. All world/physics/material IDs/weights/authored weather/light/time/mission/geometry and production renderer preserved. No publication.",
+  "counts": {
+    "reachable": 245,
+    "bound": 117,
+    "unbound": 128,
+    "newBindings": 21,
+    "newCompositions": 21,
+    "sourceReviewed": 21,
+    "fourLayerAuditRows": 21,
+    "nativeOriginalDeviceChecks": 42,
+    "correctiveDeviceChecks": 14,
+    "repairDeviceChecks": 2,
+    "bothDeviceAuthoredDiagnosticAndEdgeSheetsViewed": 21,
+    "mainRouteBound": 9,
+    "mainRouteTotal": 11,
+    "decodedNumericSeamWarningsAcross117": 7,
+    "sourceWarningCompositions": 12,
+    "authoredVisibilityAttenuationRows": 3,
+    "severelyVisibilityObscuredRows": 1,
+    "nearBlackLowExposureNightRows": 3,
+    "newPackDrivingPasses": 0,
+    "newPackDrivingFailures": 4,
+    "fullyAcceptedNewEnvironments": 0
+  },
+  "tests": {
+    "units": "90/90 passed; initial 89/90 exposed Oak Creek main-route placement still pointing to old sky. Moved exact registration to new asset; strict test unchanged.",
+    "focusedFinal": "10/10 visual-contract and driving-controls units passed after ground correction.",
+    "campaignBrowser": "6/6 passed",
+    "manifest": "{\"documents\": 1690, \"assets\": 16}\nPublished project manifest includes every current document.\n",
+    "preservation": {
+      "mode": "checked",
+      "total": 245,
+      "bindings": [
+        {
+          "race": "Col de Turini",
+          "ref": "skybox-col-de-turini"
+        },
+        {
+          "race": "Daytona Tri-Oval",
+          "ref": "skybox-daytona"
+        },
+        {
+          "race": "Mount Washington Auto Road \u2014 point-to-point",
+          "ref": "environment-v1-mount-washington-snow-noon"
+        },
+        {
+          "race": "Nurburgring Nordschleife",
+          "ref": "skybox-eifel-circuit"
+        },
+        {
+          "race": "Ouninpohja",
+          "ref": "environment-v1-ouninpohja-boreal-noon"
+        },
+        {
+          "race": "Tower Hill Road",
+          "ref": "environment-v1-tower-hill-snow-night"
+        },
+        {
+          "race": "Laurel Highlands Scenic Byway",
+          "ref": "environment-v1-laurel-ohiopyle-evening"
+        },
+        {
+          "race": "Ohio River Crossing",
+          "ref": "environment-v1-ohio-little-muskingum-storm"
+        },
+        {
+          "race": "Ozark Backroads",
+          "ref": "environment-v1-ozark-eminence-day"
+        },
+        {
+          "race": "Data Center City",
+          "ref": "environment-v1-stl-riverfront-night"
+        },
+        {
+          "race": "Historic Route 66",
+          "ref": "environment-v1-route66-erick-texola"
+        },
+        {
+          "race": "Moki Dugway",
+          "ref": "environment-v1-moki-cedar-mesa-day"
+        },
+        {
+          "race": "Oak Creek Canyon",
+          "ref": "environment-v1-oakrim-evening"
+        },
+        {
+          "race": "RI 116 \u2014 North Smithfield Scituate",
+          "ref": "environment-v1-ri116-morning"
+        },
+        {
+          "race": "I-95 \u2014 Attleboro to Warwick curves",
+          "ref": "environment-v1-i95-noon"
+        },
+        {
+          "race": "RI 102 \u2014 Victory Highway",
+          "ref": "environment-v1-ri102-evening"
+        },
+        {
+          "race": "RI 44 \u2014 Putnam Pike Glocester",
+          "ref": "environment-v1-ri44-morning"
+        },
+        {
+          "race": "Lime Rock Park \u2014 Connecticut",
+          "ref": "environment-v1-lime-evening"
+        },
+        {
+          "race": "Kancamagus Highway \u2014 NH 112",
+          "ref": "environment-v1-kancamagus-morning"
+        },
+        {
+          "race": "Bear Notch Road \u2014 Bartlett",
+          "ref": "environment-v1-bear-notch-morning"
+        },
+        {
+          "race": "Hurricane Mountain Road \u2014 Conway",
+          "ref": "environment-v1-hurricane-evening"
+        },
+        {
+          "race": "Crawford Notch \u2014 US 302",
+          "ref": "environment-v1-crawford-noon"
+        },
+        {
+          "race": "Pinkham Notch \u2014 NH 16",
+          "ref": "environment-v1-pinkham-snow-noon"
+        },
+        {
+          "race": "Club Motorsports \u2014 Tamworth",
+          "ref": "environment-v1-tamworth-noon"
+        },
+        {
+          "race": "Team O\u2019Neil-inspired Rally Stage (2994)",
+          "ref": "environment-v1-oneil-noon"
+        },
+        {
+          "race": "New Hampshire Motor Speedway \u2014 Loudon",
+          "ref": "environment-v1-loudon-evening"
+        },
+        {
+          "race": "New England Dragway \u2014 Epping",
+          "ref": "environment-v1-epping-morning"
+        },
+        {
+          "race": "PA 381 \u2014 Ohiopyle approach",
+          "ref": "environment-v1-ohiopyle-noon"
+        },
+        {
+          "race": "PA 711 \u2014 Normalville Champion",
+          "ref": "environment-v1-normalville-evening"
+        },
+        {
+          "race": "US 40 \u2014 Chalk Hill Summit",
+          "ref": "environment-v1-chalk-hill-evening"
+        },
+        {
+          "race": "PA 31 \u2014 Donegal to Laurel Ridge",
+          "ref": "environment-v1-donegal-night"
+        },
+        {
+          "race": "County Line Road \u2014 Seven Springs",
+          "ref": "environment-v1-seven-springs-night"
+        },
+        {
+          "race": "Forbes State Forest \u2014 designated gravel roads",
+          "ref": "environment-v1-forbes-morning"
+        },
+        {
+          "race": "Jennerstown Speedway \u2014 oval",
+          "ref": "environment-v1-jennerstown-night"
+        },
+        {
+          "race": "Keystone Motorsports Park \u2014 New Alexandria",
+          "ref": "environment-v1-keystone-morning"
+        },
+        {
+          "race": "Pittsburgh International Race Complex \u2014 Wampum",
+          "ref": "environment-v1-pitt-noon"
+        },
+        {
+          "race": "OH 26 \u2014 Covered Bridge Scenic Byway",
+          "ref": "environment-v1-oh26-noon"
+        },
+        {
+          "race": "OH 555 \u2014 Triple Nickel",
+          "ref": "environment-v1-triple-nickel-evening"
+        },
+        {
+          "race": "OH 550 \u2014 Barlow approach",
+          "ref": "environment-v1-barlow-morning"
+        },
+        {
+          "race": "OH 536 \u2014 Ohio River hills",
+          "ref": "environment-v1-oh536-night"
+        },
+        {
+          "race": "OH 676 \u2014 Western county hills",
+          "ref": "environment-v1-oh676-night"
+        },
+        {
+          "race": "Marietta\u2013Williamstown \u2014 I-77 river bridge",
+          "ref": "environment-v1-marietta-evening"
+        },
+        {
+          "race": "Washington County western covered-bridge gravel loop",
+          "ref": "environment-v1-washington-gravel-morning"
+        },
+        {
+          "race": "Ohio Valley Speedway \u2014 Washington, West Virginia",
+          "ref": "environment-v1-ohio-valley-night"
+        },
+        {
+          "race": "Mid-Ohio Sports Car Course \u2014 Lexington",
+          "ref": "environment-v1-mid-ohio-morning"
+        },
+        {
+          "race": "MO 19 \u2014 Eminence Current River",
+          "ref": "environment-v1-eminence-evening"
+        },
+        {
+          "race": "MO 106 \u2014 Alley Spring approach",
+          "ref": "environment-v1-alley-noon"
+        },
+        {
+          "race": "MO 106 \u2014 Powder Mill approach",
+          "ref": "environment-v1-powder-morning"
+        },
+        {
+          "race": "MO V \u2014 Two Rivers access",
+          "ref": "environment-v1-two-rivers-morning"
+        },
+        {
+          "race": "MO H NN \u2014 Roberts Field access",
+          "ref": "environment-v1-roberts-evening"
+        },
+        {
+          "race": "Jerktail Landing gravel road",
+          "ref": "environment-v1-jerktail-morning"
+        },
+        {
+          "race": "US 60 \u2014 Winona Van Buren",
+          "ref": "environment-v1-winona-noon"
+        },
+        {
+          "race": "Glade Top Trail \u2014 Mark Twain National Forest",
+          "ref": "environment-v1-glade-morning"
+        },
+        {
+          "race": "Ozarks International Raceway \u2014 Gravois Mills",
+          "ref": "environment-v1-oir-morning"
+        },
+        {
+          "race": "World Wide Technology Raceway \u2014 road course",
+          "ref": "environment-v1-gateway-noon"
+        },
+        {
+          "race": "World Wide Technology Raceway \u2014 oval",
+          "ref": "environment-v1-gateway-night"
+        },
+        {
+          "race": "World Wide Technology Raceway \u2014 drag strip",
+          "ref": "environment-v1-gateway-night"
+        },
+        {
+          "race": "I-64 \u2014 St. Louis downtown approaches",
+          "ref": "environment-v1-stl64-morning"
+        },
+        {
+          "race": "I-70 \u2014 Stan Musial Veterans Memorial Bridge",
+          "ref": "environment-v1-stan-noon"
+        },
+        {
+          "race": "IL 100 \u2014 Great River Road bluffs",
+          "ref": "environment-v1-alton-noon"
+        },
+        {
+          "race": "MO 94 \u2014 Defiance Augusta",
+          "ref": "environment-v1-defiance-evening"
+        },
+        {
+          "race": "Gateway Kartplex \u2014 WWT complex",
+          "ref": "environment-v1-gateway-morning"
+        },
+        {
+          "race": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+          "ref": "environment-v1-pevely-evening"
+        },
+        {
+          "race": "Valley of the Gods Road \u2014 San Juan CR 242",
+          "ref": "environment-v1-gods-noon"
+        },
+        {
+          "race": "Muley Point Road \u2014 CR 241",
+          "ref": "environment-v1-muley-evening"
+        },
+        {
+          "race": "UT 316 \u2014 Goosenecks State Park Road",
+          "ref": "environment-v1-goosenecks-morning"
+        },
+        {
+          "race": "US 163 \u2014 Mexican Hat Monument Valley approach",
+          "ref": "environment-v1-mexicanhat-morning"
+        },
+        {
+          "race": "UT 95 \u2014 Comb Ridge Cedar Mesa",
+          "ref": "environment-v1-comb-evening"
+        },
+        {
+          "race": "UT 276 \u2014 Halls Crossing approach",
+          "ref": "environment-v1-halls-night"
+        },
+        {
+          "race": "US 191 \u2014 Bluff Blanding",
+          "ref": "environment-v1-bluff-morning"
+        },
+        {
+          "race": "Shafer Trail \u2014 Canyonlands National Park",
+          "ref": "environment-v1-shafer-night"
+        },
+        {
+          "race": "Burr Trail switchbacks \u2014 Capitol Reef",
+          "ref": "environment-v1-burr-noon"
+        },
+        {
+          "race": "SR 179 \u2014 Red Rock Scenic Byway",
+          "ref": "environment-v1-redbyway-evening"
+        },
+        {
+          "race": "Upper Lower Red Rock Loop Road",
+          "ref": "environment-v1-redloop-morning"
+        },
+        {
+          "race": "Page Springs Road",
+          "ref": "environment-v1-pagesprings-evening"
+        },
+        {
+          "race": "Beaverhead Flat Road \u2014 CR 78",
+          "ref": "environment-v1-beaverflat-evening"
+        },
+        {
+          "race": "Boynton Pass Road FR 525 loop",
+          "ref": "environment-v1-boynton-night"
+        },
+        {
+          "race": "Schnebly Hill Road \u2014 Sedona",
+          "ref": "environment-v1-schnebly-noon"
+        },
+        {
+          "race": "SR 89A \u2014 Mingus Mountain Jerome",
+          "ref": "environment-v1-mingus-morning"
+        },
+        {
+          "race": "Podium Club at Attesa \u2014 Casa Grande",
+          "ref": "environment-v1-attesa-evening"
+        },
+        {
+          "race": "Firebird Motorsports Park \u2014 Chandler",
+          "ref": "environment-v1-firebird-evening"
+        },
+        {
+          "race": "Willow Springs \u2014 Horse Thief Mile",
+          "ref": "environment-v1-willow-night"
+        },
+        {
+          "race": "Old Staples Road",
+          "ref": "environment-v1-old-staples-woodland-day"
+        },
+        {
+          "race": "Watkins Glen \u2014 Long Course",
+          "ref": "environment-v1-watkins-morning"
+        },
+        {
+          "race": "Watkins Glen \u2014 Short Course",
+          "ref": "environment-v1-watkins-evening"
+        },
+        {
+          "race": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+          "ref": "environment-v1-watkins-evening"
+        },
+        {
+          "race": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+          "ref": "environment-v1-watkins-noon"
+        },
+        {
+          "race": "Road America \u2014 Full Course",
+          "ref": "environment-v1-road-america-evening"
+        },
+        {
+          "race": "Road America \u2014 The Bend",
+          "ref": "environment-v1-road-america-noon"
+        },
+        {
+          "race": "Road Atlanta \u2014 Grand Prix",
+          "ref": "environment-v1-road-atlanta-morning"
+        },
+        {
+          "race": "Road Atlanta \u2014 Short Course",
+          "ref": "environment-v1-road-atlanta-evening"
+        },
+        {
+          "race": "Road Atlanta \u2014 Club Course",
+          "ref": "environment-v1-road-atlanta-night"
+        },
+        {
+          "race": "Virginia International Raceway \u2014 Full Course",
+          "ref": "environment-v1-vir-morning"
+        },
+        {
+          "race": "Virginia International Raceway \u2014 North Course",
+          "ref": "environment-v1-vir-morning"
+        },
+        {
+          "race": "Virginia International Raceway \u2014 South Course",
+          "ref": "environment-v1-vir-night"
+        },
+        {
+          "race": "Virginia International Raceway \u2014 Grand Course",
+          "ref": "environment-v1-vir-night"
+        },
+        {
+          "race": "Sebring International Raceway \u2014 Full Circuit",
+          "ref": "environment-v1-sebring-night"
+        },
+        {
+          "race": "Sebring International Raceway \u2014 Short Circuit",
+          "ref": "environment-v1-sebring-morning"
+        },
+        {
+          "race": "Sebring International Raceway \u2014 Club Circuit",
+          "ref": "environment-v1-sebring-evening"
+        },
+        {
+          "race": "Homestead-Miami Speedway \u2014 Oval",
+          "ref": "environment-v1-homestead-evening"
+        },
+        {
+          "race": "Homestead-Miami Speedway \u2014 Road Course",
+          "ref": "environment-v1-homestead-evening"
+        },
+        {
+          "race": "Homestead-Miami Speedway \u2014 Modified Road Course",
+          "ref": "environment-v1-homestead-evening"
+        },
+        {
+          "race": "Daytona International Speedway \u2014 Sports Car Course",
+          "ref": "skybox-daytona"
+        },
+        {
+          "race": "Daytona International Speedway \u2014 Stock Car Road Course",
+          "ref": "environment-v1-daytona-evening"
+        },
+        {
+          "race": "Willow Springs \u2014 Big Willow",
+          "ref": "environment-v1-willow-morning"
+        },
+        {
+          "race": "Willow Springs \u2014 Streets of Willow",
+          "ref": "environment-v1-willow-morning"
+        },
+        {
+          "race": "Willow Springs \u2014 Streets \u2014 Short",
+          "ref": "environment-v1-willow-evening"
+        },
+        {
+          "race": "Lime Rock Park \u2014 Both Chicanes",
+          "ref": "environment-v1-lime-evening"
+        },
+        {
+          "race": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+          "ref": "environment-v1-mid-ohio-morning"
+        },
+        {
+          "race": "Mid-Ohio Sports Car Course \u2014 Short Course",
+          "ref": "environment-v1-mid-ohio-night"
+        },
+        {
+          "race": "Pig Trail \u2014 Arkansas 23",
+          "ref": "environment-v1-pigtrail-evening"
+        },
+        {
+          "race": "National Road \u2014 Sideling Hill",
+          "ref": "environment-v1-sideling-evening"
+        },
+        {
+          "race": "Natchez Trace \u2014 Tishomingo",
+          "ref": "environment-v1-tishomingo-morning"
+        },
+        {
+          "race": "Little Rock, AR \u2014 Landmark Run",
+          "ref": "environment-v1-little-rock-noon"
+        },
+        {
+          "race": "St. Louis, MO \u2014 Landmark Run",
+          "ref": "environment-v1-stl-landmark-morning"
+        },
+        {
+          "race": "Grand Canyon \u2014 Desert View Drive",
+          "ref": "environment-v1-desertview-noon"
+        },
+        {
+          "race": "Grand Canyon \u2014 Diamond Creek Descent",
+          "ref": "environment-v1-diamond-evening"
+        }
+      ]
+    },
+    "nativeAudit": {
+      "path": "/tmp/race-pack9-native-final-audit.json",
+      "cases": 42,
+      "superseded": [
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-1c2e1-oad-independent-sky-desktop/site-ab8b6b6cf346c866-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-1e36a-nt-independent-sky-handheld/site-e6e5b74e38580cc8-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-1febc-241-independent-sky-desktop/site-033e9a76320cf0fc-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-26b1c-ve-independent-sky-handheld/site-d92c7a2faac3d653-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-38d4f-ive-independent-sky-desktop/site-d92c7a2faac3d653-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-6a543-41-independent-sky-handheld/site-033e9a76320cf0fc-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-6d847-ef-independent-sky-handheld/site-6def4e54ef86c467-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-9afd4-sa-independent-sky-handheld/site-10c403e94ba88c6f-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-b21a6-ent-independent-sky-desktop/site-e6e5b74e38580cc8-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-b2f74-ad-independent-sky-handheld/site-ab8b6b6cf346c866-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-d8d3c-esa-independent-sky-desktop/site-10c403e94ba88c6f-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-dcbd2-ach-independent-sky-desktop/site-33a27248a35a988d-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-f5cd6-eef-independent-sky-desktop/site-6def4e54ef86c467-state.json",
+        "/tmp/race-environment-pack9-renderer/race-environments-renderer-f5d62-ch-independent-sky-handheld/site-33a27248a35a988d-state.json"
+      ]
+    },
+    "negativeAudit": "Old-only native reports correctly rejected ground-canyon-rock-v2 versus current ground-desert-scrub-v2; no stale evidence accepted.",
+    "negativeDuplicateAudit": "Duplicate corrective race/device rejected; retained /tmp/race-pack9-duplicate-negative.log.",
+    "commands": [
+      "node --test tests/unit/campaignArtIntegration.test.js tests/unit/americaCampaign.test.js tests/unit/raceTerrainTextureBlend.test.js tests/unit/raceRoadTextures.test.js tests/unit/raceDecals.test.js tests/unit/raceVisualFx.test.js tests/unit/raceEnvironmentVisualContract.test.js tests/unit/raceEnvironmentDrivingControls.test.js",
+      "python tools/project_manifest.py --check --validate-assets",
+      "node tools/race-environments/bind.mjs",
+      "node tools/race-environments/check-art.mjs"
+    ],
+    "finalCorrectiveNative": "14/14 passed in 3.4 minutes; corrected-ground.jpg inspected for both devices, sky-only art unchanged."
+  },
+  "quality": {
+    "seams": [
+      "Oak Creek Canyon",
+      "US 191 \u2014 Bluff Blanding",
+      "Shafer Trail \u2014 Canyonlands National Park",
+      "Page Springs Road",
+      "Schnebly Hill Road \u2014 Sedona",
+      "SR 89A \u2014 Mingus Mountain Jerome",
+      "Grand Canyon \u2014 Desert View Drive"
+    ],
+    "conspicuous": "Schnebly and Mingus ghosted wrap joins; Firebird top-row variation; faint extreme-pitch vertical striping and hard lower bands remain. No full seam acceptance granted.",
+    "kartplex": "Original top-row numeric warning cleared; both native devices reviewed; faint extreme-pitch striping remains. Old driving captures describe old source.",
+    "night": "Halls, Shafer and Boynton use clear-night crescent/stars, visible diagnostically but near-black at authored .05 exposure. Natural foreground/sky acceptance not established.",
+    "visibility": "Oak .8804997 visibility opacity with .42 brightness obscures loaded panorama. Desert View and Diamond .4507491 attenuation preserve some visible landscape. Not missing assets; weather unchanged.",
+    "pevely": "Dirt-art/asphalt-physics mismatch retained. Smooth polished hard-packed clay could reduce loose-rut cues but cannot reconcile actual physics; asphalt artwork would misrepresent the real dirt oval. No new treatment applied.",
+    "terrainCorrections": {
+      "muley-evening": "ground-desert-scrub-v2",
+      "goosenecks-morning": "ground-desert-scrub-v2",
+      "comb-evening": "ground-desert-scrub-v2",
+      "halls-night": "ground-desert-scrub-v2",
+      "burr-noon": "ground-desert-scrub-v2",
+      "desertview-noon": "ground-desert-scrub-v2",
+      "diamond-evening": "ground-gray-gravel-v2"
+    }
+  },
+  "driving": {
+    "scope": "Short real-travel and driving samples only. Inspect retained authored frames separately; no route-wide or visual acceptance inferred.",
+    "successes": [],
+    "failures": [
+      {
+        "file": "/tmp/race-environment-pack9-driving/race-environments-driving--1fd9e-authored-foreground-and-sky/failure-state.json",
+        "race": "Boynton Pass Road FR 525 loop",
+        "device": "handheld",
+        "state": null,
+        "errors": [],
+        "network": [],
+        "error": "Error: keyboard.up: Target page, context or browser has been closed"
+      },
+      {
+        "file": "/tmp/race-environment-pack9-driving/race-environments-driving--774f9-authored-foreground-and-sky/failure-state.json",
+        "race": "Boynton Pass Road FR 525 loop",
+        "device": "desktop",
+        "state": {
+          "state": "race-editor",
+          "status": "Loading Boynton Pass Road FR 525 loop",
+          "error": "Race preparation failed during art pack: Race preparation exceeded the absolute loading deadline",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Boynton Pass Road FR 525 loop",
+            "phase": "art-pack",
+            "progress": 0.9474528301886792,
+            "elapsedMs": 89569.40000000596,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "preparation": "Loading artwork",
+          "race": "New Race",
+          "sky": "providence",
+          "weather": {
+            "id": "clear",
+            "label": "Clear",
+            "visualIntensity": 0,
+            "targetIntensity": 0,
+            "buildup": 0,
+            "effectiveIntensity": 0,
+            "precipitationIntensity": 0,
+            "snowDepthInches": 0,
+            "visibilityDistanceM": null,
+            "visibilityStrength": 0,
+            "visibilityColor": "rgba(0,0,0,0)",
+            "visibilityNearAlpha": 0,
+            "visibilityFarAlpha": 0
+          },
+          "fx": {
+            "enabled": false,
+            "preset": "noon",
+            "sunEnabled": true,
+            "sunDisc": true,
+            "sunX": 0.5,
+            "sunY": 0.2,
+            "sunColor": "#fff0cf",
+            "sunSize": 0.012,
+            "sunIntensity": 0.7,
+            "lensFlare": 0.12,
+            "sunGlare": 0.45,
+            "skyBrightness": 1,
+            "tintColor": "#ffffff",
+            "tintAmount": 0,
+            "motionBlur": 0,
+            "speedLines": 0,
+            "speedLineOpacity": 1,
+            "speedLineArtRef": "",
+            "speedLineArtMode": "overlay",
+            "vignette": 0,
+            "speedStartMph": 45,
+            "speedFullMph": 130
+          },
+          "session": {
+            "running": false
+          }
+        },
+        "errors": [],
+        "network": [
+          {
+            "url": "http://127.0.0.1:4272/__storage/file?folder=art&name=waterspray",
+            "error": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          },
+          {
+            "url": "http://127.0.0.1:4272/__storage/file?folder=art&name=dirtsmoke",
+            "error": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          },
+          {
+            "url": "http://127.0.0.1:4272/__storage/file?folder=art&name=snowsmoke",
+            "error": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          }
+        ],
+        "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m"
+      },
+      {
+        "file": "/tmp/race-environment-pack9-driving/race-environments-driving--84f2b-authored-foreground-and-sky/failure-state.json",
+        "race": "Valley of the Gods Road \u2014 San Juan CR 242",
+        "device": "handheld",
+        "state": {
+          "state": "prompt",
+          "status": "Race did not present its first playable frame",
+          "error": "",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Valley of the Gods Road %E2%80%94 San Juan CR 242",
+            "phase": "starting-race",
+            "progress": 0.997,
+            "elapsedMs": 77879.5,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "race": "Valley of the Gods Road \u2014 San Juan CR 242",
+          "sky": "environment-v1-gods-noon",
+          "weather": {
+            "id": "clear",
+            "label": "Clear",
+            "visualIntensity": 0,
+            "targetIntensity": 0,
+            "buildup": 0,
+            "effectiveIntensity": 0,
+            "precipitationIntensity": 0,
+            "snowDepthInches": 0,
+            "visibilityDistanceM": null,
+            "visibilityStrength": 0,
+            "visibilityColor": "rgba(0,0,0,0)",
+            "visibilityNearAlpha": 0,
+            "visibilityFarAlpha": 0
+          },
+          "fx": {
+            "enabled": true,
+            "preset": "noon",
+            "sunEnabled": true,
+            "sunDisc": true,
+            "sunX": 0.5,
+            "sunY": 0.08,
+            "sunColor": "#fff5dc",
+            "sunSize": 0.012,
+            "sunIntensity": 0.8,
+            "lensFlare": 0.12,
+            "sunGlare": 0.45,
+            "skyBrightness": 1,
+            "tintColor": "#ffffff",
+            "tintAmount": 0,
+            "motionBlur": 0.16,
+            "speedLines": 0.08,
+            "speedLineOpacity": 1,
+            "speedLineArtRef": "",
+            "speedLineArtMode": "overlay",
+            "vignette": 0.1,
+            "speedStartMph": 45,
+            "speedFullMph": 130
+          },
+          "session": null
+        },
+        "errors": [],
+        "network": [
+          {
+            "url": "http://127.0.0.1:4272/__storage/file?folder=art&name=dirtsmoke",
+            "error": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          }
+        ],
+        "error": "Error: page.waitForFunction: Error: Race left startup for prompt: Race did not present its first playable frame\n    at eval (eval at predicate (eval at evaluate (:290:30)), <anonymous>:4:56)\n    at predicate (eval at evaluate (:290:30), <anonymous>:7:23)\n    at next (eval at evaluate (:290:30), <anonymous>:29:29)"
+      },
+      {
+        "file": "/tmp/race-environment-pack9-driving/race-environments-driving--fd26e-authored-foreground-and-sky/failure-state.json",
+        "race": "Valley of the Gods Road \u2014 San Juan CR 242",
+        "device": "desktop",
+        "state": {
+          "state": "race-editor",
+          "status": "Loading Valley of the Gods Road %E2%80%94 San Juan CR 242",
+          "error": "Race preparation failed during art pack: Required artwork could not load: 8300 body",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Valley of the Gods Road %E2%80%94 San Juan CR 242",
+            "phase": "transfer-art",
+            "progress": 0.975,
+            "elapsedMs": 70849.5,
+            "missingArtRefs": [],
+            "status": "running"
+          },
+          "preparation": "Transferring artwork",
+          "race": "New Race",
+          "sky": "providence",
+          "weather": {
+            "id": "clear",
+            "label": "Clear",
+            "visualIntensity": 0,
+            "targetIntensity": 0,
+            "buildup": 0,
+            "effectiveIntensity": 0,
+            "precipitationIntensity": 0,
+            "snowDepthInches": 0,
+            "visibilityDistanceM": null,
+            "visibilityStrength": 0,
+            "visibilityColor": "rgba(0,0,0,0)",
+            "visibilityNearAlpha": 0,
+            "visibilityFarAlpha": 0
+          },
+          "fx": {
+            "enabled": false,
+            "preset": "noon",
+            "sunEnabled": true,
+            "sunDisc": true,
+            "sunX": 0.5,
+            "sunY": 0.2,
+            "sunColor": "#fff0cf",
+            "sunSize": 0.012,
+            "sunIntensity": 0.7,
+            "lensFlare": 0.12,
+            "sunGlare": 0.45,
+            "skyBrightness": 1,
+            "tintColor": "#ffffff",
+            "tintAmount": 0,
+            "motionBlur": 0,
+            "speedLines": 0,
+            "speedLineOpacity": 1,
+            "speedLineArtRef": "",
+            "speedLineArtMode": "overlay",
+            "vignette": 0,
+            "speedStartMph": 45,
+            "speedFullMph": 130
+          },
+          "session": {
+            "running": false
+          }
+        },
+        "errors": [],
+        "network": [
+          {
+            "url": "http://127.0.0.1:4272/__storage/file?folder=art&name=8300%20body",
+            "error": {
+              "errorText": "net::ERR_ABORTED"
+            }
+          }
+        ],
+        "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m"
+      }
+    ],
+    "successfulSamples": 0,
+    "failedSamples": 4,
+    "distinctSuccessfulRaces": 0
+  },
+  "drivingLimit": "Four new cases failed; concurrent bounded checks may confound load timing, no matched untouched-baseline diagnosis this pack, so not asserted baseline failures. Boynton handheld overall runner timeout masked by keyboard cleanup; cleanup now preserves original exception. No runtime deadlines changed.",
+  "evidence": {
+    "recipes": "data/race-environments/pack9-recipes.json",
+    "native": "/tmp/race-environment-pack9-renderer",
+    "corrective": "/tmp/race-environment-pack9-terrain-native",
+    "repair": "/tmp/race-environment-pack9-repairs-native",
+    "sheets": "/tmp/race-pack9-sheets",
+    "sources": "/workspace/generated_images",
+    "sourceBoundaryMetrics": "/tmp/pack9-final-source-metrics.json",
+    "logs": [
+      "/tmp/race-pack9-units-final.log",
+      "/tmp/race-pack9-campaign.log",
+      "/tmp/race-pack9-terrain-native.log",
+      "/tmp/race-pack9-final-focused.log"
+    ],
+    "correctedGroundSheet": "/tmp/race-pack9-sheets/corrected-ground.jpg"
+  },
+  "disk": {
+    "startAvailableBytes": 3555676160,
+    "availableBeforeCommit": 3340242944,
+    "note": "statvfs available bytes; original images, all QA, Git objects and prior refs retained; no cleanup. Allocated du reported separately, shared Git counted once.",
+    "measuredAllocatedKiB": {
+      "allOriginalGeneratedImages": 370744,
+      "sharedGitObjectsCountedOnce": 3925024,
+      "allEnvironmentSourceAssets": 222472,
+      "initialPack9NativeQA": 21056,
+      "pack9DrivingFailureQA": 2384
+    },
+    "forecast": "About 0.14 GiB consumed before commit in this pack; original images and Git objects dominate cumulative use. Current 3.17 GiB leaves several comparable compact packs but must be remeasured each checkpoint; no cleanup performed."
+  },
+  "independentNightDriving": {
+    "scope": "Short real-travel and driving samples only. Inspect retained authored frames separately; no route-wide or visual acceptance inferred.",
+    "successes": [
+      {
+        "file": "/tmp/race-environment-pack9-night-pair/race-environments-driving--00bf9-authored-foreground-and-sky/driving-state.json",
+        "race": "World Wide Technology Raceway \u2014 drag strip",
+        "device": "desktop",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "displacementM": 20.104838407146477,
+        "timing": {
+          "wallMs": 42250,
+          "simulationMs": 3933.3333333333258
+        },
+        "routeProgressM": 20.092240709189237,
+        "elapsedMs": 5966.666666666657,
+        "speedMps": 6.104702,
+        "sky": "environment-v1-gateway-night",
+        "brightness": 0.05,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      }
+    ],
+    "failures": [],
+    "successfulSamples": 1,
+    "failedSamples": 0,
+    "distinctSuccessfulRaces": 1
+  },
+  "independentNightReview": {
+    "result": "20.092m route progress, 20.105m displacement, 3.933s simulation in 42.250s wall; normal-input 2m car corridor passed. No page/network errors. Ordinary authored frames inspected: headlights/road fit dark surroundings, but .05 sky remains near black; readable skyline acceptance still pending.",
+    "matchedPair": "/tmp/race-pack9-sheets/gateway-matched-night.jpg",
+    "pairedPose": "Exact x/z/yaw/cameraYaw/elapsed equality asserted; pause overlay retained. Diagnostic exposes restrained moon and venue silhouette, no daytime-looking horizon. This is not a normal-brightness pass or a new-pack driving pass.",
+    "originals": "/tmp/race-environment-pack9-night-pair"
+  }
+}

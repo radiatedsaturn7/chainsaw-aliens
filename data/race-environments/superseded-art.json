@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "skybox-tower-hill": {
+      "kind": "skybox",
+      "replacement": "environment-v1-tower-hill-snow-night",
+      "raceRef": "Tower Hill Road",
+      "reason": "Original daytime autumn cityscape is not the snowy rural Tower Hill night location. Replacement has snow, woodland and clouded night silhouettes. Native desktop/handheld raw, authored and pitch comparisons reviewed; authored .05 exposure remains nearly black and replacement boundary bands remain pending, not full driving acceptance.",
+      "source": "assets/campaign-art/skyboxes/tower-hill.png",
+      "sourceSha256": "14ba11d41687683d20974b7a78eac1b5ef66bd9f8d376975cba4791b32a05bc2",
+      "documentPath": "art/skybox-tower-hill/document.json",
+      "documentSha256": "f58d4409a8bff659660a958e1d047f6490d213f09f9d0949c56570bb844372ac",
+      "review": {
+        "path": "data/race-environments/tower-hill-review.jpg",
+        "sha256": "3bd81992a1a9d0d485e2f7065acd11f98809b4d406feeef49ce5f54d971e99bc",
+        "verdict": "superseded-location-season-mismatch",
+        "scope": "Matched native renderer original/replacement, desktop/handheld, raw100 and unchanged authored exposure. Full driving acceptance not claimed."
+      }
+    },
+    "skybox-bayard-noon-2994": {
+      "kind": "skybox",
+      "replacement": "environment-v1-bayard-noon",
+      "raceRef": "Bayard \u2014 Road 77 to City Park",
+      "reason": "Original noon prairie was geographically plausible and is not mislabeled as invalid. Superseded after matched desktop/handheld native review by a more specific North Platte agricultural valley, Bayard elevator cluster, Wildcat escarpment and distant Chimney Rock composition grounded in saved Road 77 origin. Noon stays unchanged; both have diagnostic lower-edge extensions, so no seam or full-route driving acceptance is inferred.",
+      "source": "assets/campaign-art/skyboxes/bayard-noon-2994.png",
+      "sourceSha256": "403583e3de4f710d859ad1dee597006daabdd4abe3609b890831d591b10653b2",
+      "documentPath": "art/skybox-bayard-noon-2994/document.json",
+      "documentSha256": "2777ea5a8423f9ac3a4973dc476c6787741d95fa33d7c014e37437750d256a59",
+      "review": {
+        "path": "data/race-environments/bayard-review.jpg",
+        "sha256": "e42752102c5e927836f41ffb88c69886de2985454279be6803e9bd37e575be29",
+        "verdict": "superseded-site-composition",
+        "scope": "Both sources and matched native raw/authored desktop/handheld views reviewed. New composition adds local identity while retaining compatible noon landscape. Native review is not route-wide driving approval."
+      }
+    },
+    "skybox-moki-dugway": {
+      "kind": "skybox",
+      "replacement": "environment-v1-moki-cedar-mesa-day",
+      "raceRef": "Moki Dugway",
+      "reason": "Original Utah mesa scene remains geographically plausible, not invalid art. Superseded by the already active wider Cedar Mesa and Valley of the Gods distant horizon composition, with lower distant landforms instead of a close switchback/ruin focal point. Matched native comparisons viewed; authored fog obscures both, and replacement lower-edge extension remains a release-quality gap. No driving or seam acceptance is inferred.",
+      "source": "assets/campaign-art/skyboxes/moki-dugway.png",
+      "sourceSha256": "095d51c90f0f89b1f8d62f56d86f62dca7d8f0b3074a2ed31d14fafb6cc4678a",
+      "documentPath": "art/skybox-moki-dugway/document.json",
+      "documentSha256": "cbc86d997b2cf7acfbc4076af99b3a32fa5006ec9bc57be50d45b92b8b9229c0",
+      "review": {
+        "path": "data/race-environments/moki-review.jpg",
+        "sha256": "60dbb82b77ab1110b01059858e12711919841c8c05dfa9362a207d6331993492",
+        "verdict": "superseded-site-composition",
+        "scope": "Original source and active source plus matched native raw100 and unchanged authored desktop/handheld views inspected. Original bytes retained and verified; fog and boundary limitations are separate from composition choice."
+      }
+    },
+    "skybox-oak-creek": {
+      "kind": "skybox",
+      "replacement": "environment-v1-oakrim-evening",
+      "raceRef": "Oak Creek Canyon",
+      "reason": "Original lower Sedona red-rock/cottonwood scene remains regionally plausible. Superseded by the active upper Oak Creek Vista pine-rim, layered red/tan canyon and evening composition grounded in the saved upper 89A origin. Matched native comparisons viewed: unchanged authored fog hides much of both; replacement reduces older bottom extrusion but mild boundary bands remain. No full-route acceptance is inferred.",
+      "source": "assets/campaign-art/skyboxes/oak-creek.png",
+      "sourceSha256": "d2b0b00583ec4ac0ac055ca79bd4482d5f684954f2ff9686c5504b8d020920f5",
+      "documentPath": "art/skybox-oak-creek/document.json",
+      "documentSha256": "21b0f6fd917701e16b79c3a1c00c6ce224a3d2df0e5a7ea32ce2da25379835af",
+      "review": {
+        "path": "data/race-environments/oak-creek-review.jpg",
+        "sha256": "c64000c353ebfeeb85e16022f43700632bcc3e41086f42f572b2c41e0c28ab4b",
+        "verdict": "superseded-site-composition",
+        "scope": "Original source and active source plus matched native raw100 and unchanged authored desktop/handheld views inspected. Original bytes retained and verified; fog and boundary limitations are separate from composition choice."
+      }
+    },
+    "skybox-data-center-city": {
+      "kind": "skybox",
+      "replacement": "environment-v1-stl-riverfront-night",
+      "raceRef": "Data Center City",
+      "reason": "Original generic futuristic towers and ruined wooded foreground are superseded by the already active lower riverfront campus composition with clean colorful machine infrastructure and a restrained night sky. Last inherited use on eleven unrelated city/circuit routes was replaced by site-specific artwork in pack14. Both original and active native desktop/handheld views inspected: authored fog and .05 exposure hide both, and active edge extensions remain a polish limitation. No readability or driving acceptance is inferred.",
+      "source": "assets/campaign-art/skyboxes/data-center-city.png",
+      "sourceSha256": "34e1381acddcd84074e876872257c487bb4886aa486994aa2841e5430b263e13",
+      "documentPath": "art/skybox-data-center-city/document.json",
+      "documentSha256": "05ebd453201b44f437c5eddf189cba1aa43da557c813dfb17a1a371101047837",
+      "review": {
+        "path": "data/race-environments/data-center-review.jpg",
+        "sha256": "b4763bfe030fce3a4cfcdc5d0d7023e34a01112000c13c860662b0b6eaf37c33",
+        "verdict": "superseded-site-composition",
+        "scope": "Original and active sources plus matched native raw100 and unchanged authored desktop/handheld views inspected. Original bytes remain unchanged; clean machine-campus composition is preferred while actual low exposure/fog and boundary defects remain explicit."
+      }
+    },
+    "skybox-ozarks": {
+      "kind": "skybox",
+      "replacement": "environment-v1-ozark-eminence-day",
+      "raceRef": "Ozark Backroads",
+      "reason": "Original autumn wooded bluff panorama is regionally plausible and is not claimed to depict a proven wrong state. Superseded by the already active winter woodland, low rolling limestone valley and river composition grounded in the saved MO-19 near Eminence origin. Last inherited use was removed by pack14 site-specific skies. Original and active native desktop/handheld raw/authored comparisons viewed; both are obscured by unchanged authored haze, and active lower-edge columns remain a release-quality defect. No seam or driving acceptance is inferred.",
+      "source": "assets/campaign-art/skyboxes/ozarks.png",
+      "sourceSha256": "b268e98638d8eb88633770b01ecfd17a9cf653095c9abe05576623dfde80f473",
+      "documentPath": "art/skybox-ozarks/document.json",
+      "documentSha256": "51a660a2ff129a04dd47a98643426039c613fbe29c140c7a8ce98db63b60c0ee",
+      "review": {
+        "path": "data/race-environments/ozark-review.jpg",
+        "sha256": "159dc421305fd36d6ceffcc52d11304baa9b3e0b83862ab027493015b558f43f",
+        "verdict": "superseded-site-composition",
+        "scope": "Both sources and matched native raw100/authored desktop/handheld views reviewed. Original bytes preserved. Site/season composition choice is separate from unresolved active lower-edge extrusion and authored haze."
+      }
+    },
+    "skybox-angeles-crest": {
+      "kind": "skybox",
+      "replacement": "environment-v1-angeles-evening",
+      "raceRef": "Angeles Crest Highway",
+      "reason": "Original San Gabriel ridge remains geographically plausible. Active replacement emphasizes angular nearby gray mountain ridges and chaparral with the saved evening palette. Original bottom extrusion is reduced to a flatter extension; extension and faint top boundary remain quality limitations. Matched original/replacement native desktop and handheld raw100 and unchanged authored views were inspected.",
+      "source": "assets/campaign-art/skyboxes/angeles-crest.png",
+      "sourceSha256": "0f29c57c66940350d35fa9394731e9668c22921dc9d082cabd24f967aac4cf43",
+      "documentPath": "art/skybox-angeles-crest/document.json",
+      "documentSha256": "dd8eb2b6282966247a4a0f13932e5e318f42c8a3a8efd4669d376d0607ee805a",
+      "review": {
+        "path": "data/race-environments/pack16-skybox-angeles-crest-review.jpg",
+        "sha256": "014db1fe407d928c21efa2f7e1e6587f9241b6b3b7d099246772844bf7a7b408",
+        "verdict": "superseded-site-composition",
+        "scope": "Matched native renderer original/replacement desktop and handheld, raw100/no-fog and unchanged authored exposure. Source and native originals retained. Boundary polish and production-driving acceptance remain separate and pending."
+      }
+    },
+    "skybox-laurel-highlands": {
+      "kind": "skybox",
+      "replacement": "environment-v1-laurel-ohiopyle-evening",
+      "raceRef": "Laurel Highlands Scenic Byway",
+      "reason": "Original autumn Appalachian hills remain regionally plausible. Active replacement emphasizes the rounded wooded PA 381 gorge and hemlock landscape. Both retain conspicuous lower-edge extensions, so supersession records site composition, not seam acceptance. Matched original/replacement native desktop and handheld raw100 and unchanged authored views were inspected.",
+      "source": "assets/campaign-art/skyboxes/laurel-highlands.png",
+      "sourceSha256": "6ceee956472bfce8cf2f2dda211be409863c119db1bd2c84a2ceb9fcd2e3bd32",
+      "documentPath": "art/skybox-laurel-highlands/document.json",
+      "documentSha256": "f566042f9794f8b55e75f24ef2d95c95b36ef223322f917e65e5856b72eb99d9",
+      "review": {
+        "path": "data/race-environments/pack16-skybox-laurel-highlands-review.jpg",
+        "sha256": "e1be6a7999d23e1583bfc28e2128cccc61302ef225be753a1c359132fcc800ec",
+        "verdict": "superseded-site-composition",
+        "scope": "Matched native renderer original/replacement desktop and handheld, raw100/no-fog and unchanged authored exposure. Source and native originals retained. Boundary polish and production-driving acceptance remain separate and pending."
+      }
+    },
+    "skybox-mount-washington": {
+      "kind": "skybox",
+      "replacement": "environment-v1-mount-washington-snow-noon",
+      "raceRef": "Mount Washington Auto Road \u2014 point-to-point",
+      "reason": "Original clear blue mountain view is superseded by the active snowy Presidential Range and cloudy summit composition consistent with authored snow. Both sources remain retained. Production visibility hides the sky; diagnostic boundary extensions remain. Matched original/replacement native desktop and handheld raw100 and unchanged authored views were inspected.",
+      "source": "assets/campaign-art/skyboxes/mount-washington.png",
+      "sourceSha256": "76f60cd41dbe3fdf40b2935b1a799cb2dd7d9e5d9866143f9bc5855647771378",
+      "documentPath": "art/skybox-mount-washington/document.json",
+      "documentSha256": "1a149eab1593846ca00457b796dadaa5dc81bdbfd34ffe5c6ed41763eff86c8e",
+      "review": {
+        "path": "data/race-environments/pack16-skybox-mount-washington-review.jpg",
+        "sha256": "3383cb2af937d08a07d76770382bf88f86699d8a6871dfe05acf26de5c72ff62",
+        "verdict": "superseded-site-composition",
+        "scope": "Matched native renderer original/replacement desktop and handheld, raw100/no-fog and unchanged authored exposure. Source and native originals retained. Boundary polish and production-driving acceptance remain separate and pending."
+      }
+    },
+    "skybox-ohio-river-crossing": {
+      "kind": "skybox",
+      "replacement": "environment-v1-ohio-little-muskingum-storm",
+      "raceRef": "Ohio River Crossing",
+      "reason": "Original broad river and industrial bridge composition does not match the saved SR26 Little Muskingum enclosed wooded valley. Active narrow valley and storm cloud composition is more appropriate. Top and bottom extensions remain conspicuous in diagnostic views. Matched original/replacement native desktop and handheld raw100 and unchanged authored views were inspected.",
+      "source": "assets/campaign-art/skyboxes/ohio-river-crossing.png",
+      "sourceSha256": "20f4085b5f9699414ca98425edc0086e7da4875b1e9834dde7285703a2e26a32",
+      "documentPath": "art/skybox-ohio-river-crossing/document.json",
+      "documentSha256": "6094269d1968edf089880eed04738e819246e1caec72c6e7ebab31a9bdcbc1b4",
+      "review": {
+        "path": "data/race-environments/pack16-skybox-ohio-river-crossing-review.jpg",
+        "sha256": "bc928f13f442f700db5c90c0c1024a90cf75c960055a7df4a42cdc394a2e5fec",
+        "verdict": "superseded-site-composition",
+        "scope": "Matched native renderer original/replacement desktop and handheld, raw100/no-fog and unchanged authored exposure. Source and native originals retained. Boundary polish and production-driving acceptance remain separate and pending."
+      }
+    },
+    "skybox-pikes-peak": {
+      "kind": "skybox",
+      "replacement": "environment-v1-pikes-evening",
+      "raceRef": "Pikes Peak Highway",
+      "reason": "Original lower forested mountain perspective is superseded by the active upper treeless pink-gray granite and talus horizon. Authored evening settings remain unchanged. The replacement has broad flat boundary extensions still requiring polish. Matched original/replacement native desktop and handheld raw100 and unchanged authored views were inspected.",
+      "source": "assets/campaign-art/skyboxes/pikes-peak.png",
+      "sourceSha256": "950e1b1259d564aed24ac5b1fe74b73a07432744365b94890fa9c8b4ca5e60cd",
+      "documentPath": "art/skybox-pikes-peak/document.json",
+      "documentSha256": "03dd1ba23cb440002de8263caed116c8e85082f95e3ce0c084085c74fe9d58ff",
+      "review": {
+        "path": "data/race-environments/pack16-skybox-pikes-peak-review.jpg",
+        "sha256": "141d2ef429ad8cec19c43f2136b9328b58cdcfe44abba367ca119d5775ecb5a9",
+        "verdict": "superseded-site-composition",
+        "scope": "Matched native renderer original/replacement desktop and handheld, raw100/no-fog and unchanged authored exposure. Source and native originals retained. Boundary polish and production-driving acceptance remain separate and pending."
+      }
+    },
+    "skybox-route-66": {
+      "kind": "skybox",
+      "replacement": "environment-v1-route66-erick-texola",
+      "raceRef": "Historic Route 66",
+      "reason": "Original desert mesa and isolated roadside silhouette is superseded by the active low Erick-Texola prairie, agricultural and utility skyline. The source location is distinct from Monument Valley. Authored fog obscures both; full driving and wrap acceptance are not inferred. Matched original/replacement native desktop and handheld raw100 and unchanged authored views were inspected.",
+      "source": "assets/campaign-art/skyboxes/route-66.png",
+      "sourceSha256": "7b4c49d6b06830cfb7e53437153fc5ae716b6b59107267404630051b739f5707",
+      "documentPath": "art/skybox-route-66/document.json",
+      "documentSha256": "52d3b022faf77551e16d300316358ef48610f29f873885758762c69314b468f5",
+      "review": {
+        "path": "data/race-environments/pack16-skybox-route-66-review.jpg",
+        "sha256": "a812566b8531295edf239f43f8a395995da907697e1e1144a3c0524294389d5e",
+        "verdict": "superseded-site-composition",
+        "scope": "Matched native renderer original/replacement desktop and handheld, raw100/no-fog and unchanged authored exposure. Source and native originals retained. Boundary polish and production-driving acceptance remain separate and pending."
+      }
+    },
+    "ground-dirty-snow-v2": {
+      "kind": "terrain",
+      "replacement": "ground-patchy-snow-leaf-v1",
+      "raceRef": "Ohio River Crossing",
+      "replacementMaterial": "snow",
+      "replacementCellCount": 18591,
+      "reason": "Original muddy snow remains valid generic snow art. Superseded at this wooded Little Muskingum location by patchy snow with temperate leaf litter; the saved physical snow cells and all weights remain unchanged.",
+      "source": "assets/campaign-art/ground/ground-dirty-snow-v2.png",
+      "sourceSha256": "cac68dd18583d8720dc05ec5dd0a90de5b6e7d71d35797c9a2a766de93848dc8",
+      "documentPath": "art/ground-dirty-snow-v2/document.json",
+      "documentSha256": "db56aff6d89c6ea5d795d3254f31d70f72014bd27b954d21400f6eeb8241b7d9",
+      "review": {
+        "path": "data/race-environments/pack17-ground-dirty-snow-v2-review.jpg",
+        "sha256": "080619813021a5c298d490857f7bcdef2d9143269866697c731fc8faa1603013",
+        "verdict": "superseded-material-site-fit",
+        "scope": "Actual native original/replacement canvases inspected at desktop and handheld sizes; exact active normal/rough material cells verified independently. Unlit material acceptance only, not world lighting or driving acceptance."
+      }
+    },
+    "ground-industrial-rubble-v2": {
+      "kind": "terrain",
+      "replacement": "ground-gray-gravel-v2",
+      "raceRef": "Data Center City",
+      "replacementMaterial": "gravel",
+      "replacementCellCount": 5692,
+      "reason": "Original image is a colorful fabricated metal panel floor, not gravel despite its historical name. Superseded for the saved gravel cells by actual gray gravel. Original colorful artwork remains preserved; changing the physical substrate to metal would require a separate design decision.",
+      "source": "assets/campaign-art/ground/ground-industrial-rubble-v2.png",
+      "sourceSha256": "63f8b26905cfc6142082f545642a73df98aec10413e10d274f7af37ad531307b",
+      "documentPath": "art/ground-industrial-rubble-v2/document.json",
+      "documentSha256": "bfaae3e24e3a9c3c0a0d612bd7ccfa599822af76050eb0bb14ecfb9e828df9b5",
+      "review": {
+        "path": "data/race-environments/pack17-ground-industrial-rubble-v2-review.jpg",
+        "sha256": "d5228cd7baf2839d057079a8828bb3357d843afefd734c1808a4ba79db8164de",
+        "verdict": "superseded-material-site-fit",
+        "scope": "Actual native original/replacement canvases inspected at desktop and handheld sizes; exact active normal/rough material cells verified independently. Unlit material acceptance only, not world lighting or driving acceptance."
+      }
+    }
+  }
+}

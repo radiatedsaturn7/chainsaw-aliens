@@ -1,0 +1,471 @@
+{
+  "schemaVersion": 1,
+  "parentCheckpoint": "822179b1a673954a98104120082993e233cb0109",
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "pack": "western-mountains-pacific-pack13",
+  "coverage": {
+    "totalRaces": 245,
+    "assigned": 201,
+    "remaining": 44,
+    "newBindings": 24,
+    "newUniqueSkies": 24,
+    "newSourceImagesInspected": 24,
+    "newNativeDeviceCases": 48,
+    "newBothDeviceRoutesInspected": 24,
+    "olderRepairNativeCases": 12,
+    "newTerrainMaterialCheckedRoutes": 24,
+    "existingSnowRoutes": 21,
+    "existingGrassRoutes": 2,
+    "existingGravelRoutes": 1,
+    "fullRouteAcceptanceAdded": 0,
+    "shortProductionPasses": 2,
+    "shortProductionFailures": 1,
+    "nativeCaseExecutions": 70,
+    "currentNewNativeDeviceCases": 48,
+    "currentRepairNativeDeviceCases": 12,
+    "comparisonCases": 6,
+    "supersededNativeCasesRetained": 4,
+    "authoredLowExposureNightRoutes": 7,
+    "authoredHazeRoutes": 4,
+    "fullyFogOccludedRoutes": 1,
+    "materialCellsChecked": {
+      "snow": 310626,
+      "grass": 18557,
+      "gravel": 20860,
+      "total": 350043
+    }
+  },
+  "checks": {
+    "units": {
+      "passed": 112,
+      "failed": 0,
+      "log": "/tmp/race-pack13-final-units.tap"
+    },
+    "campaignBrowser": {
+      "passed": 6,
+      "log": "/tmp/race-pack13-campaign.log"
+    },
+    "nativeAudit": "/tmp/race-pack13-native-audit.json",
+    "decodedArt": "/tmp/race-pack13-final-art.json",
+    "preservation": "/tmp/race-pack13-preservation.json",
+    "manifest": "/tmp/race-pack13-final-manifest.log"
+  },
+  "visualEvidence": {
+    "newSheets": "/tmp/pack13-sheets/",
+    "repairSheets": "/tmp/pack13-repair-sheets/",
+    "nativeGroundRepeats": "/tmp/pack13-native-materials.jpg",
+    "newNumericWarnings": [],
+    "allNumericWarnings": [],
+    "nightRule": "Clear night sites have selective restrained stars/crescents; snowy Thompson Pass uses cloud glow without moon/stars. Unchanged authored .05 exposure may hide these details; diagnostic views are not driving acceptance.",
+    "qualityLimits": "Top/bottom clamped bands remain under extreme pitch; Boise lower edge and Thompson cloud top need targeted polish. Numeric seam thresholds alone do not establish visual or full-route acceptance.",
+    "allTwentyNewContactSheetsViewed": true,
+    "nativeBoundaryRows": "/tmp/pack13-native-boundaries.json",
+    "priorityBoundaryGaps": [
+      "Boise bottom row range 17/19/32 causes conspicuous diagnostic columns.",
+      "Thompson cloud top row range 15/20/25 extends at high pitch; authored fog fully obscures it.",
+      "Little Tujunga numeric wrap now clears but broad bare edge strip needs art polish.",
+      "Older Moki lower edge remains conspicuous in independent projection; both preserved original and replacement have this limitation."
+    ],
+    "supersessionReviews": [
+      "data/race-environments/moki-review.jpg",
+      "data/race-environments/oak-creek-review.jpg"
+    ],
+    "productionObservation": "Sandia noon snowy foreground and distant ridge fit the sampled actual view. Laguna authored night remains nearly black; same-pose paused 100%-sky diagnostic shows a restrained blue silhouette above the headlights, with pause overlay retained. No final night readability claim. Skalkaho failure frame is loaded and live but only 3.92m progress; terrain occludes much horizon.",
+    "lagunaMatchedPair": "/tmp/race-pack13-driving/race-environments-driving--d3480-authored-foreground-and-sky/matched-pair.json"
+  },
+  "productionDriving": {
+    "scope": "Short real-travel and driving samples only. Inspect retained authored frames separately; no route-wide or visual acceptance inferred.",
+    "successes": [
+      {
+        "file": "/tmp/race-pack13-driving/race-environments-driving--c7a30-authored-foreground-and-sky/driving-state.json",
+        "race": "Sandia Speedway \u2014 Road Course",
+        "device": "desktop",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "displacementM": 22.306475268368008,
+        "timing": {
+          "wallMs": 8366,
+          "simulationMs": 6266.500000000015
+        },
+        "routeProgressM": 22.994895070830065,
+        "elapsedMs": 8899.800000000016,
+        "speedMps": 11.751731872558594,
+        "sky": "environment-v1-sandia-noon",
+        "brightness": 1,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-pack13-driving/race-environments-driving--d3480-authored-foreground-and-sky/driving-state.json",
+        "race": "WeatherTech Raceway Laguna Seca",
+        "device": "handheld",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "displacementM": 20.170268069048625,
+        "timing": {
+          "wallMs": 35849,
+          "simulationMs": 4033.333333333325
+        },
+        "routeProgressM": 20.168045610716426,
+        "elapsedMs": 6066.666666666656,
+        "speedMps": 6.156158,
+        "sky": "environment-v1-lagunaseca-night",
+        "brightness": 0.05,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      }
+    ],
+    "failures": [
+      {
+        "file": "/tmp/race-pack13-driving/race-environments-driving--b1a6d-authored-foreground-and-sky/failure-state.json",
+        "race": "Skalkaho Pass \u2014 Forest Rally",
+        "device": "handheld",
+        "state": {
+          "state": "race-editor",
+          "status": "Playtesting Skalkaho Pass %E2%80%94 Forest Rally in RTG-001",
+          "error": "",
+          "diagnostics": {
+            "requestId": 1,
+            "cacheKey": "",
+            "raceName": "Skalkaho Pass %E2%80%94 Forest Rally",
+            "phase": "starting-race",
+            "progress": 0.997,
+            "elapsedMs": 56511.79999999702,
+            "missingArtRefs": [],
+            "status": "presented",
+            "firstPlayableFrameAt": 1794747690407
+          },
+          "race": "Skalkaho Pass \u2014 Forest Rally",
+          "sky": "environment-v1-skalkaho-evening",
+          "weather": {
+            "id": "clear",
+            "label": "Clear",
+            "visualIntensity": 0,
+            "targetIntensity": 0,
+            "buildup": 0,
+            "effectiveIntensity": 0,
+            "precipitationIntensity": 0,
+            "snowDepthInches": 0,
+            "visibilityDistanceM": 5000,
+            "visibilityStrength": 0,
+            "visibilityColor": "rgba(0,0,0,0)",
+            "visibilityNearAlpha": 0,
+            "visibilityFarAlpha": 0
+          },
+          "fx": {
+            "enabled": true,
+            "preset": "evening",
+            "sunEnabled": true,
+            "sunDisc": true,
+            "sunX": 0.75,
+            "sunY": 0.48,
+            "sunColor": "#ffb16c",
+            "sunSize": 0.012,
+            "sunIntensity": 0.65,
+            "lensFlare": 0.12,
+            "sunGlare": 0.45,
+            "skyBrightness": 0.42,
+            "tintColor": "#ffae78",
+            "tintAmount": 0.08,
+            "motionBlur": 0.16,
+            "speedLines": 0.08,
+            "speedLineOpacity": 1,
+            "speedLineArtRef": "",
+            "speedLineArtMode": "overlay",
+            "vignette": 0.1,
+            "speedStartMph": 45,
+            "speedFullMph": 130
+          },
+          "session": {
+            "running": true,
+            "pending": false,
+            "elapsed": 7233.333333333312,
+            "speed": 3.112294,
+            "worldX": -3571.690242,
+            "worldZ": 782.259159,
+            "camera": "third-person"
+          }
+        },
+        "errors": [],
+        "network": [],
+        "error": "Error: Normal-input route progress\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m20\u001b[39m\nReceived:    \u001b[31m3.923031441758085\u001b[39m"
+      }
+    ],
+    "successfulSamples": 2,
+    "failedSamples": 1,
+    "distinctSuccessfulRaces": 2,
+    "failureClassification": {
+      "race": "Skalkaho Pass \u2014 Forest Rally",
+      "classification": "Normal-input distance target failure, not startup. Not established as a baseline defect.",
+      "targetM": 20,
+      "progressM": 3.923031441758085,
+      "controlBudgetWallMs": 90000,
+      "simulationAdvanceMs": 5100,
+      "finalLateralM": -0.0037284381444115,
+      "missingArtRefs": [],
+      "retries": 0
+    }
+  },
+  "remainingRoutes": [
+    {
+      "raceRef": "Demo Track",
+      "siteGroup": "site-81f0740150bdd13f",
+      "documentPath": "races/Demo Track/document.json"
+    },
+    {
+      "raceRef": "Mount Washington Auto Road \u2014 point-to-point Copy",
+      "siteGroup": "site-af086b4ab458d226",
+      "documentPath": "races/Mount Washington Auto Road %E2%80%94 point-to-point Copy/document.json"
+    },
+    {
+      "raceRef": "Studio Sprint",
+      "siteGroup": "site-456872ebce92f3df",
+      "documentPath": "races/Studio Sprint/document.json"
+    },
+    {
+      "raceRef": "Studio Sprint Copy",
+      "siteGroup": "site-f5c7b0c80ccaed90",
+      "documentPath": "races/Studio Sprint Copy/document.json"
+    },
+    {
+      "raceRef": "Studio Sprint2",
+      "siteGroup": "site-24c1bc8192f25476",
+      "documentPath": "races/Studio Sprint2/document.json"
+    },
+    {
+      "raceRef": "buse1",
+      "siteGroup": "site-17ea1aac9a920747",
+      "documentPath": "races/buse1/document.json"
+    },
+    {
+      "raceRef": "p1",
+      "siteGroup": "site-f64551fcd6f07823",
+      "documentPath": "races/p1/document.json"
+    },
+    {
+      "raceRef": "p2loadtest",
+      "siteGroup": "site-52108990a32ae764",
+      "documentPath": "races/p2loadtest/document.json"
+    },
+    {
+      "raceRef": "Indianapolis Motor Speedway \u2014 Oval",
+      "siteGroup": "facility-indianapolis-a8ccedb566",
+      "documentPath": "races/Indianapolis Motor Speedway %E2%80%94 Oval/document.json"
+    },
+    {
+      "raceRef": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+      "siteGroup": "facility-indianapolis-41bc38d75f",
+      "documentPath": "races/Indianapolis Motor Speedway %E2%80%94 Grand Prix Road Course/document.json"
+    },
+    {
+      "raceRef": "Hana Highway \u2014 Rainforest Bends",
+      "siteGroup": "site-7cd23d44d23189c0",
+      "documentPath": "races/Hana Highway %E2%80%94 Rainforest Bends/document.json"
+    },
+    {
+      "raceRef": "Barber Motorsports Park",
+      "siteGroup": "site-2df0d586d8e95bd2",
+      "documentPath": "races/Barber Motorsports Park/document.json"
+    },
+    {
+      "raceRef": "NCM Motorsports Park",
+      "siteGroup": "site-1e4427ffcce2292f",
+      "documentPath": "races/NCM Motorsports Park/document.json"
+    },
+    {
+      "raceRef": "NOLA Motorsports Park",
+      "siteGroup": "site-7a77be5321a89d09",
+      "documentPath": "races/NOLA Motorsports Park/document.json"
+    },
+    {
+      "raceRef": "GingerMan Raceway",
+      "siteGroup": "site-91b730232d2edaba",
+      "documentPath": "races/GingerMan Raceway/document.json"
+    },
+    {
+      "raceRef": "Brainerd \u2014 Competition Course",
+      "siteGroup": "site-a2afa1a045dcd258",
+      "documentPath": "races/Brainerd %E2%80%94 Competition Course/document.json"
+    },
+    {
+      "raceRef": "NCCAR \u2014 Road Course",
+      "siteGroup": "site-3a5aa14c138a5399",
+      "documentPath": "races/NCCAR %E2%80%94 Road Course/document.json"
+    },
+    {
+      "raceRef": "Carolina Motorsports Park",
+      "siteGroup": "site-236b9640b6e31d49",
+      "documentPath": "races/Carolina Motorsports Park/document.json"
+    },
+    {
+      "raceRef": "Birmingham, AL \u2014 Landmark Run",
+      "siteGroup": "site-8fbef84f052f150c",
+      "documentPath": "races/Birmingham%2C AL %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Miami, FL \u2014 Landmark Run",
+      "siteGroup": "site-5109a6bdde2bfc10",
+      "documentPath": "races/Miami%2C FL %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Atlanta, GA \u2014 Landmark Run",
+      "siteGroup": "site-6f5b30be5456f7e1",
+      "documentPath": "races/Atlanta%2C GA %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Chicago, IL \u2014 Landmark Run",
+      "siteGroup": "site-18f72d527e5df19a",
+      "documentPath": "races/Chicago%2C IL %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Des Moines, IA \u2014 Landmark Run",
+      "siteGroup": "site-48a69f289b41065e",
+      "documentPath": "races/Des Moines%2C IA %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Louisville, KY \u2014 Landmark Run",
+      "siteGroup": "site-a55d00ac69a1e402",
+      "documentPath": "races/Louisville%2C KY %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Detroit, MI \u2014 Landmark Run",
+      "siteGroup": "site-c5f1aa302a17a49e",
+      "documentPath": "races/Detroit%2C MI %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Anchorage, AK \u2014 Landmark Run",
+      "siteGroup": "site-c22955a9bacbba73",
+      "documentPath": "races/Anchorage%2C AK %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Honolulu, HI \u2014 Landmark Run",
+      "siteGroup": "site-a1f7d35a406767d9",
+      "documentPath": "races/Honolulu%2C HI %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Indianapolis, IN \u2014 Landmark Run",
+      "siteGroup": "site-fe73b02344865b7a",
+      "documentPath": "races/Indianapolis%2C IN %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "New Orleans, LA \u2014 Landmark Run",
+      "siteGroup": "site-6bbf3e59bf508848",
+      "documentPath": "races/New Orleans%2C LA %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Minneapolis, MN \u2014 Landmark Run",
+      "siteGroup": "site-057af482cd61c0ab",
+      "documentPath": "races/Minneapolis%2C MN %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Jackson, MS \u2014 Landmark Run",
+      "siteGroup": "site-99d091992ba9491f",
+      "documentPath": "races/Jackson%2C MS %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Charlotte, NC \u2014 Landmark Run",
+      "siteGroup": "site-748cb3ba26739e14",
+      "documentPath": "races/Charlotte%2C NC %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Cleveland, OH \u2014 Landmark Run",
+      "siteGroup": "site-8832609ac0b53a91",
+      "documentPath": "races/Cleveland%2C OH %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "San Antonio, TX \u2014 Landmark Run",
+      "siteGroup": "site-5f5ac78c36de132d",
+      "documentPath": "races/San Antonio%2C TX %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Charleston, SC \u2014 Landmark Run",
+      "siteGroup": "site-e3b0e114c719d39f",
+      "documentPath": "races/Charleston%2C SC %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Nashville, TN \u2014 Landmark Run",
+      "siteGroup": "site-801a87f5aebb72dd",
+      "documentPath": "races/Nashville%2C TN %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Richmond, VA \u2014 Landmark Run",
+      "siteGroup": "site-f86a23e25c2cac55",
+      "documentPath": "races/Richmond%2C VA %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Flatrock Motorclub \u2014 Club Course",
+      "siteGroup": "site-fd0df59bcbdae7a7",
+      "documentPath": "races/Flatrock Motorclub %E2%80%94 Club Course/document.json"
+    },
+    {
+      "raceRef": "Charleston, WV \u2014 Landmark Run",
+      "siteGroup": "site-1a5f89f9794417e3",
+      "documentPath": "races/Charleston%2C WV %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Milwaukee, WI \u2014 Landmark Run",
+      "siteGroup": "site-711d3f6b0ea42407",
+      "documentPath": "races/Milwaukee%2C WI %E2%80%94 Landmark Run/document.json"
+    },
+    {
+      "raceRef": "Denali Highway \u2014 Tundra Gravel",
+      "siteGroup": "site-8870f7e6d7a1ad92",
+      "documentPath": "races/Denali Highway %E2%80%94 Tundra Gravel/document.json"
+    },
+    {
+      "raceRef": "Tantalus \u2014 Honolulu Heights",
+      "siteGroup": "site-9355ce47e2414978",
+      "documentPath": "races/Tantalus %E2%80%94 Honolulu Heights/document.json"
+    },
+    {
+      "raceRef": "Haleakala \u2014 Volcano Ascent",
+      "siteGroup": "site-16532ce2e70c3a9d",
+      "documentPath": "races/Haleakala %E2%80%94 Volcano Ascent/document.json"
+    },
+    {
+      "raceRef": "Maunakea \u2014 Cinder Summit",
+      "siteGroup": "site-15b1ac599d7224a9",
+      "documentPath": "races/Maunakea %E2%80%94 Cinder Summit/document.json"
+    }
+  ],
+  "resources": {
+    "availableBytesBeforeCommit": 2446860288,
+    "startingAvailableBytes": 2656645120,
+    "cleanupPerformed": false,
+    "contributors": {
+      "generatedImagesMiB": 606,
+      "newNativeAMiB": 16,
+      "newNativeBMiB": 8.6,
+      "repairNativeMiB": 7,
+      "note": "Measured du allocations; original sources, all prior evidence and superseded captures retained. No checkout copies or cleanup."
+    },
+    "availableBytesAfterStaging": 2351017984,
+    "netAvailableDecreaseBytes": 305627136,
+    "forecast": "Observed decrease about 0.285 GiB for this 24-route pack including new sources, revisions, compact QA and Git objects. At similar pace 44 remaining bindings would use roughly another 0.52 GiB; this is an estimate, not reserved space."
+  },
+  "preservation": "Only allowed visual art refs/source/native artwork and supporting recipe/validation evidence changed. All 245 race semantics compared to exact base. Original images and earlier QA retained; no world lighting/weather/physics/geometry changes, remote writes, cars or cleanup.",
+  "liveBaseCheck": {
+    "method": "git ls-remote origin refs/heads/staging",
+    "sha": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+    "phase": "Rechecked during final QA; unchanged."
+  },
+  "initialValidation": {
+    "log": "/tmp/race-pack13-units.tap",
+    "passed": 110,
+    "failed": 2,
+    "findings": [
+      "Hatcher native checksum changed during an overlapping narrow import; final suite ran only after imports settled.",
+      "Actual placement guard rejected now-unused skybox-moki-dugway. Usage audit also identified skybox-oak-creek; both received exact byte-preserving supersession records after source and matched native review. No guard, skip, or generic exemption changed."
+    ]
+  },
+  "manifestCounts": {
+    "documents": 1781,
+    "assets": 16
+  }
+}

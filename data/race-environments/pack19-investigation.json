@@ -1,0 +1,1422 @@
+{
+  "parent": "d1fb7c5549cd6a9208eb7e5f2f677a5f2a975774",
+  "production": "227517e4eef509504735a23b0d130f3e1485fe71",
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "productionChanged": false,
+  "publicationReady": false,
+  "scope": "Isolated response-intercepted shader prototype only. Saved src/race/asset files unchanged.",
+  "artOnlyFinding": {
+    "cells": 1585,
+    "refs": [
+      "ground-temperate-grass-v1"
+    ],
+    "repeatM": 1.002,
+    "overlayVertices": [
+      6552,
+      5304,
+      15432,
+      13020,
+      14268,
+      12150
+    ],
+    "extraTriangles": 22242,
+    "explanation": "Existing 512m chunks cloned as depth-equal terrain color passes, not six competing assets. Explicit cells and default ground both resolve one art. Earlier ground-only control kept all six; tiles-only removed two and visibly lost near ground. Texture dimensions/repeat do not suppress these passes, and atlas pitch/mip base are fixed. No equivalent supported art-only arrangement demonstrated.",
+    "priorPerLayerEvidence": "pack18-demo-ablation.json"
+  },
+  "prototype": {
+    "activation": "grid.refs.length===1 globally, not per chunk",
+    "change": "Reuse terrainSample(base,uv,lod) inside the unchanged nine-term weighted sum. All single-ref lookup red channels are zero, including sparse holes, so clamping and negative coordinates continue resolving slot zero.",
+    "preserved": "Atlas generation, low/high mip samples, derivative-before-fract UV/LOD, weighted accumulation order, vertex colors, material/depth/renderOrder, geometry, sparse coverage, disposal and all multi-ref shaders. Separate prototype program cache key.",
+    "limits": "Only SwiftShader tested. Keeps all six overlays. No broad runtime speed or startup guarantee."
+  },
+  "matchedColdRows": [
+    {
+      "variant": "uniform",
+      "startup": {
+        "bootMs": 6412,
+        "travelCallMs": 29013,
+        "playableWaitMs": 82269,
+        "totalToPlayableMs": 117796
+      },
+      "drive": {
+        "wallMs": 33770,
+        "simulationMs": 4033.333333333325,
+        "drawCalls": 121,
+        "drawCpuMs": 1818.3999999761581,
+        "maxDrawMs": 1079.2000000029802
+      },
+      "renderer": {
+        "worker": {
+          "qualification": {
+            "qualified": false,
+            "requiredStepsPerSecond": 120,
+            "achievedStepsPerSecond": 204.79563102549648,
+            "stepBudgetMs": 8.333333333333334,
+            "p95StepMs": 14.899999991059303,
+            "backlogStart": 0,
+            "backlogEnd": 0,
+            "reasons": [
+              "single-thread p95 14.900ms > 8.333ms step budget"
+            ]
+          },
+          "requestedMode": "auto",
+          "thread": "render",
+          "bridge": false,
+          "migrationFailure": null,
+          "clientError": null,
+          "clockMode": "bounded",
+          "clock": {
+            "maxAdvanceSeconds": 0.03333333333333333,
+            "maxDebtSeconds": 0.06666666666666667,
+            "debtSeconds": 0.06666666666666667,
+            "discardedSeconds": 16.0492,
+            "admittedSeconds": 2.033333333333336,
+            "rawSeconds": 18.149200000000008,
+            "excludedSeconds": 0.4334000000000087
+          }
+        },
+        "canvas": {
+          "width": 933,
+          "height": 640
+        },
+        "memory": {
+          "geometries": 20,
+          "textures": 3
+        },
+        "render": {
+          "frame": 254,
+          "calls": 21,
+          "triangles": 52558,
+          "points": 0,
+          "lines": 0
+        },
+        "programs": 7,
+        "blend": true,
+        "sceneMeshes": [
+          {
+            "name": "",
+            "vertices": 6552
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 6552
+          },
+          {
+            "name": "",
+            "vertices": 5304
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 5304
+          },
+          {
+            "name": "",
+            "vertices": 15432
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 15432
+          },
+          {
+            "name": "",
+            "vertices": 13020
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 13020
+          },
+          {
+            "name": "",
+            "vertices": 14268
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 14268
+          },
+          {
+            "name": "",
+            "vertices": 12150
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 12150
+          },
+          {
+            "name": "",
+            "vertices": 8550
+          },
+          {
+            "name": "",
+            "vertices": 11910
+          },
+          {
+            "name": "",
+            "vertices": 6
+          },
+          {
+            "name": "",
+            "vertices": 1938
+          },
+          {
+            "name": "",
+            "vertices": 1674
+          },
+          {
+            "name": "raceDynamicDoodads"
+          },
+          {
+            "name": "terrainDecals"
+          },
+          {
+            "name": ""
+          },
+          {
+            "name": "",
+            "vertices": 4
+          },
+          {
+            "name": "raceDynamicProceduralCar"
+          },
+          {
+            "name": "race-driving-guide",
+            "vertices": 384
+          }
+        ],
+        "canvasElements": [
+          {
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      "workerBefore": {
+        "qualification": {
+          "qualified": false,
+          "requiredStepsPerSecond": 120,
+          "achievedStepsPerSecond": 204.79563102549648,
+          "stepBudgetMs": 8.333333333333334,
+          "p95StepMs": 14.899999991059303,
+          "backlogStart": 0,
+          "backlogEnd": 0,
+          "reasons": [
+            "single-thread p95 14.900ms > 8.333ms step budget"
+          ]
+        },
+        "requestedMode": "auto",
+        "thread": "render",
+        "bridge": false,
+        "migrationFailure": null,
+        "clockMode": "bounded",
+        "clock": {
+          "maxAdvanceSeconds": 0.03333333333333333,
+          "maxDebtSeconds": 0.06666666666666667,
+          "debtSeconds": 0.06666666666666667,
+          "discardedSeconds": 16.0492,
+          "admittedSeconds": 2.033333333333336,
+          "rawSeconds": 18.149200000000008,
+          "excludedSeconds": 0.4334000000000087
+        }
+      },
+      "workerAfter": {
+        "qualification": {
+          "qualified": false,
+          "requiredStepsPerSecond": 120,
+          "achievedStepsPerSecond": 204.79563102549648,
+          "stepBudgetMs": 8.333333333333334,
+          "p95StepMs": 14.899999991059303,
+          "backlogStart": 0,
+          "backlogEnd": 0,
+          "reasons": [
+            "single-thread p95 14.900ms > 8.333ms step budget"
+          ]
+        },
+        "requestedMode": "auto",
+        "thread": "render",
+        "bridge": false,
+        "migrationFailure": null,
+        "clockMode": "bounded",
+        "clock": {
+          "maxAdvanceSeconds": 0.03333333333333333,
+          "maxDebtSeconds": 0.06666666666666667,
+          "debtSeconds": 0.06666666666666667,
+          "discardedSeconds": 45.681166666666634,
+          "admittedSeconds": 6.066666666666655,
+          "rawSeconds": 51.814499999999995,
+          "excludedSeconds": 0.4334000000000087
+        }
+      },
+      "metres": 20.052247999999963,
+      "evidenceDirectory": "/tmp/race-pack19-uniform"
+    },
+    {
+      "variant": "control",
+      "startup": {
+        "bootMs": 5032,
+        "travelCallMs": 29233,
+        "playableWaitMs": 87308,
+        "totalToPlayableMs": 121693
+      },
+      "drive": {
+        "wallMs": 41855,
+        "simulationMs": 4033.333333333325,
+        "drawCalls": 121,
+        "drawCpuMs": 1695.6999999284744,
+        "maxDrawMs": 1435.5
+      },
+      "renderer": {
+        "worker": {
+          "qualification": {
+            "qualified": false,
+            "requiredStepsPerSecond": 120,
+            "achievedStepsPerSecond": 219.0380578738732,
+            "stepBudgetMs": 8.333333333333334,
+            "p95StepMs": 9.899999991059303,
+            "backlogStart": 0,
+            "backlogEnd": 0,
+            "reasons": [
+              "single-thread p95 9.900ms > 8.333ms step budget"
+            ]
+          },
+          "requestedMode": "auto",
+          "thread": "render",
+          "bridge": false,
+          "migrationFailure": null,
+          "clientError": null,
+          "clockMode": "bounded",
+          "clock": {
+            "maxAdvanceSeconds": 0.03333333333333333,
+            "maxDebtSeconds": 0.06666666666666667,
+            "debtSeconds": 0.06666666666666667,
+            "discardedSeconds": 19.099199999999996,
+            "admittedSeconds": 2.033333333333336,
+            "rawSeconds": 21.199199999999987,
+            "excludedSeconds": 0.3333000000000029
+          }
+        },
+        "canvas": {
+          "width": 933,
+          "height": 640
+        },
+        "memory": {
+          "geometries": 20,
+          "textures": 3
+        },
+        "render": {
+          "frame": 256,
+          "calls": 21,
+          "triangles": 52558,
+          "points": 0,
+          "lines": 0
+        },
+        "programs": 7,
+        "blend": true,
+        "sceneMeshes": [
+          {
+            "name": "",
+            "vertices": 6552
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 6552
+          },
+          {
+            "name": "",
+            "vertices": 5304
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 5304
+          },
+          {
+            "name": "",
+            "vertices": 15432
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 15432
+          },
+          {
+            "name": "",
+            "vertices": 13020
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 13020
+          },
+          {
+            "name": "",
+            "vertices": 14268
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 14268
+          },
+          {
+            "name": "",
+            "vertices": 12150
+          },
+          {
+            "name": "terrain-art:blended",
+            "vertices": 12150
+          },
+          {
+            "name": "",
+            "vertices": 8550
+          },
+          {
+            "name": "",
+            "vertices": 11910
+          },
+          {
+            "name": "",
+            "vertices": 6
+          },
+          {
+            "name": "",
+            "vertices": 1938
+          },
+          {
+            "name": "",
+            "vertices": 1674
+          },
+          {
+            "name": "raceDynamicDoodads"
+          },
+          {
+            "name": "terrainDecals"
+          },
+          {
+            "name": ""
+          },
+          {
+            "name": "",
+            "vertices": 4
+          },
+          {
+            "name": "raceDynamicProceduralCar"
+          },
+          {
+            "name": "race-driving-guide",
+            "vertices": 384
+          }
+        ],
+        "canvasElements": [
+          {
+            "width": 1280,
+            "height": 720
+          }
+        ]
+      },
+      "workerBefore": {
+        "qualification": {
+          "qualified": false,
+          "requiredStepsPerSecond": 120,
+          "achievedStepsPerSecond": 219.0380578738732,
+          "stepBudgetMs": 8.333333333333334,
+          "p95StepMs": 9.899999991059303,
+          "backlogStart": 0,
+          "backlogEnd": 0,
+          "reasons": [
+            "single-thread p95 9.900ms > 8.333ms step budget"
+          ]
+        },
+        "requestedMode": "auto",
+        "thread": "render",
+        "bridge": false,
+        "migrationFailure": null,
+        "clockMode": "bounded",
+        "clock": {
+          "maxAdvanceSeconds": 0.03333333333333333,
+          "maxDebtSeconds": 0.06666666666666667,
+          "debtSeconds": 0.06666666666666667,
+          "discardedSeconds": 19.099199999999996,
+          "admittedSeconds": 2.033333333333336,
+          "rawSeconds": 21.199199999999987,
+          "excludedSeconds": 0.3333000000000029
+        }
+      },
+      "workerAfter": {
+        "qualification": {
+          "qualified": false,
+          "requiredStepsPerSecond": 120,
+          "achievedStepsPerSecond": 219.0380578738732,
+          "stepBudgetMs": 8.333333333333334,
+          "p95StepMs": 9.899999991059303,
+          "backlogStart": 0,
+          "backlogEnd": 0,
+          "reasons": [
+            "single-thread p95 9.900ms > 8.333ms step budget"
+          ]
+        },
+        "requestedMode": "auto",
+        "thread": "render",
+        "bridge": false,
+        "migrationFailure": null,
+        "clockMode": "bounded",
+        "clock": {
+          "maxAdvanceSeconds": 0.03333333333333333,
+          "maxDebtSeconds": 0.06666666666666667,
+          "debtSeconds": 0.06666666666666667,
+          "discardedSeconds": 56.7807666666667,
+          "admittedSeconds": 6.066666666666655,
+          "rawSeconds": 62.9141,
+          "excludedSeconds": 0.3333000000000029
+        }
+      },
+      "metres": 20.052247999999963,
+      "evidenceDirectory": "/tmp/race-pack19-control"
+    }
+  ],
+  "samePoseGPU": {
+    "uniform": true,
+    "width": 933,
+    "height": 640,
+    "differentChannels": 0,
+    "maxChannelDelta": 0,
+    "meanChannelDelta": 0
+  },
+  "syntheticGPU": [
+    {
+      "mixed": false,
+      "pose": 0,
+      "uniform": true,
+      "width": 5,
+      "height": 4,
+      "gridAllZero": true,
+      "differentChannels": 0,
+      "max": 0
+    },
+    {
+      "mixed": false,
+      "pose": 1,
+      "uniform": true,
+      "width": 5,
+      "height": 4,
+      "gridAllZero": true,
+      "differentChannels": 0,
+      "max": 0
+    },
+    {
+      "mixed": true,
+      "pose": 0,
+      "uniform": false,
+      "width": 5,
+      "height": 4,
+      "gridAllZero": false,
+      "differentChannels": 0,
+      "max": 0
+    },
+    {
+      "mixed": true,
+      "pose": 1,
+      "uniform": false,
+      "width": 5,
+      "height": 4,
+      "gridAllZero": false,
+      "differentChannels": 0,
+      "max": 0
+    }
+  ],
+  "visualReview": {
+    "prototypeContact": "pack19-prototype-contact.jpg",
+    "syntheticContact": "pack19-synthetic-contact.jpg",
+    "viewed": true,
+    "finding": "Identical texture/road/foreground at sampled same pose; synthetic sparse, negative-coordinate, sloped and mixed-ref images inspected. Transparent sky in raw Three canvas is intentional; separate full authored driving frames include normal sky."
+  },
+  "turiniStrictDiagnosis": {
+    "firstFailureOnly": true,
+    "all245LedgerQAFlagsUnset": true,
+    "terrainProductionReviewedCount": 0,
+    "meaning": "Strict gate checks ledger certification, not a newly detected pixel defect. All245 completion flags remain unset. Existing independent sky/material evidence does not equal production foreground acceptance. Current desktop and handheld fail first playable frame; matched fresh untouched-base desktop also fails the same first-frame guard. This establishes an existing desktop startup blocker, not proof all candidate timing is unchanged.",
+    "visualReview": {
+      "viewed": true,
+      "contact": "pack19-turini-contact.jpg",
+      "material": "Frosted grass tile sample suitable for preserved grass substrate in snowy environment. World terrain still not accepted.",
+      "sky": "No-fog projection has conspicuous top/bottom repeated-edge vertical bands. Native authored visibility opacity1 obscures panorama entirely. Asset framing polish remains unresolved; no weather or exposure changed."
+    }
+  },
+  "turiniCurrentFailures": [
+    {
+      "race": "Col de Turini",
+      "device": "desktop",
+      "state": {
+        "state": "prompt",
+        "status": "Race did not present its first playable frame",
+        "error": "",
+        "diagnostics": {
+          "requestId": 1,
+          "cacheKey": "",
+          "raceName": "Col de Turini",
+          "phase": "starting-race",
+          "progress": 0.997,
+          "elapsedMs": 76280.89999999106,
+          "missingArtRefs": [],
+          "status": "running"
+        },
+        "race": "Col de Turini",
+        "sky": "skybox-col-de-turini",
+        "weather": {
+          "id": "snow",
+          "label": "Snow",
+          "visualIntensity": 0.75,
+          "targetIntensity": 0.75,
+          "buildup": 0,
+          "effectiveIntensity": 0,
+          "precipitationIntensity": 0.75,
+          "snowDepthInches": 0,
+          "visibilityDistanceM": 316.23,
+          "visibilityStrength": 0.678160836085047,
+          "visibilityColor": "238,245,248",
+          "visibilityNearAlpha": 0.016954020902126176,
+          "visibilityFarAlpha": 0.6374711859199441
+        },
+        "fx": {
+          "enabled": true,
+          "preset": "noon",
+          "sunEnabled": true,
+          "sunDisc": true,
+          "sunX": 0.5,
+          "sunY": 0.08,
+          "sunColor": "#fff5dc",
+          "sunSize": 0.012,
+          "sunIntensity": 0.8,
+          "lensFlare": 0.12,
+          "sunGlare": 0.45,
+          "skyBrightness": 1,
+          "tintColor": "#ffffff",
+          "tintAmount": 0,
+          "motionBlur": 0,
+          "speedLines": 0,
+          "speedLineOpacity": 1,
+          "speedLineArtRef": "",
+          "speedLineArtMode": "overlay",
+          "vignette": 0.1,
+          "speedStartMph": 45,
+          "speedFullMph": 130
+        },
+        "worker": {
+          "requestedMode": "auto",
+          "bridge": false,
+          "migrationFailure": null
+        },
+        "session": null
+      },
+      "errors": [],
+      "network": [],
+      "error": "Error: page.waitForFunction: Error: Race left startup for prompt: Race did not present its first playable frame\n    at eval (eval at predicate (eval at evaluate (:290:30)), <anonymous>:4:56)\n    at predicate (eval at evaluate (:290:30), <anonymous>:7:23)\n    at next (eval at evaluate (:290:30), <anonymous>:29:29)"
+    },
+    {
+      "race": "Col de Turini",
+      "device": "handheld",
+      "state": {
+        "state": "prompt",
+        "status": "Race did not present its first playable frame",
+        "error": "",
+        "diagnostics": {
+          "requestId": 1,
+          "cacheKey": "",
+          "raceName": "Col de Turini",
+          "phase": "starting-race",
+          "progress": 0.997,
+          "elapsedMs": 80171.79999999702,
+          "missingArtRefs": [],
+          "status": "running"
+        },
+        "race": "Col de Turini",
+        "sky": "skybox-col-de-turini",
+        "weather": {
+          "id": "snow",
+          "label": "Snow",
+          "visualIntensity": 0.75,
+          "targetIntensity": 0.75,
+          "buildup": 0,
+          "effectiveIntensity": 0,
+          "precipitationIntensity": 0.75,
+          "snowDepthInches": 0,
+          "visibilityDistanceM": 316.23,
+          "visibilityStrength": 0.678160836085047,
+          "visibilityColor": "238,245,248",
+          "visibilityNearAlpha": 0.016954020902126176,
+          "visibilityFarAlpha": 0.6374711859199441
+        },
+        "fx": {
+          "enabled": true,
+          "preset": "noon",
+          "sunEnabled": true,
+          "sunDisc": true,
+          "sunX": 0.5,
+          "sunY": 0.08,
+          "sunColor": "#fff5dc",
+          "sunSize": 0.012,
+          "sunIntensity": 0.8,
+          "lensFlare": 0.12,
+          "sunGlare": 0.45,
+          "skyBrightness": 1,
+          "tintColor": "#ffffff",
+          "tintAmount": 0,
+          "motionBlur": 0,
+          "speedLines": 0,
+          "speedLineOpacity": 1,
+          "speedLineArtRef": "",
+          "speedLineArtMode": "overlay",
+          "vignette": 0.1,
+          "speedStartMph": 45,
+          "speedFullMph": 130
+        },
+        "worker": {
+          "requestedMode": "auto",
+          "bridge": false,
+          "migrationFailure": null
+        },
+        "session": null
+      },
+      "errors": [],
+      "network": [],
+      "error": "Error: page.waitForFunction: Error: Race left startup for prompt: Race did not present its first playable frame\n    at eval (eval at predicate (eval at evaluate (:290:30)), <anonymous>:4:56)\n    at predicate (eval at evaluate (:290:30), <anonymous>:7:23)\n    at next (eval at evaluate (:290:30), <anonymous>:29:29)"
+    }
+  ],
+  "turiniBaseFailure": {
+    "race": "Col de Turini",
+    "device": "desktop",
+    "state": {
+      "state": "prompt",
+      "status": "Race did not present its first playable frame",
+      "error": "",
+      "diagnostics": {
+        "requestId": 1,
+        "cacheKey": "",
+        "raceName": "Col de Turini",
+        "phase": "starting-race",
+        "progress": 0.997,
+        "elapsedMs": 75723.30000001192,
+        "missingArtRefs": [],
+        "status": "running"
+      },
+      "race": "Col de Turini",
+      "sky": "skybox-mount-washington",
+      "weather": {
+        "id": "snow",
+        "label": "Snow",
+        "visualIntensity": 0.75,
+        "targetIntensity": 0.75,
+        "buildup": 0,
+        "effectiveIntensity": 0,
+        "precipitationIntensity": 0.75,
+        "snowDepthInches": 0,
+        "visibilityDistanceM": 316.23,
+        "visibilityStrength": 0.678160836085047,
+        "visibilityColor": "238,245,248",
+        "visibilityNearAlpha": 0.016954020902126176,
+        "visibilityFarAlpha": 0.6374711859199441
+      },
+      "fx": {
+        "enabled": true,
+        "preset": "noon",
+        "sunEnabled": true,
+        "sunDisc": true,
+        "sunX": 0.5,
+        "sunY": 0.08,
+        "sunColor": "#fff5dc",
+        "sunSize": 0.012,
+        "sunIntensity": 0.8,
+        "lensFlare": 0.12,
+        "sunGlare": 0.45,
+        "skyBrightness": 1,
+        "tintColor": "#ffffff",
+        "tintAmount": 0,
+        "motionBlur": 0,
+        "speedLines": 0,
+        "speedLineOpacity": 1,
+        "speedLineArtRef": "",
+        "speedLineArtMode": "overlay",
+        "vignette": 0.1,
+        "speedStartMph": 45,
+        "speedFullMph": 130
+      },
+      "worker": {
+        "requestedMode": "auto",
+        "bridge": false,
+        "migrationFailure": null
+      },
+      "session": null
+    },
+    "errors": [],
+    "network": [],
+    "error": "Error: page.waitForFunction: Error: Race left startup for prompt: Race did not present its first playable frame\n    at eval (eval at predicate (eval at evaluate (:290:30)), <anonymous>:4:56)\n    at predicate (eval at evaluate (:290:30), <anonymous>:7:23)\n    at next (eval at evaluate (:290:30), <anonymous>:29:29)"
+  },
+  "turiniNativeStates": [
+    {
+      "race": "Col de Turini",
+      "diagnosticOverride": null,
+      "savedRef": "skybox-col-de-turini",
+      "imageFormat": "jpg",
+      "selector": {
+        "value": "Col de Turini",
+        "mode": "exact-logical-name"
+      },
+      "ref": "skybox-col-de-turini",
+      "controls": [
+        {
+          "artRef": "skybox-col-de-turini",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 4,
+            "max": 247,
+            "mean": 122.85850427350428
+          },
+          "compositeStats": {
+            "min": 129,
+            "max": 142,
+            "mean": 136
+          }
+        },
+        {
+          "artRef": "providence",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 89.63090455840455
+          },
+          "compositeStats": {
+            "min": 129,
+            "max": 142,
+            "mean": 136
+          }
+        }
+      ],
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 129,
+            "max": 142,
+            "mean": 136
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 4,
+            "max": 247,
+            "mean": 122.85850427350428
+          }
+        },
+        "pitch-0.35-yaw--0.01": {
+          "horizonRatio": 0.35,
+          "hillPitch": -0.2,
+          "yaw": -0.01,
+          "stats": {
+            "min": 7,
+            "max": 244,
+            "mean": 98.00631766381767
+          }
+        },
+        "pitch-0.35-yaw-0.01": {
+          "horizonRatio": 0.35,
+          "hillPitch": -0.2,
+          "yaw": 0.01,
+          "stats": {
+            "min": 7,
+            "max": 244,
+            "mean": 98.1280056980057
+          }
+        },
+        "pitch-0.8-yaw--0.01": {
+          "horizonRatio": 0.8,
+          "hillPitch": 0.2,
+          "yaw": -0.01,
+          "stats": {
+            "min": 9,
+            "max": 248,
+            "mean": 135.68450854700853
+          }
+        },
+        "pitch-0.8-yaw-0.01": {
+          "horizonRatio": 0.8,
+          "hillPitch": 0.2,
+          "yaw": 0.01,
+          "stats": {
+            "min": 12,
+            "max": 248,
+            "mean": 135.65394586894587
+          }
+        }
+      },
+      "weather": {
+        "id": "snow",
+        "label": "Snow",
+        "visualIntensity": 0.75,
+        "targetIntensity": 0.75,
+        "buildup": 0,
+        "effectiveIntensity": 0,
+        "precipitationIntensity": 0.75,
+        "snowDepthInches": 0,
+        "visibilityDistanceM": 316.23,
+        "visibilityStrength": 0.678160836085047,
+        "visibilityColor": "238,245,248",
+        "visibilityNearAlpha": 0.016954020902126176,
+        "visibilityFarAlpha": 0.6374711859199441
+      },
+      "visibilityOpacity": 1,
+      "maximumArtworkContrast": 0,
+      "compositeTargetRedirected": false,
+      "authoredFx": {
+        "enabled": true,
+        "preset": "noon",
+        "sunEnabled": true,
+        "sunDisc": true,
+        "sunX": 0.5,
+        "sunY": 0.08,
+        "sunColor": "#fff5dc",
+        "sunSize": 0.012,
+        "sunIntensity": 0.8,
+        "lensFlare": 0.12,
+        "sunGlare": 0.45,
+        "skyBrightness": 1,
+        "tintColor": "#ffffff",
+        "tintAmount": 0,
+        "motionBlur": 0,
+        "speedLines": 0,
+        "speedLineOpacity": 1,
+        "speedLineArtRef": "",
+        "speedLineArtMode": "overlay",
+        "vignette": 0.1,
+        "speedStartMph": 45,
+        "speedFullMph": 130
+      },
+      "effectiveLayers": {
+        "tileImageCounts": {
+          "ground-frosted-grass-v1": 7592
+        },
+        "tileImageById": {
+          "grass": {
+            "ground-frosted-grass-v1": 7592
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-frosted-grass-v1"
+      },
+      "note": "Independent native sky compositor from exact stored race object; deliberately not storage transport, terrain, driving, weather overlay or route-wide acceptance."
+    },
+    {
+      "race": "Col de Turini",
+      "diagnosticOverride": null,
+      "savedRef": "skybox-col-de-turini",
+      "imageFormat": "jpg",
+      "selector": {
+        "value": "Col de Turini",
+        "mode": "exact-logical-name"
+      },
+      "ref": "skybox-col-de-turini",
+      "controls": [
+        {
+          "artRef": "skybox-col-de-turini",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 6,
+            "max": 250,
+            "mean": 125.83162434895833
+          },
+          "compositeStats": {
+            "min": 129,
+            "max": 142,
+            "mean": 136
+          }
+        },
+        {
+          "artRef": "providence",
+          "rawDrawn": true,
+          "rawStats": {
+            "min": 0,
+            "max": 255,
+            "mean": 85.00296875
+          },
+          "compositeStats": {
+            "min": 129,
+            "max": 142,
+            "mean": 136
+          }
+        }
+      ],
+      "diagnostic": {
+        "sky100-authored-weather": {
+          "stats": {
+            "min": 129,
+            "max": 142,
+            "mean": 136
+          }
+        },
+        "sky100-raw-no-fog": {
+          "stats": {
+            "min": 6,
+            "max": 250,
+            "mean": 125.83162434895833
+          }
+        },
+        "pitch-0.35-yaw--0.01": {
+          "horizonRatio": 0.35,
+          "hillPitch": -0.2,
+          "yaw": -0.01,
+          "stats": {
+            "min": 6,
+            "max": 248,
+            "mean": 98.20068033854167
+          }
+        },
+        "pitch-0.35-yaw-0.01": {
+          "horizonRatio": 0.35,
+          "hillPitch": -0.2,
+          "yaw": 0.01,
+          "stats": {
+            "min": 6,
+            "max": 247,
+            "mean": 98.13678005642362
+          }
+        },
+        "pitch-0.8-yaw--0.01": {
+          "horizonRatio": 0.8,
+          "hillPitch": 0.2,
+          "yaw": -0.01,
+          "stats": {
+            "min": 5,
+            "max": 248,
+            "mean": 140.0917437065972
+          }
+        },
+        "pitch-0.8-yaw-0.01": {
+          "horizonRatio": 0.8,
+          "hillPitch": 0.2,
+          "yaw": 0.01,
+          "stats": {
+            "min": 5,
+            "max": 248,
+            "mean": 140.02627549913194
+          }
+        }
+      },
+      "weather": {
+        "id": "snow",
+        "label": "Snow",
+        "visualIntensity": 0.75,
+        "targetIntensity": 0.75,
+        "buildup": 0,
+        "effectiveIntensity": 0,
+        "precipitationIntensity": 0.75,
+        "snowDepthInches": 0,
+        "visibilityDistanceM": 316.23,
+        "visibilityStrength": 0.678160836085047,
+        "visibilityColor": "238,245,248",
+        "visibilityNearAlpha": 0.016954020902126176,
+        "visibilityFarAlpha": 0.6374711859199441
+      },
+      "visibilityOpacity": 1,
+      "maximumArtworkContrast": 0,
+      "compositeTargetRedirected": false,
+      "authoredFx": {
+        "enabled": true,
+        "preset": "noon",
+        "sunEnabled": true,
+        "sunDisc": true,
+        "sunX": 0.5,
+        "sunY": 0.08,
+        "sunColor": "#fff5dc",
+        "sunSize": 0.012,
+        "sunIntensity": 0.8,
+        "lensFlare": 0.12,
+        "sunGlare": 0.45,
+        "skyBrightness": 1,
+        "tintColor": "#ffffff",
+        "tintAmount": 0,
+        "motionBlur": 0,
+        "speedLines": 0,
+        "speedLineOpacity": 1,
+        "speedLineArtRef": "",
+        "speedLineArtMode": "overlay",
+        "vignette": 0.1,
+        "speedStartMph": 45,
+        "speedFullMph": 130
+      },
+      "effectiveLayers": {
+        "tileImageCounts": {
+          "ground-frosted-grass-v1": 7592
+        },
+        "tileImageById": {
+          "grass": {
+            "ground-frosted-grass-v1": 7592
+          }
+        },
+        "road": {
+          "road": {
+            "filterMode": "balanced",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "road-asphalt-patched",
+            "roughArtRef": "",
+            "repeatM": 24,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "margin": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "shoulder": {
+            "filterMode": "inherit",
+            "mipmapDistance": 1,
+            "mipmaps": true,
+            "anisotropy": 1,
+            "enabled": true,
+            "artRef": "",
+            "roughArtRef": "",
+            "repeatM": 5,
+            "repeatWidthM": 0,
+            "laneWidthM": 0
+          },
+          "surfaceRoads": {
+            "asphalt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-asphalt-patched",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "gravel": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-gravel-gray",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "dirt": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "road-dirt-packed",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            },
+            "snow": {
+              "filterMode": "balanced",
+              "mipmapDistance": 1,
+              "mipmaps": true,
+              "anisotropy": 1,
+              "enabled": true,
+              "artRef": "snowroad",
+              "roughArtRef": "",
+              "repeatM": 12,
+              "repeatWidthM": 0,
+              "laneWidthM": 0
+            }
+          },
+          "surfaceShoulders": {}
+        },
+        "surfaceSamples": [
+          {
+            "surface": "asphalt",
+            "shoulder": {},
+            "surfaceArt": ""
+          }
+        ],
+        "margin": {
+          "enabled": true,
+          "shoulderEnabled": true,
+          "widthM": 0.22,
+          "shoulderWidthM": 12,
+          "collisionMode": "none",
+          "artRef": "apron",
+          "marginMode": "hidden",
+          "shoulderMode": "hidden",
+          "collisionEdge": "none",
+          "collisionEffect": "reset"
+        },
+        "ground": "ground-frosted-grass-v1"
+      },
+      "note": "Independent native sky compositor from exact stored race object; deliberately not storage transport, terrain, driving, weather overlay or route-wide acceptance."
+    }
+  ],
+  "syntheticTiming": [
+    {
+      "timings": [
+        {
+          "enabled": false,
+          "msPerFrame": 0.5
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.3333333333333333
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.16666666666666666
+        },
+        {
+          "enabled": false,
+          "msPerFrame": 0.25
+        },
+        {
+          "enabled": false,
+          "msPerFrame": 0.11666666716337204
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.13333333283662796
+        }
+      ],
+      "mixed": false,
+      "pose": 0,
+      "uniform": true,
+      "width": 5,
+      "height": 4,
+      "gridAllZero": true,
+      "differentChannels": 0,
+      "max": 0
+    },
+    {
+      "timings": [
+        {
+          "enabled": false,
+          "msPerFrame": 0.2166666661699613
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.15000000099341074
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.08333333333333333
+        },
+        {
+          "enabled": false,
+          "msPerFrame": 0.06666666766007741
+        },
+        {
+          "enabled": false,
+          "msPerFrame": 0.16666666666666666
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.13333333283662796
+        }
+      ],
+      "mixed": false,
+      "pose": 1,
+      "uniform": true,
+      "width": 5,
+      "height": 4,
+      "gridAllZero": true,
+      "differentChannels": 0,
+      "max": 0
+    },
+    {
+      "timings": [
+        {
+          "enabled": false,
+          "msPerFrame": 0.049999999503294625
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.11666666716337204
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.14999999850988388
+        },
+        {
+          "enabled": false,
+          "msPerFrame": 0.08333333333333333
+        },
+        {
+          "enabled": false,
+          "msPerFrame": 0.06666666517655055
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.10000000149011612
+        }
+      ],
+      "mixed": true,
+      "pose": 0,
+      "uniform": false,
+      "width": 5,
+      "height": 4,
+      "gridAllZero": false,
+      "differentChannels": 0,
+      "max": 0
+    },
+    {
+      "timings": [
+        {
+          "enabled": false,
+          "msPerFrame": 0.049999999503294625
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.033333333830038704
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.049999999503294625
+        },
+        {
+          "enabled": false,
+          "msPerFrame": 0.049999999503294625
+        },
+        {
+          "enabled": false,
+          "msPerFrame": 0.049999999503294625
+        },
+        {
+          "enabled": true,
+          "msPerFrame": 0.033333333830038704
+        }
+      ],
+      "mixed": true,
+      "pose": 1,
+      "uniform": false,
+      "width": 5,
+      "height": 4,
+      "gridAllZero": false,
+      "differentChannels": 0,
+      "max": 0
+    }
+  ],
+  "syntheticTimingLimit": "Alternating gl.finish render calls are submillisecond and variable even for unchanged multi-ref control; not used as evidence of real gameplay speedup. Only cold actual driving pair provides observed performance comparison.",
+  "verification": {
+    "new": "Demo prototype and control20m bothpass; identical GPU at Demo pose;4synthetic parity cases zero differing channels; repeated parity with timing passes; Turini independent compositor bothsizespass but visible boundary defects remain; actual Turini current bothsizesandbase desktop fail firstframe.",
+    "previousUnchangedProduction": "129units,6campaignbrowser,6loadingbrowser,all245guardsandmanifest green at parent. Not rerun: this checkpoint changes only diagnostic evidence and browser-intercepted prototype, not shipped runtime/assets/tests.",
+    "productionPreserved": true,
+    "publicationReady": false
+  },
+  "conclusion": "No art-only arrangement demonstrated equivalent near/distant coverage at lower geometry cost. Narrow uniform shader prototype is visually equivalent in tested GPU scenes and its fresh bounded-clock20m run is19.3%faster (33.770svs41.855s), with startup117.796svs121.693s. One pair on SwiftShader is not broad performance proof. Keep prototype isolated; all sixoverlaysremain. No release; unresolved complete route acceptance and Turini diagnostic boundary bands.",
+  "headroomBytes": 1227051008
+}

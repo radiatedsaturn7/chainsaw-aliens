@@ -1,0 +1,12 @@
+#!/bin/bash
+cd /workspace/roster-combined-local || exit 1
+for variant in baseline candidate; do
+ ledger=data/race-environments/ledger.json
+ if [ "$variant" = baseline ]; then ledger=/tmp/pack16-baseline-ledger.json; fi
+ cat /proc/stat > /tmp/pack20-$variant-cpu-before.txt
+ cat /proc/pressure/cpu > /tmp/pack20-$variant-pressure-before.txt
+ RACE_PROBE_LEDGER=$ledger RACE_PROBE_SNAPSHOT=$variant RACE_DRIVE_NAMES='Demo Track' RACE_DRIVE_DISTANCE=20 node_modules/.bin/playwright test tests/playwright/pack20-startup-trace.spec.js --grep desktop --config race-environments-pack16-$variant-local.config.mjs --workers=1 --reporter=line --output /tmp/race-pack20-$variant > /tmp/pack20-$variant.log 2>&1
+ echo "$variant exit=$?"
+ cat /proc/stat > /tmp/pack20-$variant-cpu-after.txt
+ cat /proc/pressure/cpu > /tmp/pack20-$variant-pressure-after.txt
+done
