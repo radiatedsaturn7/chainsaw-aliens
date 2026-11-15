@@ -1,0 +1,345 @@
+[
+  {
+    "key": "hurricane-evening",
+    "raceRef": "Hurricane Mountain Road — Conway",
+    "ref": "environment-v1-hurricane-evening",
+    "source": "environment-v1/hurricane-evening.png",
+    "sourceImage": "/workspace/generated_images/exec-fef58d2a-d08e-4568-9559-972cabedc0ce.png",
+    "landscape": "Close rocky Conway wooded ridge opening to lower valley.",
+    "reference": null,
+    "sourceEvidence": {
+      "origin": {
+        "name": "Hurricane Mountain Road — Conway",
+        "lat": 44.069,
+        "lon": -71.08,
+        "country": "us"
+      },
+      "snapshot": "data/campaigns/america/side-races/sources/H02-S03.json",
+      "catalog": [
+        {
+          "id": "H02-S03",
+          "hubStage": 2,
+          "startGps": {
+            "lat": 44.0753172,
+            "lon": -71.10430286666667
+          },
+          "finishGps": {
+            "lat": 44.077968,
+            "lon": -71.033782
+          },
+          "lightingPreset": "evening"
+        }
+      ]
+    },
+    "sourceLimitation": "Saved route coordinates establish location; regional descriptions inform landforms. Buildings, season and abandoned condition are original interpretation, not surveyed assets. No additional external site description verified; composition conservatively follows saved location and regional biome.",
+    "sharing": "Unique route/site composition; no cross-route sharing asserted.",
+    "boundaries": "Flat safe bands requested; native yaw/pitch and wrap review required.",
+    "ground": "ground-frozen-forest",
+    "tiles": {
+      "grass": "ground-frozen-forest"
+    },
+    "artProvenance": {
+      "tool": "image_gen.imagegen",
+      "originalRetained": "/workspace/generated_images/exec-fef58d2a-d08e-4568-9559-972cabedc0ce.png",
+      "sha256": "46213e413269e10d2e219a236990907046ffd9a9c07c0cfc1e788e58a6caf065",
+      "brief": "Hurricane Mountain Road Conway NH, steep close wooded ridge with granite outcrops at left, lower layered valley opening right, pine and hardwood silhouettes, muted violet peach clear evening, pale upper sky, no sun disk. No snow, no city.",
+      "format": "Original badge-free 2994 panoramic pixel art, requested 3:1; clear flat top/bottom clamp-safe bands; no cars or foreground road.",
+      "manualSourceReview": "Viewed source/contact sheet; geography differentiated. Native boundary and production acceptance remain separate."
+    },
+    "repairedImage": "/workspace/generated_images/exec-7e92be55-e2dc-4991-81a9-408942f60090.png"
+  },
+  {
+    "key": "loudon-evening",
+    "raceRef": "New Hampshire Motor Speedway — Loudon",
+    "ref": "environment-v1-loudon-evening",
+    "source": "environment-v1/loudon-evening.png",
+    "sourceImage": "/workspace/generated_images/exec-dcf7e1a0-6642-4de2-aff8-901b3012e5df.png",
+    "landscape": "Loudon oval grandstand and paddock within wooded hills.",
+    "reference": "https://www.nhms.com/fans/directions/",
+    "sourceEvidence": {
+      "origin": {
+        "name": "New Hampshire Motor Speedway — Loudon",
+        "lat": 43.362,
+        "lon": -71.46,
+        "country": "us"
+      },
+      "snapshot": "data/campaigns/america/side-races/sources/H02-S08.json",
+      "catalog": [
+        {
+          "id": "H02-S08",
+          "hubStage": 2,
+          "startGps": {
+            "lat": 43.364164466666665,
+            "lon": -71.46152086666666
+          },
+          "finishGps": {
+            "lat": 43.364164466666665,
+            "lon": -71.46152086666666
+          },
+          "lightingPreset": "evening"
+        }
+      ]
+    },
+    "sourceLimitation": "Saved route coordinates establish location; regional descriptions inform landforms. Buildings, season and abandoned condition are original interpretation, not surveyed assets.",
+    "sharing": "Unique route/site composition; no cross-route sharing asserted.",
+    "boundaries": "Flat safe bands requested; native yaw/pitch and wrap review required.",
+    "ground": "environment-v1-ground-dormant-prairie",
+    "tiles": {
+      "grass": "environment-v1-ground-dormant-prairie"
+    },
+    "artProvenance": {
+      "tool": "image_gen.imagegen",
+      "originalRetained": "/workspace/generated_images/exec-dcf7e1a0-6642-4de2-aff8-901b3012e5df.png",
+      "sha256": "a1d26edf1c7591391446197d1b856085b44bd7187b96c1aa9ca2eb1eed2a531b",
+      "brief": "New Hampshire Motor Speedway Loudon facility, low long empty oval grandstand and flat paddock in rolling pine hardwood hills, forested overlook hill on right, modest control tower, dusk violet warm evening sky, subtle deserted infrastructure. No snow, no giant city.",
+      "format": "Original badge-free 2994 panoramic pixel art, requested 3:1; clear flat top/bottom clamp-safe bands; no cars or foreground road.",
+      "manualSourceReview": "Viewed source/contact sheet; geography differentiated. Native boundary and production acceptance remain separate."
+    },
+    "repairedImage": "/workspace/generated_images/exec-5b0c323e-fb7b-4987-9133-587150a98408.png"
+  },
+  {
+    "key": "ri116-morning",
+    "raceRef": "RI 116 — North Smithfield Scituate",
+    "ref": "environment-v1-ri116-morning",
+    "source": "environment-v1/ri116-morning.png",
+    "sourceImage": "/workspace/generated_images/exec-6c885ab2-4a1c-478b-8083-62bf5b709d9b.png",
+    "landscape": "Low North Smithfield woodland/mill region, modest abandoned roof and stone wall.",
+    "reference": "https://www.nps.gov/blrv/planyourvisit/placestogo.htm",
+    "sourceEvidence": {
+      "origin": {
+        "name": "RI 116 — North Smithfield / Scituate",
+        "lat": 41.89,
+        "lon": -71.58,
+        "country": "us"
+      },
+      "snapshot": "data/campaigns/america/side-races/sources/H01-S02.json",
+      "catalog": [
+        {
+          "id": "H01-S02",
+          "hubStage": 1,
+          "startGps": {
+            "lat": 41.896847,
+            "lon": -71.54409
+          },
+          "finishGps": {
+            "lat": 41.834351,
+            "lon": -71.586563
+          },
+          "lightingPreset": "morning"
+        }
+      ]
+    },
+    "sourceLimitation": "Saved route coordinates establish location; regional descriptions inform landforms. Buildings, season and abandoned condition are original interpretation, not surveyed assets.",
+    "sharing": "Unique route/site composition; no cross-route sharing asserted.",
+    "boundaries": "Flat safe bands requested; native yaw/pitch and wrap review required.",
+    "ground": "ground-frozen-forest",
+    "tiles": {
+      "grass": "ground-frozen-forest"
+    },
+    "artProvenance": {
+      "tool": "image_gen.imagegen",
+      "originalRetained": "/workspace/generated_images/exec-6c885ab2-4a1c-478b-8083-62bf5b709d9b.png",
+      "sha256": "88df7dc6d5da3d40423763157b77d9e398bea3ba0874f4b541ddc6db041c55ed",
+      "brief": "Rhode Island route116 North Smithfield Scituate landscape, gently rolling low hardwood pine forest with modest weathered former mill roof and small stone wall, clear hazy morning. Narrow distant power lines. No skyline, mountains, snow, lake or coast.",
+      "format": "Original badge-free 2994 panoramic pixel art, requested 3:1; clear flat top/bottom clamp-safe bands; no cars or foreground road.",
+      "manualSourceReview": "Viewed source/contact sheet; geography differentiated. Native boundary and production acceptance remain separate."
+    },
+    "repairedImage": "/workspace/generated_images/exec-fdd72540-7584-4557-b186-f9925b11d3f5.png"
+  },
+  {
+    "key": "ri102-evening",
+    "raceRef": "RI 102 — Victory Highway",
+    "ref": "environment-v1-ri102-evening",
+    "source": "environment-v1/ri102-evening.png",
+    "sourceImage": "/workspace/generated_images/exec-94603531-9018-455a-ac6f-532143da8ea6.png",
+    "landscape": "Northern RI Burrillville low oak/pine woodland, stone walls and modest roadside workshop.",
+    "reference": null,
+    "sourceEvidence": {
+      "origin": {
+        "name": "RI 102 — Victory Highway",
+        "lat": 41.94,
+        "lon": -71.7,
+        "country": "us"
+      },
+      "snapshot": "data/campaigns/america/side-races/sources/H01-S03.json",
+      "catalog": [
+        {
+          "id": "H01-S03",
+          "hubStage": 1,
+          "startGps": {
+            "lat": 41.929173,
+            "lon": -71.668396
+          },
+          "finishGps": {
+            "lat": 41.83845788888888,
+            "lon": -71.67613488888888
+          },
+          "lightingPreset": "evening"
+        }
+      ]
+    },
+    "sourceLimitation": "Saved route coordinates establish location; regional descriptions inform landforms. Buildings, season and abandoned condition are original interpretation, not surveyed assets. No additional external site description verified; composition conservatively follows saved location and regional biome.",
+    "sharing": "Unique route/site composition; no cross-route sharing asserted.",
+    "boundaries": "Flat safe bands requested; native yaw/pitch and wrap review required.",
+    "ground": "ground-frozen-forest",
+    "tiles": {
+      "grass": "ground-frozen-forest"
+    },
+    "artProvenance": {
+      "tool": "image_gen.imagegen",
+      "originalRetained": "/workspace/generated_images/exec-94603531-9018-455a-ac6f-532143da8ea6.png",
+      "sha256": "442a9e7f50147ca5d14da730df7d4db95418a93f1a6a1ca2cf9a202b88d8d0d4",
+      "brief": "Northern Rhode Island Victory Highway route102 Burrillville region, close low oak pine woodland, weathered stone wall and subdued abandoned small roadside workshop roof amongst trees, low rocky woodland rise at left, muted clear evening lilac peach sky. No mountain, snow, city, ocean or large water.",
+      "format": "Original badge-free 2994 panoramic pixel art, requested 3:1; clear flat top/bottom clamp-safe bands; no cars or foreground road.",
+      "manualSourceReview": "Viewed source/contact sheet; geography differentiated. Native boundary and production acceptance remain separate."
+    },
+    "repairedImage": "/workspace/generated_images/exec-d2f33d2d-5b31-4baa-aa71-fcc650ac9d4f.png"
+  },
+  {
+    "key": "ri44-morning",
+    "raceRef": "RI 44 — Putnam Pike Glocester",
+    "ref": "environment-v1-ri44-morning",
+    "source": "environment-v1/ri44-morning.png",
+    "sourceImage": "/workspace/generated_images/exec-7d62f589-3254-4502-af5f-7c6f5ca0edc2.png",
+    "landscape": "Glocester/Putnam Pike mixed woods, granite boulders and modest rural barn.",
+    "reference": "https://dem.ri.gov/contact-us/directions-division-forest-environment",
+    "sourceEvidence": {
+      "origin": {
+        "name": "RI 44 — Putnam Pike / Glocester",
+        "lat": 41.91,
+        "lon": -71.69,
+        "country": "us"
+      },
+      "snapshot": "data/campaigns/america/side-races/sources/H01-S07.json",
+      "catalog": [
+        {
+          "id": "H01-S07",
+          "hubStage": 1,
+          "startGps": {
+            "lat": 41.8996939,
+            "lon": -71.631676
+          },
+          "finishGps": {
+            "lat": 41.920447599999996,
+            "lon": -71.74997880000001
+          },
+          "lightingPreset": "morning"
+        }
+      ]
+    },
+    "sourceLimitation": "Saved route coordinates establish location; regional descriptions inform landforms. Buildings, season and abandoned condition are original interpretation, not surveyed assets.",
+    "sharing": "Unique route/site composition; no cross-route sharing asserted.",
+    "boundaries": "Flat safe bands requested; native yaw/pitch and wrap review required.",
+    "ground": "ground-frozen-forest",
+    "tiles": {
+      "grass": "ground-frozen-forest"
+    },
+    "artProvenance": {
+      "tool": "image_gen.imagegen",
+      "originalRetained": "/workspace/generated_images/exec-7d62f589-3254-4502-af5f-7c6f5ca0edc2.png",
+      "sha256": "306e135f815d61e9b4c6cb0ec9cb832aeb018a6188c9a073fbe9a2d7a6cf4aaa",
+      "brief": "Putnam Pike US44 Glocester Chepachet RI, broad low forest corridor, mixed hardwood and pine, exposed gray granite boulders and a distant weathered rural timber barn, clear morning pale blue sky. No mountains, snow, reservoirs or city.",
+      "format": "Original badge-free 2994 panoramic pixel art, requested 3:1; clear flat top/bottom clamp-safe bands; no cars or foreground road.",
+      "manualSourceReview": "Viewed source/contact sheet; geography differentiated. Native boundary and production acceptance remain separate."
+    },
+    "repairedImage": "/workspace/generated_images/exec-daa4da89-53ce-4a68-8a91-8b62d0353f7c.png"
+  },
+  {
+    "key": "bear-notch-morning",
+    "raceRef": "Bear Notch Road — Bartlett",
+    "ref": "environment-v1-bear-notch-morning",
+    "source": "environment-v1/bear-notch-morning.png",
+    "sourceImage": "/workspace/generated_images/exec-dc783025-3974-406e-b125-ec489e8a0687.png",
+    "landscape": "Close wooded Bartlett saddle and low ridges.",
+    "reference": "https://www.visitnh.gov/things-to-do/scenic-drives/white-mountains",
+    "sourceEvidence": {
+      "origin": {
+        "name": "Bear Notch Road — Bartlett",
+        "lat": 44.047,
+        "lon": -71.274,
+        "country": "us"
+      },
+      "snapshot": "data/campaigns/america/side-races/sources/H02-S02.json",
+      "catalog": [
+        {
+          "id": "H02-S02",
+          "hubStage": 2,
+          "startGps": {
+            "lat": 44.0356773,
+            "lon": -71.325149
+          },
+          "finishGps": {
+            "lat": 44.0685195,
+            "lon": -71.2829265
+          },
+          "lightingPreset": "morning"
+        }
+      ]
+    },
+    "sourceLimitation": "Saved route coordinates establish location; regional descriptions inform landforms. Buildings, season and abandoned condition are original interpretation, not surveyed assets.",
+    "sharing": "Unique route/site composition; no cross-route sharing asserted.",
+    "boundaries": "Flat safe bands requested; native yaw/pitch and wrap review required.",
+    "ground": "ground-frozen-forest",
+    "tiles": {
+      "grass": "ground-frozen-forest"
+    },
+    "artProvenance": {
+      "tool": "image_gen.imagegen",
+      "originalRetained": "/workspace/generated_images/exec-dc783025-3974-406e-b125-ec489e8a0687.png",
+      "sha256": "55286e4f9dd6aa3609b32924677ae27d4f13400709b1f2230fa438e07eacfb64",
+      "brief": "Bear Notch Road Bartlett New Hampshire, intimate wooded mountain saddle, asymmetrical low forest ridges with dense spruce and hardwood canopy, weathered wooden utility hut partly hidden near far left, cool clear morning. No snow, no lake, no huge peaks.",
+      "format": "Original badge-free 2994 panoramic pixel art, requested 3:1; clear flat top/bottom clamp-safe bands; no cars or foreground road.",
+      "manualSourceReview": "Viewed source/contact sheet; geography differentiated. Native boundary and production acceptance remain separate."
+    },
+    "repairedImage": "/workspace/generated_images/exec-d8e55374-6e7b-4bad-8660-59e6e9a1f5bd.png"
+  },
+  {
+    "key": "pinkham-snow-noon",
+    "raceRef": "Pinkham Notch — NH 16",
+    "ref": "environment-v1-pinkham-snow-noon",
+    "source": "environment-v1/pinkham-snow-noon.png",
+    "sourceImage": "/workspace/generated_images/exec-c64900cc-8b15-4d44-80b1-a2f430bb70ca.png",
+    "landscape": "Snowy wooded Pinkham pass and broad mountain shoulders; no summit observatory.",
+    "reference": "https://www.visitnh.gov/things-to-do/scenic-drives/white-mountains",
+    "sourceEvidence": {
+      "origin": {
+        "name": "Pinkham Notch — NH 16",
+        "lat": 44.225,
+        "lon": -71.252,
+        "country": "us"
+      },
+      "snapshot": "data/campaigns/america/side-races/sources/H02-S05.json",
+      "catalog": [
+        {
+          "id": "H02-S05",
+          "hubStage": 2,
+          "startGps": {
+            "lat": 44.2467389,
+            "lon": -71.2531936
+          },
+          "finishGps": {
+            "lat": 44.160191,
+            "lon": -71.212701
+          },
+          "lightingPreset": "noon"
+        }
+      ]
+    },
+    "sourceLimitation": "Saved route coordinates establish location; regional descriptions inform landforms. Buildings, season and abandoned condition are original interpretation, not surveyed assets.",
+    "sharing": "Unique route/site composition; no cross-route sharing asserted.",
+    "boundaries": "Flat safe bands requested; native yaw/pitch and wrap review required.",
+    "ground": "ground-clean-snow-v2",
+    "tiles": {
+      "grass": "ground-clean-snow-v2"
+    },
+    "artProvenance": {
+      "tool": "image_gen.imagegen",
+      "originalRetained": "/workspace/generated_images/exec-c64900cc-8b15-4d44-80b1-a2f430bb70ca.png",
+      "sha256": "2f05cce1c17591c68f989c20af7abf1c4563aefa667b6f6de2d17b5625f60af9",
+      "brief": "Snowy wooded Pinkham pass and broad mountain shoulders; no summit observatory.",
+      "format": "Original badge-free 2994 panoramic pixel art, requested 3:1; clear flat top/bottom clamp-safe bands; no cars or foreground road.",
+      "manualSourceReview": "Viewed source/contact sheet; geography differentiated. Native boundary and production acceptance remain separate."
+    },
+    "repairedImage": "/workspace/generated_images/exec-3912aae5-5f21-4b7c-bbab-7572f02ea1d7.png"
+  }
+]

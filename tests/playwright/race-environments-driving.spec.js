@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {gunzipSync} from 'node:zlib';
+import {steeringIntent} from '../../tools/race-environments/driving-controls.mjs';
 import {test,expect,devices} from '@playwright/test';
 import {resolveDiagnosticRaceChoice} from '../../tools/race-environments/selector.mjs';
 const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
@@ -25,8 +26,25 @@ for(const name of names)for(const mobile of [false,true])test.describe(`${name} 
    const selector=resolveDiagnosticRaceChoice(choices,name,row.documentPath);
    const started=await page.evaluate(async race=>{const g=window.__game;g.setDisplayMode('color');return g.startRaceTravel({raceName:race,carSelection:'specific',carRef:'RTG-001'});},selector.value);expect(started).toBe(true);
    await page.waitForFunction(()=>{const g=window.__game,s=g.raceEditor.playtestSession;if(g.state==='prompt'&&!s?.running)throw Error('Race left startup for prompt: '+g.raceEditor.status);return s?.running&&!s.startupFramePending&&s.elapsedMs>2000;},null,{timeout:180000});
-   const before=await snapshot();await page.keyboard.down('g');await page.waitForFunction(()=>window.__game.raceEditor.playtestSession.speedMps>1,null,{timeout:30000});
-   await page.screenshot({path:info.outputPath('authored-driving-a.png')});await page.waitForTimeout(2000);await page.keyboard.up('g');
+   const before=await snapshot();
+   if(process.env.RACE_DRIVE_STEER==='1'){
+    const trace=[],held=new Set();let initialDistance=null,progress=0;
+    await page.screenshot({path:info.outputPath('authored-driving-a.png')});
+    const deadline=Date.now()+60000;
+    try{
+     while(Date.now()<deadline&&progress<50){
+      const t=await page.evaluate(()=>{const e=window.__game.raceEditor,s=e.playtestSession,p=e.getRaceRouteProjectionForWorldPoint({x:s.worldX,z:s.worldZ}),look=e.getRaceWorldPoseAtDistance(p.distance+Math.max(8,s.speedMps*1.8));return {elapsed:s.elapsedMs,yaw:s.carYaw,targetYaw:Math.atan2(look.x-s.worldX,look.z-s.worldZ),speed:s.speedMps,lateral:p.lateral,width:Number(p.segment?.roadWidthM||e.selectedRace.road.width||8),distance:p.distance,x:s.worldX,z:s.worldZ};});
+      initialDistance??=t.distance;progress=t.distance-initialDistance;const intent=steeringIntent(t);trace.push({...t,...intent,progress});
+      for(const [key,on]of [['ArrowLeft',intent.steer<0],['ArrowRight',intent.steer>0],['g',intent.throttle],['r',intent.brake]]){if(on&&!held.has(key)){await page.keyboard.down(key);held.add(key);}else if(!on&&held.has(key)){await page.keyboard.up(key);held.delete(key);}}
+      await page.waitForTimeout(150);
+     }
+     expect(progress,'Steered opening-bend route progress').toBeGreaterThanOrEqual(50);
+     expect(trace.some(t=>t.steer!==0),'Steering input actually exercised').toBe(true);
+    }finally{for(const key of held)await page.keyboard.up(key);fs.writeFileSync(info.outputPath('steering-trace.json'),JSON.stringify({scope:'Normal keyboard inputs with read-only route telemetry; 2m-wide car envelope; no pose/speed/physics/deadline overrides.',progress,trace},null,2));}
+   }else{
+    await page.keyboard.down('g');await page.waitForFunction(()=>window.__game.raceEditor.playtestSession.speedMps>1,null,{timeout:30000});
+    await page.screenshot({path:info.outputPath('authored-driving-a.png')});await page.waitForTimeout(2000);await page.keyboard.up('g');
+   }
    const after=await snapshot();await page.screenshot({path:info.outputPath('authored-driving-b.png')});
    expect(Math.hypot(after.session.worldX-before.session.worldX,after.session.worldZ-before.session.worldZ)).toBeGreaterThan(.5);expect(after.sky).toBe(row.binding.skyboxArtRef);expect(after.session.elapsed).toBeGreaterThan(before.session.elapsed);expect(after.session.speed).toBeGreaterThan(1);
    fs.writeFileSync(info.outputPath('driving-state.json'),JSON.stringify({race:name,baseline:baseline||null,device:mobile?'handheld':'desktop',selector,before,after,errors,network,note:'Actual production travel and real update/draw loop; authored captures have no sky brightness, weather or world lighting override. Short drive sample, not route-wide approval.'},null,2));

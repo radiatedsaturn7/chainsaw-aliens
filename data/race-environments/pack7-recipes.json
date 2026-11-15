@@ -1,0 +1,849 @@
+{
+  "base": "24b3164e4b7765482a9b819e6968f821b452b344",
+  "recipes": [
+    {
+      "key": "ohiopyle-noon",
+      "raceRef": "PA 381 — Ohiopyle approach",
+      "ref": "environment-v1-ohiopyle-noon",
+      "source": "environment-v1/ohiopyle-noon.png",
+      "sourceImage": "/workspace/generated_images/exec-328ac2fd-79d3-463a-a539-a78428c29db2.png",
+      "landscape": "Low rounded Laurel Highlands wooded gorge rim, dense mixed hardwoods and hemlocks, gray sandstone ledges and a subtle distant gorge depression, clear noon. No giant falls, skyscrapers, snow or dramatic alpine peaks.",
+      "reference": "https://www.pa.gov/agencies/dcnr/programs-and-services/community-outreach-and-development/conservation-landscapes/laurel-highlands",
+      "sourceEvidence": {
+        "origin": {
+          "name": "PA 381 — Ohiopyle approach",
+          "lat": 39.93,
+          "lon": -79.45,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H03-S01.json",
+        "catalog": [
+          {
+            "id": "H03-S01",
+            "hubStage": 3,
+            "startGps": {
+              "lat": 39.87389112857142,
+              "lon": -79.49145034285714
+            },
+            "finishGps": {
+              "lat": 39.94806705,
+              "lon": -79.4520052
+            },
+            "lightingPreset": "noon"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. Primary operator/government or course-host source supports regional/facility context.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-328ac2fd-79d3-463a-a539-a78428c29db2.png",
+        "sourceSha256": "07c19ba128d22cc1d50a544f203b505259a8ce481d345c9e6eae4dffeaa06c23",
+        "originalBrief": "Low rounded Laurel Highlands wooded gorge rim, dense mixed hardwoods and hemlocks, gray sandstone ledges and a subtle distant gorge depression, clear noon. No giant falls, skyscrapers, snow or dramatic alpine peaks.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "normalville-evening",
+      "raceRef": "PA 711 — Normalville Champion",
+      "ref": "environment-v1-normalville-evening",
+      "source": "environment-v1/normalville-evening.png",
+      "sourceImage": "/workspace/generated_images/exec-011a9511-fd93-4888-aa28-6d509ef219a4.png",
+      "landscape": "Rolling Pennsylvania upland pasture edged by long low hardwood ridges, a small distant weathered farm barn and silos in the center, quiet clear evening peach sky. No snow, tall mountains or city.",
+      "reference": null,
+      "sourceEvidence": {
+        "origin": {
+          "name": "PA 711 — Normalville / Champion",
+          "lat": 40.02,
+          "lon": -79.39,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H03-S02.json",
+        "catalog": [
+          {
+            "id": "H03-S02",
+            "hubStage": 3,
+            "startGps": {
+              "lat": 40.0734453,
+              "lon": -79.3589473
+            },
+            "finishGps": {
+              "lat": 40.0058873,
+              "lon": -79.44124844999999
+            },
+            "lightingPreset": "evening"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. No route-specific primary landscape description verified; conservative regional landforms grounded in saved coordinates.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-011a9511-fd93-4888-aa28-6d509ef219a4.png",
+        "sourceSha256": "595b2c0e620a46d49a5df2b735b5ba717423fac37acbeda44d0047419372c24a",
+        "originalBrief": "Rolling Pennsylvania upland pasture edged by long low hardwood ridges, a small distant weathered farm barn and silos in the center, quiet clear evening peach sky. No snow, tall mountains or city.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "chalk-hill-evening",
+      "raceRef": "US 40 — Chalk Hill Summit",
+      "ref": "environment-v1-chalk-hill-evening",
+      "source": "environment-v1/chalk-hill-evening.png",
+      "sourceImage": "/workspace/generated_images/exec-3261666c-ede3-40e1-a79c-59cc284a97f5.png",
+      "landscape": "National Road Chalk Hill upland landscape, broad rounded Appalachian wooded ridge, layered sandstone bank near central old stone inn-like roof and telegraph poles, clear muted evening. No snow, modern skyline or alpine peaks.",
+      "reference": null,
+      "sourceEvidence": {
+        "origin": {
+          "name": "US 40 — Chalk Hill / Summit",
+          "lat": 39.85,
+          "lon": -79.61,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H03-S03.json",
+        "catalog": [
+          {
+            "id": "H03-S03",
+            "hubStage": 3,
+            "startGps": {
+              "lat": 39.8156879,
+              "lon": -79.5828133
+            },
+            "finishGps": {
+              "lat": 39.8675584,
+              "lon": -79.6905067
+            },
+            "lightingPreset": "evening"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. No route-specific primary landscape description verified; conservative regional landforms grounded in saved coordinates.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-3261666c-ede3-40e1-a79c-59cc284a97f5.png",
+        "sourceSha256": "ebe9faa033aabddf57b008f1b5d16880ae4194ac7caccf27de89c3de7e998ee9",
+        "originalBrief": "National Road Chalk Hill upland landscape, broad rounded Appalachian wooded ridge, layered sandstone bank near central old stone inn-like roof and telegraph poles, clear muted evening. No snow, modern skyline or alpine peaks.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "donegal-night",
+      "raceRef": "PA 31 — Donegal to Laurel Ridge",
+      "ref": "environment-v1-donegal-night",
+      "source": "environment-v1/donegal-night.png",
+      "sourceImage": "/workspace/generated_images/exec-bf5465d1-36be-4cbe-aed6-6ba3afa3364f.png",
+      "landscape": "Laurel Ridge Pennsylvania clear night, broad low ridge black-blue outline above dark meadow and hardwoods, tiny distant abandoned hamlet roofs, a small off-center pale crescent moon and sparse stars in central sky. Restrained dark navy, no daytime sunset, no snow or bright floodlighting.",
+      "reference": null,
+      "sourceEvidence": {
+        "origin": {
+          "name": "PA 31 — Donegal to Laurel Ridge",
+          "lat": 40.09,
+          "lon": -79.3,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H03-S04.json",
+        "catalog": [
+          {
+            "id": "H03-S04",
+            "hubStage": 3,
+            "startGps": {
+              "lat": 40.0879129,
+              "lon": -79.3364016
+            },
+            "finishGps": {
+              "lat": 40.0523151,
+              "lon": -79.2177752
+            },
+            "lightingPreset": "night"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. No route-specific primary landscape description verified; conservative regional landforms grounded in saved coordinates.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-bf5465d1-36be-4cbe-aed6-6ba3afa3364f.png",
+        "sourceSha256": "7d20e92684d8885f5f9f74551cea2571c76a9b5b187e650a2c7d294391f8c029",
+        "originalBrief": "Laurel Ridge Pennsylvania clear night, broad low ridge black-blue outline above dark meadow and hardwoods, tiny distant abandoned hamlet roofs, a small off-center pale crescent moon and sparse stars in central sky. Restrained dark navy, no daytime sunset, no snow or bright floodlighting.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "seven-springs-night",
+      "raceRef": "County Line Road — Seven Springs",
+      "ref": "environment-v1-seven-springs-night",
+      "source": "environment-v1/seven-springs-night.png",
+      "sourceImage": "/workspace/generated_images/exec-1c5914d7-ccd3-4352-b805-b4d495974100.png",
+      "landscape": "High Laurel Highlands wooded plateau at clear night, rounded dark forested slopes, distant empty ski-lift support silhouettes and low chalet roof in center, subdued faint star cluster, NO moon disk, no snow blanket. Navy charcoal landscape with very faint cloud haze, no bright daylight.",
+      "reference": null,
+      "sourceEvidence": {
+        "origin": {
+          "name": "County Line Road — Seven Springs",
+          "lat": 40.05,
+          "lon": -79.28,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H03-S05.json",
+        "catalog": [
+          {
+            "id": "H03-S05",
+            "hubStage": 3,
+            "startGps": {
+              "lat": 40.0071425,
+              "lon": -79.2641283
+            },
+            "finishGps": {
+              "lat": 40.0420868,
+              "lon": -79.33778871666665
+            },
+            "lightingPreset": "night"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. No route-specific primary landscape description verified; conservative regional landforms grounded in saved coordinates.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-1c5914d7-ccd3-4352-b805-b4d495974100.png",
+        "sourceSha256": "76f432223c37f31c9ba839724d5ae2d90123a84157acafa919bdc707bd09cc9c",
+        "originalBrief": "High Laurel Highlands wooded plateau at clear night, rounded dark forested slopes, distant empty ski-lift support silhouettes and low chalet roof in center, subdued faint star cluster, NO moon disk, no snow blanket. Navy charcoal landscape with very faint cloud haze, no bright daylight.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "forbes-morning",
+      "raceRef": "Forbes State Forest — designated gravel roads",
+      "ref": "environment-v1-forbes-morning",
+      "source": "environment-v1/forbes-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-156be7f9-9b2c-4d35-99d0-d22d14d8d159.png",
+      "landscape": "Pennsylvania Forbes State Forest rolling sandstone uplands, layered hardwood/hemlock forest and central exposed blocky gray rock ledges, small mossy woodland opening with leaf litter and gravel, soft clear morning. No snow, no giant mountains, no buildings or lake.",
+      "reference": "https://www.pa.gov/agencies/dcnr/recreation/where-to-go/state-forests/find-a-forest/forbes/sightseeing",
+      "sourceEvidence": {
+        "origin": {
+          "name": "Forbes State Forest — designated gravel roads",
+          "lat": 40.12,
+          "lon": -79.18,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H03-S06.json",
+        "catalog": [
+          {
+            "id": "H03-S06",
+            "hubStage": 3,
+            "startGps": {
+              "lat": 40.1177855,
+              "lon": -79.1790756
+            },
+            "finishGps": {
+              "lat": 40.1570064,
+              "lon": -79.1497398
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. Primary operator/government or course-host source supports regional/facility context.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-156be7f9-9b2c-4d35-99d0-d22d14d8d159.png",
+        "sourceSha256": "33e30bd8784ab4ba99be7463a2b9170a044448399108581961e1b7e9bcff610e",
+        "originalBrief": "Pennsylvania Forbes State Forest rolling sandstone uplands, layered hardwood/hemlock forest and central exposed blocky gray rock ledges, small mossy woodland opening with leaf litter and gravel, soft clear morning. No snow, no giant mountains, no buildings or lake.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "jennerstown-night",
+      "raceRef": "Jennerstown Speedway — oval",
+      "ref": "environment-v1-jennerstown-night",
+      "source": "environment-v1/jennerstown-night.png",
+      "sourceImage": "/workspace/generated_images/exec-87aa765c-2e66-4077-86d4-89ecc0a0f99f.png",
+      "landscape": "Small Laurel Highlands Pennsylvania oval facility at clear night, low empty steel bleachers and compact timing/control building, dark rounded wooded ridge, restrained localized amber service glow at central shed, sparse central stars but no moon disk. Abandoned 2994, not a brightly operating stadium. No snow.",
+      "reference": "https://www.jennerstown.org/about",
+      "sourceEvidence": {
+        "origin": {
+          "name": "Jennerstown Speedway — oval",
+          "lat": 40.155,
+          "lon": -79.063,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H03-S07.json",
+        "catalog": [
+          {
+            "id": "H03-S07",
+            "hubStage": 3,
+            "startGps": {
+              "lat": 40.1585436,
+              "lon": -79.073103975
+            },
+            "finishGps": {
+              "lat": 40.1585436,
+              "lon": -79.073103975
+            },
+            "lightingPreset": "night"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. Primary operator/government or course-host source supports regional/facility context.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-87aa765c-2e66-4077-86d4-89ecc0a0f99f.png",
+        "sourceSha256": "4d8c1787007f2c9e5678a0892ccd7104a8145deb721db99255e792622ae34543",
+        "originalBrief": "Small Laurel Highlands Pennsylvania oval facility at clear night, low empty steel bleachers and compact timing/control building, dark rounded wooded ridge, restrained localized amber service glow at central shed, sparse central stars but no moon disk. Abandoned 2994, not a brightly operating stadium. No snow.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "keystone-morning",
+      "raceRef": "Keystone Motorsports Park — New Alexandria",
+      "ref": "environment-v1-keystone-morning",
+      "source": "environment-v1/keystone-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-8a9711b1-6014-4173-a33b-6bfe29a7ef97.png",
+      "landscape": "New Alexandria Pennsylvania drag-racing facility, low long empty bleachers, timing tower and paddock sheds in center, gently rolling wooded hills behind, muted morning mist in valley and clear sky, dry olive grass. No snow or giant stadium bowl.",
+      "reference": "https://keystoneracewaypark.com/directions/",
+      "sourceEvidence": {
+        "origin": {
+          "name": "Keystone Motorsports Park — New Alexandria",
+          "lat": 40.40831,
+          "lon": -79.39744,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H03-S08.json",
+        "catalog": [
+          {
+            "id": "H03-S08",
+            "hubStage": 3,
+            "startGps": {
+              "lat": 40.4061407,
+              "lon": -79.3971989
+            },
+            "finishGps": {
+              "lat": 40.402542986633144,
+              "lon": -79.39669285059088
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. Primary operator/government or course-host source supports regional/facility context.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-8a9711b1-6014-4173-a33b-6bfe29a7ef97.png",
+        "sourceSha256": "23b4719f96bcd793b880aeaf859eec55acee7094cd87351ccc09a6abdf450528",
+        "originalBrief": "New Alexandria Pennsylvania drag-racing facility, low long empty bleachers, timing tower and paddock sheds in center, gently rolling wooded hills behind, muted morning mist in valley and clear sky, dry olive grass. No snow or giant stadium bowl.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "pitt-noon",
+      "raceRef": "Pittsburgh International Race Complex — Wampum",
+      "ref": "environment-v1-pitt-noon",
+      "source": "environment-v1/pitt-noon.png",
+      "sourceImage": "/workspace/generated_images/exec-0e07d6d5-7eda-4ad1-8c76-11b85d520206.png",
+      "landscape": "Wampum western Pennsylvania natural-terrain racing facility, rolling grassy basin and wooded ridges, low paddock garages and distant guardrail ribbon in center, broad wooded spectator hill, clear noon. No snow, major skyline or oval stadium bowl.",
+      "reference": "https://stcscca.com/road-racing/",
+      "sourceEvidence": {
+        "origin": {
+          "name": "Pittsburgh International Race Complex — Wampum",
+          "lat": 40.85,
+          "lon": -80.347,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H03-S09.json",
+        "catalog": [
+          {
+            "id": "H03-S09",
+            "hubStage": 3,
+            "startGps": {
+              "lat": 40.85049141666667,
+              "lon": -80.34813285
+            },
+            "finishGps": {
+              "lat": 40.85049141666667,
+              "lon": -80.34813285
+            },
+            "lightingPreset": "noon"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. Primary operator/government or course-host source supports regional/facility context.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-0e07d6d5-7eda-4ad1-8c76-11b85d520206.png",
+        "sourceSha256": "d5cac8674dda7672a13c24371c546e54ba1e7c4d999ab5cc814445ed10ad256f",
+        "originalBrief": "Wampum western Pennsylvania natural-terrain racing facility, rolling grassy basin and wooded ridges, low paddock garages and distant guardrail ribbon in center, broad wooded spectator hill, clear noon. No snow, major skyline or oval stadium bowl.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "oh26-noon",
+      "raceRef": "OH 26 — Covered Bridge Scenic Byway",
+      "ref": "environment-v1-oh26-noon",
+      "source": "environment-v1/oh26-noon.png",
+      "sourceImage": "/workspace/generated_images/exec-18169fd0-c53d-49cb-9424-89345c7d3299.png",
+      "landscape": "Little Muskingum River valley in southeastern Ohio: enclosed low hardwood hills alternating pasture, a SMALL distant weathered timber covered bridge over a narrow creek in center, meandering valley vegetation, clear noon. No large Ohio River bridge, skyline, snow or alpine peaks.",
+      "reference": "https://www.monroecountyohio.net/departments/parks_and_recreation/covered_bridge_byway.php",
+      "sourceEvidence": {
+        "origin": {
+          "name": "OH 26 — Covered Bridge Scenic Byway",
+          "lat": 39.56,
+          "lon": -81.2,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H04-S01.json",
+        "catalog": [
+          {
+            "id": "H04-S01",
+            "hubStage": 4,
+            "startGps": {
+              "lat": 39.54813,
+              "lon": -81.206123
+            },
+            "finishGps": {
+              "lat": 39.540702,
+              "lon": -81.17627
+            },
+            "lightingPreset": "noon"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. Primary operator/government or course-host source supports regional/facility context.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-18169fd0-c53d-49cb-9424-89345c7d3299.png",
+        "sourceSha256": "400c3ddc319af70492d82d99ba359eb05cd7bce531f4329566570ce36361a815",
+        "originalBrief": "Little Muskingum River valley in southeastern Ohio: enclosed low hardwood hills alternating pasture, a SMALL distant weathered timber covered bridge over a narrow creek in center, meandering valley vegetation, clear noon. No large Ohio River bridge, skyline, snow or alpine peaks.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "triple-nickel-evening",
+      "raceRef": "OH 555 — Triple Nickel",
+      "ref": "environment-v1-triple-nickel-evening",
+      "source": "environment-v1/triple-nickel-evening.png",
+      "sourceImage": "/workspace/generated_images/exec-60f6adfd-1e08-4380-92ea-9d0c2e798a63.png",
+      "landscape": "Southeastern Ohio Triple Nickel near Little Hocking, closely rolling rounded farm hills with irregular pasture and hardwood copses, small central weathered red barn, distant ridge layers, clear warm evening. No giant river, tall mountains or snow.",
+      "reference": null,
+      "sourceEvidence": {
+        "origin": {
+          "name": "OH 555 — Triple Nickel",
+          "lat": 39.4195178,
+          "lon": -81.8156907,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H04-S02.json",
+        "catalog": [
+          {
+            "id": "H04-S02",
+            "hubStage": 4,
+            "startGps": {
+              "lat": 39.348774,
+              "lon": -81.789452
+            },
+            "finishGps": {
+              "lat": 39.388143,
+              "lon": -81.816555
+            },
+            "lightingPreset": "evening"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. No route-specific primary landscape description verified; conservative regional landforms grounded in saved coordinates.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-60f6adfd-1e08-4380-92ea-9d0c2e798a63.png",
+        "sourceSha256": "b67c1441f36b0a605d947677ec1309a96f142da246181e2e2b034ce79ef4cc50",
+        "originalBrief": "Southeastern Ohio Triple Nickel near Little Hocking, closely rolling rounded farm hills with irregular pasture and hardwood copses, small central weathered red barn, distant ridge layers, clear warm evening. No giant river, tall mountains or snow.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "barlow-morning",
+      "raceRef": "OH 550 — Barlow approach",
+      "ref": "environment-v1-barlow-morning",
+      "source": "environment-v1/barlow-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-adc87aa7-c201-436a-bfb7-467e83103c49.png",
+      "landscape": "Barlow Ohio rural approach, broad gently rolling pasture with hedgerows, low wooded hills and a distant faded farmhouse with small silo cluster in center, cool clear morning. No skyline, snow or alpine peaks.",
+      "reference": null,
+      "sourceEvidence": {
+        "origin": {
+          "name": "OH 550 — Barlow approach",
+          "lat": 39.4,
+          "lon": -81.65,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H04-S03.json",
+        "catalog": [
+          {
+            "id": "H04-S03",
+            "hubStage": 4,
+            "startGps": {
+              "lat": 39.39357675,
+              "lon": -81.59699025
+            },
+            "finishGps": {
+              "lat": 39.403103333333334,
+              "lon": -81.720761
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. No route-specific primary landscape description verified; conservative regional landforms grounded in saved coordinates.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-adc87aa7-c201-436a-bfb7-467e83103c49.png",
+        "sourceSha256": "2d507306181a75310f80011c948b3b8be98997ca9e6a21533c50b0cea976eef7",
+        "originalBrief": "Barlow Ohio rural approach, broad gently rolling pasture with hedgerows, low wooded hills and a distant faded farmhouse with small silo cluster in center, cool clear morning. No skyline, snow or alpine peaks.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "oh536-night",
+      "raceRef": "OH 536 — Ohio River hills",
+      "ref": "environment-v1-oh536-night",
+      "source": "environment-v1/oh536-night.png",
+      "sourceImage": "/workspace/generated_images/exec-2386fa77-3079-4ea6-a07a-4fef581ffa66.png",
+      "landscape": "Southeastern Ohio deeply folded low river-country hills at clear night, wooded ridge silhouettes and faint narrow distant river reflection in central valley, small waning crescent high in CENTRAL sky and sparse stars. Dark blue muted silver, no suspension bridge, skyline, snow or daylight.",
+      "reference": null,
+      "sourceEvidence": {
+        "origin": {
+          "name": "OH 536 — Ohio River hills",
+          "lat": 39.73,
+          "lon": -80.99,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H04-S04.json",
+        "catalog": [
+          {
+            "id": "H04-S04",
+            "hubStage": 4,
+            "startGps": {
+              "lat": 39.7369005,
+              "lon": -80.9731836
+            },
+            "finishGps": {
+              "lat": 39.7145533,
+              "lon": -80.9567197
+            },
+            "lightingPreset": "night"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. No route-specific primary landscape description verified; conservative regional landforms grounded in saved coordinates.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-2386fa77-3079-4ea6-a07a-4fef581ffa66.png",
+        "sourceSha256": "7e6c07f2712a8c6d113b02596070bc26b5c2b40e23bdf509a99698c5ba3d1d63",
+        "originalBrief": "Southeastern Ohio deeply folded low river-country hills at clear night, wooded ridge silhouettes and faint narrow distant river reflection in central valley, small waning crescent high in CENTRAL sky and sparse stars. Dark blue muted silver, no suspension bridge, skyline, snow or daylight.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "oh676-night",
+      "raceRef": "OH 676 — Western county hills",
+      "ref": "environment-v1-oh676-night",
+      "source": "environment-v1/oh676-night.png",
+      "sourceImage": "/workspace/generated_images/exec-889c094d-f05c-47e3-a3cb-cf5f61cdc7da.png",
+      "landscape": "Western Washington County Ohio wooded farmland at clear night, shallow rounded hills and small central abandoned tobacco-barn-like timber building, thin haze and very faint stars, NO moon disk. Quiet charcoal indigo and subdued pasture tones; no big river, snow or bright city.",
+      "reference": null,
+      "sourceEvidence": {
+        "origin": {
+          "name": "OH 676 — Western county hills",
+          "lat": 39.44,
+          "lon": -81.78,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H04-S05.json",
+        "catalog": [
+          {
+            "id": "H04-S05",
+            "hubStage": 4,
+            "startGps": {
+              "lat": 39.4668345,
+              "lon": -81.8194862
+            },
+            "finishGps": {
+              "lat": 39.486393,
+              "lon": -81.781828
+            },
+            "lightingPreset": "night"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. No route-specific primary landscape description verified; conservative regional landforms grounded in saved coordinates.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-889c094d-f05c-47e3-a3cb-cf5f61cdc7da.png",
+        "sourceSha256": "ae899bed6eefb7c6dee0906df75018000e633a33e160de70efecc76aab45d5b9",
+        "originalBrief": "Western Washington County Ohio wooded farmland at clear night, shallow rounded hills and small central abandoned tobacco-barn-like timber building, thin haze and very faint stars, NO moon disk. Quiet charcoal indigo and subdued pasture tones; no big river, snow or bright city.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "marietta-evening",
+      "raceRef": "Marietta–Williamstown — I-77 river bridge",
+      "ref": "environment-v1-marietta-evening",
+      "source": "environment-v1/marietta-evening.png",
+      "sourceImage": "/workspace/generated_images/exec-00bbf554-605a-4056-9eda-12b31dd45381.png",
+      "landscape": "Ohio River between Marietta Ohio and Williamstown WV: broad calm river centrally visible below low wooded banks, distant low industrial roofs and modest horizontal steel-girder highway crossing on piers, clear peach violet evening. No suspension towers or cable stayed bridge, no tall skyline, no snow. Far river view rather than a road foreground.",
+      "reference": null,
+      "sourceEvidence": {
+        "origin": {
+          "name": "Marietta–Williamstown — I-77 river bridge",
+          "lat": 39.403,
+          "lon": -81.45,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H04-S06.json",
+        "catalog": [
+          {
+            "id": "H04-S06",
+            "hubStage": 4,
+            "startGps": {
+              "lat": 39.36018258333333,
+              "lon": -81.441667
+            },
+            "finishGps": {
+              "lat": 39.468313,
+              "lon": -81.4354879
+            },
+            "lightingPreset": "evening"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. No route-specific primary landscape description verified; conservative regional landforms grounded in saved coordinates.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "environment-v1-ground-sebring-olive",
+      "tiles": {
+        "snow": "environment-v1-ground-sebring-olive"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-00bbf554-605a-4056-9eda-12b31dd45381.png",
+        "sourceSha256": "6624e70f04bd241ecb04d5b885240e38412560f3872be46e9b96331103e73045",
+        "originalBrief": "Ohio River between Marietta Ohio and Williamstown WV: broad calm river centrally visible below low wooded banks, distant low industrial roofs and modest horizontal steel-girder highway crossing on piers, clear peach violet evening. No suspension towers or cable stayed bridge, no tall skyline, no snow. Far river view rather than a road foreground.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "washington-gravel-morning",
+      "raceRef": "Washington County western covered-bridge gravel loop",
+      "ref": "environment-v1-washington-gravel-morning",
+      "source": "environment-v1/washington-gravel-morning.png",
+      "sourceImage": "/workspace/generated_images/exec-a38db01e-74dc-45ef-bcc9-7ff0f0622814.png",
+      "landscape": "Western Washington County Ohio rural gravel loop, low wooded ridges enclosing a grassy narrow creek valley, small central weathered timber covered bridge partly obscured by trees, pale gravel bank and pasture, clear morning. More intimate woodland than broad OH26 valley, no giant river or mountains or snow.",
+      "reference": "https://www.recreation.gov/gateways/13622",
+      "sourceEvidence": {
+        "origin": {
+          "name": "Washington County western covered-bridge gravel loop",
+          "lat": 39.459395,
+          "lon": -81.768753,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H04-S07.json",
+        "catalog": [
+          {
+            "id": "H04-S07",
+            "hubStage": 4,
+            "startGps": {
+              "lat": 39.457907,
+              "lon": -81.772998
+            },
+            "finishGps": {
+              "lat": 39.47848916666666,
+              "lon": -81.737387
+            },
+            "lightingPreset": "morning"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. Primary operator/government or course-host source supports regional/facility context.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-a38db01e-74dc-45ef-bcc9-7ff0f0622814.png",
+        "sourceSha256": "6172fead84c7aaebdc688515eaa87f3b33a259269da43e0871524e5bfab3d773",
+        "originalBrief": "Western Washington County Ohio rural gravel loop, low wooded ridges enclosing a grassy narrow creek valley, small central weathered timber covered bridge partly obscured by trees, pale gravel bank and pasture, clear morning. More intimate woodland than broad OH26 valley, no giant river or mountains or snow.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "ohio-valley-night",
+      "raceRef": "Ohio Valley Speedway — Washington, West Virginia",
+      "ref": "environment-v1-ohio-valley-night",
+      "source": "environment-v1/ohio-valley-night.png",
+      "sourceImage": "/workspace/generated_images/exec-0c079452-d150-422e-8b2e-b0ca1ef91faf.png",
+      "landscape": "Small Washington WV dirt oval facility at clear night, low earth banking and compact empty metal bleachers and pit sheds in center, enclosing wooded foothills, very restrained single amber shed window and sparse stars, no moon disk or floodlit stadium. Dark navy earth palette, no snow.",
+      "reference": "https://www.raceovs.com/",
+      "sourceEvidence": {
+        "origin": {
+          "name": "Ohio Valley Speedway — Washington, West Virginia",
+          "lat": 39.206,
+          "lon": -81.663,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/side-races/sources/H04-S08.json",
+        "catalog": [
+          {
+            "id": "H04-S08",
+            "hubStage": 4,
+            "startGps": {
+              "lat": 39.1980391,
+              "lon": -81.65146695
+            },
+            "finishGps": {
+              "lat": 39.1980391,
+              "lon": -81.65146695
+            },
+            "lightingPreset": "night"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. Primary operator/government or course-host source supports regional/facility context.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "ground-brown-dirt-v2",
+      "tiles": {
+        "snow": "ground-brown-dirt-v2"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-0c079452-d150-422e-8b2e-b0ca1ef91faf.png",
+        "sourceSha256": "0c2903a8f196f64238eb335cdafe9530c1c819feea9136d24ba4da95f41b8071",
+        "originalBrief": "Small Washington WV dirt oval facility at clear night, low earth banking and compact empty metal bleachers and pit sheds in center, enclosing wooded foothills, very restrained single amber shed window and sparse stars, no moon disk or floodlit stadium. Dark navy earth palette, no snow.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    },
+    {
+      "key": "sideling-evening",
+      "raceRef": "National Road — Sideling Hill",
+      "ref": "environment-v1-sideling-evening",
+      "source": "environment-v1/sideling-evening.png",
+      "sourceImage": "/workspace/generated_images/exec-c61f1e96-a15c-4779-bb65-0b386a526110.png",
+      "landscape": "Western Maryland National Road region near Sideling Hill, long folded Appalachian sandstone/shale wooded ridgeline with a central modest layered gray-brown rock exposure, broad forested valley depth, clear warm evening. Do NOT depict the famous interstate roadcut as the route itself; no huge manmade cut, no snow, no alpine peaks.",
+      "reference": "https://www.mgs.md.gov/geology/geology_tour/sideling_hill.html",
+      "sourceEvidence": {
+        "origin": {
+          "name": "National Road — Sideling Hill",
+          "lat": 39.694,
+          "lon": -78.359,
+          "country": "us"
+        },
+        "snapshot": "data/campaigns/america/state-expansion/sources/state-md.json",
+        "catalog": [
+          {
+            "id": "state-md",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 3,
+            "location": {
+              "lat": 39.694,
+              "lon": -78.359
+            },
+            "lightingPreset": "evening"
+          }
+        ]
+      },
+      "sourceLimitation": "Exact installed origin/route identifies site. Composition and abandoned structures are original interpretation, not surveyed buildings. Primary operator/government or course-host source supports regional/facility context.",
+      "sharing": "Unique physical route/site composition; no state/hub-wide sharing.",
+      "ground": "ground-frozen-forest",
+      "tiles": {
+        "snow": "ground-frozen-forest"
+      },
+      "boundaries": "Matching low distant side horizons; all tall features central; smooth top/bottom closure rather than painted safe-band borders. Native wrap verification mandatory.",
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "originalRetained": "/workspace/generated_images/exec-c61f1e96-a15c-4779-bb65-0b386a526110.png",
+        "sourceSha256": "a2989efbfb091262c31d92d1a25ca13adcb173cf57d5db89ed1409634f2f3974",
+        "originalBrief": "Western Maryland National Road region near Sideling Hill, long folded Appalachian sandstone/shale wooded ridgeline with a central modest layered gray-brown rock exposure, broad forested valley depth, clear warm evening. Do NOT depict the famous interstate roadcut as the route itself; no huge manmade cut, no snow, no alpine peaks.",
+        "boundaryBrief": "Matching low distant side horizons; tall features central; smooth uniform last rows rather than separate border bands."
+      }
+    }
+  ]
+}

@@ -3911,6 +3911,150 @@
       "maxEdge": 512,
       "placements": [],
       "usageNote": "Three Sebring layouts only, muted sandy olive airfield grass image; physical materials unchanged."
+    },
+    {
+      "name": "environment-v1-ohiopyle-noon",
+      "source": "environment-v1/ohiopyle-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-normalville-evening",
+      "source": "environment-v1/normalville-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-chalk-hill-evening",
+      "source": "environment-v1/chalk-hill-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-donegal-night",
+      "source": "environment-v1/donegal-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-seven-springs-night",
+      "source": "environment-v1/seven-springs-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-forbes-morning",
+      "source": "environment-v1/forbes-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-jennerstown-night",
+      "source": "environment-v1/jennerstown-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-keystone-morning",
+      "source": "environment-v1/keystone-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pitt-noon",
+      "source": "environment-v1/pitt-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oh26-noon",
+      "source": "environment-v1/oh26-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-triple-nickel-evening",
+      "source": "environment-v1/triple-nickel-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-barlow-morning",
+      "source": "environment-v1/barlow-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oh536-night",
+      "source": "environment-v1/oh536-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oh676-night",
+      "source": "environment-v1/oh676-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-marietta-evening",
+      "source": "environment-v1/marietta-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-washington-gravel-morning",
+      "source": "environment-v1/washington-gravel-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ohio-valley-night",
+      "source": "environment-v1/ohio-valley-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sideling-evening",
+      "source": "environment-v1/sideling-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Appalachian pack7 saved race binding in race-environments ledger."
     }
   ]
 }
