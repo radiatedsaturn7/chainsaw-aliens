@@ -761,7 +761,9 @@
       "catalog-tansy-cargo-2010-body": "art/catalog-tansy-cargo-2010-body/document.json",
       "catalog-tansy-cargo-2010-dashboard": "art/catalog-tansy-cargo-2010-dashboard/document.json",
       "catalog-lunaria-30-1991-body": "art/catalog-lunaria-30-1991-body/document.json",
-      "catalog-lunaria-30-1991-dashboard": "art/catalog-lunaria-30-1991-dashboard/document.json"
+      "catalog-lunaria-30-1991-dashboard": "art/catalog-lunaria-30-1991-dashboard/document.json",
+      "catalog-juniper-40-2014-body": "art/catalog-juniper-40-2014-body/document.json",
+      "catalog-juniper-40-2014-dashboard": "art/catalog-juniper-40-2014-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -853,7 +855,8 @@
       "Hellebore RS 2015": "cars/Hellebore RS 2015/document.json",
       "Ironwood V8 2004": "cars/Ironwood V8 2004/document.json",
       "Tansy Cargo 2010": "cars/Tansy Cargo 2010/document.json",
-      "Lunaria 30 1991": "cars/Lunaria 30 1991/document.json"
+      "Lunaria 30 1991": "cars/Lunaria 30 1991/document.json",
+      "Juniper 40 2014": "cars/Juniper 40 2014/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

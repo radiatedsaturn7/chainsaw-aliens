@@ -7,3 +7,5 @@ Original badge-free 2994 mid-engine coupe based on the stock US 1991 Acura NSX 3
 Original coral/charcoal body and blank LHD dashboard use native importer processing, measured shared wheels and live speed/RPM/gear/fuel instruments. Fixed rear camera and existing surface effects are preserved. Eight exterior views, moving desktop/handheld previews and readable cockpit composition are reviewed using the production renderer. These checks are not full campaign acceptance or acceleration calibration.
 
 Local addition atop preserved Tansy f0673553; no existing vehicle, map or lighting edits. Original generation paths are retained in generation.json.
+
+The final combined candidate explicitly uses the same estimated 0.43 m CG in runtime suspension tuning and the body profile; the independent first snapshot remains preserved.

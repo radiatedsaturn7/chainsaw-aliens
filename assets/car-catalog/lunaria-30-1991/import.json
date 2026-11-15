@@ -784,7 +784,7 @@
               "source": "fuel",
               "format": "bar",
               "textAlign": "center",
-              "name": "Fuel reserve (0–100%)",
+              "name": "Fuel reserve (0\u2013100%)",
               "enabled": true,
               "x": 0,
               "y": 0.92,
@@ -1055,7 +1055,8 @@
       "frontDifferentialDecel": 0,
       "steeringRatio": 19.5,
       "centerDifferentialBalance": 0.5,
-      "finalDrive": 4.062
+      "finalDrive": 4.062,
+      "cgHeightM": 0.43
     },
     "description": "Original badge-free2994 mid-engine coupe referencing stock US1991 Acura NSX3.0 5MT, not automatic or later3.2/6MT.",
     "category": "car",
@@ -1120,7 +1121,7 @@
     },
     "estimates": [
       "Nominal staggered tire radii calculated from manufacturer sizes; runtime RWD scalar uses rear.3157m.",
-      "Variable factory steering18.2–20.8 approximated by constant19.5. Idle800,curve interpolation,32psi,CG/bodysections,overhangsplit,grip,springs/dampers/brakes and88percent efficiency are game tuning.",
+      "Variable factory steering18.2\u201320.8 approximated by constant19.5. Idle800,curve interpolation,32psi,CG/bodysections,overhangsplit,grip,springs/dampers/brakes and88percent efficiency are game tuning.",
       "Factory LSD approximated by.25/.10; no claim of calibrated torque bias,OEMTCS/ABS,VTEC transition or aerodynamic lift. Cd.32 sourced.",
       "Auto Assist automates sourced5MT, not a factory automatic specification. Display168mph/5.7sec are estimates, not measured game performance.",
       "Original coral/charcoal2994 coupe and LHDdash; shared wheels/livegauges,fixedrear,surfaceFX."
