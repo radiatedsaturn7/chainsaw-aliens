@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'rowan-53-2004':{"wheelOpening": true, "size": [2172, 724], "cluster": [290, 465, 590, 155], "wheel": [585, 680, 280], "gaugeColor": "#fff1cf"},
  'magnolia-40-1990':{"wheelOpening": true, "size": [2172, 724], "cluster": [1370, 475, 550, 155], "wheel": [1645, 680, 280], "gaugeColor": "#b9e6de"},
  'juniper-40-2014':{"wheelOpening": true, "size": [2172, 724], "cluster": [280, 455, 590, 160], "wheel": [575, 675, 280]},
  'lunaria-30-1991':{"wheelOpening": true, "size": [2172, 724], "cluster": [365, 475, 590, 155], "wheel": [660, 680, 280]},
