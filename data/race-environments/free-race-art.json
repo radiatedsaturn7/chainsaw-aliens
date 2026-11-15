@@ -25,6 +25,46 @@
       "raceRef": "Old Staples Road",
       "slot": "sky",
       "reason": "Saved Game Menu races selector enumerates this manifest race; native editor binding is validated separately from enabled campaign choices."
+    },
+    "environment-v1-demo-meadow-noon": {
+      "raceRef": "Demo Track",
+      "slot": "sky",
+      "reason": "Saved manifest race is reachable through Game Menu race selector; exact native race binding is checked independently of enabled campaign choices. Legacy test identity is retained, not counted as a campaign stage."
+    },
+    "environment-v1-mountwashington-storm": {
+      "raceRef": "Mount Washington Auto Road \u2014 point-to-point Copy",
+      "slot": "sky",
+      "reason": "Saved manifest race is reachable through Game Menu race selector; exact native race binding is checked independently of enabled campaign choices. Legacy test identity is retained, not counted as a campaign stage."
+    },
+    "environment-v1-studio-testfield-noon": {
+      "raceRef": "Studio Sprint",
+      "slot": "sky",
+      "reason": "Saved manifest race is reachable through Game Menu race selector; exact native race binding is checked independently of enabled campaign choices. Legacy test identity is retained, not counted as a campaign stage."
+    },
+    "environment-v1-studio-annex-noon": {
+      "raceRef": "Studio Sprint Copy",
+      "slot": "sky",
+      "reason": "Saved manifest race is reachable through Game Menu race selector; exact native race binding is checked independently of enabled campaign choices. Legacy test identity is retained, not counted as a campaign stage."
+    },
+    "environment-v1-studio-snowcloud-noon": {
+      "raceRef": "Studio Sprint2",
+      "slot": "sky",
+      "reason": "Saved manifest race is reachable through Game Menu race selector; exact native race binding is checked independently of enabled campaign choices. Legacy test identity is retained, not counted as a campaign stage."
+    },
+    "environment-v1-buse-testing-hills-noon": {
+      "raceRef": "buse1",
+      "slot": "sky",
+      "reason": "Saved manifest race is reachable through Game Menu race selector; exact native race binding is checked independently of enabled campaign choices. Legacy test identity is retained, not counted as a campaign stage."
+    },
+    "environment-v1-p1-northeast-junction-noon": {
+      "raceRef": "p1",
+      "slot": "sky",
+      "reason": "Saved manifest race is reachable through Game Menu race selector; exact native race binding is checked independently of enabled campaign choices. Legacy test identity is retained, not counted as a campaign stage."
+    },
+    "environment-v1-p2-rain-night": {
+      "raceRef": "p2loadtest",
+      "slot": "sky",
+      "reason": "Saved manifest race is reachable through Game Menu race selector; exact native race binding is checked independently of enabled campaign choices. Legacy test identity is retained, not counted as a campaign stage."
     }
   }
 }

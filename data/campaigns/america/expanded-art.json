@@ -5319,6 +5319,182 @@
       "maxEdge": 1024,
       "placements": [],
       "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "ground-volcanic-cinder-v1",
+      "source": "environment-v1/ground-volcanic-cinder-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Explicit volcanic substrate: gravel cinder or snow/cinder according to declared asset identity; physical cells unchanged."
+    },
+    {
+      "name": "ground-volcanic-snow-v1",
+      "source": "environment-v1/ground-volcanic-snow-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Explicit volcanic substrate: gravel cinder or snow/cinder according to declared asset identity; physical cells unchanged."
+    },
+    {
+      "name": "environment-v1-demo-meadow-noon",
+      "source": "environment-v1/demo-meadow-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mountwashington-storm",
+      "source": "environment-v1/mountwashington-storm.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-studio-testfield-noon",
+      "source": "environment-v1/studio-testfield-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-studio-annex-noon",
+      "source": "environment-v1/studio-annex-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-studio-snowcloud-noon",
+      "source": "environment-v1/studio-snowcloud-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-buse-testing-hills-noon",
+      "source": "environment-v1/buse-testing-hills-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-p1-northeast-junction-noon",
+      "source": "environment-v1/p1-northeast-junction-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-p2-rain-night",
+      "source": "environment-v1/p2-rain-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hana-rainforest-night",
+      "source": "environment-v1/hana-rainforest-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-miami-morning",
+      "source": "environment-v1/miami-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-anchorage-night",
+      "source": "environment-v1/anchorage-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-honolulu-night",
+      "source": "environment-v1/honolulu-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sanantonio-night",
+      "source": "environment-v1/sanantonio-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-charlestonsc-evening",
+      "source": "environment-v1/charlestonsc-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-richmond-evening",
+      "source": "environment-v1/richmond-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-charlestonwv-night",
+      "source": "environment-v1/charlestonwv-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-denalihighway-snow-morning",
+      "source": "environment-v1/denalihighway-snow-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-tantalus-rain-morning",
+      "source": "environment-v1/tantalus-rain-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-haleakala-morning",
+      "source": "environment-v1/haleakala-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-maunakea-snow-evening",
+      "source": "environment-v1/maunakea-snow-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
     }
   ]
 }

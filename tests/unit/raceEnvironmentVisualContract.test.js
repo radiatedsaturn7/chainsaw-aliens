@@ -29,7 +29,7 @@ test('diagnostic selector aliases must exactly match the manifest folder and log
 
 import {assertTerrainArtMaterial} from '../../tools/race-environments/terrain-materials.mjs';
 test('material-specific terrain rejects snow/rock and dirt/gravel swaps in normal and rough layers',()=>{
- for(const [ref,correct,wrong] of [['ground-plains-snow-straw-v1','snow','grass'],['ground-prairie-grass-v1','grass','dirt'],['ground-snow-chaparral-v1','snow','dirt'],['ground-alpine-snow-granite-v1','snow','gravel'],['ground-decomposed-granite-dirt-v1','dirt','gravel'],['ground-winter-snow-litter-v1','snow','grass'],['ground-patchy-snow-leaf-v1','snow','dirt'],['ground-temperate-grass-v1','grass','snow'],['ground-alpine-rock-v2','gravel','snow'],['ground-gray-gravel-v2','gravel','dirt']]){
+ for(const [ref,correct,wrong] of [['ground-volcanic-cinder-v1','gravel','snow'],['ground-volcanic-snow-v1','snow','gravel'],['ground-plains-snow-straw-v1','snow','grass'],['ground-prairie-grass-v1','grass','dirt'],['ground-snow-chaparral-v1','snow','dirt'],['ground-alpine-snow-granite-v1','snow','gravel'],['ground-decomposed-granite-dirt-v1','dirt','gravel'],['ground-winter-snow-litter-v1','snow','grass'],['ground-patchy-snow-leaf-v1','snow','dirt'],['ground-temperate-grass-v1','grass','snow'],['ground-alpine-rock-v2','gravel','snow'],['ground-gray-gravel-v2','gravel','dirt']]){
   for(const slot of ['artRef','roughArtRef']){
    assertTerrainArtMaterial({[slot]:ref},{tileId:correct});
    assert.throws(()=>assertTerrainArtMaterial({[slot]:ref},{tileId:wrong}),/must visually represent/);
@@ -78,4 +78,18 @@ test('requested native QA cannot silently omit a misspelled, unbound or filtered
  assert.throws(()=>assertRequestedRaceCoverage(selected,['typo']),/missing from QA selection/);
  assert.throws(()=>assertRequestedRaceCoverage([],['exact']),/missing from QA selection/);
  assert.throws(()=>assertRequestedRaceCoverage(selected,['exact','exact']),/Duplicate/);
+});
+
+test('final island and legacy bindings preserve exact baseline cell coverage including four empty default-grass maps',()=>{
+ const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
+ const rows=ledger.rows.filter(r=>r.environmentPack==='islands-legacy-final-pack15');assert.equal(rows.length,20);
+ const expected=[1585,15397,0,0,48133,0,0,23975,17222,13857,22230,16422,25807,20196,16380,15180,7065,16536,11622,11934];
+ const recipes=JSON.parse(fs.readFileSync('data/race-environments/pack15-recipes.json')).recipes;assert.equal(recipes.length,20);
+ for(const [i,recipe] of recipes.entries()){
+  const row=rows.find(r=>r.raceRef===recipe.raceRef);assert.ok(row);
+  let doc=JSON.parse(fs.readFileSync('data/server-storage/files/'+row.documentPath));if(doc.__chainsawStorage)doc=JSON.parse(gunzipSync(Buffer.from(doc.data,'base64')));
+  const map=doc.race.road.tileMap,entries=Object.values(map.cells);assert.equal(entries.length,expected[i],row.raceRef);
+  if(!entries.length){assert.equal(map.defaultTileId,'grass');assert.equal(recipe.ground,'ground-temperate-grass-v1');}
+  for(const cell of entries){for(const slot of ['artRef','roughArtRef'])assert.ok(terrainArtMaterials[cell[slot]],row.raceRef+': '+slot);assertTerrainArtMaterial(cell,{tileId:cell.tileId});}
+ }
 });

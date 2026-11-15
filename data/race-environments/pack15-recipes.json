@@ -1,0 +1,748 @@
+{
+  "schemaVersion": 1,
+  "pack": "islands-legacy-final-pack15",
+  "recipes": [
+    {
+      "key": "demo-meadow-noon",
+      "raceRef": "Demo Track",
+      "ref": "environment-v1-demo-meadow-noon",
+      "source": "environment-v1/demo-meadow-noon.png",
+      "brief": "A fictional small multi-surface demonstration course in an open temperate meadow with a low hedgerow horizon, isolated weathered equipment sheds and distant soft hills. No real geographic site is asserted.",
+      "brightness": 1,
+      "weather": "clear",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "sourceOrigin": null,
+      "sourceSnapshot": null,
+      "catalog": [],
+      "references": [
+        "data/server-storage/files/races/Demo Track/document.json"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-97d5a314-727d-4e07-a6ff-279dea7f20cb.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. A fictional small multi-surface demonstration course in an open temperate meadow with a low hedgerow horizon, isolated weathered equipment sheds and distant soft hills. No real geographic site is asserted. Effective authored sky brightness 1, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "mountwashington-storm",
+      "raceRef": "Mount Washington Auto Road \u2014 point-to-point Copy",
+      "ref": "environment-v1-mountwashington-storm",
+      "source": "environment-v1/mountwashington-storm.png",
+      "brief": "Mount Washington New Hampshire Presidential Range: rounded bare gray summit shoulders, krummholz lower slopes, layered steep glacial ravines, turbulent overcast storm clouds. Grass/tundra ground and asphalt variant, NOT the snowy original variant.",
+      "brightness": 1,
+      "weather": "storm",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "sourceOrigin": {
+        "kind": "place",
+        "name": "Mount Washington Auto Road, Sargent's Purchase, Co\u00f6s County, New Hampshire, 03589, United States",
+        "lat": 44.2811197,
+        "lon": -71.246017,
+        "osmType": "way",
+        "osmId": 1211919720,
+        "country": "us"
+      },
+      "sourceSnapshot": null,
+      "catalog": [],
+      "references": [
+        "data/server-storage/files/races/Mount Washington Auto Road %E2%80%94 point-to-point Copy/document.json"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-f297dc84-91b3-47c8-afbd-769b6009535b.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Mount Washington New Hampshire Presidential Range: rounded bare gray summit shoulders, krummholz lower slopes, layered steep glacial ravines, turbulent overcast storm clouds. Grass/tundra ground and asphalt variant, NOT the snowy original variant. Effective authored sky brightness 1, weather storm; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "studio-testfield-noon",
+      "raceRef": "Studio Sprint",
+      "ref": "environment-v1-studio-testfield-noon",
+      "source": "environment-v1/studio-testfield-noon.png",
+      "brief": "Fictional compact Studio Sprint test facility: low brick workshop roofs and an old slender water tower beyond a grass field, shallow wooded ridges. No real geographic site is asserted.",
+      "brightness": 1,
+      "weather": "clear",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {},
+      "sourceOrigin": null,
+      "sourceSnapshot": null,
+      "catalog": [],
+      "references": [
+        "data/server-storage/files/races/Studio Sprint/document.json"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-e14b2cb5-c64a-4dc4-a59a-ee555602182d.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Fictional compact Studio Sprint test facility: low brick workshop roofs and an old slender water tower beyond a grass field, shallow wooded ridges. No real geographic site is asserted. Effective authored sky brightness 1, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "studio-annex-noon",
+      "raceRef": "Studio Sprint Copy",
+      "ref": "environment-v1-studio-annex-noon",
+      "source": "environment-v1/studio-annex-noon.png",
+      "brief": "Fictional Studio Sprint Copy test-field view: low weathered sawtooth-roof annex and scattered trees in an open grassy bowl, original industrial silhouette different from the main studio scene. Geographic identity of this saved copy is undocumented.",
+      "brightness": 1,
+      "weather": "clear",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {},
+      "sourceOrigin": null,
+      "sourceSnapshot": null,
+      "catalog": [],
+      "references": [
+        "data/server-storage/files/races/Studio Sprint Copy/document.json"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-fae06df9-7e26-44dd-80fd-28954a91ec83.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Fictional Studio Sprint Copy test-field view: low weathered sawtooth-roof annex and scattered trees in an open grassy bowl, original industrial silhouette different from the main studio scene. Geographic identity of this saved copy is undocumented. Effective authored sky brightness 1, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "studio-snowcloud-noon",
+      "raceRef": "Studio Sprint2",
+      "ref": "environment-v1-studio-snowcloud-noon",
+      "source": "environment-v1/studio-snowcloud-noon.png",
+      "brief": "Fictional Studio Sprint2 hill-test setting: low undulating tree-lined grass hills and a distant worn test hangar beneath dense cold snow clouds. Sparse frost in sheltered patches, grass still visible; no blue summer sky or moon.",
+      "brightness": 1,
+      "weather": "snow",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "sourceOrigin": null,
+      "sourceSnapshot": null,
+      "catalog": [],
+      "references": [
+        "data/server-storage/files/races/Studio Sprint2/document.json"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-d798c292-76bc-4df6-b8eb-586a51433d75.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Fictional Studio Sprint2 hill-test setting: low undulating tree-lined grass hills and a distant worn test hangar beneath dense cold snow clouds. Sparse frost in sheltered patches, grass still visible; no blue summer sky or moon. Effective authored sky brightness 1, weather snow; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "buse-testing-hills-noon",
+      "raceRef": "buse1",
+      "ref": "environment-v1-buse-testing-hills-noon",
+      "source": "environment-v1/buse-testing-hills-noon.png",
+      "brief": "Fictional BUSE asphalt test route among rolling grassy uplands, a distant disused quarry cut and narrow low maintenance buildings, no dramatic alpine peaks. Geographic identity undocumented, no place-name signage.",
+      "brightness": 1,
+      "weather": "clear",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {},
+      "sourceOrigin": null,
+      "sourceSnapshot": null,
+      "catalog": [],
+      "references": [
+        "data/server-storage/files/races/buse1/document.json"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-6c4a3c7b-2ec8-4078-b286-836678827206.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Fictional BUSE asphalt test route among rolling grassy uplands, a distant disused quarry cut and narrow low maintenance buildings, no dramatic alpine peaks. Geographic identity undocumented, no place-name signage. Effective authored sky brightness 1, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "p1-northeast-junction-noon",
+      "raceRef": "p1",
+      "ref": "environment-v1-p1-northeast-junction-noon",
+      "source": "environment-v1/p1-northeast-junction-noon.png",
+      "brief": "Fictional northeastern US departure junction suggested by authored I-90/I-95 dialogue: low wooded ridges, old brick freight warehouses and a distant quiet interchange silhouette, no invented identifiable city skyline or highway signs.",
+      "brightness": 1,
+      "weather": "clear",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {},
+      "sourceOrigin": null,
+      "sourceSnapshot": null,
+      "catalog": [],
+      "references": [
+        "data/server-storage/files/races/p1/document.json"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-fba9bff6-efcb-491f-bf07-221948f6a068.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Fictional northeastern US departure junction suggested by authored I-90/I-95 dialogue: low wooded ridges, old brick freight warehouses and a distant quiet interchange silhouette, no invented identifiable city skyline or highway signs. Effective authored sky brightness 1, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "p2-rain-night",
+      "raceRef": "p2loadtest",
+      "ref": "environment-v1-p2-rain-night",
+      "source": "environment-v1/p2-rain-night.png",
+      "brief": "Fictional constructed endurance proving ground: broad low wooded ridges and sparse industrial service buildings, distant tunnel portal hillside and elevated flyover silhouette, stormy dark rainy night with muted cloud glow, no moon or stars. Geographic identity undocumented.",
+      "brightness": 0.05,
+      "weather": "rain",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "sourceOrigin": null,
+      "sourceSnapshot": null,
+      "catalog": [],
+      "references": [
+        "data/server-storage/files/races/p2loadtest/document.json"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-5ed70426-00de-461b-be10-081a012d8b3f.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Fictional constructed endurance proving ground: broad low wooded ridges and sparse industrial service buildings, distant tunnel portal hillside and elevated flyover silhouette, stormy dark rainy night with muted cloud glow, no moon or stars. Geographic identity undocumented. Effective authored sky brightness 0.05, weather rain; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "hana-rainforest-night",
+      "raceRef": "Hana Highway \u2014 Rainforest Bends",
+      "ref": "environment-v1-hana-rainforest-night",
+      "source": "environment-v1/hana-rainforest-night.png",
+      "brief": "Maui Hana Highway rainforest bends: steep folded windward green volcanic slopes, bamboo and broadleaf jungle silhouettes, narrow distant Pacific strip between coastal ridges. Clear dark night, sparse subtle stars, no dry desert or tall city.",
+      "brightness": 0.05,
+      "weather": "clear",
+      "ground": "ground-patchy-snow-leaf-v1",
+      "tiles": {
+        "snow": "ground-patchy-snow-leaf-v1"
+      },
+      "sourceOrigin": {
+        "name": "Hana Highway \u2014 Rainforest Bends",
+        "lat": 20.855,
+        "lon": -156.145,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-hi.json",
+      "catalog": [
+        {
+          "id": "state-hi",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 20.855,
+            "lon": -156.145
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://www.gohawaii.com/islands/maui/regions/east-maui/Hana"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-4478e537-4122-430b-994e-c3e6008b2bbb.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Maui Hana Highway rainforest bends: steep folded windward green volcanic slopes, bamboo and broadleaf jungle silhouettes, narrow distant Pacific strip between coastal ridges. Clear dark night, sparse subtle stars, no dry desert or tall city. Effective authored sky brightness 0.05, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "miami-morning",
+      "raceRef": "Miami, FL \u2014 Landmark Run",
+      "ref": "environment-v1-miami-morning",
+      "source": "environment-v1/miami-morning.png",
+      "brief": "Downtown Miami and Biscayne Bay: flat coastal land, slender high-rise blocks, low causeway silhouettes and palm-lined industrial waterfront, abandoned original structures. Morning, no mountains, thin fictional frozen2994 frost patches.",
+      "brightness": 0.65,
+      "weather": "clear",
+      "ground": "ground-patchy-snow-leaf-v1",
+      "tiles": {
+        "snow": "ground-patchy-snow-leaf-v1"
+      },
+      "sourceOrigin": {
+        "name": "Miami \u2014 Landmark Run",
+        "lat": 25.778,
+        "lon": -80.193,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-fl.json",
+      "catalog": [
+        {
+          "id": "city-fl",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 4,
+          "location": {
+            "lat": 25.778,
+            "lon": -80.193
+          },
+          "startGps": {
+            "lat": 25.769466666666666,
+            "lon": -80.20255092222222
+          },
+          "finishGps": {
+            "lat": 25.793596466666667,
+            "lon": -80.18688786666667
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://www.miamiandbeaches.com/things-to-do/history-and-heritage/downtown-miami-architecture",
+        "https://www.miamiandbeaches.com/neighborhoods/downtown-miami-brickell-area",
+        "https://www.miamiandbeaches.com/getmedia/a4dd7c64-7059-4511-86b4-9bb46e0e517d/Miami-sports-entertainment-venues-guide-2020.pdf.aspx"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-39d625b8-c516-4381-9b01-c93fb901e52c.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Downtown Miami and Biscayne Bay: flat coastal land, slender high-rise blocks, low causeway silhouettes and palm-lined industrial waterfront, abandoned original structures. Morning, no mountains, thin fictional frozen2994 frost patches. Effective authored sky brightness 0.65, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "anchorage-night",
+      "raceRef": "Anchorage, AK \u2014 Landmark Run",
+      "ref": "environment-v1-anchorage-night",
+      "source": "environment-v1/anchorage-night.png",
+      "brief": "Anchorage low downtown blocks and rail-industrial sheds beneath the long rugged Chugach front, snowy birch and spruce outskirts with low Cook Inlet plain. Clear deep navy night, subtle stars, no bright aurora invented.",
+      "brightness": 0.05,
+      "weather": "clear",
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "sourceOrigin": {
+        "name": "Anchorage \u2014 Landmark Run",
+        "lat": 61.218,
+        "lon": -149.896,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ak.json",
+      "catalog": [
+        {
+          "id": "city-ak",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 61.218,
+            "lon": -149.896
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://www.anchorage.net/meetings/why-anchorage/walkable-downtown/",
+        "https://www.anchorage.net/plan-your-trip/itineraries/to-the-north/",
+        "https://www.anchorage.net/plan-your-trip/about-anchorage/"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-7559e384-52dc-420b-b54a-50836450bc1f.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Anchorage low downtown blocks and rail-industrial sheds beneath the long rugged Chugach front, snowy birch and spruce outskirts with low Cook Inlet plain. Clear deep navy night, subtle stars, no bright aurora invented. Effective authored sky brightness 0.05, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "honolulu-night",
+      "raceRef": "Honolulu, HI \u2014 Landmark Run",
+      "ref": "environment-v1-honolulu-night",
+      "source": "environment-v1/honolulu-night.png",
+      "brief": "Downtown Honolulu harbor: compact office towers, low historic civic roof silhouettes, palms, distant folded Koolau ridges and a subdued harbor edge. Clear dark night, sparse stars, restrained original urban lights, not a Waikiki beach hotel wall.",
+      "brightness": 0.05,
+      "weather": "clear",
+      "ground": "ground-patchy-snow-leaf-v1",
+      "tiles": {
+        "snow": "ground-patchy-snow-leaf-v1"
+      },
+      "sourceOrigin": {
+        "name": "Honolulu \u2014 Landmark Run",
+        "lat": 21.307,
+        "lon": -157.859,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-hi.json",
+      "catalog": [
+        {
+          "id": "city-hi",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 21.307,
+            "lon": -157.859
+          },
+          "startGps": {
+            "lat": 21.313092249999997,
+            "lon": -157.86993635
+          },
+          "finishGps": {
+            "lat": 21.2982714,
+            "lon": -157.84225013333335
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://www.gohawaii.com/islands/oahu/regions/honolulu/iolani-palace",
+        "https://www.gohawaii.com/islands/oahu/regions/honolulu/downtown-honolulu",
+        "https://www.gohawaii.com/honolulu"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-42644627-b426-42a8-ad33-33268b5e4db5.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Downtown Honolulu harbor: compact office towers, low historic civic roof silhouettes, palms, distant folded Koolau ridges and a subdued harbor edge. Clear dark night, sparse stars, restrained original urban lights, not a Waikiki beach hotel wall. Effective authored sky brightness 0.05, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "sanantonio-night",
+      "raceRef": "San Antonio, TX \u2014 Landmark Run",
+      "ref": "environment-v1-sanantonio-night",
+      "source": "environment-v1/sanantonio-night.png",
+      "brief": "Downtown San Antonio: low limestone and brick blocks, slender observation tower silhouette, small river-corridor cypress, broad almost flat South Texas horizon. Clear dark night, restrained lights and stars, no mountains or ocean.",
+      "brightness": 0.05,
+      "weather": "clear",
+      "ground": "ground-patchy-snow-leaf-v1",
+      "tiles": {
+        "snow": "ground-patchy-snow-leaf-v1"
+      },
+      "sourceOrigin": {
+        "name": "San Antonio, TX \u2014 Landmark Run",
+        "lat": 29.424,
+        "lon": -98.492,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-tx.json",
+      "catalog": [
+        {
+          "id": "city-tx",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 7,
+          "location": {
+            "lat": 29.424,
+            "lon": -98.492
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://www.visitsanantonio.com/plan-your-trip/neighborhood-guide/downtown/",
+        "https://www.visitsanantonio.com/media/media-kit/san-antonios-legendary-attractions/",
+        "https://www.visitsanantonio.com/welcome-international-travelers/bienvenido/"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-7262430f-2196-4eb1-8d99-4d399172e21f.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Downtown San Antonio: low limestone and brick blocks, slender observation tower silhouette, small river-corridor cypress, broad almost flat South Texas horizon. Clear dark night, restrained lights and stars, no mountains or ocean. Effective authored sky brightness 0.05, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "charlestonsc-evening",
+      "raceRef": "Charleston, SC \u2014 Landmark Run",
+      "ref": "environment-v1-charlestonsc-evening",
+      "source": "environment-v1/charlestonsc-evening.png",
+      "brief": "Charleston South Carolina peninsula: low historic brick and pastel roofs, thin church spires, flat tidal marsh and harbor, distant cable-stayed bridge silhouette. Muted evening sky, palmettos and live oak, no mountains.",
+      "brightness": 0.42,
+      "weather": "clear",
+      "ground": "ground-patchy-snow-leaf-v1",
+      "tiles": {
+        "snow": "ground-patchy-snow-leaf-v1"
+      },
+      "sourceOrigin": {
+        "name": "Charleston, SC \u2014 Landmark Run",
+        "lat": 32.785,
+        "lon": -79.933,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-sc.json",
+      "catalog": [
+        {
+          "id": "city-sc",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 4,
+          "location": {
+            "lat": 32.785,
+            "lon": -79.933
+          },
+          "startGps": {
+            "lat": 32.79005784285714,
+            "lon": -79.94388427142857
+          },
+          "finishGps": {
+            "lat": 32.77209379090909,
+            "lon": -79.92825213636364
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://www.charlestoncvb.com/plan-your-trip/tours-attractions~204att..?location=charleston-downtown~445",
+        "https://www.charlestoncvb.com/lgbtq/",
+        "https://www.charlestoncvb.com/plan-your-trip/tours-attractions~204Travel/?location=charleston-downtown~445"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-82d4eb30-17c1-4d6d-9e1c-50a8f2eb2264.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Charleston South Carolina peninsula: low historic brick and pastel roofs, thin church spires, flat tidal marsh and harbor, distant cable-stayed bridge silhouette. Muted evening sky, palmettos and live oak, no mountains. Effective authored sky brightness 0.42, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "richmond-evening",
+      "raceRef": "Richmond, VA \u2014 Landmark Run",
+      "ref": "environment-v1-richmond-evening",
+      "source": "environment-v1/richmond-evening.png",
+      "brief": "Richmond Virginia: James River rocky fall-line water, brick tobacco warehouses and a clock-towered station motif, modest skyline on low rolling Piedmont ridges, evening peach horizon. No coastal harbor or tall mountains.",
+      "brightness": 0.42,
+      "weather": "clear",
+      "ground": "ground-patchy-snow-leaf-v1",
+      "tiles": {
+        "snow": "ground-patchy-snow-leaf-v1"
+      },
+      "sourceOrigin": {
+        "name": "Richmond, VA \u2014 Landmark Run",
+        "lat": 37.542,
+        "lon": -77.436,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-va.json",
+      "catalog": [
+        {
+          "id": "city-va",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 3,
+          "location": {
+            "lat": 37.542,
+            "lon": -77.436
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://www.visitrichmondva.com/listing/main-street-station/1097/",
+        "https://www.visitrichmondva.com/listing/main-street-station/40/",
+        "https://www.visitrichmondva.com/listing/main-street-station/4535/"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-6ccebbbe-0478-4443-874f-4dc7c8048ec6.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Richmond Virginia: James River rocky fall-line water, brick tobacco warehouses and a clock-towered station motif, modest skyline on low rolling Piedmont ridges, evening peach horizon. No coastal harbor or tall mountains. Effective authored sky brightness 0.42, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "charlestonwv-night",
+      "raceRef": "Charleston, WV \u2014 Landmark Run",
+      "ref": "environment-v1-charlestonwv-night",
+      "source": "environment-v1/charlestonwv-night.png",
+      "brief": "Charleston West Virginia: tightly enclosing wooded Appalachian hills above the Kanawha river, low city blocks, restrained golden civic dome motif and steel river bridges. Clear navy night with sparse stars, no coastal palms.",
+      "brightness": 0.05,
+      "weather": "clear",
+      "ground": "ground-patchy-snow-leaf-v1",
+      "tiles": {
+        "snow": "ground-patchy-snow-leaf-v1"
+      },
+      "sourceOrigin": {
+        "name": "Charleston, WV \u2014 Landmark Run",
+        "lat": 38.347,
+        "lon": -81.626,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-wv.json",
+      "catalog": [
+        {
+          "id": "city-wv",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 4,
+          "location": {
+            "lat": 38.347,
+            "lon": -81.626
+          },
+          "startGps": {
+            "lat": 38.34269575,
+            "lon": -81.613293
+          },
+          "finishGps": {
+            "lat": 38.34350034444444,
+            "lon": -81.63078711111112
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://events.charlestonwv.com/",
+        "https://events.charlestonwv.com/calendar/upcoming",
+        "https://events.charlestonwv.com/capitol_market_228"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-2a17d935-cd66-405c-8050-b64d3c86698f.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Charleston West Virginia: tightly enclosing wooded Appalachian hills above the Kanawha river, low city blocks, restrained golden civic dome motif and steel river bridges. Clear navy night with sparse stars, no coastal palms. Effective authored sky brightness 0.05, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "denalihighway-snow-morning",
+      "raceRef": "Denali Highway \u2014 Tundra Gravel",
+      "ref": "environment-v1-denalihighway-snow-morning",
+      "source": "environment-v1/denalihighway-snow-morning.png",
+      "brief": "Eastern Denali Highway near Paxson Alaska: broad treeless tundra benches, low willow patches and glacial gravel flats under layered Alaska Range foothills, distant rugged snow ridges. Snowy morning clouds with diffuse glow, no invented giant Denali peak looming next to road.",
+      "brightness": 0.65,
+      "weather": "snow",
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "sourceOrigin": {
+        "name": "Denali Highway \u2014 Tundra Gravel",
+        "lat": 63.07,
+        "lon": -146.7,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-denali.json",
+      "catalog": [
+        {
+          "id": "detour-denali",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 63.07,
+            "lon": -146.7
+          },
+          "startGps": {
+            "lat": 63.0704729,
+            "lon": -146.1077985
+          },
+          "finishGps": {
+            "lat": 63.0923479,
+            "lon": -146.2984675
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://www.blm.gov/visit/denali-highway"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-03e1422d-3475-48ef-b8e3-a89080560db0.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Eastern Denali Highway near Paxson Alaska: broad treeless tundra benches, low willow patches and glacial gravel flats under layered Alaska Range foothills, distant rugged snow ridges. Snowy morning clouds with diffuse glow, no invented giant Denali peak looming next to road. Effective authored sky brightness 0.65, weather snow; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "tantalus-rain-morning",
+      "raceRef": "Tantalus \u2014 Honolulu Heights",
+      "ref": "environment-v1-tantalus-rain-morning",
+      "source": "environment-v1/tantalus-rain-morning.png",
+      "brief": "Tantalus Honolulu heights: lush folded volcanic ridge and wet broadleaf forest framing a distant low Honolulu/Pacific view from elevation. Rainy morning with layered gray cloud, no star or moon, no desert summit.",
+      "brightness": 0.65,
+      "weather": "rain",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "sourceOrigin": {
+        "name": "Tantalus \u2014 Honolulu Heights",
+        "lat": 21.327,
+        "lon": -157.821,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-tantalus.json",
+      "catalog": [
+        {
+          "id": "detour-tantalus",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 21.327,
+            "lon": -157.821
+          },
+          "startGps": {
+            "lat": 21.3167007,
+            "lon": -157.83794096666665
+          },
+          "finishGps": {
+            "lat": 21.32528,
+            "lon": -157.8147156
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://dlnr.hawaii.gov/dofaw/files/2025/02/Final-TRTD-CMP-2019-12-11-with-Appendices.pdf"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-b414b84a-db0f-4e0d-86a6-0a3d188a5a70.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Tantalus Honolulu heights: lush folded volcanic ridge and wet broadleaf forest framing a distant low Honolulu/Pacific view from elevation. Rainy morning with layered gray cloud, no star or moon, no desert summit. Effective authored sky brightness 0.65, weather rain; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "haleakala-morning",
+      "raceRef": "Haleakala \u2014 Volcano Ascent",
+      "ref": "environment-v1-haleakala-morning",
+      "source": "environment-v1/haleakala-morning.png",
+      "brief": "Haleakala Maui upper volcano approach: broad reddish brown and charcoal cinder shoulders, sparse alpine scrub and rolling shield-volcano curvature above low cloud sea. Clear morning, subdued crater-rim layers not jagged snow Alps.",
+      "brightness": 0.65,
+      "weather": "clear",
+      "ground": "ground-volcanic-cinder-v1",
+      "tiles": {
+        "gravel": "ground-volcanic-cinder-v1"
+      },
+      "sourceOrigin": {
+        "name": "Haleakala \u2014 Volcano Ascent",
+        "lat": 20.745,
+        "lon": -156.245,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-haleakala.json",
+      "catalog": [
+        {
+          "id": "detour-haleakala",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 20.745,
+            "lon": -156.245
+          },
+          "startGps": {
+            "lat": 20.75276025,
+            "lon": -156.229521425
+          },
+          "finishGps": {
+            "lat": 20.713619266666665,
+            "lon": -156.2510475
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [
+        "https://www.nps.gov/hale/planyourvisit/directions.htm"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-b23934d8-ea39-4076-b4d9-147ab452764f.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Haleakala Maui upper volcano approach: broad reddish brown and charcoal cinder shoulders, sparse alpine scrub and rolling shield-volcano curvature above low cloud sea. Clear morning, subdued crater-rim layers not jagged snow Alps. Effective authored sky brightness 0.65, weather clear; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    },
+    {
+      "key": "maunakea-snow-evening",
+      "raceRef": "Maunakea \u2014 Cinder Summit",
+      "ref": "environment-v1-maunakea-snow-evening",
+      "source": "environment-v1/maunakea-snow-evening.png",
+      "brief": "Maunakea Hawaii upper cinder summit: rounded rust-gray volcanic cones, patchy snow hollows and a few distant small white observatory domes below a vast cloudy evening sky. Snow-weather diffuse warm cloud glow, no direct moon, no tropical trees at summit.",
+      "brightness": 0.42,
+      "weather": "snow",
+      "ground": "ground-volcanic-snow-v1",
+      "tiles": {
+        "snow": "ground-volcanic-snow-v1"
+      },
+      "sourceOrigin": {
+        "name": "Maunakea \u2014 Cinder Summit",
+        "lat": 19.79,
+        "lon": -155.46,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-maunakea.json",
+      "catalog": [
+        {
+          "id": "detour-maunakea",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 11,
+          "location": {
+            "lat": 19.79,
+            "lon": -155.46
+          },
+          "startGps": {
+            "lat": 19.770431666666667,
+            "lon": -155.45982
+          },
+          "finishGps": {
+            "lat": 19.8214316,
+            "lon": -155.4710041
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://hilo.hawaii.edu/maunakea/visitor-information/public-safety"
+      ],
+      "sourceLimitation": "Saved GPS/source establishes real site where present; structures and future abandoned conditions are original illustrative art, not surveyed. Null-source legacy entries are explicitly fictional test environments, not inferred real places. Existing physical substrate and authored weather remain unchanged.",
+      "sourceImage": "/workspace/generated_images/exec-06558cd8-97dd-4c67-ae52-6d24edc95f46.png",
+      "generationPrompt": "Original badge-free 2994 pixel-art racing sky panorama, ultra-wide 3:1. Maunakea Hawaii upper cinder summit: rounded rust-gray volcanic cones, patchy snow hollows and a few distant small white observatory domes below a vast cloudy evening sky. Snow-weather diffuse warm cloud glow, no direct moon, no tropical trees at summit. Effective authored sky brightness 0.42, weather snow; compose for that time, no baked double-darkening. Horizon at 60% height. CRITICAL game texture constraints: outer left/right 12% meet at identical horizon height and same color at each row. Top 10% consists of ONE PERFECTLY FLAT SOLID SKY COLOR, no texture/dither/noise/stars there, blended naturally into scene beneath. Bottom 10% ONE PERFECTLY FLAT SOLID local ground color, no texture/dither/noise there; naturally fade foreground above into it. These bands are part of image, never borders, no sky-blue bottom. No close road/car/text/logo. Original regional buildings weathered unless otherwise noted. Distinct landscape, plausible geography."
+    }
+  ],
+  "groundAssets": [
+    {
+      "key": "ground-volcanic-cinder-v1",
+      "source": "environment-v1/ground-volcanic-cinder-v1.png",
+      "sourceImage": "/workspace/generated_images/exec-422f69f1-a885-4b3f-9e39-939d181ed997.png",
+      "generationPrompt": "Original 2994 pixel-art seamless terrain texture, square top-down orthographic, no perspective. Dark charcoal, muted rusty red and brown small volcanic cinder grains, loose angular pea-sized gravel, NOT asphalt or smooth rock slab. Must clearly read as gravel. Low-contrast natural game texture with evenly dispersed small details, no large boulders, objects, text, logos or directional lighting. All four edges tile naturally. No gradients or focal point."
+    },
+    {
+      "key": "ground-volcanic-snow-v1",
+      "source": "environment-v1/ground-volcanic-snow-v1.png",
+      "sourceImage": "/workspace/generated_images/exec-a56d1dbd-4b31-4e87-980b-0e4d81d89e89.png",
+      "generationPrompt": "Original 2994 pixel-art seamless terrain texture, square top-down orthographic, no perspective. Connected compacted white-gray snow patches with embedded charcoal and muted rust volcanic cinder grains. About 70% snow, 30% small dark exposed cinder. Must clearly read as snow, NOT bare rock. Low-contrast natural game texture with evenly dispersed small details, no large boulders, objects, text, logos or directional lighting. All four edges tile naturally. No gradients or focal point."
+    }
+  ],
+  "legacyEvidence": {
+    "defaultEditorTrack": "src/ui/RaceEditor.js loads Studio Sprint; src/racing/raceData.js default name",
+    "constructedLoadTest": "tools/loadtest/create-p2.mjs constructs synthetic figure/branches from p1; saved p2 rain/night is authoritative",
+    "sameGeometryNotAssumedSameSite": "Demo Track and three Studio variants reuse five-node template; Demo additionally has 17 network edges. Distinct authored facilities are used because no real site identity is established.",
+    "mountWashingtonCopy": "Original and Copy have identical 313-node geometry hash a20ad18c9f2c1d3005bd8347ce3090a516c80c9f82ec65cc0c584ee221b01210, but snow versus asphalt road, snow versus grass cells, and snow/noon versus storm/noon require separate art."
+  }
+}

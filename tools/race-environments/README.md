@@ -1,6 +1,6 @@
 # Race environment pipeline
 
-`data/race-environments/ledger.json` covers all 245 saved races exposed by the real Game Menu selector, including 233 enabled campaign choices, three additional catalog courses and nine uncatalogued documents. Pending rows are not visual acceptance. The current base is pinned in ledger.json (24b3164e after the landed car batch); historical baseline diagnosis remains pinned to ef6034818.
+`data/race-environments/ledger.json` covers all 245 saved races exposed by the real Game Menu selector, including 233 enabled campaign choices, three additional catalog courses and nine uncatalogued documents. Pending rows are not visual acceptance. The current base is pinned in ledger.json (2dd6bff9 after reconciliation); historical baseline diagnosis remains pinned to ef6034818.
 
 Every row starts with its own collision-free site group. A shared group requires explicit source/GPS and compatible time/weather evidence; state/chapter `venueKey` is insufficient. Before grouping layouts compare actual route bounds, authored lighting and weather. Preserve Tower Hill's snowy night and Bayard's noon. Ozark is MO-19 near Eminence. Data Center City is St. Louis riverfront, with fictional clean colorful robotic compounds.
 
@@ -200,3 +200,9 @@ Boise bottom, Thompson top and Moki bottom boundary variation is reduced. Little
 Reproduce new native coverage with `RACE_RENDER_PACK=south-greatlakes-pack14 RACE_RENDER_COMPACT=1` and the portable renderer config. Apply only this pack via `prepare-south-greatlakes-pack.mjs`, repeat `--only REF` arguments through the canonical importer, then run `bind.mjs --apply` followed by the readback. Preserve old evidence. The release checklist deliberately keeps assignment, semantic eligibility, native review, actual driving, and complete acceptance distinct.
 
 Pack14 validation history is explicit: the full 112-test command first found the unplaced city sky, then found the unplaced Ozark sky (111 passed in each run). After both specific preserved-original records, the actual-use gate and all 15 supersession negatives passed in a targeted 16-test rerun, with the configured snow warning visible. The other 111 checks stayed unchanged; a final single all-112 invocation was not repeated after that registry-only repair. Six Campaign Artwork browser tests, the 245-race preservation readback, 225 decoded active skies and the 1806-document manifest passed. One numeric sky warning remains at Little Tujunga. Nothing is published from this checkpoint.
+
+## Final islands and legacy pack
+
+`prepare-final-islands-pack.mjs` imports explicit recipes for the final20 rows (12 real-location routes and eight legacy/test entries). All245 are assigned, but the release remains blocked by global material and visual review. Run `audit-material-coverage.mjs` for exact normal/rough cell mismatches and unclassified refs across the whole ledger; its nonzero exit is intentional until corrected. See `pack15-material-blockers.json` for source inspection and named routes. Four zero-cell legacy grass maps are pinned individually in the regression rather than exempting nonempty maps.
+
+Original PNGs, superseded native art, all prior QA and paused car work remain retained. The final strict completeness gate is not waived by complete assignment, opacity or hash uniqueness.

@@ -1,0 +1,77 @@
+{
+  "scope": "Imported skies with no actual saved-race placement and no existing deferral/supersession; preserved bytes verified. Not an exemption. Each needs actual appropriate placement or matched review and explicit supersession under existing schema.",
+  "assets": [
+    {
+      "ref": "skybox-angeles-crest",
+      "import": {
+        "source": "assets/campaign-art/skyboxes/angeles-crest.png",
+        "sourceSha256": "0f29c57c66940350d35fa9394731e9668c22921dc9d082cabd24f967aac4cf43",
+        "documentSha256": "dd8eb2b6282966247a4a0f13932e5e318f42c8a3a8efd4669d376d0607ee805a",
+        "width": 1024,
+        "height": 341
+      },
+      "preservedSourceMatchesImport": true,
+      "preservedNativeMatchesImport": true
+    },
+    {
+      "ref": "skybox-laurel-highlands",
+      "import": {
+        "source": "assets/campaign-art/skyboxes/laurel-highlands.png",
+        "sourceSha256": "6ceee956472bfce8cf2f2dda211be409863c119db1bd2c84a2ceb9fcd2e3bd32",
+        "documentSha256": "f566042f9794f8b55e75f24ef2d95c95b36ef223322f917e65e5856b72eb99d9",
+        "width": 1024,
+        "height": 341
+      },
+      "preservedSourceMatchesImport": true,
+      "preservedNativeMatchesImport": true
+    },
+    {
+      "ref": "skybox-mount-washington",
+      "import": {
+        "source": "assets/campaign-art/skyboxes/mount-washington.png",
+        "sourceSha256": "76f60cd41dbe3fdf40b2935b1a799cb2dd7d9e5d9866143f9bc5855647771378",
+        "documentSha256": "1a149eab1593846ca00457b796dadaa5dc81bdbfd34ffe5c6ed41763eff86c8e",
+        "width": 1024,
+        "height": 341
+      },
+      "preservedSourceMatchesImport": true,
+      "preservedNativeMatchesImport": true
+    },
+    {
+      "ref": "skybox-ohio-river-crossing",
+      "import": {
+        "source": "assets/campaign-art/skyboxes/ohio-river-crossing.png",
+        "sourceSha256": "20f4085b5f9699414ca98425edc0086e7da4875b1e9834dde7285703a2e26a32",
+        "documentSha256": "6094269d1968edf089880eed04738e819246e1caec72c6e7ebab31a9bdcbc1b4",
+        "width": 1024,
+        "height": 341
+      },
+      "preservedSourceMatchesImport": true,
+      "preservedNativeMatchesImport": true
+    },
+    {
+      "ref": "skybox-pikes-peak",
+      "import": {
+        "source": "assets/campaign-art/skyboxes/pikes-peak.png",
+        "sourceSha256": "950e1b1259d564aed24ac5b1fe74b73a07432744365b94890fa9c8b4ca5e60cd",
+        "documentSha256": "03dd1ba23cb440002de8263caed116c8e85082f95e3ce0c084085c74fe9d58ff",
+        "width": 1024,
+        "height": 341
+      },
+      "preservedSourceMatchesImport": true,
+      "preservedNativeMatchesImport": true
+    },
+    {
+      "ref": "skybox-route-66",
+      "import": {
+        "source": "assets/campaign-art/skyboxes/route-66.png",
+        "sourceSha256": "7b4c49d6b06830cfb7e53437153fc5ae716b6b59107267404630051b739f5707",
+        "documentSha256": "52d3b022faf77551e16d300316358ef48610f29f873885758762c69314b468f5",
+        "width": 1024,
+        "height": 341
+      },
+      "preservedSourceMatchesImport": true,
+      "preservedNativeMatchesImport": true
+    }
+  ]
+}

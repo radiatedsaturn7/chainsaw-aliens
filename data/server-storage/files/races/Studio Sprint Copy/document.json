@@ -14,7 +14,7 @@
     "groundRenderer": "webgl-track",
     "groundTextureBaseWorldM": 1.002,
     "groundTextureFilterMode": "balanced",
-    "skyboxArtRef": "providence",
+    "skyboxArtRef": "environment-v1-studio-annex-noon",
     "hazards": [],
     "triggers": [],
     "scenery": [],
@@ -35,7 +35,7 @@
       "rollingStartSpeedMps": 13.4
     },
     "skyboxSettings": {
-      "artRef": "providence",
+      "artRef": "environment-v1-studio-annex-noon",
       "offsetXTurns": 0,
       "offsetYRatio": 0
     },
@@ -176,6 +176,7 @@
     },
     "visualFx": {
       "skyBrightness": 1
-    }
+    },
+    "groundPlaneArtRef": "ground-temperate-grass-v1"
   }
 }

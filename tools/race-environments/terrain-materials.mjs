@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 // Texture intent is independent of the saved physical cell. New visual assets
 // must declare their actual substrate rather than inheriting the cell's ID.
 export const terrainArtMaterials = Object.freeze({
+ 'ground-volcanic-cinder-v1':'gravel', 'ground-volcanic-snow-v1':'snow',
  'ground-brown-dirt-v2':'dirt', 'ground-industrial-concrete-v2':'asphalt',
  'ground-industrial-rubble-v2':'gravel', 'ground-canyon-rock-v2':'gravel',
  'ground-gray-gravel-v2':'gravel', 'ground-red-gravel-v2':'gravel',

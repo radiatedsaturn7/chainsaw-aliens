@@ -1,0 +1,3140 @@
+{
+  "total": 245,
+  "mismatchRaceCount": 37,
+  "unclassifiedRaceCount": 95,
+  "note": "Counts are per visual slot, not unique cells. Unknown art requires visual classification; known mismatches block release. Ground/road/shoulder visual review remains separate.",
+  "mismatches": [
+    {
+      "race": "Ohio Valley Speedway \u2014 Washington, West Virginia",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-brown-dirt-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 1330
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-brown-dirt-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 1330
+        }
+      ]
+    },
+    {
+      "race": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-brown-dirt-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 1364
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-brown-dirt-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 1364
+        }
+      ]
+    },
+    {
+      "race": "Gold Camp Road \u2014 Colorado Springs",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 22022
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 22022
+        }
+      ]
+    },
+    {
+      "race": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 17136
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 17136
+        }
+      ]
+    },
+    {
+      "race": "Shelf Road \u2014 Gold Belt Tour",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 15015
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 15015
+        }
+      ]
+    },
+    {
+      "race": "Skyline Drive \u2014 Ca\u00f1on City",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 12276
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 12276
+        }
+      ]
+    },
+    {
+      "race": "Garden of the Gods \u2014 paved park road",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 15450
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 15450
+        }
+      ]
+    },
+    {
+      "race": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 9438
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 9438
+        }
+      ]
+    },
+    {
+      "race": "Valley of the Gods Road \u2014 San Juan CR 242",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 6919
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 6919
+        }
+      ]
+    },
+    {
+      "race": "Muley Point Road \u2014 CR 241",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 24660
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 24660
+        }
+      ]
+    },
+    {
+      "race": "UT 316 \u2014 Goosenecks State Park Road",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 18939
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 18939
+        }
+      ]
+    },
+    {
+      "race": "US 163 \u2014 Mexican Hat Monument Valley approach",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 18306
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 18306
+        }
+      ]
+    },
+    {
+      "race": "UT 95 \u2014 Comb Ridge Cedar Mesa",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 12996
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 12996
+        }
+      ]
+    },
+    {
+      "race": "UT 276 \u2014 Halls Crossing approach",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 4640
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 4640
+        }
+      ]
+    },
+    {
+      "race": "US 191 \u2014 Bluff Blanding",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 10985
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 10985
+        }
+      ]
+    },
+    {
+      "race": "Shafer Trail \u2014 Canyonlands National Park",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-canyon-rock-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 15300
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-canyon-rock-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 15300
+        }
+      ]
+    },
+    {
+      "race": "Burr Trail switchbacks \u2014 Capitol Reef",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 18180
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 18180
+        }
+      ]
+    },
+    {
+      "race": "SR 179 \u2014 Red Rock Scenic Byway",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 6232
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 6232
+        }
+      ]
+    },
+    {
+      "race": "Upper Lower Red Rock Loop Road",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 27477
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 27477
+        }
+      ]
+    },
+    {
+      "race": "Beaverhead Flat Road \u2014 CR 78",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 19397
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 19397
+        }
+      ]
+    },
+    {
+      "race": "Boynton Pass Road FR 525 loop",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 16731
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 16731
+        }
+      ]
+    },
+    {
+      "race": "Schnebly Hill Road \u2014 Sedona",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 21484
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-red-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 21484
+        }
+      ]
+    },
+    {
+      "race": "Podium Club at Attesa \u2014 Casa Grande",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 9196
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 9196
+        }
+      ]
+    },
+    {
+      "race": "Firebird Motorsports Park \u2014 Chandler",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 16986
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 16986
+        }
+      ]
+    },
+    {
+      "race": "Upper Big Tujunga Canyon Road",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 28525
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 28525
+        }
+      ]
+    },
+    {
+      "race": "Big Tujunga Canyon Road",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 16380
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 16380
+        }
+      ]
+    },
+    {
+      "race": "Glendora Mountain Road",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 29808
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 29808
+        }
+      ]
+    },
+    {
+      "race": "Glendora Ridge Road",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 10679
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 10679
+        }
+      ]
+    },
+    {
+      "race": "San Gabriel Canyon Road \u2014 SR 39",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 14784
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 14784
+        }
+      ]
+    },
+    {
+      "race": "Little Tujunga Canyon Road",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 25900
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 25900
+        }
+      ]
+    },
+    {
+      "race": "Willow Springs \u2014 Horse Thief Mile",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 3078
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 3078
+        }
+      ]
+    },
+    {
+      "race": "In-N-Out Burger Pomona Dragstrip",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 16761
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 16761
+        }
+      ]
+    },
+    {
+      "race": "Willow Springs \u2014 Big Willow",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 16218
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 16218
+        }
+      ]
+    },
+    {
+      "race": "Willow Springs \u2014 Streets of Willow",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 6901
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 6901
+        }
+      ]
+    },
+    {
+      "race": "Willow Springs \u2014 Streets \u2014 Short",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 5092
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-desert-scrub-v2",
+          "tileId": "snow",
+          "material": "dirt",
+          "status": "mismatch",
+          "cells": 5092
+        }
+      ]
+    },
+    {
+      "race": "Denver, CO \u2014 Landmark Run",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 15228
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "snow",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 15228
+        }
+      ]
+    },
+    {
+      "race": "Grand Canyon \u2014 Diamond Creek Descent",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "dirt",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 12482
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-gray-gravel-v2",
+          "tileId": "dirt",
+          "material": "gravel",
+          "status": "mismatch",
+          "cells": 12482
+        }
+      ]
+    }
+  ],
+  "unclassified": [
+    {
+      "race": "Col de Turini",
+      "pack": "initial",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": null,
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7592
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7592
+        }
+      ]
+    },
+    {
+      "race": "Daytona Tri-Oval",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10656
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10656
+        }
+      ]
+    },
+    {
+      "race": "Mount Washington Auto Road \u2014 point-to-point",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-clean-snow-v2",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 6712
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-clean-snow-v2",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 6712
+        }
+      ]
+    },
+    {
+      "race": "Nurburgring Nordschleife",
+      "pack": "initial",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": null,
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 20352
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 20352
+        }
+      ]
+    },
+    {
+      "race": "Ouninpohja",
+      "pack": "initial",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-finnish-boreal-verge",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12720
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-finnish-boreal-verge",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12720
+        }
+      ]
+    },
+    {
+      "race": "Tower Hill Road",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-clean-snow-v2",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7421
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-clean-snow-v2",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7421
+        }
+      ]
+    },
+    {
+      "race": "Laurel Highlands Scenic Byway",
+      "pack": "initial",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "dirt",
+          "material": null,
+          "status": "unclassified",
+          "cells": 23760
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "dirt",
+          "material": null,
+          "status": "unclassified",
+          "cells": 23760
+        }
+      ]
+    },
+    {
+      "race": "Ohio River Crossing",
+      "pack": "initial",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-ohio-wet-leaf-litter",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 18591
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 18591
+        },
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-ohio-wet-leaf-litter",
+          "tileId": "slush",
+          "material": null,
+          "status": "unclassified",
+          "cells": 1
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "slush",
+          "material": null,
+          "status": "unclassified",
+          "cells": 1
+        }
+      ]
+    },
+    {
+      "race": "Ozark Backroads",
+      "pack": "initial",
+      "layers": [
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "dirt",
+          "material": null,
+          "status": "unclassified",
+          "cells": 4369
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "gravel",
+          "material": null,
+          "status": "unclassified",
+          "cells": 3011
+        }
+      ]
+    },
+    {
+      "race": "Data Center City",
+      "pack": "initial",
+      "layers": [
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "asphalt",
+          "material": null,
+          "status": "unclassified",
+          "cells": 2527
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "gravel",
+          "material": null,
+          "status": "unclassified",
+          "cells": 5692
+        },
+        {
+          "slot": "artRef",
+          "ref": "ground-dirty-snow-v2",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 4701
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 4701
+        }
+      ]
+    },
+    {
+      "race": "Historic Route 66",
+      "pack": "initial",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "dirt",
+          "material": null,
+          "status": "unclassified",
+          "cells": 2970
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "dirt",
+          "material": null,
+          "status": "unclassified",
+          "cells": 2970
+        }
+      ]
+    },
+    {
+      "race": "Moki Dugway",
+      "pack": "initial",
+      "layers": [
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "gravel",
+          "material": null,
+          "status": "unclassified",
+          "cells": 17930
+        }
+      ]
+    },
+    {
+      "race": "Oak Creek Canyon",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "gravel",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7958
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "gravel",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7958
+        }
+      ]
+    },
+    {
+      "race": "RI 116 \u2014 North Smithfield Scituate",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 14774
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 14774
+        }
+      ]
+    },
+    {
+      "race": "I-95 \u2014 Attleboro to Warwick curves",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12558
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12558
+        }
+      ]
+    },
+    {
+      "race": "RI 102 \u2014 Victory Highway",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 3480
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 3480
+        }
+      ]
+    },
+    {
+      "race": "RI 44 \u2014 Putnam Pike Glocester",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8016
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8016
+        }
+      ]
+    },
+    {
+      "race": "Lime Rock Park \u2014 Connecticut",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": null,
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8470
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8470
+        }
+      ]
+    },
+    {
+      "race": "Kancamagus Highway \u2014 NH 112",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 15300
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 15300
+        }
+      ]
+    },
+    {
+      "race": "Bear Notch Road \u2014 Bartlett",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 24492
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 24492
+        }
+      ]
+    },
+    {
+      "race": "Hurricane Mountain Road \u2014 Conway",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7788
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7788
+        }
+      ]
+    },
+    {
+      "race": "Crawford Notch \u2014 US 302",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 15045
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 15045
+        }
+      ]
+    },
+    {
+      "race": "Pinkham Notch \u2014 NH 16",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-clean-snow-v2",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10890
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-clean-snow-v2",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10890
+        }
+      ]
+    },
+    {
+      "race": "Club Motorsports \u2014 Tamworth",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 9486
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 9486
+        }
+      ]
+    },
+    {
+      "race": "Team O\u2019Neil-inspired Rally Stage (2994)",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 24684
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 24684
+        }
+      ]
+    },
+    {
+      "race": "New Hampshire Motor Speedway \u2014 Loudon",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 5720
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 5720
+        }
+      ]
+    },
+    {
+      "race": "New England Dragway \u2014 Epping",
+      "pack": "new-england-pack6",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 16459
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 16459
+        }
+      ]
+    },
+    {
+      "race": "PA 381 \u2014 Ohiopyle approach",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 14080
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 14080
+        }
+      ]
+    },
+    {
+      "race": "PA 711 \u2014 Normalville Champion",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 26970
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 26970
+        }
+      ]
+    },
+    {
+      "race": "US 40 \u2014 Chalk Hill Summit",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 18857
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 18857
+        }
+      ]
+    },
+    {
+      "race": "PA 31 \u2014 Donegal to Laurel Ridge",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 13090
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 13090
+        }
+      ]
+    },
+    {
+      "race": "County Line Road \u2014 Seven Springs",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 17604
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 17604
+        }
+      ]
+    },
+    {
+      "race": "Forbes State Forest \u2014 designated gravel roads",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 20709
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 20709
+        }
+      ]
+    },
+    {
+      "race": "Jennerstown Speedway \u2014 oval",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 2401
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 2401
+        }
+      ]
+    },
+    {
+      "race": "Keystone Motorsports Park \u2014 New Alexandria",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10248
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10248
+        }
+      ]
+    },
+    {
+      "race": "Pittsburgh International Race Complex \u2014 Wampum",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 16482
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 16482
+        }
+      ]
+    },
+    {
+      "race": "OH 26 \u2014 Covered Bridge Scenic Byway",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 26864
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 26864
+        }
+      ]
+    },
+    {
+      "race": "OH 555 \u2014 Triple Nickel",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 15604
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 15604
+        }
+      ]
+    },
+    {
+      "race": "OH 550 \u2014 Barlow approach",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 4698
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 4698
+        }
+      ]
+    },
+    {
+      "race": "OH 536 \u2014 Ohio River hills",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 28826
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 28826
+        }
+      ]
+    },
+    {
+      "race": "OH 676 \u2014 Western county hills",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 25521
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 25521
+        }
+      ]
+    },
+    {
+      "race": "Marietta\u2013Williamstown \u2014 I-77 river bridge",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 4698
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 4698
+        }
+      ]
+    },
+    {
+      "race": "Washington County western covered-bridge gravel loop",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 19436
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 19436
+        }
+      ]
+    },
+    {
+      "race": "Mid-Ohio Sports Car Course \u2014 Lexington",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12972
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12972
+        }
+      ]
+    },
+    {
+      "race": "MO 19 \u2014 Eminence Current River",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 17028
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 17028
+        }
+      ]
+    },
+    {
+      "race": "MO 106 \u2014 Alley Spring approach",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 5940
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 5940
+        }
+      ]
+    },
+    {
+      "race": "MO 106 \u2014 Powder Mill approach",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8379
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8379
+        }
+      ]
+    },
+    {
+      "race": "MO V \u2014 Two Rivers access",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7638
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7638
+        }
+      ]
+    },
+    {
+      "race": "MO H NN \u2014 Roberts Field access",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 17820
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 17820
+        }
+      ]
+    },
+    {
+      "race": "Jerktail Landing gravel road",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8184
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8184
+        }
+      ]
+    },
+    {
+      "race": "US 60 \u2014 Winona Van Buren",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12337
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12337
+        }
+      ]
+    },
+    {
+      "race": "Glade Top Trail \u2014 Mark Twain National Forest",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12900
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12900
+        }
+      ]
+    },
+    {
+      "race": "Ozarks International Raceway \u2014 Gravois Mills",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 18328
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 18328
+        }
+      ]
+    },
+    {
+      "race": "World Wide Technology Raceway \u2014 road course",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 6206
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 6206
+        }
+      ]
+    },
+    {
+      "race": "World Wide Technology Raceway \u2014 oval",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 6634
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 6634
+        }
+      ]
+    },
+    {
+      "race": "World Wide Technology Raceway \u2014 drag strip",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 13120
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 13120
+        }
+      ]
+    },
+    {
+      "race": "I-64 \u2014 St. Louis downtown approaches",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 6253
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 6253
+        }
+      ]
+    },
+    {
+      "race": "I-70 \u2014 Stan Musial Veterans Memorial Bridge",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 20111
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 20111
+        }
+      ]
+    },
+    {
+      "race": "IL 100 \u2014 Great River Road bluffs",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8000
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8000
+        }
+      ]
+    },
+    {
+      "race": "MO 94 \u2014 Defiance Augusta",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 26488
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 26488
+        }
+      ]
+    },
+    {
+      "race": "Gateway Kartplex \u2014 WWT complex",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 2460
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 2460
+        }
+      ]
+    },
+    {
+      "race": "US 24 \u2014 Ute Pass Woodland Park",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 30102
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 30102
+        }
+      ]
+    },
+    {
+      "race": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "pack": "front-range-sangabriel-pack10",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 13485
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 13485
+        }
+      ]
+    },
+    {
+      "race": "Page Springs Road",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 13776
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 13776
+        }
+      ]
+    },
+    {
+      "race": "SR 89A \u2014 Mingus Mountain Jerome",
+      "pack": "canyon-country-pack9",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 17363
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 17363
+        }
+      ]
+    },
+    {
+      "race": "Old Staples Road",
+      "pack": "initial",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": null,
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7473
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7473
+        }
+      ]
+    },
+    {
+      "race": "Watkins Glen \u2014 Long Course",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8379
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8379
+        }
+      ]
+    },
+    {
+      "race": "Watkins Glen \u2014 Short Course",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7560
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7560
+        }
+      ]
+    },
+    {
+      "race": "Watkins Glen \u2014 Long \u2014 No Inner Loop",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8379
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8379
+        }
+      ]
+    },
+    {
+      "race": "Watkins Glen \u2014 Short \u2014 No Inner Loop",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7560
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7560
+        }
+      ]
+    },
+    {
+      "race": "Road America \u2014 Full Course",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10062
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10062
+        }
+      ]
+    },
+    {
+      "race": "Road America \u2014 The Bend",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10413
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10413
+        }
+      ]
+    },
+    {
+      "race": "Road Atlanta \u2014 Grand Prix",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8432
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8432
+        }
+      ]
+    },
+    {
+      "race": "Road Atlanta \u2014 Short Course",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12524
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12524
+        }
+      ]
+    },
+    {
+      "race": "Road Atlanta \u2014 Club Course",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 3237
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 3237
+        }
+      ]
+    },
+    {
+      "race": "Virginia International Raceway \u2014 Full Course",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 11218
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 11218
+        }
+      ]
+    },
+    {
+      "race": "Virginia International Raceway \u2014 North Course",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 13923
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 13923
+        }
+      ]
+    },
+    {
+      "race": "Virginia International Raceway \u2014 South Course",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8928
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8928
+        }
+      ]
+    },
+    {
+      "race": "Virginia International Raceway \u2014 Grand Course",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 11218
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 11218
+        }
+      ]
+    },
+    {
+      "race": "Sebring International Raceway \u2014 Full Circuit",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 17324
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 17324
+        }
+      ]
+    },
+    {
+      "race": "Sebring International Raceway \u2014 Short Circuit",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10800
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10800
+        }
+      ]
+    },
+    {
+      "race": "Sebring International Raceway \u2014 Club Circuit",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 9250
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 9250
+        }
+      ]
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Oval",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 9944
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 9944
+        }
+      ]
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Road Course",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8798
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8798
+        }
+      ]
+    },
+    {
+      "race": "Homestead-Miami Speedway \u2014 Modified Road Course",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7857
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 7857
+        }
+      ]
+    },
+    {
+      "race": "Daytona International Speedway \u2014 Sports Car Course",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10656
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10656
+        }
+      ]
+    },
+    {
+      "race": "Daytona International Speedway \u2014 Stock Car Road Course",
+      "pack": "venue-pack4",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10656
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "grass",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 10656
+        }
+      ]
+    },
+    {
+      "race": "Lime Rock Park \u2014 Both Chicanes",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": null,
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8624
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": null,
+          "tileId": "grass",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8624
+        }
+      ]
+    },
+    {
+      "race": "Mid-Ohio Sports Car Course \u2014 Chicane Course",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12972
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 12972
+        }
+      ]
+    },
+    {
+      "race": "Mid-Ohio Sports Car Course \u2014 Short Course",
+      "pack": "venue-pack5",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8832
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-dormant-prairie",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 8832
+        }
+      ]
+    },
+    {
+      "race": "Pig Trail \u2014 Arkansas 23",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 11418
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 11418
+        }
+      ]
+    },
+    {
+      "race": "National Road \u2014 Sideling Hill",
+      "pack": "appalachian-pack7",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 9275
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 9275
+        }
+      ]
+    },
+    {
+      "race": "Natchez Trace \u2014 Tishomingo",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 21580
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "ground-frozen-forest",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 21580
+        }
+      ]
+    },
+    {
+      "race": "Little Rock, AR \u2014 Landmark Run",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 16983
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 16983
+        }
+      ]
+    },
+    {
+      "race": "St. Louis, MO \u2014 Landmark Run",
+      "pack": "ozark-riverlands-pack8",
+      "layers": [
+        {
+          "slot": "artRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 22560
+        },
+        {
+          "slot": "roughArtRef",
+          "ref": "environment-v1-ground-sebring-olive",
+          "tileId": "snow",
+          "material": null,
+          "status": "unclassified",
+          "cells": 22560
+        }
+      ]
+    }
+  ],
+  "viewedSourceFindings": {
+    "ground-clean-snow-v2": "white snow; existing grass bindings require correction",
+    "ground-dirty-snow-v2": "white snow with grit; snow intent plausible",
+    "ground-frozen-forest": "brown leaf litter with no visible snow; many snow bindings need correction, filename is not evidence",
+    "environment-v1-ground-finnish-boreal-verge": "green moss and brown needles, no snow visible",
+    "environment-v1-ground-ohio-wet-leaf-litter": "brown wet leaves and soil, no snow visible",
+    "environment-v1-ground-dormant-prairie": "dry golden grass, no snow visible",
+    "environment-v1-ground-sebring-olive": "olive grass, no snow visible"
+  },
+  "sourceContactEvidence": [
+    "/tmp/pack15-unclassified-terrain.jpg",
+    "/tmp/pack15-legacy-terrain.jpg"
+  ],
+  "baseline": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "baselineComparison": [
+    {
+      "race": "Ohio Valley Speedway \u2014 Washington, West Virginia",
+      "mismatchedSlotsChangedFromBase": 2660,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Federated Auto Parts Raceway at I-55 \u2014 Pevely",
+      "mismatchedSlotsChangedFromBase": 2728,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Gold Camp Road \u2014 Colorado Springs",
+      "mismatchedSlotsChangedFromBase": 44044,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "mismatchedSlotsChangedFromBase": 34272,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Shelf Road \u2014 Gold Belt Tour",
+      "mismatchedSlotsChangedFromBase": 30030,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Skyline Drive \u2014 Ca\u00f1on City",
+      "mismatchedSlotsChangedFromBase": 24552,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Garden of the Gods \u2014 paved park road",
+      "mismatchedSlotsChangedFromBase": 30900,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "mismatchedSlotsChangedFromBase": 18876,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Valley of the Gods Road \u2014 San Juan CR 242",
+      "mismatchedSlotsChangedFromBase": 13838,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Muley Point Road \u2014 CR 241",
+      "mismatchedSlotsChangedFromBase": 49320,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "UT 316 \u2014 Goosenecks State Park Road",
+      "mismatchedSlotsChangedFromBase": 37878,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "US 163 \u2014 Mexican Hat Monument Valley approach",
+      "mismatchedSlotsChangedFromBase": 36612,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "UT 95 \u2014 Comb Ridge Cedar Mesa",
+      "mismatchedSlotsChangedFromBase": 25992,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "UT 276 \u2014 Halls Crossing approach",
+      "mismatchedSlotsChangedFromBase": 9280,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "US 191 \u2014 Bluff Blanding",
+      "mismatchedSlotsChangedFromBase": 21970,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Shafer Trail \u2014 Canyonlands National Park",
+      "mismatchedSlotsChangedFromBase": 30600,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Burr Trail switchbacks \u2014 Capitol Reef",
+      "mismatchedSlotsChangedFromBase": 36360,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "SR 179 \u2014 Red Rock Scenic Byway",
+      "mismatchedSlotsChangedFromBase": 12464,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Upper Lower Red Rock Loop Road",
+      "mismatchedSlotsChangedFromBase": 54954,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Beaverhead Flat Road \u2014 CR 78",
+      "mismatchedSlotsChangedFromBase": 38794,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Boynton Pass Road FR 525 loop",
+      "mismatchedSlotsChangedFromBase": 33462,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Schnebly Hill Road \u2014 Sedona",
+      "mismatchedSlotsChangedFromBase": 42968,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Podium Club at Attesa \u2014 Casa Grande",
+      "mismatchedSlotsChangedFromBase": 18392,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Firebird Motorsports Park \u2014 Chandler",
+      "mismatchedSlotsChangedFromBase": 33972,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Upper Big Tujunga Canyon Road",
+      "mismatchedSlotsChangedFromBase": 57050,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Big Tujunga Canyon Road",
+      "mismatchedSlotsChangedFromBase": 32760,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Glendora Mountain Road",
+      "mismatchedSlotsChangedFromBase": 59616,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Glendora Ridge Road",
+      "mismatchedSlotsChangedFromBase": 21358,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "San Gabriel Canyon Road \u2014 SR 39",
+      "mismatchedSlotsChangedFromBase": 29568,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Little Tujunga Canyon Road",
+      "mismatchedSlotsChangedFromBase": 51800,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Willow Springs \u2014 Horse Thief Mile",
+      "mismatchedSlotsChangedFromBase": 6156,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "In-N-Out Burger Pomona Dragstrip",
+      "mismatchedSlotsChangedFromBase": 33522,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Willow Springs \u2014 Big Willow",
+      "mismatchedSlotsChangedFromBase": 32436,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Willow Springs \u2014 Streets of Willow",
+      "mismatchedSlotsChangedFromBase": 13802,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Willow Springs \u2014 Streets \u2014 Short",
+      "mismatchedSlotsChangedFromBase": 10184,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Denver, CO \u2014 Landmark Run",
+      "mismatchedSlotsChangedFromBase": 30456,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    },
+    {
+      "race": "Grand Canyon \u2014 Diamond Creek Descent",
+      "mismatchedSlotsChangedFromBase": 24964,
+      "mismatchedSlotsAlreadyPresentAtBase": 0
+    }
+  ],
+  "knownMismatchUniqueCells": 544295
+}
