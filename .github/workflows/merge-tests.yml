@@ -189,6 +189,9 @@ jobs:
         run: npm ci
 
       - name: Run Playwright tests
+        env:
+          # Cover every authored sky/device while reusing startup across small batches.
+          RACE_RENDER_BATCH_SIZE: 8
         run: npm run test:playwright -- --config=playwright.editor.config.js --reporter=line --workers=1 --shard=${{ matrix.shard }}
 
       - name: Upload Playwright report

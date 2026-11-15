@@ -201,7 +201,10 @@ export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',
     const h=c.size/2;c.children=[{x:c.x,z:c.z,size:h},{x:c.x+h,z:c.z,size:h},{x:c.x+h,z:c.z+h,size:h},{x:c.x,z:c.z+h,size:h}];
     delete c.pieces;return c.children;
   };
+  let refinedCells=0;
   const refine=c=>{
+    // Report real work in bounded batches, not a periodic keep-alive timer.
+    if(++refinedCells%4096===0)onProgress({phase:'refining',refinedCells,elapsedMs:Date.now()-started});
     const center=query(c.x+c.size/2,c.z+c.size/2),distance=Math.max(0,center.distanceToRoad-c.size*Math.SQRT2/2);
     const target=distance<=12?2.5:distance<=40?5:center.terrainRegion==='transition'?10:sourceCellSize;
     if(c.size>target&&c.size>minCellSize){split(c).forEach(refine);return;}
@@ -280,7 +283,9 @@ export function buildAdaptiveRaceTerrain({surfaceBake,runtimeType='destination',
       : (a,b) => vertices.within(Math.min(a.x,b.x)-1e-6,Math.max(a.x,b.x)+1e-6,Math.min(a.z,b.z)-1e-6,Math.max(a.z,b.z)+1e-6);
     const needsRefinement=new Set();
     stats.unresolvedHeightErrors=0;stats.unresolvedAtMinimumCellSize=0;stats.maxHeightErrorM=0;delete stats.heightErrorExamples;
+    let connectedCells=0;
     for(const c of finalLeaves){
+      if(++connectedCells%4096===0)onProgress({phase:'connecting',pass:passes+1,connectedCells,elapsedMs:Date.now()-started});
       stats.minimumCellSizeM=Math.min(stats.minimumCellSizeM,c.size);
       for(const poly of c.pieces){
         const boundary=[];

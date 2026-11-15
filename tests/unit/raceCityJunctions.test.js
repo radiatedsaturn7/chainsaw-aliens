@@ -25,7 +25,13 @@ test('Burlington rounded shared intersection has one level rendered and physical
  assert.ok(Math.abs(before[0]-before[1])>.5,'fixture reproduces the mismatched road heights');
  // Scenery is irrelevant to this geometry regression; omit its external artwork requests.
  const race=structuredClone(document.race);race.scenery=[];race.sceneryDefinitions=[];
- const {header,packedSampler}=await buildRaceTransferPackage(race,{includeArtAssets:false});
+ const progress=[];
+ const {header,packedSampler}=await buildRaceTransferPackage(race,{includeArtAssets:false,reportProgress:(value,phase)=>progress.push({value,phase})});
+ const terrainProgress=progress.filter(p=>p.phase==='world-bake').map(p=>p.value);
+ assert.ok(terrainProgress.length>=3,'worker reports refinement and connectivity milestones before packing');
+ assert.equal(terrainProgress[0],.12);
+ assert.ok(terrainProgress.at(-1)<.76);
+ assert.ok(terrainProgress.every((value,i)=>!i||value>=terrainProgress[i-1]),'terrain progress is monotonic');
  const junction=header.surfaceBake.junctions.find(n=>n.kind==='shared-turn'&&Math.hypot(n.x-818,n.z-71)<8);
  assert.ok(junction,'non-crossing turn footprints form a junction');
  assert.equal(junction.branches.length,2);
