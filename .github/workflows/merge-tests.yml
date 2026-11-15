@@ -177,11 +177,13 @@ jobs:
           node-version: 22
           cache: npm
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      # Use the container's Python and matching distro image library. Hosted
+      # toolcache Python can depend on a newer OpenSSL than this Noble image.
       - name: Install PNG validation dependency
-        run: python -m pip install Pillow==11.3.0
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends python3-pil
+          python3 -c "from PIL import Image; import ssl"
 
       - name: Install dependencies
         run: npm ci
@@ -238,11 +240,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      # Use the container's Python and matching distro image library. Hosted
+      # toolcache Python can depend on a newer OpenSSL than this Noble image.
       - name: Install PNG validation dependency
-        run: python -m pip install Pillow==11.3.0
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends python3-pil
+          python3 -c "from PIL import Image; import ssl"
 
       - run: npm ci
       - name: Run every production car preview
