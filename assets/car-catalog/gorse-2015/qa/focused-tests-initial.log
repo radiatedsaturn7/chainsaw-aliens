@@ -1,0 +1,65 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (230.829422ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (8.256802ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (51.265011ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (9134.896038ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (17.807376ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (4818.529106ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (274.596728ms)
+✔ requires explicit source data and mappings (1.416835ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (78.267737ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (255.31363ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.598237ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (79.907742ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (85.092873ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (908.958262ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (936.437571ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (757.103447ms)
+✔ performance is finite, deterministic, responds to upgrades and balances E1 through S (4.039859ms)
+✔ saved variants remain unique, exclude player, then fill only with the selected default (1.045538ms)
+✔ eligibility, category and performance filters apply together; fallback cannot select player (0.950766ms)
+✔ missing acceleration and legacy null selection use valid defaults (0.470456ms)
+✔ PI class ceilings are inclusive from E1 100 through S 1000 (0.482284ms)
+✔ dry-tarmac PI ignores stale performance claims and responds to gearing, driven wheels and tire compounds (0.887661ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (6496.131162ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (6402.196269ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.52723ms)
+✔ legacy expectation adds only explicit absent gauge defaults and keeps all authored values (5.291235ms)
+✖ Gorse is the2015 Defender90 Station Wagon diesel6MT with optional235 tires (1.776424ms)
+✔ Gorse explicit estimated gearing survives native editor manual and assist roundtrip (146.558782ms)
+✔ Gorse has eight distinct original exterior frames, shared tire layers and original hashes (212.183914ms)
+✔ separate staging branch retains 100 playable documents and excludes3 legacy system templates (449.097239ms)
+✔ Gorse 2015 published wheel graphics cover original opening heights without changing physical radius (430.101372ms)
+✔ Lobelia is final2005 GM basecoupe LS2 standard6MT with staggered tires (2.905348ms)
+✔ Lobelia verified standard six-speed gearing survives native editor manual and assist roundtrip (165.317083ms)
+✔ Lobelia has eight distinct original exterior frames, shared tire layers and original hashes (106.813888ms)
+✔ separate staging branch retains 99 playable documents and excludes3 legacy system templates (221.78727ms)
+✔ two-output force allocation exactly matches generic distribution (155.504108ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 35
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14813.575852
+
+✖ failing tests:
+
+test at tests/unit/gorseCatalog.test.js:3:1
+✖ Gorse is the2015 Defender90 Station Wagon diesel6MT with optional235 tires (1.776424ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  123 !== 121
+  
+      at TestContext.<anonymous> (file:///workspace/chainsaw-aliens/tests/unit/gorseCatalog.test.js:3:237)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 123,
+    expected: 121,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
