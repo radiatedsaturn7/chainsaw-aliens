@@ -108,9 +108,9 @@ test('standalone garage template creates a valid Play destination',async()=>{
  assert.doesNotThrow(()=>normalizeMenuDocument(e.menu));
 });
 
-test('garage exposes only Play, Tune and Upgrade and keeps the selected car across destinations',async()=>{
+test('garage exposes Drive, Tune, Upgrade and Garage and keeps the selected car across destinations',async()=>{
  const p=await player();await p.activate(p.interactive()[0],1,{choose:true});await p.activate(p.interactive()[0],1,{choose:true});
- assert.deepEqual(p.interactive().map(e=>e.label),['Drive','Tune','Upgrade']);
+ assert.deepEqual(p.interactive().map(e=>e.label),['Drive','Tune','Upgrade','Garage']);
  const car=p.flow.parameters.carRef;
  for(const [button,target] of [['garage-tune','tuning'],['garage-upgrade','upgrades']]){
   await p.activate(p.flow.screen.elements.find(e=>e.id===button));

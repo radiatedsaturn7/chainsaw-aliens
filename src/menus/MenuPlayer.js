@@ -84,7 +84,7 @@ export default class MenuPlayer {
     const buttons=['garage-play','garage-tune','garage-upgrade'].map(id=>screen.elements.find(e=>e.id===id));
     if(buttons.some(e=>!e))return;
     buttons.forEach((e,i)=>{e.x=.05+i*.23;e.w=.21;});
-    if(!screen.elements.some(e=>e.id==='campaign-garage'))screen.elements.push({...structuredClone(buttons[2]),id:'campaign-garage',label:'Garage',x:.74,w:.21,tabOrder:4,action:{type:'campaign-garage',target:'owned'}});
+    if(!screen.elements.some(e=>e.id==='campaign-garage'))screen.elements.push({...structuredClone(buttons[2]),id:'campaign-garage',label:'Garage',x:.74,w:.21,tabOrder:4,action:{type:'campaign-garage',target:'owned',parameter:'',value:null}});
     if(!screen.elements.some(e=>e.id==='race-rewards'))screen.elements.push(normalizeMenuDocument({screens:[{id:'brief',elements:[{id:'race-rewards',type:'race-description',property:'rewards',binding:'raceRef',x:.05,y:.44,w:.32,h:.31,fontSize:19}]}]}).screens[0].elements[0]);
   }
   async campaignGarage(action='owned',value={}){
