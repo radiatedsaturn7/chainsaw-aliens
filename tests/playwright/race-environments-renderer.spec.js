@@ -38,14 +38,30 @@ for(const mobile of [false,true])test(`independent sky compositor ${mobile?'hand
     controls.push({artRef,rawDrawn,rawStats,compositeStats:stats(c),png:c.toDataURL('image/png').split(',')[1]});
     e.selectedRace.skyboxSettings.artRef=saved;e.selectedRace.skyboxArtRef=savedDirect;e.raceSkyboxRenderCache=null;
    }
+   // Explicit diagnostic authorization: 100% sky brightness ONLY, same yaw,
+   // viewport and weather. Raw sky-only capture additionally omits fog by calling
+   // the native art compositor directly; this is never a release default.
+   const savedFx=structuredClone(e.selectedRace.visualFx),savedWeather=JSON.stringify(e.getRaceWeatherState());
+   const diagnostic={};
+   try{
+    e.selectedRace.visualFx={...e.selectedRace.visualFx,skyBrightness:1};
+    for(const mode of ['sky100-authored-weather','sky100-raw-no-fog']){
+     const c=document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d');
+     if(mode==='sky100-authored-weather')e.drawRaceParallaxBackground(ctx,{x:0,y:0,w:width,h:height},{horizon:height*.65,cameraYaw:0,suppressGroundFill:true});
+     else if(!e.drawRaceSkyboxArt(ctx,{x:0,y:0,w:width,h:height},{horizon:height*.65,normalizedCameraYaw:0}))throw Error('Diagnostic raw sky missing');
+     diagnostic[mode]={stats:stats(c),png:c.toDataURL('image/png').split(',')[1]};
+    }
+   }finally{e.selectedRace.visualFx=savedFx;}
+   if(JSON.stringify(e.getRaceWeatherState())!==savedWeather)throw Error('Diagnostic changed weather');
    const weather=e.getRaceWeatherState(),opacity=skyVisibilityOpacity(weather.visibilityDistanceM),fx=e.getRaceRenderVisualFx();
-   return {ref,outputs,controls,weather,visibilityOpacity:opacity,maximumArtworkContrast:255*(1-opacity)*fx.skyBrightness,compositeTargetRedirected:!!e.raceSkyboxCompositeTarget,authoredFx:fx,effectiveLayers};
+   return {ref,outputs,controls,diagnostic,weather,visibilityOpacity:opacity,maximumArtworkContrast:255*(1-opacity)*fx.skyBrightness,compositeTargetRedirected:!!e.raceSkyboxCompositeTarget,authoredFx:fx,effectiveLayers};
   },{race:row.raceRef,raceDocument:document.race,width,height});
   expect(result.ref).toBe(row.binding.skyboxArtRef);
   fs.mkdirSync(info.outputPath(),{recursive:true});
   for(const frame of result.outputs){expect(frame.drawn).toBe(true);fs.writeFileSync(info.outputPath(`${row.siteGroup}-${frame.yaw}.png`),Buffer.from(frame.png,'base64'));if(frame.authoredPng)fs.writeFileSync(info.outputPath(`${row.siteGroup}-authored-composite.png`),Buffer.from(frame.authoredPng,'base64'));}
+  for(const [mode,frame]of Object.entries(result.diagnostic)){fs.writeFileSync(info.outputPath(`${row.siteGroup}-${mode}.png`),Buffer.from(frame.png,'base64'));delete frame.png;}
   for(const control of result.controls){expect(control.rawDrawn).toBe(true);fs.writeFileSync(info.outputPath(`${row.siteGroup}-matched-${control.artRef}.png`),Buffer.from(control.png,'base64'));delete control.png;}
-  fs.writeFileSync(info.outputPath(row.siteGroup+'-state.json'),JSON.stringify({race:row.raceRef,ref:result.ref,controls:result.controls,weather:result.weather,visibilityOpacity:result.visibilityOpacity,maximumArtworkContrast:result.maximumArtworkContrast,compositeTargetRedirected:result.compositeTargetRedirected,authoredFx:result.authoredFx,effectiveLayers:result.effectiveLayers,note:'Independent native sky compositor from exact stored race object; deliberately not storage transport, terrain, driving, weather overlay or route-wide acceptance.'},null,2));
+  fs.writeFileSync(info.outputPath(row.siteGroup+'-state.json'),JSON.stringify({race:row.raceRef,ref:result.ref,controls:result.controls,diagnostic:result.diagnostic,weather:result.weather,visibilityOpacity:result.visibilityOpacity,maximumArtworkContrast:result.maximumArtworkContrast,compositeTargetRedirected:result.compositeTargetRedirected,authoredFx:result.authoredFx,effectiveLayers:result.effectiveLayers,note:'Independent native sky compositor from exact stored race object; deliberately not storage transport, terrain, driving, weather overlay or route-wide acceptance.'},null,2));
  }
  for(const ref of [...new Set(ledger.rows.map(r=>r.binding?.groundPlaneArtRef).filter(Boolean))]){
   const png=await page.evaluate(async ref=>{const e=window.__game.raceEditor;await e.hydrateRaceArt(ref);const art=e.getRaceArtSpriteCanvas(ref);if(!art)throw Error('Missing ground '+ref);const c=document.createElement('canvas');c.width=c.height=512;const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;for(let y=0;y<2;y++)for(let x=0;x<2;x++)ctx.drawImage(art,x*256,y*256,256,256);return c.toDataURL('image/png').split(',')[1];},ref);
