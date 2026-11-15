@@ -3687,6 +3687,102 @@
       "maxEdge": 1024,
       "placements": [],
       "usageNote": "Exact venue/layout bindings in race-environments/ledger.json"
+    },
+    {
+      "name": "environment-v1-willow-night",
+      "source": "environment-v1/willow-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-vir-night",
+      "source": "environment-v1/vir-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-road-atlanta-night",
+      "source": "environment-v1/road-atlanta-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sebring-night",
+      "source": "environment-v1/sebring-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mid-ohio-night",
+      "source": "environment-v1/mid-ohio-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-vir-morning",
+      "source": "environment-v1/vir-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-road-atlanta-morning",
+      "source": "environment-v1/road-atlanta-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-road-atlanta-evening",
+      "source": "environment-v1/road-atlanta-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sebring-morning",
+      "source": "environment-v1/sebring-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sebring-evening",
+      "source": "environment-v1/sebring-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mid-ohio-morning",
+      "source": "environment-v1/mid-ohio-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-lime-evening",
+      "source": "environment-v1/lime-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
     }
   ]
 }

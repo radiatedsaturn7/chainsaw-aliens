@@ -4600,7 +4600,7 @@
       "sharingEvidence": [
         "Exact lime/full source layout at 41.928,-73.38; H01-S08; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H01-S08",
@@ -4754,6 +4754,33 @@
         "latitude": 41.928,
         "longitude": -73.38,
         "reference": "https://limerock.com/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-lime-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "lime-evening",
+        "ref": "environment-v1-lime-evening",
+        "source": "environment-v1/lime-evening.png",
+        "sourceImage": "/workspace/generated_images/exec-4cb7f1e6-2308-40b1-8230-c5c7d8e5952f.png",
+        "landscape": "Northwest Connecticut natural-terrain valley, rounded wooded hills and meadow.",
+        "reference": "https://limerock.com/",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Official page inaccessible in web tool; exact installed source coordinates and regional natural-terrain geography retained.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Northwest Connecticut natural-terrain valley, rounded wooded hills and meadow.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -8473,7 +8500,7 @@
       "sharingEvidence": [
         "Exact mid-ohio/sports-car source layout at 40.689,-82.635; H04-S09; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H04-S09",
@@ -8620,6 +8647,33 @@
         "latitude": 40.689,
         "longitude": -82.635,
         "reference": "https://midohio.com/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-mid-ohio-morning",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "mid-ohio-morning",
+        "ref": "environment-v1-mid-ohio-morning",
+        "source": "environment-v1/mid-ohio-morning.png",
+        "sourceImage": "/workspace/generated_images/exec-4b5bc503-14bd-49bc-b1d2-acadd655c689.png",
+        "landscape": "Lexington natural-terrain Ohio circuit; low wooded farm ridge and rolling meadow.",
+        "reference": "https://www.midohio.com/news/mo-history",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Lexington natural-terrain Ohio circuit; low wooded farm ridge and rolling meadow.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -17182,7 +17236,7 @@
       "sharingEvidence": [
         "Exact willow/horse-thief source layout at 34.872,-118.264; H11-S08; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H11-S08",
@@ -17324,6 +17378,33 @@
         "latitude": 34.872,
         "longitude": -118.264,
         "reference": "https://willowspringsraceway.com/tracks/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-willow-night",
+        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "terrainTileArtById": {
+          "snow": "ground-desert-scrub-v2"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "willow-night",
+        "ref": "environment-v1-willow-night",
+        "source": "environment-v1/willow-night.png",
+        "sourceImage": "/workspace/generated_images/exec-d7b3f2c7-4b3f-4f62-b1a9-0342ca8ef623.png",
+        "landscape": "Mojave rocky foothill canyon and open basin, sparse scrub.",
+        "reference": "https://willowspringsraceway.com/tracks/",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Mojave rocky foothill canyon and open basin, sparse scrub.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -18759,7 +18840,7 @@
       "sharingEvidence": [
         "Exact road-atlanta/grand-prix source layout at 34.1495,-83.8131; raceway-road-atlanta-grand-prix; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-road-atlanta-grand-prix",
@@ -18895,6 +18976,34 @@
         "latitude": 34.1495,
         "longitude": -83.8131,
         "reference": "https://www.roadatlanta.com/track-info/about-mrra/track-map"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-road-atlanta-morning",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "road-atlanta-morning",
+        "ref": "environment-v1-road-atlanta-morning",
+        "source": "environment-v1/road-atlanta-morning.png",
+        "sourceImage": "/workspace/generated_images/exec-3b755240-7b9c-41f8-8d7e-c8d2d2bd925c.png",
+        "landscape": "Rolling northeast Georgia park-like hills, pine/hardwood slopes and red-clay patches.",
+        "reference": "https://www.roadatlanta.com/track-info/about-mrra/track-map",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing.",
+        "preservedDraft": "/workspace/generated_images/exec-7df64ac2-02f9-4b57-b2f5-ac341638da08.png"
+      },
+      "terrainReview": {
+        "ground": "Rolling northeast Georgia park-like hills, pine/hardwood slopes and red-clay patches.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -18904,7 +19013,7 @@
       "sharingEvidence": [
         "Exact road-atlanta/short source layout at 34.1495,-83.8131; raceway-road-atlanta-short; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-road-atlanta-short",
@@ -19041,6 +19150,34 @@
         "latitude": 34.1495,
         "longitude": -83.8131,
         "reference": "https://www.roadatlanta.com/track-info/about-mrra/track-map"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-road-atlanta-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "road-atlanta-evening",
+        "ref": "environment-v1-road-atlanta-evening",
+        "source": "environment-v1/road-atlanta-evening.png",
+        "sourceImage": "/workspace/generated_images/exec-caaa0df8-c6cb-42f6-b48e-043879d08b05.png",
+        "landscape": "Rolling northeast Georgia park-like hills, pine/hardwood slopes and red-clay patches.",
+        "reference": "https://www.roadatlanta.com/track-info/about-mrra/track-map",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing.",
+        "preservedDraft": "/workspace/generated_images/exec-7fa71dfd-f9c6-49db-9159-5d0abe7e636f.png"
+      },
+      "terrainReview": {
+        "ground": "Rolling northeast Georgia park-like hills, pine/hardwood slopes and red-clay patches.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -19050,7 +19187,7 @@
       "sharingEvidence": [
         "Exact road-atlanta/club source layout at 34.1495,-83.8131; raceway-road-atlanta-club; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-road-atlanta-club",
@@ -19185,6 +19322,33 @@
         "latitude": 34.1495,
         "longitude": -83.8131,
         "reference": "https://www.roadatlanta.com/track-info/about-mrra/track-map"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-road-atlanta-night",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "road-atlanta-night",
+        "ref": "environment-v1-road-atlanta-night",
+        "source": "environment-v1/road-atlanta-night.png",
+        "sourceImage": "/workspace/generated_images/exec-68a58605-c49e-44a6-ad4e-3b7779df8669.png",
+        "landscape": "Rolling northeast Georgia park-like hills, pine/hardwood slopes and red-clay patches.",
+        "reference": "https://www.roadatlanta.com/track-info/about-mrra/track-map",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Rolling northeast Georgia park-like hills, pine/hardwood slopes and red-clay patches.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -19194,7 +19358,7 @@
       "sharingEvidence": [
         "Exact vir/full source layout at 36.561,-79.204; raceway-vir-full; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-vir-full",
@@ -19344,6 +19508,33 @@
         "latitude": 36.561,
         "longitude": -79.204,
         "reference": "https://virnow.com/track/configurations/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-vir-morning",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "vir-morning",
+        "ref": "environment-v1-vir-morning",
+        "source": "environment-v1/vir-morning.png",
+        "sourceImage": "/workspace/generated_images/exec-3f69393b-ae1c-4836-8a14-41588a832ab3.png",
+        "landscape": "Rolling Virginia meadows and oak/hardwood wooded ridges.",
+        "reference": "https://virnow.com/oak-tree-tavern/",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Rolling Virginia meadows and oak/hardwood wooded ridges.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -19353,7 +19544,7 @@
       "sharingEvidence": [
         "Exact vir/north source layout at 36.561,-79.204; raceway-vir-north; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-vir-north",
@@ -19503,6 +19694,33 @@
         "latitude": 36.561,
         "longitude": -79.204,
         "reference": "https://virnow.com/track/configurations/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-vir-morning",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "vir-morning",
+        "ref": "environment-v1-vir-morning",
+        "source": "environment-v1/vir-morning.png",
+        "sourceImage": "/workspace/generated_images/exec-3f69393b-ae1c-4836-8a14-41588a832ab3.png",
+        "landscape": "Rolling Virginia meadows and oak/hardwood wooded ridges.",
+        "reference": "https://virnow.com/oak-tree-tavern/",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Rolling Virginia meadows and oak/hardwood wooded ridges.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -19512,7 +19730,7 @@
       "sharingEvidence": [
         "Exact vir/south source layout at 36.561,-79.204; raceway-vir-south; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-vir-south",
@@ -19655,6 +19873,33 @@
         "latitude": 36.561,
         "longitude": -79.204,
         "reference": "https://virnow.com/track/configurations/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-vir-night",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "vir-night",
+        "ref": "environment-v1-vir-night",
+        "source": "environment-v1/vir-night.png",
+        "sourceImage": "/workspace/generated_images/exec-56a71664-abe2-401d-a77a-c2f6e2521292.png",
+        "landscape": "Rolling Virginia meadows and oak/hardwood wooded ridges.",
+        "reference": "https://virnow.com/oak-tree-tavern/",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Rolling Virginia meadows and oak/hardwood wooded ridges.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -19664,7 +19909,7 @@
       "sharingEvidence": [
         "Exact vir/grand source layout at 36.561,-79.204; raceway-vir-grand; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-vir-grand",
@@ -19818,6 +20063,33 @@
         "latitude": 36.561,
         "longitude": -79.204,
         "reference": "https://virnow.com/track/configurations/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-vir-night",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "vir-night",
+        "ref": "environment-v1-vir-night",
+        "source": "environment-v1/vir-night.png",
+        "sourceImage": "/workspace/generated_images/exec-56a71664-abe2-401d-a77a-c2f6e2521292.png",
+        "landscape": "Rolling Virginia meadows and oak/hardwood wooded ridges.",
+        "reference": "https://virnow.com/oak-tree-tavern/",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Rolling Virginia meadows and oak/hardwood wooded ridges.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -19827,7 +20099,7 @@
       "sharingEvidence": [
         "Exact sebring/full source layout at 27.454,-81.349; raceway-sebring-full; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-sebring-full",
@@ -19979,6 +20251,33 @@
         "latitude": 27.454,
         "longitude": -81.349,
         "reference": "https://www.imsa.com/sebring-international-raceway"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-sebring-night",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "sebring-night",
+        "ref": "environment-v1-sebring-night",
+        "source": "environment-v1/sebring-night.png",
+        "sourceImage": "/workspace/generated_images/exec-6a79d430-36b1-4b23-b286-16401f9a0f50.png",
+        "landscape": "Flat Florida former airfield, low hangars, palms/pine silhouettes and sandy grass.",
+        "reference": "https://www.sebringraceway.com/track-history/",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Flat Florida former airfield, low hangars, palms/pine silhouettes and sandy grass.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -19988,7 +20287,7 @@
       "sharingEvidence": [
         "Exact sebring/short source layout at 27.454,-81.349; raceway-sebring-short; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-sebring-short",
@@ -20130,6 +20429,33 @@
         "latitude": 27.454,
         "longitude": -81.349,
         "reference": "https://www.imsa.com/sebring-international-raceway"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-sebring-morning",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "sebring-morning",
+        "ref": "environment-v1-sebring-morning",
+        "source": "environment-v1/sebring-morning.png",
+        "sourceImage": "/workspace/generated_images/exec-08d0ca68-7546-44ac-9d4c-e56b993b27e2.png",
+        "landscape": "Flat Florida former airfield, low hangars, palms/pine silhouettes and sandy grass.",
+        "reference": "https://www.sebringraceway.com/track-history/",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Flat Florida former airfield, low hangars, palms/pine silhouettes and sandy grass.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -20139,7 +20465,7 @@
       "sharingEvidence": [
         "Exact sebring/club source layout at 27.454,-81.349; raceway-sebring-club; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-sebring-club",
@@ -20285,6 +20611,33 @@
         "latitude": 27.454,
         "longitude": -81.349,
         "reference": "https://www.imsa.com/sebring-international-raceway"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-sebring-evening",
+        "groundPlaneArtRef": "grass",
+        "terrainTileArtById": {
+          "snow": "grass"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "sebring-evening",
+        "ref": "environment-v1-sebring-evening",
+        "source": "environment-v1/sebring-evening.png",
+        "sourceImage": "/workspace/generated_images/exec-24d8c2f1-4bf9-4267-ae21-5c8401b02137.png",
+        "landscape": "Flat Florida former airfield, low hangars, palms/pine silhouettes and sandy grass.",
+        "reference": "https://www.sebringraceway.com/track-history/",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Flat Florida former airfield, low hangars, palms/pine silhouettes and sandy grass.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -22256,7 +22609,7 @@
       "sharingEvidence": [
         "Exact lime/both-chicanes source layout at 41.928,-73.38; raceway-lime-both-chicanes; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-lime-both-chicanes",
@@ -22402,6 +22755,33 @@
         "latitude": 41.928,
         "longitude": -73.38,
         "reference": "https://limerock.com/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-lime-evening",
+        "groundPlaneArtRef": "ground-frozen-forest",
+        "terrainTileArtById": {
+          "snow": "ground-frozen-forest"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "lime-evening",
+        "ref": "environment-v1-lime-evening",
+        "source": "environment-v1/lime-evening.png",
+        "sourceImage": "/workspace/generated_images/exec-4cb7f1e6-2308-40b1-8230-c5c7d8e5952f.png",
+        "landscape": "Northwest Connecticut natural-terrain valley, rounded wooded hills and meadow.",
+        "reference": "https://limerock.com/",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Official page inaccessible in web tool; exact installed source coordinates and regional natural-terrain geography retained.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Northwest Connecticut natural-terrain valley, rounded wooded hills and meadow.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -22411,7 +22791,7 @@
       "sharingEvidence": [
         "Exact mid-ohio/chicane source layout at 40.689,-82.635; raceway-mid-ohio-chicane; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-mid-ohio-chicane",
@@ -22550,6 +22930,33 @@
         "latitude": 40.689,
         "longitude": -82.635,
         "reference": "https://midohio.com/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-mid-ohio-morning",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "mid-ohio-morning",
+        "ref": "environment-v1-mid-ohio-morning",
+        "source": "environment-v1/mid-ohio-morning.png",
+        "sourceImage": "/workspace/generated_images/exec-4b5bc503-14bd-49bc-b1d2-acadd655c689.png",
+        "landscape": "Lexington natural-terrain Ohio circuit; low wooded farm ridge and rolling meadow.",
+        "reference": "https://www.midohio.com/news/mo-history",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Lexington natural-terrain Ohio circuit; low wooded farm ridge and rolling meadow.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -22559,7 +22966,7 @@
       "sharingEvidence": [
         "Exact mid-ohio/short source layout at 40.689,-82.635; raceway-mid-ohio-short; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-mid-ohio-short",
@@ -22697,6 +23104,33 @@
         "latitude": 40.689,
         "longitude": -82.635,
         "reference": "https://midohio.com/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-mid-ohio-night",
+        "groundPlaneArtRef": "environment-v1-ground-dormant-prairie",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-dormant-prairie"
+        }
+      },
+      "environmentPack": "venue-pack5",
+      "recipe": {
+        "key": "mid-ohio-night",
+        "ref": "environment-v1-mid-ohio-night",
+        "source": "environment-v1/mid-ohio-night.png",
+        "sourceImage": "/workspace/generated_images/exec-d32eef2b-ad5c-4cd2-b72c-346ec2092fab.png",
+        "landscape": "Lexington natural-terrain Ohio circuit; low wooded farm ridge and rolling meadow.",
+        "reference": "https://www.midohio.com/news/mo-history",
+        "sourceEvidence": "Exact installed source/layout/GPS in ledger and tools/campaigns/raceway_sources.json; illustrative 2994 structures are not surveyed buildings.",
+        "sourceLimitation": "Manufacturer/operator source describes site character; season and abandoned buildings are original art interpretation.",
+        "boundaries": "Plain top/bottom safe bands requested; native wrap/pitch review remains mandatory.",
+        "sharing": "Only exact site plus identical complete authored-environment signature; no night/day sharing."
+      },
+      "terrainReview": {
+        "ground": "Lexington natural-terrain Ohio circuit; low wooded farm ridge and rolling meadow.",
+        "tiles": "Explicit normal/rough art for inherited snow tile IDs; physical IDs/weights remain unchanged.",
+        "road": "Active asphalt retains original mappings, repetitions and surface behavior.",
+        "shoulder": "All authored shoulder/default/margin settings retained; effective refs require native audit.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {

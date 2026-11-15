@@ -3158,8 +3158,92 @@
   },
   "environment-v1-daytona-evening": {
     "source": "assets/campaign-art/environment-v1/daytona-evening.png",
-    "sourceSha256": "38eb0f03bc31763a30010f4ebe05d3b0850d12c1a9cfc26fa8f2822dd4dc989b",
-    "documentSha256": "202bea02bb5b993d58e054953ce622af5fabe9474f2013d629dcdc94013f216d",
+    "sourceSha256": "9800cd45ca3f4d3bec99270a89a2b700b133273ff63c320a378a6d5e149dbd26",
+    "documentSha256": "9321ad209be7a2accc1229d8e690344a3fc2210f02f3cbba2ded6bac697f6dfa",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-willow-night": {
+    "source": "assets/campaign-art/environment-v1/willow-night.png",
+    "sourceSha256": "e7624ab8caae4b5bcfb6cf8b16d79a7cc142ebf6bc108c2c55f4c3003d1b2488",
+    "documentSha256": "64abfd545987a54a9973902b7180f29e5ce4374fb89236c7e99c0cbb90a13299",
+    "width": 1024,
+    "height": 342
+  },
+  "environment-v1-vir-night": {
+    "source": "assets/campaign-art/environment-v1/vir-night.png",
+    "sourceSha256": "bcbc66d26a5af75722a0dfa9cd2d9a76ee3c341e396abe17ecf81e0cc45692b2",
+    "documentSha256": "638dcfbaec9d92e7928f59bbf522176a81ccd0066d20b417e7beac7a3c13a09f",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-road-atlanta-night": {
+    "source": "assets/campaign-art/environment-v1/road-atlanta-night.png",
+    "sourceSha256": "0ca65099ffd15f9cf44c35a5b78f23f631f81949119b889cedfab8e8da4977bd",
+    "documentSha256": "be8ac01d97a35a6c8415b51a4f04f19d5ab66cfa8be5b611baa0b0e62a2cc4ce",
+    "width": 1024,
+    "height": 342
+  },
+  "environment-v1-sebring-night": {
+    "source": "assets/campaign-art/environment-v1/sebring-night.png",
+    "sourceSha256": "65ceb896c177dd175cda42ac7da4de6f59418d18f5fc175cc93ed6b6d2296497",
+    "documentSha256": "68579fb5091e3878d4bc359a5f9921e79d10c3119cccc284cb6d0ee6be226b33",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-mid-ohio-night": {
+    "source": "assets/campaign-art/environment-v1/mid-ohio-night.png",
+    "sourceSha256": "7eb9e21210d40cbf9b510914407bd2f83fc1c9aff0f16847b7b53e426a682bb5",
+    "documentSha256": "69119c114a71e0583d41a52f99da86b4e3909ab4b9b765b95dbe4eeef7b87ce4",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-vir-morning": {
+    "source": "assets/campaign-art/environment-v1/vir-morning.png",
+    "sourceSha256": "62de4a0e87f471b92313d5fbffd6bfe9f256dc6fda47e6c83997354698f46e53",
+    "documentSha256": "7c67022343d91e24eb3511fe5253f37dc7883301023c9b224531af0908ed70e3",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-road-atlanta-morning": {
+    "source": "assets/campaign-art/environment-v1/road-atlanta-morning.png",
+    "sourceSha256": "a35142142bc84d219745855d59820e35601ccb516ec01f2e3201169e477ad3d4",
+    "documentSha256": "308b13b8a66698d82bde1651333a8b874d9d077e48635e506b01dc7196b82d1c",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-road-atlanta-evening": {
+    "source": "assets/campaign-art/environment-v1/road-atlanta-evening.png",
+    "sourceSha256": "c9d3d6f96e6c27bc6aac4db70702457fa5d21773152edec1c9a5e9ce1ca86565",
+    "documentSha256": "2a30ee9f0fc038d11bb991da55c4c9a87f5dde31fc3fd41ada44c0e3c6dd1c2e",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-sebring-morning": {
+    "source": "assets/campaign-art/environment-v1/sebring-morning.png",
+    "sourceSha256": "f9c8abd0cd88fb0b0ac364561b8daa1a0f5bbfeb86df811b6b5391da0370bb02",
+    "documentSha256": "12f38f0717053849f345a5c47d69a2e34953620939f061c5c693cbd44db69d98",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-sebring-evening": {
+    "source": "assets/campaign-art/environment-v1/sebring-evening.png",
+    "sourceSha256": "8b0ef9a050f1b59ea6833782fc5da54ec92fe10261b8c03c19bad4126470819f",
+    "documentSha256": "241d6a157725fdd23ac50c4e4e85ed090e5cbdd88a5858f2b10e1962a4a4ddbf",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-mid-ohio-morning": {
+    "source": "assets/campaign-art/environment-v1/mid-ohio-morning.png",
+    "sourceSha256": "cc2460bf4c6075b6c26ef79edc2e1447de09bbfb02d259752495f691b2ff8b85",
+    "documentSha256": "0bf39391a38539d70171e73a54b283fefcfcf0e86823ba9fd86fda78f6f7403e",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-lime-evening": {
+    "source": "assets/campaign-art/environment-v1/lime-evening.png",
+    "sourceSha256": "ca0894c37b8bd7bc6000978577d24ba12e16c55b347175ed22aeacb300cf3354",
+    "documentSha256": "a72cf342ee6a2d3ea075e8f4f6a420c5d48809a74b879ceeed97e533175c26a9",
     "width": 1024,
     "height": 341
   }

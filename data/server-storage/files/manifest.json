@@ -793,7 +793,19 @@
       "environment-v1-homestead-evening": "art/environment-v1-homestead-evening/document.json",
       "environment-v1-willow-morning": "art/environment-v1-willow-morning/document.json",
       "environment-v1-willow-evening": "art/environment-v1-willow-evening/document.json",
-      "environment-v1-daytona-evening": "art/environment-v1-daytona-evening/document.json"
+      "environment-v1-daytona-evening": "art/environment-v1-daytona-evening/document.json",
+      "environment-v1-willow-night": "art/environment-v1-willow-night/document.json",
+      "environment-v1-vir-night": "art/environment-v1-vir-night/document.json",
+      "environment-v1-road-atlanta-night": "art/environment-v1-road-atlanta-night/document.json",
+      "environment-v1-sebring-night": "art/environment-v1-sebring-night/document.json",
+      "environment-v1-mid-ohio-night": "art/environment-v1-mid-ohio-night/document.json",
+      "environment-v1-vir-morning": "art/environment-v1-vir-morning/document.json",
+      "environment-v1-road-atlanta-morning": "art/environment-v1-road-atlanta-morning/document.json",
+      "environment-v1-road-atlanta-evening": "art/environment-v1-road-atlanta-evening/document.json",
+      "environment-v1-sebring-morning": "art/environment-v1-sebring-morning/document.json",
+      "environment-v1-sebring-evening": "art/environment-v1-sebring-evening/document.json",
+      "environment-v1-mid-ohio-morning": "art/environment-v1-mid-ohio-morning/document.json",
+      "environment-v1-lime-evening": "art/environment-v1-lime-evening/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

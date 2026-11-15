@@ -6,7 +6,8 @@ import {resolveDiagnosticRaceChoice} from '../../tools/race-environments/selecto
 const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
 const requested=process.env.RACE_RENDER_NAMES?.split('|');
 const selected=ledger.rows.filter(r=>r.binding&&(!requested||requested.includes(r.raceRef))&&(!process.env.RACE_RENDER_PACK||r.environmentPack===process.env.RACE_RENDER_PACK));
-for(const selectedRow of selected)for(const mobile of [false,true])test(`${selectedRow.raceRef} independent sky ${mobile?'handheld':'desktop'}`,async({page},info)=>{
+const deviceModes=process.env.RACE_RENDER_DEVICES==='desktop'?[false]:[false,true];
+for(const selectedRow of selected)for(const mobile of deviceModes)test(`${selectedRow.raceRef} independent sky ${mobile?'handheld':'desktop'}`,async({page},info)=>{
  test.setTimeout(180000);
  const width=mobile?390:1280,height=mobile?240:480;
  await page.goto('/index.html?hideFullscreenForTesting');
@@ -53,6 +54,11 @@ for(const selectedRow of selected)for(const mobile of [false,true])test(`${selec
      if(mode==='sky100-authored-weather')e.drawRaceParallaxBackground(ctx,{x:0,y:0,w:width,h:height},{horizon:height*.65,cameraYaw:0,suppressGroundFill:true});
      else if(!e.drawRaceSkyboxArt(ctx,{x:0,y:0,w:width,h:height},{horizon:height*.65,normalizedCameraYaw:0}))throw Error('Diagnostic raw sky missing');
      diagnostic[mode]={stats:stats(c),png:c.toDataURL('image/png').split(',')[1]};
+    }
+    for(const horizonRatio of [.35,.8])for(const yaw of [-.01,.01]){
+     const c=document.createElement('canvas');c.width=width;c.height=height;
+     if(!e.drawRaceSkyboxArt(c.getContext('2d'),{x:0,y:0,w:width,h:height},{horizon:height*horizonRatio,normalizedCameraYaw:yaw}))throw Error('Pitch/wrap diagnostic missing');
+     diagnostic[`pitch-${horizonRatio}-yaw-${yaw}`]={stats:stats(c),png:c.toDataURL('image/png').split(',')[1]};
     }
    }finally{e.selectedRace.visualFx=savedFx;}
    if(JSON.stringify(e.getRaceWeatherState())!==savedWeather)throw Error('Diagnostic changed weather');

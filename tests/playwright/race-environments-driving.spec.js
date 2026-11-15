@@ -1,0 +1,33 @@
+// Bounded real travel/drive evidence. Never overrides lighting, weather or deadlines.
+import fs from 'node:fs';
+import {test,expect,devices} from '@playwright/test';
+import {resolveDiagnosticRaceChoice} from '../../tools/race-environments/selector.mjs';
+const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
+const names=(process.env.RACE_DRIVE_NAMES||'Willow Springs — Horse Thief Mile|Daytona Tri-Oval').split('|');
+for(const name of names)for(const mobile of [false,true])test.describe(`${name} ${mobile?'handheld':'desktop'}`,()=>{
+ test.use({viewport:mobile?{width:390,height:844}:{width:1280,height:720},isMobile:mobile,hasTouch:mobile,...(mobile?{userAgent:devices['iPhone 13'].userAgent}:{})});
+ test('real authored foreground and sky',async({page},info)=>{
+  test.setTimeout(300000);const row=ledger.rows.find(r=>r.raceRef===name);expect(row?.binding).toBeTruthy();
+  const errors=[],network=[];page.on('pageerror',e=>errors.push(e.stack||e.message));page.on('requestfailed',r=>network.push({url:r.url(),error:r.failure()}));
+  const snapshot=()=>page.evaluate(()=>{const g=window.__game,e=g?.raceEditor,s=e?.playtestSession;return {state:g?.state,status:e?.status,error:g?.lastRaceTravelError,diagnostics:g?.raceRuntimePreparation?.lastDiagnostics,preparation:e?.racePlaytestPreparation?.phase,race:e?.selectedRace?.name,sky:e?.getRaceSkyboxSettings()?.artRef,weather:e?.getRaceWeatherState(),fx:e?.getRaceRenderVisualFx(),session:s?{running:s.running,pending:s.startupFramePending,elapsed:s.elapsedMs,speed:s.speedMps,distance:s.distanceM,worldX:s.worldX,worldZ:s.worldZ,camera:s.cameraView}:null};});
+  try{
+   await page.goto('/index.html?hideFullscreenForTesting');await page.waitForFunction(()=>window.__gameReady&&!window.__game.loading,null,{timeout:120000});
+   const choices=await page.evaluate(async()=>{const {hydrateServerStorage}=await import('/src/ui/serverStorage.js');await hydrateServerStorage({folder:'races'});return window.__game.menuPlayer.resources.choices('races',{});});
+   const selector=resolveDiagnosticRaceChoice(choices,name,row.documentPath);
+   const started=await page.evaluate(async race=>{const g=window.__game;g.setDisplayMode('color');return g.startRaceTravel({raceName:race,carSelection:'specific',carRef:'RTG-001'});},selector.value);expect(started).toBe(true);
+   await page.waitForFunction(()=>{const g=window.__game,s=g.raceEditor.playtestSession;if(g.state==='prompt'&&!s?.running)throw Error('Race left startup for prompt: '+g.raceEditor.status);return s?.running&&!s.startupFramePending&&s.elapsedMs>2000;},null,{timeout:180000});
+   const before=await snapshot();await page.keyboard.down('g');await page.waitForFunction(()=>window.__game.raceEditor.playtestSession.speedMps>1,null,{timeout:30000});
+   await page.screenshot({path:info.outputPath('authored-driving-a.png')});await page.waitForTimeout(2000);await page.keyboard.up('g');
+   const after=await snapshot();await page.screenshot({path:info.outputPath('authored-driving-b.png')});
+   expect(Math.hypot(after.session.worldX-before.session.worldX,after.session.worldZ-before.session.worldZ)).toBeGreaterThan(.5);expect(after.sky).toBe(row.binding.skyboxArtRef);expect(after.session.elapsed).toBeGreaterThan(before.session.elapsed);expect(after.session.speed).toBeGreaterThan(1);
+   fs.writeFileSync(info.outputPath('driving-state.json'),JSON.stringify({race:name,selector,before,after,errors,network,note:'Actual production travel and real update/draw loop; authored captures have no sky brightness, weather or world lighting override. Short drive sample, not route-wide approval.'},null,2));
+   // Separately authorized sky-only exposure diagnostic, restored immediately.
+   if(process.env.RACE_DRIVE_SKY_DIAGNOSTIC==='1'){
+    const saved=await page.evaluate(()=>{const e=window.__game.raceEditor,fx=structuredClone(e.selectedRace.visualFx);e.selectedRace.visualFx={...fx,skyBrightness:1};return fx;});
+    try{await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));await page.screenshot({path:info.outputPath('diagnostic-sky100-world-authored.png')});}
+    finally{await page.evaluate(fx=>{window.__game.raceEditor.selectedRace.visualFx=fx;},saved);}
+    expect((await snapshot()).fx.skyBrightness).toBe(after.fx.skyBrightness);
+   }
+  }catch(error){fs.writeFileSync(info.outputPath('failure-state.json'),JSON.stringify({race:name,state:await snapshot().catch(()=>null),errors,network,error:String(error)},null,2));await page.screenshot({path:info.outputPath('failure.png')}).catch(()=>{});throw error;}
+ });
+});

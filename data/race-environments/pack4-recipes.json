@@ -98,13 +98,14 @@
     {
       "key": "daytona-evening",
       "ref": "environment-v1-daytona-evening",
-      "sourceImage": "/workspace/generated_images/exec-7a2ce099-a594-4718-a0ea-fd2cf711bc33.png",
+      "sourceImage": "/workspace/generated_images/exec-f5e65a64-af35-40c3-a1f4-50eeca28f6d6.png",
       "source": "environment-v1/daytona-evening.png",
       "physicalSource": "tools/campaigns/raceway_sources.json",
       "reference": "https://www.daytonainternationalspeedway.com/",
       "sourceLimitation": "Official facility page plus exact saved source coordinates/layout; abandoned structures are original fictional 2994 interpretation.",
-      "boundaryReview": "Imagegen boundary repair; native wrap review required, not accepted from prompt alone.",
-      "preservedDraft": "/workspace/generated_images/exec-17bfde83-9c44-4480-b10e-8c3451f848f9.png"
+      "boundaryReview": "Top cloud removed from safe boundary by imagegen; fresh native pitch/wrap evidence required.",
+      "preservedDraft": "/workspace/generated_images/exec-17bfde83-9c44-4480-b10e-8c3451f848f9.png",
+      "preservedTopEdgeDraft": "/workspace/generated_images/exec-7a2ce099-a594-4718-a0ea-fd2cf711bc33.png"
     }
   ],
   "sharingPolicy": "No change to existing guard: only identical siteGroup and saved authored environment share identical sky pixels. No night variants included."
