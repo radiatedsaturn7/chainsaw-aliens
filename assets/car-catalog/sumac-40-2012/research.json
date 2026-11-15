@@ -1,0 +1,59 @@
+{
+  "referenceVehicle": "US 2012 Nissan Xterra X 4x2 5AT LHD; not S, PRO-4X or part-time4WD",
+  "sources": [
+    {
+      "url": "https://usa.nissannews.com/en-US/releases/2012-nissan-xterra-specifications",
+      "fields": [
+        "engine output",
+        "mass",
+        "dimensions",
+        "tires",
+        "fuel",
+        "transmission and drive type"
+      ],
+      "access": "Exact March5 2012 OEM X4x2 AT column; mass4143lb and52/48 distribution. Automatic ratios fully visible despite broken manual list in OEM HTML.6000rpm maximum sourced. Factory2WD; no invented4WD modes, lockers or PRO4X equipment."
+    }
+  ],
+  "verifiedFacts": {
+    "hp": 261,
+    "hprpm": 5600,
+    "tq": 281,
+    "tqrpm": 4000,
+    "mass": 1879.23318891,
+    "cc": 3.954,
+    "dims": [
+      4.53898,
+      1.8491199999999999,
+      2.70002,
+      1.5697199999999998,
+      1.5697199999999998
+    ],
+    "height": 1.90246,
+    "clear": 0.20827999999999997,
+    "tire": [
+      265,
+      70,
+      16
+    ],
+    "fuel": 21.1
+  },
+  "gearingStatus": {
+    "individualRatios": [
+      3.842,
+      2.353,
+      1.529,
+      1,
+      0.839
+    ],
+    "reverse": 2.765,
+    "finalDrive": 3.133
+  },
+  "estimates": [
+    "CG, suspension/brakes/grip and body collision sections, overhang split, Cd and displayed top speed/0-60 are game tuning, not manufacturer measurements.",
+    "Idle750, torque interpolation away from manufacturer peak anchors, shift timing, launchRPM and drivetrain efficiency are gameplay estimates. Tire pressure32psi estimated; nominal radii calculated from sourced sizes.",
+    "Car Editor uses generic suspension geometry; no claim of actual factory hardpoints, axle architecture or detailed electronic assist calibration.",
+    "Original fictional exterior and dashboard; runtime shared wheels, fitted live speed/RPM/gear/fuel gauges, fixed-rear camera and unchanged surface effects.",
+    "Exact March5 2012 OEM X4x2 AT column; mass4143lb and52/48 distribution. Automatic ratios fully visible despite broken manual list in OEM HTML.6000rpm maximum sourced. Factory2WD; no invented4WD modes, lockers or PRO4X equipment.",
+    "Factory automatic only; converter slip.10 and multiplication1.7 estimates."
+  ]
+}
