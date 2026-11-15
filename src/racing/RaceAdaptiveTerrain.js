@@ -1,8 +1,15 @@
 import { subtractRaceTerrainPolygonByConvexPolygon } from './RaceTerrainClipping.js';
 
-export const ADAPTIVE_TERRAIN_REVISION = 'adaptive-ground-v3';
+export const ADAPTIVE_TERRAIN_REVISION = 'adaptive-ground-v4';
 const smooth = t => { t = Math.max(0, Math.min(1, t)); return t*t*(3-2*t); };
 const cross = (a,b,c) => (b.x-a.x)*(c.z-a.z)-(b.z-a.z)*(c.x-a.x);
+// Roundoff scales with the edge products; a fixed epsilon erases narrow
+// but valid clipped ears and can make nearby boundary vertices block them.
+const orientation = (a,b,c) => {
+  const u=(b.x-a.x)*(c.z-a.z),v=(b.z-a.z)*(c.x-a.x);
+  const value=u-v,tolerance=8*Number.EPSILON*(Math.abs(u)+Math.abs(v));
+  return Math.abs(value)<=tolerance?0:Math.sign(value);
+};
 const pointKey = p => `${Math.round(p.x*1e6)},${Math.round(p.z*1e6)}`;
 const interpolate = (a,b,t) => ({x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t});
 
@@ -20,8 +27,8 @@ export function triangulateTerrainBoundary(input) {
     let best=-1,bestLength=Infinity;
     for(let i=0;i<remaining.length;i++){
       const a=remaining[(i+remaining.length-1)%remaining.length],b=remaining[i],c=remaining[(i+1)%remaining.length];
-      if(sign*cross(a,b,c)<=1e-12)continue;
-      const blocked=remaining.some(p=>p!==a&&p!==b&&p!==c&&sign*cross(a,b,p)>=-1e-12&&sign*cross(b,c,p)>=-1e-12&&sign*cross(c,a,p)>=-1e-12);
+      if(sign*orientation(a,b,c)<=0)continue;
+      const blocked=remaining.some(p=>p!==a&&p!==b&&p!==c&&sign*orientation(a,b,p)>=0&&sign*orientation(b,c,p)>=0&&sign*orientation(c,a,p)>=0);
       if(blocked)continue;
       const length=(a.x-c.x)**2+(a.z-c.z)**2;
       if(length<bestLength){best=i;bestLength=length;}
@@ -31,7 +38,7 @@ export function triangulateTerrainBoundary(input) {
     result.push([remaining[(best+remaining.length-1)%remaining.length],remaining[best],remaining[(best+1)%remaining.length]]);
     remaining.splice(best,1);
   }
-  if(Math.abs(cross(...remaining))>1e-12)result.push(remaining);
+  if(orientation(...remaining)!==0)result.push(remaining);
   return result;
 }
 

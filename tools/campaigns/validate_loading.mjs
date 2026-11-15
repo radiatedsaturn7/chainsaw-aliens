@@ -1,4 +1,4 @@
-import {collectSceneryArtRefs} from '../../src/racing/RaceSceneryAssets.js';
+import {collectSceneryArtRefs,hydrateSceneryDefinitions} from '../../src/racing/RaceSceneryAssets.js';
 // Exercise the real worker preparation and transfer pipeline in an isolated,
 // deliberately small-stack process per saved stage (keeps memory bounded too).
 import fs from 'node:fs';
@@ -31,6 +31,15 @@ if(id){
  const stage=catalog.find(s=>s.id===id);assert.ok(stage,`Unknown stage ${id}`);
  const stored=JSON.parse(fs.readFileSync(path.resolve(fileURLToPath(new URL('../../data/server-storage/files/',import.meta.url)),stage.documentPath||`races/${stage.name}/document.json`)));
  const doc=stored.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(stored.data,'base64'))):stored;
+ // The browser hydrates missing definitions through HTTP. This offline harness
+ // must resolve the same saved documents from disk before worker preparation.
+ const missing=await hydrateSceneryDefinitions(doc.race,async ref=>{
+  const filename=new URL(`../../data/server-storage/files/doodads/${encodeURIComponent(ref)}/document.json`,import.meta.url);
+  if(!fs.existsSync(filename))return null;
+  const value=JSON.parse(fs.readFileSync(filename));
+  return value.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(value.data,'base64'))):value;
+ });
+ assert.deepEqual(missing,[],'Referenced saved doodads must exist');
  const {buildRaceTransferPackage}=await import('../../src/ui/raceWorldBakeWorker.js');
  {
   const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');
