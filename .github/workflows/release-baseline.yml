@@ -1,0 +1,73 @@
+name: Racing release baseline
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: [staging]
+permissions:
+  contents: read
+jobs:
+  systems:
+    name: Campaign, saves, handling and feedback
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:release-baseline
+  loading:
+    name: Bake ${{ matrix.catalog }} races (${{ matrix.shard }}/3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        catalog: [main, side-races, raceways]
+        shard: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - name: Bake and transfer every saved race in this shard
+        env:
+          CATALOG: ${{ matrix.catalog }}
+          SHARD: ${{ matrix.shard }}
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          mkdir -p artifacts/release
+          if [ "$CATALOG" = main ]; then
+            node tools/campaigns/validate_loading.mjs --shard="$SHARD/3" --report="artifacts/release/$CATALOG-$SHARD.json"
+          else
+            node tools/campaigns/validate_loading.mjs --"$CATALOG" --shard="$SHARD/3" --report="artifacts/release/$CATALOG-$SHARD.json"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-bakes-${{ matrix.catalog }}-${{ matrix.shard }}
+          path: artifacts/release/
+  mobile:
+    name: Mobile-sized browser performance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx playwright test tests/playwright/race-mobile-baseline.spec.js tests/playwright/p1-startup.spec.js --workers=1 --reporter=line
+        env:
+          CI: 'true'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-mobile-results
+          path: test-results/

@@ -321,3 +321,25 @@ test('menu controls, audio and haptics are isolated, copied and restored with ea
  await reloaded.saves.resume(1);await menu.settings.load();
  assert.equal(menu.settings.values['settings.musicVolume'],.8);
 });
+
+test('opening mission objective, equipment, record and completion survive the real result/save-slot flow',async()=>{
+ const {normalizeItemDocument}=await import('../../src/items/ItemDocument.js');
+ const {campaignConditionSnapshot}=await import('../../src/garage/CampaignObjectives.js');
+ const {createMechanicalState}=await import('../../src/racing/simulation/MechanicalModel.js');
+ const parts=JSON.parse(fs.readFileSync('src/content/garage-parts.json'));
+ const {game,saves,store}=await fixture();await saves.startNew(0);await commitMenuCar(game,'RTG-001');
+ game.items.library={load:async id=>normalizeItemDocument(parts.items.find(p=>p.id===id))};
+ game.raceTravelSession={carSelection:{documentName:'RTG-001'},garage:game.items.garage};
+ const editor=new RaceEditor(game);editor.mode='race';editor.selectedRace.type='destination';
+ const ref='Mount Washington Auto Road — point-to-point',mechanical=createMechanicalState();
+ const session={raceId:'washington',raceDocumentName:ref,carId:'RTG-001',elapsedMs:700000,mechanical,campaignStartCondition:campaignConditionSnapshot(mechanical)};
+ editor.playtestSession=session;
+ await editor.saveCampaignRaceResult(session);
+ assert.equal(session.campaignReward.objectiveBonus,250);
+ assert.equal(saves.slots[0].progress[raceCompletionKey(ref)],true);
+ assert.equal(saves.slots[0].items.bags.items['rally-suspension'],1);
+ const reloaded=await fixture(store);await reloaded.saves.resume(0);
+ const receipt=reloaded.game.items.garage.progress.rewards[ref];
+ assert.equal(receipt.objectiveEarned,true);assert.equal(receipt.bestTimes['RTG-001'],700000);
+ await reloaded.saves.startNew(1);assert.equal(reloaded.game.items.garage.progress.rewards[ref],undefined);
+});

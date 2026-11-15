@@ -74,6 +74,12 @@ export function updateCodriverEvents(state,session,dt,{enabled,paused,intro,acti
   if(!active){stopCodriver(state);state.pendingChatter=null;return;}
   if(state.pendingChatter?.expires<now)state.pendingChatter=null;
   // No chatter while a call is due or within ten seconds of the next feature.
+  const advice=session.vehicleFeedback?.pending;
+  if(!state.pendingChatter&&advice&&advice.expires>=session.vehicleFeedback.clock){
+    state.pendingChatter={text:advice.text,expires:now+2,vehicleAdvice:advice.id};
+    session.vehicleFeedback.pending=null;
+  }
+  if(state.pendingChatter?.vehicleAdvice&&session.vehicleFeedback?.current?.id!==state.pendingChatter.vehicleAdvice)state.pendingChatter=null;
   if(!roadDue&&nextRemaining>Math.max(80,Math.abs(session.speedMps||0)*10)&&state.pendingChatter&&now-(state.lastChatter??-30)>20){
     if(speakCodriver(state,state.pendingChatter.text,'chatter')){state.lastChatter=now;state.pendingChatter=null;}
   }

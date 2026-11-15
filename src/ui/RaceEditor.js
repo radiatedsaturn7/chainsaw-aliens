@@ -1,4 +1,6 @@
+import {vehicleFeedbackRows} from '../racing/RaceVehicleFeedback.js';
 import {prepareSkyboxTexture} from '../racing/RaceSkyboxTexture.js';
+import {campaignConditionSnapshot,campaignRunSummary} from '../garage/CampaignObjectives.js';
 import {awardCampaignRace} from '../garage/CampaignEconomy.js';
 import {collectSceneryArtRefs} from '../racing/RaceSceneryAssets.js';
 import {timingLine,timingLineArtRefs,buildTimingLineDecals} from '../racing/RaceTimingLines.js';
@@ -2585,6 +2587,7 @@ export default class RaceEditor {
     if (!this.playtestSession) return false;
     projection = this.getRaceRecoveryProjection(projection);
     this.playtestSession.lastVehicleResetReason = String(reason || 'track-center-reset');
+    this.playtestSession.campaignRecoveries=(this.playtestSession.campaignRecoveries||0)+1;
     const previousPlacement = {
       heightM: this.playtestSession.heightM,
       bodyY: this.playtestSession.bodyY,
@@ -13806,6 +13809,8 @@ export default class RaceEditor {
         diagnosticMode ? `Diagnostic: ${diagnosticMode}` : `Pace notes ${this.selectedRace?.codriver?.enabled ? 'enabled' : 'off'}`
       ]
     };
+    this.playtestSession.campaignStartCondition=campaignConditionSnapshot(this.playtestSession.mechanical);
+    this.playtestSession.campaignRecoveries=0;
     prepareManagedRaceScenery(this.ensureRaceScenery(), this.playtestSession);
     const drivingPlan = options?.carEditorPreview ? null : prepareRaceAiRoadPlan(this);
     this.playtestSession.drivingAssists = {plan: drivingPlan};
@@ -13951,7 +13956,7 @@ export default class RaceEditor {
       const mission=mechanicalMissionVariables(session.mechanical,this.selectedRace?.mechanicalMission,this.game.items?.progress?.bags?.items);
       if(!session.debugCarOverride&&this.game.items?.garage){
         session.rewardRunId ||= globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`;
-        session.campaignReward=await awardCampaignRace(this.game.items.garage,{ref,race:this.selectedRace,runId:session.rewardRunId,success:mission.success});
+        session.campaignReward=await awardCampaignRace(this.game.items.garage,{ref,race:this.selectedRace,runId:session.rewardRunId,success:mission.success,run:campaignRunSummary(session)});
       }
       await setMenuProgress(this.game,{...raceDriftScoreVariables(this.selectedRace,session.driftScore,this.game.menuProgress),...(ref?{[raceCompletionKey(ref)]:mission.success,lastCompletedRace:ref,
         garageReturnCount:Number(this.game.menuProgress?.garageReturnCount||0)+1,garageDialogueEvent:''}:{}),...finish.variables,...mission.variables});
@@ -20521,8 +20526,11 @@ export default class RaceEditor {
       ...(this.selectedRace?.campaign?.scoring==='drift'?[{id:'race-result-drift',label:'Drift score',value:String(Math.floor(this.playtestSession.driftScore?.points||0)),disabled:true}]:[]),
       {id:'race-result-time',label:'Finish time',value:(Number(this.playtestSession.elapsedMs||0)/1000).toFixed(2)+' s',disabled:true},
       ...(this.playtestSession.campaignReward?[{id:'race-result-scrap',label:'Scrap earned',value:String(this.playtestSession.campaignReward.scrap),disabled:true},...(this.playtestSession.campaignReward.partName?[{id:'race-result-part',label:'Part won',value:this.playtestSession.campaignReward.partName,disabled:true}]:[])]:[]),
+      ...(this.playtestSession.campaignReward?.objectiveStatus?[{id:'race-result-objective',label:this.playtestSession.campaignReward.objectiveStatus,value:this.playtestSession.campaignReward.objectiveBonus?`+${this.playtestSession.campaignReward.objectiveBonus} scrap`:'',disabled:true}]:[]),
+      ...(this.playtestSession.campaignReward?.bestTimeMs?[{id:'race-result-best',label:this.playtestSession.campaignReward.personalBest?'New personal best':'Car best',value:(this.playtestSession.campaignReward.bestTimeMs/1000).toFixed(2)+' s',disabled:true}]:[]),
       {id:'race-results-continue',label:'Continue',value:'',onClick:()=>this.finishPlaytest()}
     ];
+    if(this.raceInput.pauseMenuMode==='vehicle-feedback')return [...vehicleFeedbackRows(this.playtestSession),{id:'vehicle-feedback-back',label:'Back',value:'',onClick:()=>this.backRacePauseMenu()}];
     if(this.raceInput.pauseMenuMode==='inventory'&&this.game.items){
       this.itemInventoryMenu ||= new InventoryMenu(this.game.items,{onUse:()=>{if(this.raceInput.paused)this.toggleRacePause();},onRadio:()=>{this.raceInput.pauseMenuMode='radio';this.raceInput.pauseMenuIndex=0;},onBack:()=>{this.raceInput.pauseMenuMode='main';this.raceInput.pauseMenuIndex=0;}});
       return this.itemInventoryMenu.rows();
@@ -20692,6 +20700,7 @@ export default class RaceEditor {
           this.raceInput.pauseMenuIndex = 0;
         }
       },
+      {id:'race-vehicle-feedback',label:'Car Feedback',value:'',onClick:()=>{this.raceInput.pauseMenuMode='vehicle-feedback';this.raceInput.pauseMenuIndex=0;}},
       {id:'race-reset-position',label:'Reset Position',value:'',
         disabled:Number(this.playtestSession?.countdownRemainingMs||0)>0||!!this.playtestSession?.pendingEdgeCenterReset,
         onClick:()=>{if(this.resetRacePosition()&&this.raceInput.paused)this.toggleRacePause();}},
@@ -20731,6 +20740,10 @@ export default class RaceEditor {
   }
 
   backRacePauseMenu() {
+    if(this.raceInput.pauseMenuMode==='vehicle-feedback'){
+      this.raceInput.pauseMenuMode='main';
+      this.raceInput.pauseMenuIndex=Math.max(0,this.getRacePauseMenuRows().findIndex(r=>r.id==='race-vehicle-feedback'));return;
+    }
     if (['car-lights','car-signals'].includes(this.raceInput.pauseMenuMode)) {
       const id=this.raceInput.pauseMenuMode==='car-lights'?'race-car-lights':'race-car-signals';
       this.raceInput.pauseMenuMode='car-controls';
@@ -25205,6 +25218,7 @@ export default class RaceEditor {
     const selectedIndex = clamp(Math.round(Number(this.raceInput.pauseMenuIndex || 0)), 0, Math.max(0, rows.length - 1));
     const pauseTitle = this.playtestSession?.raceResults ? 'Race Results' : this.raceInput.pauseMenuMode === 'inventory' ? 'Inventory' : this.raceInput.pauseMenuMode === 'radio' ? 'Radio' : this.raceInput.pauseMenuMode === 'settings'
       ? 'Settings'
+      : this.raceInput.pauseMenuMode === 'vehicle-feedback' ? 'Car Feedback'
       : this.raceInput.pauseMenuMode === 'car-lights' ? 'Lights'
       : this.raceInput.pauseMenuMode === 'car-signals' ? 'Signals'
       : this.raceInput.pauseMenuMode === 'car-controls' ? 'Car Controls'

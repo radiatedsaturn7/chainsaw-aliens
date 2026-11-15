@@ -18,6 +18,8 @@
     "test:dashboard": "npm run prepare:playwright && node tools/test-runner/run.cjs",
     "test:robtersession-songs": "node tools/robtersession/song-generator-harness.js",
     "test:robtersession-midi": "node tools/robtersession-midi-tests.cjs",
+    "test:release-baseline": "node --test --test-concurrency=1 tests/unit/bootstrap.test.js tests/unit/campaignOpeningSequence.test.js tests/unit/campaignSaves.test.js tests/unit/automaticClutch.test.js tests/unit/raceLaunchControl.test.js tests/unit/raceVehicleFeedback.test.js tests/unit/raceCodriver.test.js tests/unit/raceHotLoopAllocation.test.js tests/unit/raceRenderAllocation.test.js",
+    "test:campaign-opening": "node --test tests/unit/campaignOpeningSequence.test.js",
     "test:campaign-loading": "node tools/campaigns/validate_loading.mjs",
     "test:race-physics-feel": "node --test tests/unit/racePhysicsFeel.test.js",
     "test:vehicle-dynamics:smoke": "node tools/run-vehicle-dynamics-tests.mjs smoke",

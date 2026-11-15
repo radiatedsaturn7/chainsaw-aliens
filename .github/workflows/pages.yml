@@ -15,7 +15,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  release-baseline:
+    uses: ./.github/workflows/release-baseline.yml
   build:
+    needs: release-baseline
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

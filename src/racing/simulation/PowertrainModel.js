@@ -598,7 +598,23 @@ export class PowertrainModel {
     const automaticClutch = !electric && converterSlip === 0 && (cvt || controls.assists?.autoShift === true)
       && Math.abs(gear) === 1 && Number(controls.throttle || 0) > .02;
     const clutchTargetRpm = idleRpm + (launchRpm-idleRpm)*clamp(Number(controls.throttle)||0,0,1);
-    const takeup = (automaticClutch || launchControlActive) ? clamp(coupledRpm / Math.max(idleRpm,clutchTargetRpm),.35,1) : 1;
+    // Shaft-speed-only take-up creates a hill-start deadlock: low speed limits
+    // clutch torque, which prevents the speed needed to engage the clutch.
+    // Feed clutch pressure in over time once the engine reaches its take-up RPM.
+    // This is torque capacity, not shaft synchronization; the slipping engine
+    // still uses the launch RPM target below. TC retains its existing authority.
+    const assistedTakeup = automaticClutch || launchControlActive;
+    const canTakeUp = assistedTakeup && driverClutchCoupling > .99
+      && Number(controls.brake || 0) < .05 && Number(controls.handbrake || 0) < .05
+      && shiftTorqueScale > .99;
+    const engineReady = Number(previous.engineRpm ?? idleRpm) >= clutchTargetRpm * .85;
+    const automaticClutchTakeup = canTakeUp
+      ? clamp(Number(previous.automaticClutchTakeup || 0) + (engineReady ? seconds / .8 : 0),0,1)
+      : 0;
+    const takeup = assistedTakeup ? Math.max(
+      clamp(coupledRpm / Math.max(idleRpm,clutchTargetRpm),.35,1),
+      .35 + .65 * automaticClutchTakeup
+    ) : 1;
     const launchTakeup = launchControlActive ? clamp(launchControl.elapsed/.6,0,1) : 1;
     const clutchCoupling = electric ? 1 : driverClutchCoupling * shiftTorqueScale * Math.min(takeup,launchTakeup)
       * (mechanical?.effects?.drive ?? 1);
@@ -886,6 +902,7 @@ export class PowertrainModel {
         shiftRecoveryTimeRemainingSeconds,
         shiftTorqueScale,
         clutchCoupling,
+        automaticClutchTakeup,
         rpmCoupling,
         revLimiterActive: limiterActive,
         limiterSequence: Number(previous.limiterSequence || 0) + (limiterActive ? 1 : 0),
@@ -904,6 +921,7 @@ export class PowertrainModel {
         drivetrainEfficiency: transmissionEfficiency,
         shiftTorqueScale,
         clutchCoupling,
+        automaticClutchTakeup,
         rpmCoupling,
         converterTorqueMultiplier,
         revLimiterActive: limiterActive,

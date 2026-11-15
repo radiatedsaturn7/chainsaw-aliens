@@ -62,7 +62,9 @@ export function garageDialogueContext(screen,resources,parameters,states=new Map
   return {kind:'upgrades',category,detail,selection:[state.slot||'',...(state.path||[]),row?.value||''].join('/'),insufficient:!!item&&!owned&&credits<item.carPart.price,expensive:!!item&&!owned&&credits>0&&item.carPart.price>=credits*.6,maximum};
  }
  const category=screen.id==='garage'?({'garage-play':'drive','garage-tune':'tune','garage-upgrade':'upgrade','campaign-garage':'cars'}[focusedId]||'drive'):'';
- return {kind:'garage',category};
+ const lastRace=resources?.garage?.items?.game?.menuProgress?.lastCompletedRace;
+ const feedback=resources?.garage?.progress?.rewards?.[lastRace]?.lastReward?.feedback;
+ return {kind:'garage',category,...(category==='drive'&&feedback?{detail:feedback}:{})};
 }
 export function garageDialogueText(context){
  if(context.detail)return context.detail;
@@ -86,7 +88,7 @@ export class GarageDialogueState{
   if(trigger&&token!==this.lastTrigger&&GARAGE_DIALOGUE.events[trigger]){this.lastTrigger=token;this.say(trigger,context,now);return;}
   if(screen.id!=='garage'||['tuning','upgrades'].includes(from))return;
   this.visits++;
-  if(parameters.lastCompletedRace&&raceToken!==this.lastRace){this.lastRace=raceToken;this.say('returned',context,now);}
+  if(parameters.lastCompletedRace&&raceToken!==this.lastRace){this.lastRace=raceToken;this.say('returned',context,now);if(context.detail)this.event.text=context.detail;}
   else if(this.visits%5===0){const stories=['city','quiet','personal'];this.say(stories[(this.visits/5-1)%stories.length],context,now);}
  }
  text(context,now=Date.now()){

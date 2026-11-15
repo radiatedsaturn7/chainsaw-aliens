@@ -58,3 +58,34 @@ test('economy and owned cars belong to each save slot',async()=>{
 });
 
 test('loading race data can be absent without breaking route selection',()=>{assert.ok(Number.isFinite(raceRewardQuote('pending',null,null).total));});
+
+test('optional goal can be earned on replay once; personal bests survive normalization per car',async()=>{
+ const {garage,items,game,saved}=fixture();await garage.load();
+ const ref='Mount Washington Auto Road — point-to-point';
+ const run={eligible:true,measured:true,finished:true,carRef:'RTG-001',elapsedMs:840000,recoveries:1,worstDamage:20,worstPart:'radiator'};
+ const first=await awardCampaignRace(garage,{ref,race,runId:'rough',run});
+ assert.equal(first.objectiveBonus,0);assert.equal(first.personalBest,false);assert.match(first.feedback,/radiator/i);
+ run.recoveries=0;run.worstDamage=4;
+ const second=await awardCampaignRace(garage,{ref,race,runId:'clean',run});
+ assert.equal(second.objectiveBonus,250);assert.equal(second.personalBest,true);
+ const credits=game.player.credits;
+ await awardCampaignRace(garage,{ref,race,runId:'clean',run});assert.equal(game.player.credits,credits);
+ run.elapsedMs=900000;
+ const third=await awardCampaignRace(garage,{ref,race,runId:'slower',run});
+ assert.equal(third.objectiveBonus,0);assert.equal(third.personalBest,false);assert.equal(third.bestTimeMs,840000);
+ const normalized=normalizeItemProgress(saved());
+ assert.equal(normalized.garage.rewards[ref].objectiveEarned,true);
+ assert.equal(normalized.garage.rewards[ref].bestTimes['RTG-001'],840000);
+ items.progress=normalized;run.carRef='RTG-S';
+ const other=await awardCampaignRace(garage,{ref,race,runId:'other',run});assert.equal(other.personalBest,true);
+ assert.equal(garage.progress.rewards[ref].bestTimes['RTG-001'],840000);
+});
+
+test('failed bonus save rolls back bonus eligibility, time, inventory and currency together',async()=>{
+ const {garage,items,game}=fixture();await garage.load();const save=items.savePreference;
+ const params={ref:'Laurel Highlands Scenic Byway',race,runId:'clean',run:{eligible:true,measured:true,finished:true,carRef:'RTG-001',elapsedMs:600000,recoveries:0,worstDamage:0}};
+ items.savePreference=async()=>({ok:false,reason:'offline'});
+ await assert.rejects(awardCampaignRace(garage,params),/offline/);
+ assert.equal(game.player.credits,500);assert.equal(garage.progress.rewards[params.ref],undefined);
+ items.savePreference=save;const result=await awardCampaignRace(garage,params);assert.equal(result.objectiveBonus,250);
+});
