@@ -1,0 +1,13 @@
+# Ironwood V8 2004
+
+Original badge-free 2994 sedan based on the stock US 2004 Mercury Marauder, 4.6 DOHC V8, RWD, four-speed automatic. This large naturally aspirated body-on-frame sedan is distinct from the earlier crossover, rear-engine Alpine, EV, wagon and turbocharged GNX. No police equipment or film livery.
+
+Primary reference: [original 2004 Mercury brochure, page 14](https://www.auto-brochures.com/makes/Mercury/Marauder/Mercury_US%20Marauder_2004.pdf), archived manufacturer document. Visually read specifications and mechanical equipment: 302 hp at 5750 rpm, 318 lb-ft at 4300 rpm, 4199 lb curb mass, 6250 rpm tachometer redline, 3.55 limited-slip axle, four-speed automatic, 19 US gallon tank; 212 in length, 114.7 in wheelbase, 56.8 in height, 63.4/65.6 in tracks, 235/50R18 front and 245/55R18 rear. The quoted 84.9 in width includes mirrors and is not silently used for the collision body.
+
+`research.json` distinguishes verified facts from estimates. Individual forward/reverse ratios are provisional game values, not verified factory ratios; converter behavior, shift schedule, 1.986 m body width, weight distribution, steering ratio, drag, ground clearance, suspension, CG, tire pressures and display performance are estimates. Front/rear nominal tire radii are calculated from the documented sizes; the RWD scalar powertrain radius uses the rear size. Factory rear air-leveling, exact solid-axle behavior and OEM driver aids are not faithfully simulated or certified. No invented factory manual variant.
+
+`body.png` and `dashboard.png` are original supported image-generation outputs retained unchanged. Eight separately authored exterior directions use the native importer and measured existing wheel art. The LHD blank binnacle receives live speed/RPM/gear/fuel gauges and the shared steering wheel, not painted instrumentation. Fixed rear camera and existing surface smoke/spray are retained.
+
+Validation uses the production editor's actual moving driving preview on desktop and handheld, eight exterior views, source/published roundtrip and hash checks, staggered tire geometry, shared-wheel opening coverage, the all-import camera/surface-FX invariant and asset manifest validation. This is a gameplay/rendering smoke check, not calibrated acceleration testing or full campaign acceptance. Screenshots are reviewed separately from automated state assertions.
+
+Local-only addition on preserved Hellebore d6817790, itself atop six-car snapshot 245fd28e; live staging checked at 3aa27e7895f47eedcc579ee7c57e05567d728b3d. No matching source model/alias in either catalog or current open PR titles/branches. Existing vehicles and world documents are preserved.

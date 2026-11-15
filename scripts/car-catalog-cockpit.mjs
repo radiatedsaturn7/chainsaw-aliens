@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'ironwood-v8-2004':{wheelOpening:true,size:[2172,724],cluster:[245,480,525,145],wheel:[510,675,280]},
  'hellebore-rs-2015':{wheelOpening:true,size:[2172,724],cluster:[280,435,570,140],wheel:[565,630,280]},
  'gentian-sx-1977':{wheelOpening:true,size:[2172,724],cluster:[310,465,580,140],wheel:[600,660,280]},
  'milkweed-60-2013':{electric:true,wheelOpening:true,size:[2172,724],cluster:[300,410,490,125],wheel:[545,600,280]},
