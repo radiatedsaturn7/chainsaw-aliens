@@ -1028,7 +1028,9 @@
       "catalog-speedwell-1968-body": "art/catalog-speedwell-1968-body/document.json",
       "catalog-speedwell-1968-dashboard": "art/catalog-speedwell-1968-dashboard/document.json",
       "catalog-tamarisk-2024-body": "art/catalog-tamarisk-2024-body/document.json",
-      "catalog-tamarisk-2024-dashboard": "art/catalog-tamarisk-2024-dashboard/document.json"
+      "catalog-tamarisk-2024-dashboard": "art/catalog-tamarisk-2024-dashboard/document.json",
+      "catalog-valerian-turbo-1992-body": "art/catalog-valerian-turbo-1992-body/document.json",
+      "catalog-valerian-turbo-1992-dashboard": "art/catalog-valerian-turbo-1992-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1130,7 +1132,8 @@
       "Meadowsweet 1992": "cars/Meadowsweet 1992/document.json",
       "Heather 1993": "cars/Heather 1993/document.json",
       "Speedwell 1968": "cars/Speedwell 1968/document.json",
-      "Tamarisk 2024": "cars/Tamarisk 2024/document.json"
+      "Tamarisk 2024": "cars/Tamarisk 2024/document.json",
+      "Valerian Turbo 1992": "cars/Valerian Turbo 1992/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
