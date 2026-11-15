@@ -331,7 +331,30 @@
           ],
           "scope": "Short real travel/driving samples; full-route desktop/handheld QA booleans remain pending."
         },
-        "pack6RevisionNote": "Noon source boundary repaired in pack6; prior native screenshots retained, current edge review pending."
+        "pack6RevisionNote": "Noon source boundary repaired in pack6; prior native screenshots retained, current edge review pending.",
+        "pack6ProductionSamples": {
+          "successes": [
+            {
+              "file": "/tmp/race-environment-pack6-driving/race-environments-driving--065ed-authored-foreground-and-sky/driving-state.json",
+              "race": "Daytona Tri-Oval",
+              "device": "desktop",
+              "viewport": {
+                "width": 1280,
+                "height": 720
+              },
+              "displacementM": 41.15478662596184,
+              "elapsedMs": 7366.43333333334,
+              "speedMps": 21.105052947998047,
+              "sky": "skybox-daytona",
+              "brightness": 1,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            }
+          ],
+          "failures": [],
+          "scope": "Short real normal travel/driving samples only. Prior samples retained; no route-wide or complete visual acceptance inferred."
+        }
       },
       "physicalSiteLabel": "Daytona International Speedway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -611,7 +634,22 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-9e9c1-int-independent-sky-desktop/site-0a68d934985ab307-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-cc633-nt-independent-sky-handheld/site-0a68d934985ab307-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted.",
+            "Authored visibility opacity 1 fully hides sky; raw diagnostic shows mountain composition and a visible cloud wrap join. No production readability claim."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "Mount Washington Auto Road, Sargent's Purchase, Co\u00f6s County, New Hampshire, 03589, United States",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -710,7 +748,16 @@
         "ground": "Rounded Presidential Range snowy granite summit and observatory, rime and subalpine spruce.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-9e9c1-int-independent-sky-desktop/site-0a68d934985ab307-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-cc633-nt-independent-sky-handheld/site-0a68d934985ab307-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -1506,7 +1553,120 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-ca1a7-ad-independent-sky-handheld/site-5a5854749acbb495-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-d52e3-oad-independent-sky-desktop/site-5a5854749acbb495-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted.",
+            "Cloud/snow night art has no moon; authored sky brightness .05 with fog .1437 makes sky nearly black. 100% sky-only diagnostic is not release exposure."
+          ],
+          "seamAccepted": false
+        },
+        "pack6ProductionSamples": {
+          "successes": [
+            {
+              "file": "/tmp/race-environment-pack6-driving/race-environments-driving--51f1a-authored-foreground-and-sky/driving-state.json",
+              "race": "Tower Hill Road",
+              "device": "handheld",
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "displacementM": 0.7312032336156368,
+              "elapsedMs": 2966.666666666669,
+              "speedMps": 2.604371,
+              "sky": "environment-v1-tower-hill-snow-night",
+              "brightness": 0.05,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            }
+          ],
+          "failures": [
+            {
+              "file": "/tmp/race-environment-pack6-driving/race-environments-driving--9c620-authored-foreground-and-sky/failure-state.json",
+              "race": "Tower Hill Road",
+              "device": "desktop",
+              "state": {
+                "state": "race-editor",
+                "status": "Playtesting Tower Hill Road in RTG-001",
+                "error": "",
+                "diagnostics": {
+                  "requestId": 1,
+                  "cacheKey": "",
+                  "raceName": "Tower Hill Road",
+                  "phase": "starting-race",
+                  "progress": 0.997,
+                  "elapsedMs": 45230.40000000596,
+                  "missingArtRefs": [],
+                  "status": "presented",
+                  "firstPlayableFrameAt": 1794729235919
+                },
+                "race": "Tower Hill Road",
+                "sky": "environment-v1-tower-hill-snow-night",
+                "weather": {
+                  "id": "snow",
+                  "label": "Snow",
+                  "visualIntensity": 0.14961462499999995,
+                  "targetIntensity": 0.14961462499999995,
+                  "buildup": 1,
+                  "effectiveIntensity": 0.14961462499999995,
+                  "precipitationIntensity": 0.14961462499999995,
+                  "snowDepthInches": 0.8976877499999997,
+                  "visibilityDistanceM": 5020.77,
+                  "visibilityStrength": 0.07695112355813176,
+                  "visibilityColor": "238,245,248",
+                  "visibilityNearAlpha": 0.001923778088953294,
+                  "visibilityFarAlpha": 0.07233405614464385
+                },
+                "fx": {
+                  "enabled": true,
+                  "preset": "night",
+                  "sunEnabled": false,
+                  "sunDisc": true,
+                  "sunX": 0.5,
+                  "sunY": 0.15,
+                  "sunColor": "#afc9ff",
+                  "sunSize": 0.012,
+                  "sunIntensity": 0,
+                  "lensFlare": 0,
+                  "sunGlare": 0.45,
+                  "skyBrightness": 0.05,
+                  "tintColor": "#839ccc",
+                  "tintAmount": 0.04,
+                  "motionBlur": 0.16,
+                  "speedLines": 0.08,
+                  "speedLineOpacity": 1,
+                  "speedLineArtRef": "",
+                  "speedLineArtMode": "overlay",
+                  "vignette": 0.1,
+                  "speedStartMph": 45,
+                  "speedFullMph": 130
+                },
+                "session": {
+                  "running": true,
+                  "pending": false,
+                  "elapsed": 12582.899999999992,
+                  "speed": 0.4807089865207672,
+                  "worldX": 1579.2181396484375,
+                  "worldZ": -76.42748260498047,
+                  "camera": "third-person"
+                }
+              },
+              "errors": [],
+              "network": [],
+              "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m1\u001b[39m\nReceived:   \u001b[31m-0.0701109990477562\u001b[39m"
+            }
+          ],
+          "scope": "Short real normal travel/driving samples only. Prior samples retained; no route-wide or complete visual acceptance inferred."
+        }
       },
       "physicalSiteLabel": "Tower Hill Road, Cumberland, RI",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -1585,7 +1745,16 @@
         "ground": "Low Cumberland snowy woodland, bare hardwoods and pines, small stone wall, cloudy night without moon.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-ca1a7-ad-independent-sky-handheld/site-5a5854749acbb495-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-d52e3-oad-independent-sky-desktop/site-5a5854749acbb495-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -3781,7 +3950,22 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-1add2-ate-independent-sky-desktop/site-931ca89b7a891ab6-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-89ab3-te-independent-sky-handheld/site-931ca89b7a891ab6-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted.",
+            "Numeric wrap discontinuity warning confirmed; inspect source edge correspondence, do not treat forward view as seamless."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "RI 116 \u2014 North Smithfield / Scituate",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -3873,7 +4057,16 @@
         "ground": "Low North Smithfield woodland/mill region, modest abandoned roof and stone wall.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-1add2-ate-independent-sky-desktop/site-931ca89b7a891ab6-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-89ab3-te-independent-sky-handheld/site-931ca89b7a891ab6-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -4131,7 +4324,21 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-c86b6-ves-independent-sky-desktop/site-15ddb8bf02ebb77a-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-c8d28-es-independent-sky-handheld/site-15ddb8bf02ebb77a-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "I-95 \u2014 Attleboro to Warwick curves",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -4310,7 +4517,16 @@
         "ground": "Northern Attleboro/RI low wooded industrial corridor, small warehouses and utility structures.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-c86b6-ves-independent-sky-desktop/site-15ddb8bf02ebb77a-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-c8d28-es-independent-sky-handheld/site-15ddb8bf02ebb77a-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -4425,7 +4641,22 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-8e55d-ay-independent-sky-handheld/site-810746e752ff427f-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-eb9bb-way-independent-sky-desktop/site-810746e752ff427f-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted.",
+            "Numeric wrap discontinuity warning confirmed; inspect source edge correspondence, do not treat forward view as seamless."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "RI 102 \u2014 Victory Highway",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -4515,7 +4746,16 @@
         "ground": "Northern RI Burrillville low oak/pine woodland, stone walls and modest roadside workshop.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-8e55d-ay-independent-sky-handheld/site-810746e752ff427f-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-eb9bb-way-independent-sky-desktop/site-810746e752ff427f-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -4903,7 +5143,22 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-2996a-er-independent-sky-handheld/site-407f8b96bd290ca5-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-64fc1-ter-independent-sky-desktop/site-407f8b96bd290ca5-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted.",
+            "Numeric wrap discontinuity warning confirmed; inspect source edge correspondence, do not treat forward view as seamless."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "RI 44 \u2014 Putnam Pike / Glocester",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -4993,7 +5248,16 @@
         "ground": "Glocester/Putnam Pike mixed woods, granite boulders and modest rural barn.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-2996a-er-independent-sky-handheld/site-407f8b96bd290ca5-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-64fc1-ter-independent-sky-desktop/site-407f8b96bd290ca5-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -5444,7 +5708,21 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-41a98-112-independent-sky-desktop/site-dfcb58ea4510984b-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-7026c-12-independent-sky-handheld/site-dfcb58ea4510984b-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "Kancamagus Highway \u2014 NH 112",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -5526,7 +5804,16 @@
         "ground": "Broad layered rounded White Mountain valley, mixed forest and stream depression.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-41a98-112-independent-sky-desktop/site-dfcb58ea4510984b-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-7026c-12-independent-sky-handheld/site-dfcb58ea4510984b-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -5641,7 +5928,22 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-0740b-ett-independent-sky-desktop/site-996a00e2fcbb5289-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-4555a-tt-independent-sky-handheld/site-996a00e2fcbb5289-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted.",
+            "Numeric wrap discontinuity warning confirmed; inspect source edge correspondence, do not treat forward view as seamless."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "Bear Notch Road \u2014 Bartlett",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -5723,7 +6025,16 @@
         "ground": "Close wooded Bartlett saddle and low ridges.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-0740b-ett-independent-sky-desktop/site-996a00e2fcbb5289-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-4555a-tt-independent-sky-handheld/site-996a00e2fcbb5289-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -5838,7 +6149,23 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-66612-way-independent-sky-desktop/site-affc31958020fbaf-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-94fba-ay-independent-sky-handheld/site-affc31958020fbaf-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted.",
+            "Numeric wrap discontinuity warning confirmed; inspect source edge correspondence, do not treat forward view as seamless.",
+            "Conspicuous terrain/tree height discontinuity at desktop horizontal wrap in actual native projection."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "Hurricane Mountain Road \u2014 Conway",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -5920,7 +6247,16 @@
         "ground": "Close rocky Conway wooded ridge opening to lower valley.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-66612-way-independent-sky-desktop/site-affc31958020fbaf-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-94fba-ay-independent-sky-handheld/site-affc31958020fbaf-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -6035,7 +6371,21 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-ae137-02-independent-sky-handheld/site-8bddb6a4b297a267-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-df1e9-302-independent-sky-desktop/site-8bddb6a4b297a267-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "Crawford Notch \u2014 US 302",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -6125,7 +6475,16 @@
         "ground": "Narrow Dry River wooded valley, broad steep rocky shoulders.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-ae137-02-independent-sky-handheld/site-8bddb6a4b297a267-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-df1e9-302-independent-sky-desktop/site-8bddb6a4b297a267-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -6240,7 +6599,23 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-2daa3--16-independent-sky-desktop/site-d4f3647ae10043c0-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-a6024-16-independent-sky-handheld/site-d4f3647ae10043c0-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted.",
+            "Numeric wrap discontinuity warning confirmed; inspect source edge correspondence, do not treat forward view as seamless.",
+            "Authored snow visibility opacity .7263 intentionally reduces contrast; route is a wooded pass rather than summit view."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "Pinkham Notch \u2014 NH 16",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -6325,7 +6700,16 @@
         "ground": "Snowy wooded Pinkham pass and broad mountain shoulders; no summit observatory.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-2daa3--16-independent-sky-desktop/site-d4f3647ae10043c0-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-a6024-16-independent-sky-handheld/site-d4f3647ae10043c0-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -6440,7 +6824,21 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-d3466-rth-independent-sky-desktop/site-b77b2426c4ac70c2-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-f6570-th-independent-sky-handheld/site-b77b2426c4ac70c2-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "Club Motorsports \u2014 Tamworth",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -6522,7 +6920,16 @@
         "ground": "Rolling wooded Tamworth motorsports acreage and modest paddock.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-d3466-rth-independent-sky-desktop/site-b77b2426c4ac70c2-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-f6570-th-independent-sky-handheld/site-b77b2426c4ac70c2-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -6637,7 +7044,21 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-376bb-994-independent-sky-desktop/site-6f08eb24ddcc4294-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-40dfe-94-independent-sky-handheld/site-6f08eb24ddcc4294-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "Team O\u2019Neil Rally School \u2014 Dalton",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -6717,7 +7138,16 @@
         "ground": "Inspired Dalton gravel training clearings, wooded rolling hills and small cabin.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-376bb-994-independent-sky-desktop/site-6f08eb24ddcc4294-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-40dfe-94-independent-sky-handheld/site-6f08eb24ddcc4294-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -6832,7 +7262,22 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-510ae-on-independent-sky-handheld/site-2e5bd5e7faad72ca-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-b12df-don-independent-sky-desktop/site-2e5bd5e7faad72ca-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted.",
+            "Conspicuous terrain/tree height discontinuity at desktop horizontal wrap in actual native projection."
+          ],
+          "seamAccepted": false
+        }
       },
       "physicalSiteLabel": "New Hampshire Motor Speedway \u2014 Loudon",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -6920,7 +7365,16 @@
         "ground": "Loudon oval grandstand and paddock within wooded hills.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-510ae-on-independent-sky-handheld/site-2e5bd5e7faad72ca-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-b12df-don-independent-sky-desktop/site-2e5bd5e7faad72ca-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -7035,7 +7489,61 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native projection, authored sky-only composite, separate 100% diagnostic and pitch/wrap pairs; not gameplay acceptance.",
+          "reviewed": true,
+          "deviceReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-00506-ng-independent-sky-handheld/site-5ce2409ff8a9c529-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-3e5b6-ing-independent-sky-desktop/site-5ce2409ff8a9c529-state.json"
+          ],
+          "contactSheets": "/tmp/race-pack6-sheets",
+          "manualReview": "Source images, all 30 device exposure/pitch pairs inspected. Site compositions differentiated; unresolved edge issues retained.",
+          "issues": [
+            "Visible transitions into flat top/bottom safe bands and low-contrast clamp variation need refinement; no seam acceptance granted."
+          ],
+          "seamAccepted": false
+        },
+        "pack6ProductionSamples": {
+          "successes": [
+            {
+              "file": "/tmp/race-environment-pack6-driving/race-environments-driving--8aead-authored-foreground-and-sky/driving-state.json",
+              "race": "New England Dragway \u2014 Epping",
+              "device": "handheld",
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "displacementM": 2.787869702384391,
+              "elapsedMs": 3300.0000000000036,
+              "speedMps": 6.099722,
+              "sky": "environment-v1-epping-morning",
+              "brightness": 0.65,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            },
+            {
+              "file": "/tmp/race-environment-pack6-driving/race-environments-driving--da263-authored-foreground-and-sky/driving-state.json",
+              "race": "New England Dragway \u2014 Epping",
+              "device": "desktop",
+              "viewport": {
+                "width": 1280,
+                "height": 720
+              },
+              "displacementM": 54.038921565042955,
+              "elapsedMs": 7516.333333333334,
+              "speedMps": 24.400888442993164,
+              "sky": "environment-v1-epping-morning",
+              "brightness": 0.65,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            }
+          ],
+          "failures": [],
+          "scope": "Short real normal travel/driving samples only. Prior samples retained; no route-wide or complete visual acceptance inferred."
+        }
       },
       "physicalSiteLabel": "New England Dragway \u2014 Epping",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -7117,7 +7625,16 @@
         "ground": "Epping flat drag facility, low woodland, small bleachers and timing tower.",
         "tiles": "Explicit normal and rough images per existing tile ID; snow retained on authored snow routes, rock retained on Mount Washington gravel cells. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source recipe reviewed; actual production appearance pending.",
+        "effectiveAudit": {
+          "nativeReports": [
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-00506-ng-independent-sky-handheld/site-5ce2409ff8a9c529-state.json",
+            "/tmp/race-environment-pack6-renderer/race-environments-renderer-3e5b6-ing-independent-sky-desktop/site-5ce2409ff8a9c529-state.json"
+          ],
+          "allSegmentResolver": "/tmp/race-pack6-effective-road-audit.json",
+          "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
+          "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
+        }
       }
     },
     {
@@ -21662,7 +22179,47 @@
           "failures": [],
           "scope": "Short real travel/driving samples; full-route desktop/handheld QA booleans remain pending."
         },
-        "pack6RevisionNote": "Prior pack5 captures retained as historical evidence. Ground palette revised in pack6; previous captures do not validate current ground image."
+        "pack6RevisionNote": "Prior pack5 captures retained as historical evidence. Ground palette revised in pack6; previous captures do not validate current ground image.",
+        "pack6ProductionSamples": {
+          "successes": [
+            {
+              "file": "/tmp/race-environment-pack6-driving/race-environments-driving--2acf2-authored-foreground-and-sky/driving-state.json",
+              "race": "Sebring International Raceway \u2014 Short Circuit",
+              "device": "handheld",
+              "viewport": {
+                "width": 390,
+                "height": 844
+              },
+              "displacementM": 1.2969984947982718,
+              "elapsedMs": 3000.0000000000023,
+              "speedMps": 3.655304,
+              "sky": "environment-v1-sebring-morning",
+              "brightness": 0.65,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            },
+            {
+              "file": "/tmp/race-environment-pack6-driving/race-environments-driving--a912f-authored-foreground-and-sky/driving-state.json",
+              "race": "Sebring International Raceway \u2014 Short Circuit",
+              "device": "desktop",
+              "viewport": {
+                "width": 1280,
+                "height": 720
+              },
+              "displacementM": 56.8007012931235,
+              "elapsedMs": 8882.999999999998,
+              "speedMps": 25.131847381591797,
+              "sky": "environment-v1-sebring-morning",
+              "brightness": 0.65,
+              "missingArtRefs": [],
+              "errors": [],
+              "network": []
+            }
+          ],
+          "failures": [],
+          "scope": "Short real normal travel/driving samples only. Prior samples retained; no route-wide or complete visual acceptance inferred."
+        }
       },
       "physicalSiteLabel": "Sebring International Raceway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",

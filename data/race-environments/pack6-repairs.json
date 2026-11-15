@@ -12,7 +12,7 @@
       ],
       "tool": "image_gen.imagegen",
       "sourceSha256": "6ba9e645d833f724f68f3d391987564af7fdc27469a5df10531e75f94163088f",
-      "acceptance": "Pending fresh native and production review; source image inspected."
+      "acceptance": "Fresh desktop/handheld native pitch review: strong lower clamp streaks reduced, minor variation remains. Current desktop actual drive passed; full visual acceptance pending."
     },
     {
       "ref": "environment-v1-ground-sebring-olive",
@@ -26,7 +26,7 @@
       ],
       "tool": "image_gen.imagegen",
       "sourceSha256": "b643891a14e29ef756f6a7626928f0106d7f6e6d08d0cda5d731636ee19e4107",
-      "acceptance": "Pending fresh native and production review; source image inspected."
+      "acceptance": "Native ground loaded and actual desktop/handheld Sebring Short samples passed. Before/after views show improved foreground/panorama palette join; no full-route acceptance inferred."
     }
   ]
 }
