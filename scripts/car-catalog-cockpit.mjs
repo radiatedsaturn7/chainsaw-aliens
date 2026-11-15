@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'tansy-cargo-2010':{wheelOpening:true,size:[2172,724],cluster:[405,475,490,145],wheel:[650,670,280]},
  'ironwood-v8-2004':{wheelOpening:true,size:[2172,724],cluster:[245,480,525,145],wheel:[510,675,280]},
  'hellebore-rs-2015':{wheelOpening:true,size:[2172,724],cluster:[280,435,570,140],wheel:[565,630,280]},
  'gentian-sx-1977':{wheelOpening:true,size:[2172,724],cluster:[310,465,580,140],wheel:[600,660,280]},

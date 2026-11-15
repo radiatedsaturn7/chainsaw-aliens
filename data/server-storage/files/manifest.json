@@ -757,7 +757,9 @@
       "catalog-hellebore-rs-2015-body": "art/catalog-hellebore-rs-2015-body/document.json",
       "catalog-hellebore-rs-2015-dashboard": "art/catalog-hellebore-rs-2015-dashboard/document.json",
       "catalog-ironwood-v8-2004-body": "art/catalog-ironwood-v8-2004-body/document.json",
-      "catalog-ironwood-v8-2004-dashboard": "art/catalog-ironwood-v8-2004-dashboard/document.json"
+      "catalog-ironwood-v8-2004-dashboard": "art/catalog-ironwood-v8-2004-dashboard/document.json",
+      "catalog-tansy-cargo-2010-body": "art/catalog-tansy-cargo-2010-body/document.json",
+      "catalog-tansy-cargo-2010-dashboard": "art/catalog-tansy-cargo-2010-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -847,7 +849,8 @@
       "Milkweed 60 2013": "cars/Milkweed 60 2013/document.json",
       "Gentian SX 1977": "cars/Gentian SX 1977/document.json",
       "Hellebore RS 2015": "cars/Hellebore RS 2015/document.json",
-      "Ironwood V8 2004": "cars/Ironwood V8 2004/document.json"
+      "Ironwood V8 2004": "cars/Ironwood V8 2004/document.json",
+      "Tansy Cargo 2010": "cars/Tansy Cargo 2010/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
