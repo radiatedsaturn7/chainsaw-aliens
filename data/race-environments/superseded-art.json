@@ -20,7 +20,7 @@
     "skybox-bayard-noon-2994": {
       "kind": "skybox",
       "replacement": "environment-v1-bayard-noon",
-      "raceRef": "Bayard — Road 77 to City Park",
+      "raceRef": "Bayard \u2014 Road 77 to City Park",
       "reason": "Original noon prairie was geographically plausible and is not mislabeled as invalid. Superseded after matched desktop/handheld native review by a more specific North Platte agricultural valley, Bayard elevator cluster, Wildcat escarpment and distant Chimney Rock composition grounded in saved Road 77 origin. Noon stays unchanged; both have diagnostic lower-edge extensions, so no seam or full-route driving acceptance is inferred.",
       "source": "assets/campaign-art/skyboxes/bayard-noon-2994.png",
       "sourceSha256": "403583e3de4f710d859ad1dee597006daabdd4abe3609b890831d591b10653b2",
@@ -31,6 +31,38 @@
         "sha256": "e42752102c5e927836f41ffb88c69886de2985454279be6803e9bd37e575be29",
         "verdict": "superseded-site-composition",
         "scope": "Both sources and matched native raw/authored desktop/handheld views reviewed. New composition adds local identity while retaining compatible noon landscape. Native review is not route-wide driving approval."
+      }
+    },
+    "skybox-moki-dugway": {
+      "kind": "skybox",
+      "replacement": "environment-v1-moki-cedar-mesa-day",
+      "raceRef": "Moki Dugway",
+      "reason": "Original Utah mesa scene remains geographically plausible, not invalid art. Superseded by the already active wider Cedar Mesa and Valley of the Gods distant horizon composition, with lower distant landforms instead of a close switchback/ruin focal point. Matched native comparisons viewed; authored fog obscures both, and replacement lower-edge extension remains a release-quality gap. No driving or seam acceptance is inferred.",
+      "source": "assets/campaign-art/skyboxes/moki-dugway.png",
+      "sourceSha256": "095d51c90f0f89b1f8d62f56d86f62dca7d8f0b3074a2ed31d14fafb6cc4678a",
+      "documentPath": "art/skybox-moki-dugway/document.json",
+      "documentSha256": "cbc86d997b2cf7acfbc4076af99b3a32fa5006ec9bc57be50d45b92b8b9229c0",
+      "review": {
+        "path": "data/race-environments/moki-review.jpg",
+        "sha256": "60dbb82b77ab1110b01059858e12711919841c8c05dfa9362a207d6331993492",
+        "verdict": "superseded-site-composition",
+        "scope": "Original source and active source plus matched native raw100 and unchanged authored desktop/handheld views inspected. Original bytes retained and verified; fog and boundary limitations are separate from composition choice."
+      }
+    },
+    "skybox-oak-creek": {
+      "kind": "skybox",
+      "replacement": "environment-v1-oakrim-evening",
+      "raceRef": "Oak Creek Canyon",
+      "reason": "Original lower Sedona red-rock/cottonwood scene remains regionally plausible. Superseded by the active upper Oak Creek Vista pine-rim, layered red/tan canyon and evening composition grounded in the saved upper 89A origin. Matched native comparisons viewed: unchanged authored fog hides much of both; replacement reduces older bottom extrusion but mild boundary bands remain. No full-route acceptance is inferred.",
+      "source": "assets/campaign-art/skyboxes/oak-creek.png",
+      "sourceSha256": "d2b0b00583ec4ac0ac055ca79bd4482d5f684954f2ff9686c5504b8d020920f5",
+      "documentPath": "art/skybox-oak-creek/document.json",
+      "documentSha256": "21b0f6fd917701e16b79c3a1c00c6ce224a3d2df0e5a7ea32ce2da25379835af",
+      "review": {
+        "path": "data/race-environments/oak-creek-review.jpg",
+        "sha256": "c64000c353ebfeeb85e16022f43700632bcc3e41086f42f572b2c41e0c28ab4b",
+        "verdict": "superseded-site-composition",
+        "scope": "Original source and active source plus matched native raw100 and unchanged authored desktop/handheld views inspected. Original bytes retained and verified; fog and boundary limitations are separate from composition choice."
       }
     }
   }

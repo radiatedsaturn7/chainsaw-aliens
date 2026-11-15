@@ -299,7 +299,7 @@
     {
       "key": "bluff-morning",
       "raceRef": "US 191 \u2014 Bluff Blanding",
-      "sourceImage": "/workspace/generated_images/exec-23268fa5-14c2-43c9-9491-d52fb24f9bb1.png",
+      "sourceImage": "/workspace/generated_images/exec-093a42ce-c40a-4621-b5ad-e9cf5daaae73.png",
       "brief": "Bluff to Blanding transition: long horizontal cream sandstone bluffs and higher dark juniper mesas, scattered cottonwoods only in low drainage, tiny abandoned roadside building central.",
       "ground": "ground-desert-scrub-v2",
       "brightness": 0.65,
@@ -337,16 +337,29 @@
       "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
       "artProvenance": {
         "tool": "image_gen.imagegen",
-        "sourceSha256": "3252bd20b7dbc9d04217380ca74a5b1042d7a9ad6fce4683ae0d9a3dfc5a1d88",
-        "originalRetained": "/workspace/generated_images/exec-23268fa5-14c2-43c9-9491-d52fb24f9bb1.png",
-        "priorSourceRetained": null,
-        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
-      }
+        "sourceSha256": "f01eb88c3f256bd49dfbe6f0e6e3227d5ad05b7fd9b67f40540bed5e91969b50",
+        "originalRetained": "/workspace/generated_images/exec-093a42ce-c40a-4621-b5ad-e9cf5daaae73.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-23268fa5-14c2-43c9-9491-d52fb24f9bb1.png",
+        "review": "Viewed original and revised source; native wrap and authored review pending."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-23268fa5-14c2-43c9-9491-d52fb24f9bb1.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "3252bd20b7dbc9d04217380ca74a5b1042d7a9ad6fce4683ae0d9a3dfc5a1d88",
+            "originalRetained": "/workspace/generated_images/exec-23268fa5-14c2-43c9-9491-d52fb24f9bb1.png",
+            "priorSourceRetained": null,
+            "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+          },
+          "checkpoint": "822179b1a673954a98104120082993e233cb0109"
+        }
+      ]
     },
     {
       "key": "shafer-night",
       "raceRef": "Shafer Trail \u2014 Canyonlands National Park",
-      "sourceImage": "/workspace/generated_images/exec-b7d7fac2-c67d-4abe-8b62-b8f84fbb0422.png",
+      "sourceImage": "/workspace/generated_images/exec-5057719b-cd7f-4a8e-8716-f72d9bfcbb89.png",
       "brief": "Shafer Canyon from rim: immense stacked red and pale sandstone cliffs dropping into open White Rim basin; very distant winding dry track, no foreground road, sparse scrub. Clear moonlit blue-gray night, crescent and sparse stars; no daylight colors.",
       "ground": "ground-canyon-rock-v2",
       "brightness": 0.05,
@@ -383,11 +396,24 @@
       "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
       "artProvenance": {
         "tool": "image_gen.imagegen",
-        "sourceSha256": "da4510f50fbb029b582e23de259750cd1ff3995c63c39b2c1a6911894ad0d6ad",
-        "originalRetained": "/workspace/generated_images/exec-b7d7fac2-c67d-4abe-8b62-b8f84fbb0422.png",
-        "priorSourceRetained": null,
-        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
-      }
+        "sourceSha256": "b3a5e7c9181d2898577dba5b74afb5a7e75e6e9143ab3aeddfaa72c1ea2c4b03",
+        "originalRetained": "/workspace/generated_images/exec-5057719b-cd7f-4a8e-8716-f72d9bfcbb89.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-b7d7fac2-c67d-4abe-8b62-b8f84fbb0422.png",
+        "review": "Viewed original and revised source; native wrap and authored review pending."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-b7d7fac2-c67d-4abe-8b62-b8f84fbb0422.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "da4510f50fbb029b582e23de259750cd1ff3995c63c39b2c1a6911894ad0d6ad",
+            "originalRetained": "/workspace/generated_images/exec-b7d7fac2-c67d-4abe-8b62-b8f84fbb0422.png",
+            "priorSourceRetained": null,
+            "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+          },
+          "checkpoint": "822179b1a673954a98104120082993e233cb0109"
+        }
+      ]
     },
     {
       "key": "burr-noon",
@@ -442,7 +468,7 @@
     {
       "key": "oakrim-evening",
       "raceRef": "Oak Creek Canyon",
-      "sourceImage": "/workspace/generated_images/exec-f57f2740-43c0-47f5-afba-b4e2da69fbba.png",
+      "sourceImage": "/workspace/generated_images/exec-8e201fbf-eb94-4721-99b8-cffda6207ba7.png",
       "brief": "Upper Oak Creek canyon near Vista: ponderosa pine rim and deep forested canyon, red and tan horizontal rock strata below dark conifer rim, no saguaro or desert dunes, warm evening.",
       "ground": "ground-frozen-forest",
       "brightness": 0.42,
@@ -482,10 +508,10 @@
       "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
       "artProvenance": {
         "tool": "image_gen.imagegen",
-        "sourceSha256": "ae34a9ab2ee44ac6d60718fe7a3fb7327469830d7907af1dad3e27481f1f0c17",
-        "originalRetained": "/workspace/generated_images/exec-f57f2740-43c0-47f5-afba-b4e2da69fbba.png",
-        "priorSourceRetained": null,
-        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+        "sourceSha256": "0e31accffd621e943b03814b15e670484c8d669aed0aab1830831df95771b890",
+        "originalRetained": "/workspace/generated_images/exec-8e201fbf-eb94-4721-99b8-cffda6207ba7.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-f57f2740-43c0-47f5-afba-b4e2da69fbba.png",
+        "review": "Viewed original and revised source; native wrap and authored review pending."
       },
       "mainRoutePlacementMigration": {
         "from": "skybox-oak-creek",
@@ -495,7 +521,20 @@
             "race": "oak"
           }
         ]
-      }
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-f57f2740-43c0-47f5-afba-b4e2da69fbba.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "ae34a9ab2ee44ac6d60718fe7a3fb7327469830d7907af1dad3e27481f1f0c17",
+            "originalRetained": "/workspace/generated_images/exec-f57f2740-43c0-47f5-afba-b4e2da69fbba.png",
+            "priorSourceRetained": null,
+            "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+          },
+          "checkpoint": "822179b1a673954a98104120082993e233cb0109"
+        }
+      ]
     },
     {
       "key": "redbyway-evening",
@@ -594,7 +633,7 @@
     {
       "key": "pagesprings-evening",
       "raceRef": "Page Springs Road",
-      "sourceImage": "/workspace/generated_images/exec-aa8faadb-09f3-493a-8358-7d545e91d9cd.png",
+      "sourceImage": "/workspace/generated_images/exec-86acc14d-f0d4-4aec-b35e-efe0b519a6d5.png",
       "brief": "Page Springs Verde Valley: green riparian cottonwood ribbon and modest vineyard rows among dry rolling tan hills, distant subdued Mingus ridge; no red towering Sedona cathedral.",
       "ground": "ground-frozen-forest",
       "brightness": 0.42,
@@ -631,11 +670,24 @@
       "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
       "artProvenance": {
         "tool": "image_gen.imagegen",
-        "sourceSha256": "21d43cfb3020f7276bce47971afa49941ce5fb3c989c8dbf638e2c1e24473690",
-        "originalRetained": "/workspace/generated_images/exec-aa8faadb-09f3-493a-8358-7d545e91d9cd.png",
-        "priorSourceRetained": null,
-        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
-      }
+        "sourceSha256": "dd88e11ee449bca6105e1bc06f022d833611e9dd52091f707fd1da16fff9fd58",
+        "originalRetained": "/workspace/generated_images/exec-86acc14d-f0d4-4aec-b35e-efe0b519a6d5.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-aa8faadb-09f3-493a-8358-7d545e91d9cd.png",
+        "review": "Viewed original and revised source; native wrap and authored review pending."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-aa8faadb-09f3-493a-8358-7d545e91d9cd.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "21d43cfb3020f7276bce47971afa49941ce5fb3c989c8dbf638e2c1e24473690",
+            "originalRetained": "/workspace/generated_images/exec-aa8faadb-09f3-493a-8358-7d545e91d9cd.png",
+            "priorSourceRetained": null,
+            "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+          },
+          "checkpoint": "822179b1a673954a98104120082993e233cb0109"
+        }
+      ]
     },
     {
       "key": "beaverflat-evening",
@@ -952,7 +1004,7 @@
     {
       "key": "desertview-noon",
       "raceRef": "Grand Canyon \u2014 Desert View Drive",
-      "sourceImage": "/workspace/generated_images/exec-ff128abb-7b70-4b71-ad2d-461a879486bf.png",
+      "sourceImage": "/workspace/generated_images/exec-0a9e13b1-baf6-473b-9894-9d0879660a81.png",
       "brief": "Grand Canyon east rim: expansive layered pale Kaibab rim, deep crimson and purple inner canyon, distant Painted Desert to one side, pinyon juniper rim vegetation, tiny weathered stone watchtower near center only.",
       "ground": "ground-desert-scrub-v2",
       "brightness": 1,
@@ -995,15 +1047,28 @@
       "sourceLimitation": "Exact saved GPS/source establishes route location; cited primary/local trail sources establish regional forms or facility context, not a surveyed viewpoint. Original abandoned structures and exact perspective are illustrative. No same-state or proximity sharing.",
       "artProvenance": {
         "tool": "image_gen.imagegen",
-        "sourceSha256": "e2d6783fe6b9d730043e3157449628604fcb442da2456e1eab98733c512ab7b1",
-        "originalRetained": "/workspace/generated_images/exec-ff128abb-7b70-4b71-ad2d-461a879486bf.png",
-        "priorSourceRetained": null,
-        "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+        "sourceSha256": "e7356a87484cae0d51be815b5d005a7f4f9d3a5437454f3a90ea684391b86e43",
+        "originalRetained": "/workspace/generated_images/exec-0a9e13b1-baf6-473b-9894-9d0879660a81.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-ff128abb-7b70-4b71-ad2d-461a879486bf.png",
+        "review": "Viewed original and revised source; native wrap and authored review pending."
       },
       "previousGroundReview": {
         "ref": "ground-canyon-rock-v2",
         "finding": "Decoded orange rock was unsuitable for pale plateau/rim or dark basement-rock locality."
-      }
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-ff128abb-7b70-4b71-ad2d-461a879486bf.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "e2d6783fe6b9d730043e3157449628604fcb442da2456e1eab98733c512ab7b1",
+            "originalRetained": "/workspace/generated_images/exec-ff128abb-7b70-4b71-ad2d-461a879486bf.png",
+            "priorSourceRetained": null,
+            "review": "Source contact sheets viewed. Boundary warnings remain explicit; no automatic visual acceptance."
+          },
+          "checkpoint": "822179b1a673954a98104120082993e233cb0109"
+        }
+      ]
     },
     {
       "key": "diamond-evening",

@@ -140,3 +140,50 @@ handheld met the 20m distance check; desktop moved 18.76m but missed the 90-seco
 budget. Neither native darkness nor diagnostic brightness substitutes for full
 night driving acceptance. See pack12 evidence for final exact results and retained
 limitations. Do not publish the still-incomplete all-245 request.
+
+## Western mountains and Pacific pack13 checkpoint
+
+Adds 24 distinct physical-site panoramas and material-compatible visual bindings:
+201/245 assigned, 44 remaining. Recipes and remaining route list are in
+`data/race-environments/pack13-{recipes,evidence}.json`. The new physical cells remain
+310,626 snow, 18,557 grass and 20,860 gravel; the six reused visual substrates were
+reviewed as source tiles and native repeats. Active road ribbons remain patched
+asphalt, Skalkaho gray gravel, Magruder packed dirt and Thompson snowroad; shoulders
+remain hidden. No road/surface/geometry/lighting/weather or mission changes.
+
+All 48 current new native device views were manually reviewed, alongside 12 current
+older-repair views and six original/replacement comparisons. Seventy native cases
+ran successfully in total, including four retained superseded cases. The decoded
+201-route wrap/opacity/uniqueness check has no numeric warnings after corrections,
+but this is not seam or full-route acceptance. Boise lower-edge columns, Thompson
+cloud-top extension, Little Tujunga's broad bare edge strip and older Moki lower-edge
+extrusion remain explicit polish gaps. Seven new night routes have authored .05
+sky exposure; Thompson's snow fog fully occludes the sky. The saved lighting stays
+unchanged. Diagnostic 100% views are never release defaults.
+
+Final focused suite: 112 passed, no skips; exact Campaign browser set: six passed;
+manifest: 1,781 documents/16 assets; all-245 visual-only comparison passed against
+`2dd6bff9928437c115a16e8d9aab62a4b60443df`. The first suite caught an overlapping
+Hatcher import checksum and legitimate removal of the last inherited Moki sky use.
+The settled final run is green after exact Moki/Oak Creek supersession records with
+pinned original source/native bytes and reviewed comparison images. Both originals
+remain geographically plausible; the records explain the more specific active
+composition, not a fabricated placement or blanket exemption. Existing negative
+coverage remains unchanged and the configured-unused snow warning stays visible.
+
+Short real driving: Sandia desktop 22.99m (6.27s simulation/8.37s wall) and Laguna
+handheld 20.17m (4.03s simulation/35.85s wall), with no page/network/missing-art errors.
+Skalkaho handheld failed 20m: 3.92m during the 90s input budget, live running session,
+5.10s simulation advance, near road centre and no missing art. This is not a startup
+failure or an established baseline defect; it was not retried. Laguna's matched
+paused authored/100%-sky pair is retained; actual night readability remains pending.
+Tower Hill was not rerun. See the evidence JSON for exact capture paths and logs.
+
+Repeat native coverage with `RACE_RENDER_PACK=western-mountains-pacific-pack13
+RACE_RENDER_COMPACT=1 RACE_QA_CHROMIUM=/usr/bin/chromium` and
+`tools/race-environments/renderer.config.mjs`. Use fresh capture directories. Keep
+source review, native authored/diagnostic evidence, effective materials and actual
+driving separate. Before the remaining regional packs, preflight old artwork use;
+inspect imported native boundary rows as well as original image edges. Retain all
+originals and QA, recheck staging at the next integration checkpoint, and do not
+publish this still-incomplete all-245 branch.

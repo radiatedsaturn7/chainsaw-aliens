@@ -162,7 +162,7 @@
     },
     {
       "key": "goldcamp-night",
-      "raceRef": "Gold Camp Road — Colorado Springs",
+      "raceRef": "Gold Camp Road \u2014 Colorado Springs",
       "brief": "Close dark weathered granite Cheyenne Mountain canyon with ponderosa pines and a tiny abandoned stone railroad portal to one side; layered distant city basin, clear night crescent only high center.",
       "ground": "ground-gray-gravel-v2",
       "brightness": 0.05,
@@ -173,7 +173,7 @@
         "snow": "ground-gray-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Gold Camp Road — Colorado Springs",
+        "name": "Gold Camp Road \u2014 Colorado Springs",
         "lat": 38.79,
         "lon": -104.9,
         "country": "us"
@@ -232,7 +232,7 @@
     },
     {
       "key": "phantom-morning",
-      "raceRef": "Phantom Canyon Road — Gold Belt Tour",
+      "raceRef": "Phantom Canyon Road \u2014 Gold Belt Tour",
       "brief": "Enclosed rugged granite canyon, steep pale pink crags with sparse pinyon and juniper, narrow dry valley, abandoned tiny iron trestle deep below. No broad red mesas.",
       "ground": "ground-gray-gravel-v2",
       "brightness": 0.65,
@@ -243,7 +243,7 @@
         "snow": "ground-gray-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Phantom Canyon Road — Gold Belt Tour",
+        "name": "Phantom Canyon Road \u2014 Gold Belt Tour",
         "lat": 38.61,
         "lon": -105.12,
         "country": "us"
@@ -299,7 +299,7 @@
     },
     {
       "key": "shelf-morning",
-      "raceRef": "Shelf Road — Gold Belt Tour",
+      "raceRef": "Shelf Road \u2014 Gold Belt Tour",
       "brief": "Tall tawny limestone canyon wall and a narrow natural window rock high in central bluff, dry creek valley with pinyon juniper, broad low distant ridge at both ends.",
       "ground": "ground-gray-gravel-v2",
       "brightness": 0.65,
@@ -310,7 +310,7 @@
         "snow": "ground-gray-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Shelf Road — Gold Belt Tour",
+        "name": "Shelf Road \u2014 Gold Belt Tour",
         "lat": 38.65,
         "lon": -105.23,
         "country": "us"
@@ -366,7 +366,7 @@
     },
     {
       "key": "skyline-night",
-      "raceRef": "Skyline Drive — Cañon City",
+      "raceRef": "Skyline Drive \u2014 Ca\u00f1on City",
       "brief": "Narrow tilted tan hogback ridge over broad Canon City Arkansas River basin; dark sparse settlement grid and low distant Wet Mountains, clear crescent and sparse stars.",
       "ground": "ground-desert-scrub-v2",
       "brightness": 0.05,
@@ -377,7 +377,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "Skyline Drive — Cañon City",
+        "name": "Skyline Drive \u2014 Ca\u00f1on City",
         "lat": 38.46,
         "lon": -105.25,
         "country": "us"
@@ -432,7 +432,7 @@
     },
     {
       "key": "utepass-morning",
-      "raceRef": "US 24 — Ute Pass Woodland Park",
+      "raceRef": "US 24 \u2014 Ute Pass Woodland Park",
       "brief": "Ponderosa-pine wooded Ute Pass saddle, forested green granite foothills and massive Pikes Peak shoulder well back left of center, scattered ruined timber structures.",
       "ground": "ground-frozen-forest",
       "brightness": 0.65,
@@ -443,7 +443,7 @@
         "snow": "ground-frozen-forest"
       },
       "sourceOrigin": {
-        "name": "US 24 — Ute Pass / Woodland Park",
+        "name": "US 24 \u2014 Ute Pass / Woodland Park",
         "lat": 38.91,
         "lon": -104.98,
         "country": "us"
@@ -499,7 +499,7 @@
     },
     {
       "key": "co67-morning",
-      "raceRef": "CO 67 — Woodland Park Cripple Creek",
+      "raceRef": "CO 67 \u2014 Woodland Park Cripple Creek",
       "brief": "High rolling montane grass meadows alternating with dark ponderosa/aspen woods, distant Pikes massif, tiny weathered mining headframe in central valley.",
       "ground": "ground-frozen-forest",
       "brightness": 0.65,
@@ -510,7 +510,7 @@
         "snow": "ground-frozen-forest"
       },
       "sourceOrigin": {
-        "name": "CO 67 — Woodland Park / Cripple Creek",
+        "name": "CO 67 \u2014 Woodland Park / Cripple Creek",
         "lat": 38.83,
         "lon": -105.14,
         "country": "us"
@@ -568,7 +568,7 @@
     },
     {
       "key": "gardengods-night",
-      "raceRef": "Garden of the Gods — paved park road",
+      "raceRef": "Garden of the Gods \u2014 paved park road",
       "brief": "Distinct upright red sandstone fins and tilted narrow slabs rising out of low juniper foothills, dark Pikes Peak mass beyond, clear starry night restrained crescent.",
       "ground": "ground-red-gravel-v2",
       "brightness": 0.05,
@@ -579,7 +579,7 @@
         "snow": "ground-red-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Garden of the Gods — paved park road",
+        "name": "Garden of the Gods \u2014 paved park road",
         "lat": 38.88,
         "lon": -104.88,
         "country": "us"
@@ -634,7 +634,7 @@
     },
     {
       "key": "ppir-noon",
-      "raceRef": "Pikes Peak International Raceway — Fountain",
+      "raceRef": "Pikes Peak International Raceway \u2014 Fountain",
       "brief": "Fountain shortgrass plain with a low distant Pikes Peak massif and tiny low grandstands; angular scale corrected after actual production driving comparison. Clear noon preserved.",
       "ground": "ground-winter-snow-litter-v1",
       "brightness": 1,
@@ -645,7 +645,7 @@
         "snow": "ground-winter-snow-litter-v1"
       },
       "sourceOrigin": {
-        "name": "Pikes Peak International Raceway — Fountain",
+        "name": "Pikes Peak International Raceway \u2014 Fountain",
         "lat": 38.59,
         "lon": -104.68,
         "country": "us"
@@ -715,7 +715,7 @@
     },
     {
       "key": "pueblo-evening",
-      "raceRef": "Pueblo Motorsports Park — road course or drag strip",
+      "raceRef": "Pueblo Motorsports Park \u2014 road course or drag strip",
       "brief": "Open tawny shortgrass prairie and rolling shale mesas west of Pueblo, low distant Wet Mountain skyline, sparse abandoned paddock sheds and slim timing tower.",
       "ground": "ground-desert-scrub-v2",
       "brightness": 0.42,
@@ -727,7 +727,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "Pueblo Motorsports Park — road course or drag strip",
+        "name": "Pueblo Motorsports Park \u2014 road course or drag strip",
         "lat": 38.31,
         "lon": -104.67,
         "country": "us"
@@ -782,7 +782,7 @@
     },
     {
       "key": "angelesforest-evening",
-      "raceRef": "Angeles Forest Highway — County N3",
+      "raceRef": "Angeles Forest Highway \u2014 County N3",
       "brief": "North slope San Gabriel uplift with broad dry brush-filled basin and sage green chaparral ridges, weathered gray granite cuts, scattered pine pockets and distant Antelope Valley opening.",
       "ground": "ground-snow-chaparral-v1",
       "brightness": 0.42,
@@ -793,7 +793,7 @@
         "snow": "ground-snow-chaparral-v1"
       },
       "sourceOrigin": {
-        "name": "Angeles Forest Highway — County N3",
+        "name": "Angeles Forest Highway \u2014 County N3",
         "lat": 34.34,
         "lon": -118.12,
         "country": "us"
@@ -1121,7 +1121,7 @@
     },
     {
       "key": "sangabriel-morning",
-      "raceRef": "San Gabriel Canyon Road — SR 39",
+      "raceRef": "San Gabriel Canyon Road \u2014 SR 39",
       "brief": "Large V-shaped San Gabriel canyon, pale granite wash and small restrained blue-green reservoir glimpse deep center valley, steep chaparral flanks and oak pockets.",
       "ground": "ground-gray-gravel-v2",
       "brightness": 0.65,
@@ -1132,7 +1132,7 @@
         "snow": "ground-gray-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "San Gabriel Canyon Road — SR 39",
+        "name": "San Gabriel Canyon Road \u2014 SR 39",
         "lat": 34.22,
         "lon": -117.86,
         "country": "us"
@@ -1192,7 +1192,7 @@
       "brief": "Lower rounded dusty foothill switchback country, close sage chaparral with yucca, tan soil and isolated coast-live-oak groves in gullies, distant broad San Fernando valley haze.",
       "ground": "ground-desert-scrub-v2",
       "brightness": 1,
-      "sourceImage": "/workspace/generated_images/exec-03047722-3bd5-4112-b126-c74dd19651b5.png",
+      "sourceImage": "/workspace/generated_images/exec-aa9ca82e-cfbc-4c13-83da-1ac2383769d9.png",
       "ref": "environment-v1-littletujunga-noon",
       "source": "environment-v1/littletujunga-noon.png",
       "tiles": {
@@ -1234,25 +1234,71 @@
         "priorSourceImage": null
       },
       "sourceBoundaryMetrics": {
-        "path": "/workspace/generated_images/exec-03047722-3bd5-4112-b126-c74dd19651b5.png",
-        "width": 2144,
-        "height": 733,
-        "edgeMeanRGB": 19.272851296043655,
-        "edgeMaximumRGB": 138,
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 8.392725598526702,
+        "edgeMaximumRGB": 108.66666666666667,
         "topRangeRGB": [
-          10,
+          13,
           5,
           5
         ],
         "bottomRangeRGB": [
-          4,
-          6,
-          5
+          5,
+          7,
+          6
         ],
         "warnings": [
-          "horizontal-wrap"
+          "horizontal-wrap",
+          "top-row-extrusion"
         ],
         "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      },
+      "sourceHistory": [
+        {
+          "sourceImage": "/workspace/generated_images/exec-03047722-3bd5-4112-b126-c74dd19651b5.png",
+          "artProvenance": null,
+          "checkpoint": "822179b1a673954a98104120082993e233cb0109"
+        },
+        {
+          "sourceImage": "/workspace/generated_images/exec-cd8bd1e0-4fa0-4176-8d35-b3c113c08408.png",
+          "artProvenance": {
+            "tool": "image_gen.imagegen",
+            "sourceSha256": "bc4e2d77232940f1dc881ee94a78b9017f4f34d3562b93688769619d6d24a554",
+            "originalRetained": "/workspace/generated_images/exec-cd8bd1e0-4fa0-4176-8d35-b3c113c08408.png",
+            "priorSourceRetained": "/workspace/generated_images/exec-03047722-3bd5-4112-b126-c74dd19651b5.png",
+            "review": "Viewed original and revised source; native wrap and authored review pending."
+          },
+          "sourceBoundaryMetrics": {
+            "path": "/workspace/generated_images/exec-03047722-3bd5-4112-b126-c74dd19651b5.png",
+            "width": 2144,
+            "height": 733,
+            "edgeMeanRGB": 19.272851296043655,
+            "edgeMaximumRGB": 138,
+            "topRangeRGB": [
+              10,
+              5,
+              5
+            ],
+            "bottomRangeRGB": [
+              4,
+              6,
+              5
+            ],
+            "warnings": [
+              "horizontal-wrap"
+            ],
+            "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+          }
+        }
+      ],
+      "artProvenance": {
+        "tool": "image_gen.imagegen",
+        "sourceSha256": "01c78365b1486e9e4d7df142cdfa6339bb41f0ca6aa7a36a2a01aa72c5a8fbd8",
+        "originalRetained": "/workspace/generated_images/exec-aa9ca82e-cfbc-4c13-83da-1ac2383769d9.png",
+        "priorSourceRetained": "/workspace/generated_images/exec-cd8bd1e0-4fa0-4176-8d35-b3c113c08408.png",
+        "prompt": "Correct ONLY panorama wrap/boundary composition in this exact Little Tujunga Canyon, gray-green chaparral rounded San Gabriel foothills with distant urban basin under clear noon pixel art. Both outermost left and right strips must be visually identical: quiet blue sky to exactly 60% image height, then same low distant gray-brown ridge silhouette at exactly same height and shade, then same quiet local ground color. No near hills, trees, structures or prominent features in either outer 10%; blend naturally into unchanged central scene. This is a circular panorama, so the left/right join must have zero noticeable vertical step. Keep original time and regional identity. Uniform blue topmost row and quiet uniform ground bottommost row; no texture touching those boundary rows. No frame. 3:1, no text/logos.",
+        "review": "Second boundary correction source viewed; final native review pending."
       }
     },
     {
@@ -1329,7 +1375,7 @@
     },
     {
       "key": "denver-morning",
-      "raceRef": "Denver, CO — Landmark Run",
+      "raceRef": "Denver, CO \u2014 Landmark Run",
       "brief": "Abandoned Denver downtown from low urban street elevation: distinct mixed brick warehouses and modern stepped towers, distant blue Front Range only on west horizon, dry plains city not mountain valley, small muted cottonwood canopy.",
       "ground": "ground-gray-gravel-v2",
       "brightness": 0.65,
@@ -1340,7 +1386,7 @@
         "snow": "ground-gray-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Denver, CO — Landmark Run",
+        "name": "Denver, CO \u2014 Landmark Run",
         "lat": 39.748,
         "lon": -104.994,
         "country": "us"

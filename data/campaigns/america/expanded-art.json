@@ -4927,6 +4927,198 @@
       "maxEdge": 1024,
       "placements": [],
       "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-lagunaseca-night",
+      "source": "environment-v1/lagunaseca-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hatcher-noon",
+      "source": "environment-v1/hatcher-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-beartooth-noon",
+      "source": "environment-v1/beartooth-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-springmountain-morning",
+      "source": "environment-v1/springmountain-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sandia-noon",
+      "source": "environment-v1/sandia-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-needles-noon",
+      "source": "environment-v1/needles-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-windriver-morning",
+      "source": "environment-v1/windriver-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-portlandraceway-morning",
+      "source": "environment-v1/portlandraceway-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pacificraceways-evening",
+      "source": "environment-v1/pacificraceways-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-idaho21-noon",
+      "source": "environment-v1/idaho21-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-phoenix-morning",
+      "source": "environment-v1/phoenix-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-losangeles-night",
+      "source": "environment-v1/losangeles-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-boise-night",
+      "source": "environment-v1/boise-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-billings-morning",
+      "source": "environment-v1/billings-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-lasvegas-morning",
+      "source": "environment-v1/lasvegas-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-albuquerque-night",
+      "source": "environment-v1/albuquerque-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-portlandcity-morning",
+      "source": "environment-v1/portlandcity-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-saltlake-night",
+      "source": "environment-v1/saltlake-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-seattle-night",
+      "source": "environment-v1/seattle-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-cheyenne-morning",
+      "source": "environment-v1/cheyenne-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-thompson-snow-night",
+      "source": "environment-v1/thompson-snow-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-skalkaho-evening",
+      "source": "environment-v1/skalkaho-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-magruder-evening",
+      "source": "environment-v1/magruder-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-chiefjoseph-noon",
+      "source": "environment-v1/chiefjoseph-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
     }
   ]
 }

@@ -38,10 +38,10 @@ test('material-specific terrain rejects snow/rock and dirt/gravel swaps in norma
 });
 import {gunzipSync} from 'node:zlib';
 import {terrainArtMaterials} from '../../tools/race-environments/terrain-materials.mjs';
-test('Northeast and Plains visual bindings declare a matching material for every normal and rough terrain cell',()=>{
+test('Northeast, Plains and Western visual bindings declare a matching material for every normal and rough terrain cell',()=>{
  const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
- const rows=ledger.rows.filter(r=>['northeast-corridor-pack11','plains-route66-pack12'].includes(r.environmentPack));
- assert.equal(rows.length,40);
+ const rows=ledger.rows.filter(r=>['northeast-corridor-pack11','plains-route66-pack12','western-mountains-pacific-pack13'].includes(r.environmentPack));
+ assert.equal(rows.length,64);
  let cells=0;
  for(const row of rows){
   let doc=JSON.parse(fs.readFileSync('data/server-storage/files/'+row.documentPath));
