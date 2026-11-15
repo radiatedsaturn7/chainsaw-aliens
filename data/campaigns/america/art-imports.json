@@ -3025,8 +3025,8 @@
   },
   "environment-v1-moki-cedar-mesa-day": {
     "source": "assets/campaign-art/environment-v1/moki-cedar-mesa-day.png",
-    "sourceSha256": "fbbc7a526932bd14b58e9d1aa5a5e4556a32f78c54afb57126c6b30388db30d0",
-    "documentSha256": "7f01d3f3203dde6fc678720f8dfdd146d948906af7d45f56fa28ed3eafe2f414",
+    "sourceSha256": "ab4508b58a0c29c9e3f7a6bba13de9cbcc9566c0ce2cbd45074b9e468ca4a861",
+    "documentSha256": "8d5e7c7b75369f52e6d050bbb8500af4f85e3749c16b2a75a3eb16d1aacda68a",
     "width": 1024,
     "height": 341
   },
@@ -3900,8 +3900,8 @@
   },
   "environment-v1-littletujunga-noon": {
     "source": "assets/campaign-art/environment-v1/littletujunga-noon.png",
-    "sourceSha256": "01c78365b1486e9e4d7df142cdfa6339bb41f0ca6aa7a36a2a01aa72c5a8fbd8",
-    "documentSha256": "0dcbebeefd3362c4202c074da98ac8901aab39bbaed882c174af9fb6f63c8eed",
+    "sourceSha256": "6c22663a9585d7eadffc48289cca68a52587c2882596e2242e6212c1598bbaf9",
+    "documentSha256": "e203f65c49325cb5cd06f2b03eabf7471e33242bf134cbb17bb08a4d62b2dfcb",
     "width": 1024,
     "height": 341
   },
@@ -4334,8 +4334,8 @@
   },
   "environment-v1-boise-night": {
     "source": "assets/campaign-art/environment-v1/boise-night.png",
-    "sourceSha256": "dd07b68288ffb8a26974d3cc8617e341589d94eef41ba09f85aaee36126c2379",
-    "documentSha256": "a61840250f7562d782d74f1ce03c69f11263bbced5e8e999181135e097cd0896",
+    "sourceSha256": "0e3d6563ee33e073e4962d71f7feec097cf505d7f2d0a684ad8ecdc2617b2596",
+    "documentSha256": "f2b8b16f5ce1eb3af79ff9b3dca8f38d447dcd4edcb83a9bc76a2e45b6e87de4",
     "width": 1024,
     "height": 341
   },
@@ -4390,8 +4390,8 @@
   },
   "environment-v1-thompson-snow-night": {
     "source": "assets/campaign-art/environment-v1/thompson-snow-night.png",
-    "sourceSha256": "7909693dea78243293f290d0ee3ccf036b67b05cc4f4bcd806ab689b8d70afcc",
-    "documentSha256": "ddb225276bc9f02f20c414446b414351ea985fc52e8c440f0c10ec7dd19ff261",
+    "sourceSha256": "444948637966cd8a3517b8af21312992328048d64203c508fc08eb9502d6688c",
+    "documentSha256": "ec107450e33c0740ecf3f735e3a0bf7cbf91af7fbfd96a77d5adc8c99c4da79c",
     "width": 1024,
     "height": 341
   },
@@ -4415,5 +4415,180 @@
     "documentSha256": "7f1425c28bc5c61d8b9ece78780ed31fd611732399c3755666ee0817b93e10f8",
     "width": 1024,
     "height": 341
+  },
+  "ground-patchy-snow-leaf-v1": {
+    "source": "assets/campaign-art/environment-v1/ground-patchy-snow-leaf-v1.png",
+    "sourceSha256": "74ad05b8c9624d0242962b2c77f0a87a1ca6df24524f54bee37469eb773070b5",
+    "documentSha256": "3886c3678f640a528771561d7614b7cea5357761073655fd686198c7ea3afa3c",
+    "width": 512,
+    "height": 512
+  },
+  "environment-v1-indyoval-night": {
+    "source": "assets/campaign-art/environment-v1/indyoval-night.png",
+    "sourceSha256": "7762aa9d34dae25eab6467ab90195fc1e5be08d61b4b58529168b47e6959a2c8",
+    "documentSha256": "0c0bb653707a8472751e81e76182b86ec346f4c60e836c294e96b0252b517029",
+    "width": 1024,
+    "height": 342
+  },
+  "environment-v1-indyroad-evening": {
+    "source": "assets/campaign-art/environment-v1/indyroad-evening.png",
+    "sourceSha256": "23cf94f495e6adcf99f785c1566e271842dec9cfd03146c15fe28921c562270f",
+    "documentSha256": "def0c04b3cfabd0b9aa4a7e43331655ac6a1600b7e0683744a3a604f5cc6c304",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-barber-noon": {
+    "source": "assets/campaign-art/environment-v1/barber-noon.png",
+    "sourceSha256": "9f4c82f7a237f541b4e7a30526a50e007a930de14d4576ac86d4cd0988b09494",
+    "documentSha256": "61e7d275632df71f4c480093c222cfd14afe9533d7d8f5424501de907115d490",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-ncm-night": {
+    "source": "assets/campaign-art/environment-v1/ncm-night.png",
+    "sourceSha256": "ae05ef392d59a21e91ef42a447c0582350e0e3a9d07d391ad56b59649151d820",
+    "documentSha256": "b41515449461f6d55b38b9e3e6e8b039d36fa60ae8d55c558763388333f2c521",
+    "width": 1024,
+    "height": 350
+  },
+  "environment-v1-nola-noon": {
+    "source": "assets/campaign-art/environment-v1/nola-noon.png",
+    "sourceSha256": "78a9fb91e38cc30de4e2c786c1deab51d397e64d3b6d6b72de71c2b37a07f0e2",
+    "documentSha256": "dd6f203db936dd88dc2b3bba01dde754fcff63a265622d6e57ebecd51ef6ad7b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-gingerman-evening": {
+    "source": "assets/campaign-art/environment-v1/gingerman-evening.png",
+    "sourceSha256": "00ebe54e79f423416bc23f5d34f50198c14abeea3c98aa0e81a2d7b92dc2c5bf",
+    "documentSha256": "b3e7ce85ca9cb385606bcced810b2febc9b59dffd688e684562c90b4a2ebd588",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-brainerd-noon": {
+    "source": "assets/campaign-art/environment-v1/brainerd-noon.png",
+    "sourceSha256": "b38619b2d7e3a7dce0c6ea7a6e88cd74018d38dd744b8c4a2d7c62c62d6cda1d",
+    "documentSha256": "b704557e489f581b13ff5915e30d8e58674633e4b2dad58fc92502a08cf9acdf",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-nccar-morning": {
+    "source": "assets/campaign-art/environment-v1/nccar-morning.png",
+    "sourceSha256": "4ce1bf7dba861a713ccb90cfc1a1e0727001461f75841b323b51ef19ed2c7234",
+    "documentSha256": "37dc976e7caef35457902883c0059d7b51bc9f525a395d1d2a28dd22d531d10d",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-carolinapark-noon": {
+    "source": "assets/campaign-art/environment-v1/carolinapark-noon.png",
+    "sourceSha256": "c59cb76fc3e8ef2f52c46ad05701163a2ca5f8920edb92ee9f71572efa3a450d",
+    "documentSha256": "abe9da0d897685b3ff24e2e47f8f831494f8b52670c44926e2b2641c551d189d",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-birmingham-night": {
+    "source": "assets/campaign-art/environment-v1/birmingham-night.png",
+    "sourceSha256": "d6c5a18290cb91b92f6fa7d32829e0e5eebd5ef067a3479a33b1d96d1c38620b",
+    "documentSha256": "37ad712308d1c57acd5f6ea0bc7977cb22486e8719a0219bf8ec1861d36fc151",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-atlanta-evening": {
+    "source": "assets/campaign-art/environment-v1/atlanta-evening.png",
+    "sourceSha256": "448717a79a21c4c447ff12a5def8222a09ba6ee28ed2bdb3f32869d93da8a777",
+    "documentSha256": "a2a1aed357b60d1be30df8939dbbfe1a3860e10b4a8b8fbe8b71b4f13719982f",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-chicago-night": {
+    "source": "assets/campaign-art/environment-v1/chicago-night.png",
+    "sourceSha256": "175233f9e87ea4fe01cb7c4695ade9dbdc73f421c43237e4dc857368975dcad5",
+    "documentSha256": "a28553bd9171d30386eda95e92aace166b6fdc2fb826e96519c2e895a9f7e226",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-desmoines-night": {
+    "source": "assets/campaign-art/environment-v1/desmoines-night.png",
+    "sourceSha256": "6e3b5e4fdb85985aaf2b16eca1f88cdd5120b456bb01c66808b0df958770b869",
+    "documentSha256": "79e55aeacf96582c4925065389aa7a6b9166bc61614fbcc27b75c8717c981159",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-louisville-night": {
+    "source": "assets/campaign-art/environment-v1/louisville-night.png",
+    "sourceSha256": "c839c6e0f4e7d2a310ffd91114e556327a9811df9a84b2074b63b14eb577d847",
+    "documentSha256": "0c7a515b5e2b5aff68f545ac4ba07ee3d923421ad5fe8f46310c51a8e9557863",
+    "width": 1024,
+    "height": 350
+  },
+  "environment-v1-detroit-morning": {
+    "source": "assets/campaign-art/environment-v1/detroit-morning.png",
+    "sourceSha256": "87492e81b1940ff1e99e56631744a77cc7f049ee6c065b052ad6073de7e32df7",
+    "documentSha256": "8c168f5ddaa5ef8867ac9b75e46659f0c1f5c5a32651a0f60ae47d2e2abc4746",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-indianapoliscity-morning": {
+    "source": "assets/campaign-art/environment-v1/indianapoliscity-morning.png",
+    "sourceSha256": "de9d55449b344833955e42bdf1c9465bbdc718345f08d504232453a876de9087",
+    "documentSha256": "ad3133f899dfe63ea7d995f792a5112c19cf9068a88b831d5aac3fcc18e9829b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-neworleans-noon": {
+    "source": "assets/campaign-art/environment-v1/neworleans-noon.png",
+    "sourceSha256": "44fa3619368fa40187c6a840a818879e6a9d67f5b2c322ab088e3a2a126c0116",
+    "documentSha256": "773b5d0008536f080bb29f3d504aec88466a08b958444d7de66c74342577c4bd",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-minneapolis-noon": {
+    "source": "assets/campaign-art/environment-v1/minneapolis-noon.png",
+    "sourceSha256": "2ead4a0837acedd12f6100939c79b22c61514e111ee386ffdeb7e9f4df36bd81",
+    "documentSha256": "ff9c3016dcacaf9e9677d8ebf27066e94da13f520276c0ab7624af48367bdc85",
+    "width": 1024,
+    "height": 342
+  },
+  "environment-v1-jackson-noon": {
+    "source": "assets/campaign-art/environment-v1/jackson-noon.png",
+    "sourceSha256": "befffc68e01e43181522231c1255780e4a70be732a3d18da8dcef3a245607210",
+    "documentSha256": "e75eb380ab3fc808be45a77853f7a21220fc005a64d20dd77cc6bbc53cc78562",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-charlotte-morning": {
+    "source": "assets/campaign-art/environment-v1/charlotte-morning.png",
+    "sourceSha256": "3411af19fcee96fcb41de54264f8b7e7ce2b108e79cc647e3e7f976cff567625",
+    "documentSha256": "57d948d7fa0ed04bb5810e495978c7229ed412dc5507179a245bf6576fd72fd4",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-cleveland-evening": {
+    "source": "assets/campaign-art/environment-v1/cleveland-evening.png",
+    "sourceSha256": "4f27e181518c14d98c3974a1cb453072794c763f005ee4d08466e844f359b405",
+    "documentSha256": "f0b5637289e5451a586f1d969eba13bd6b8d5823e3cbdece9e293a77f804308c",
+    "width": 1024,
+    "height": 342
+  },
+  "environment-v1-nashville-night": {
+    "source": "assets/campaign-art/environment-v1/nashville-night.png",
+    "sourceSha256": "4cb3282deced22c1d03599913bdde247781420468e04ff909224e9e0f04e4757",
+    "documentSha256": "13fa6b986089edd06703c84d953f1acead5a80ed02d6baaf19e84d7226e399ea",
+    "width": 1024,
+    "height": 350
+  },
+  "environment-v1-flatrock-night": {
+    "source": "assets/campaign-art/environment-v1/flatrock-night.png",
+    "sourceSha256": "1dc7961f71a2fdae6c9498b5e2519203f0dde76ac0884c2f7648a6816d05d5b1",
+    "documentSha256": "79355b577f74d0cfcfc5813469fef4900ed0986c0011ae565a70e019ba29cf40",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-milwaukee-morning": {
+    "source": "assets/campaign-art/environment-v1/milwaukee-morning.png",
+    "sourceSha256": "7211ce924e580e170d9f60496d9aab83f2f39d58f9d0f3724a9581f1de7c066a",
+    "documentSha256": "ad413ac867fcef2d37379ccc60e14e6ae8417a7051c7d1d25522cece63da3fba",
+    "width": 1024,
+    "height": 350
   }
 }

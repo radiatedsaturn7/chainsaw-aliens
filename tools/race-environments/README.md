@@ -187,3 +187,16 @@ driving separate. Before the remaining regional packs, preflight old artwork use
 inspect imported native boundary rows as well as original image edges. Retain all
 originals and QA, recheck staging at the next integration checkpoint, and do not
 publish this still-incomplete all-245 branch.
+
+
+## Pack 14: Southern and Great Lakes checkpoint
+
+24 exact previously unbound routes are now assigned, bringing the ledger to 225/245 (20 remain). See `data/race-environments/pack14-recipes.json` for distinct site compositions and original-image provenance, `pack14-evidence.json` for separate native/driving/material evidence, and `release-checklist.md` for remaining full-scope and hosted-check gates. Indianapolis oval and road course retain separate authored night/evening variants. All 373,782 physical snow cells in this pack remain snow; 13 routes use a new snow/deciduous-litter visual, 11 retain the existing winter-snow material. Road and margin semantics are preserved.
+
+48 new native device cases plus eight repair cases and eight original/current retirement comparisons were captured and reviewed; these are not full-route driving acceptance. GingerMan desktop and NCM handheld passed the unchanged 20 m input-driven gate, but NCM retains two aborted smoke-art network requests and nearly black authored exposure. Both have matched paused diagnostics. Eight new night scenes retain 5% brightness. No world lighting/weather was changed.
+
+Boise bottom, Thompson top and Moki bottom boundary variation is reduced. Little Tujunga vegetation improves the bare side fields but its numeric wrap worsens and remains open; extreme-pitch clamped bands persist elsewhere. The older Ozark active panorama also retains conspicuous lower extrusion. All full-route QA flags remain pending. Original `skybox-data-center-city` and `skybox-ozarks` bytes are specifically preserved in the existing supersession schema with pinned original/current comparisons; no generic usage exemption or test gate was weakened.
+
+Reproduce new native coverage with `RACE_RENDER_PACK=south-greatlakes-pack14 RACE_RENDER_COMPACT=1` and the portable renderer config. Apply only this pack via `prepare-south-greatlakes-pack.mjs`, repeat `--only REF` arguments through the canonical importer, then run `bind.mjs --apply` followed by the readback. Preserve old evidence. The release checklist deliberately keeps assignment, semantic eligibility, native review, actual driving, and complete acceptance distinct.
+
+Pack14 validation history is explicit: the full 112-test command first found the unplaced city sky, then found the unplaced Ozark sky (111 passed in each run). After both specific preserved-original records, the actual-use gate and all 15 supersession negatives passed in a targeted 16-test rerun, with the configured snow warning visible. The other 111 checks stayed unchanged; a final single all-112 invocation was not repeated after that registry-only repair. Six Campaign Artwork browser tests, the 245-race preservation readback, 225 decoded active skies and the 1806-document manifest passed. One numeric sky warning remains at Little Tujunga. Nothing is published from this checkpoint.

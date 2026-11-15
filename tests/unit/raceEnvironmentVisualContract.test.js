@@ -29,7 +29,7 @@ test('diagnostic selector aliases must exactly match the manifest folder and log
 
 import {assertTerrainArtMaterial} from '../../tools/race-environments/terrain-materials.mjs';
 test('material-specific terrain rejects snow/rock and dirt/gravel swaps in normal and rough layers',()=>{
- for(const [ref,correct,wrong] of [['ground-plains-snow-straw-v1','snow','grass'],['ground-prairie-grass-v1','grass','dirt'],['ground-snow-chaparral-v1','snow','dirt'],['ground-alpine-snow-granite-v1','snow','gravel'],['ground-decomposed-granite-dirt-v1','dirt','gravel'],['ground-winter-snow-litter-v1','snow','grass'],['ground-temperate-grass-v1','grass','snow'],['ground-alpine-rock-v2','gravel','snow'],['ground-gray-gravel-v2','gravel','dirt']]){
+ for(const [ref,correct,wrong] of [['ground-plains-snow-straw-v1','snow','grass'],['ground-prairie-grass-v1','grass','dirt'],['ground-snow-chaparral-v1','snow','dirt'],['ground-alpine-snow-granite-v1','snow','gravel'],['ground-decomposed-granite-dirt-v1','dirt','gravel'],['ground-winter-snow-litter-v1','snow','grass'],['ground-patchy-snow-leaf-v1','snow','dirt'],['ground-temperate-grass-v1','grass','snow'],['ground-alpine-rock-v2','gravel','snow'],['ground-gray-gravel-v2','gravel','dirt']]){
   for(const slot of ['artRef','roughArtRef']){
    assertTerrainArtMaterial({[slot]:ref},{tileId:correct});
    assert.throws(()=>assertTerrainArtMaterial({[slot]:ref},{tileId:wrong}),/must visually represent/);
@@ -40,8 +40,8 @@ import {gunzipSync} from 'node:zlib';
 import {terrainArtMaterials} from '../../tools/race-environments/terrain-materials.mjs';
 test('Northeast, Plains and Western visual bindings declare a matching material for every normal and rough terrain cell',()=>{
  const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
- const rows=ledger.rows.filter(r=>['northeast-corridor-pack11','plains-route66-pack12','western-mountains-pacific-pack13'].includes(r.environmentPack));
- assert.equal(rows.length,64);
+ const rows=ledger.rows.filter(r=>['northeast-corridor-pack11','plains-route66-pack12','western-mountains-pacific-pack13','south-greatlakes-pack14'].includes(r.environmentPack));
+ assert.equal(rows.length,88);
  let cells=0;
  for(const row of rows){
   let doc=JSON.parse(fs.readFileSync('data/server-storage/files/'+row.documentPath));

@@ -5119,6 +5119,206 @@
       "maxEdge": 1024,
       "placements": [],
       "usageNote": "Exact Western mountains Pacific pack13 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "ground-patchy-snow-leaf-v1",
+      "source": "environment-v1/ground-patchy-snow-leaf-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Patchy snow and deciduous leaf litter for existing snow physical cells; no physics changes."
+    },
+    {
+      "name": "environment-v1-indyoval-night",
+      "source": "environment-v1/indyoval-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-indyroad-evening",
+      "source": "environment-v1/indyroad-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-barber-noon",
+      "source": "environment-v1/barber-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ncm-night",
+      "source": "environment-v1/ncm-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-nola-noon",
+      "source": "environment-v1/nola-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-gingerman-evening",
+      "source": "environment-v1/gingerman-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-brainerd-noon",
+      "source": "environment-v1/brainerd-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-nccar-morning",
+      "source": "environment-v1/nccar-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-carolinapark-noon",
+      "source": "environment-v1/carolinapark-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-birmingham-night",
+      "source": "environment-v1/birmingham-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-atlanta-evening",
+      "source": "environment-v1/atlanta-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-chicago-night",
+      "source": "environment-v1/chicago-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-desmoines-night",
+      "source": "environment-v1/desmoines-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-louisville-night",
+      "source": "environment-v1/louisville-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-detroit-morning",
+      "source": "environment-v1/detroit-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-indianapoliscity-morning",
+      "source": "environment-v1/indianapoliscity-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-neworleans-noon",
+      "source": "environment-v1/neworleans-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-minneapolis-noon",
+      "source": "environment-v1/minneapolis-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-jackson-noon",
+      "source": "environment-v1/jackson-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-charlotte-morning",
+      "source": "environment-v1/charlotte-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-cleveland-evening",
+      "source": "environment-v1/cleveland-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-nashville-night",
+      "source": "environment-v1/nashville-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-flatrock-night",
+      "source": "environment-v1/flatrock-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-milwaukee-morning",
+      "source": "environment-v1/milwaukee-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Southern Great Lakes pack14 saved race binding in race-environments ledger."
     }
   ]
 }

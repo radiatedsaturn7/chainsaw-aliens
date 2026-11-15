@@ -36031,7 +36031,7 @@
       "sharingEvidence": [
         "Exact indianapolis/oval source layout at 39.795,-86.234; raceway-indianapolis-oval; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-indianapolis-oval",
@@ -36174,6 +36174,63 @@
         "latitude": 39.795,
         "longitude": -86.234,
         "reference": "https://www.indianapolismotorspeedway.com/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-indyoval-night",
+        "groundPlaneArtRef": "ground-winter-snow-litter-v1",
+        "terrainTileArtById": {
+          "snow": "ground-winter-snow-litter-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "indyoval-night",
+        "raceRef": "Indianapolis Motor Speedway \u2014 Oval",
+        "ref": "environment-v1-indyoval-night",
+        "source": "environment-v1/indyoval-night.png",
+        "brief": "Flat Indianapolis Speedway facility with vast low oval grandstands, thin scoring pylon and pagoda-like original control tower, low tree-lined urban horizon; no mountains.",
+        "lightingInstruction": "DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors.",
+        "brightness": 0.05,
+        "ground": "ground-winter-snow-litter-v1",
+        "tiles": {
+          "snow": "ground-winter-snow-litter-v1"
+        },
+        "sourceOrigin": {
+          "name": "Indianapolis Motor Speedway",
+          "lat": 39.795,
+          "lon": -86.234,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/raceways/sources/indianapolis.json",
+        "catalog": [
+          {
+            "id": "raceway-indianapolis-oval",
+            "venueKey": "indianapolis",
+            "venueName": "Indianapolis Motor Speedway",
+            "hubStage": 6,
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/raceways/sources/indianapolis.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-ef01258a-6f00-4c30-b5f4-f0d5cf1a263a.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Flat Indianapolis Speedway facility with vast low oval grandstands, thin scoring pylon and pagoda-like original control tower, low tree-lined urban horizon; no mountains. DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Flat Indianapolis Speedway facility with vast low oval grandstands, thin scoring pylon and pagoda-like original control tower, low tree-lined urban horizon; no mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -36183,7 +36240,7 @@
       "sharingEvidence": [
         "Exact indianapolis/road source layout at 39.795,-86.234; raceway-indianapolis-road; same facility composition only with identical saved authoredEnvironment."
       ],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-indianapolis-road",
@@ -36323,6 +36380,63 @@
         "latitude": 39.795,
         "longitude": -86.234,
         "reference": "https://www.indianapolismotorspeedway.com/"
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-indyroad-evening",
+        "groundPlaneArtRef": "ground-winter-snow-litter-v1",
+        "terrainTileArtById": {
+          "snow": "ground-winter-snow-litter-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "indyroad-evening",
+        "raceRef": "Indianapolis Motor Speedway \u2014 Grand Prix Road Course",
+        "ref": "environment-v1-indyroad-evening",
+        "source": "environment-v1/indyroad-evening.png",
+        "brief": "Same Indianapolis Speedway facility viewed from its road-course infield, long oval stands distant and layered pit roofs with pagoda-like control tower, flat wooded urban plain. Compatible same physical venue, deliberately separate evening composition from night oval.",
+        "lightingInstruction": "CLEAR EVENING, muted peach horizon and dusky blue upper sky, no noon sky.",
+        "brightness": 0.42,
+        "ground": "ground-winter-snow-litter-v1",
+        "tiles": {
+          "snow": "ground-winter-snow-litter-v1"
+        },
+        "sourceOrigin": {
+          "name": "Indianapolis Motor Speedway",
+          "lat": 39.795,
+          "lon": -86.234,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/raceways/sources/indianapolis.json",
+        "catalog": [
+          {
+            "id": "raceway-indianapolis-road",
+            "venueKey": "indianapolis",
+            "venueName": "Indianapolis Motor Speedway",
+            "hubStage": 6,
+            "lightingPreset": "evening"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/raceways/sources/indianapolis.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-d5f10f13-695e-49a9-aadf-e374162cc54d.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Same Indianapolis Speedway facility viewed from its road-course infield, long oval stands distant and layered pit roofs with pagoda-like control tower, flat wooded urban plain. Compatible same physical venue, deliberately separate evening composition from night oval. CLEAR EVENING, muted peach horizon and dusky blue upper sky, no noon sky. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Same Indianapolis Speedway facility viewed from its road-course infield, long oval stands distant and layered pit roofs with pagoda-like control tower, flat wooded urban plain. Compatible same physical venue, deliberately separate evening composition from night oval.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -40499,7 +40613,7 @@
           "width": 2172,
           "height": 724,
           "edgeMeanRGB": 7.696132596685083,
-          "edgeMaximumRGB": 136.0,
+          "edgeMaximumRGB": 136,
           "topRangeRGB": [
             10,
             6,
@@ -40529,7 +40643,7 @@
               "width": 2172,
               "height": 724,
               "edgeMeanRGB": 31.941528545119706,
-              "edgeMaximumRGB": 186.0,
+              "edgeMaximumRGB": 186,
               "topRangeRGB": [
                 8,
                 4,
@@ -40564,7 +40678,7 @@
       "documentPath": "races/Barber Motorsports Park/document.json",
       "siteGroup": "site-2df0d586d8e95bd2",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-al",
@@ -40692,6 +40806,72 @@
         "maxX": 391.386134832856,
         "minY": -298.5476709188386,
         "maxY": 435.5400097667375
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-barber-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "barber-noon",
+        "raceRef": "Barber Motorsports Park",
+        "ref": "environment-v1-barber-noon",
+        "source": "environment-v1/barber-noon.png",
+        "brief": "Birmingham eastern wooded rolling foothills, rounded mixed oak-pine hills around low empty track terraces, small glass-fronted museum-like building and abandoned paddock; no alpine mountains.",
+        "lightingInstruction": "CLEAR NOON, bright blue sky and white daylight, no stars or moon.",
+        "brightness": 1,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "Barber Motorsports Park",
+          "lat": 33.5332,
+          "lon": -86.6188,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-al.json",
+        "catalog": [
+          {
+            "id": "state-al",
+            "venueKey": "state-al",
+            "venueName": "Barber Motorsports Park",
+            "hubStage": 5,
+            "location": {
+              "lat": 33.5332,
+              "lon": -86.6188
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/state-al.json",
+          "https://barberracingevents.com/"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-f10e6569-c6e3-46ff-a5cc-0bd22f9bb8a6.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Birmingham eastern wooded rolling foothills, rounded mixed oak-pine hills around low empty track terraces, small glass-fronted museum-like building and abandoned paddock; no alpine mountains. CLEAR NOON, bright blue sky and white daylight, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars.",
+        "originalGeneratedImage": "/workspace/generated_images/exec-eff29604-d9a6-44af-b527-faca32a25dfb.png",
+        "boundaryRepairPrompt": "Repair only the lower boundary of this panorama. Remove the unnatural SKY BLUE stripe at the bottom. Extend the local dark earth, snow litter or muted river foreground naturally, then blend into a subdued DARK neutral ground/water shade across the bottom 16 pixels. No blue sky color at lower edge. Preserve all skyline, buildings, lighting, weather, original pixel style and 3:1 composition. Quiet constant bottom color, smoothly faded from foreground not a hard band; retain horizontal wrap.",
+        "beforeWrapRepairImage": "/workspace/generated_images/exec-7cd4f198-1d5a-4121-bd5c-ece55cf7afac.png",
+        "wrapRepairPrompt": "Fix horizontal wrapping of this panoramic background ONLY. Keep central 70% and its landmarks, weather, colors and terrain intact. Outer LEFT 15% and RIGHT 15% must meet seamlessly when tiled: matching sky color at EVERY HEIGHT, identical distant horizon elevation, matching low terrain/vegetation/water bands, no tall tree or building crossing either boundary. Use low background silhouettes at both side margins, merge seamlessly into central scene. Preserve quiet uniform top and bottom 16px bands. No frame or vertical border, no blur strip, no empty rectangles. Original pixel art, same aspect and time of day."
+      },
+      "terrainReview": {
+        "ground": "Birmingham eastern wooded rolling foothills, rounded mixed oak-pine hills around low empty track terraces, small glass-fronted museum-like building and abandoned paddock; no alpine mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -41182,7 +41362,7 @@
       "documentPath": "races/NCM Motorsports Park/document.json",
       "siteGroup": "site-1e4427ffcce2292f",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-ky",
@@ -41313,6 +41493,68 @@
         "maxX": 591.6633051343337,
         "minY": -270.9601715136551,
         "maxY": 561.0792553502656
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-ncm-night",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "ncm-night",
+        "raceRef": "NCM Motorsports Park",
+        "ref": "environment-v1-ncm-night",
+        "source": "environment-v1/ncm-night.png",
+        "brief": "Bowling Green Kentucky gentle limestone-country rolling fields and deciduous woodlots, a low long empty circuit facility with angular paddock roofs and sparse warm windows; no mountains.",
+        "lightingInstruction": "DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors.",
+        "brightness": 0.05,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "NCM Motorsports Park",
+          "lat": 37.004,
+          "lon": -86.367,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-ky.json",
+        "catalog": [
+          {
+            "id": "state-ky",
+            "venueKey": "state-ky",
+            "venueName": "NCM Motorsports Park",
+            "hubStage": 6,
+            "location": {
+              "lat": 37.004,
+              "lon": -86.367
+            },
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/state-ky.json",
+          "https://www.motorsportspark.org/track-information/"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-686f9e66-74e0-47ed-8e2c-df163c7d979a.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Bowling Green Kentucky gentle limestone-country rolling fields and deciduous woodlots, a low long empty circuit facility with angular paddock roofs and sparse warm windows; no mountains. DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Bowling Green Kentucky gentle limestone-country rolling fields and deciduous woodlots, a low long empty circuit facility with angular paddock roofs and sparse warm windows; no mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -41320,7 +41562,7 @@
       "documentPath": "races/NOLA Motorsports Park/document.json",
       "siteGroup": "site-7a77be5321a89d09",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-la",
@@ -41449,6 +41691,69 @@
         "maxX": -141.45974397770792,
         "minY": -285.69351964413914,
         "maxY": 672.6635183645592
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-nola-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "nola-noon",
+        "raceRef": "NOLA Motorsports Park",
+        "ref": "environment-v1-nola-noon",
+        "source": "environment-v1/nola-noon.png",
+        "brief": "Avondale Louisiana nearly flat Mississippi delta plain, low wetland hardwood and cypress silhouette, drainage reed edges and distant empty paddock roofs; no hills or invented mountain skyline.",
+        "lightingInstruction": "CLEAR NOON, bright blue sky and white daylight, no stars or moon.",
+        "brightness": 1,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "NOLA Motorsports Park",
+          "lat": 29.886,
+          "lon": -90.194,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-la.json",
+        "catalog": [
+          {
+            "id": "state-la",
+            "venueKey": "state-la",
+            "venueName": "NOLA Motorsports Park",
+            "hubStage": 5,
+            "location": {
+              "lat": 29.886,
+              "lon": -90.194
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/state-la.json",
+          "https://nolamotor.com/faqs/"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-34d2070c-1d1e-434d-9617-fffdda4976c0.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Avondale Louisiana nearly flat Mississippi delta plain, low wetland hardwood and cypress silhouette, drainage reed edges and distant empty paddock roofs; no hills or invented mountain skyline. CLEAR NOON, bright blue sky and white daylight, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars.",
+        "sourceNote": "Official location is Avondale near Churchill Energy Power Station; abandoned cypress/delta surroundings are artistic inference, not a surveyed representation of circuit structures."
+      },
+      "terrainReview": {
+        "ground": "Avondale Louisiana nearly flat Mississippi delta plain, low wetland hardwood and cypress silhouette, drainage reed edges and distant empty paddock roofs; no hills or invented mountain skyline.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -41456,7 +41761,7 @@
       "documentPath": "races/GingerMan Raceway/document.json",
       "siteGroup": "site-91b730232d2edaba",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-mi",
@@ -41603,6 +41908,69 @@
         "maxX": 1249.8043953650915,
         "minY": -296.24593275796906,
         "maxY": 369.84595636502524
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-gingerman-evening",
+        "groundPlaneArtRef": "ground-winter-snow-litter-v1",
+        "terrainTileArtById": {
+          "snow": "ground-winter-snow-litter-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "gingerman-evening",
+        "raceRef": "GingerMan Raceway",
+        "ref": "environment-v1-gingerman-evening",
+        "source": "environment-v1/gingerman-evening.png",
+        "brief": "South Haven Michigan inland gently rolling grassy circuit, mixed deciduous woodlots, sparse farm barns and low empty pit shelters; Lake Michigan is not at the immediate track edge.",
+        "lightingInstruction": "CLEAR EVENING, muted peach horizon and dusky blue upper sky, no noon sky.",
+        "brightness": 0.42,
+        "ground": "ground-winter-snow-litter-v1",
+        "tiles": {
+          "snow": "ground-winter-snow-litter-v1"
+        },
+        "sourceOrigin": {
+          "name": "GingerMan Raceway",
+          "lat": 42.409,
+          "lon": -86.147,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-mi.json",
+        "catalog": [
+          {
+            "id": "state-mi",
+            "venueKey": "state-mi",
+            "venueName": "GingerMan Raceway",
+            "hubStage": 4,
+            "location": {
+              "lat": 42.409,
+              "lon": -86.147
+            },
+            "lightingPreset": "evening"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/state-mi.json",
+          "https://www.gingermanraceway.com/about-track-information.html"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-dfd2f5f0-ed57-4be1-b2fd-6536d641d231.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. South Haven Michigan inland gently rolling grassy circuit, mixed deciduous woodlots, sparse farm barns and low empty pit shelters; Lake Michigan is not at the immediate track edge. CLEAR EVENING, muted peach horizon and dusky blue upper sky, no noon sky. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars.",
+        "sourceNote": "Official venue describes wooded grounds six miles from the beach; the illustration deliberately omits an immediate Lake Michigan shoreline."
+      },
+      "terrainReview": {
+        "ground": "South Haven Michigan inland gently rolling grassy circuit, mixed deciduous woodlots, sparse farm barns and low empty pit shelters; Lake Michigan is not at the immediate track edge.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -41610,7 +41978,7 @@
       "documentPath": "races/Brainerd %E2%80%94 Competition Course/document.json",
       "siteGroup": "site-a2afa1a045dcd258",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-mn",
@@ -41740,6 +42108,69 @@
         "maxX": 563.0993193358609,
         "minY": 15.289323532223284,
         "maxY": 922.6856562700884
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-brainerd-noon",
+        "groundPlaneArtRef": "ground-winter-snow-litter-v1",
+        "terrainTileArtById": {
+          "snow": "ground-winter-snow-litter-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "brainerd-noon",
+        "raceRef": "Brainerd \u2014 Competition Course",
+        "ref": "environment-v1-brainerd-noon",
+        "source": "environment-v1/brainerd-noon.png",
+        "brief": "Northern Minnesota flat to gently rolling boreal pine and birch woodland around a distant wide circuit clearing, low empty stands and garages; no invented nearby lake.",
+        "lightingInstruction": "CLEAR NOON, bright blue sky and white daylight, no stars or moon.",
+        "brightness": 1,
+        "ground": "ground-winter-snow-litter-v1",
+        "tiles": {
+          "snow": "ground-winter-snow-litter-v1"
+        },
+        "sourceOrigin": {
+          "name": "Brainerd \u2014 Competition Course",
+          "lat": 46.418,
+          "lon": -94.274,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-mn.json",
+        "catalog": [
+          {
+            "id": "state-mn",
+            "venueKey": "state-mn",
+            "venueName": "Brainerd \u2014 Competition Course",
+            "hubStage": 6,
+            "location": {
+              "lat": 46.418,
+              "lon": -94.274
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/state-mn.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-4f2d56f9-3c98-4f04-a2ac-27b0120aa8f4.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Northern Minnesota flat to gently rolling boreal pine and birch woodland around a distant wide circuit clearing, low empty stands and garages; no invented nearby lake. CLEAR NOON, bright blue sky and white daylight, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars.",
+        "originalGeneratedImage": "/workspace/generated_images/exec-58bbb534-f461-44ed-82a9-a393a3cde427.png",
+        "boundaryRepairPrompt": "Repair only the lower boundary of this panorama. Remove the unnatural SKY BLUE stripe at the bottom. Extend the local dark earth, snow litter or muted river foreground naturally, then blend into a subdued DARK neutral ground/water shade across the bottom 16 pixels. No blue sky color at lower edge. Preserve all skyline, buildings, lighting, weather, original pixel style and 3:1 composition. Quiet constant bottom color, smoothly faded from foreground not a hard band; retain horizontal wrap."
+      },
+      "terrainReview": {
+        "ground": "Northern Minnesota flat to gently rolling boreal pine and birch woodland around a distant wide circuit clearing, low empty stands and garages; no invented nearby lake.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -42511,7 +42942,7 @@
       "documentPath": "races/NCCAR %E2%80%94 Road Course/document.json",
       "siteGroup": "site-3a5aa14c138a5399",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-nc",
@@ -42640,6 +43071,67 @@
         "maxX": -600.0653544753736,
         "minY": -1801.0378340504901,
         "maxY": -816.627788742801
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-nccar-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "nccar-morning",
+        "raceRef": "NCCAR \u2014 Road Course",
+        "ref": "environment-v1-nccar-morning",
+        "source": "environment-v1/nccar-morning.png",
+        "brief": "Garysburg North Carolina low coastal-plain rolling test facility, pine and mixed hardwood tree belts, small low technical buildings and open grassy margins; not mountain country.",
+        "lightingInstruction": "CLEAR MORNING, pale blue sky with a restrained warm horizon, no stars or moon.",
+        "brightness": 0.65,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "NCCAR \u2014 Road Course",
+          "lat": 36.468,
+          "lon": -77.569,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-nc.json",
+        "catalog": [
+          {
+            "id": "state-nc",
+            "venueKey": "state-nc",
+            "venueName": "NCCAR \u2014 Road Course",
+            "hubStage": 3,
+            "location": {
+              "lat": 36.468,
+              "lon": -77.569
+            },
+            "lightingPreset": "morning"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/state-nc.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-efc2a6e1-70dd-49a8-92c2-d523faa7fcea.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Garysburg North Carolina low coastal-plain rolling test facility, pine and mixed hardwood tree belts, small low technical buildings and open grassy margins; not mountain country. CLEAR MORNING, pale blue sky with a restrained warm horizon, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Garysburg North Carolina low coastal-plain rolling test facility, pine and mixed hardwood tree belts, small low technical buildings and open grassy margins; not mountain country.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -44175,7 +44667,7 @@
       "documentPath": "races/Carolina Motorsports Park/document.json",
       "siteGroup": "site-236b9640b6e31d49",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-sc",
@@ -44303,6 +44795,67 @@
         "maxX": 508.23764977175057,
         "minY": -350.2089051954285,
         "maxY": 345.4497557611236
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-carolinapark-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "carolinapark-noon",
+        "raceRef": "Carolina Motorsports Park",
+        "ref": "environment-v1-carolinapark-noon",
+        "source": "environment-v1/carolinapark-noon.png",
+        "brief": "Kershaw South Carolina Sandhills, low sandy rounded rises with longleaf/loblolly pine stands, distant sparse abandoned paddock buildings; no skyline or high mountains.",
+        "lightingInstruction": "CLEAR NOON, bright blue sky and white daylight, no stars or moon.",
+        "brightness": 1,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "Carolina Motorsports Park",
+          "lat": 34.488,
+          "lon": -80.595,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-sc.json",
+        "catalog": [
+          {
+            "id": "state-sc",
+            "venueKey": "state-sc",
+            "venueName": "Carolina Motorsports Park",
+            "hubStage": 4,
+            "location": {
+              "lat": 34.488,
+              "lon": -80.595
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/state-sc.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-6b239187-87d8-4416-b7a6-744fa829d6e1.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Kershaw South Carolina Sandhills, low sandy rounded rises with longleaf/loblolly pine stands, distant sparse abandoned paddock buildings; no skyline or high mountains. CLEAR NOON, bright blue sky and white daylight, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Kershaw South Carolina Sandhills, low sandy rounded rises with longleaf/loblolly pine stands, distant sparse abandoned paddock buildings; no skyline or high mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -44780,7 +45333,7 @@
       "documentPath": "races/Birmingham%2C AL %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-8fbef84f052f150c",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-al",
@@ -44947,6 +45500,67 @@
         "maxX": 2236.964785490347,
         "minY": -1026.9088049726242,
         "maxY": 3746.7182284690675
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-birmingham-night",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "birmingham-night",
+        "raceRef": "Birmingham, AL \u2014 Landmark Run",
+        "ref": "environment-v1-birmingham-night",
+        "source": "environment-v1/birmingham-night.png",
+        "brief": "Birmingham Alabama city basin below long rounded wooded Red Mountain ridge, compact brick industrial skyline, old furnace stacks and sparse warm windows; no alpine cliffs.",
+        "lightingInstruction": "DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors.",
+        "brightness": 0.05,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "Birmingham \u2014 Landmark Run",
+          "lat": 33.518,
+          "lon": -86.807,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-al.json",
+        "catalog": [
+          {
+            "id": "city-al",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 5,
+            "location": {
+              "lat": 33.518,
+              "lon": -86.807
+            },
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-al.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-3061bdba-f7c7-4e3b-9392-2ed8234cbe25.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Birmingham Alabama city basin below long rounded wooded Red Mountain ridge, compact brick industrial skyline, old furnace stacks and sparse warm windows; no alpine cliffs. DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Birmingham Alabama city basin below long rounded wooded Red Mountain ridge, compact brick industrial skyline, old furnace stacks and sparse warm windows; no alpine cliffs.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -46333,7 +46947,7 @@
       "documentPath": "races/Atlanta%2C GA %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-6f5b30be5456f7e1",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-ga",
@@ -46537,6 +47151,67 @@
         "maxX": 1841.3779137934484,
         "minY": -2476.7592171220467,
         "maxY": 1467.8417761305036
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-atlanta-evening",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "atlanta-evening",
+        "raceRef": "Atlanta, GA \u2014 Landmark Run",
+        "ref": "environment-v1-atlanta-evening",
+        "source": "environment-v1/atlanta-evening.png",
+        "brief": "Atlanta Georgia rolling wooded Piedmont with a broken distant cluster of slender high-rise towers and lower brick rail-industrial roofs, loblolly pines and hardwoods; no waterfront or high mountains.",
+        "lightingInstruction": "CLEAR EVENING, muted peach horizon and dusky blue upper sky, no noon sky.",
+        "brightness": 0.42,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "Atlanta \u2014 Landmark Run",
+          "lat": 33.756,
+          "lon": -84.388,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ga.json",
+        "catalog": [
+          {
+            "id": "city-ga",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 4,
+            "location": {
+              "lat": 33.756,
+              "lon": -84.388
+            },
+            "lightingPreset": "evening"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-ga.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-eef90613-58e8-4d4a-bad9-8bf881e4f454.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Atlanta Georgia rolling wooded Piedmont with a broken distant cluster of slender high-rise towers and lower brick rail-industrial roofs, loblolly pines and hardwoods; no waterfront or high mountains. CLEAR EVENING, muted peach horizon and dusky blue upper sky, no noon sky. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Atlanta Georgia rolling wooded Piedmont with a broken distant cluster of slender high-rise towers and lower brick rail-industrial roofs, loblolly pines and hardwoods; no waterfront or high mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -46544,7 +47219,7 @@
       "documentPath": "races/Chicago%2C IL %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-18f72d527e5df19a",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-il",
@@ -46753,6 +47428,75 @@
         "maxX": 1443.0274282199046,
         "minY": -786.6644211229197,
         "maxY": 1403.4264661514087
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-chicago-night",
+        "groundPlaneArtRef": "ground-winter-snow-litter-v1",
+        "terrainTileArtById": {
+          "snow": "ground-winter-snow-litter-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "chicago-night",
+        "raceRef": "Chicago, IL \u2014 Landmark Run",
+        "ref": "environment-v1-chicago-night",
+        "source": "environment-v1/chicago-night.png",
+        "brief": "Chicago Illinois flat Lake Michigan shore and layered tall urban towers, rail-industrial silhouettes, broad dark water toward one side, modest city glow without neon logos; distant horizon flat.",
+        "lightingInstruction": "DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors.",
+        "brightness": 0.05,
+        "ground": "ground-winter-snow-litter-v1",
+        "tiles": {
+          "snow": "ground-winter-snow-litter-v1"
+        },
+        "sourceOrigin": {
+          "name": "Chicago \u2014 Landmark Run",
+          "lat": 41.885,
+          "lon": -87.628,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-il.json",
+        "catalog": [
+          {
+            "id": "city-il",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 6,
+            "location": {
+              "lat": 41.885,
+              "lon": -87.628
+            },
+            "startGps": {
+              "lat": 41.89207463333333,
+              "lon": -87.61056860000001
+            },
+            "finishGps": {
+              "lat": 41.8723787,
+              "lon": -87.6471248
+            },
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-il.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-c8a27e4c-e2c3-4173-a911-fac820e7053c.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Chicago Illinois flat Lake Michigan shore and layered tall urban towers, rail-industrial silhouettes, broad dark water toward one side, modest city glow without neon logos; distant horizon flat. DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Chicago Illinois flat Lake Michigan shore and layered tall urban towers, rail-industrial silhouettes, broad dark water toward one side, modest city glow without neon logos; distant horizon flat.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -46760,7 +47504,7 @@
       "documentPath": "races/Des Moines%2C IA %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-48a69f289b41065e",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-ia",
@@ -46927,6 +47671,75 @@
         "maxX": 1771.8822288326567,
         "minY": -1098.675221705586,
         "maxY": 1196.3701072489077
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-desmoines-night",
+        "groundPlaneArtRef": "ground-winter-snow-litter-v1",
+        "terrainTileArtById": {
+          "snow": "ground-winter-snow-litter-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "desmoines-night",
+        "raceRef": "Des Moines, IA \u2014 Landmark Run",
+        "ref": "environment-v1-desmoines-night",
+        "source": "environment-v1/desmoines-night.png",
+        "brief": "Des Moines Iowa modest stepped downtown towers, river confluence bridges and broad low prairie hills behind, leafless riparian trees and sparse warm windows, no mountains.",
+        "lightingInstruction": "DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors.",
+        "brightness": 0.05,
+        "ground": "ground-winter-snow-litter-v1",
+        "tiles": {
+          "snow": "ground-winter-snow-litter-v1"
+        },
+        "sourceOrigin": {
+          "name": "Des Moines \u2014 Landmark Run",
+          "lat": 41.587,
+          "lon": -93.617,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ia.json",
+        "catalog": [
+          {
+            "id": "city-ia",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 6,
+            "location": {
+              "lat": 41.587,
+              "lon": -93.617
+            },
+            "startGps": {
+              "lat": 41.58026945833333,
+              "lon": -93.64295034166666
+            },
+            "finishGps": {
+              "lat": 41.59688061,
+              "lon": -93.59640602
+            },
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-ia.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-a4b6aa83-d67f-4c1c-93d0-733151cd35b0.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Des Moines Iowa modest stepped downtown towers, river confluence bridges and broad low prairie hills behind, leafless riparian trees and sparse warm windows, no mountains. DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Des Moines Iowa modest stepped downtown towers, river confluence bridges and broad low prairie hills behind, leafless riparian trees and sparse warm windows, no mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -46934,7 +47747,7 @@
       "documentPath": "races/Louisville%2C KY %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-a55d00ac69a1e402",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-ky",
@@ -47108,6 +47921,75 @@
         "maxX": 1855.707445363506,
         "minY": -445.52532797135217,
         "maxY": 1252.495029746318
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-louisville-night",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "louisville-night",
+        "raceRef": "Louisville, KY \u2014 Landmark Run",
+        "ref": "environment-v1-louisville-night",
+        "source": "environment-v1/louisville-night.png",
+        "brief": "Louisville Kentucky low Ohio River city with long steel truss bridge, compact original downtown tower cluster, low wooded Indiana hills on far bank and river reflections; no alpine forms.",
+        "lightingInstruction": "DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors.",
+        "brightness": 0.05,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "Louisville \u2014 Landmark Run",
+          "lat": 38.255,
+          "lon": -85.759,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ky.json",
+        "catalog": [
+          {
+            "id": "city-ky",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 6,
+            "location": {
+              "lat": 38.255,
+              "lon": -85.759
+            },
+            "startGps": {
+              "lat": 38.2590067,
+              "lon": -85.73774755714287
+            },
+            "finishGps": {
+              "lat": 38.243736057142854,
+              "lon": -85.77048317142857
+            },
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-ky.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-19224874-63ad-4a3f-be16-c1a786a1e109.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Louisville Kentucky low Ohio River city with long steel truss bridge, compact original downtown tower cluster, low wooded Indiana hills on far bank and river reflections; no alpine forms. DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Louisville Kentucky low Ohio River city with long steel truss bridge, compact original downtown tower cluster, low wooded Indiana hills on far bank and river reflections; no alpine forms.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -47397,7 +48279,7 @@
       "documentPath": "races/Detroit%2C MI %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-c5f1aa302a17a49e",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-mi",
@@ -47593,6 +48475,67 @@
         "maxX": 1557.1515066323768,
         "minY": -2115.264011282177,
         "maxY": 1336.6760594877746
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-detroit-morning",
+        "groundPlaneArtRef": "ground-winter-snow-litter-v1",
+        "terrainTileArtById": {
+          "snow": "ground-winter-snow-litter-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "detroit-morning",
+        "raceRef": "Detroit, MI \u2014 Landmark Run",
+        "ref": "environment-v1-detroit-morning",
+        "source": "environment-v1/detroit-morning.png",
+        "brief": "Detroit Michigan broad river and flat industrial shore, clustered cylindrical and rectilinear high rises, low abandoned factories and bridge span far off, leafless riparian trees; no hills.",
+        "lightingInstruction": "CLEAR MORNING, pale blue sky with a restrained warm horizon, no stars or moon.",
+        "brightness": 0.65,
+        "ground": "ground-winter-snow-litter-v1",
+        "tiles": {
+          "snow": "ground-winter-snow-litter-v1"
+        },
+        "sourceOrigin": {
+          "name": "Detroit \u2014 Landmark Run",
+          "lat": 42.335,
+          "lon": -83.052,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-mi.json",
+        "catalog": [
+          {
+            "id": "city-mi",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 4,
+            "location": {
+              "lat": 42.335,
+              "lon": -83.052
+            },
+            "lightingPreset": "morning"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-mi.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-40857942-4db2-4041-8b05-28e92a3c7e22.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Detroit Michigan broad river and flat industrial shore, clustered cylindrical and rectilinear high rises, low abandoned factories and bridge span far off, leafless riparian trees; no hills. CLEAR MORNING, pale blue sky with a restrained warm horizon, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Detroit Michigan broad river and flat industrial shore, clustered cylindrical and rectilinear high rises, low abandoned factories and bridge span far off, leafless riparian trees; no hills.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -49082,7 +50025,7 @@
       "documentPath": "races/Indianapolis%2C IN %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-fe73b02344865b7a",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-in",
@@ -49274,6 +50217,75 @@
         "maxX": 831.9012793513933,
         "minY": -1275.7671010384702,
         "maxY": 1630.3422663842025
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-indianapoliscity-morning",
+        "groundPlaneArtRef": "ground-winter-snow-litter-v1",
+        "terrainTileArtById": {
+          "snow": "ground-winter-snow-litter-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "indianapoliscity-morning",
+        "raceRef": "Indianapolis, IN \u2014 Landmark Run",
+        "ref": "environment-v1-indianapoliscity-morning",
+        "source": "environment-v1/indianapoliscity-morning.png",
+        "brief": "Central Indianapolis flat Midwest city, compact varied tower skyline, small distant civic monument spire and White River tree corridor, low brick warehouses; this is downtown, not speedway grandstands.",
+        "lightingInstruction": "CLEAR MORNING, pale blue sky with a restrained warm horizon, no stars or moon.",
+        "brightness": 0.65,
+        "ground": "ground-winter-snow-litter-v1",
+        "tiles": {
+          "snow": "ground-winter-snow-litter-v1"
+        },
+        "sourceOrigin": {
+          "name": "Indianapolis \u2014 Landmark Run",
+          "lat": 39.769,
+          "lon": -86.159,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-in.json",
+        "catalog": [
+          {
+            "id": "city-in",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 6,
+            "location": {
+              "lat": 39.769,
+              "lon": -86.159
+            },
+            "startGps": {
+              "lat": 39.754338,
+              "lon": -86.1495605
+            },
+            "finishGps": {
+              "lat": 39.78047323333334,
+              "lon": -86.16947365
+            },
+            "lightingPreset": "morning"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-in.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-898ce1c9-ee8b-4815-84d6-a51832006b5f.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Central Indianapolis flat Midwest city, compact varied tower skyline, small distant civic monument spire and White River tree corridor, low brick warehouses; this is downtown, not speedway grandstands. CLEAR MORNING, pale blue sky with a restrained warm horizon, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Central Indianapolis flat Midwest city, compact varied tower skyline, small distant civic monument spire and White River tree corridor, low brick warehouses; this is downtown, not speedway grandstands.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -49281,7 +50293,7 @@
       "documentPath": "races/New Orleans%2C LA %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-6bbf3e59bf508848",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-la",
@@ -49445,6 +50457,71 @@
         "maxX": 1376.6770722206563,
         "minY": -985.8555813506306,
         "maxY": 704.6432234397294
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-neworleans-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "neworleans-noon",
+        "raceRef": "New Orleans, LA \u2014 Landmark Run",
+        "ref": "environment-v1-neworleans-noon",
+        "source": "environment-v1/neworleans-noon.png",
+        "brief": "New Orleans Louisiana low Mississippi river city, layered narrow old roofs, modest distant downtown towers and low port cranes, broad levee line and live-oak/cypress silhouettes; flat horizon, no hills.",
+        "lightingInstruction": "CLEAR NOON, bright blue sky and white daylight, no stars or moon.",
+        "brightness": 1,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "New Orleans \u2014 Landmark Run",
+          "lat": 29.958,
+          "lon": -90.066,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-la.json",
+        "catalog": [
+          {
+            "id": "city-la",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 5,
+            "location": {
+              "lat": 29.958,
+              "lon": -90.066
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-la.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-09875785-ed95-4e42-a8e1-a72dc82692a3.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. New Orleans Louisiana low Mississippi river city, layered narrow old roofs, modest distant downtown towers and low port cranes, broad levee line and live-oak/cypress silhouettes; flat horizon, no hills. CLEAR NOON, bright blue sky and white daylight, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars.",
+        "originalGeneratedImage": "/workspace/generated_images/exec-e8fb540b-c98a-4e6c-ab36-9d62d30a60b8.png",
+        "boundaryRepairPrompt": "Repair only the lower boundary of this panorama. Remove the unnatural SKY BLUE stripe at the bottom. Extend the local dark earth, snow litter or muted river foreground naturally, then blend into a subdued DARK neutral ground/water shade across the bottom 16 pixels. No blue sky color at lower edge. Preserve all skyline, buildings, lighting, weather, original pixel style and 3:1 composition. Quiet constant bottom color, smoothly faded from foreground not a hard band; retain horizontal wrap.",
+        "beforeWrapRepairImage": "/workspace/generated_images/exec-7a91d203-a642-4a9b-a57b-2a8915237f1d.png",
+        "wrapRepairPrompt": "Fix horizontal wrapping of this panoramic background ONLY. Keep central 70% and its landmarks, weather, colors and terrain intact. Outer LEFT 15% and RIGHT 15% must meet seamlessly when tiled: matching sky color at EVERY HEIGHT, identical distant horizon elevation, matching low terrain/vegetation/water bands, no tall tree or building crossing either boundary. Use low background silhouettes at both side margins, merge seamlessly into central scene. Preserve quiet uniform top and bottom 16px bands. No frame or vertical border, no blur strip, no empty rectangles. Original pixel art, same aspect and time of day."
+      },
+      "terrainReview": {
+        "ground": "New Orleans Louisiana low Mississippi river city, layered narrow old roofs, modest distant downtown towers and low port cranes, broad levee line and live-oak/cypress silhouettes; flat horizon, no hills.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -49779,7 +50856,7 @@
       "documentPath": "races/Minneapolis%2C MN %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-057af482cd61c0ab",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-mn",
@@ -49977,6 +51054,69 @@
         "maxX": 1694.6727214528003,
         "minY": -1313.0915829703729,
         "maxY": 2254.580327306462
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-minneapolis-noon",
+        "groundPlaneArtRef": "ground-winter-snow-litter-v1",
+        "terrainTileArtById": {
+          "snow": "ground-winter-snow-litter-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "minneapolis-noon",
+        "raceRef": "Minneapolis, MN \u2014 Landmark Run",
+        "ref": "environment-v1-minneapolis-noon",
+        "source": "environment-v1/minneapolis-noon.png",
+        "brief": "Minneapolis Minnesota Mississippi river city, stepped downtown towers and industrial mill blocks, a low stone-arch bridge motif, distant mixed riparian woods and gently rolling urban land.",
+        "lightingInstruction": "CLEAR NOON, bright blue sky and white daylight, no stars or moon.",
+        "brightness": 1,
+        "ground": "ground-winter-snow-litter-v1",
+        "tiles": {
+          "snow": "ground-winter-snow-litter-v1"
+        },
+        "sourceOrigin": {
+          "name": "Minneapolis \u2014 Landmark Run",
+          "lat": 44.974,
+          "lon": -93.27,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-mn.json",
+        "catalog": [
+          {
+            "id": "city-mn",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 6,
+            "location": {
+              "lat": 44.974,
+              "lon": -93.27
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-mn.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-c763bd5d-343e-4382-9bba-1d545587eb8b.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Minneapolis Minnesota Mississippi river city, stepped downtown towers and industrial mill blocks, a low stone-arch bridge motif, distant mixed riparian woods and gently rolling urban land. CLEAR NOON, bright blue sky and white daylight, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars.",
+        "originalGeneratedImage": "/workspace/generated_images/exec-5883a307-6673-4885-9405-0e194c71be41.png",
+        "boundaryRepairPrompt": "Repair only the lower boundary of this panorama. Remove the unnatural SKY BLUE stripe at the bottom. Extend the local dark earth, snow litter or muted river foreground naturally, then blend into a subdued DARK neutral ground/water shade across the bottom 16 pixels. No blue sky color at lower edge. Preserve all skyline, buildings, lighting, weather, original pixel style and 3:1 composition. Quiet constant bottom color, smoothly faded from foreground not a hard band; retain horizontal wrap."
+      },
+      "terrainReview": {
+        "ground": "Minneapolis Minnesota Mississippi river city, stepped downtown towers and industrial mill blocks, a low stone-arch bridge motif, distant mixed riparian woods and gently rolling urban land.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -49984,7 +51124,7 @@
       "documentPath": "races/Jackson%2C MS %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-99d091992ba9491f",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-ms",
@@ -50158,6 +51298,77 @@
         "maxX": 394.31256998424914,
         "minY": -1137.1031294839527,
         "maxY": 1069.7046143523212
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-jackson-noon",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "jackson-noon",
+        "raceRef": "Jackson, MS \u2014 Landmark Run",
+        "ref": "environment-v1-jackson-noon",
+        "source": "environment-v1/jackson-noon.png",
+        "brief": "Jackson Mississippi low urban skyline with modest office blocks, a small civic dome motif, wooded Pearl River lowlands and brick industrial roofs; no large coastal water or mountains.",
+        "lightingInstruction": "CLEAR NOON, bright blue sky and white daylight, no stars or moon.",
+        "brightness": 1,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "Jackson \u2014 Landmark Run",
+          "lat": 32.302,
+          "lon": -90.183,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ms.json",
+        "catalog": [
+          {
+            "id": "city-ms",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 5,
+            "location": {
+              "lat": 32.302,
+              "lon": -90.183
+            },
+            "startGps": {
+              "lat": 32.31216826666667,
+              "lon": -90.19255016666666
+            },
+            "finishGps": {
+              "lat": 32.29237992857143,
+              "lon": -90.17902195714287
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-ms.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-28b1d64e-1fdf-47ff-b925-4a724fe0dfdd.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Jackson Mississippi low urban skyline with modest office blocks, a small civic dome motif, wooded Pearl River lowlands and brick industrial roofs; no large coastal water or mountains. CLEAR NOON, bright blue sky and white daylight, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars.",
+        "originalGeneratedImage": "/workspace/generated_images/exec-b7812366-714f-45bf-b27f-982e47c3d3fa.png",
+        "boundaryRepairPrompt": "Repair only the lower boundary of this panorama. Remove the unnatural SKY BLUE stripe at the bottom. Extend the local dark earth, snow litter or muted river foreground naturally, then blend into a subdued DARK neutral ground/water shade across the bottom 16 pixels. No blue sky color at lower edge. Preserve all skyline, buildings, lighting, weather, original pixel style and 3:1 composition. Quiet constant bottom color, smoothly faded from foreground not a hard band; retain horizontal wrap."
+      },
+      "terrainReview": {
+        "ground": "Jackson Mississippi low urban skyline with modest office blocks, a small civic dome motif, wooded Pearl River lowlands and brick industrial roofs; no large coastal water or mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -51074,7 +52285,7 @@
           "width": 2172,
           "height": 724,
           "edgeMeanRGB": 3.8324125230202575,
-          "edgeMaximumRGB": 86.0,
+          "edgeMaximumRGB": 86,
           "topRangeRGB": [
             5,
             5,
@@ -51984,7 +53195,7 @@
       "documentPath": "races/Charlotte%2C NC %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-748cb3ba26739e14",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-nc",
@@ -52189,6 +53400,69 @@
         "maxX": 993.8232001141339,
         "minY": -906.795879304698,
         "maxY": 1147.6666621063307
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-charlotte-morning",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "charlotte-morning",
+        "raceRef": "Charlotte, NC \u2014 Landmark Run",
+        "ref": "environment-v1-charlotte-morning",
+        "source": "environment-v1/charlotte-morning.png",
+        "brief": "Charlotte North Carolina rounded Piedmont tree canopy and distinct cluster of slender towers above lower brick neighborhoods, mixed hardwood and pine backdrop; no immediate mountain range.",
+        "lightingInstruction": "CLEAR MORNING, pale blue sky with a restrained warm horizon, no stars or moon.",
+        "brightness": 0.65,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "Charlotte \u2014 Landmark Run",
+          "lat": 35.227,
+          "lon": -80.845,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-nc.json",
+        "catalog": [
+          {
+            "id": "city-nc",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 4,
+            "location": {
+              "lat": 35.227,
+              "lon": -80.845
+            },
+            "lightingPreset": "morning"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-nc.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-8e1c7f20-e274-41b7-8691-fac8425c3bbd.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Charlotte North Carolina rounded Piedmont tree canopy and distinct cluster of slender towers above lower brick neighborhoods, mixed hardwood and pine backdrop; no immediate mountain range. CLEAR MORNING, pale blue sky with a restrained warm horizon, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars.",
+        "originalGeneratedImage": "/workspace/generated_images/exec-59d122bc-89f9-4e50-bc1f-13d8e5a3ba2e.png",
+        "boundaryRepairPrompt": "Repair only the lower boundary of this panorama. Remove the unnatural SKY BLUE stripe at the bottom. Extend the local dark earth, snow litter or muted river foreground naturally, then blend into a subdued DARK neutral ground/water shade across the bottom 16 pixels. No blue sky color at lower edge. Preserve all skyline, buildings, lighting, weather, original pixel style and 3:1 composition. Quiet constant bottom color, smoothly faded from foreground not a hard band; retain horizontal wrap."
+      },
+      "terrainReview": {
+        "ground": "Charlotte North Carolina rounded Piedmont tree canopy and distinct cluster of slender towers above lower brick neighborhoods, mixed hardwood and pine backdrop; no immediate mountain range.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -52466,7 +53740,7 @@
       "documentPath": "races/Cleveland%2C OH %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-8832609ac0b53a91",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-oh",
@@ -52671,6 +53945,75 @@
         "maxX": 1417.8088559044645,
         "minY": -1035.6598577865573,
         "maxY": 2252.114576403096
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-cleveland-evening",
+        "groundPlaneArtRef": "ground-winter-snow-litter-v1",
+        "terrainTileArtById": {
+          "snow": "ground-winter-snow-litter-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "cleveland-evening",
+        "raceRef": "Cleveland, OH \u2014 Landmark Run",
+        "ref": "environment-v1-cleveland-evening",
+        "source": "environment-v1/cleveland-evening.png",
+        "brief": "Cleveland Ohio Lake Erie industrial waterfront, compact tower cluster including a slim older pointed tower motif, low factories and port cranes, flat lake horizon and lower river valley; no mountains.",
+        "lightingInstruction": "CLEAR EVENING, muted peach horizon and dusky blue upper sky, no noon sky.",
+        "brightness": 0.42,
+        "ground": "ground-winter-snow-litter-v1",
+        "tiles": {
+          "snow": "ground-winter-snow-litter-v1"
+        },
+        "sourceOrigin": {
+          "name": "Cleveland \u2014 Landmark Run",
+          "lat": 41.499,
+          "lon": -81.693,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-oh.json",
+        "catalog": [
+          {
+            "id": "city-oh",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 4,
+            "location": {
+              "lat": 41.499,
+              "lon": -81.693
+            },
+            "startGps": {
+              "lat": 41.50768884285714,
+              "lon": -81.69878741428572
+            },
+            "finishGps": {
+              "lat": 41.478746275,
+              "lon": -81.6759757
+            },
+            "lightingPreset": "evening"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-oh.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-e5a58103-83df-46b1-9eba-737b3e568477.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Cleveland Ohio Lake Erie industrial waterfront, compact tower cluster including a slim older pointed tower motif, low factories and port cranes, flat lake horizon and lower river valley; no mountains. CLEAR EVENING, muted peach horizon and dusky blue upper sky, no noon sky. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Cleveland Ohio Lake Erie industrial waterfront, compact tower cluster including a slim older pointed tower motif, low factories and port cranes, flat lake horizon and lower river valley; no mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -54422,7 +55765,7 @@
               "width": 2172,
               "height": 724,
               "edgeMeanRGB": 16.778084714548804,
-              "edgeMaximumRGB": 205.0,
+              "edgeMaximumRGB": 205,
               "topRangeRGB": [
                 6,
                 6,
@@ -55494,7 +56837,7 @@
       "documentPath": "races/Nashville%2C TN %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-801a87f5aebb72dd",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-tn",
@@ -55706,6 +57049,75 @@
         "maxX": 746.5029987157056,
         "minY": -736.7711886224249,
         "maxY": 1027.4647803739683
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-nashville-night",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "nashville-night",
+        "raceRef": "Nashville, TN \u2014 Landmark Run",
+        "ref": "environment-v1-nashville-night",
+        "source": "environment-v1/nashville-night.png",
+        "brief": "Nashville Tennessee Cumberland River city, twin-spire original tower motif with varied lower blocks, steel river bridge, rolling wooded limestone basin hills and restrained warm windows.",
+        "lightingInstruction": "DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors.",
+        "brightness": 0.05,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "Nashville, TN \u2014 Landmark Run",
+          "lat": 36.162,
+          "lon": -86.783,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-tn.json",
+        "catalog": [
+          {
+            "id": "city-tn",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 6,
+            "location": {
+              "lat": 36.162,
+              "lon": -86.783
+            },
+            "startGps": {
+              "lat": 36.1527598,
+              "lon": -86.7919273
+            },
+            "finishGps": {
+              "lat": 36.16862593333334,
+              "lon": -86.78116419999999
+            },
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-tn.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-8a6257cf-7cd6-4b71-a1c2-077e817c3aa7.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Nashville Tennessee Cumberland River city, twin-spire original tower motif with varied lower blocks, steel river bridge, rolling wooded limestone basin hills and restrained warm windows. DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Nashville Tennessee Cumberland River city, twin-spire original tower motif with varied lower blocks, steel river bridge, rolling wooded limestone basin hills and restrained warm windows.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -56010,7 +57422,7 @@
           "width": 2172,
           "height": 724,
           "edgeMeanRGB": 3.9180478821362796,
-          "edgeMaximumRGB": 54.0,
+          "edgeMaximumRGB": 54,
           "topRangeRGB": [
             4,
             4,
@@ -56538,7 +57950,7 @@
       "documentPath": "races/Flatrock Motorclub %E2%80%94 Club Course/document.json",
       "siteGroup": "site-fd0df59bcbdae7a7",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-tn",
@@ -56666,6 +58078,68 @@
         "maxX": 576.552069942374,
         "minY": -929.246166003105,
         "maxY": 147.80050064648935
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-flatrock-night",
+        "groundPlaneArtRef": "ground-patchy-snow-leaf-v1",
+        "terrainTileArtById": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "flatrock-night",
+        "raceRef": "Flatrock Motorclub \u2014 Club Course",
+        "ref": "environment-v1-flatrock-night",
+        "source": "environment-v1/flatrock-night.png",
+        "brief": "Tennessee Cumberland Plateau wooded rolling sandstone ridges around the Flatrock club circuit, low distant empty club buildings and forested horizon, no huge Smokies peaks at the track.",
+        "lightingInstruction": "DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors.",
+        "brightness": 0.05,
+        "ground": "ground-patchy-snow-leaf-v1",
+        "tiles": {
+          "snow": "ground-patchy-snow-leaf-v1"
+        },
+        "sourceOrigin": {
+          "name": "Flatrock Motorclub \u2014 Club Course",
+          "lat": 35.8793707,
+          "lon": -84.7538283,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-tn.json",
+        "catalog": [
+          {
+            "id": "state-tn",
+            "venueKey": "state-tn",
+            "venueName": "Flatrock Motorclub \u2014 Club Course",
+            "hubStage": 4,
+            "location": {
+              "lat": 35.8793707,
+              "lon": -84.7538283
+            },
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/state-tn.json",
+          "https://www.flatrockmotorclub.com/drive"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-b2c916ec-4558-427b-a736-b3cfb53475fa.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Tennessee Cumberland Plateau wooded rolling sandstone ridges around the Flatrock club circuit, low distant empty club buildings and forested horizon, no huge Smokies peaks at the track. DARK CLEAR NIGHT, deep navy sky and restrained stars; a small subtle crescent is optional, no daylight colors. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars."
+      },
+      "terrainReview": {
+        "ground": "Tennessee Cumberland Plateau wooded rolling sandstone ridges around the Flatrock club circuit, low distant empty club buildings and forested horizon, no huge Smokies peaks at the track.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -57176,7 +58650,7 @@
       "documentPath": "races/Milwaukee%2C WI %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-711d3f6b0ea42407",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-wi",
@@ -57397,6 +58871,69 @@
         "maxX": 1087.0781841803603,
         "minY": -574.9897598880718,
         "maxY": 1407.7297157561693
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-milwaukee-morning",
+        "groundPlaneArtRef": "ground-winter-snow-litter-v1",
+        "terrainTileArtById": {
+          "snow": "ground-winter-snow-litter-v1"
+        }
+      },
+      "environmentPack": "south-greatlakes-pack14",
+      "recipe": {
+        "key": "milwaukee-morning",
+        "raceRef": "Milwaukee, WI \u2014 Landmark Run",
+        "ref": "environment-v1-milwaukee-morning",
+        "source": "environment-v1/milwaukee-morning.png",
+        "brief": "Milwaukee Wisconsin flat Lake Michigan urban waterfront, old brick industry, modest tower cluster, bridge and harbor silhouettes with distant low tree belts; no mountains.",
+        "lightingInstruction": "CLEAR MORNING, pale blue sky with a restrained warm horizon, no stars or moon.",
+        "brightness": 0.65,
+        "ground": "ground-winter-snow-litter-v1",
+        "tiles": {
+          "snow": "ground-winter-snow-litter-v1"
+        },
+        "sourceOrigin": {
+          "name": "Milwaukee, WI \u2014 Landmark Run",
+          "lat": 43.038,
+          "lon": -87.911,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-wi.json",
+        "catalog": [
+          {
+            "id": "city-wi",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 6,
+            "location": {
+              "lat": 43.038,
+              "lon": -87.911
+            },
+            "lightingPreset": "morning"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-wi.json"
+        ],
+        "sourceLimitation": "Exact saved source/GPS establishes site. Original abandoned 2994 structures and viewpoint are illustrative, not surveyed. Existing snow material remains unchanged; sparse patches are visual snow/litter, not a claim of typical local weather.",
+        "sourceImage": "/workspace/generated_images/exec-f76237d0-86fc-45de-bbc5-8357c8388352.png",
+        "generationPrompt": "Original badge-free 2994 pixel-art 3:1 racing panorama. Milwaukee Wisconsin flat Lake Michigan urban waterfront, old brick industry, modest tower cluster, bridge and harbor silhouettes with distant low tree belts; no mountains. CLEAR MORNING, pale blue sky with a restrained warm horizon, no stars or moon. Abandoned, weathered regional buildings, never text/logos. Sparse winter snow patches and local litter reflect unchanged game snow substrate, not blanket arctic ice. Distant horizon at 60% height. Horizontal wrap: outer 12% left/right have same horizon elevation and matching sky/land colors, keep large features in central 75%. Quiet uniform-color top and bottom 16-pixel bands blended naturally across preceding 8% of image; no textured detail touches these bands, no frame or abrupt band. Do not include close roads or cars.",
+        "originalGeneratedImage": "/workspace/generated_images/exec-163b1b74-14e1-49f4-b268-35489b67595e.png",
+        "boundaryRepairPrompt": "Repair only the lower boundary of this panorama. Remove the unnatural SKY BLUE stripe at the bottom. Extend the local dark earth, snow litter or muted river foreground naturally, then blend into a subdued DARK neutral ground/water shade across the bottom 16 pixels. No blue sky color at lower edge. Preserve all skyline, buildings, lighting, weather, original pixel style and 3:1 composition. Quiet constant bottom color, smoothly faded from foreground not a hard band; retain horizontal wrap."
+      },
+      "terrainReview": {
+        "ground": "Milwaukee Wisconsin flat Lake Michigan urban waterfront, old brick industry, modest tower cluster, bridge and harbor silhouettes with distant low tree belts; no mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "native-material-reviewed; production route-wide review pending"
+      },
+      "nativeReview": {
+        "pack": "pack14",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
+        "evidence": "data/race-environments/pack14-evidence.json",
+        "boundaryPolishPending": true
       }
     },
     {
@@ -58856,7 +60393,7 @@
           "width": 2172,
           "height": 724,
           "edgeMeanRGB": 5.362338858195212,
-          "edgeMaximumRGB": 84.0,
+          "edgeMaximumRGB": 84,
           "topRangeRGB": [
             10,
             5,

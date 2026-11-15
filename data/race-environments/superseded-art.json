@@ -64,6 +64,38 @@
         "verdict": "superseded-site-composition",
         "scope": "Original source and active source plus matched native raw100 and unchanged authored desktop/handheld views inspected. Original bytes retained and verified; fog and boundary limitations are separate from composition choice."
       }
+    },
+    "skybox-data-center-city": {
+      "kind": "skybox",
+      "replacement": "environment-v1-stl-riverfront-night",
+      "raceRef": "Data Center City",
+      "reason": "Original generic futuristic towers and ruined wooded foreground are superseded by the already active lower riverfront campus composition with clean colorful machine infrastructure and a restrained night sky. Last inherited use on eleven unrelated city/circuit routes was replaced by site-specific artwork in pack14. Both original and active native desktop/handheld views inspected: authored fog and .05 exposure hide both, and active edge extensions remain a polish limitation. No readability or driving acceptance is inferred.",
+      "source": "assets/campaign-art/skyboxes/data-center-city.png",
+      "sourceSha256": "34e1381acddcd84074e876872257c487bb4886aa486994aa2841e5430b263e13",
+      "documentPath": "art/skybox-data-center-city/document.json",
+      "documentSha256": "05ebd453201b44f437c5eddf189cba1aa43da557c813dfb17a1a371101047837",
+      "review": {
+        "path": "data/race-environments/data-center-review.jpg",
+        "sha256": "b4763bfe030fce3a4cfcdc5d0d7023e34a01112000c13c860662b0b6eaf37c33",
+        "verdict": "superseded-site-composition",
+        "scope": "Original and active sources plus matched native raw100 and unchanged authored desktop/handheld views inspected. Original bytes remain unchanged; clean machine-campus composition is preferred while actual low exposure/fog and boundary defects remain explicit."
+      }
+    },
+    "skybox-ozarks": {
+      "kind": "skybox",
+      "replacement": "environment-v1-ozark-eminence-day",
+      "raceRef": "Ozark Backroads",
+      "reason": "Original autumn wooded bluff panorama is regionally plausible and is not claimed to depict a proven wrong state. Superseded by the already active winter woodland, low rolling limestone valley and river composition grounded in the saved MO-19 near Eminence origin. Last inherited use was removed by pack14 site-specific skies. Original and active native desktop/handheld raw/authored comparisons viewed; both are obscured by unchanged authored haze, and active lower-edge columns remain a release-quality defect. No seam or driving acceptance is inferred.",
+      "source": "assets/campaign-art/skyboxes/ozarks.png",
+      "sourceSha256": "b268e98638d8eb88633770b01ecfd17a9cf653095c9abe05576623dfde80f473",
+      "documentPath": "art/skybox-ozarks/document.json",
+      "documentSha256": "51a660a2ff129a04dd47a98643426039c613fbe29c140c7a8ce98db63b60c0ee",
+      "review": {
+        "path": "data/race-environments/ozark-review.jpg",
+        "sha256": "159dc421305fd36d6ceffcc52d11304baa9b3e0b83862ab027493015b558f43f",
+        "verdict": "superseded-site-composition",
+        "scope": "Both sources and matched native raw100/authored desktop/handheld views reviewed. Original bytes preserved. Site/season composition choice is separate from unresolved active lower-edge extrusion and authored haze."
+      }
     }
   }
 }
