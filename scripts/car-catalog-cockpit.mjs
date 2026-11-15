@@ -6,6 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {normalizeCarGauges} from '../src/racing/CarGauges.js';
 export const cockpitAnchors={
+ 'magnolia-40-1990':{"wheelOpening": true, "size": [2172, 724], "cluster": [1370, 475, 550, 155], "wheel": [1645, 680, 280], "gaugeColor": "#b9e6de"},
  'juniper-40-2014':{"wheelOpening": true, "size": [2172, 724], "cluster": [280, 455, 590, 160], "wheel": [575, 675, 280]},
  'lunaria-30-1991':{"wheelOpening": true, "size": [2172, 724], "cluster": [365, 475, 590, 155], "wheel": [660, 680, 280]},
  'tansy-cargo-2010':{wheelOpening:true,size:[2172,724],cluster:[405,475,490,145],wheel:[650,670,280]},
@@ -106,6 +107,7 @@ export function applyCockpitAnchors(car,a){
    Object.assign(g,{x:xs[i],y:i===3?.92:0,width:widths[i],height:i===3?.08:.88,fontSize:i===3?18:120});
   }
  }
+ if(a.gaugeColor)for(const g of layout.widgets)Object.assign(g,{color:a.gaugeColor,textColor:a.gaugeColor});
  car.art.gauges={...car.art.gauges,interior:layout};return car;
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){

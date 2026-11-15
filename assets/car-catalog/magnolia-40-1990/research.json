@@ -1,0 +1,50 @@
+{
+  "referenceVehicle": "UK June1990 Lexus LS400 4.0V8 RHD coil-spring four-speed automatic",
+  "sources": [
+    {
+      "url": "https://media.lexus.co.uk/wp-content/uploads/sites/3/pdf/LS400-Gen1-UK-launch-pack-1990.pdf",
+      "fields": [
+        "engine",
+        "gearing",
+        "mass",
+        "weight distribution",
+        "dimensions",
+        "tracks",
+        "tires",
+        "fuel",
+        "steering"
+      ],
+      "access": "Original Lexus UK launch pack, technical specification pages28–30; source scan visually checked for ratios."
+    }
+  ],
+  "verifiedFacts": {
+    "powerHp": 241,
+    "powerRpm": 5400,
+    "torqueLbFt": 258,
+    "torqueRpm": 4400,
+    "massKg": 1805,
+    "frontWeightDistribution": 0.5429362880886427,
+    "gears": [
+      2.531,
+      1.531,
+      1,
+      0.753
+    ],
+    "reverse": 1.88,
+    "final": 3.615,
+    "maximumEngineRpm": 6700,
+    "sourceQualification": "UK launch coil-spring version, not US250hp. Launch table printsA342E, first2.531/second1.531/reverse1.880; retained as printed rather than substituted with generic A341E values. 85litres converted to USgallons."
+  },
+  "gearingStatus": {
+    "individualRatios": "Exact manufacturer table four-speed automatic ratios, including reverse.",
+    "finalDrive": "Manufacturer final applied once."
+  },
+  "estimates": [
+    "Redline below sourced maximum, idle650,torque interpolation,32psi,CG,bodysections,grip,brakes/suspension rates and85percent efficiency are game tuning.",
+    "Factory automatic only. Converter slip.10/multiplication1.7 and shift timing/launchRPM are game estimates, not calibrated OEM controls. No manual gearbox invented.",
+    "Nominal tire radii derived from sourced sizes; RWD scalar uses rear. Wheel-well-aware collider represents actual wheel openings; CG kept consistent with runtime tuning.",
+    "Car Editor does not forward per-car suspension architecture; generic runtime suspension and assists are approximations, not a factory hardpoint model.",
+    "Original fictional body/dashboard, shared wheels, fixed rear camera and existing surface effects. Gauge colors/placement individually fitted.",
+    "Cd.29 and published155mph/8.3sec are manufacturer reference figures, not measured game performance; open differential approximation."
+  ]
+}
