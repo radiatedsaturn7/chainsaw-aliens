@@ -7742,7 +7742,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "PA 381 — Ohiopyle approach",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -7827,7 +7833,27 @@
         "ground": "Low rounded Laurel Highlands wooded gorge rim, dense mixed hardwoods and hemlocks, gray sandstone ledges and a subtle distant gorge depression, clear noon. No giant falls, skyscrapers, snow or dramatic alpine peaks.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-63d40-ch-independent-sky-handheld/site-ea45982cd0691d1d-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-76b06-ach-independent-sky-desktop/site-ea45982cd0691d1d-state.json"
+          ],
+          "ground": "ground-frozen-forest",
+          "tileImageById": {
+            "snow": {
+              "ground-frozen-forest": 14080
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -7942,7 +7968,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "PA 711 — Normalville / Champion",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -8024,7 +8056,27 @@
         "ground": "Rolling Pennsylvania upland pasture edged by long low hardwood ridges, a small distant weathered farm barn and silos in the center, quiet clear evening peach sky. No snow, tall mountains or city.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-46f50-on-independent-sky-handheld/site-0c07fa38fb04f09c-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-d6f0f-ion-independent-sky-desktop/site-0c07fa38fb04f09c-state.json"
+          ],
+          "ground": "environment-v1-ground-sebring-olive",
+          "tileImageById": {
+            "snow": {
+              "environment-v1-ground-sebring-olive": 26970
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -8139,7 +8191,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "US 40 — Chalk Hill / Summit",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -8227,7 +8285,27 @@
         "ground": "National Road Chalk Hill upland landscape, broad rounded Appalachian wooded ridge, layered sandstone bank near central old stone inn-like roof and telegraph poles, clear muted evening. No snow, modern skyline or alpine peaks.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-3ed57-mit-independent-sky-desktop/site-d200c051d2de088c-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-dbf2c-it-independent-sky-handheld/site-d200c051d2de088c-state.json"
+          ],
+          "ground": "ground-frozen-forest",
+          "tileImageById": {
+            "snow": {
+              "ground-frozen-forest": 18857
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -8342,7 +8420,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "PA 31 — Donegal to Laurel Ridge",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -8425,7 +8509,27 @@
         "ground": "Laurel Ridge Pennsylvania clear night, broad low ridge black-blue outline above dark meadow and hardwoods, tiny distant abandoned hamlet roofs, a small off-center pale crescent moon and sparse stars in central sky. Restrained dark navy, no daytime sunset, no snow or bright floodlighting.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-db525-ge-independent-sky-handheld/site-972e17deb852af50-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-e508c-dge-independent-sky-desktop/site-972e17deb852af50-state.json"
+          ],
+          "ground": "ground-frozen-forest",
+          "tileImageById": {
+            "snow": {
+              "ground-frozen-forest": 13090
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -8540,7 +8644,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "County Line Road — Seven Springs",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -8628,7 +8738,27 @@
         "ground": "High Laurel Highlands wooded plateau at clear night, rounded dark forested slopes, distant empty ski-lift support silhouettes and low chalet roof in center, subdued faint star cluster, NO moon disk, no snow blanket. Navy charcoal landscape with very faint cloud haze, no bright daylight.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-471f2-ngs-independent-sky-desktop/site-f7da332c258efcfe-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-5f5ff-gs-independent-sky-handheld/site-f7da332c258efcfe-state.json"
+          ],
+          "ground": "ground-frozen-forest",
+          "tileImageById": {
+            "snow": {
+              "ground-frozen-forest": 17604
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -8743,7 +8873,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "Forbes State Forest — designated gravel roads",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -8825,7 +8961,27 @@
         "ground": "Pennsylvania Forbes State Forest rolling sandstone uplands, layered hardwood/hemlock forest and central exposed blocky gray rock ledges, small mossy woodland opening with leaf litter and gravel, soft clear morning. No snow, no giant mountains, no buildings or lake.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-35386-ads-independent-sky-desktop/site-970130995788e0e1-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-52073-ds-independent-sky-handheld/site-970130995788e0e1-state.json"
+          ],
+          "ground": "ground-frozen-forest",
+          "tileImageById": {
+            "snow": {
+              "ground-frozen-forest": 20709
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "gravel",
+              "artRef": "road-gravel-gray"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -8940,7 +9096,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "Jennerstown Speedway — oval",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -9021,7 +9183,27 @@
         "ground": "Small Laurel Highlands Pennsylvania oval facility at clear night, low empty steel bleachers and compact timing/control building, dark rounded wooded ridge, restrained localized amber service glow at central shed, sparse central stars but no moon disk. Abandoned 2994, not a brightly operating stadium. No snow.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-05b1b-val-independent-sky-desktop/site-8094a0b0d3afc061-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-28f8d-al-independent-sky-handheld/site-8094a0b0d3afc061-state.json"
+          ],
+          "ground": "environment-v1-ground-sebring-olive",
+          "tileImageById": {
+            "snow": {
+              "environment-v1-ground-sebring-olive": 2401
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -9136,7 +9318,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "Keystone Motorsports Park — New Alexandria",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -9217,7 +9405,27 @@
         "ground": "New Alexandria Pennsylvania drag-racing facility, low long empty bleachers, timing tower and paddock sheds in center, gently rolling wooded hills behind, muted morning mist in valley and clear sky, dry olive grass. No snow or giant stadium bowl.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-8736a-ria-independent-sky-desktop/site-7602d0e9bdf75459-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-df521-ia-independent-sky-handheld/site-7602d0e9bdf75459-state.json"
+          ],
+          "ground": "environment-v1-ground-sebring-olive",
+          "tileImageById": {
+            "snow": {
+              "environment-v1-ground-sebring-olive": 10248
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -9332,7 +9540,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "Pittsburgh International Race Complex — Wampum",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -9422,7 +9636,27 @@
         "ground": "Wampum western Pennsylvania natural-terrain racing facility, rolling grassy basin and wooded ridges, low paddock garages and distant guardrail ribbon in center, broad wooded spectator hill, clear noon. No snow, major skyline or oval stadium bowl.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-6470b-pum-independent-sky-desktop/site-b863ba89a6b16f08-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-a3b41-um-independent-sky-handheld/site-b863ba89a6b16f08-state.json"
+          ],
+          "ground": "environment-v1-ground-sebring-olive",
+          "tileImageById": {
+            "snow": {
+              "environment-v1-ground-sebring-olive": 16482
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -9537,7 +9771,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "OH 26 — Covered Bridge Scenic Byway",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -9620,7 +9860,27 @@
         "ground": "Little Muskingum River valley in southeastern Ohio: enclosed low hardwood hills alternating pasture, a SMALL distant weathered timber covered bridge over a narrow creek in center, meandering valley vegetation, clear noon. No large Ohio River bridge, skyline, snow or alpine peaks.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-72638-ay-independent-sky-handheld/site-ce967576740b91ba-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-94a03-way-independent-sky-desktop/site-ce967576740b91ba-state.json"
+          ],
+          "ground": "ground-frozen-forest",
+          "tileImageById": {
+            "snow": {
+              "ground-frozen-forest": 26864
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -9735,7 +9995,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "OH 555 — Triple Nickel",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -9816,7 +10082,27 @@
         "ground": "Southeastern Ohio Triple Nickel near Little Hocking, closely rolling rounded farm hills with irregular pasture and hardwood copses, small central weathered red barn, distant ridge layers, clear warm evening. No giant river, tall mountains or snow.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-bff09-kel-independent-sky-desktop/site-810d6d9e4e9b3ddc-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-d6ef6-el-independent-sky-handheld/site-810d6d9e4e9b3ddc-state.json"
+          ],
+          "ground": "environment-v1-ground-sebring-olive",
+          "tileImageById": {
+            "snow": {
+              "environment-v1-ground-sebring-olive": 15604
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -9931,7 +10217,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "OH 550 — Barlow approach",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -10013,7 +10305,27 @@
         "ground": "Barlow Ohio rural approach, broad gently rolling pasture with hedgerows, low wooded hills and a distant faded farmhouse with small silo cluster in center, cool clear morning. No skyline, snow or alpine peaks.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-11ccb-ch-independent-sky-handheld/site-962dcdad0505b546-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-d49ac-ach-independent-sky-desktop/site-962dcdad0505b546-state.json"
+          ],
+          "ground": "environment-v1-ground-sebring-olive",
+          "tileImageById": {
+            "snow": {
+              "environment-v1-ground-sebring-olive": 4698
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -10128,7 +10440,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "OH 536 — Ohio River hills",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -10210,7 +10528,27 @@
         "ground": "Southeastern Ohio deeply folded low river-country hills at clear night, wooded ridge silhouettes and faint narrow distant river reflection in central valley, small waning crescent high in CENTRAL sky and sparse stars. Dark blue muted silver, no suspension bridge, skyline, snow or daylight.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-7ecd9-lls-independent-sky-desktop/site-46654cec16ae2e4b-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-c6a8d-ls-independent-sky-handheld/site-46654cec16ae2e4b-state.json"
+          ],
+          "ground": "ground-frozen-forest",
+          "tileImageById": {
+            "snow": {
+              "ground-frozen-forest": 28826
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -10325,7 +10663,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "OH 676 — Western county hills",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -10410,7 +10754,27 @@
         "ground": "Western Washington County Ohio wooded farmland at clear night, shallow rounded hills and small central abandoned tobacco-barn-like timber building, thin haze and very faint stars, NO moon disk. Quiet charcoal indigo and subdued pasture tones; no big river, snow or bright city.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-616a4-lls-independent-sky-desktop/site-b0105dc9624aeb55-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-b827d-ls-independent-sky-handheld/site-b0105dc9624aeb55-state.json"
+          ],
+          "ground": "ground-frozen-forest",
+          "tileImageById": {
+            "snow": {
+              "ground-frozen-forest": 25521
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -10525,7 +10889,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "Marietta–Williamstown — I-77 river bridge",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -10615,7 +10985,27 @@
         "ground": "Ohio River between Marietta Ohio and Williamstown WV: broad calm river centrally visible below low wooded banks, distant low industrial roofs and modest horizontal steel-girder highway crossing on piers, clear peach violet evening. No suspension towers or cable stayed bridge, no tall skyline, no snow. Far river view rather than a road foreground.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-6f7cb-ge-independent-sky-handheld/site-85f359605453a4d3-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-723e6-dge-independent-sky-desktop/site-85f359605453a4d3-state.json"
+          ],
+          "ground": "environment-v1-ground-sebring-olive",
+          "tileImageById": {
+            "snow": {
+              "environment-v1-ground-sebring-olive": 4698
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -10730,7 +11120,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "Washington County western covered-bridge gravel loop",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -10812,7 +11208,27 @@
         "ground": "Western Washington County Ohio rural gravel loop, low wooded ridges enclosing a grassy narrow creek valley, small central weathered timber covered bridge partly obscured by trees, pale gravel bank and pasture, clear morning. More intimate woodland than broad OH26 valley, no giant river or mountains or snow.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-3412a-op-independent-sky-handheld/site-2282df3a3baec807-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-534fb-oop-independent-sky-desktop/site-2282df3a3baec807-state.json"
+          ],
+          "ground": "ground-frozen-forest",
+          "tileImageById": {
+            "snow": {
+              "ground-frozen-forest": 19436
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "dirt",
+              "artRef": "road-dirt-packed"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -10927,7 +11343,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "Ohio Valley Speedway — Washington, West Virginia",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -11008,7 +11430,27 @@
         "ground": "Small Washington WV dirt oval facility at clear night, low earth banking and compact empty metal bleachers and pit sheds in center, enclosing wooded foothills, very restrained single amber shed window and sparse stars, no moon disk or floodlit stadium. Dark navy earth palette, no snow.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-28b7c-ia-independent-sky-handheld/site-e25b27253b7705c1-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-c1988-nia-independent-sky-desktop/site-e25b27253b7705c1-state.json"
+          ],
+          "ground": "ground-brown-dirt-v2",
+          "tileImageById": {
+            "snow": {
+              "ground-brown-dirt-v2": 1330
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "dirt",
+              "artRef": "road-dirt-packed"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {
@@ -26919,7 +27361,13 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "nativePack7": {
+          "desktop": true,
+          "handheld": true,
+          "diagnosticContactSheetsViewed": true,
+          "scope": "Native projection and effective binding only; not driving acceptance."
+        }
       },
       "physicalSiteLabel": "National Road — Sideling Hill",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -27005,7 +27453,27 @@
         "ground": "Western Maryland National Road region near Sideling Hill, long folded Appalachian sandstone/shale wooded ridgeline with a central modest layered gray-brown rock exposure, broad forested valley depth, clear warm evening. Do NOT depict the famous interstate roadcut as the route itself; no huge manmade cut, no snow, no alpine peaks.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Appalachian routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "Source and effective bindings reviewed; full production review pending.",
+        "effectiveEvidence": {
+          "reports": [
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-05280-ill-independent-sky-desktop/site-2c1fd8d13734f0b2-state.json",
+            "/tmp/race-environment-pack7-renderer/race-environments-renderer-6dfa5-ll-independent-sky-handheld/site-2c1fd8d13734f0b2-state.json"
+          ],
+          "ground": "ground-frozen-forest",
+          "tileImageById": {
+            "snow": {
+              "ground-frozen-forest": 9275
+            }
+          },
+          "activeSurfaceArt": [
+            {
+              "surface": "asphalt",
+              "artRef": "road-asphalt-patched"
+            }
+          ],
+          "marginMode": "hidden",
+          "shoulderMode": "hidden"
+        }
       }
     },
     {

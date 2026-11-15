@@ -1,0 +1,580 @@
+{
+  "base": "24b3164e4b7765482a9b819e6968f821b452b344",
+  "parentCheckpoint": "0e1b313301e1bd264a9913d86b4acd10fbe2eb25",
+  "artCheckpoint": "839c975f75af093bcbc9202bea129c9540f23308",
+  "artTree": "7e6c21220b4532599b24162cecc4b26961da3026",
+  "scope": "Local-only eighteen-site Appalachian pack, seven sky boundary revisions, three remaining main-route audits and QA input controller. No physics, geometry, mission, scenery, lighting/weather/time, cars or remote changes. All originals and prior QA retained.",
+  "counts": {
+    "reachableRaces": 245,
+    "bound": 74,
+    "newBindings": 18,
+    "mainRouteBound": 8,
+    "mainRouteTotal": 11,
+    "remainingMainAudits": 3,
+    "newSkyCompositions": 18,
+    "newGroundTextures": 0,
+    "revisedPriorSkies": 7,
+    "sourceAndEffectiveTerrainReviews": 18,
+    "diagnosticCompositionsViewedBothDevices": 18,
+    "newNativeDeviceCasesPassed": 36,
+    "repairNativeDeviceCasesPassed": 14,
+    "fullyAcceptedEnvironments": 0,
+    "actualDrivingSamplesPassed": 2,
+    "actualDrivingCasesFailed": 5,
+    "distinctNewRacesWithDrivingPass": 2,
+    "newRacesWithBothDeviceDrivingPasses": 0
+  },
+  "checks": {
+    "units": {
+      "passed": 90,
+      "failed": 0,
+      "log": "/tmp/race-pack7-units.log"
+    },
+    "campaignBrowsers": {
+      "passed": 6,
+      "failed": 0,
+      "log": "/tmp/race-pack7-campaign.log"
+    },
+    "manifest": {
+      "documents": 1648,
+      "assets": 16,
+      "log": "/tmp/race-pack7-manifest.log"
+    },
+    "nonvisual": {
+      "races": 245,
+      "log": "/tmp/race-pack7-bind.json",
+      "result": "Full preflight passed before applying bindings; nonvisual semantics identical to base."
+    },
+    "native": {
+      "audit": "/tmp/race-pack7-native-audit.json",
+      "logs": [
+        "/tmp/race-pack7-native.log",
+        "/tmp/race-pack7-repairs.log"
+      ],
+      "sheets": "/tmp/race-pack7-sheets",
+      "wrapperNote": "Native wrapper received interrupt but child completed all 36; verified final 36 passed log and complete report audit. No duplicate capture run."
+    },
+    "art": {
+      "report": "/tmp/race-pack7-art.json",
+      "result": "All 74 bound skies opaque/decoded; identical pixels limited to evidenced same-site groups. Only two numerical warnings remain globally: Keystone and Sideling."
+    },
+    "driving": {
+      "report": "/tmp/race-pack7-driving-audit.json",
+      "newPackLog": "/tmp/race-pack7-driving.log",
+      "passed": [
+        {
+          "file": "/tmp/race-environment-pack7-driving/race-environments-driving--df999-authored-foreground-and-sky/driving-state.json",
+          "race": "PA 31 — Donegal to Laurel Ridge",
+          "device": "handheld",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "displacementM": 0.9509654281833512,
+          "elapsedMs": 2766.666666666668,
+          "speedMps": 3.086793,
+          "sky": "environment-v1-donegal-night",
+          "brightness": 0.05,
+          "missingArtRefs": [],
+          "errors": [],
+          "network": []
+        },
+        {
+          "file": "/tmp/race-environment-pack7-driving/race-environments-driving--f48d0-authored-foreground-and-sky/driving-state.json",
+          "race": "Keystone Motorsports Park — New Alexandria",
+          "device": "handheld",
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "displacementM": 0.8431958257415639,
+          "elapsedMs": 2833.333333333335,
+          "speedMps": 3.075662,
+          "sky": "environment-v1-keystone-morning",
+          "brightness": 0.65,
+          "missingArtRefs": [],
+          "errors": [],
+          "network": []
+        }
+      ],
+      "failures": [
+        {
+          "file": "/tmp/race-environment-pack7-driving/race-environments-driving--6739c-authored-foreground-and-sky/failure-state.json",
+          "race": "PA 31 — Donegal to Laurel Ridge",
+          "device": "desktop",
+          "state": {
+            "state": "race-editor",
+            "status": "Loading PA 31 %E2%80%94 Donegal to Laurel Ridge",
+            "error": "Race preparation failed during world bake: Race preparation timed out while building terrain",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "PA 31 %E2%80%94 Donegal to Laurel Ridge",
+              "phase": "world-bake",
+              "progress": 0.12,
+              "elapsedMs": 5008.399999991059,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "preparation": "Building terrain",
+            "race": "New Race",
+            "sky": "providence",
+            "weather": {
+              "id": "clear",
+              "label": "Clear",
+              "visualIntensity": 0,
+              "targetIntensity": 0,
+              "buildup": 0,
+              "effectiveIntensity": 0,
+              "precipitationIntensity": 0,
+              "snowDepthInches": 0,
+              "visibilityDistanceM": null,
+              "visibilityStrength": 0,
+              "visibilityColor": "rgba(0,0,0,0)",
+              "visibilityNearAlpha": 0,
+              "visibilityFarAlpha": 0
+            },
+            "fx": {
+              "enabled": false,
+              "preset": "noon",
+              "sunEnabled": true,
+              "sunDisc": true,
+              "sunX": 0.5,
+              "sunY": 0.2,
+              "sunColor": "#fff0cf",
+              "sunSize": 0.012,
+              "sunIntensity": 0.7,
+              "lensFlare": 0.12,
+              "sunGlare": 0.45,
+              "skyBrightness": 1,
+              "tintColor": "#ffffff",
+              "tintAmount": 0,
+              "motionBlur": 0,
+              "speedLines": 0,
+              "speedLineOpacity": 1,
+              "speedLineArtRef": "",
+              "speedLineArtMode": "overlay",
+              "vignette": 0,
+              "speedStartMph": 45,
+              "speedFullMph": 130
+            },
+            "session": {
+              "running": false
+            }
+          },
+          "errors": [],
+          "network": [],
+          "error": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m"
+        },
+        {
+          "file": "/tmp/race-environment-pack7-driving/race-environments-driving--bbdc7-authored-foreground-and-sky/failure-state.json",
+          "race": "Keystone Motorsports Park — New Alexandria",
+          "device": "desktop",
+          "state": {
+            "state": "prompt",
+            "status": "Race did not present its first playable frame",
+            "error": "",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Keystone Motorsports Park %E2%80%94 New Alexandria",
+              "phase": "starting-race",
+              "progress": 0.997,
+              "elapsedMs": 56749.60000000894,
+              "missingArtRefs": [],
+              "status": "running"
+            },
+            "race": "Keystone Motorsports Park — New Alexandria",
+            "sky": "environment-v1-keystone-morning",
+            "weather": {
+              "id": "clear",
+              "label": "Clear",
+              "visualIntensity": 0,
+              "targetIntensity": 0,
+              "buildup": 0,
+              "effectiveIntensity": 0,
+              "precipitationIntensity": 0,
+              "snowDepthInches": 0,
+              "visibilityDistanceM": null,
+              "visibilityStrength": 0,
+              "visibilityColor": "rgba(0,0,0,0)",
+              "visibilityNearAlpha": 0,
+              "visibilityFarAlpha": 0
+            },
+            "fx": {
+              "enabled": true,
+              "preset": "morning",
+              "sunEnabled": true,
+              "sunDisc": true,
+              "sunX": 0.25,
+              "sunY": 0.42,
+              "sunColor": "#ffdcaa",
+              "sunSize": 0.012,
+              "sunIntensity": 0.65,
+              "lensFlare": 0.12,
+              "sunGlare": 0.45,
+              "skyBrightness": 0.65,
+              "tintColor": "#ffd1a0",
+              "tintAmount": 0.06,
+              "motionBlur": 0.16,
+              "speedLines": 0.08,
+              "speedLineOpacity": 1,
+              "speedLineArtRef": "",
+              "speedLineArtMode": "overlay",
+              "vignette": 0.1,
+              "speedStartMph": 45,
+              "speedFullMph": 130
+            },
+            "session": null
+          },
+          "errors": [],
+          "network": [
+            {
+              "url": "http://127.0.0.1:4258/__storage/file?folder=art&name=dirtsmoke",
+              "error": {
+                "errorText": "net::ERR_ABORTED"
+              }
+            }
+          ],
+          "error": "Error: page.waitForFunction: Error: Race left startup for prompt: Race did not present its first playable frame\n    at eval (eval at predicate (eval at evaluate (:290:30)), <anonymous>:4:56)\n    at predicate (eval at evaluate (:290:30), <anonymous>:7:23)\n    at next (eval at evaluate (:290:30), <anonymous>:29:29)"
+        },
+        {
+          "file": "/tmp/race-environment-pack7-steering/race-environments-driving--51f1a-authored-foreground-and-sky/failure-state.json",
+          "race": "Tower Hill Road",
+          "device": "handheld",
+          "state": {
+            "state": "race-editor",
+            "status": "Playtesting Tower Hill Road in RTG-001",
+            "error": "",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Tower Hill Road",
+              "phase": "starting-race",
+              "progress": 0.997,
+              "elapsedMs": 44882.5,
+              "missingArtRefs": [],
+              "status": "presented",
+              "firstPlayableFrameAt": 1794731089703
+            },
+            "race": "Tower Hill Road",
+            "sky": "environment-v1-tower-hill-snow-night",
+            "weather": {
+              "id": "snow",
+              "label": "Snow",
+              "visualIntensity": 0.09037499999999998,
+              "targetIntensity": 0.09037499999999998,
+              "buildup": 1,
+              "effectiveIntensity": 0.09037499999999998,
+              "precipitationIntensity": 0.09037499999999998,
+              "snowDepthInches": 0.5422499999999999,
+              "visibilityDistanceM": 6595.53,
+              "visibilityStrength": 0.03896415110635137,
+              "visibilityColor": "238,245,248",
+              "visibilityNearAlpha": 0.0009741037776587842,
+              "visibilityFarAlpha": 0.036626302039970283
+            },
+            "fx": {
+              "enabled": true,
+              "preset": "night",
+              "sunEnabled": false,
+              "sunDisc": true,
+              "sunX": 0.5,
+              "sunY": 0.15,
+              "sunColor": "#afc9ff",
+              "sunSize": 0.012,
+              "sunIntensity": 0,
+              "lensFlare": 0,
+              "sunGlare": 0.45,
+              "skyBrightness": 0.05,
+              "tintColor": "#839ccc",
+              "tintAmount": 0.04,
+              "motionBlur": 0.16,
+              "speedLines": 0.08,
+              "speedLineOpacity": 1,
+              "speedLineArtRef": "",
+              "speedLineArtMode": "overlay",
+              "vignette": 0.1,
+              "speedStartMph": 45,
+              "speedFullMph": 130
+            },
+            "session": {
+              "running": true,
+              "pending": false,
+              "elapsed": 5099.999999999998,
+              "speed": 5.228051,
+              "worldX": 1618.431972,
+              "worldZ": -71.897924,
+              "camera": "third-person"
+            }
+          },
+          "errors": [],
+          "network": [],
+          "error": "AssertionError [ERR_ASSERTION]: Test car left road corridor"
+        },
+        {
+          "file": "/tmp/race-environment-pack7-steering/race-environments-driving--9c620-authored-foreground-and-sky/failure-state.json",
+          "race": "Tower Hill Road",
+          "device": "desktop",
+          "state": {
+            "state": "race-editor",
+            "status": "Playtesting Tower Hill Road in RTG-001",
+            "error": "",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Tower Hill Road",
+              "phase": "starting-race",
+              "progress": 0.997,
+              "elapsedMs": 43157.10000000894,
+              "missingArtRefs": [],
+              "status": "presented",
+              "firstPlayableFrameAt": 1794730904860
+            },
+            "race": "Tower Hill Road",
+            "sky": "environment-v1-tower-hill-snow-night",
+            "weather": {
+              "id": "snow",
+              "label": "Snow",
+              "visualIntensity": 0.13246237500000013,
+              "targetIntensity": 0.13246237500000013,
+              "buildup": 1,
+              "effectiveIntensity": 0.13246237500000013,
+              "precipitationIntensity": 0.13246237500000013,
+              "snowDepthInches": 0.7947742500000008,
+              "visibilityDistanceM": 5433.44,
+              "visibilityStrength": 0.06528673133718625,
+              "visibilityColor": "238,245,248",
+              "visibilityNearAlpha": 0.0016321682834296563,
+              "visibilityFarAlpha": 0.06136952745695507
+            },
+            "fx": {
+              "enabled": true,
+              "preset": "night",
+              "sunEnabled": false,
+              "sunDisc": true,
+              "sunX": 0.5,
+              "sunY": 0.15,
+              "sunColor": "#afc9ff",
+              "sunSize": 0.012,
+              "sunIntensity": 0,
+              "lensFlare": 0,
+              "sunGlare": 0.45,
+              "skyBrightness": 0.05,
+              "tintColor": "#839ccc",
+              "tintAmount": 0.04,
+              "motionBlur": 0.16,
+              "speedLines": 0.08,
+              "speedLineOpacity": 1,
+              "speedLineArtRef": "",
+              "speedLineArtMode": "overlay",
+              "vignette": 0.1,
+              "speedStartMph": 45,
+              "speedFullMph": 130
+            },
+            "session": {
+              "running": true,
+              "pending": false,
+              "elapsed": 10416.300000000016,
+              "speed": 10.06467056274414,
+              "worldX": 1601.81982421875,
+              "worldZ": -70.19740295410156,
+              "camera": "third-person"
+            }
+          },
+          "errors": [],
+          "network": [],
+          "error": "AssertionError [ERR_ASSERTION]: Test car left road corridor"
+        },
+        {
+          "file": "/tmp/race-environment-pack7-steering-corrected/race-environments-driving--51f1a-authored-foreground-and-sky/failure-state.json",
+          "race": "Tower Hill Road",
+          "device": "handheld",
+          "state": {
+            "state": "race-editor",
+            "status": "Playtesting Tower Hill Road in RTG-001",
+            "error": "",
+            "diagnostics": {
+              "requestId": 1,
+              "cacheKey": "",
+              "raceName": "Tower Hill Road",
+              "phase": "starting-race",
+              "progress": 0.997,
+              "elapsedMs": 49858.5,
+              "missingArtRefs": [],
+              "status": "presented",
+              "firstPlayableFrameAt": 1794732417785
+            },
+            "race": "Tower Hill Road",
+            "sky": "environment-v1-tower-hill-snow-night",
+            "weather": {
+              "id": "snow",
+              "label": "Snow",
+              "visualIntensity": 0.1162361111111109,
+              "targetIntensity": 0.1162361111111109,
+              "buildup": 1,
+              "effectiveIntensity": 0.1162361111111109,
+              "precipitationIntensity": 0.1162361111111109,
+              "snowDepthInches": 0.6974166666666655,
+              "visibilityDistanceM": 5855.01,
+              "visibilityStrength": 0.05472810950920983,
+              "visibilityColor": "238,245,248",
+              "visibilityNearAlpha": 0.0013682027377302458,
+              "visibilityFarAlpha": 0.05144442293865724
+            },
+            "fx": {
+              "enabled": true,
+              "preset": "night",
+              "sunEnabled": false,
+              "sunDisc": true,
+              "sunX": 0.5,
+              "sunY": 0.15,
+              "sunColor": "#afc9ff",
+              "sunSize": 0.012,
+              "sunIntensity": 0,
+              "lensFlare": 0,
+              "sunGlare": 0.45,
+              "skyBrightness": 0.05,
+              "tintColor": "#839ccc",
+              "tintAmount": 0.04,
+              "motionBlur": 0.16,
+              "speedLines": 0.08,
+              "speedLineOpacity": 1,
+              "speedLineArtRef": "",
+              "speedLineArtMode": "overlay",
+              "vignette": 0.1,
+              "speedStartMph": 45,
+              "speedFullMph": 130
+            },
+            "session": {
+              "running": true,
+              "pending": false,
+              "elapsed": 8366.66666666664,
+              "speed": 6.90779,
+              "worldX": 1592.517884,
+              "worldZ": -76.740006,
+              "camera": "third-person"
+            }
+          },
+          "errors": [],
+          "network": [],
+          "error": "Error: Steered opening-bend route progress\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m50\u001b[39m\nReceived:    \u001b[31m34.66536966176937\u001b[39m"
+        }
+      ],
+      "inspection": "Actual authored and separately labeled sky100 handheld frames viewed for Keystone and Donegal. Keystone foreground/sky coherent at sampled yaw, wrap seam elsewhere pending. Donegal foreground/headlights coherent but sky nearly black; diagnostic shows restrained night silhouette. Captures are consecutive, not frozen matched poses.",
+      "contactSheet": "/tmp/race-pack7-sheets/actual-handheld.jpg",
+      "loadCaveat": "Initial desktop attempts overlapped native compositor work; no fresh untouched-base comparison was run for these new blockers. Do not label their cause as established baseline or art regression."
+    },
+    "towerHill": {
+      "initial": "Both first steered cases moved then violated corridor. Harness steering sign disagreed with production RaceEditor convention; corrected QA only. Initial failed traces retained.",
+      "sourceEvidence": "src/ui/RaceEditor.js physical-steering/opposite-world-yaw comment in preview controller; src/ui/RaceEditor.js normal keyboardSteer mapping.",
+      "correctedResult": "FAILED unchanged >=50m gate after 60-second wall budget. Not startup failure and not route-wide acceptance.",
+      "correctedLog": "/tmp/race-pack7-steering-corrected.log",
+      "trace": "/tmp/race-environment-pack7-steering-corrected/race-environments-driving--51f1a-authored-foreground-and-sky/steering-trace.json",
+      "routeProgressM": 34.66536966176937,
+      "maximumAbsLateralM": 0.9650328378568258,
+      "roadWidthM": 7,
+      "conservativeCarWidthM": 2,
+      "simulatedElapsedMs": 6166.666666666641,
+      "steeredTicks": 214,
+      "screenshotViewed": "/tmp/race-environment-pack7-steering-corrected/race-environments-driving--51f1a-authored-foreground-and-sky/failure.png",
+      "finding": "Normal keyboard steering kept sampled car envelope on road through opening bend. Snow-lit road visible; unchanged sky extremely dark. No pose/physics/deadline overrides."
+    },
+    "configuredUnusedWarning": "Visible: road-snow-patchy — Pikes Peak Highway snow mapping has no active segment; retained configuration debt."
+  },
+  "repairComparisons": [
+    {
+      "race": "Hurricane Mountain Road — Conway",
+      "ref": "environment-v1-hurricane-evening",
+      "meanRGBBefore": 60.18963831867057,
+      "meanRGBAfter": 1.541544477028348,
+      "numericWarning": false,
+      "manualReview": "Both native device wrap/pitch sheets viewed; large horizon steps improved. Fine seams and lower-row extrusion remain; no whole-environment acceptance."
+    },
+    {
+      "race": "New Hampshire Motor Speedway — Loudon",
+      "ref": "environment-v1-loudon-evening",
+      "meanRGBBefore": 10.337243401759531,
+      "meanRGBAfter": 2.2424242424242418,
+      "numericWarning": false,
+      "manualReview": "Both native device wrap/pitch sheets viewed; large horizon steps improved. Fine seams and lower-row extrusion remain; no whole-environment acceptance."
+    },
+    {
+      "race": "RI 116 — North Smithfield Scituate",
+      "ref": "environment-v1-ri116-morning",
+      "meanRGBBefore": 21.89051808406648,
+      "meanRGBAfter": 4.531769305962856,
+      "numericWarning": false,
+      "manualReview": "Both native device wrap/pitch sheets viewed; large horizon steps improved. Fine seams and lower-row extrusion remain; no whole-environment acceptance."
+    },
+    {
+      "race": "RI 102 — Victory Highway",
+      "ref": "environment-v1-ri102-evening",
+      "meanRGBBefore": 19.243401759530787,
+      "meanRGBAfter": 2.52199413489736,
+      "numericWarning": false,
+      "manualReview": "Both native device wrap/pitch sheets viewed; large horizon steps improved. Fine seams and lower-row extrusion remain; no whole-environment acceptance."
+    },
+    {
+      "race": "RI 44 — Putnam Pike Glocester",
+      "ref": "environment-v1-ri44-morning",
+      "meanRGBBefore": 23.64027370478983,
+      "meanRGBAfter": 3.656891495601171,
+      "numericWarning": false,
+      "manualReview": "Both native device wrap/pitch sheets viewed; large horizon steps improved. Fine seams and lower-row extrusion remain; no whole-environment acceptance."
+    },
+    {
+      "race": "Bear Notch Road — Bartlett",
+      "ref": "environment-v1-bear-notch-morning",
+      "meanRGBBefore": 21.215053763440874,
+      "meanRGBAfter": 1.8475073313782997,
+      "numericWarning": false,
+      "manualReview": "Both native device wrap/pitch sheets viewed; large horizon steps improved. Fine seams and lower-row extrusion remain; no whole-environment acceptance."
+    },
+    {
+      "race": "Pinkham Notch — NH 16",
+      "ref": "environment-v1-pinkham-snow-noon",
+      "meanRGBBefore": 38.289345063538626,
+      "meanRGBAfter": 3.909090909090907,
+      "numericWarning": false,
+      "manualReview": "Both native device wrap/pitch sheets viewed; large horizon steps improved. Fine seams and lower-row extrusion remain; no whole-environment acceptance."
+    }
+  ],
+  "qualityGaps": [
+    "Keystone and Sideling visible sky-color wrap discontinuities; numerical warnings remain.",
+    "Forbes treetops touch upper boundary and stretch at high pitch.",
+    "Fine wrap lines and lower-row extrusion remain across multiple new and prior skies.",
+    "All six new clear-night compositions have restrained cues but .05 authored exposure makes their native composites nearly black. Diagnostic visibility is not production appearance acceptance.",
+    "No full-route or both-device new-race driving acceptance; record actual samples separately.",
+    "Pikes and Oak Creek require location-specific replacements; Angeles is a plausible reuse candidate but remains unbound pending verification."
+  ],
+  "nightRule": "Donegal/OH536 small crescent cues; other clear nights sparse stars/local light rather than obligatory moon. Night scene not brightened in shipped settings.",
+  "next": "Prioritize Keystone/Sideling wrap colors and Forbes top boundary, retain darkness findings, then next geographically grounded pack. Do not publish partial coverage.",
+  "disk": {
+    "before": {
+      "base": "0e1b313301e1bd264a9913d86b4acd10fbe2eb25",
+      "availableBytes": 4006400000,
+      "allocatedKiB": {
+        "originalImages": 223620,
+        "sharedGitObjects": 3771172,
+        "environmentSources": 105108,
+        "nativeArt": 1111296
+      }
+    },
+    "afterArtCheckpoint": {
+      "availableBytes": 3753111552,
+      "allocatedKiB": {
+        "originalImages": 279820,
+        "sharedGitObjects": 3856576,
+        "environmentSources": 146388,
+        "nativeArt": 1130692,
+        "nativeQA": 20288,
+        "repairQA": 7248,
+        "drivingQA": 1572,
+        "steeringQA": 1328,
+        "contactSheets": 5232
+      }
+    },
+    "interpretation": "Measured allocated KiB, not apparent sizes. Shared Git objects counted once. Components do not enumerate every temporary browser file. No cleanup or deletion. About 0.25 GB growth this pack; ~3.5 GiB free. Another comparable pack fits with reserve, but all remaining 171 races may exhaust headroom; remeasure each checkpoint and preserve at least 1 GiB reserve rather than assume linear completion capacity."
+  }
+}
