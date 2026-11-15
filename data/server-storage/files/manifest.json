@@ -753,7 +753,9 @@
       "catalog-milkweed-60-2013-body": "art/catalog-milkweed-60-2013-body/document.json",
       "catalog-milkweed-60-2013-dashboard": "art/catalog-milkweed-60-2013-dashboard/document.json",
       "catalog-gentian-sx-1977-body": "art/catalog-gentian-sx-1977-body/document.json",
-      "catalog-gentian-sx-1977-dashboard": "art/catalog-gentian-sx-1977-dashboard/document.json"
+      "catalog-gentian-sx-1977-dashboard": "art/catalog-gentian-sx-1977-dashboard/document.json",
+      "catalog-hellebore-rs-2015-body": "art/catalog-hellebore-rs-2015-body/document.json",
+      "catalog-hellebore-rs-2015-dashboard": "art/catalog-hellebore-rs-2015-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -841,7 +843,8 @@
       "Honeysuckle 22 2009": "cars/Honeysuckle 22 2009/document.json",
       "Sycamore RT 2017": "cars/Sycamore RT 2017/document.json",
       "Milkweed 60 2013": "cars/Milkweed 60 2013/document.json",
-      "Gentian SX 1977": "cars/Gentian SX 1977/document.json"
+      "Gentian SX 1977": "cars/Gentian SX 1977/document.json",
+      "Hellebore RS 2015": "cars/Hellebore RS 2015/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
