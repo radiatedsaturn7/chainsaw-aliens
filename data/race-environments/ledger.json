@@ -288,7 +288,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Daytona International Speedway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -356,7 +363,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -17644,7 +17652,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Watkins Glen",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -17726,7 +17741,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -17837,7 +17853,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Watkins Glen",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -17912,7 +17935,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -18023,7 +18047,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Watkins Glen",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -18105,7 +18136,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -18216,7 +18248,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Watkins Glen",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -18291,7 +18330,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -18402,7 +18442,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Road America",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -18492,7 +18539,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -18603,7 +18651,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Road America",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -18693,7 +18748,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -20640,7 +20696,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Homestead-Miami Speedway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -20708,7 +20771,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -20819,7 +20883,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Homestead-Miami Speedway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -20888,7 +20959,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -20999,7 +21071,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Homestead-Miami Speedway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -21068,7 +21147,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -21179,7 +21259,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Daytona International Speedway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -21254,7 +21341,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -21365,7 +21453,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "pending-top-edge-clamp-artifact"
+        }
       },
       "physicalSiteLabel": "Daytona International Speedway",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -21441,7 +21536,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -21552,7 +21648,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Willow Springs",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -21616,7 +21719,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -21727,7 +21831,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Willow Springs",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -21793,7 +21904,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
@@ -21904,7 +22016,14 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "independentArtReview": {
+          "scope": "Native sky-only projection, 100% raw and unchanged authored composite; not gameplay or foreground acceptance",
+          "reviewed": true,
+          "deviceReports": 2,
+          "captureRoot": "/tmp/race-environment-pack4-renderer-final",
+          "result": "regional-composition-visible; wrap and gameplay pending"
+        }
       },
       "physicalSiteLabel": "Willow Springs",
       "siteEvidenceStatus": "exact-authored-layout-and-source-coordinate",
@@ -21971,7 +22090,8 @@
         "tiles": "All existing snow tile material IDs and weights retained; explicit normal/rough visual refs supplied. This is visual correction, not a physics fix.",
         "road": "Active asphalt retains existing patched-asphalt and exact surface-specific normal/rough mappings/repeats.",
         "shoulder": "Existing shoulder/default and margin settings preserved; effective references captured by native renderer.",
-        "acceptance": "source-reviewed; production pending"
+        "acceptance": "source-reviewed; production pending",
+        "effectiveBindingsVerified": true
       }
     },
     {
