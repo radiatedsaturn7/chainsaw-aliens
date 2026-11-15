@@ -1,3 +1,4 @@
+import {configureCampaignRegionMap} from '../../src/menus/CampaignRegionDialogue.js';
 import {applySavedMissionConditions} from './apply_mission_conditions.mjs';
 // Install the single Middle Route, preserving the two existing opening races.
 import fs from 'node:fs';
@@ -5,7 +6,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import {prepareAmericaRace} from './prepare_america.mjs';
 import {raceFxPreset} from '../../src/racing/RaceVisualFx.js';
-import {createAmericaWorldMap, AMERICA_ROUTE_NAME} from '../../src/menus/AmericaWorldMap.js';
+import {createAmericaWorldMap} from '../../src/menus/AmericaWorldMap.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 import {analyzeRaceDrivingRoute,racePaceNotes} from '../../src/racing/RaceDrivingAssists.js';
 const source='data/campaigns/america',generated='artifacts/campaign-import/middle',root='data/server-storage/files';
@@ -84,9 +85,9 @@ menu.parameters.campaignOpeningRace='Tower Hill Road';
 const screen=menu.screens.find(s=>s.id==='world-map');
 if(!screen)throw Error('Game Menu world-map screen is missing');
 const map=screen.elements.find(e=>e.type==='world-map');
-Object.assign(map,createAmericaWorldMap(catalog),{showSelectedLabel:true,fontSize:16});
+Object.assign(map,createAmericaWorldMap(catalog),{showSelectedLabel:false,fontSize:16});
 screen.elements=screen.elements.filter(e=>!e.id.startsWith('america-'));
-screen.elements.push({id:'america-heading',type:'text',label:`${AMERICA_ROUTE_NAME.toUpperCase()} · ${catalog.length} RACES`,x:.08,y:.07,w:.84,h:.035,fontSize:16,color:'#ffffff',visible:true,useDefaultFont:true});
+configureCampaignRegionMap(menu);
 write(menuPath,menu);
 write(`${root}/menus/Game Menu/metadata.json`,{...read(`${root}/menus/Game Menu/metadata.json`),savedAt});
 write(manifestPath,manifest);

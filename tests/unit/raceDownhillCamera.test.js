@@ -48,3 +48,56 @@ test('Bear Notch descent uses the smoothed driving deck to bring the road into v
  const yaw=e.getRaceWorldPoseAtDistance(best.d).yaw,session={cameraView:'third-person',carYaw:yaw,cameraYaw:yaw};
  const profile=e.getRaceCameraPitchProfile({visualTravel:best.d,session,speedMps:20});assert.ok(profile.horizonRatio<.24,JSON.stringify({best,profile}));
 });
+
+test('junction branch and ground-height changes do not disable camera smoothing',()=>{
+ const {e,session}=fixture(0);Object.assign(session,{worldX:10,worldZ:20,elapsedMs:1000});
+ const flat={terrainHorizonRatio:.31,horizonRatio:.31};
+ e.getRaceSmoothedCameraProfile({session,pitchProfile:flat,visualTravel:4100,roadElevation:0});
+ session.elapsedMs+=16;session.worldZ+=.3;
+ const spike=e.getRaceSmoothedCameraProfile({session,pitchProfile:{terrainHorizonRatio:.58,horizonRatio:.58},visualTravel:4900,roadElevation:1});
+ assert.ok(spike.horizonRatio<.35,'a branch jump must not snap the horizon');
+ assert.ok(spike.roadElevation<.1,'a height-query spike remains damped');
+ session.elapsedMs+=16;
+ const back=e.getRaceSmoothedCameraProfile({session,pitchProfile:flat,visualTravel:4101,roadElevation:0});
+ assert.ok(Math.abs(back.horizonRatio-spike.horizonRatio)<.01);
+ session.worldX+=100;session.elapsedMs+=16;
+ const teleported=e.getRaceSmoothedCameraProfile({session,pitchProfile:{horizonRatio:.5},roadElevation:2});
+ assert.equal(teleported.horizonRatio,.5);assert.equal(teleported.roadElevation,2);
+});
+
+test('third-person height damps suspension jolts without changing the car or accumulating per render pass',()=>{
+ const {e,session}=fixture(0);Object.assign(session,{elapsedMs:1000,bodyY:.5,worldX:0,worldZ:0});
+ const initial=e.getRaceThirdPersonCameraEyeHeight(session,0);
+ session.elapsedMs+=16;session.bodyY=1.1;
+ const raised=e.getRaceThirdPersonCameraEyeHeight(session,.03)+.03;
+ assert.ok((raised-initial)*12>0);assert.ok((raised-initial)*12<.15);
+ assert.equal(session.bodyY,1.1);
+ assert.equal(e.getRaceThirdPersonCameraEyeHeight(session,.03)+.03,raised,'same-frame read cannot advance damping');
+ session.elapsedMs+=16;session.bodyY=.5;
+ const recovered=e.getRaceThirdPersonCameraEyeHeight(session,0);
+ assert.ok(recovered<raised);assert.ok(recovered>initial);
+ session.vehicleDynamicsRunner={state:{vehicleResetGeneration:1}};
+ session.bodyY=3;
+ assert.equal(e.getRaceThirdPersonCameraEyeHeight(session,0),.5,'reset follows new body immediately');
+ e.clearRaceThirdPersonCameraState(session);assert.equal(session.cameraBodyHeight,undefined);
+});
+
+test('Bayard paved-section camera profiles stay finite and gradual along the saved route',async()=>{
+ const fs=await import('node:fs'),zlib=await import('node:zlib');
+ const root=new URL('../../data/server-storage/files/races/',import.meta.url);
+ const name=fs.readdirSync(root).find(n=>n.startsWith('Bayard'));
+ let doc=JSON.parse(fs.readFileSync(root.pathname+name+'/document.json'));
+ if(doc.__chainsawStorage)doc=JSON.parse(zlib.gunzipSync(Buffer.from(doc.data,'base64')));
+ const e=new RaceEditor({});e.applyLoadedRaceDocument(doc);
+ e.getRaceSessionCar=()=>({camera:{trackingMode:'fixed-rear'}});e.isCarExteriorArtPreview=()=>false;
+ e.withRaceGeometryReadCache(()=>{
+  let last;
+  for(let d=4075;d<e.getRaceRouteLength();d+=10){
+   const pose=e.getRaceWorldPoseAtDistance(d);
+   const profile=e.getRaceCameraPitchProfile({visualTravel:d,speedMps:20,session:{cameraView:'third-person',cameraYaw:pose.yaw,carYaw:pose.yaw}});
+   assert.ok(Number.isFinite(profile.horizonRatio));
+   if(last!=null)assert.ok(Math.abs(profile.horizonRatio-last)<.04,`Bayard ${d}m`);
+   last=profile.horizonRatio;
+  }
+ });
+});

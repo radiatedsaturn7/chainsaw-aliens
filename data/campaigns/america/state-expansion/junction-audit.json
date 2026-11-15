@@ -1,0 +1,1220 @@
+{
+  "cityCount": 50,
+  "junctionCount": 62,
+  "sharedTurnCount": 9,
+  "races": [
+    {
+      "id": "city-al",
+      "name": "Birmingham, AL — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 1650.6205402126348,
+          "z": -478.801217438233,
+          "heightM": -12.5260152108136,
+          "branches": 2,
+          "routeDistancesM": [
+            4270,
+            5072.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "shared-turn",
+          "x": 1203.659005461696,
+          "z": 3229.1969838872747,
+          "heightM": 55.38927858647051,
+          "branches": 2,
+          "routeDistancesM": [
+            9977.5,
+            10582.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.0658141036401503e-14,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-az",
+      "name": "Phoenix, AZ — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 1205.2721336582415,
+          "z": 196.85698023394062,
+          "heightM": -1.1287537780505486,
+          "branches": 2,
+          "routeDistancesM": [
+            1240,
+            2495
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.6653345369377348e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-ca",
+      "name": "Los Angeles, CA — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-ct",
+      "name": "Hartford, CT — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-de",
+      "name": "Wilmington, DE — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -4.534502472290545,
+          "z": 147.08028685452226,
+          "heightM": 10.186412882075597,
+          "branches": 2,
+          "routeDistancesM": [
+            3600,
+            4872.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.3322676295501878e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-fl",
+      "name": "Miami, FL — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 391.37100763226414,
+          "z": -1002.3829827428472,
+          "heightM": -1.3815194962036594,
+          "branches": 2,
+          "routeDistancesM": [
+            3387.5,
+            4265
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.6653345369377348e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "shared-turn",
+          "x": 391.35313251978243,
+          "z": -1283.7965936796902,
+          "heightM": -1.5075915758736413,
+          "branches": 2,
+          "routeDistancesM": [
+            3665,
+            6667.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 3.3306690738754696e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-ga",
+      "name": "Atlanta, GA — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-il",
+      "name": "Chicago, IL — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 294.541184921944,
+          "z": 605.2968948556662,
+          "heightM": 2.6914977507799502,
+          "branches": 2,
+          "routeDistancesM": [
+            3015,
+            3310
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 6.661338147750939e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-ia",
+      "name": "Des Moines, IA — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-ky",
+      "name": "Louisville, KY — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-md",
+      "name": "Baltimore, MD — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-mi",
+      "name": "Detroit, MI — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-ak",
+      "name": "Anchorage, AK — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -84.25408354691658,
+          "z": 47.86347351551991,
+          "heightM": -3.6515832639430346,
+          "branches": 2,
+          "routeDistancesM": [
+            395,
+            1915
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 6.661338147750939e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": -193.4101807629857,
+          "z": 47.7625591427878,
+          "heightM": -2.5899539052117713,
+          "branches": 2,
+          "routeDistancesM": [
+            2025,
+            4370
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 3.3306690738754696e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": -193.51870631115597,
+          "z": -60.644083096009986,
+          "heightM": -2.258200441716542,
+          "branches": 2,
+          "routeDistancesM": [
+            185,
+            4480
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 3.3306690738754696e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-ar",
+      "name": "Little Rock, AR — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-id",
+      "name": "Boise, ID — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-ks",
+      "name": "Wichita, KS — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -1149.4838801978442,
+          "z": -187.51023959597924,
+          "heightM": -1.1996420011904356,
+          "branches": 2,
+          "routeDistancesM": [
+            3035,
+            4352.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.6653345369377348e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "shared-turn",
+          "x": -633.285565374758,
+          "z": 131.07523944107692,
+          "heightM": -0.3277959678643202,
+          "branches": 2,
+          "routeDistancesM": [
+            3682.5,
+            5202.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 4.163336342344337e-17,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "shared-turn",
+          "x": -1129.177463055619,
+          "z": -184.16513524335198,
+          "heightM": -1.2502995674256225,
+          "branches": 2,
+          "routeDistancesM": [
+            3065,
+            4347.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.6653345369377348e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-me",
+      "name": "Portland, ME — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -222.13766272402984,
+          "z": -1.453683196364887,
+          "heightM": -17.918691381480656,
+          "branches": 2,
+          "routeDistancesM": [
+            1940,
+            2000
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "shared-turn",
+          "x": -171.06001208259553,
+          "z": 227.99304157325298,
+          "heightM": -21.691593423224443,
+          "branches": 2,
+          "routeDistancesM": [
+            2330,
+            4312.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-hi",
+      "name": "Honolulu, HI — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -173.60695614764612,
+          "z": 19.805935143446693,
+          "heightM": 1.9871867005704078,
+          "branches": 2,
+          "routeDistancesM": [
+            1462.5,
+            2805
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 3.3306690738754696e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-in",
+      "name": "Indianapolis, IN — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -72.75927166394024,
+          "z": 48.64072730317455,
+          "heightM": -4.950382958976635,
+          "branches": 2,
+          "routeDistancesM": [
+            2320,
+            5037.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 6.661338147750939e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-la",
+      "name": "New Orleans, LA — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 764.408258462095,
+          "z": -446.1163060924237,
+          "heightM": 0.9378737339540943,
+          "branches": 2,
+          "routeDistancesM": [
+            1035,
+            4080
+          ],
+          "samples": 46,
+          "largestHeightErrorM": 0.0011884929808816391,
+          "lowestNormalY": 0.9999856508000828,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": 773.4339332417284,
+          "z": -458.02066770986954,
+          "heightM": 0.9106819098737696,
+          "branches": 2,
+          "routeDistancesM": [
+            1020,
+            4175
+          ],
+          "samples": 46,
+          "largestHeightErrorM": 0.004674251709833155,
+          "lowestNormalY": 0.9999864593106405,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": 195.06712622704146,
+          "z": -96.53402774641042,
+          "heightM": 0.7508883812704048,
+          "branches": 2,
+          "routeDistancesM": [
+            3230,
+            5050
+          ],
+          "samples": 47,
+          "largestHeightErrorM": 0.000004251894975770831,
+          "lowestNormalY": 0.9999999999907662,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": -140.77468885971976,
+          "z": -201.21438182826577,
+          "heightM": -0.23460846201125213,
+          "branches": 2,
+          "routeDistancesM": [
+            2780,
+            5490
+          ],
+          "samples": 47,
+          "largestHeightErrorM": 7.594551402340111e-7,
+          "lowestNormalY": 0.9999999999996794,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-ma",
+      "name": "Boston, MA — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-mn",
+      "name": "Minneapolis, MN — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 740.0035106679109,
+          "z": -657.014551911042,
+          "heightM": -16.576780961794135,
+          "branches": 2,
+          "routeDistancesM": [
+            7360,
+            8352.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-ms",
+      "name": "Jackson, MS — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-mo",
+      "name": "St. Louis, MO — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 871.7519756587293,
+          "z": 168.5132457288996,
+          "heightM": 26.062625935528345,
+          "branches": 2,
+          "routeDistancesM": [
+            3765,
+            4922.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 5.329070518200751e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-mt",
+      "name": "Billings, MT — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 493.3650614575708,
+          "z": -229.25391901389284,
+          "heightM": -20.785147499235663,
+          "branches": 2,
+          "routeDistancesM": [
+            3347.5,
+            3795
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": -113.01270039038829,
+          "z": -90.82579841603206,
+          "heightM": -19.009157485982684,
+          "branches": 2,
+          "routeDistancesM": [
+            2342.5,
+            4590
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": -206.65511545791676,
+          "z": -23.90243795942588,
+          "heightM": -18.67949432791682,
+          "branches": 2,
+          "routeDistancesM": [
+            2227.5,
+            5392.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-nv",
+      "name": "Las Vegas, NV — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -387.9584642092334,
+          "z": 442.3107922648839,
+          "heightM": -3.7003126625266134,
+          "branches": 2,
+          "routeDistancesM": [
+            1505,
+            4355
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 6.661338147750939e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-nh",
+      "name": "Manchester, NH — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-nj",
+      "name": "Newark, NJ — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -596.1879859706276,
+          "z": -1388.3787862446738,
+          "heightM": 7.941085547418459,
+          "branches": 2,
+          "routeDistancesM": [
+            772.5,
+            1472.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.3322676295501878e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-nm",
+      "name": "Albuquerque, NM — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-nc",
+      "name": "Charlotte, NC — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -319.8064556986715,
+          "z": 393.5150655100528,
+          "heightM": 27.851552988907525,
+          "branches": 2,
+          "routeDistancesM": [
+            1940,
+            3430
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 5.329070518200751e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-nd",
+      "name": "Fargo, ND — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-oh",
+      "name": "Cleveland, OH — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 835.5751614331106,
+          "z": -187.68758609170277,
+          "heightM": 25.414808662864026,
+          "branches": 2,
+          "routeDistancesM": [
+            1952.5,
+            2162.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 5.329070518200751e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-co",
+      "name": "Denver, CO — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-ne",
+      "name": "Omaha, NE — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 372.1312629630278,
+          "z": 168.71513551129115,
+          "heightM": -2.935628718089291,
+          "branches": 2,
+          "routeDistancesM": [
+            4837.5,
+            5280
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 3.3306690738754696e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": 482.44359123576834,
+          "z": 286.719967706306,
+          "heightM": -8.417533550848544,
+          "branches": 2,
+          "routeDistancesM": [
+            4607.5,
+            5497.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.3322676295501878e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": 924.418479107374,
+          "z": 405.21768272851324,
+          "heightM": -17.140729080535383,
+          "branches": 2,
+          "routeDistancesM": [
+            3822.5,
+            6052.5
+          ],
+          "samples": 48,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-ny",
+      "name": "New York, NY — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -278.23489804510353,
+          "z": 1204.2800240678132,
+          "heightM": 9.925907761967103,
+          "branches": 2,
+          "routeDistancesM": [
+            1005,
+            1797.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.3322676295501878e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": 178.638248638333,
+          "z": -275.82520649385066,
+          "heightM": 21.104546622318594,
+          "branches": 2,
+          "routeDistancesM": [
+            4485,
+            4952.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 5.329070518200751e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-ok",
+      "name": "Oklahoma City, OK — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-tx",
+      "name": "San Antonio, TX — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 843.4024309057689,
+          "z": 140.58001463312607,
+          "heightM": -11.769772352508802,
+          "branches": 2,
+          "routeDistancesM": [
+            2072.5,
+            3477.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-or",
+      "name": "Portland, OR — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -98.57891630193963,
+          "z": 332.592551115824,
+          "heightM": 6.469167373438794,
+          "branches": 2,
+          "routeDistancesM": [
+            1682.5,
+            1992.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.3322676295501878e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": 120.94403483907385,
+          "z": -12.364676694266844,
+          "heightM": 0.1831503821245163,
+          "branches": 2,
+          "routeDistancesM": [
+            1235,
+            2472.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.0816681711721685e-17,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": -356.5613700605245,
+          "z": 657.6090097549051,
+          "heightM": 23.3710746089277,
+          "branches": 2,
+          "routeDistancesM": [
+            5342.5,
+            5895
+          ],
+          "samples": 48,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-ri",
+      "name": "Providence, RI — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 261.85065444696136,
+          "z": -76.30979450520879,
+          "heightM": -44.44820027558488,
+          "branches": 2,
+          "routeDistancesM": [
+            3382.5,
+            4405
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 5.329070518200751e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": 20.37746229955875,
+          "z": -190.87184610867428,
+          "heightM": -45.59052820185507,
+          "branches": 2,
+          "routeDistancesM": [
+            3057.5,
+            4787.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 5.329070518200751e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-pa",
+      "name": "Philadelphia, PA — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 369.8904915577658,
+          "z": 227.78048110486904,
+          "heightM": -13.936818811339638,
+          "branches": 2,
+          "routeDistancesM": [
+            3417.5,
+            4095
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-sc",
+      "name": "Charleston, SC — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -120.45783768351868,
+          "z": -188.4559938157029,
+          "heightM": -0.24007538944560897,
+          "branches": 2,
+          "routeDistancesM": [
+            1395,
+            5057.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 4.163336342344337e-17,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "shared-turn",
+          "x": 136.6020881514616,
+          "z": 482.8947078788466,
+          "heightM": -0.2815424134266468,
+          "branches": 2,
+          "routeDistancesM": [
+            2127.5,
+            6070
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 4.163336342344337e-17,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-sd",
+      "name": "Sioux Falls, SD — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-tn",
+      "name": "Nashville, TN — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 195.49450973343846,
+          "z": 568.1268765354572,
+          "heightM": -17.273371770423005,
+          "branches": 2,
+          "routeDistancesM": [
+            4212.5,
+            5672.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": 184.68890648826851,
+          "z": 289.958483283654,
+          "heightM": -16.175107441979996,
+          "branches": 2,
+          "routeDistancesM": [
+            3397.5,
+            6022.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": 98.55038189626013,
+          "z": -429.91608732522405,
+          "heightM": -15.829720073910604,
+          "branches": 2,
+          "routeDistancesM": [
+            2240,
+            6952.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-ut",
+      "name": "Salt Lake City, UT — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -332.93740898550374,
+          "z": -830.6720575598407,
+          "heightM": 27.951280942317975,
+          "branches": 2,
+          "routeDistancesM": [
+            2522.5,
+            4482.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 5.329070518200751e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-vt",
+      "name": "Burlington, VT — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 0.789802530092367,
+          "z": 111.74744319482805,
+          "heightM": -5.880316502960664,
+          "branches": 2,
+          "routeDistancesM": [
+            3342.5,
+            4930
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 6.661338147750939e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "shared-turn",
+          "x": 818.102804406796,
+          "z": 71.40671577466667,
+          "heightM": 45.76332838825872,
+          "branches": 2,
+          "routeDistancesM": [
+            2525,
+            6210
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 5.329070518200751e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-va",
+      "name": "Richmond, VA — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-wa",
+      "name": "Seattle, WA — Landmark Run",
+      "junctions": []
+    },
+    {
+      "id": "city-wv",
+      "name": "Charleston, WV — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -796.1572175925352,
+          "z": -323.52842193089,
+          "heightM": -7.02748472617178,
+          "branches": 2,
+          "routeDistancesM": [
+            4305,
+            5135
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.3322676295501878e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": -336.84088785608515,
+          "z": -240.99683411612475,
+          "heightM": -7.579346927188459,
+          "branches": 2,
+          "routeDistancesM": [
+            3687.5,
+            6350
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.3322676295501878e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-wi",
+      "name": "Milwaukee, WI — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": 984.3609027173821,
+          "z": 46.27526442421951,
+          "heightM": -20.346318916729984,
+          "branches": 2,
+          "routeDistancesM": [
+            2177.5,
+            2812.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": 143.27072096136123,
+          "z": -211.85210903899107,
+          "heightM": -17.854683030424788,
+          "branches": 2,
+          "routeDistancesM": [
+            1087.5,
+            4077.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": 108.35310695521876,
+          "z": -339.12261187317415,
+          "heightM": -18.50535600702684,
+          "branches": 2,
+          "routeDistancesM": [
+            947.5,
+            4215
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.6645352591003757e-15,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "shared-turn",
+          "x": 363.30537953098,
+          "z": -85.94307851439683,
+          "heightM": -12.423244691741365,
+          "branches": 2,
+          "routeDistancesM": [
+            1437.5,
+            3740
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 0,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    },
+    {
+      "id": "city-wy",
+      "name": "Cheyenne, WY — Landmark Run",
+      "junctions": [
+        {
+          "kind": "crossing",
+          "x": -204.69758454259238,
+          "z": 853.0780856165088,
+          "heightM": -1.2978405031700033,
+          "branches": 2,
+          "routeDistancesM": [
+            1980,
+            2395
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.6653345369377348e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": -207.2098756864915,
+          "z": 610.7928266990926,
+          "heightM": -0.17521958641985158,
+          "branches": 2,
+          "routeDistancesM": [
+            1025,
+            2720
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 2.0816681711721685e-17,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": -158.92030288509156,
+          "z": 709.0564718535984,
+          "heightM": -0.8002389153465294,
+          "branches": 2,
+          "routeDistancesM": [
+            917.5,
+            3452.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.6653345369377348e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": -252.74230326177272,
+          "z": 755.5132780521213,
+          "heightM": -0.8143624353347112,
+          "branches": 2,
+          "routeDistancesM": [
+            2507.5,
+            3555
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.6653345369377348e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "crossing",
+          "x": -346.2144356558131,
+          "z": 801.8735180554551,
+          "heightM": -0.8221954964419651,
+          "branches": 2,
+          "routeDistancesM": [
+            1775,
+            3657.5
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.6653345369377348e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        },
+        {
+          "kind": "shared-turn",
+          "x": -110.54969916527644,
+          "z": 806.9529820812543,
+          "heightM": -1.0181940248588517,
+          "branches": 2,
+          "routeDistancesM": [
+            805,
+            2085
+          ],
+          "samples": 49,
+          "largestHeightErrorM": 1.6653345369377348e-16,
+          "lowestNormalY": 1,
+          "maxSurfaceLayers": 1
+        }
+      ]
+    }
+  ],
+  "passed": true,
+  "failures": []
+}

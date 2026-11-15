@@ -12,7 +12,7 @@ test('phone cues have distinct rhythms, bounded pulses and priority',()=>{
  for(const cues of [{road:1},{bump:1},{slip:1},{braking:1},{impact:1}]){
   const p=phoneDrivingPattern(cues,30),values=[p.pattern].flat();
   assert.ok(values.reduce((a,b)=>a+b,0)<p.interval);
-  for(const v of values)assert.ok(Number.isInteger(v)&&v>=16&&v<=125);
+  for(const v of values)assert.ok(Number.isInteger(v)&&v>=16&&v<=250);
  }
  assert.equal(normalizeHaptics({phonePulse:500}).phonePulse,30);
  assert.ok(phoneDrivingPattern({road:.3},30).pattern>road.pattern);
@@ -50,8 +50,34 @@ test('phone front and rear cues stay recognizable over ordinary rough-road bumps
  const rear=phoneDrivingPattern({rearSlip:.6,bump:.8,road:.8});
  assert.equal(front.kind,'front-slip');assert.ok(front.pattern>=140);
  assert.equal(rear.kind,'rear-slip');assert.equal(rear.pattern.length,5);
- assert.ok(rear.pattern[1]>=100&&rear.pattern[3]>=100);
- assert.ok(rear.pattern[0]<front.pattern/2);
+ assert.ok(rear.pattern[1]>=35&&rear.pattern[3]===rear.pattern[1]);
+ assert.ok(rear.pattern[0]<front.pattern);
  assert.equal(phoneDrivingPattern({rearSlip:.8,impact:.5}).kind,'impact');
  assert.equal(phoneDrivingPattern({frontSlip:.8,braking:.5}).kind,'braking');
+});
+
+function duty(pattern){
+ const pulses=[pattern.pattern].flat();
+ return pulses.reduce((sum,v,i)=>sum+(i%2===0?v:0),0)/pattern.interval;
+}
+test('all skid rhythms and crashes grow with intensity, with much higher skid duty at the limit',()=>{
+ for(const key of ['slip','frontSlip','rearSlip']){
+  const low=phoneDrivingPattern({[key]:.15}),medium=phoneDrivingPattern({[key]:.5}),high=phoneDrivingPattern({[key]:1});
+  assert.ok(duty(low)<duty(medium),key);assert.ok(duty(medium)<duty(high),key);
+  assert.ok(duty(high)>duty(low)*2,key);assert.ok(duty(high)>.7,key);
+ }
+ assert.ok(phoneDrivingPattern({impact:1}).pattern>phoneDrivingPattern({impact:.15}).pattern*2);
+});
+test('a worsening skid interrupts a weaker pattern without restarting for small fluctuations',()=>{
+ let now=0;const calls=[];const phone=new PhoneHaptics({vibrate:p=>{calls.push(p);return true;}},()=>now);
+ phone.play({rearSlip:.2});now=90;phone.play({rearSlip:.25});assert.equal(calls.length,1);
+ phone.play({rearSlip:.8});assert.equal(calls.length,2);assert.ok(calls[1][0]>calls[0][0]);
+ now=110;phone.play({rearSlip:1});assert.equal(calls.length,2);
+ phone.play({impact:.7});assert.equal(calls.length,3);
+});
+test('new defaults are stronger without overriding saved strength or disabled effects',()=>{
+ const defaults=normalizeHaptics();assert.equal(defaults.strength,.85);assert.equal(defaults.phonePulse,24);
+ const saved=normalizeHaptics({strength:.3,slip:0,impacts:0,phonePulse:16,enabled:false});
+ assert.equal(saved.strength,.3);assert.equal(saved.slip,0);assert.equal(saved.impacts,0);
+ assert.equal(saved.phonePulse,16);assert.equal(saved.enabled,false);
 });

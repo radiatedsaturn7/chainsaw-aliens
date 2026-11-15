@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {HAPTIC_DEFAULTS} from '../../src/racing/RaceHaptics.js';
 import {createAmericaWorldMap} from '../../src/menus/AmericaWorldMap.js';
 import {worldMapNodes,worldMapSelectableNodes} from '../../src/menus/MenuWorldMap.js';
 import test from 'node:test';
@@ -307,7 +308,7 @@ test('menu controls, audio and haptics are isolated, copied and restored with ea
  await saves.startNew(1);
  assert.notEqual(player.settings.values['settings.musicVolume'],.2);
  assert.equal(game.input.actionKeymap.jump,undefined);
- assert.equal(game.raceHaptics.settings.strength,.65);
+ assert.equal(game.raceHaptics.settings.strength,HAPTIC_DEFAULTS.strength);
  await player.settings.set('settings.musicVolume',.8);
  await saves.resume(0);
  assert.equal(player.settings.values['settings.musicVolume'],.2);

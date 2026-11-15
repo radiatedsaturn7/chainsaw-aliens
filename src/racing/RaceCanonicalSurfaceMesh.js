@@ -1,3 +1,4 @@
+import {triangulateRaceSurfaceQuad} from './RaceTerrainClipping.js';
 import {createRaceJunctionClipper} from './RaceAtGradeJunctions.js';
 const pointZ = (point = {}) => Number(point.z ?? point.y ?? 0);
 
@@ -55,22 +56,7 @@ function terrainRegion(cell = {}) {
 
 function pushQuad(pushTriangle, points = [], metadata = {}) {
   if (!Array.isArray(points) || points.length !== 4 || points.some((point) => !finitePoint(point))) return;
-  const [a, b, c, d] = points;
-  const diagonalAC = Math.hypot(
-    Number(c.x || 0) - Number(a.x || 0),
-    pointZ(c) - pointZ(a)
-  );
-  const diagonalBD = Math.hypot(
-    Number(d.x || 0) - Number(b.x || 0),
-    pointZ(d) - pointZ(b)
-  );
-  if (diagonalAC <= diagonalBD) {
-    pushTriangle(a, b, c, metadata);
-    pushTriangle(a, c, d, metadata);
-  } else {
-    pushTriangle(a, b, d, metadata);
-    pushTriangle(b, c, d, metadata);
-  }
+  for(const triangle of triangulateRaceSurfaceQuad(points))pushTriangle(...triangle,metadata);
 }
 
 export function buildRaceCanonicalSurfaceMesh({
@@ -174,8 +160,10 @@ export function buildRaceCanonicalSurfaceMesh({
   const clipJunction=createRaceJunctionClipper(sections,surfaceBake?.junctions);
   const pairCount = runtimeType === 'circuit' ? sections.length : Math.max(0, sections.length - 1);
   for (let index = 0; index < pairCount; index += 1) {
+    let roadTriangleIndex=0;
     const emit=(a,b,c,metadata)=>{
-      for(const polygon of clipJunction([a,b,c],index,metadata.region))
+      const triangleIndex=metadata.region==='road'?roadTriangleIndex++:null;
+      for(const polygon of clipJunction([a,b,c],index,metadata.region,triangleIndex))
         for(let i=1;i<polygon.length-1;i++)pushTriangle(polygon[0],polygon[i],polygon[i+1],metadata);
     };
     const near = sections[index];

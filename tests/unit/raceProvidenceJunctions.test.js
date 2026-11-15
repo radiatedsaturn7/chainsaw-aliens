@@ -12,7 +12,9 @@ test('Providence worker preserves junction rendering and driveable shared height
  const stored=JSON.parse(fs.readFileSync(new URL(`${encodeURIComponent(folder)}/document.json`,root)));
  const document=stored.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(stored.data,'base64'))):stored;
  const before=JSON.stringify(document.race.road.nodes);
- const result=await buildRaceTransferPackage(document.race,{includeArtAssets:false});
+ // Isolate road geometry from optional external doodad hydration.
+ const race=structuredClone(document.race);race.scenery=[];race.sceneryDefinitions=[];
+ const result=await buildRaceTransferPackage(race,{includeArtAssets:false});
  const {header,packedSampler}=result;
  assert.equal(header.surfaceBake.junctions.length,2);
  assert.ok(header.mesh.triangles.length,'worker must transfer clipped geometry, not rebuild overlapping strips');

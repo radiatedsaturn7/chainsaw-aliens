@@ -4,7 +4,7 @@ import {DEFAULT_MUSIC_VOLUME} from '../audio/musicVolume.js';
 import {menuEmbeddedAsset} from './MenuAppearance.js';
 import {createGarageMenuScreen,createCarShowroomScreen,createTuningMenuScreen,createUpgradeMenuScreen,createWorldMapMenuScreen} from '../garage/GarageMenu.js';
 export const MENU_ELEMENT_TYPES = ['progress-bar','random-fact','garage-dialogue','garage-tuner','race-description','code-entry','world-map','car-showroom','garage-browser','shape','container','text','image','button','choice','slider','toggle','keybind','car-preview','car-description','car-stats','power-curve','video','property-display','asset-preview'];
-export const MENU_ACTION_TYPES = ['save-slot','wheel-settings','haptics','cheat-code','screen','new-game','continue-game','back','set-param','race','level','movie','quit','garage-fit','garage-buy','garage-install','garage-remove','garage-tune','garage-reset'];
+export const MENU_ACTION_TYPES = ['campaign-garage','save-slot','wheel-settings','haptics','cheat-code','screen','new-game','continue-game','back','set-param','race','level','movie','quit','garage-fit','garage-buy','garage-install','garage-remove','garage-tune','garage-reset'];
 export const MENU_ANIMATIONS = ['none','pulse','fade','bob','spin','typewriter'];
 export const MENU_SETTINGS = {
   fxVolume:{label:'FX volume',min:0,max:1,step:0.05,default:0.8},

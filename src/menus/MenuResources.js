@@ -1,3 +1,4 @@
+import {raceRewardQuote} from '../garage/CampaignEconomy.js';
 import {hydrateServerStorage} from '../ui/serverStorage.js';
 import {planAutoUpgrade,garageCarPerformance} from '../garage/GarageAutoUpgrade.js';
 import {loadGarageSetupCatalog} from '../garage/GarageSetups.js';
@@ -86,6 +87,15 @@ export class MenuResources {
     const cached=this.garageCars.get(key);if(cached?.stock===stock)return cached.car;
     this.request(`garage-car:${key}`,async()=>{const car=await garage.build(ref,stock);this.garageCars.set(key,{stock,car});});
     return null;
+  }
+  raceReward(ref){
+    const race=this.race(ref);if(!race)return null;
+    this.raceRewardCache ||= new Map();
+    const revision=`${this.garage?.revision}:${this.garage?.items.revision}`;
+    const cached=this.raceRewardCache.get(ref);
+    if(cached?.race===race&&cached.revision===revision)return cached.quote;
+    const quote=raceRewardQuote(ref,race,this.garage?.progress);
+    this.raceRewardCache.set(ref,{race,revision,quote});return quote;
   }
   race(ref){
     if(!ref)return null;
