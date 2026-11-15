@@ -93,3 +93,18 @@ test('failed loading artwork stops an already prepared race instead of leaving i
  e.drawRacePreparationScreen(ctx,640,360);await e.raceLoadingEntry.task;
  assert.match(failure,/Background missing/);assert.equal(e.playtestSession,null);
 });
+
+test('first-frame watchdog allows the bounded artwork warmup and still expires',()=>{
+ const originalNow=Date.now;
+ try{
+  const e=new RaceEditor({});let now=10000,failures=0;Date.now=()=>now;
+  e.playtestSession={running:true,startupFramePending:true,startupPresentationStartedAtMs:1000};
+  e.raceLoadingPresentation={ready:true};e.isLivePlaytestSession=()=>true;
+  e.failRaceStartupPresentation=()=>failures++;
+  e.update({},.016);assert.equal(failures,0,'real loading warmup can exceed the former 8.3 second deadline');
+  now=34000;e.update({},.016);assert.equal(failures,0,'allows 30-second optional-art wait plus first-frame work and fade');
+  now=40000;e.update({},.016);assert.equal(failures,1,'stuck startup still expires');
+  failures=0;e.raceLoadingPresentation=null;now=7000;e.update({},.016);
+  assert.equal(failures,1,'non-loading previews retain the short first-frame deadline');
+ }finally{Date.now=originalNow;}
+});

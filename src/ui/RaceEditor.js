@@ -40,7 +40,7 @@ import {
 } from '../racing/RaceVisibleScenery.js';
 import { syncManagedRaceSceneryChunks } from '../racing/RaceSceneryChunks.js';
 import { staticWorldKeyChanges } from '../racing/RaceStaticWorldCache.js';
-import {raceStartupWarmupReady} from '../racing/RaceStartupWarmup.js';
+import {raceStartupWarmupReady,RACE_STARTUP_ART_WAIT_MS} from '../racing/RaceStartupWarmup.js';
 import {drawRacePerformanceStatus} from '../racing/RacePerformanceStatus.js';
 import {prepareRacePerformanceReport, uploadRacePerformanceCapture} from '../racing/RacePerformanceUpload.js';
 import {RacePerformanceCapture} from '../racing/RacePerformanceCapture.js';
@@ -1191,7 +1191,7 @@ export default class RaceEditor {
     if (startupFramePending
       && !loadingArtworkPending
       && Number(this.playtestSession.startupPresentationStartedAtMs || 0) > 0
-      && Date.now() - Number(this.playtestSession.startupPresentationStartedAtMs) > RACE_PRESENTATION_TIMEOUT_MS + (this.raceLoadingPresentation ? 3300 : 0)) {
+      && Date.now() - Number(this.playtestSession.startupPresentationStartedAtMs) > RACE_PRESENTATION_TIMEOUT_MS + (this.raceLoadingPresentation ? RACE_STARTUP_ART_WAIT_MS + 3300 : 0)) {
       this.failRaceStartupPresentation('Race did not present its first playable frame');
       return;
     }
