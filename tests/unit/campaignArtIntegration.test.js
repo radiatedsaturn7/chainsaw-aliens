@@ -1,3 +1,5 @@
+// Keep supersession negatives in the existing Campaign Artwork command.
+import './campaignArtSupersession.test.js';
 import {assertTerrainArtMaterial} from '../../tools/race-environments/terrain-materials.mjs';
 import {assertFenceRoadClearance,fenceRoadGap,assertFencePathGeometry} from '../helpers/campaignFenceValidation.mjs';
 import {createRaceStaticColliderWorld} from '../../src/racing/RaceSimulation.js';
@@ -128,7 +130,7 @@ test('delivered art satisfies explicit campaign, editor and configured-unused in
  }
  const snow=read(root+manifest.folders.races[intent.configuredUnused['road-snow-patchy'].raceRef]).race;
  const configured=new Set([roadTextureSettings(snow).surfaceRoads.snow?.artRef]);
- for(const message of validateArtworkIntent(intent,imports,used,editorLoaded,configured,deferred,authoredFreeRaceArtwork(read('data/race-environments/free-race-art.json'),read(root+manifest.folders.menus['Game Menu']),manifest,p=>read(root+p),paths)))t.diagnostic(message);
+ for(const message of validateArtworkIntent(intent,imports,used,editorLoaded,configured,deferred,authoredFreeRaceArtwork(read('data/race-environments/free-race-art.json'),read(root+manifest.folders.menus['Game Menu']),manifest,p=>read(root+p),paths),{registry:read('data/race-environments/superseded-art.json'),manifest,read:p=>read(root+p),readBytes:p=>fs.readFileSync(p)}))t.diagnostic(message);
 });
 
 test('exposed terrain keeps material weights and the marked turnout is a usable pull-off',()=>{

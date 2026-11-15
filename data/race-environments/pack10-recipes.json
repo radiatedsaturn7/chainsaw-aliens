@@ -638,7 +638,7 @@
       "brief": "Fountain shortgrass plain with a low distant Pikes Peak massif and tiny low grandstands; angular scale corrected after actual production driving comparison. Clear noon preserved.",
       "ground": "ground-winter-snow-litter-v1",
       "brightness": 1,
-      "sourceImage": "/workspace/generated_images/exec-ca6b9c00-b82e-488a-81fe-d6b36183214f.png",
+      "sourceImage": "/workspace/generated_images/exec-8927300f-113b-4342-aee0-93984ed2624b.png",
       "ref": "environment-v1-ppir-noon",
       "source": "environment-v1/ppir-noon.png",
       "tiles": {
@@ -670,35 +670,45 @@
         "https://www.ppir.com/contactus"
       ],
       "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
-      "sourceSha256": "895fb45cf73ccde46f03c65d95e7a252064a7b81c8166b0607d2b2aadc4382a6",
+      "sourceSha256": "b01963fa1989f085d39ac71f62bf37ab5839991e79b49aec38ea60cb7747220f",
       "provenance": {
         "tool": "image_gen",
-        "sourceImage": "/workspace/generated_images/exec-ca6b9c00-b82e-488a-81fe-d6b36183214f.png",
-        "sourceSha256": "895fb45cf73ccde46f03c65d95e7a252064a7b81c8166b0607d2b2aadc4382a6",
+        "sourceImage": "/workspace/generated_images/exec-8927300f-113b-4342-aee0-93984ed2624b.png",
+        "sourceSha256": "b01963fa1989f085d39ac71f62bf37ab5839991e79b49aec38ea60cb7747220f",
         "sourceReviewed": true,
-        "priorSourceImage": "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png"
+        "reason": "Quiet pale snow boundary fades texture before last row to reduce native extrusion. Horizon and winter transition retained."
       },
       "sourceBoundaryMetrics": {
-        "path": "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png",
+        "path": "/workspace/generated_images/exec-8927300f-113b-4342-aee0-93984ed2624b.png",
         "width": 2172,
         "height": 724,
-        "edgeMeanRGB": 5.111418047882136,
-        "edgeMaximumRGB": 58.666666666666664,
+        "edgeMeanRGB": 4.332872928176796,
+        "edgeMaximumRGB": 53.333333333333336,
         "topRangeRGB": [
-          10,
-          5,
-          6
+          12,
+          6,
+          5
         ],
         "bottomRangeRGB": [
-          4,
-          4,
-          7
+          6,
+          6,
+          5
         ],
         "warnings": [],
         "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
       },
       "sourceHistory": [
-        "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png"
+        "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png",
+        {
+          "sourceImage": "/workspace/generated_images/exec-ca6b9c00-b82e-488a-81fe-d6b36183214f.png",
+          "sourceSha256": "895fb45cf73ccde46f03c65d95e7a252064a7b81c8166b0607d2b2aadc4382a6",
+          "reason": "Pack12 winter-field transition supersedes dry yellow prairie; original retained."
+        },
+        {
+          "sourceImage": "/workspace/generated_images/exec-17ca43e3-196d-4a88-b0cb-da5f1b9241bd.png",
+          "sourceSha256": "b9740976e4ac1c5563b2afc03a8a3488786de541f55624936f5beb6f4c5ee7f3",
+          "reason": "Winter color transition retained but bottom extrusion reduced in later image_gen revision; prior bytes preserved."
+        }
       ],
       "revisionNote": "Reduced distant massif and grandstand angular size; quiet sky; removed solid bottom strip. Production fit pending.",
       "materialCorrection": "Existing Fountain snow cells now display compacted winter snow with embedded dead vegetation, not dry scrub. No material ID/weight changes. Clear weather and distant shortgrass panorama retained; foreground fit rechecked."
@@ -774,13 +784,13 @@
       "key": "angelesforest-evening",
       "raceRef": "Angeles Forest Highway — County N3",
       "brief": "North slope San Gabriel uplift with broad dry brush-filled basin and sage green chaparral ridges, weathered gray granite cuts, scattered pine pockets and distant Antelope Valley opening.",
-      "ground": "ground-desert-scrub-v2",
+      "ground": "ground-snow-chaparral-v1",
       "brightness": 0.42,
       "sourceImage": "/workspace/generated_images/exec-f44e9c8e-e0bc-4bf7-8f85-bf0c727a8ed9.png",
       "ref": "environment-v1-angelesforest-evening",
       "source": "environment-v1/angelesforest-evening.png",
       "tiles": {
-        "snow": "ground-desert-scrub-v2"
+        "snow": "ground-snow-chaparral-v1"
       },
       "sourceOrigin": {
         "name": "Angeles Forest Highway — County N3",

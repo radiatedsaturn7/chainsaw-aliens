@@ -99,3 +99,44 @@ This is not a certification of older packs: Angeles Forest County N3 still has
 remaining material audit, rather than weakening the material guard or changing
 physics. Pack11's twenty new routes have complete declared normal/rough material
 coverage; full-project visual/terrain acceptance remains pending.
+
+Pack12 (`plains-route66-pack12`) binds twenty separate Texas Route 66 / Great
+Plains sites. Source recipes retain exact saved GPS/source metadata and distinguish
+fictional 2994 compositions from surveyed views. Eighteen routes retain snow
+material with sparse prairie-straw snow art; Sandhills and noon Bayard retain grass
+with a separate mixed prairie-grass texture. Angeles Forest's 17,952 snow cells
+now use snow/chaparral art, resolving the specific pack11 debt above. PPIR keeps
+its low distant mountain profile and now has a pale winter-field transition with
+a quieter bottom edge. No physical material, route, scenery or authored lighting
+changes are authorized by this pipeline.
+
+The explicit `superseded-art.json` schema preserves retired source/native bytes,
+registered paths and SHA-256 values, a hashed compact comparison, and a real
+replacement in the named race. Every saved race is checked for lingering old sky
+bindings. Missing/changed originals, evidence, replacement placement, conflicting
+intent, self/cyclic retirement and unrelated unused art fail. Tower Hill's old
+autumn cityscape is a season/location mismatch; Bayard's plausible older noon
+prairie is separately documented as superseded by a more specific local composition,
+not mislabeled as invalid. These are visible diagnostics, not a deferred-art list.
+The snow-ribbon configuration warning remains visible. Supersession negative
+coverage is imported by the existing Campaign Artwork integration test command.
+
+For native pack12 reproduction use `RACE_RENDER_PACK=plains-route66-pack12
+RACE_RENDER_COMPACT=1 RACE_QA_CHROMIUM=/usr/bin/chromium` with
+`tools/race-environments/renderer.config.mjs` and a fresh output directory.
+Requested race names now fail collection if any route is absent/unbound/filtered,
+so a typo cannot silently shrink coverage. `RACE_RENDER_DIAGNOSTIC_REF` allows
+an explicitly labeled in-memory art comparison only for one named race; it never
+writes a saved document or changes authored weather/effects. For evidence collected
+across separate runs, `RACE_QA_BASE_DIRS` can be a JSON array of exact base capture
+directories passed to `summarize-venue-qa.mjs`; the same complete two-device count,
+current refs, material and exposure assertions still apply without re-rendering
+already captured cases. Additional positional directories remain corrective overrides.
+
+Keep source acceptance, measured/native wrap and effective-layer review, authored
+appearance and actual movement separate. Source/decoded boundary thresholds are
+not equivalent, and a lower metric does not certify a seamless image. Tower Hill
+handheld met the 20m distance check; desktop moved 18.76m but missed the 90-second
+budget. Neither native darkness nor diagnostic brightness substitutes for full
+night driving acceptance. See pack12 evidence for final exact results and retained
+limitations. Do not publish the still-incomplete all-245 request.

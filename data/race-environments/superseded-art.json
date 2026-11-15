@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "skybox-tower-hill": {
+      "kind": "skybox",
+      "replacement": "environment-v1-tower-hill-snow-night",
+      "raceRef": "Tower Hill Road",
+      "reason": "Original daytime autumn cityscape is not the snowy rural Tower Hill night location. Replacement has snow, woodland and clouded night silhouettes. Native desktop/handheld raw, authored and pitch comparisons reviewed; authored .05 exposure remains nearly black and replacement boundary bands remain pending, not full driving acceptance.",
+      "source": "assets/campaign-art/skyboxes/tower-hill.png",
+      "sourceSha256": "14ba11d41687683d20974b7a78eac1b5ef66bd9f8d376975cba4791b32a05bc2",
+      "documentPath": "art/skybox-tower-hill/document.json",
+      "documentSha256": "f58d4409a8bff659660a958e1d047f6490d213f09f9d0949c56570bb844372ac",
+      "review": {
+        "path": "data/race-environments/tower-hill-review.jpg",
+        "sha256": "3bd81992a1a9d0d485e2f7065acd11f98809b4d406feeef49ce5f54d971e99bc",
+        "verdict": "superseded-location-season-mismatch",
+        "scope": "Matched native renderer original/replacement, desktop/handheld, raw100 and unchanged authored exposure. Full driving acceptance not claimed."
+      }
+    },
+    "skybox-bayard-noon-2994": {
+      "kind": "skybox",
+      "replacement": "environment-v1-bayard-noon",
+      "raceRef": "Bayard — Road 77 to City Park",
+      "reason": "Original noon prairie was geographically plausible and is not mislabeled as invalid. Superseded after matched desktop/handheld native review by a more specific North Platte agricultural valley, Bayard elevator cluster, Wildcat escarpment and distant Chimney Rock composition grounded in saved Road 77 origin. Noon stays unchanged; both have diagnostic lower-edge extensions, so no seam or full-route driving acceptance is inferred.",
+      "source": "assets/campaign-art/skyboxes/bayard-noon-2994.png",
+      "sourceSha256": "403583e3de4f710d859ad1dee597006daabdd4abe3609b890831d591b10653b2",
+      "documentPath": "art/skybox-bayard-noon-2994/document.json",
+      "documentSha256": "2777ea5a8423f9ac3a4973dc476c6787741d95fa33d7c014e37437750d256a59",
+      "review": {
+        "path": "data/race-environments/bayard-review.jpg",
+        "sha256": "e42752102c5e927836f41ffb88c69886de2985454279be6803e9bd37e575be29",
+        "verdict": "superseded-site-composition",
+        "scope": "Both sources and matched native raw/authored desktop/handheld views reviewed. New composition adds local identity while retaining compatible noon landscape. Native review is not route-wide driving approval."
+      }
+    }
+  }
+}

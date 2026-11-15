@@ -8,3 +8,10 @@ export function resolveDiagnosticRaceChoice(choices,race,documentPath){
  const alias=choices.find(c=>c.value===folder);if(!alias)throw Error('Race absent from runtime selector');
  return {value:alias.value,mode:'exact-manifest-encoded-folder',limitation:'Existing test-server index exposes encoded folder spelling. This proves selector identity, not human-name transport or gameplay.'};
 }
+
+// A typo must fail collection, not silently reduce the requested QA coverage.
+export function assertRequestedRaceCoverage(selected, requested) {
+ if(!requested)return;
+ if(new Set(requested).size!==requested.length)throw Error('Duplicate requested race');
+ for(const name of requested)if(!selected.some(r=>r.raceRef===name))throw Error('Requested race missing from QA selection: '+name);
+}

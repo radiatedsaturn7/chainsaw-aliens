@@ -4743,6 +4743,190 @@
       "maxEdge": 1024,
       "placements": [],
       "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "ground-snow-chaparral-v1",
+      "source": "ground/snow-chaparral-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Angeles Forest existing snow material: snow with sparse chaparral twigs and granite grains, not dry scrub."
+    },
+    {
+      "name": "ground-plains-snow-straw-v1",
+      "source": "environment-v1/ground-plains-snow-straw-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Material-specific grass or snow for Great Plains existing physical cells."
+    },
+    {
+      "name": "ground-prairie-grass-v1",
+      "source": "environment-v1/ground-prairie-grass-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Material-specific grass or snow for Great Plains existing physical cells."
+    },
+    {
+      "name": "environment-v1-shamrock-mclean-noon",
+      "source": "environment-v1/shamrock-mclean-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-groom-conway-night",
+      "source": "environment-v1/groom-conway-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-amarillo-sixth-noon",
+      "source": "environment-v1/amarillo-sixth-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-vega-adrian-night",
+      "source": "environment-v1/vega-adrian-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-adrian-glenrio-noon",
+      "source": "environment-v1/adrian-glenrio-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-paloduro-night",
+      "source": "environment-v1/paloduro-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-amarillo-dragway-noon",
+      "source": "environment-v1/amarillo-dragway-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-bridgeport-pony-clear",
+      "source": "environment-v1/bridgeport-pony-clear.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hallett-evening",
+      "source": "environment-v1/hallett-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-midlands-noon",
+      "source": "environment-v1/midlands-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-heartland-evening",
+      "source": "environment-v1/heartland-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-theodore-north-clear",
+      "source": "environment-v1/theodore-north-clear.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hastings-evening",
+      "source": "environment-v1/hastings-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-wichita-evening",
+      "source": "environment-v1/wichita-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-fargo-noon",
+      "source": "environment-v1/fargo-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-omaha-evening",
+      "source": "environment-v1/omaha-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oklahomacity-evening",
+      "source": "environment-v1/oklahomacity-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-siouxfalls-night",
+      "source": "environment-v1/siouxfalls-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-sandhills-evening",
+      "source": "environment-v1/sandhills-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-bayard-noon",
+      "source": "environment-v1/bayard-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Great Plains Route 66 pack12 saved race binding in race-environments ledger."
     }
   ]
 }

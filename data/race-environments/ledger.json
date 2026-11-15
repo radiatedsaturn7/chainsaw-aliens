@@ -1666,7 +1666,48 @@
             }
           ],
           "scope": "Short real normal travel/driving samples only. Prior samples retained; no route-wide or complete visual acceptance inferred."
-        }
+        },
+        "pack12ProductionSamples": [
+          {
+            "file": "/tmp/race-pack12-tower-driving/race-environments-driving--51f1a-authored-foreground-and-sky/driving-state.json",
+            "race": "Tower Hill Road",
+            "device": "handheld",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "displacementM": 19.85160369408162,
+            "timing": {
+              "wallMs": 49408,
+              "simulationMs": 4099.999999999991
+            },
+            "routeProgressM": 20.07923498216953,
+            "elapsedMs": 6133.333333333322,
+            "speedMps": 7.306043,
+            "sky": "environment-v1-tower-hill-snow-night",
+            "brightness": 0.05,
+            "missingArtRefs": [],
+            "errors": [],
+            "network": [
+              {
+                "url": "http://127.0.0.1:4293/__storage/file?folder=art&name=burnoutsmoke",
+                "error": {
+                  "errorText": "net::ERR_ABORTED"
+                }
+              }
+            ]
+          }
+        ],
+        "pack12ProductionFailures": [
+          {
+            "file": "/tmp/race-pack12-tower-driving/race-environments-driving--9c620-authored-foreground-and-sky/failure-state.json",
+            "error": "Error: Normal-input route progress\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m20\u001b[39m\nReceived:    \u001b[31m18.764371192746122\u001b[39m",
+            "device": "desktop",
+            "note": "Retained failure; not counted as accepted drive."
+          }
+        ],
+        "pack12AuthoredDrivingFramesReviewed": true,
+        "pack12DrivingScope": "Short normal-input sample only. Original exposure/weather, conservative 2 m car corridor. No full-route or night sky readability approval."
       },
       "physicalSiteLabel": "Tower Hill Road, Cumberland, RI",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -17446,7 +17487,7 @@
       "documentPath": "races/Old Route 66 %E2%80%94 Shamrock McLean/document.json",
       "siteGroup": "site-c39fb30133bf59a1",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H07-S01",
@@ -17553,7 +17594,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-8e305-ean-independent-sky-desktop/site-c39fb30133bf59a1-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-9089c-an-independent-sky-handheld/site-c39fb30133bf59a1-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 1,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 255,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Old Route 66 — Shamrock / McLean",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -17576,6 +17635,100 @@
         "maxX": 5964.426309664227,
         "minY": 375.50578594868597,
         "maxY": 537.3761707466851
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-shamrock-mclean-noon",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "shamrock-mclean-noon",
+        "raceRef": "Old Route 66 — Shamrock McLean",
+        "ref": "environment-v1-shamrock-mclean-noon",
+        "source": "environment-v1/shamrock-mclean-noon.png",
+        "brief": "Low rolling Texas eastern Panhandle shortgrass with an abandoned distant brick main-street cluster, small water tower and grain elevators; shallow draws, no mountains.",
+        "brightness": 1,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Old Route 66 — Shamrock / McLean",
+          "lat": 35.23,
+          "lon": -100.5,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/side-races/sources/H07-S01.json",
+        "catalog": [
+          {
+            "id": "H07-S01",
+            "hubStage": 7,
+            "startGps": {
+              "lat": 35.2264851,
+              "lon": -100.4343334
+            },
+            "finishGps": {
+              "lat": 35.225167266666666,
+              "lon": -100.5370258
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "https://thc.texas.gov/travel/historic-highways/route-66",
+          "data/campaigns/america/side-races/sources/H07-S01.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-e07f5928-f352-43ab-984b-3abac3e44edd.png",
+        "sourceSha256": "f867685211190a59fe984bb264a8326bf5ce490b1f21fc2dcfed0bf611934d37",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-e07f5928-f352-43ab-984b-3abac3e44edd.png",
+          "sourceSha256": "f867685211190a59fe984bb264a8326bf5ce490b1f21fc2dcfed0bf611934d37",
+          "prompt": "Correct the attached panorama for the specific scene Low rolling Texas eastern Panhandle shortgrass with an abandoned distant brick main-street cluster, small water tower and grain elevators; shallow draws, no mountains. CRITICAL: this is BRIGHT CLEAR MIDDAY, NOT NIGHT. Remove all stars and moon, replace entire sky with light-to-medium azure daylight and sparse white clouds; white snow clearly lit by noon sun. Retain specific far-away structures, winter snowy ground and pixel-art 3:1 panorama. It is a flat plains location: remove exaggerated near canyon walls or mesas; only low shallow draws/riverbank where relevant. No text/logos. Quiet matching left/right wrap boundaries, no border or stripes.",
+          "sourceReviewed": true
+        },
+        "sourceHistory": [
+          {
+            "sourceImage": "/workspace/generated_images/exec-c70f0d49-d057-4a58-8d19-339c73793b48.png",
+            "reason": "Rejected draft: wrong day/night exposure or exaggerated plains topography; preserved."
+          }
+        ],
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-e07f5928-f352-43ab-984b-3abac3e44edd.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 16.839318600368323,
+          "edgeMaximumRGB": 159.33333333333334,
+          "topRangeRGB": [
+            11,
+            5,
+            11
+          ],
+          "bottomRangeRGB": [
+            213,
+            219,
+            239
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Low rolling Texas eastern Panhandle shortgrass with an abandoned distant brick main-street cluster, small water tower and grain elevators; shallow draws, no mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -17583,7 +17736,7 @@
       "documentPath": "races/Old Route 66 %E2%80%94 Groom Conway/document.json",
       "siteGroup": "site-b162812f9b65fa16",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H07-S02",
@@ -17691,7 +17844,51 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-b0fdf-ay-independent-sky-handheld/site-b162812f9b65fa16-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-e13b2-way-independent-sky-desktop/site-b162812f9b65fa16-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.05,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 12.75,
+          "interpretation": "Nearly hidden at unchanged authored night exposure; loaded art proven separately, no night visibility approval."
+        },
+        "pack12ProductionSamples": [
+          {
+            "file": "/tmp/race-pack12-regional-driving/race-environments-driving--5fe8b-authored-foreground-and-sky/driving-state.json",
+            "race": "Old Route 66 — Groom Conway",
+            "device": "handheld",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "displacementM": 20.228754555460405,
+            "timing": {
+              "wallMs": 42979,
+              "simulationMs": 5766.666666666642
+            },
+            "routeProgressM": 20.006436762585825,
+            "elapsedMs": 7799.999999999974,
+            "speedMps": 6.654597,
+            "sky": "environment-v1-groom-conway-night",
+            "brightness": 0.05,
+            "missingArtRefs": [],
+            "errors": [],
+            "network": []
+          }
+        ],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving.",
+        "pack12AuthoredDrivingFramesReviewed": true,
+        "pack12DrivingScope": "Short normal-input sample only. Original exposure/weather, conservative 2 m car corridor. No full-route or night sky readability approval.",
+        "pack12DrivingObservation": "Clear-night sky nearly hidden at authored .05. Same-pose 100%-sky pause pair has restrained navy palette, not daylight; moon not visible in this forward pose. No night readability approval."
       },
       "physicalSiteLabel": "Old Route 66 — Groom / Conway",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -17715,6 +17912,101 @@
         "maxX": 6097.654666386721,
         "minY": -841.0351088540659,
         "maxY": -811.7685637366967
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-groom-conway-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "groom-conway-night",
+        "raceRef": "Old Route 66 — Groom Conway",
+        "ref": "environment-v1-groom-conway-night",
+        "source": "environment-v1/groom-conway-night.png",
+        "brief": "Utterly flat Carson County high plains; slender distant grain elevators and a few derelict utility poles, low winter fields, sparse clear stars and a small restrained moon, no urban skyline.",
+        "brightness": 0.05,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Old Route 66 — Groom / Conway",
+          "lat": 35.2,
+          "lon": -101.3,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/side-races/sources/H07-S02.json",
+        "catalog": [
+          {
+            "id": "H07-S02",
+            "hubStage": 7,
+            "startGps": {
+              "lat": 35.2073004,
+              "lon": -101.2328914
+            },
+            "finishGps": {
+              "lat": 35.20756266666667,
+              "lon": -101.37999461111112
+            },
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "https://thc.texas.gov/travel/historic-highways/route-66",
+          "data/campaigns/america/side-races/sources/H07-S02.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-f51ac26e-d3a4-4b37-a292-d037b2668c13.png",
+        "sourceSha256": "85a18557047627eabbe5f26b20d506d25d48d2692d62d56ed2f834502d84b1f6",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-f51ac26e-d3a4-4b37-a292-d037b2668c13.png",
+          "sourceSha256": "85a18557047627eabbe5f26b20d506d25d48d2692d62d56ed2f834502d84b1f6",
+          "prompt": "Correct this original 3:1 pixel panorama. Site: Utterly flat Carson County high plains; slender distant grain elevators and a few derelict utility poles, low winter fields, sparse clear stars and a small restrained moon, no urban skyline. Clear subdued navy night with tiny restrained stars and small moon. IMPORTANT remove the invented steep canyon cliffs, mesas and rock walls. This place has gently rolling or flat plains and only low distant banks or shallow draws. Retain snowcovered winter ground, sparse local vegetation and tiny distant venue/building details. Seamless left/right wrap with matching edge silhouettes and colors, no hard bands/borders. No text/logos. Keep distant horizon low with ample sky.",
+          "sourceReviewed": true
+        },
+        "sourceHistory": [
+          {
+            "sourceImage": "/workspace/generated_images/exec-d3272b91-36bd-41fd-b70b-51864ca4307a.png",
+            "reason": "Rejected draft: wrong day/night exposure or exaggerated plains topography; preserved."
+          }
+        ],
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-f51ac26e-d3a4-4b37-a292-d037b2668c13.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 8.118324125230203,
+          "edgeMaximumRGB": 80.0,
+          "topRangeRGB": [
+            4,
+            5,
+            5
+          ],
+          "bottomRangeRGB": [
+            50,
+            41,
+            37
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Utterly flat Carson County high plains; slender distant grain elevators and a few derelict utility poles, low winter fields, sparse clear stars and a small restrained moon, no urban skyline.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "gravel": "road-gravel-gray",
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -17722,7 +18014,7 @@
       "documentPath": "races/Amarillo %E2%80%94 Historic 6th Avenue alignment/document.json",
       "siteGroup": "site-7cc80bc12a0a8444",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H07-S03",
@@ -17829,7 +18121,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-2126b-ent-independent-sky-desktop/site-7cc80bc12a0a8444-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-7e1e1-nt-independent-sky-handheld/site-7cc80bc12a0a8444-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 1,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 255,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Amarillo — Historic 6th Avenue alignment",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -17858,6 +18168,100 @@
         "maxX": 2993.63223989954,
         "minY": -168.16031983735945,
         "maxY": 258.8955053079636
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-amarillo-sixth-noon",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "amarillo-sixth-noon",
+        "raceRef": "Amarillo — Historic 6th Avenue alignment",
+        "ref": "environment-v1-amarillo-sixth-noon",
+        "source": "environment-v1/amarillo-sixth-noon.png",
+        "brief": "Amarillo Sixth Avenue historic commercial corridor: low brick storefront roofline, distant utility towers and industrial silos, broad flat Panhandle horizon; original ruined structures without readable signs.",
+        "brightness": 1,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Amarillo — Historic 6th Avenue alignment",
+          "lat": 35.21,
+          "lon": -101.87,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/side-races/sources/H07-S03.json",
+        "catalog": [
+          {
+            "id": "H07-S03",
+            "hubStage": 7,
+            "startGps": {
+              "lat": 35.2076717,
+              "lon": -101.8370491
+            },
+            "finishGps": {
+              "lat": 35.2112314,
+              "lon": -101.8840558
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "https://thc.texas.gov/travel/historic-highways/route-66",
+          "data/campaigns/america/side-races/sources/H07-S03.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-90393ae2-4206-468a-86e2-9a04d97e99ef.png",
+        "sourceSha256": "29af6fc6dfc502dbd5da576d027014da765178941cedecf81ed9e3322e8bc36b",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-90393ae2-4206-468a-86e2-9a04d97e99ef.png",
+          "sourceSha256": "29af6fc6dfc502dbd5da576d027014da765178941cedecf81ed9e3322e8bc36b",
+          "prompt": "Correct the attached panorama for the specific scene Amarillo Sixth Avenue historic commercial corridor: low brick storefront roofline, distant utility towers and industrial silos, broad flat Panhandle horizon; original ruined structures without readable signs. CRITICAL: this is BRIGHT CLEAR MIDDAY, NOT NIGHT. Remove all stars and moon, replace entire sky with light-to-medium azure daylight and sparse white clouds; white snow clearly lit by noon sun. Retain specific far-away structures, winter snowy ground and pixel-art 3:1 panorama. It is a flat plains location: remove exaggerated near canyon walls or mesas; only low shallow draws/riverbank where relevant. No text/logos. Quiet matching left/right wrap boundaries, no border or stripes.",
+          "sourceReviewed": true
+        },
+        "sourceHistory": [
+          {
+            "sourceImage": "/workspace/generated_images/exec-a2575360-45d1-4315-ac30-4f3ee9c4f3d8.png",
+            "reason": "Rejected draft: wrong day/night exposure or exaggerated plains topography; preserved."
+          }
+        ],
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-90393ae2-4206-468a-86e2-9a04d97e99ef.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 8.695672191528546,
+          "edgeMaximumRGB": 169.33333333333334,
+          "topRangeRGB": [
+            12,
+            6,
+            11
+          ],
+          "bottomRangeRGB": [
+            180,
+            185,
+            173
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Amarillo Sixth Avenue historic commercial corridor: low brick storefront roofline, distant utility towers and industrial silos, broad flat Panhandle horizon; original ruined structures without readable signs.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -17865,7 +18269,7 @@
       "documentPath": "races/Old Route 66 %E2%80%94 Vega Adrian/document.json",
       "siteGroup": "site-92f69a857d2f218c",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H07-S04",
@@ -17972,7 +18376,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-37fe7-ian-independent-sky-desktop/site-92f69a857d2f218c-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-f3f88-an-independent-sky-handheld/site-92f69a857d2f218c-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.05,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 12.75,
+          "interpretation": "Nearly hidden at unchanged authored night exposure; loaded art proven separately, no night visibility approval."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Old Route 66 — Vega / Adrian",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -18002,6 +18424,99 @@
         "maxX": 3066.8843558315416,
         "minY": -1519.9255517121783,
         "maxY": -947.3487250657188
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-vega-adrian-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "vega-adrian-night",
+        "raceRef": "Old Route 66 — Vega Adrian",
+        "ref": "environment-v1-vega-adrian-night",
+        "source": "environment-v1/vega-adrian-night.png",
+        "brief": "Western Texas high plains between Vega and Adrian; broad empty plateau, distant windmill and squat isolated grain store, clear starlit navy sky, subtle moon glow, very low horizon.",
+        "brightness": 0.05,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Old Route 66 — Vega / Adrian",
+          "lat": 35.26,
+          "lon": -102.6,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/side-races/sources/H07-S04.json",
+        "catalog": [
+          {
+            "id": "H07-S04",
+            "hubStage": 7,
+            "startGps": {
+              "lat": 35.2706096,
+              "lon": -102.566222
+            },
+            "finishGps": {
+              "lat": 35.27244725384615,
+              "lon": -102.62302243076923
+            },
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "https://thc.texas.gov/travel/historic-highways/route-66",
+          "data/campaigns/america/side-races/sources/H07-S04.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-903476d5-acf0-4cab-a138-9ae8de0dbb3b.png",
+        "sourceSha256": "130fb79a631c4e02a0d866c5b5a29f35016ff19be8623261a8de2efbf6651c0e",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-903476d5-acf0-4cab-a138-9ae8de0dbb3b.png",
+          "sourceSha256": "130fb79a631c4e02a0d866c5b5a29f35016ff19be8623261a8de2efbf6651c0e",
+          "prompt": "Correct this original 3:1 pixel panorama. Site: Western Texas high plains between Vega and Adrian; broad empty plateau, distant windmill and squat isolated grain store, clear starlit navy sky, subtle moon glow, very low horizon. Clear subdued navy night with tiny restrained stars and small moon. IMPORTANT remove the invented steep canyon cliffs, mesas and rock walls. This place has gently rolling or flat plains and only low distant banks or shallow draws. Retain snowcovered winter ground, sparse local vegetation and tiny distant venue/building details. Seamless left/right wrap with matching edge silhouettes and colors, no hard bands/borders. No text/logos. Keep distant horizon low with ample sky.",
+          "sourceReviewed": true
+        },
+        "sourceHistory": [
+          {
+            "sourceImage": "/workspace/generated_images/exec-10eb06f1-5d91-4957-82a8-31a1ada6fb9f.png",
+            "reason": "Rejected draft: wrong day/night exposure or exaggerated plains topography; preserved."
+          }
+        ],
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-903476d5-acf0-4cab-a138-9ae8de0dbb3b.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 3.537292817679558,
+          "edgeMaximumRGB": 46.666666666666664,
+          "topRangeRGB": [
+            4,
+            6,
+            9
+          ],
+          "bottomRangeRGB": [
+            22,
+            22,
+            27
+          ],
+          "warnings": [
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Western Texas high plains between Vega and Adrian; broad empty plateau, distant windmill and squat isolated grain store, clear starlit navy sky, subtle moon glow, very low horizon.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -18009,7 +18524,7 @@
       "documentPath": "races/Old Route 66 %E2%80%94 Adrian Glenrio/document.json",
       "siteGroup": "site-285ed697fa66294d",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H07-S05",
@@ -18116,7 +18631,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-c732e-io-independent-sky-handheld/site-285ed697fa66294d-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-ebd08-rio-independent-sky-desktop/site-285ed697fa66294d-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 1,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 255,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Old Route 66 — Adrian / Glenrio",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -18141,6 +18674,100 @@
         "maxX": 8297.060718928104,
         "minY": -5472.688263853647,
         "maxY": -444.5534829704022
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-adrian-glenrio-noon",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "adrian-glenrio-noon",
+        "raceRef": "Old Route 66 — Adrian Glenrio",
+        "ref": "environment-v1-adrian-glenrio-noon",
+        "source": "environment-v1/adrian-glenrio-noon.png",
+        "brief": "Texas New Mexico border near Glenrio: broad shortgrass plateau with shallow tan erosional breaks, tiny abandoned roadside motel canopies far away; no tall mountains.",
+        "brightness": 1,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Old Route 66 — Adrian / Glenrio",
+          "lat": 35.18,
+          "lon": -102.95,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/side-races/sources/H07-S05.json",
+        "catalog": [
+          {
+            "id": "H07-S05",
+            "hubStage": 7,
+            "startGps": {
+              "lat": 35.18399796,
+              "lon": -102.99746784
+            },
+            "finishGps": {
+              "lat": 35.229217,
+              "lon": -102.858708
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "https://thc.texas.gov/travel/historic-highways/route-66",
+          "data/campaigns/america/side-races/sources/H07-S05.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-780baa66-e89e-4cdf-a989-0cacd383e2be.png",
+        "sourceSha256": "c5baa30b086d5d30f14135d613cce6fb70133fbd805b7a9866c937a1e45dbcb3",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-780baa66-e89e-4cdf-a989-0cacd383e2be.png",
+          "sourceSha256": "c5baa30b086d5d30f14135d613cce6fb70133fbd805b7a9866c937a1e45dbcb3",
+          "prompt": "Correct the attached panorama for the specific scene Texas New Mexico border near Glenrio: broad shortgrass plateau with shallow tan erosional breaks, tiny abandoned roadside motel canopies far away; no tall mountains. CRITICAL: this is BRIGHT CLEAR MIDDAY, NOT NIGHT. Remove all stars and moon, replace entire sky with light-to-medium azure daylight and sparse white clouds; white snow clearly lit by noon sun. Retain specific far-away structures, winter snowy ground and pixel-art 3:1 panorama. It is a flat plains location: remove exaggerated near canyon walls or mesas; only low shallow draws/riverbank where relevant. No text/logos. Quiet matching left/right wrap boundaries, no border or stripes.",
+          "sourceReviewed": true
+        },
+        "sourceHistory": [
+          {
+            "sourceImage": "/workspace/generated_images/exec-ad8a1e79-5e69-4a5e-bbc1-6c72d5c225f4.png",
+            "reason": "Rejected draft: wrong day/night exposure or exaggerated plains topography; preserved."
+          }
+        ],
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-780baa66-e89e-4cdf-a989-0cacd383e2be.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 8.319521178637201,
+          "edgeMaximumRGB": 103.0,
+          "topRangeRGB": [
+            9,
+            6,
+            11
+          ],
+          "bottomRangeRGB": [
+            199,
+            211,
+            214
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Texas New Mexico border near Glenrio: broad shortgrass plateau with shallow tan erosional breaks, tiny abandoned roadside motel canopies far away; no tall mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -18148,7 +18775,7 @@
       "documentPath": "races/Palo Duro Canyon %E2%80%94 Park Road 5/document.json",
       "siteGroup": "site-6e59eaf3604323d1",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H07-S06",
@@ -18255,7 +18882,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-08b61-d-5-independent-sky-desktop/site-6e59eaf3604323d1-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-4a708--5-independent-sky-handheld/site-6e59eaf3604323d1-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.05,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 12.75,
+          "interpretation": "Nearly hidden at unchanged authored night exposure; loaded art proven separately, no night visibility approval."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Palo Duro Canyon — Park Road 5",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -18281,6 +18926,94 @@
         "maxX": 473.7493596958884,
         "minY": -2860.348885403369,
         "maxY": -688.6033331162446
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-paloduro-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "paloduro-night",
+        "raceRef": "Palo Duro Canyon — Park Road 5",
+        "ref": "environment-v1-paloduro-night",
+        "source": "environment-v1/paloduro-night.png",
+        "brief": "Inside Palo Duro Canyon: layered muted red Permian walls and pale caprock ledges, irregular eroded hoodoo silhouettes, sparse juniper and cottonwood valley, clear starry night with subdued rim light, no glaring moon.",
+        "brightness": 0.05,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Palo Duro Canyon — Park Road 5",
+          "lat": 34.96,
+          "lon": -101.68,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/side-races/sources/H07-S06.json",
+        "catalog": [
+          {
+            "id": "H07-S06",
+            "hubStage": 7,
+            "startGps": {
+              "lat": 34.966192750000005,
+              "lon": -101.6748014
+            },
+            "finishGps": {
+              "lat": 34.9845707,
+              "lon": -101.7015582
+            },
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "https://tpwd.texas.gov/state-parks/palo-duro-canyon/nature",
+          "data/campaigns/america/side-races/sources/H07-S06.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-1612f6fc-8123-49fc-b4bd-d99bb1b9b161.png",
+        "sourceSha256": "aa81d620354c7acf5204b140c079876f4348b900c0b67e2f9a5629d868f100c0",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-1612f6fc-8123-49fc-b4bd-d99bb1b9b161.png",
+          "sourceSha256": "aa81d620354c7acf5204b140c079876f4348b900c0b67e2f9a5629d868f100c0",
+          "prompt": "Original 3:1 horizontal panoramic pixel-art racing-game skybox, abandoned 2994, no badges/text/cars/near road. Exact scene: Inside Palo Duro Canyon: layered muted red Permian walls and pale caprock ledges, irregular eroded hoodoo silhouettes, sparse juniper and cottonwood valley, clear starry night with subdued rim light, no glaring moon. Winter snow over low fields and ledges, sparse dry vegetation, steep rock faces exposed; physically snow terrain preserved. Quiet sky upper60%, distant believable site-specific silhouette near60% height, no high close objects. Horizontally seamless edges matched in height/color; top/bottom quiet blending rows without strips or borders. Crisp pixel style downscales well to512x192. No repeated generic mountains. Night navy and restrained stars, not daylight; daytime bright clear not overcast.",
+          "sourceReviewed": true
+        },
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-1612f6fc-8123-49fc-b4bd-d99bb1b9b161.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 9.022099447513812,
+          "edgeMaximumRGB": 111.0,
+          "topRangeRGB": [
+            5,
+            5,
+            6
+          ],
+          "bottomRangeRGB": [
+            83,
+            92,
+            134
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Inside Palo Duro Canyon: layered muted red Permian walls and pale caprock ledges, irregular eroded hoodoo silhouettes, sparse juniper and cottonwood valley, clear starry night with subdued rim light, no glaring moon.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -18288,7 +19021,7 @@
       "documentPath": "races/Amarillo Dragway/document.json",
       "siteGroup": "site-d37a086c816470d5",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H07-S07",
@@ -18395,7 +19128,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-19d0f-ay-independent-sky-handheld/site-d37a086c816470d5-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-e9e96-way-independent-sky-desktop/site-d37a086c816470d5-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 1,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 255,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Amarillo Dragway",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -18416,6 +19167,100 @@
         "maxX": -119.98568735785972,
         "minY": 0.22108063157243807,
         "maxY": 0.9673971982755943
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-amarillo-dragway-noon",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "amarillo-dragway-noon",
+        "raceRef": "Amarillo Dragway",
+        "ref": "environment-v1-amarillo-dragway-noon",
+        "source": "environment-v1/amarillo-dragway-noon.png",
+        "brief": "Flat prairie southeast of Amarillo: tiny long narrow distant dragstrip grandstands and timing tower, low sparse utility buildings, immense clear sky and featureless distant plain.",
+        "brightness": 1,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Amarillo Dragway",
+          "lat": 35.0784418,
+          "lon": -101.8230057,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/side-races/sources/H07-S07.json",
+        "catalog": [
+          {
+            "id": "H07-S07",
+            "hubStage": 7,
+            "startGps": {
+              "lat": 35.0784331,
+              "lon": -101.8287456
+            },
+            "finishGps": {
+              "lat": 35.07843981177686,
+              "lon": -101.82432424904076
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "https://thc.texas.gov/travel/historic-highways/route-66",
+          "data/campaigns/america/side-races/sources/H07-S07.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-66b72a7e-1f17-42c1-9159-af36bb2d1494.png",
+        "sourceSha256": "85d0c39dc79a985f7cc8f6e27b1df25589ea23a4dd6474a503592b73abe2ed0f",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-66b72a7e-1f17-42c1-9159-af36bb2d1494.png",
+          "sourceSha256": "85d0c39dc79a985f7cc8f6e27b1df25589ea23a4dd6474a503592b73abe2ed0f",
+          "prompt": "Correct the attached panorama for the specific scene Flat prairie southeast of Amarillo: tiny long narrow distant dragstrip grandstands and timing tower, low sparse utility buildings, immense clear sky and featureless distant plain. CRITICAL: this is BRIGHT CLEAR MIDDAY, NOT NIGHT. Remove all stars and moon, replace entire sky with light-to-medium azure daylight and sparse white clouds; white snow clearly lit by noon sun. Retain specific far-away structures, winter snowy ground and pixel-art 3:1 panorama. It is a flat plains location: remove exaggerated near canyon walls or mesas; only low shallow draws/riverbank where relevant. No text/logos. Quiet matching left/right wrap boundaries, no border or stripes.",
+          "sourceReviewed": true
+        },
+        "sourceHistory": [
+          {
+            "sourceImage": "/workspace/generated_images/exec-0f8873cd-1ff8-4129-85af-519f7a177f23.png",
+            "reason": "Rejected draft: wrong day/night exposure or exaggerated plains topography; preserved."
+          }
+        ],
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-66b72a7e-1f17-42c1-9159-af36bb2d1494.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 8.44244935543278,
+          "edgeMaximumRGB": 144.66666666666666,
+          "topRangeRGB": [
+            12,
+            5,
+            10
+          ],
+          "bottomRangeRGB": [
+            142,
+            180,
+            198
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Flat prairie southeast of Amarillo: tiny long narrow distant dragstrip grandstands and timing tower, low sparse utility buildings, immense clear sky and featureless distant plain.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -18423,7 +19268,7 @@
       "documentPath": "races/Route 66 %E2%80%94 Bridgeport Pony Bridge%2C Oklahoma/document.json",
       "siteGroup": "site-439e4445088459ca",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H07-S08",
@@ -18530,7 +19375,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-15ca5-oma-independent-sky-desktop/site-439e4445088459ca-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-7054f-ma-independent-sky-handheld/site-439e4445088459ca-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.65,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 165.75,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -18561,6 +19424,100 @@
         "maxX": 2590.1230549042243,
         "minY": -8584.604898777288,
         "maxY": 454.34309783431803
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-bridgeport-pony-clear",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "bridgeport-pony-clear",
+        "raceRef": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+        "ref": "environment-v1-bridgeport-pony-clear",
+        "source": "environment-v1/bridgeport-pony-clear.png",
+        "brief": "Bridgeport Oklahoma South Canadian River floodplain: wide flat sandy river basin, distant low repetitive yellow pony-truss bridge forms, cottonwood riparian bands and low red-earth terraces, pale clear sky.",
+        "brightness": 0.65,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Route 66 — Bridgeport Pony Bridge, Oklahoma",
+          "lat": 35.54,
+          "lon": -98.32,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/side-races/sources/H07-S08.json",
+        "catalog": [
+          {
+            "id": "H07-S08",
+            "hubStage": 7,
+            "startGps": {
+              "lat": 35.536011200000004,
+              "lon": -98.33304625
+            },
+            "finishGps": {
+              "lat": 35.6115971,
+              "lon": -98.3064905
+            },
+            "lightingPreset": "morning"
+          }
+        ],
+        "references": [
+          "https://historicbridges.org/b_a_list.php?pname=Caddo+County%2C+Oklahoma&ptype=county",
+          "data/campaigns/america/side-races/sources/H07-S08.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-b23202ae-8018-4f63-827f-af0022800d9c.png",
+        "sourceSha256": "228c938c125346c5803460cecbb89fc79e6193796713f7ac91f778c715c742d9",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-b23202ae-8018-4f63-827f-af0022800d9c.png",
+          "sourceSha256": "228c938c125346c5803460cecbb89fc79e6193796713f7ac91f778c715c742d9",
+          "prompt": "Correct the attached panorama for the specific scene Bridgeport Oklahoma South Canadian River floodplain: wide flat sandy river basin, distant low repetitive yellow pony-truss bridge forms, cottonwood riparian bands and low red-earth terraces, pale clear sky. CRITICAL: this is BRIGHT CLEAR MIDDAY, NOT NIGHT. Remove all stars and moon, replace entire sky with light-to-medium azure daylight and sparse white clouds; white snow clearly lit by noon sun. Retain specific far-away structures, winter snowy ground and pixel-art 3:1 panorama. It is a flat plains location: remove exaggerated near canyon walls or mesas; only low shallow draws/riverbank where relevant. No text/logos. Quiet matching left/right wrap boundaries, no border or stripes.",
+          "sourceReviewed": true
+        },
+        "sourceHistory": [
+          {
+            "sourceImage": "/workspace/generated_images/exec-ca0e604c-3cd5-4ca7-a17f-4536c1ce0e44.png",
+            "reason": "Rejected draft: wrong day/night exposure or exaggerated plains topography; preserved."
+          }
+        ],
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-b23202ae-8018-4f63-827f-af0022800d9c.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 8.119705340699817,
+          "edgeMaximumRGB": 92.66666666666667,
+          "topRangeRGB": [
+            9,
+            7,
+            12
+          ],
+          "bottomRangeRGB": [
+            96,
+            82,
+            41
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Bridgeport Oklahoma South Canadian River floodplain: wide flat sandy river basin, distant low repetitive yellow pony-truss bridge forms, cottonwood riparian bands and low red-earth terraces, pale clear sky.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -18568,7 +19525,7 @@
       "documentPath": "races/Hallett Motor Racing Circuit %E2%80%94 Jennings%2C Oklahoma/document.json",
       "siteGroup": "site-236e80a57d83e64a",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "H07-S09",
@@ -18675,7 +19632,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-0a800-ma-independent-sky-handheld/site-236e80a57d83e64a-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-aaeb4-oma-independent-sky-desktop/site-236e80a57d83e64a-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.42,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 107.1,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -18713,6 +19688,99 @@
         "maxX": -18.04009523177194,
         "minY": -431.27011868564705,
         "maxY": 168.09360278922975
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-hallett-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "hallett-evening",
+        "raceRef": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+        "ref": "environment-v1-hallett-evening",
+        "source": "environment-v1/hallett-evening.png",
+        "brief": "Hallett near Jennings Oklahoma: rolling oak woodland and open pasture around a small road-racing circuit, low wooded folds, tiny distant paddock roofs, warm subdued evening sky.",
+        "brightness": 0.42,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Hallett Motor Racing Circuit — Jennings, Oklahoma",
+          "lat": 36.22,
+          "lon": -96.59,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/side-races/sources/H07-S09.json",
+        "catalog": [
+          {
+            "id": "H07-S09",
+            "hubStage": 7,
+            "startGps": {
+              "lat": 36.2194827375,
+              "lon": -96.5902491
+            },
+            "finishGps": {
+              "lat": 36.2194827375,
+              "lon": -96.5902491
+            },
+            "lightingPreset": "evening"
+          }
+        ],
+        "references": [
+          "https://www.hallettracing.net/track-information/track-information/",
+          "data/campaigns/america/side-races/sources/H07-S09.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-19c2f40f-e16c-40af-b314-b4f1a1d5f089.png",
+        "sourceSha256": "bd7bef09d0473ccbb29b96c87a97d4fcf9c56f531806cba2d9e3ea1fd7814a54",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-19c2f40f-e16c-40af-b314-b4f1a1d5f089.png",
+          "sourceSha256": "bd7bef09d0473ccbb29b96c87a97d4fcf9c56f531806cba2d9e3ea1fd7814a54",
+          "prompt": "Correct this original 3:1 pixel panorama. Site: Hallett near Jennings Oklahoma: rolling oak woodland and open pasture around a small road-racing circuit, low wooded folds, tiny distant paddock roofs, warm subdued evening sky. Muted readable warm late afternoon/evening sky. No stars. IMPORTANT remove the invented steep canyon cliffs, mesas and rock walls. This place has gently rolling or flat plains and softly rounded low oak-covered hills. Retain snowcovered winter ground, sparse local vegetation and tiny distant venue/building details. Seamless left/right wrap with matching edge silhouettes and colors, no hard bands/borders. No text/logos. Keep distant horizon low with ample sky.",
+          "sourceReviewed": true
+        },
+        "sourceHistory": [
+          {
+            "sourceImage": "/workspace/generated_images/exec-f9bd7fd9-a400-44bc-9c76-bcff333d0e33.png",
+            "reason": "Rejected draft: wrong day/night exposure or exaggerated plains topography; preserved."
+          }
+        ],
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-19c2f40f-e16c-40af-b314-b4f1a1d5f089.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 6.536372007366482,
+          "edgeMaximumRGB": 86.0,
+          "topRangeRGB": [
+            8,
+            6,
+            7
+          ],
+          "bottomRangeRGB": [
+            43,
+            32,
+            35
+          ],
+          "warnings": [
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Hallett near Jennings Oklahoma: rolling oak woodland and open pasture around a small road-racing circuit, low wooded folds, tiny distant paddock roofs, warm subdued evening sky.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -20554,7 +21622,35 @@
             "network": []
           }
         ],
-        "pack11ProductionVisualReview": "Final actual desktop frame viewed. Distant horizon scale improved; foreground now matches snow physics. Dry prairie/snow transition remains unaccepted."
+        "pack11ProductionVisualReview": "Final actual desktop frame viewed. Distant horizon scale improved; foreground now matches snow physics. Dry prairie/snow transition remains unaccepted.",
+        "pack12ProductionSamples": [
+          {
+            "file": "/tmp/race-pack12-regional-driving/race-environments-driving--79e38-authored-foreground-and-sky/driving-state.json",
+            "race": "Pikes Peak International Raceway — Fountain",
+            "device": "desktop",
+            "viewport": {
+              "width": 1280,
+              "height": 720
+            },
+            "displacementM": 25.01872453451814,
+            "timing": {
+              "wallMs": 7597,
+              "simulationMs": 5949.800000000003
+            },
+            "routeProgressM": 25.005329731899522,
+            "elapsedMs": 8499.699999999995,
+            "speedMps": 10.81475830078125,
+            "sky": "environment-v1-ppir-noon",
+            "brightness": 1,
+            "missingArtRefs": [],
+            "errors": [],
+            "network": []
+          }
+        ],
+        "pack12ProductionFailures": [],
+        "pack12AuthoredDrivingFramesReviewed": true,
+        "pack12DrivingScope": "Short normal-input sample only. Original exposure/weather, conservative 2 m car corridor. No full-route or night sky readability approval.",
+        "pack12DrivingObservation": "Winter field joins snow foreground; prior yellow/dry transition removed and native lower-edge striping reduced. Original props unchanged."
       },
       "physicalSiteLabel": "Pikes Peak International Raceway — Fountain",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -20593,7 +21689,7 @@
         "brief": "Fountain shortgrass plain with a low distant Pikes Peak massif and tiny low grandstands; angular scale corrected after actual production driving comparison. Clear noon preserved.",
         "ground": "ground-winter-snow-litter-v1",
         "brightness": 1,
-        "sourceImage": "/workspace/generated_images/exec-ca6b9c00-b82e-488a-81fe-d6b36183214f.png",
+        "sourceImage": "/workspace/generated_images/exec-8927300f-113b-4342-aee0-93984ed2624b.png",
         "ref": "environment-v1-ppir-noon",
         "source": "environment-v1/ppir-noon.png",
         "tiles": {
@@ -20625,35 +21721,45 @@
           "https://www.ppir.com/contactus"
         ],
         "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
-        "sourceSha256": "895fb45cf73ccde46f03c65d95e7a252064a7b81c8166b0607d2b2aadc4382a6",
+        "sourceSha256": "b01963fa1989f085d39ac71f62bf37ab5839991e79b49aec38ea60cb7747220f",
         "provenance": {
           "tool": "image_gen",
-          "sourceImage": "/workspace/generated_images/exec-ca6b9c00-b82e-488a-81fe-d6b36183214f.png",
-          "sourceSha256": "895fb45cf73ccde46f03c65d95e7a252064a7b81c8166b0607d2b2aadc4382a6",
+          "sourceImage": "/workspace/generated_images/exec-8927300f-113b-4342-aee0-93984ed2624b.png",
+          "sourceSha256": "b01963fa1989f085d39ac71f62bf37ab5839991e79b49aec38ea60cb7747220f",
           "sourceReviewed": true,
-          "priorSourceImage": "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png"
+          "reason": "Quiet pale snow boundary fades texture before last row to reduce native extrusion. Horizon and winter transition retained."
         },
         "sourceBoundaryMetrics": {
-          "path": "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png",
+          "path": "/workspace/generated_images/exec-8927300f-113b-4342-aee0-93984ed2624b.png",
           "width": 2172,
           "height": 724,
-          "edgeMeanRGB": 5.111418047882136,
-          "edgeMaximumRGB": 58.666666666666664,
+          "edgeMeanRGB": 4.332872928176796,
+          "edgeMaximumRGB": 53.333333333333336,
           "topRangeRGB": [
-            10,
-            5,
-            6
+            12,
+            6,
+            5
           ],
           "bottomRangeRGB": [
-            4,
-            4,
-            7
+            6,
+            6,
+            5
           ],
           "warnings": [],
           "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
         },
         "sourceHistory": [
-          "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png"
+          "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png",
+          {
+            "sourceImage": "/workspace/generated_images/exec-ca6b9c00-b82e-488a-81fe-d6b36183214f.png",
+            "sourceSha256": "895fb45cf73ccde46f03c65d95e7a252064a7b81c8166b0607d2b2aadc4382a6",
+            "reason": "Pack12 winter-field transition supersedes dry yellow prairie; original retained."
+          },
+          {
+            "sourceImage": "/workspace/generated_images/exec-17ca43e3-196d-4a88-b0cb-da5f1b9241bd.png",
+            "sourceSha256": "b9740976e4ac1c5563b2afc03a8a3488786de541f55624936f5beb6f4c5ee7f3",
+            "reason": "Winter color transition retained but bottom extrusion reduced in later image_gen revision; prior bytes preserved."
+          }
         ],
         "revisionNote": "Reduced distant massif and grandstand angular size; quiet sky; removed solid bottom strip. Production fit pending.",
         "materialCorrection": "Existing Fountain snow cells now display compacted winter snow with embedded dead vegetation, not dry scrub. No material ID/weight changes. Clear weather and distant shortgrass panorama retained; foreground fit rechecked."
@@ -29323,9 +30429,9 @@
       },
       "binding": {
         "skyboxArtRef": "environment-v1-angelesforest-evening",
-        "groundPlaneArtRef": "ground-desert-scrub-v2",
+        "groundPlaneArtRef": "ground-snow-chaparral-v1",
         "terrainTileArtById": {
-          "snow": "ground-desert-scrub-v2"
+          "snow": "ground-snow-chaparral-v1"
         }
       },
       "environmentPack": "front-range-sangabriel-pack10",
@@ -29333,13 +30439,13 @@
         "key": "angelesforest-evening",
         "raceRef": "Angeles Forest Highway — County N3",
         "brief": "North slope San Gabriel uplift with broad dry brush-filled basin and sage green chaparral ridges, weathered gray granite cuts, scattered pine pockets and distant Antelope Valley opening.",
-        "ground": "ground-desert-scrub-v2",
+        "ground": "ground-snow-chaparral-v1",
         "brightness": 0.42,
         "sourceImage": "/workspace/generated_images/exec-f44e9c8e-e0bc-4bf7-8f85-bf0c727a8ed9.png",
         "ref": "environment-v1-angelesforest-evening",
         "source": "environment-v1/angelesforest-evening.png",
         "tiles": {
-          "snow": "ground-desert-scrub-v2"
+          "snow": "ground-snow-chaparral-v1"
         },
         "sourceOrigin": {
           "name": "Angeles Forest Highway — County N3",
@@ -29402,7 +30508,7 @@
         "ground": "North slope San Gabriel uplift with broad dry brush-filled basin and sage green chaparral ridges, weathered gray granite cuts, scattered pine pockets and distant Antelope Valley opening.",
         "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Ground source decoded and viewed; native effective ground/normal-rough tiles/active surface road/shoulder audits retained. Physical IDs and weights unchanged. Full-route driving terrain acceptance pending."
+        "acceptance": "Pack12 corrects snow substrate mismatch. New source inspected; native effective and production checks pending."
       }
     },
     {
@@ -39063,7 +40169,7 @@
       "documentPath": "races/Raceway Park of the Midlands/document.json",
       "siteGroup": "site-9b84115eeed7a083",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-ia",
@@ -39168,7 +40274,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-716e8-nds-independent-sky-desktop/site-9b84115eeed7a083-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-abdbf-ds-independent-sky-handheld/site-9b84115eeed7a083-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 1,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 255,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Raceway Park of the Midlands",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -39191,6 +40315,97 @@
         "maxX": 609.0624105890653,
         "minY": -687.1188787951614,
         "maxY": 235.92260173188228
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-midlands-noon",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "midlands-noon",
+        "raceRef": "Raceway Park of the Midlands",
+        "ref": "environment-v1-midlands-noon",
+        "source": "environment-v1/midlands-noon.png",
+        "brief": "Pacific Junction Iowa Missouri River floodplain: perfectly broad flat agricultural basin, distant levee and cottonwood rows, tiny low motorsport paddock, low bluffs far beyond, clear noon.",
+        "brightness": 1,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Raceway Park of the Midlands",
+          "lat": 41.024,
+          "lon": -95.823,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-ia.json",
+        "catalog": [
+          {
+            "id": "state-ia",
+            "venueKey": "state-ia",
+            "venueName": "Raceway Park of the Midlands",
+            "hubStage": 6,
+            "location": {
+              "lat": 41.024,
+              "lon": -95.823
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/state-ia.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-d0044871-3d28-4d40-9337-fa32d0bdbc39.png",
+        "sourceSha256": "260ab6bddc10527d86efd9d16cd7548a7764cee74f13672f10ba03b38b3d70ff",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-d0044871-3d28-4d40-9337-fa32d0bdbc39.png",
+          "sourceSha256": "260ab6bddc10527d86efd9d16cd7548a7764cee74f13672f10ba03b38b3d70ff",
+          "prompt": "Correct this original 3:1 pixel panorama. Site: Pacific Junction Iowa Missouri River floodplain: perfectly broad flat agricultural basin, distant levee and cottonwood rows, tiny low motorsport paddock, low bluffs far beyond, clear noon. Bright CLEAR NOON azure sky and white clouds; remove every star and moon. IMPORTANT remove the invented steep canyon cliffs, mesas and rock walls. This place has gently rolling or flat plains and only low distant banks or shallow draws. Retain snowcovered winter ground, sparse local vegetation and tiny distant venue/building details. Seamless left/right wrap with matching edge silhouettes and colors, no hard bands/borders. No text/logos. Keep distant horizon low with ample sky.",
+          "sourceReviewed": true
+        },
+        "sourceHistory": [
+          {
+            "sourceImage": "/workspace/generated_images/exec-589751d5-3828-48a8-a85c-cef6aca31d48.png",
+            "reason": "Rejected draft: wrong day/night exposure or exaggerated plains topography; preserved."
+          }
+        ],
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-d0044871-3d28-4d40-9337-fa32d0bdbc39.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 9.283149171270718,
+          "edgeMaximumRGB": 102.66666666666667,
+          "topRangeRGB": [
+            8,
+            9,
+            12
+          ],
+          "bottomRangeRGB": [
+            45,
+            35,
+            21
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Pacific Junction Iowa Missouri River floodplain: perfectly broad flat agricultural basin, distant levee and cottonwood rows, tiny low motorsport paddock, low bluffs far beyond, clear noon.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -39198,7 +40413,7 @@
       "documentPath": "races/Heartland Motorsports Park/document.json",
       "siteGroup": "site-f46e8bc2b4606bbc",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-ks",
@@ -39303,7 +40518,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-55501-rk-independent-sky-handheld/site-f46e8bc2b4606bbc-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-e7cea-ark-independent-sky-desktop/site-f46e8bc2b4606bbc-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.42,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 107.1,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Heartland Motorsports Park",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -39328,6 +40561,90 @@
         "maxX": 123.09159707133301,
         "minY": -770.0259306174947,
         "maxY": 556.2200303441612
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-heartland-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "heartland-evening",
+        "raceRef": "Heartland Motorsports Park",
+        "ref": "environment-v1-heartland-evening",
+        "source": "environment-v1/heartland-evening.png",
+        "brief": "South Topeka Kansas gently rolling tallgrass prairie and distant oak hedgerows; abandoned drag/race venue with low grandstand and timing tower, evening pastel horizon, no mountains.",
+        "brightness": 0.42,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Heartland Motorsports Park",
+          "lat": 38.924,
+          "lon": -95.672,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-ks.json",
+        "catalog": [
+          {
+            "id": "state-ks",
+            "venueKey": "state-ks",
+            "venueName": "Heartland Motorsports Park",
+            "hubStage": 5,
+            "location": {
+              "lat": 38.924,
+              "lon": -95.672
+            },
+            "lightingPreset": "evening"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/state-ks.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-a3773712-8a6a-4fb4-8c98-372ac1d9e76a.png",
+        "sourceSha256": "4877d97e252990584b7b4a481dd4d24692bc51153f64ff828c9c7487b88c4216",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-a3773712-8a6a-4fb4-8c98-372ac1d9e76a.png",
+          "sourceSha256": "4877d97e252990584b7b4a481dd4d24692bc51153f64ff828c9c7487b88c4216",
+          "prompt": "One original 3:1 seamless horizontal panoramic pixel-art background for abandoned 2994 racing game. Location composition: South Topeka Kansas gently rolling tallgrass prairie and distant oak hedgerows; abandoned drag/race venue with low grandstand and timing tower, evening pastel horizon, no mountains. Settled winter snow on flat ground, sparse dry straw and bare trees; steep geological faces exposed. No text/logos/cars/near road. Vast quiet sky above distant horizon at60% image height; distant architecture modest. Preserve geographic distinction. Pixel details legible downscaled512x192. Left/right wrap edges match horizon and palette, quiet uniform boundary rows smoothly meeting sky or snow, no border/stripe. Clear daylight or muted evening per description, no blanket dark exposure.",
+          "sourceReviewed": true
+        },
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-a3773712-8a6a-4fb4-8c98-372ac1d9e76a.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 5.422191528545119,
+          "edgeMaximumRGB": 75.66666666666667,
+          "topRangeRGB": [
+            4,
+            4,
+            9
+          ],
+          "bottomRangeRGB": [
+            64,
+            116,
+            180
+          ],
+          "warnings": [
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "South Topeka Kansas gently rolling tallgrass prairie and distant oak hedgerows; abandoned drag/race venue with low grandstand and timing tower, evening pastel horizon, no mountains.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -40544,7 +41861,7 @@
       "documentPath": "races/Theodore Roosevelt %E2%80%94 North Unit Drive/document.json",
       "siteGroup": "site-0a44617d8ce6d04d",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-nd",
@@ -40657,7 +41974,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-b4503-ve-independent-sky-handheld/site-0a44617d8ce6d04d-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-c7f51-ive-independent-sky-desktop/site-0a44617d8ce6d04d-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.65,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 165.75,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Theodore Roosevelt — North Unit Drive",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -40680,6 +42015,100 @@
         "maxX": 5335.7620454787475,
         "minY": -1621.0018796444654,
         "maxY": -306.1200558827439
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-theodore-north-clear",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "theodore-north-clear",
+        "raceRef": "Theodore Roosevelt — North Unit Drive",
+        "ref": "environment-v1-theodore-north-clear",
+        "source": "environment-v1/theodore-north-clear.png",
+        "brief": "Theodore Roosevelt North Unit: deeply dissected pale gray tan badland buttes and dark lignite seams, Little Missouri wooded floodplain below distant terraces, sparse juniper, no invented alpine peaks, clear bright sky.",
+        "brightness": 0.65,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Theodore Roosevelt — North Unit Drive",
+          "lat": 47.588,
+          "lon": -103.327,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-nd.json",
+        "catalog": [
+          {
+            "id": "state-nd",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 8,
+            "location": {
+              "lat": 47.588,
+              "lon": -103.327
+            },
+            "startGps": {
+              "lat": 47.596323174999995,
+              "lon": -103.33612995
+            },
+            "finishGps": {
+              "lat": 47.599608,
+              "lon": -103.255853
+            },
+            "lightingPreset": "morning"
+          }
+        ],
+        "references": [
+          "https://www.nps.gov/im/vmi-thro.htm",
+          "data/campaigns/america/state-expansion/sources/state-nd.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-f0f1c1c5-9b0b-4210-9888-a3ea1b35408c.png",
+        "sourceSha256": "cfb8dc9820a25ece0cb90749dfd54217a22f823157cbb5791176375fd65fdc22",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-f0f1c1c5-9b0b-4210-9888-a3ea1b35408c.png",
+          "sourceSha256": "cfb8dc9820a25ece0cb90749dfd54217a22f823157cbb5791176375fd65fdc22",
+          "prompt": "One original 3:1 seamless horizontal panoramic pixel-art background for abandoned 2994 racing game. Location composition: Theodore Roosevelt North Unit: deeply dissected pale gray tan badland buttes and dark lignite seams, Little Missouri wooded floodplain below distant terraces, sparse juniper, no invented alpine peaks, clear bright sky. Settled winter snow on flat ground, sparse dry straw and bare trees; steep geological faces exposed. No text/logos/cars/near road. Vast quiet sky above distant horizon at60% image height; distant architecture modest. Preserve geographic distinction. Pixel details legible downscaled512x192. Left/right wrap edges match horizon and palette, quiet uniform boundary rows smoothly meeting sky or snow, no border/stripe. Clear daylight or muted evening per description, no blanket dark exposure.",
+          "sourceReviewed": true
+        },
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-f0f1c1c5-9b0b-4210-9888-a3ea1b35408c.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 15.888121546961326,
+          "edgeMaximumRGB": 154.0,
+          "topRangeRGB": [
+            8,
+            4,
+            6
+          ],
+          "bottomRangeRGB": [
+            56,
+            49,
+            25
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Theodore Roosevelt North Unit: deeply dissected pale gray tan badland buttes and dark lignite seams, Little Missouri wooded floodplain below distant terraces, sparse juniper, no invented alpine peaks, clear bright sky.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -41229,7 +42658,7 @@
       "documentPath": "races/Motorsport Park Hastings/document.json",
       "siteGroup": "site-a01ccf954dc1eb8f",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "state-ne",
@@ -41334,7 +42763,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-16a5b-ngs-independent-sky-desktop/site-a01ccf954dc1eb8f-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-6252e-gs-independent-sky-handheld/site-a01ccf954dc1eb8f-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.42,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 107.1,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Motorsport Park Hastings",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -41358,6 +42805,91 @@
         "maxX": 262.3694864107025,
         "minY": -211.33736949174488,
         "maxY": 415.84736105716433
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-hastings-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "hastings-evening",
+        "raceRef": "Motorsport Park Hastings",
+        "ref": "environment-v1-hastings-evening",
+        "source": "environment-v1/hastings-evening.png",
+        "brief": "Hastings Nebraska flat central plains agricultural horizon, distant grain elevators and tiny low circuit paddock, sparse deciduous shelterbelt, broad warm evening sky.",
+        "brightness": 0.42,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Motorsport Park Hastings",
+          "lat": 40.57976,
+          "lon": -98.3496,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-ne.json",
+        "catalog": [
+          {
+            "id": "state-ne",
+            "venueKey": "state-ne",
+            "venueName": "Motorsport Park Hastings",
+            "hubStage": 8,
+            "location": {
+              "lat": 40.57976,
+              "lon": -98.3496
+            },
+            "lightingPreset": "evening"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/state-ne.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-aaa7aadb-b9a7-434d-9160-51e1001e5673.png",
+        "sourceSha256": "eed2cc8c7115d3422002fa3f713d87b4f731e45e953d3438fce8fb9ca8329410",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-aaa7aadb-b9a7-434d-9160-51e1001e5673.png",
+          "sourceSha256": "eed2cc8c7115d3422002fa3f713d87b4f731e45e953d3438fce8fb9ca8329410",
+          "prompt": "One original 3:1 seamless horizontal panoramic pixel-art background for abandoned 2994 racing game. Location composition: Hastings Nebraska flat central plains agricultural horizon, distant grain elevators and tiny low circuit paddock, sparse deciduous shelterbelt, broad warm evening sky. Settled winter snow on flat ground, sparse dry straw and bare trees; steep geological faces exposed. No text/logos/cars/near road. Vast quiet sky above distant horizon at60% image height; distant architecture modest. Preserve geographic distinction. Pixel details legible downscaled512x192. Left/right wrap edges match horizon and palette, quiet uniform boundary rows smoothly meeting sky or snow, no border/stripe. Clear daylight or muted evening per description, no blanket dark exposure.",
+          "sourceReviewed": true
+        },
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-aaa7aadb-b9a7-434d-9160-51e1001e5673.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 5.664364640883978,
+          "edgeMaximumRGB": 41.0,
+          "topRangeRGB": [
+            17,
+            4,
+            15
+          ],
+          "bottomRangeRGB": [
+            90,
+            96,
+            125
+          ],
+          "warnings": [
+            "top-row-extrusion",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Hastings Nebraska flat central plains agricultural horizon, distant grain elevators and tiny low circuit paddock, sparse deciduous shelterbelt, broad warm evening sky.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -45171,7 +46703,7 @@
       "documentPath": "races/Wichita%2C KS %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-879d7801409b1a84",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-ks",
@@ -45276,7 +46808,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-5d98d-un-independent-sky-handheld/site-879d7801409b1a84-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-b8c18-Run-independent-sky-desktop/site-879d7801409b1a84-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.42,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 107.1,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Wichita — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -45343,6 +46893,92 @@
         "maxX": 1551.4084167131919,
         "minY": -1155.6504688671678,
         "maxY": 907.2406596252993
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-wichita-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "wichita-evening",
+        "raceRef": "Wichita, KS — Landmark Run",
+        "ref": "environment-v1-wichita-evening",
+        "source": "environment-v1/wichita-evening.png",
+        "brief": "Wichita Kansas Arkansas River city: broad flat horizon with midrise downtown and low industrial roofs, riparian cottonwood ribbon, distant arching pedestrian bridge motif modest in scale, warm evening.",
+        "brightness": 0.42,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Wichita — Landmark Run",
+          "lat": 37.689,
+          "lon": -97.34,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ks.json",
+        "catalog": [
+          {
+            "id": "city-ks",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 7,
+            "location": {
+              "lat": 37.689,
+              "lon": -97.34
+            },
+            "lightingPreset": "evening"
+          }
+        ],
+        "references": [
+          "https://www.visitwichita.com/listing/keeper-of-the-plains/28029/",
+          "data/campaigns/america/state-expansion/sources/city-ks.json",
+          "AI/last-on-the-grid/state-expansion-landmark-artwork.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-1e43733b-8439-4ff0-a600-f53048f3fb1a.png",
+        "sourceSha256": "95b86ef8cf04991743ca04f14a7cd6547ac8b347e65e418a3a056a4004e2a65c",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-1e43733b-8439-4ff0-a600-f53048f3fb1a.png",
+          "sourceSha256": "95b86ef8cf04991743ca04f14a7cd6547ac8b347e65e418a3a056a4004e2a65c",
+          "prompt": "One original 3:1 seamless horizontal panoramic pixel-art background for abandoned 2994 racing game. Location composition: Wichita Kansas Arkansas River city: broad flat horizon with midrise downtown and low industrial roofs, riparian cottonwood ribbon, distant arching pedestrian bridge motif modest in scale, warm evening. Settled winter snow on flat ground, sparse dry straw and bare trees; steep geological faces exposed. No text/logos/cars/near road. Vast quiet sky above distant horizon at60% image height; distant architecture modest. Preserve geographic distinction. Pixel details legible downscaled512x192. Left/right wrap edges match horizon and palette, quiet uniform boundary rows smoothly meeting sky or snow, no border/stripe. Clear daylight or muted evening per description, no blanket dark exposure.",
+          "sourceReviewed": true
+        },
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-1e43733b-8439-4ff0-a600-f53048f3fb1a.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 7.511970534069982,
+          "edgeMaximumRGB": 76.0,
+          "topRangeRGB": [
+            5,
+            4,
+            9
+          ],
+          "bottomRangeRGB": [
+            137,
+            148,
+            179
+          ],
+          "warnings": [
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Wichita Kansas Arkansas River city: broad flat horizon with midrise downtown and low industrial roofs, riparian cottonwood ribbon, distant arching pedestrian bridge motif modest in scale, warm evening.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -48528,7 +50164,7 @@
       "documentPath": "races/Fargo%2C ND %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-f94d734970ec32dc",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-nd",
@@ -48633,7 +50269,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-047f9-Run-independent-sky-desktop/site-f94d734970ec32dc-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-c2d58-un-independent-sky-handheld/site-f94d734970ec32dc-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 1,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 255,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Fargo — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -48688,6 +50342,91 @@
         "maxX": 899.7536733429981,
         "minY": -1099.1077705689568,
         "maxY": 1323.577279035678
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-fargo-noon",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "fargo-noon",
+        "raceRef": "Fargo, ND — Landmark Run",
+        "ref": "environment-v1-fargo-noon",
+        "source": "environment-v1/fargo-noon.png",
+        "brief": "Fargo North Dakota Red River valley: extremely flat landscape, compact brick downtown with distant grain elevator silos, leafless cottonwood river line and broad snowy open land, clear blue noon.",
+        "brightness": 1,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Fargo — Landmark Run",
+          "lat": 46.876,
+          "lon": -96.787,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-nd.json",
+        "catalog": [
+          {
+            "id": "city-nd",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 6,
+            "location": {
+              "lat": 46.876,
+              "lon": -96.787
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-nd.json",
+          "AI/last-on-the-grid/state-expansion-landmark-artwork.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-4622441e-3005-4c93-a4bf-c61e23f71c37.png",
+        "sourceSha256": "af6f5711df45532b0cc3952f0296640db7e98480f92ac1cadb6e4768240186d7",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-4622441e-3005-4c93-a4bf-c61e23f71c37.png",
+          "sourceSha256": "af6f5711df45532b0cc3952f0296640db7e98480f92ac1cadb6e4768240186d7",
+          "prompt": "One original 3:1 seamless horizontal panoramic pixel-art background for abandoned 2994 racing game. Location composition: Fargo North Dakota Red River valley: extremely flat landscape, compact brick downtown with distant grain elevator silos, leafless cottonwood river line and broad snowy open land, clear blue noon. Settled winter snow on flat ground, sparse dry straw and bare trees; steep geological faces exposed. No text/logos/cars/near road. Vast quiet sky above distant horizon at60% image height; distant architecture modest. Preserve geographic distinction. Pixel details legible downscaled512x192. Left/right wrap edges match horizon and palette, quiet uniform boundary rows smoothly meeting sky or snow, no border/stripe. Clear daylight or muted evening per description, no blanket dark exposure.",
+          "sourceReviewed": true
+        },
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-4622441e-3005-4c93-a4bf-c61e23f71c37.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 5.918968692449355,
+          "edgeMaximumRGB": 65.0,
+          "topRangeRGB": [
+            7,
+            4,
+            9
+          ],
+          "bottomRangeRGB": [
+            103,
+            73,
+            32
+          ],
+          "warnings": [
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Fargo North Dakota Red River valley: extremely flat landscape, compact brick downtown with distant grain elevator silos, leafless cottonwood river line and broad snowy open land, clear blue noon.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -49226,7 +50965,7 @@
       "documentPath": "races/Omaha%2C NE %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-ed3ce9339abe5cb5",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-ne",
@@ -49339,7 +51078,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-a5aab-Run-independent-sky-desktop/site-ed3ce9339abe5cb5-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-ce9a9-un-independent-sky-handheld/site-ed3ce9339abe5cb5-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.42,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 107.1,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Omaha, NE — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -49435,6 +51192,108 @@
         "maxX": 1143.3286205371276,
         "minY": -1054.451826346577,
         "maxY": 828.3713791538253
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-omaha-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "omaha-evening",
+        "raceRef": "Omaha, NE — Landmark Run",
+        "ref": "environment-v1-omaha-evening",
+        "source": "environment-v1/omaha-evening.png",
+        "brief": "Omaha Missouri River urban edge: modest downtown tower cluster rising from loess bluffs on one side, broad flat river floodplain on other, thin bridge silhouette and bare cottonwood lines, clear evening.",
+        "brightness": 0.42,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Omaha, NE — Landmark Run",
+          "lat": 41.257,
+          "lon": -95.939,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ne.json",
+        "catalog": [
+          {
+            "id": "city-ne",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 6,
+            "location": {
+              "lat": 41.257,
+              "lon": -95.939
+            },
+            "startGps": {
+              "lat": 41.2664829,
+              "lon": -95.947014675
+            },
+            "finishGps": {
+              "lat": 41.2495502875,
+              "lon": -95.92539305000001
+            },
+            "lightingPreset": "evening"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-ne.json",
+          "AI/last-on-the-grid/state-expansion-landmark-artwork.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-2fa1816e-74b1-47ec-bb64-b933bdf9ddf1.png",
+        "sourceSha256": "ecd14b87fef29f3a95f8300a18f468dcaf260dd7bd33da9e733dd65878ddffaf",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-2fa1816e-74b1-47ec-bb64-b933bdf9ddf1.png",
+          "sourceSha256": "ecd14b87fef29f3a95f8300a18f468dcaf260dd7bd33da9e733dd65878ddffaf",
+          "prompt": "Edit this exact original pixel panorama to FIX THE HORIZONTAL WRAP SEAM for a 360 degree racing-game background. Keep distinct central Omaha Missouri River urban edge: modest downtown tower cluster rising from loess bluffs on one side, broad flat river floodplain on other, thin bridge silhouette and bare cottonwood lines, clear evening. composition and winter fields. The leftmost and rightmost 15% must match each other: same muted blue-lavender sky color at every height, identical low horizon elevation, matching snowfield colors and bare-tree height. Concentrate warm orange sunset glow in the CENTRAL sky behind skyline, NOT at either edge. Keep skyline structure centrally, no tall building crossing image edges. Quiet smooth top edge and pale quiet snowy bottom edge merging without visible strip or columns. Preserve original 3:1 pixel art and noon/evening as depicted, no text/logos.",
+          "sourceReviewed": true
+        },
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-2fa1816e-74b1-47ec-bb64-b933bdf9ddf1.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 14.51657458563536,
+          "edgeMaximumRGB": 125.0,
+          "topRangeRGB": [
+            6,
+            6,
+            16
+          ],
+          "bottomRangeRGB": [
+            36,
+            19,
+            19
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "top-row-extrusion",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        },
+        "sourceHistory": [
+          {
+            "sourceImage": "/workspace/generated_images/exec-5570a7f6-5910-47d6-8c55-c27f1e22f39f.png",
+            "sourceSha256": "e95d75d4208bd85a021ff0e67af13f51bb82ef8bf31b56c091c48b181c9d70d3",
+            "reason": "First decoded native wrap warning; preserved before edge-color revision."
+          }
+        ]
+      },
+      "terrainReview": {
+        "ground": "Omaha Missouri River urban edge: modest downtown tower cluster rising from loess bluffs on one side, broad flat river floodplain on other, thin bridge silhouette and bare cottonwood lines, clear evening.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -49716,7 +51575,7 @@
       "documentPath": "races/Oklahoma City%2C OK %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-81ce2ad172102837",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-ok",
@@ -49821,7 +51680,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-03ebd-un-independent-sky-handheld/site-81ce2ad172102837-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-f2ab3-Run-independent-sky-desktop/site-81ce2ad172102837-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.42,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 107.1,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Oklahoma City, OK — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -49915,6 +51792,100 @@
         "maxX": 1410.7564229207735,
         "minY": -2316.504867489241,
         "maxY": 1892.4624290186978
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-oklahomacity-evening",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "oklahomacity-evening",
+        "raceRef": "Oklahoma City, OK — Landmark Run",
+        "ref": "environment-v1-oklahomacity-evening",
+        "source": "environment-v1/oklahomacity-evening.png",
+        "brief": "Oklahoma City prairie skyline: single slender dominant glass tower amid much lower compact downtown, broad level prairie river corridor and distant industrial roofs, subdued clear evening, original abandoned architecture.",
+        "brightness": 0.42,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Oklahoma City, OK — Landmark Run",
+          "lat": 35.476,
+          "lon": -97.51,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ok.json",
+        "catalog": [
+          {
+            "id": "city-ok",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 7,
+            "location": {
+              "lat": 35.476,
+              "lon": -97.51
+            },
+            "lightingPreset": "evening"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-ok.json",
+          "AI/last-on-the-grid/state-expansion-landmark-artwork.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-f1c5d89b-8468-4fe5-ba59-8b9168a8ca42.png",
+        "sourceSha256": "0b8d1f1ccd557e9d48452f75e275f9f99f35734c86e8337a98835ec898034fa8",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-f1c5d89b-8468-4fe5-ba59-8b9168a8ca42.png",
+          "sourceSha256": "0b8d1f1ccd557e9d48452f75e275f9f99f35734c86e8337a98835ec898034fa8",
+          "prompt": "Edit this exact original pixel panorama to FIX THE HORIZONTAL WRAP SEAM for a 360 degree racing-game background. Keep distinct central Oklahoma City prairie skyline: single slender dominant glass tower amid much lower compact downtown, broad level prairie river corridor and distant industrial roofs, subdued clear evening, original abandoned architecture. composition and winter fields. The leftmost and rightmost 15% must match each other: same muted blue-lavender sky color at every height, identical low horizon elevation, matching snowfield colors and bare-tree height. Concentrate warm orange sunset glow in the CENTRAL sky behind skyline, NOT at either edge. Keep skyline structure centrally, no tall building crossing image edges. Quiet smooth top edge and pale quiet snowy bottom edge merging without visible strip or columns. Preserve original 3:1 pixel art and noon/evening as depicted, no text/logos.",
+          "sourceReviewed": true
+        },
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-f1c5d89b-8468-4fe5-ba59-8b9168a8ca42.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 8.586556169429098,
+          "edgeMaximumRGB": 78.66666666666667,
+          "topRangeRGB": [
+            7,
+            6,
+            14
+          ],
+          "bottomRangeRGB": [
+            56,
+            42,
+            31
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "top-row-extrusion",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        },
+        "sourceHistory": [
+          {
+            "sourceImage": "/workspace/generated_images/exec-edea78d2-1a4b-4224-ae64-e67fe575c166.png",
+            "sourceSha256": "b5a03f7ee74f5aa70d122f08a91bcecb88a56d1bd378c698a7c363b76ba43851",
+            "reason": "First decoded native wrap warning; preserved before edge-color revision."
+          }
+        ]
+      },
+      "terrainReview": {
+        "ground": "Oklahoma City prairie skyline: single slender dominant glass tower amid much lower compact downtown, broad level prairie river corridor and distant industrial roofs, subdued clear evening, original abandoned architecture.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -51056,7 +53027,7 @@
       "documentPath": "races/Sioux Falls%2C SD %E2%80%94 Landmark Run/document.json",
       "siteGroup": "site-7bd4bd348e420804",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "city-sd",
@@ -51169,7 +53140,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-52364-un-independent-sky-handheld/site-7bd4bd348e420804-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-ca4ab-Run-independent-sky-desktop/site-7bd4bd348e420804-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.05,
+          "visibilityOpacity": 0,
+          "maximumArtworkContrast": 12.75,
+          "interpretation": "Nearly hidden at unchanged authored night exposure; loaded art proven separately, no night visibility approval."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Sioux Falls, SD — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -51231,6 +53220,100 @@
         "maxX": 864.5885770019813,
         "minY": -1484.231930957262,
         "maxY": 1064.4760628296438
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-siouxfalls-night",
+        "groundPlaneArtRef": "ground-plains-snow-straw-v1",
+        "terrainTileArtById": {
+          "snow": "ground-plains-snow-straw-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "siouxfalls-night",
+        "raceRef": "Sioux Falls, SD — Landmark Run",
+        "ref": "environment-v1-siouxfalls-night",
+        "source": "environment-v1/siouxfalls-night.png",
+        "brief": "Sioux Falls South Dakota: low prairie city rooftops and modest tower forms, dark quartzite terraces by Big Sioux valley, winter bare trees, restrained tiny clear-night stars and a faint small moon, no mountain backdrop.",
+        "brightness": 0.05,
+        "ground": "ground-plains-snow-straw-v1",
+        "tiles": {
+          "snow": "ground-plains-snow-straw-v1"
+        },
+        "sourceOrigin": {
+          "name": "Sioux Falls, SD — Landmark Run",
+          "lat": 43.551,
+          "lon": -96.728,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-sd.json",
+        "catalog": [
+          {
+            "id": "city-sd",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 6,
+            "location": {
+              "lat": 43.551,
+              "lon": -96.728
+            },
+            "startGps": {
+              "lat": 43.56379822,
+              "lon": -96.73963067999999
+            },
+            "finishGps": {
+              "lat": 43.54142695,
+              "lon": -96.71727175
+            },
+            "lightingPreset": "night"
+          }
+        ],
+        "references": [
+          "data/campaigns/america/state-expansion/sources/city-sd.json",
+          "AI/last-on-the-grid/state-expansion-landmark-artwork.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-cab4dfbc-adcf-44e0-b522-9f113e671975.png",
+        "sourceSha256": "f990c4bc37223a6a56a49e6ed52c8bb58074e17e2e025948d15beac2ebdd457f",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-cab4dfbc-adcf-44e0-b522-9f113e671975.png",
+          "sourceSha256": "f990c4bc37223a6a56a49e6ed52c8bb58074e17e2e025948d15beac2ebdd457f",
+          "prompt": "Original 3:1 horizontal seamless panoramic pixel-art background for abandoned fictional 2994 racing game. Specific site: Sioux Falls South Dakota: low prairie city rooftops and modest tower forms, dark quartzite terraces by Big Sioux valley, winter bare trees, restrained tiny clear-night stars and a faint small moon, no mountain backdrop. Winter snow-covered ground with sparse dry vegetation and bare trees. Vast quiet sky upper60%, distant low architecture and convincing regional silhouette, pixel style suitable512x192. No logo, text, cars or close road. Left/right boundaries match height/color for wrapping, top/bottom quiet flat colors merging naturally without a visible stripe or frame. Night is navy with subdued silhouettes, never daylight; daytime bright site-specific palette. Not generic copied mountains.",
+          "sourceReviewed": true
+        },
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-cab4dfbc-adcf-44e0-b522-9f113e671975.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 10.173112338858195,
+          "edgeMaximumRGB": 90.0,
+          "topRangeRGB": [
+            4,
+            5,
+            5
+          ],
+          "bottomRangeRGB": [
+            24,
+            20,
+            17
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Sioux Falls South Dakota: low prairie city rooftops and modest tower forms, dark quartzite terraces by Big Sioux valley, winter bare trees, restrained tiny clear-night stars and a faint small moon, no mountain backdrop.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -54218,7 +56301,7 @@
       "documentPath": "races/Sandhills Journey %E2%80%94 Open Prairie/document.json",
       "siteGroup": "site-22f5f1c9744860a0",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "detour-sandhills",
@@ -54325,7 +56408,25 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-native/race-environments-renderer-587a2-rie-independent-sky-desktop/site-22f5f1c9744860a0-state.json",
+          "/tmp/race-pack12-native/race-environments-renderer-7126d-ie-independent-sky-handheld/site-22f5f1c9744860a0-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 0.42,
+          "visibilityOpacity": 0.4507491389305336,
+          "maximumArtworkContrast": 58.824767220539854,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving."
       },
       "physicalSiteLabel": "Sandhills Journey — Open Prairie",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -54349,6 +56450,91 @@
         "maxX": -11239.397447446527,
         "minY": 428.4346441397401,
         "maxY": 5574.976618160423
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-sandhills-evening",
+        "groundPlaneArtRef": "ground-prairie-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-prairie-grass-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "sandhills-evening",
+        "raceRef": "Sandhills Journey — Open Prairie",
+        "ref": "environment-v1-sandhills-evening",
+        "source": "environment-v1/sandhills-evening.png",
+        "brief": "Nebraska Sandhills: rolling grass-stabilized sandy dunes, rounded overlapping low ridges with fine tawny and sage grass, no forest or mountain peaks, sparse distant ranch windmill, warm evening.",
+        "brightness": 0.42,
+        "ground": "ground-prairie-grass-v1",
+        "tiles": {
+          "grass": "ground-prairie-grass-v1"
+        },
+        "sourceOrigin": {
+          "name": "Sandhills Journey — Open Prairie",
+          "lat": 42.045,
+          "lon": -101.34,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/wilderness/sources/detour-sandhills.json",
+        "catalog": [
+          {
+            "id": "detour-sandhills",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 8,
+            "location": {
+              "lat": 42.045,
+              "lon": -101.34
+            },
+            "lightingPreset": "evening"
+          }
+        ],
+        "references": [
+          "https://outdoornebraska.gov/learn/nebraska-habitat/prairies/",
+          "data/campaigns/america/wilderness/sources/detour-sandhills.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-3358012b-a153-40d3-bbb5-0699eda67432.png",
+        "sourceSha256": "d051dd9c971aef901140290cd91a70e1a009e3bc203c927fd788b1de4d1ebea4",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-3358012b-a153-40d3-bbb5-0699eda67432.png",
+          "sourceSha256": "d051dd9c971aef901140290cd91a70e1a009e3bc203c927fd788b1de4d1ebea4",
+          "prompt": "Original 3:1 horizontal seamless panoramic pixel-art background for abandoned fictional 2994 racing game. Specific site: Nebraska Sandhills: rolling grass-stabilized sandy dunes, rounded overlapping low ridges with fine tawny and sage grass, no forest or mountain peaks, sparse distant ranch windmill, warm evening. Grass-covered ground, NOT snow. Vast quiet sky upper60%, distant low architecture and convincing regional silhouette, pixel style suitable512x192. No logo, text, cars or close road. Left/right boundaries match height/color for wrapping, top/bottom quiet flat colors merging naturally without a visible stripe or frame. Night is navy with subdued silhouettes, never daylight; daytime bright site-specific palette. Not generic copied mountains.",
+          "sourceReviewed": true
+        },
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-3358012b-a153-40d3-bbb5-0699eda67432.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 5.885819521178637,
+          "edgeMaximumRGB": 88.33333333333333,
+          "topRangeRGB": [
+            7,
+            8,
+            8
+          ],
+          "bottomRangeRGB": [
+            94,
+            64,
+            47
+          ],
+          "warnings": [
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Nebraska Sandhills: rolling grass-stabilized sandy dunes, rounded overlapping low ridges with fine tawny and sage grass, no forest or mountain peaks, sparse distant ranch windmill, warm evening.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     },
     {
@@ -55310,7 +57496,7 @@
       "documentPath": "races/Bayard %E2%80%94 Road 77 to City Park/document.json",
       "siteGroup": "site-9402a31481461910",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "detour-bayard",
@@ -55426,7 +57612,51 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack12SourceReviewed": true,
+        "pack12BothDeviceNativeReviewed": true,
+        "pack12WrapPitchReviewed": true,
+        "pack12NativeReports": [
+          "/tmp/race-pack12-repairs-native/race-environments-renderer-5b377-ark-independent-sky-desktop/site-9402a31481461910-state.json",
+          "/tmp/race-pack12-repairs-native/race-environments-renderer-4078f-rk-independent-sky-handheld/site-9402a31481461910-state.json"
+        ],
+        "pack12NumericSeamWarning": false,
+        "pack12BoundaryExtensionVisible": true,
+        "pack12AuthoredExposure": {
+          "skyBrightness": 1,
+          "visibilityOpacity": 0.4507491389305336,
+          "maximumArtworkContrast": 140.05896957271395,
+          "interpretation": "Horizon inspected in native authored composition; actual foreground requires separate driving sample."
+        },
+        "pack12ProductionSamples": [
+          {
+            "file": "/tmp/race-pack12-regional-driving/race-environments-driving--84b92-authored-foreground-and-sky/driving-state.json",
+            "race": "Bayard — Road 77 to City Park",
+            "device": "desktop",
+            "viewport": {
+              "width": 1280,
+              "height": 720
+            },
+            "displacementM": 20.576940122944567,
+            "timing": {
+              "wallMs": 8160,
+              "simulationMs": 5299.700000000012
+            },
+            "routeProgressM": 20.54088683747201,
+            "elapsedMs": 8666.233333333357,
+            "speedMps": 14.183387756347656,
+            "sky": "environment-v1-bayard-noon",
+            "brightness": 1,
+            "missingArtRefs": [],
+            "errors": [],
+            "network": []
+          }
+        ],
+        "pack12ProductionFailures": [],
+        "pack12Limit": "All four effective layers audited and native views inspected. Diagnostic top/bottom extensions remain visible; numeric wrap thresholds do not certify seamlessness or full-route driving.",
+        "pack12AuthoredDrivingFramesReviewed": true,
+        "pack12DrivingScope": "Short normal-input sample only. Original exposure/weather, conservative 2 m car corridor. No full-route or night sky readability approval.",
+        "pack12DrivingObservation": "Noon sky and distant escarpment fit grassy foreground under preserved haze; native lower-edge extension not exposed in this normal camera pose."
       },
       "physicalSiteLabel": "Bayard — Road 77 to City Park",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -55458,6 +57688,101 @@
         "maxX": 3279.9637499397877,
         "minY": -349.7530053666739,
         "maxY": 1782.4021409778557
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-bayard-noon",
+        "groundPlaneArtRef": "ground-prairie-grass-v1",
+        "terrainTileArtById": {
+          "grass": "ground-prairie-grass-v1"
+        }
+      },
+      "environmentPack": "plains-route66-pack12",
+      "recipe": {
+        "key": "bayard-noon",
+        "raceRef": "Bayard — Road 77 to City Park",
+        "ref": "environment-v1-bayard-noon",
+        "source": "environment-v1/bayard-noon.png",
+        "brief": "Bayard Nebraska North Platte valley viewed from Road 77: broad green-tawny agricultural plain, low pale eroded Wildcat Hills escarpment and a small distant Chimney Rock spire to the south, tiny town grain elevators, bright clear noon, no snow.",
+        "brightness": 1,
+        "ground": "ground-prairie-grass-v1",
+        "tiles": {
+          "grass": "ground-prairie-grass-v1"
+        },
+        "sourceOrigin": {
+          "name": "Bayard — Road 77 to City Park",
+          "lat": 41.76,
+          "lon": -103.32,
+          "country": "us"
+        },
+        "sourceSnapshot": "data/campaigns/america/bayard/sources/detour-bayard.json",
+        "catalog": [
+          {
+            "id": "detour-bayard",
+            "venueKey": null,
+            "venueName": null,
+            "hubStage": 8,
+            "location": {
+              "lat": 41.76,
+              "lon": -103.32
+            },
+            "startGps": {
+              "lat": 41.74397049458272,
+              "lon": -103.2804561538039
+            },
+            "finishGps": {
+              "lat": 41.76219905,
+              "lon": -103.32484641666667
+            },
+            "lightingPreset": "noon"
+          }
+        ],
+        "references": [
+          "https://www.nps.gov/places/000/chimney-rock-national-historic-site.htm",
+          "data/campaigns/america/bayard/sources/detour-bayard.json"
+        ],
+        "sourceLimitation": "Saved exact GPS/source identifies site. Listed references support local terrain or structures; original fictional 2994 ruins and viewpoint are not a surveyed panorama. Winter substrate follows unchanged saved snow cells, not a claim of current weather.",
+        "sourceImage": "/workspace/generated_images/exec-90c8ca60-5dc1-4146-8605-f25c5af930d6.png",
+        "sourceSha256": "e2aeb84f1e2f79d43827693cf10025f97a727ac01789e0e7d92dcf2a679a5e01",
+        "provenance": {
+          "tool": "image_gen",
+          "sourceImage": "/workspace/generated_images/exec-90c8ca60-5dc1-4146-8605-f25c5af930d6.png",
+          "sourceSha256": "e2aeb84f1e2f79d43827693cf10025f97a727ac01789e0e7d92dcf2a679a5e01",
+          "prompt": "Original 3:1 horizontal seamless panoramic pixel-art background for abandoned fictional 2994 racing game. Specific site: Bayard Nebraska North Platte valley viewed from Road 77: broad green-tawny agricultural plain, low pale eroded Wildcat Hills escarpment and a small distant Chimney Rock spire to the south, tiny town grain elevators, bright clear noon, no snow. Grass-covered ground, NOT snow. Vast quiet sky upper60%, distant low architecture and convincing regional silhouette, pixel style suitable512x192. No logo, text, cars or close road. Left/right boundaries match height/color for wrapping, top/bottom quiet flat colors merging naturally without a visible stripe or frame. Night is navy with subdued silhouettes, never daylight; daytime bright site-specific palette. Not generic copied mountains.",
+          "sourceReviewed": true
+        },
+        "sourceBoundaryMetrics": {
+          "path": "/workspace/generated_images/exec-90c8ca60-5dc1-4146-8605-f25c5af930d6.png",
+          "width": 2172,
+          "height": 724,
+          "edgeMeanRGB": 11.544659300184163,
+          "edgeMaximumRGB": 123.33333333333333,
+          "topRangeRGB": [
+            10,
+            3,
+            9
+          ],
+          "bottomRangeRGB": [
+            31,
+            34,
+            16
+          ],
+          "warnings": [
+            "horizontal-wrap",
+            "bottom-row-extrusion"
+          ],
+          "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+        }
+      },
+      "terrainReview": {
+        "ground": "Bayard Nebraska North Platte valley viewed from Road 77: broad green-tawny agricultural plain, low pale eroded Wildcat Hills escarpment and a small distant Chimney Rock spire to the south, tiny town grain elevators, bright clear noon, no snow.",
+        "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
+        "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
+        "acceptance": "Source and native 2x2 grass/snow texture repeats inspected. Every new normal/rough cell has declared matching material; effective ground, tile, active road ribbons and hidden shoulder state audited on both devices. Physical IDs/weights and all road/shoulder parameters unchanged. Full-route appearance not certified.",
+        "pack12EffectiveRoadRibbons": {
+          "dirt": "road-dirt-packed",
+          "asphalt": "road-asphalt-patched"
+        },
+        "pack12ShoulderStatus": "hidden"
       }
     }
   ],

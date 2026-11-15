@@ -19,7 +19,7 @@ test('free-race art requires an exact active binding and runtime selector, never
  assert.throws(()=>authoredFreeRaceArtwork({schemaVersion:1,assets:{sky:{raceRef:'free',slot:'preload',reason:'unused'}}},menu,manifest,read,[]),/Invalid/);
 });
 
-import {resolveDiagnosticRaceChoice} from '../../tools/race-environments/selector.mjs';
+import {resolveDiagnosticRaceChoice,assertRequestedRaceCoverage} from '../../tools/race-environments/selector.mjs';
 test('diagnostic selector aliases must exactly match the manifest folder and logical race',()=>{
  assert.equal(resolveDiagnosticRaceChoice([{value:'A — B'}],'A — B','races/A %E2%80%94 B/document.json').mode,'exact-logical-name');
  assert.equal(resolveDiagnosticRaceChoice([{value:'A %E2%80%94 B'}],'A — B','races/A %E2%80%94 B/document.json').mode,'exact-manifest-encoded-folder');
@@ -29,7 +29,7 @@ test('diagnostic selector aliases must exactly match the manifest folder and log
 
 import {assertTerrainArtMaterial} from '../../tools/race-environments/terrain-materials.mjs';
 test('material-specific terrain rejects snow/rock and dirt/gravel swaps in normal and rough layers',()=>{
- for(const [ref,correct,wrong] of [['ground-alpine-snow-granite-v1','snow','gravel'],['ground-decomposed-granite-dirt-v1','dirt','gravel'],['ground-winter-snow-litter-v1','snow','grass'],['ground-temperate-grass-v1','grass','snow'],['ground-alpine-rock-v2','gravel','snow'],['ground-gray-gravel-v2','gravel','dirt']]){
+ for(const [ref,correct,wrong] of [['ground-plains-snow-straw-v1','snow','grass'],['ground-prairie-grass-v1','grass','dirt'],['ground-snow-chaparral-v1','snow','dirt'],['ground-alpine-snow-granite-v1','snow','gravel'],['ground-decomposed-granite-dirt-v1','dirt','gravel'],['ground-winter-snow-litter-v1','snow','grass'],['ground-temperate-grass-v1','grass','snow'],['ground-alpine-rock-v2','gravel','snow'],['ground-gray-gravel-v2','gravel','dirt']]){
   for(const slot of ['artRef','roughArtRef']){
    assertTerrainArtMaterial({[slot]:ref},{tileId:correct});
    assert.throws(()=>assertTerrainArtMaterial({[slot]:ref},{tileId:wrong}),/must visually represent/);
@@ -38,10 +38,10 @@ test('material-specific terrain rejects snow/rock and dirt/gravel swaps in norma
 });
 import {gunzipSync} from 'node:zlib';
 import {terrainArtMaterials} from '../../tools/race-environments/terrain-materials.mjs';
-test('Northeast visual bindings declare a matching material for every normal and rough terrain cell',()=>{
+test('Northeast and Plains visual bindings declare a matching material for every normal and rough terrain cell',()=>{
  const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
- const rows=ledger.rows.filter(r=>r.environmentPack==='northeast-corridor-pack11');
- assert.equal(rows.length,20);
+ const rows=ledger.rows.filter(r=>['northeast-corridor-pack11','plains-route66-pack12'].includes(r.environmentPack));
+ assert.equal(rows.length,40);
  let cells=0;
  for(const row of rows){
   let doc=JSON.parse(fs.readFileSync('data/server-storage/files/'+row.documentPath));
@@ -63,4 +63,19 @@ test('PPIR snow cells keep snow artwork after distant-horizon correction',()=>{
  if(doc.__chainsawStorage)doc=JSON.parse(gunzipSync(Buffer.from(doc.data,'base64')));
  const cells=Object.values(doc.race.road.tileMap.cells);assert.ok(cells.length>0);
  for(const c of cells){assert.equal(c.tileId,'snow');assert.ok(terrainArtMaterials[c.artRef]);assert.ok(terrainArtMaterials[c.roughArtRef]);assertTerrainArtMaterial(c,{tileId:c.tileId});}
+});
+
+ test('Angeles Forest preserves snow material with visibly snowy art, never dry scrub',()=>{
+ const l=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
+ const row=l.rows.find(r=>r.raceRef==='Angeles Forest Highway — County N3');
+ let d=JSON.parse(fs.readFileSync('data/server-storage/files/'+row.documentPath));if(d.__chainsawStorage)d=JSON.parse(gunzipSync(Buffer.from(d.data,'base64')));
+ const cells=Object.values(d.race.road.tileMap.cells);assert.equal(cells.length,17952);
+ for(const c of cells){assert.equal(c.tileId,'snow');assert.equal(c.artRef,'ground-snow-chaparral-v1');assert.equal(c.roughArtRef,c.artRef);assertTerrainArtMaterial(c,{tileId:c.tileId});}
+ });
+
+test('requested native QA cannot silently omit a misspelled, unbound or filtered route',()=>{
+ const selected=[{raceRef:'exact'}];assertRequestedRaceCoverage(selected,['exact']);
+ assert.throws(()=>assertRequestedRaceCoverage(selected,['typo']),/missing from QA selection/);
+ assert.throws(()=>assertRequestedRaceCoverage([],['exact']),/missing from QA selection/);
+ assert.throws(()=>assertRequestedRaceCoverage(selected,['exact','exact']),/Duplicate/);
 });

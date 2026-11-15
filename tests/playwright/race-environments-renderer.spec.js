@@ -2,11 +2,15 @@
 import fs from 'node:fs';
 import {gunzipSync} from 'node:zlib';
 import {test,expect} from '@playwright/test';
-import {resolveDiagnosticRaceChoice} from '../../tools/race-environments/selector.mjs';
+import {resolveDiagnosticRaceChoice,assertRequestedRaceCoverage} from '../../tools/race-environments/selector.mjs';
 const compact=process.env.RACE_RENDER_COMPACT==='1',extension=compact?'jpg':'png';
 const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
 const requested=process.env.RACE_RENDER_NAMES?.split('|');
+// Diagnostic-only override never writes saved documents or changes authored effects.
+const diagnosticRef=process.env.RACE_RENDER_DIAGNOSTIC_REF;
+if(diagnosticRef&&requested?.length!==1)throw Error('Diagnostic art comparison requires exactly one named race');
 const selected=ledger.rows.filter(r=>r.binding&&(!requested||requested.includes(r.raceRef))&&(!process.env.RACE_RENDER_PACK||r.environmentPack===process.env.RACE_RENDER_PACK));
+assertRequestedRaceCoverage(selected,requested);
 const deviceModes=process.env.RACE_RENDER_DEVICES==='desktop'?[false]:[false,true];
 for(const selectedRow of selected)for(const mobile of deviceModes)test(`${selectedRow.raceRef} independent sky ${mobile?'handheld':'desktop'}`,async({page},info)=>{
  test.setTimeout(180000);
@@ -15,6 +19,7 @@ for(const selectedRow of selected)for(const mobile of deviceModes)test(`${select
  await page.waitForFunction(()=>window.__gameReady&&!window.__game.loading,null,{timeout:120000});
  for(const row of [selectedRow]){
   let document=JSON.parse(fs.readFileSync('data/server-storage/files/'+row.documentPath));if(document.__chainsawStorage)document=JSON.parse(gunzipSync(Buffer.from(document.data,'base64')));
+  if(diagnosticRef){document.race.skyboxArtRef=diagnosticRef;document.race.skyboxSettings={...document.race.skyboxSettings,artRef:diagnosticRef};}
   const result=await page.evaluate(async({race,documentPath,raceDocument,width,height,compact})=>{
    const e=window.__game.raceEditor;
    if(!e.applyLoadedRaceDocument(raceDocument,{name:race}))throw Error('Independent race object load failed: '+race);
@@ -68,12 +73,12 @@ for(const selectedRow of selected)for(const mobile of deviceModes)test(`${select
    return {ref,selectorChoices,outputs,controls,diagnostic,weather,visibilityOpacity:opacity,maximumArtworkContrast:255*(1-opacity)*fx.skyBrightness,compositeTargetRedirected:!!e.raceSkyboxCompositeTarget,authoredFx:fx,effectiveLayers};
   },{race:row.raceRef,documentPath:row.documentPath,raceDocument:document.race,width,height,compact});
   result.selector=resolveDiagnosticRaceChoice(result.selectorChoices,row.raceRef,row.documentPath);
-  expect(result.ref).toBe(row.binding.skyboxArtRef);
+  expect(result.ref).toBe(diagnosticRef||row.binding.skyboxArtRef);
   fs.mkdirSync(info.outputPath(),{recursive:true});
   for(const frame of result.outputs){expect(frame.drawn).toBe(true);fs.writeFileSync(info.outputPath(`${row.siteGroup}-${frame.yaw}.${extension}`),Buffer.from(frame.png,'base64'));if(frame.authoredPng)fs.writeFileSync(info.outputPath(`${row.siteGroup}-authored-composite.${extension}`),Buffer.from(frame.authoredPng,'base64'));}
   for(const [mode,frame]of Object.entries(result.diagnostic)){fs.writeFileSync(info.outputPath(`${row.siteGroup}-${mode}.${extension}`),Buffer.from(frame.png,'base64'));delete frame.png;}
   for(const control of result.controls){expect(control.rawDrawn).toBe(true);fs.writeFileSync(info.outputPath(`${row.siteGroup}-matched-${control.artRef}.${extension}`),Buffer.from(control.png,'base64'));delete control.png;}
-  fs.writeFileSync(info.outputPath(row.siteGroup+'-state.json'),JSON.stringify({race:row.raceRef,imageFormat:extension,selector:result.selector,ref:result.ref,controls:result.controls,diagnostic:result.diagnostic,weather:result.weather,visibilityOpacity:result.visibilityOpacity,maximumArtworkContrast:result.maximumArtworkContrast,compositeTargetRedirected:result.compositeTargetRedirected,authoredFx:result.authoredFx,effectiveLayers:result.effectiveLayers,note:'Independent native sky compositor from exact stored race object; deliberately not storage transport, terrain, driving, weather overlay or route-wide acceptance.'},null,2));
+  fs.writeFileSync(info.outputPath(row.siteGroup+'-state.json'),JSON.stringify({race:row.raceRef,diagnosticOverride:diagnosticRef||null,savedRef:row.binding.skyboxArtRef,imageFormat:extension,selector:result.selector,ref:result.ref,controls:result.controls,diagnostic:result.diagnostic,weather:result.weather,visibilityOpacity:result.visibilityOpacity,maximumArtworkContrast:result.maximumArtworkContrast,compositeTargetRedirected:result.compositeTargetRedirected,authoredFx:result.authoredFx,effectiveLayers:result.effectiveLayers,note:'Independent native sky compositor from exact stored race object; deliberately not storage transport, terrain, driving, weather overlay or route-wide acceptance.'},null,2));
  }
  for(const ref of [...new Set([selectedRow].map(r=>r.binding?.groundPlaneArtRef).filter(Boolean))]){
   const png=await page.evaluate(async({ref,compact})=>{const e=window.__game.raceEditor;await e.hydrateRaceArt(ref);const art=e.getRaceArtSpriteCanvas(ref);if(!art)throw Error('Missing ground '+ref);const c=document.createElement('canvas');c.width=c.height=512;const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;for(let y=0;y<2;y++)for(let x=0;x<2;x++)ctx.drawImage(art,x*256,y*256,256,256);return c.toDataURL(compact?'image/jpeg':'image/png',.78).split(',')[1];},{ref,compact});

@@ -1,5 +1,6 @@
 import {createCampaignHubMenus} from '../../src/menus/CampaignHubMenus.js';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {normalizeRaceDoodadDocument} from '../../src/racing/raceDoodads.js';
 
 // Independent authoring manifests, never the import ledger itself, define scope.
@@ -73,7 +74,41 @@ export function placedSceneryArtRefs(race, resolve) {
   return refs;
 }
 
-export function validateArtworkIntent(policy, imports, used, editorLoaded, configured, existingDeferred = new Set(), authoredFreeRaceUsed = new Set()) {
+// Explicit, byte-preserving supersession of a reviewed sky, never a deferred-use list.
+export function verifySupersededArtwork(registry, imports, manifest, read, readBytes, used) {
+ assert.equal(registry.schemaVersion,1);
+ assert.deepEqual(Object.keys(registry).sort(),['assets','schemaVersion']);
+ const verified=new Set(),hash=p=>createHash('sha256').update(readBytes(p)).digest('hex');
+ for(const [ref,r] of Object.entries(registry.assets)){
+  assert.deepEqual(Object.keys(r).sort(),['documentPath','documentSha256','kind','raceRef','reason','replacement','review','source','sourceSha256']);
+  assert.equal(r.kind,'skybox','Only reviewed skybox supersession is supported');
+  assert.ok(r.reason?.length>40&&r.review?.scope?.length>40,'Missing supersession review rationale');
+  assert.ok(['superseded-location-season-mismatch','superseded-site-composition'].includes(r.review.verdict),'Invalid supersession review verdict');
+  assert.match(r.review.path,/^data\/race-environments\/[a-z0-9-]+\.jpg$/);
+  assert.equal(hash(r.review.path),r.review.sha256,'Missing or changed review evidence');
+  assert.ok(imports[ref]&&imports[r.replacement]&&ref!==r.replacement,'Missing or self replacement');
+  assert.ok(!registry.assets[r.replacement],'Replacement cannot itself be retired');
+  assert.equal(imports[ref].source,r.source,'Retired source path changed');
+  assert.equal(imports[ref].sourceSha256,r.sourceSha256,'Retired source registration changed');
+  assert.equal(imports[ref].documentSha256,r.documentSha256,'Retired native registration changed');
+  assert.equal(manifest.folders.art[ref],r.documentPath,'Retired native path changed');
+  assert.equal(hash(r.source),r.sourceSha256,'Retired original bytes changed');
+  assert.equal(hash('data/server-storage/files/'+r.documentPath),r.documentSha256,'Retired native bytes changed');
+  assert.ok(used.has(r.replacement),'Replacement must have real campaign or free-race placement');
+  assert.ok(!used.has(ref),'Retired sky still actively used');
+  const race=read(manifest.folders.races[r.raceRef])?.race;
+  assert.equal(race?.skyboxArtRef,r.replacement,'Replacement race binding mismatch');
+  assert.equal(race?.skyboxSettings?.artRef,r.replacement,'Replacement settings mismatch');
+  for(const path of Object.values(manifest.folders.races)){
+   const candidate=read(path)?.race;
+   assert.ok(candidate?.skyboxArtRef!==ref&&candidate?.skyboxSettings?.artRef!==ref,'Retired sky remains in saved race');
+  }
+  verified.add(ref);
+ }
+ return verified;
+}
+
+export function validateArtworkIntent(policy, imports, used, editorLoaded, configured, existingDeferred = new Set(), authoredFreeRaceUsed = new Set(), supersession = null) {
   assert.equal(policy.schemaVersion, 1);
   assert.equal(policy.defaultIntent, 'campaign-placement');
   for (const [ref, intent] of Object.entries(policy.editorAssets)) {
@@ -88,13 +123,18 @@ export function validateArtworkIntent(policy, imports, used, editorLoaded, confi
   assert.equal(snow.raceRef, 'Pikes Peak Highway');assert.equal(snow.surface, 'snow');
   assert.ok(imports['road-snow-patchy'], 'Missing configured snow import');
   const diagnostics = [];
+  const retired=supersession?verifySupersededArtwork(supersession.registry,imports,supersession.manifest,supersession.read,supersession.readBytes,new Set([...used,...authoredFreeRaceUsed])):new Set();
+  for(const ref of retired){
+    assert.ok(!policy.editorAssets[ref]&&!policy.configuredUnused[ref]&&!existingDeferred.has(ref),'Conflicting retired intent');
+    diagnostics.push(`SUPERSEDED ART PRESERVED: ${ref} -> ${supersession.registry.assets[ref].replacement}; original source/native bytes verified, explicit review retained.`);
+  }
   if (!used.has('road-snow-patchy')) {
     assert.ok(configured.has('road-snow-patchy'), 'Configured snow diagnostic is stale: mapping missing');
     diagnostics.push('UNUSED CONFIGURED ART: road-snow-patchy — Pikes Peak Highway snow mapping has no active segment; retained configuration debt.');
   }
   for (const ref of Object.keys(imports)) {
     if (policy.editorAssets[ref] || existingDeferred.has(ref) || ref === 'road-snow-patchy') continue;
-    assert.ok(used.has(ref) || authoredFreeRaceUsed.has(ref), `Campaign art has no actual placement: ${ref}`);
+    assert.ok(used.has(ref) || authoredFreeRaceUsed.has(ref) || retired.has(ref), `Campaign art has no actual placement: ${ref}`);
   }
   return diagnostics;
 }

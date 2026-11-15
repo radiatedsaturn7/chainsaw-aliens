@@ -7,7 +7,7 @@ export const terrainArtMaterials = Object.freeze({
  'ground-gray-gravel-v2':'gravel', 'ground-red-gravel-v2':'gravel',
  'ground-desert-scrub-v2':'dirt', 'ground-alpine-rock-v2':'gravel',
  'ground-alpine-snow-granite-v1':'snow', 'ground-decomposed-granite-dirt-v1':'dirt',
- 'ground-winter-snow-litter-v1':'snow', 'ground-temperate-grass-v1':'grass'
+ 'ground-plains-snow-straw-v1':'snow', 'ground-prairie-grass-v1':'grass', 'ground-snow-chaparral-v1':'snow', 'ground-winter-snow-litter-v1':'snow', 'ground-temperate-grass-v1':'grass'
 });
 export function assertTerrainArtMaterial(cell, normalized) {
  for (const slot of ['artRef','roughArtRef']) {
