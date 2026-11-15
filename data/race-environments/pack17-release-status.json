@@ -1,0 +1,119 @@
+{
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "startingHead": "a2b62170f697df53603e5f8728ce869132baa9ca",
+  "readyForPublication": false,
+  "changes": [
+    "Sixteen source-generated sky repairs and native512 exports; all old source/native history and generated attempts retained.",
+    "Two byte-verified narrow terrain supersessions; red gravel genuinely used on Moki gravel cells.",
+    "P2 load test per-surface dirt/gravel art repeats exact default sampling settings; all physical surfaces and geometry unchanged.",
+    "Pevely exact baseline asphalt appearance restored; real dirt venue versus saved asphalt remains inherited design debt.",
+    "Native atlas coverage and material-aware road snow-cover audit, with negative coverage.",
+    "Importer selected re-export safety support and negative tests; two attempted Demo exports were restored after continuity failure.",
+    "11934 Maunakea legacy tileArtRef fallbacks aligned to already-active volcanic snow; exact current effective art and every other cell field preserved."
+  ],
+  "coverage": {
+    "assigned": 245,
+    "distinctDecodedSkies": 235,
+    "documentedSameSiteShares": 10,
+    "numericWrapWarnings": 0,
+    "nativeSkyRoutesThisPass": 17,
+    "nativeSkyDeviceOutputsThisPass": 34,
+    "materialAtlasRoutes": 245,
+    "materialAtlasDeviceOutputs": 490,
+    "materialCombinationsViewed": 49,
+    "productionDrivingAcceptance": "Not all245. Bounded matched Demo runs plus existing representative evidence only.",
+    "physicalTerrainCells": 3355076
+  },
+  "remainingIssues": [
+    {
+      "kind": "candidate-performance",
+      "issue": "Demo terrain activation adds approximately34s before playable under matched cold serial conditions; candidate113.8\u2013119.0s versus baseline80.4\u201382.6s. Sky-only80.8s; terrain-only115.2s. Driving wall/simulation divergence also recurs.",
+      "evidence": "data/race-environments/pack17-demo-performance.json"
+    },
+    {
+      "kind": "rejected-experiment",
+      "issue": "Actual512sky/256grass export experiment failed unchanged World reset or teleport continuity assertion. Restored both exact prior native exports and source settings; attempted bytes and failure captures preserved. No causal success claim."
+    },
+    {
+      "kind": "visual-quality",
+      "issue": "Zero measured wrap warnings does not mean perfect boundaries: low-contrast vertical extensions/thin bands remain at extreme pitch. Authored fog/night intentionally hides several horizons; no lighting overrides shipped.",
+      "evidence": "data/race-environments/pack17-native-review.json"
+    },
+    {
+      "kind": "acceptance-gate",
+      "issue": "check-art.mjs --require-complete still fails incomplete production QA at Col de Turini. Native atlas and sky-only diagnostics were not promoted to full foreground/driving acceptance."
+    },
+    {
+      "kind": "inherited-design",
+      "issue": "Pevely physical asphalt conflicts with actual dirt venue. Widespread inherited snow-coded terrain also constrains climate appearance; IDs/weights/weather remain preserved."
+    },
+    {
+      "kind": "material-repeat-review",
+      "issue": "Native material identity sheets are not a terrain tiling acceptance. Existing numeric boundary warnings on ground textures remain potential repeated-texture seams and need actual world-scale review, not threshold relaxation.",
+      "refs": [
+        "ground-frosted-grass-v1",
+        "ground-temperate-grass-v1",
+        "ground-alpine-rock-v2",
+        "ground-patchy-snow-leaf-v1",
+        "environment-v1-ground-ohio-wet-leaf-litter",
+        "ground-gray-gravel-v2",
+        "ground-brown-dirt-v2",
+        "ground-alpine-snow-granite-v1",
+        "environment-v1-ground-sebring-olive",
+        "environment-v1-ground-dormant-prairie",
+        "environment-v1-ground-finnish-boreal-verge",
+        "ground-winter-snow-litter-v1",
+        "ground-volcanic-cinder-v1",
+        "ground-volcanic-snow-v1",
+        "ground-prairie-grass-v1",
+        "ground-desert-scrub-v2"
+      ]
+    }
+  ],
+  "checks": {
+    "campaignBrowser": "6 passed on final bindings (1.2m)",
+    "loadingBrowser": "6 passed on final bindings (4.5m); P1 unchanged deadlines/criticality, no missingArtRefs",
+    "nativeSky": "10 batched tests passed,34 route/device outputs",
+    "p2Native": "2 passed",
+    "materialAtlas": "2 passed,all245bothdevices; finalMoki2passed",
+    "importerPython": "3 passed",
+    "supersessionNegatives": "27 passed",
+    "fullUnits": "129 passed,0 failed,0 skipped; exact Campaign Artwork six-file command plus environment contract/driving controls",
+    "all245FinalGuards": "PASS:245nonvisual preservation,3355076physical cells plus132854legacy aliases material-classified,245skybindings/235decodedcompositions/zero skywrapwarnings,manifest1829documents16assets.",
+    "priorFailedRun": "127/128 passed before detecting Maunakea11934 dormant tileArtRef references. Fixed existing visual aliases; strict retirement gate unchanged. Superseded by final129/129 run.",
+    "manifest": "{\"documents\": 1829, \"assets\": 16}\nPublished project manifest includes every current document.",
+    "strictProductionAcceptance": "FAIL as expected: check-art.mjs --require-complete, incomplete environment QA: Col de Turini. No flags bypassed."
+  },
+  "reproduction": {
+    "units": "node --test tests/unit/campaignArtIntegration.test.js tests/unit/americaCampaign.test.js tests/unit/raceTerrainTextureBlend.test.js tests/unit/raceRoadTextures.test.js tests/unit/raceDecals.test.js tests/unit/raceVisualFx.test.js tests/unit/raceEnvironmentVisualContract.test.js tests/unit/raceEnvironmentDrivingControls.test.js",
+    "campaignBrowser": "npx playwright test tests/playwright/race-road-textures.spec.js --config race-environments-pack16-campaign-local.config.mjs --workers=1 --reporter=line",
+    "loadingBrowser": "npx playwright test tests/playwright/race-loading.spec.js tests/playwright/p1-startup.spec.js tests/playwright/road-terrain-depth.spec.js --config race-environments-pack16-campaign-local.config.mjs --workers=1 --reporter=line",
+    "guards": [
+      "node tools/race-environments/bind.mjs",
+      "node tools/race-environments/audit-material-coverage.mjs",
+      "node tools/race-environments/check-art.mjs",
+      "python tools/project_manifest.py --check --validate-assets"
+    ],
+    "coldBenchmark": "Preserved local tests/playwright/pack17-demo-probe.spec.js and /tmp/pack17-demo-alternating.sh, /tmp/pack17-demo-ablation.sh. Fresh server/browser per run; unchanged game deadlines. Configs use localChromiumSwiftShader; no software-GPU result generalized to hardware."
+  },
+  "remoteWrites": false,
+  "cleanupOrDeletion": false,
+  "legacyAliases": {
+    "routes": 11,
+    "cells": 132854,
+    "effectiveArtworkAndOtherCellValuesUnchanged": true,
+    "evidence": "data/race-environments/pack17-legacy-alias-review.json"
+  },
+  "retirementNotes": "ground-red-gravel-v2 is not retired: genuine Moki gravel placement. Its saved Valley-of-the-Gods comparison documents only the local snow-cell correction, not global retirement.",
+  "headroomBeforeCommitBytes": 1255649280,
+  "testedBaseIsLiveReadThisTurn": false,
+  "evidenceLogs": {
+    "units": "/tmp/pack17-units-complete.tap",
+    "campaign": "/tmp/pack17-campaign-complete.log",
+    "loading": "/tmp/pack17-loading-complete.log",
+    "material": "/tmp/pack17-material-complete.json",
+    "nonvisual": "/tmp/pack17-preservation-complete.json",
+    "art": "/tmp/pack17-art-complete.json",
+    "manifest": "/tmp/pack17-manifest-complete.log"
+  }
+}

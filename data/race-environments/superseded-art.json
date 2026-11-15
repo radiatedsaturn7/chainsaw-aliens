@@ -192,6 +192,42 @@
         "verdict": "superseded-site-composition",
         "scope": "Matched native renderer original/replacement desktop and handheld, raw100/no-fog and unchanged authored exposure. Source and native originals retained. Boundary polish and production-driving acceptance remain separate and pending."
       }
+    },
+    "ground-dirty-snow-v2": {
+      "kind": "terrain",
+      "replacement": "ground-patchy-snow-leaf-v1",
+      "raceRef": "Ohio River Crossing",
+      "replacementMaterial": "snow",
+      "replacementCellCount": 18591,
+      "reason": "Original muddy snow remains valid generic snow art. Superseded at this wooded Little Muskingum location by patchy snow with temperate leaf litter; the saved physical snow cells and all weights remain unchanged.",
+      "source": "assets/campaign-art/ground/ground-dirty-snow-v2.png",
+      "sourceSha256": "cac68dd18583d8720dc05ec5dd0a90de5b6e7d71d35797c9a2a766de93848dc8",
+      "documentPath": "art/ground-dirty-snow-v2/document.json",
+      "documentSha256": "db56aff6d89c6ea5d795d3254f31d70f72014bd27b954d21400f6eeb8241b7d9",
+      "review": {
+        "path": "data/race-environments/pack17-ground-dirty-snow-v2-review.jpg",
+        "sha256": "080619813021a5c298d490857f7bcdef2d9143269866697c731fc8faa1603013",
+        "verdict": "superseded-material-site-fit",
+        "scope": "Actual native original/replacement canvases inspected at desktop and handheld sizes; exact active normal/rough material cells verified independently. Unlit material acceptance only, not world lighting or driving acceptance."
+      }
+    },
+    "ground-industrial-rubble-v2": {
+      "kind": "terrain",
+      "replacement": "ground-gray-gravel-v2",
+      "raceRef": "Data Center City",
+      "replacementMaterial": "gravel",
+      "replacementCellCount": 5692,
+      "reason": "Original image is a colorful fabricated metal panel floor, not gravel despite its historical name. Superseded for the saved gravel cells by actual gray gravel. Original colorful artwork remains preserved; changing the physical substrate to metal would require a separate design decision.",
+      "source": "assets/campaign-art/ground/ground-industrial-rubble-v2.png",
+      "sourceSha256": "63f8b26905cfc6142082f545642a73df98aec10413e10d274f7af37ad531307b",
+      "documentPath": "art/ground-industrial-rubble-v2/document.json",
+      "documentSha256": "bfaae3e24e3a9c3c0a0d612bd7ccfa599822af76050eb0bb14ecfb9e828df9b5",
+      "review": {
+        "path": "data/race-environments/pack17-ground-industrial-rubble-v2-review.jpg",
+        "sha256": "d5228cd7baf2839d057079a8828bb3357d843afefd734c1808a4ba79db8164de",
+        "verdict": "superseded-material-site-fit",
+        "scope": "Actual native original/replacement canvases inspected at desktop and handheld sizes; exact active normal/rough material cells verified independently. Unlit material acceptance only, not world lighting or driving acceptance."
+      }
     }
   }
 }

@@ -1,0 +1,78 @@
+{
+  "remainingOriginalReferenceCounts": [
+    {
+      "race": "Maunakea \u2014 Cinder Summit",
+      "ref": "ground-dirty-snow-v2",
+      "slot": "tileArtRef",
+      "cells": 11934
+    }
+  ],
+  "diagnosis": "Maunakea retained11934 legacy tileArtRef aliases after artRef/roughArtRef became ground-volcanic-snow-v1. Runtime resolves artRef || tileArtRef, so the alias was dormant but contradicted strict retirement. Align only existing cell alias with the already active material-correct art, preserving physical tile IDs/weights and effective current rendering.",
+  "runtimeEvidence": [
+    "src/ui/RaceEditor.js:4203",
+    "src/ui/raceWorldBakeWorker.js:294",
+    "src/racing/RacePackedTileMap.js:166"
+  ],
+  "guard": "visual-contract permits tileArtRef only on actual road.tileMap.cells, not arbitrary objects. Negative tests retain physical and unrelated-field rejection.",
+  "verifiedChangedCells": 11934,
+  "effectiveCurrentArtworkPreserved": true,
+  "allAlignedRoutes": [
+    {
+      "race": "Bayard \u2014 Road 77 to City Park",
+      "path": "data/server-storage/files/races/Bayard %E2%80%94 Road 77 to City Park/document.json",
+      "aliasOnlyCells": 11139
+    },
+    {
+      "race": "Denali Highway \u2014 Tundra Gravel",
+      "path": "data/server-storage/files/races/Denali Highway %E2%80%94 Tundra Gravel/document.json",
+      "aliasOnlyCells": 7065
+    },
+    {
+      "race": "Grand Canyon \u2014 Desert View Drive",
+      "path": "data/server-storage/files/races/Grand Canyon %E2%80%94 Desert View Drive/document.json",
+      "aliasOnlyCells": 13114
+    },
+    {
+      "race": "Grand Canyon \u2014 Diamond Creek Descent",
+      "path": "data/server-storage/files/races/Grand Canyon %E2%80%94 Diamond Creek Descent/document.json",
+      "aliasOnlyCells": 12482
+    },
+    {
+      "race": "Haleakala \u2014 Volcano Ascent",
+      "path": "data/server-storage/files/races/Haleakala %E2%80%94 Volcano Ascent/document.json",
+      "aliasOnlyCells": 11622
+    },
+    {
+      "race": "Magruder Corridor \u2014 Wilderness Ridge",
+      "path": "data/server-storage/files/races/Magruder Corridor %E2%80%94 Wilderness Ridge/document.json",
+      "aliasOnlyCells": 10064
+    },
+    {
+      "race": "Maunakea \u2014 Cinder Summit",
+      "path": "data/server-storage/files/races/Maunakea %E2%80%94 Cinder Summit/document.json",
+      "aliasOnlyCells": 11934
+    },
+    {
+      "race": "Sandhills Journey \u2014 Open Prairie",
+      "path": "data/server-storage/files/races/Sandhills Journey %E2%80%94 Open Prairie/document.json",
+      "aliasOnlyCells": 5760
+    },
+    {
+      "race": "Skalkaho Pass \u2014 Forest Rally",
+      "path": "data/server-storage/files/races/Skalkaho Pass %E2%80%94 Forest Rally/document.json",
+      "aliasOnlyCells": 8493
+    },
+    {
+      "race": "Tantalus \u2014 Honolulu Heights",
+      "path": "data/server-storage/files/races/Tantalus %E2%80%94 Honolulu Heights/document.json",
+      "aliasOnlyCells": 16536
+    },
+    {
+      "race": "Thompson Pass \u2014 Snowline Climb",
+      "path": "data/server-storage/files/races/Thompson Pass %E2%80%94 Snowline Climb/document.json",
+      "aliasOnlyCells": 24645
+    }
+  ],
+  "allAlignedCellCount": 132854,
+  "scope": "Binder also aligns existing legacy aliases in ten other routes; all11 routes independently verified unchanged effective art and every other cell value. No new alias added."
+}

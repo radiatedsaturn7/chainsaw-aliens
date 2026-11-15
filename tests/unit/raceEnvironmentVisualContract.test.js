@@ -105,3 +105,23 @@ test('all245 routes have declared terrain in both layers and material-correct gr
  assert.throws(()=>assertTerrainArtMaterial({artRef:'unclassified-example'},{tileId:'grass'}),/Unclassified/);
  assert.throws(()=>assertTerrainArtMaterial({artRef:'ground-frosted-grass-v1'},{tileId:'snow'}),/must visually represent/);
 });
+
+test('new surface-specific art preserves exact inherited sampling and active physics',()=>{
+ const base={road:{segments:[{surface:'asphalt'},{surface:'dirt'},{surface:'gravel'}]},roadTextures:{road:{artRef:'asphaltRoad',repeatM:3,repeatWidthM:3,mipmaps:true,mipmapDistance:10,filterMode:'inherit',anisotropy:16}}};
+ const a=structuredClone(base);a.roadTextures.surfaceRoads={dirt:{...base.roadTextures.road,artRef:'road-dirt-packed'},gravel:{...base.roadTextures.road,artRef:'road-gravel-gray'}};assertVisualOnly(base,a);
+ for(const mutate of [x=>x.roadTextures.surfaceRoads.dirt.repeatM=5,x=>x.roadTextures.surfaceRoads.dirt.enabled=false,x=>x.roadTextures.surfaceRoads.dirt.filterMode='smooth',x=>x.roadTextures.surfaceRoads.snow={...base.roadTextures.road,artRef:'snowroad'},x=>x.road.segments[1].surface='asphalt']){const b=structuredClone(a);mutate(b);assert.throws(()=>assertVisualOnly(base,b));}
+});
+
+import {roadVisualStatus} from '../../tools/race-environments/road-materials.mjs';
+test('road visual cover requires known snow art and actual freezing authored snowfall',()=>{
+ const snow={weather:'snow',weatherIntensity:1,weatherTemperatureC:-8};assert.equal(roadVisualStatus('snowroad','asphalt',snow),'authored-snow-cover');
+ for(const r of [{...snow,weather:'clear'},{...snow,weatherIntensity:0},{...snow,weatherTemperatureC:8},{...snow,weatherTemperatureC:undefined}])assert.equal(roadVisualStatus('snowroad','asphalt',r),'mismatch');
+ assert.equal(roadVisualStatus('invented-snow','asphalt',snow),'unclassified');assert.equal(roadVisualStatus('road-dirt-packed','asphalt',snow),'mismatch');
+});
+
+ test('legacy tileArtRef is a visual-only cell fallback, never permission to change physics or arbitrary nested fields',()=>{
+ const before={road:{tileMap:{cells:{a:{tileId:'snow',tileWeights:{snow:1},artRef:'new',roughArtRef:'new',tileArtRef:'old'}}}},scenery:[{tileArtRef:'unrelated'}]};
+ const after=structuredClone(before);after.road.tileMap.cells.a.tileArtRef='new';assertVisualOnly(before,after);
+ const weights=structuredClone(after);weights.road.tileMap.cells.a.tileWeights.snow=.5;assert.throws(()=>assertVisualOnly(before,weights));
+ const other=structuredClone(after);other.scenery[0].tileArtRef='new';assert.throws(()=>assertVisualOnly(before,other));
+ });

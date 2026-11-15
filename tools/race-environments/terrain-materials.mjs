@@ -7,7 +7,7 @@ export const terrainArtMaterials = Object.freeze({
  'environment-v1-ground-finnish-boreal-verge':'grass', 'environment-v1-ground-dormant-prairie':'grass', 'environment-v1-ground-sebring-olive':'grass', 'road-slush':'slush',
  'ground-volcanic-cinder-v1':'gravel', 'ground-volcanic-snow-v1':'snow',
  'ground-brown-dirt-v2':'dirt', 'ground-industrial-concrete-v2':'asphalt',
- 'ground-industrial-rubble-v2':'gravel', 'ground-canyon-rock-v2':'gravel',
+ 'ground-industrial-rubble-v2':'metal', 'ground-canyon-rock-v2':'gravel',
  'ground-gray-gravel-v2':'gravel', 'ground-red-gravel-v2':'gravel',
  'ground-desert-scrub-v2':'dirt', 'ground-alpine-rock-v2':'gravel',
  'ground-alpine-snow-granite-v1':'snow', 'ground-decomposed-granite-dirt-v1':'dirt',

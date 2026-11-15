@@ -3025,17 +3025,17 @@
   },
   "environment-v1-moki-cedar-mesa-day": {
     "source": "assets/campaign-art/environment-v1/moki-cedar-mesa-day.png",
-    "sourceSha256": "ab4508b58a0c29c9e3f7a6bba13de9cbcc9566c0ce2cbd45074b9e468ca4a861",
-    "documentSha256": "8d5e7c7b75369f52e6d050bbb8500af4f85e3749c16b2a75a3eb16d1aacda68a",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "11ac9c413ec3f2c13922da4af2ef9ba850dccb6b5382a1143108af3063d721ab",
+    "documentSha256": "3ff47c79f809814905e9bb8f216edfe7f10587cb0801dd51039963eaeddbadde",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-ozark-eminence-day": {
     "source": "assets/campaign-art/environment-v1/ozark-eminence-day.png",
-    "sourceSha256": "17ef04acd247335ad5120c291e0a2fb41443b0eebb537752c4a3532a763fa6de",
-    "documentSha256": "e2a8e2ea1d82cdee23ab2241d543168f74a0f0107a1a354bd2bba5dcb89e4934",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "6384f3930508200928b46a66c8e8d610ea42f34b230896a86f7557f7d63a581d",
+    "documentSha256": "5167813e6887aa91d9468228312bd61e3c179e85ef66d001da549c65b18c265f",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-stl-riverfront-night": {
     "source": "assets/campaign-art/environment-v1/stl-riverfront-night.png",
@@ -3046,10 +3046,10 @@
   },
   "environment-v1-ohio-little-muskingum-storm": {
     "source": "assets/campaign-art/environment-v1/ohio-little-muskingum-storm.png",
-    "sourceSha256": "aee8e31850d5e3c12400e2ee387d619ffdc301f4e5fcf370a7684e0c97a21674",
-    "documentSha256": "c470b63a30d4f21c468501a353eac25da35123798fce2c82459cc7b2f9b0bcc4",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "ddbb4b5cbf6d0f61a4755c64993f465741387c52422aa9c09b92523db4f2f50e",
+    "documentSha256": "e79bdb79a9134b70a6670ae101c67e98a65f8ec3f43804ea9a438d603232a597",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-ouninpohja-boreal-noon": {
     "source": "assets/campaign-art/environment-v1/ouninpohja-boreal-noon.png",
@@ -3081,10 +3081,10 @@
   },
   "environment-v1-laurel-ohiopyle-evening": {
     "source": "assets/campaign-art/environment-v1/laurel-ohiopyle-evening.png",
-    "sourceSha256": "98c8ec6021bc9e574d95f5ce7481ce9af6f2178ab00a1a1937729d7d14041660",
-    "documentSha256": "e100dbc5842ff1144e9c5057f0cf52aca5400ce7b6ed033266dc292cbbf047df",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "6cdc0520fea8f3cefa0770ea5d6d7f9c8a108bf38834563921429ef0fb2a736e",
+    "documentSha256": "28db93a0c14583ca8a77cc446d1ae5145f8240c3a2bac3f676e21eba08ef3cbf",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-route66-erick-texola": {
     "source": "assets/campaign-art/environment-v1/route66-erick-texola.png",
@@ -3781,17 +3781,17 @@
   },
   "environment-v1-pikes-evening": {
     "source": "assets/campaign-art/environment-v1/pikes-evening.png",
-    "sourceSha256": "a3a742f6abb1d042d776f784b724cded4f04deb39f948b4abc23d8d575280629",
-    "documentSha256": "e86ed16b1a8be684b9f6bdd884dc457cfbbac200d9ac500ffdf8da6aecfe92b5",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "6f1e2e33c70317056aee4dd3cf83a5e5e0dabf2bb054683f16349ba4b6a763f3",
+    "documentSha256": "a38bc15369f80d12fd506109e91ae8835270d3ec466243c4e64d52f54b70640e",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-angeles-evening": {
     "source": "assets/campaign-art/environment-v1/angeles-evening.png",
-    "sourceSha256": "db2811d70e3fdb6358811936f15026f62666309ff360b6bc9bd9161da7cf94cc",
-    "documentSha256": "7ef7b1c3abd77e3a07785e595108eca85a4703f0186bac47c859bdaa02a97527",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "03703d72b26ed467523c869d9c0439591fbbb556e5a76fb1fd59859e5b133c94",
+    "documentSha256": "d6087636787804be006d32ae7fe87fa1243a7b805e0ec916bad5aa705c9c4364",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-goldcamp-night": {
     "source": "assets/campaign-art/environment-v1/goldcamp-night.png",
@@ -3900,10 +3900,10 @@
   },
   "environment-v1-littletujunga-noon": {
     "source": "assets/campaign-art/environment-v1/littletujunga-noon.png",
-    "sourceSha256": "a4b005d704d36be567779ff7545347071bad2a205043103df372ede1819285c6",
-    "documentSha256": "ff968105719c7262c3d4e6a23e639dac082fd851d9757638214f236c7e685509",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "d9c45bcd971ea850c0be65dfb7ad9272f85b15c005f5d3f7dda6325a6ae4e37b",
+    "documentSha256": "c4199313f6fc06e3d14fe52b7fbf8e4a66d01a3bb5baee1a111ac9d3c52af827",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-pomona-noon": {
     "source": "assets/campaign-art/environment-v1/pomona-noon.png",
@@ -4614,24 +4614,24 @@
   },
   "environment-v1-mountwashington-storm": {
     "source": "assets/campaign-art/environment-v1/mountwashington-storm.png",
-    "sourceSha256": "0536c7976b5e40b5fc983830d8eac54c7646764df9726a1db720266323af69e4",
-    "documentSha256": "7f1e6be0b4a1e822f391684c0e18b61a8f4b3cc02593581f21d19a2d6f26f4f8",
-    "width": 1024,
-    "height": 350
+    "sourceSha256": "08482e9d0db4ef3b4c8b721aeba076eee88222026bc6615c7c06675ee248d01e",
+    "documentSha256": "edc7a1f210ba6364f702c5561ad4d0e0f04f99e3d85d279d69e200b6c251138b",
+    "width": 512,
+    "height": 175
   },
   "environment-v1-studio-testfield-noon": {
     "source": "assets/campaign-art/environment-v1/studio-testfield-noon.png",
-    "sourceSha256": "526f645fb3d9826e679e77dcd759189a724ddba0de50d616fff22fabf056337a",
-    "documentSha256": "55113227694073b533da5fb2500de8a7828b2381e8708a97bdc0a583965f0f83",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "ca40b35260ff5327726854c6c7db138e6f333931b4ebd7961e1e1020859e586b",
+    "documentSha256": "a96713e854d1011a0767fb39b8a001ef6fee827aa370c406c4bc42e98680341f",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-studio-annex-noon": {
     "source": "assets/campaign-art/environment-v1/studio-annex-noon.png",
-    "sourceSha256": "2f0b59a10ce2c517406503fd7f4400253e3205bff1579b2ee81a67f99fd98ef8",
-    "documentSha256": "6f9d9120229674be2ab249862197d5e9d13258419560d6df3204a18fa72ce543",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "44aba098ae17e0b3792e83786e00047a8db0e9b604f94a83c3e8f88b614f6f43",
+    "documentSha256": "528f7f7b07ed9716043d2d0ee2218d833e9d43b34028cb4a6ce39d5e8cc191b2",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-studio-snowcloud-noon": {
     "source": "assets/campaign-art/environment-v1/studio-snowcloud-noon.png",
@@ -4649,10 +4649,10 @@
   },
   "environment-v1-p1-northeast-junction-noon": {
     "source": "assets/campaign-art/environment-v1/p1-northeast-junction-noon.png",
-    "sourceSha256": "bd9be6ba55128baf1b801d249b76ad7f8fba94cd86a181e9f7adce76b21f8662",
-    "documentSha256": "15e1fbdf549d2919f91acfae661dd5efcd20e53e9408daa72f150a0130f3f50a",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "83a91f7d1aba334845d07f11ae2bf891a5af422a541aa22cda758ea702942c1a",
+    "documentSha256": "6a5269901689939d1f6432cb79a0c376554d5ea1878c1e25df9f6a6228cc0c86",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-p2-rain-night": {
     "source": "assets/campaign-art/environment-v1/p2-rain-night.png",
@@ -4670,17 +4670,17 @@
   },
   "environment-v1-miami-morning": {
     "source": "assets/campaign-art/environment-v1/miami-morning.png",
-    "sourceSha256": "f62b3a18695ef2127a067da2efe8af387150016f2b6b4a7cdb182f08d1c00f3c",
-    "documentSha256": "acae379cbf865c2c39ccf7f43ee5ab82ec5db6bfbf85485ba94133a594600e0d",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "fa80d2016910b2a09c2d72443937377f12e56d4a95232df11a1c506c5c15874f",
+    "documentSha256": "71d5cdb1ac7be574c3313fa531d7d0f150e40c2efd42236280bed928ca06005c",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-anchorage-night": {
     "source": "assets/campaign-art/environment-v1/anchorage-night.png",
-    "sourceSha256": "fe75d86a0ceb88c97694431cbd24411f02a017bce0c752bf6240c6685ff39d8a",
-    "documentSha256": "f6f88f573ea5b99d5c25da4afb57e1d5f85877395a805ebe9b52ef972d508549",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "325afc707bac330d2a2f11bd8f298eb87c0e277b208243b968606b15fed9b352",
+    "documentSha256": "3aaab8d6f8e0b843424337376c71634b3fa8926211fffcfe8837626097d49cd6",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-honolulu-night": {
     "source": "assets/campaign-art/environment-v1/honolulu-night.png",
@@ -4698,17 +4698,17 @@
   },
   "environment-v1-charlestonsc-evening": {
     "source": "assets/campaign-art/environment-v1/charlestonsc-evening.png",
-    "sourceSha256": "785b800b22b3a52c8bc65ca02141b7b21447a7072e06a23a83d80205237b9478",
-    "documentSha256": "6077b38f09210affad1d8246b9678b0eb9f974d30035d968ed1bb0537c7f843b",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "4fd93a49f51efba2c0bb6ac050325f7e69f1fbe166232528180d4df286cf64a8",
+    "documentSha256": "522fa62542616a7db5a3ebf04c2c5eec19282d4595a6ba89bdcba6d572b7ee20",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-richmond-evening": {
     "source": "assets/campaign-art/environment-v1/richmond-evening.png",
-    "sourceSha256": "41b4caf6dd8f55482e846424e51b65276f46079f85b5b26a9d2a475988b766f8",
-    "documentSha256": "5682a98792642c58cbc8fba5925dee95dfe0f5b31c38f26c59865e477f8209b8",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "bcdf296295e44a2706a1d65c332cfb3e00c7f0b5c38aa88581d96475eb206ab5",
+    "documentSha256": "5162b8b66d1ad71a4fd85e71d6d6b03b9a03825b6dc1f2682c1f161874e533fc",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-charlestonwv-night": {
     "source": "assets/campaign-art/environment-v1/charlestonwv-night.png",
@@ -4726,10 +4726,10 @@
   },
   "environment-v1-tantalus-rain-morning": {
     "source": "assets/campaign-art/environment-v1/tantalus-rain-morning.png",
-    "sourceSha256": "e65948349ee73f7b815f1c30f9381f2ae92ab47e75b7c4d7407044d599801752",
-    "documentSha256": "64e3732f7aed949a572e7b0d5680fb7f2d84d2a5c6780d3af4164e9e831d1fca",
-    "width": 1024,
-    "height": 341
+    "sourceSha256": "9395d13deca44edcf1c138aa5e7a04ea0bf62bb0765381159c218aa5baaf7864",
+    "documentSha256": "5cc895b9e758af525e95df1d5682026d1c270f353658230ec6d79f87c901bb76",
+    "width": 512,
+    "height": 171
   },
   "environment-v1-haleakala-morning": {
     "source": "assets/campaign-art/environment-v1/haleakala-morning.png",

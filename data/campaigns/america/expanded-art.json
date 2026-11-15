@@ -3499,7 +3499,7 @@
       "name": "environment-v1-moki-cedar-mesa-day",
       "source": "environment-v1/moki-cedar-mesa-day.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [
         {
           "race": "moki"
@@ -3510,7 +3510,7 @@
       "name": "environment-v1-ozark-eminence-day",
       "source": "environment-v1/ozark-eminence-day.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [
         {
           "race": "ozark"
@@ -3532,7 +3532,7 @@
       "name": "environment-v1-ohio-little-muskingum-storm",
       "source": "environment-v1/ohio-little-muskingum-storm.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [
         {
           "race": "ohio"
@@ -3571,7 +3571,7 @@
       "name": "environment-v1-laurel-ohiopyle-evening",
       "source": "environment-v1/laurel-ohiopyle-evening.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [
         {
           "race": "laurel"
@@ -4388,7 +4388,7 @@
       "name": "environment-v1-pikes-evening",
       "source": "environment-v1/pikes-evening.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [
         {
           "race": "pikes"
@@ -4400,7 +4400,7 @@
       "name": "environment-v1-angeles-evening",
       "source": "environment-v1/angeles-evening.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [
         {
           "race": "angeles"
@@ -4532,7 +4532,7 @@
       "name": "environment-v1-littletujunga-noon",
       "source": "environment-v1/littletujunga-noon.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
       "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
     },
@@ -5348,7 +5348,7 @@
       "name": "environment-v1-mountwashington-storm",
       "source": "environment-v1/mountwashington-storm.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
       "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
     },
@@ -5356,7 +5356,7 @@
       "name": "environment-v1-studio-testfield-noon",
       "source": "environment-v1/studio-testfield-noon.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
       "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
     },
@@ -5364,7 +5364,7 @@
       "name": "environment-v1-studio-annex-noon",
       "source": "environment-v1/studio-annex-noon.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
       "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
     },
@@ -5388,7 +5388,7 @@
       "name": "environment-v1-p1-northeast-junction-noon",
       "source": "environment-v1/p1-northeast-junction-noon.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
       "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
     },
@@ -5412,7 +5412,7 @@
       "name": "environment-v1-miami-morning",
       "source": "environment-v1/miami-morning.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
       "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
     },
@@ -5420,7 +5420,7 @@
       "name": "environment-v1-anchorage-night",
       "source": "environment-v1/anchorage-night.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
       "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
     },
@@ -5444,7 +5444,7 @@
       "name": "environment-v1-charlestonsc-evening",
       "source": "environment-v1/charlestonsc-evening.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
       "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
     },
@@ -5452,7 +5452,7 @@
       "name": "environment-v1-richmond-evening",
       "source": "environment-v1/richmond-evening.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
       "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
     },
@@ -5476,7 +5476,7 @@
       "name": "environment-v1-tantalus-rain-morning",
       "source": "environment-v1/tantalus-rain-morning.png",
       "kind": "skybox",
-      "maxEdge": 1024,
+      "maxEdge": 512,
       "placements": [],
       "usageNote": "Exact final islands and legacy pack15 saved race binding in race-environments ledger."
     },

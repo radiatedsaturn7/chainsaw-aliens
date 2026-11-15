@@ -1,3 +1,4 @@
+import {terrainArtMaterials} from '../../tools/race-environments/terrain-materials.mjs';
 import {createCampaignHubMenus} from '../../src/menus/CampaignHubMenus.js';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
@@ -74,16 +75,22 @@ export function placedSceneryArtRefs(race, resolve) {
   return refs;
 }
 
-// Explicit, byte-preserving supersession of a reviewed sky, never a deferred-use list.
+// Explicit byte-preserving supersession; terrain additionally requires counted material-correct cells.
 export function verifySupersededArtwork(registry, imports, manifest, read, readBytes, used) {
  assert.equal(registry.schemaVersion,1);
  assert.deepEqual(Object.keys(registry).sort(),['assets','schemaVersion']);
  const verified=new Set(),hash=p=>createHash('sha256').update(readBytes(p)).digest('hex');
+ // Inspect every saved race once; retain only reference sets, not decoded world data.
+ const savedSkyRefs=new Set(),savedTerrainRefs=new Set();
+ const scan=value=>{if(!value||typeof value!=='object')return;for(const [key,v]of Object.entries(value)){if(['artRef','roughArtRef','tileArtRef','groundPlaneArtRef'].includes(key)&&typeof v==='string')savedTerrainRefs.add(v);else if(v&&typeof v==='object')scan(v);}};
+ for(const path of Object.values(manifest.folders.races)){const race=read(path)?.race;savedSkyRefs.add(race?.skyboxArtRef);savedSkyRefs.add(race?.skyboxSettings?.artRef);scan(race);}
  for(const [ref,r] of Object.entries(registry.assets)){
-  assert.deepEqual(Object.keys(r).sort(),['documentPath','documentSha256','kind','raceRef','reason','replacement','review','source','sourceSha256']);
-  assert.equal(r.kind,'skybox','Only reviewed skybox supersession is supported');
+  assert.ok(['skybox','terrain'].includes(r.kind),'Unsupported supersession kind');
+  const fields=['documentPath','documentSha256','kind','raceRef','reason','replacement','review','source','sourceSha256'];
+  if(r.kind==='terrain')fields.push('replacementMaterial','replacementCellCount');
+  assert.deepEqual(Object.keys(r).sort(),fields.sort());
   assert.ok(r.reason?.length>40&&r.review?.scope?.length>40,'Missing supersession review rationale');
-  assert.ok(['superseded-location-season-mismatch','superseded-site-composition'].includes(r.review.verdict),'Invalid supersession review verdict');
+  assert.ok((r.kind==='terrain'?['superseded-material-site-fit']:['superseded-location-season-mismatch','superseded-site-composition']).includes(r.review.verdict),'Invalid supersession review verdict');
   assert.match(r.review.path,/^data\/race-environments\/[a-z0-9-]+\.jpg$/);
   assert.equal(hash(r.review.path),r.review.sha256,'Missing or changed review evidence');
   assert.ok(imports[ref]&&imports[r.replacement]&&ref!==r.replacement,'Missing or self replacement');
@@ -97,12 +104,17 @@ export function verifySupersededArtwork(registry, imports, manifest, read, readB
   assert.ok(used.has(r.replacement),'Replacement must have real campaign or free-race placement');
   assert.ok(!used.has(ref),'Retired sky still actively used');
   const race=read(manifest.folders.races[r.raceRef])?.race;
-  assert.equal(race?.skyboxArtRef,r.replacement,'Replacement race binding mismatch');
-  assert.equal(race?.skyboxSettings?.artRef,r.replacement,'Replacement settings mismatch');
-  for(const path of Object.values(manifest.folders.races)){
-   const candidate=read(path)?.race;
-   assert.ok(candidate?.skyboxArtRef!==ref&&candidate?.skyboxSettings?.artRef!==ref,'Retired sky remains in saved race');
+  if(r.kind==='skybox'){
+   assert.equal(race?.skyboxArtRef,r.replacement,'Replacement race binding mismatch');
+   assert.equal(race?.skyboxSettings?.artRef,r.replacement,'Replacement settings mismatch');
+  }else{
+   assert.equal(terrainArtMaterials[r.replacement],r.replacementMaterial,'Replacement material not independently declared');
+   assert.ok(Number.isInteger(r.replacementCellCount)&&r.replacementCellCount>0,'Terrain replacement needs counted actual cells');
+   const cells=Object.values(race?.road?.tileMap?.cells||{}).filter(c=>c.artRef===r.replacement||c.roughArtRef===r.replacement);
+   assert.equal(cells.length,r.replacementCellCount,'Terrain replacement cell count mismatch');
+   for(const c of cells){assert.equal(c.tileId,r.replacementMaterial,'Replacement changes visual material');assert.equal(c.artRef,r.replacement);assert.equal(c.roughArtRef,r.replacement);}
   }
+  assert.ok(!(r.kind==='skybox'?savedSkyRefs:savedTerrainRefs).has(ref),r.kind==='skybox'?'Retired sky remains in saved race':'Retired terrain remains in saved race');
   verified.add(ref);
  }
  return verified;

@@ -1,0 +1,8 @@
+{
+  "roadProblemCount": 0,
+  "groundProblemCount": 0,
+  "total": 245,
+  "mismatchRaceCount": 0,
+  "unclassifiedRaceCount": 0,
+  "note": "Counts are per visual slot, not unique cells. Unknown art requires visual classification; known mismatches block release. Ground/road/shoulder visual review remains separate."
+}

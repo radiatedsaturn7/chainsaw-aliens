@@ -36,5 +36,27 @@ for(const [name,mutate]of Object.entries({
  'hidden old use':f=>f.docs['other.json'].race.skyboxArtRef='old',
  'wrong native path':f=>f.registry.assets.old.documentPath='elsewhere',
  'blanket extra key':f=>f.registry.allowAll=true,
- 'non-sky retirement':f=>f.registry.assets.old.kind='terrain'
+ 'incomplete terrain retirement':f=>f.registry.assets.old.kind='terrain'
 }))test('supersession rejects '+name,()=>{const f=fixture();mutate(f);assert.throws(()=>f.run());});
+
+function terrainFixture(){
+ const f=fixture(),r=f.registry.assets.old,ref='ground-gray-gravel-v2';
+ r.kind='terrain';r.replacement=ref;r.replacementMaterial='gravel';r.replacementCellCount=2;r.review.verdict='superseded-material-site-fit';
+ f.imports[ref]=f.imports.replacement;delete f.imports.replacement;f.manifest.folders.art[ref]='art/new.json';delete f.manifest.folders.art.replacement;f.used=new Set([ref]);
+ f.docs['race.json']={race:{road:{tileMap:{cells:{a:{tileId:'gravel',artRef:ref,roughArtRef:ref},b:{tileId:'gravel',artRef:ref,roughArtRef:ref}}}}}};
+ return f;
+}
+test('terrain supersession requires exact counted material-correct normal and rough replacements',()=>{assert.deepEqual([...terrainFixture().run()],['old']);});
+for(const [name,mutate]of Object.entries({
+ 'wrong declared material':f=>f.registry.assets.old.replacementMaterial='snow',
+ 'wrong physical material':f=>f.docs['race.json'].race.road.tileMap.cells.a.tileId='snow',
+ 'missing replacement count':f=>delete f.registry.assets.old.replacementCellCount,
+ 'wrong replacement count':f=>f.registry.assets.old.replacementCellCount=3,
+ 'empty replacement':f=>f.docs['race.json'].race.road.tileMap.cells={},
+ 'rough-only replacement':f=>delete f.docs['race.json'].race.road.tileMap.cells.a.artRef,
+ 'hidden rough old use':f=>f.docs['other.json'].race.road={tileMap:{cells:{a:{roughArtRef:'old'}}}},
+ 'hidden ground old use':f=>f.docs['other.json'].race.groundPlaneArtRef='old',
+ 'hidden road old use':f=>f.docs['other.json'].race.roadTextures={surfaceRoads:{gravel:{artRef:'old'}}},
+ 'missing original':f=>delete f.bytes['old.png'],
+ 'unreviewed terrain':f=>f.registry.assets.old.review.verdict='ignore-unused'
+}))test('terrain supersession rejects '+name,()=>{const f=terrainFixture();mutate(f);assert.throws(()=>f.run());});

@@ -190,6 +190,13 @@
         "weather": "snow",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -444,6 +451,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -561,6 +575,13 @@
           "/tmp/race-pack15-native-a/race-environments-renderer-32634-ack-independent-sky-desktop/site-81f0740150bdd13f-state.json",
           "/tmp/race-pack15-native-a/race-environments-renderer-6ed79-ck-independent-sky-handheld/site-81f0740150bdd13f-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -837,6 +858,13 @@
         "weather": "snow",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -1029,6 +1057,13 @@
           "/tmp/race-pack15-native-a/race-environments-renderer-7f380-py-independent-sky-handheld/site-af086b4ab458d226-state.json",
           "/tmp/race-pack15-native-a/race-environments-renderer-93e33-opy-independent-sky-desktop/site-af086b4ab458d226-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -1243,6 +1278,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -1416,6 +1458,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -1529,6 +1578,13 @@
           "/tmp/race-pack15-native-a/race-environments-renderer-87260-nt-independent-sky-handheld/site-456872ebce92f3df-state.json",
           "/tmp/race-pack15-native-a/race-environments-renderer-aa963-int-independent-sky-desktop/site-456872ebce92f3df-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -1642,6 +1698,13 @@
           "/tmp/race-pack15-native-a/race-environments-renderer-006ea-opy-independent-sky-desktop/site-f5c7b0c80ccaed90-state.json",
           "/tmp/race-pack15-native-a/race-environments-renderer-98f11-py-independent-sky-handheld/site-f5c7b0c80ccaed90-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -1770,6 +1833,13 @@
         "weather": "snow",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -2116,6 +2186,13 @@
         "weather": "snow",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -2387,6 +2464,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -2498,6 +2582,13 @@
           "/tmp/race-pack15-native-a/race-environments-renderer-buse1-independent-sky-desktop/site-17ea1aac9a920747-state.json",
           "/tmp/race-pack15-native-a/race-environments-renderer-buse1-independent-sky-handheld/site-17ea1aac9a920747-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -2648,6 +2739,13 @@
           "/tmp/race-pack15-native-a/race-environments-renderer-p1-independent-sky-desktop/site-f64551fcd6f07823-state.json",
           "/tmp/race-pack15-native-a/race-environments-renderer-p1-independent-sky-handheld/site-f64551fcd6f07823-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -2755,6 +2853,10 @@
         "groundPlaneArtRef": "ground-temperate-grass-v1",
         "terrainTileArtById": {
           "grass": "ground-temperate-grass-v1"
+        },
+        "roadArtBySurface": {
+          "dirt": "road-dirt-packed",
+          "gravel": "road-gravel-gray"
         }
       },
       "environmentPack": "islands-legacy-final-pack15",
@@ -2800,6 +2902,17 @@
           "/tmp/race-pack15-native-a/race-environments-renderer-43d4b-st-independent-sky-handheld/site-52108990a32ae764-state.json",
           "/tmp/race-pack15-native-a/race-environments-renderer-c78bd-est-independent-sky-desktop/site-52108990a32ae764-state.json"
         ]
+      },
+      "roadVisualReview": {
+        "status": "material correction pending native review",
+        "reason": "Fictional rain-night mixed-surface test course: retain asphalt default and exact sampling, add dirt/gravel art only for existing dirt/gravel sections. No surface, width, geometry or behavior changes."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -3003,6 +3116,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -3193,6 +3313,13 @@
         "weather": "storm",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -3396,6 +3523,13 @@
       },
       "terrainReview": {
         "acceptance": "material-corrected; revised native review pending"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -3633,6 +3767,13 @@
       },
       "terrainReview": {
         "acceptance": "material-corrected; revised native review pending"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -3842,6 +3983,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -4130,6 +4278,13 @@
         "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "Ground source decoded and viewed; native effective ground/normal-rough tiles/active surface road/shoulder audits retained. Physical IDs and weights unchanged. Full-route driving terrain acceptance pending."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -4292,7 +4447,7 @@
       "binding": {
         "skyboxArtRef": "environment-v1-moki-cedar-mesa-day",
         "terrainTileArtById": {
-          "gravel": "ground-gray-gravel-v2"
+          "gravel": "ground-red-gravel-v2"
         }
       },
       "originalImage": "/workspace/generated_images/exec-39f7d598-519c-41b8-af7d-88fb5fd01dff.png",
@@ -4319,10 +4474,18 @@
         "groundPlaneIntent": "gravel",
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
-        "visualReview": "pending revised native material review"
+        "visualReview": "Final original red-gravel normal/rough cell artwork viewed through native atlas on both sizes; full world review remains pending.",
+        "pack17Correction": "Restored original red gravel in the actual Moki gravel cells, matching Cedar Mesa sandstone detritus and original material-specific art. No retirement: configured shoulders also retain it; snow cells elsewhere remain snow."
       },
       "terrainReview": {
         "acceptance": "material-corrected; revised native review pending"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-moki-final.jpg"
       }
     },
     {
@@ -4923,6 +5086,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -5195,6 +5365,13 @@
         "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "Ground source decoded and viewed; native effective ground/normal-rough tiles/active surface road/shoulder audits retained. Physical IDs and weights unchanged. Full-route driving terrain acceptance pending."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -5433,6 +5610,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -5684,6 +5868,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -6003,6 +6194,13 @@
           "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
           "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
         }
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -6239,6 +6437,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -6454,6 +6659,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -6672,6 +6884,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -6908,6 +7127,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -7117,6 +7343,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -7330,6 +7563,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -7558,6 +7798,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -7786,6 +8033,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -8015,6 +8269,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -8251,6 +8512,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -8483,6 +8751,13 @@
         "weather": "snow",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -8703,6 +8978,13 @@
           "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
           "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
         }
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -8929,6 +9211,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -9155,6 +9444,13 @@
           "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
           "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
         }
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -9415,6 +9711,13 @@
           "finding": "Explicit ground and normal/rough tile refs verified on both devices. Every segment uses registered surface-specific road art. Authored shoulder/margin settings remain unchanged, including procedural/inherited shoulders where no ref is authored.",
           "acceptance": "source-and-effective-bindings-reviewed; full production terrain acceptance pending"
         }
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -9649,6 +9952,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -9880,6 +10190,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -10117,6 +10434,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -10349,6 +10673,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -10586,6 +10917,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -10823,6 +11161,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -11053,6 +11398,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -11289,6 +11641,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -11528,6 +11887,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -11760,6 +12126,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -11990,6 +12363,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -12221,6 +12601,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -12452,6 +12839,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -12686,6 +13080,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -12925,6 +13326,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -13156,6 +13564,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -13386,6 +13801,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -13587,6 +14009,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -13850,6 +14279,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -14114,6 +14550,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -14376,6 +14819,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -14639,6 +15089,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -14904,6 +15361,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -15166,6 +15630,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -15428,6 +15899,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -15693,6 +16171,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -15960,6 +16445,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -16235,6 +16727,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -16508,6 +17007,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -16829,6 +17335,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -17135,6 +17648,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -17425,6 +17945,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -17698,6 +18225,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -17977,6 +18511,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -18292,6 +18833,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -18562,6 +19110,13 @@
       "roadMaterialRemediation": {
         "status": "restored baseline asphalt-compatible art; physical-site mismatch pending",
         "reason": "Prior dirt visual on physical asphalt was introduced by this branch. Restore exact baseline road textures rather than conceal traction semantics. The real dirt-oval site still conflicts with preserved asphalt physics and requires separate design resolution."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -18811,6 +19366,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -19089,6 +19651,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -19344,6 +19913,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -19599,6 +20175,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -19850,6 +20433,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -20096,6 +20686,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -20343,6 +20940,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -20600,6 +21204,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -20863,6 +21474,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -21118,6 +21736,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -21358,6 +21983,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -21602,6 +22234,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -21843,6 +22482,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -22085,6 +22731,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -22330,6 +22983,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -22576,6 +23236,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -22907,6 +23574,13 @@
         "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "Ground source decoded and viewed; native effective ground/normal-rough tiles/active surface road/shoulder audits retained. Physical IDs and weights unchanged. Full-route driving terrain acceptance pending."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -23149,6 +23823,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -23609,6 +24290,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -24073,6 +24761,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -24539,6 +25234,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -25000,6 +25702,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -25468,6 +26177,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -25933,6 +26649,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -26422,6 +27145,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -26902,6 +27632,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -27371,6 +28108,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -27845,6 +28589,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -28310,6 +29061,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -28792,6 +29550,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -29256,6 +30021,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -29717,6 +30489,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -30200,6 +30979,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -30685,6 +31471,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -31164,6 +31957,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -31625,6 +32425,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -31859,6 +32666,13 @@
         "tiles": "Explicit normal and rough images per existing tile ID; Only existing tile visual refs mapped to the selected local substrate; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "Pack12 corrects snow substrate mismatch. New source inspected; native effective and production checks pending."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -32099,6 +32913,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -32341,6 +33162,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -32581,6 +33409,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -32821,6 +33656,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -33063,6 +33905,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -33358,6 +34207,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -33601,6 +34457,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -33846,6 +34709,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -33940,6 +34810,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -34155,6 +35032,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -34363,6 +35247,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -34578,6 +35469,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -34786,6 +35684,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -35009,6 +35914,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -35232,6 +36144,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -35423,6 +36342,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -35615,6 +36541,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -35811,6 +36744,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -36015,6 +36955,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -36219,6 +37166,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -36463,6 +37417,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -36678,6 +37639,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -36893,6 +37861,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -37172,6 +38147,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -37374,6 +38356,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -37583,6 +38572,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -37789,6 +38785,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -37990,6 +38993,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -38192,6 +39202,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -38394,6 +39411,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -38603,6 +39627,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -38812,6 +39843,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -39009,6 +40047,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -39208,6 +40253,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -39408,6 +40460,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -39632,6 +40691,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -39833,6 +40899,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -40026,6 +41099,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -40225,6 +41305,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -40508,6 +41595,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -40770,6 +41864,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -40996,6 +42097,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -41206,6 +42314,13 @@
           "/tmp/race-pack15-native-a/race-environments-renderer-9cf5d-nds-independent-sky-desktop/site-7cd23d44d23189c0-state.json",
           "/tmp/race-pack15-native-a/race-environments-renderer-ceb87-ds-independent-sky-handheld/site-7cd23d44d23189c0-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -41419,6 +42534,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -41658,6 +42780,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -41931,6 +43060,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -42204,6 +43340,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -42405,6 +43548,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -42649,6 +43799,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -42888,6 +44045,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -43088,6 +44252,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -43287,6 +44458,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -43504,6 +44682,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -43704,6 +44889,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -43941,6 +45133,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -44178,6 +45377,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -44468,6 +45674,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -44665,6 +45878,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -44920,6 +46140,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -45182,6 +46409,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -45399,6 +46633,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -45682,6 +46923,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -45921,6 +47169,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -46193,6 +47448,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -46389,6 +47651,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -46624,6 +47893,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -46859,6 +48135,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -47094,6 +48377,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -47393,6 +48683,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -47714,6 +49011,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -48007,6 +49311,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -48264,6 +49575,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -48551,6 +49869,13 @@
           "/tmp/race-pack15-native-a/race-environments-renderer-575cd-un-independent-sky-handheld/site-5109a6bdde2bfc10-state.json",
           "/tmp/race-pack15-native-a/race-environments-renderer-a376d-Run-independent-sky-desktop/site-5109a6bdde2bfc10-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -48823,6 +50148,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -49108,6 +50440,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -49351,6 +50690,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -49601,6 +50947,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -49883,6 +51236,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -50147,6 +51507,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -50392,6 +51759,13 @@
           "/tmp/race-pack15-native-b/race-environments-renderer-0b4fb-Run-independent-sky-desktop/site-c22955a9bacbba73-state.json",
           "/tmp/race-pack15-native-b/race-environments-renderer-ae294-un-independent-sky-handheld/site-c22955a9bacbba73-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -50698,6 +52072,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -50972,6 +52353,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -51255,6 +52643,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -51516,6 +52911,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -51785,6 +53187,13 @@
           "/tmp/race-pack15-native-b/race-environments-renderer-a85e1-un-independent-sky-handheld/site-a1f7d35a406767d9-state.json",
           "/tmp/race-pack15-native-b/race-environments-renderer-c3f4d-Run-independent-sky-desktop/site-a1f7d35a406767d9-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -52053,6 +53462,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -52289,6 +53705,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -52616,6 +54039,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -52884,6 +54314,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -53136,6 +54573,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -53442,6 +54886,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -53759,6 +55210,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -54116,6 +55574,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -54371,6 +55836,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -54648,6 +56120,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -54963,6 +56442,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -55238,6 +56724,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -55508,6 +57001,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -55789,6 +57289,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -56116,6 +57623,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -56452,6 +57966,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -56726,6 +58247,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -57044,6 +58572,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -57302,6 +58837,13 @@
           "/tmp/race-pack15-native-b/race-environments-renderer-399f3-Run-independent-sky-desktop/site-5f5ac78c36de132d-state.json",
           "/tmp/race-pack15-native-b/race-environments-renderer-ffad4-un-independent-sky-handheld/site-5f5ac78c36de132d-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -57647,6 +59189,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -57930,6 +59479,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -58211,6 +59767,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -58467,6 +60030,13 @@
           "/tmp/race-pack15-native-b/race-environments-renderer-a6df7-un-independent-sky-handheld/site-e3b0e114c719d39f-state.json",
           "/tmp/race-pack15-native-b/race-environments-renderer-f0970-Run-independent-sky-desktop/site-e3b0e114c719d39f-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -58761,6 +60331,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -59049,6 +60626,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -59410,6 +60994,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -59680,6 +61271,13 @@
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
         "acceptance": "native-material-reviewed-production-pending",
         "pack11Audit": "Grass/snow normal and rough cell art matches physical ID; current road, shoulder and margin visual refs preserved and captured in native effectiveLayers."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -59944,6 +61542,13 @@
           "/tmp/race-pack15-native-b/race-environments-renderer-a02d6-Run-independent-sky-desktop/site-f86a23e25c2cac55-state.json",
           "/tmp/race-pack15-native-b/race-environments-renderer-d4b43-un-independent-sky-handheld/site-f86a23e25c2cac55-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -60141,6 +61746,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -60463,6 +62075,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -60722,6 +62341,13 @@
           "/tmp/race-pack15-native-b/race-environments-renderer-86c38-un-independent-sky-handheld/site-1a5f89f9794417e3-state.json",
           "/tmp/race-pack15-native-b/race-environments-renderer-9aa75-Run-independent-sky-desktop/site-1a5f89f9794417e3-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -61013,6 +62639,13 @@
         "scope": "Actual native sky compositor raw100/authored/pitch views and effective ground/tile/road/margin refs inspected. Not driving or full-route acceptance.",
         "evidence": "data/race-environments/pack14-evidence.json",
         "boundaryPolishPending": true
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -61275,6 +62908,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -61513,6 +63153,13 @@
           "snow": "snowroad"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -61733,6 +63380,13 @@
           "/tmp/race-pack15-native-b/race-environments-renderer-0af91-el-independent-sky-handheld/site-8870f7e6d7a1ad92-state.json",
           "/tmp/race-pack15-native-b/race-environments-renderer-879e5-vel-independent-sky-desktop/site-8870f7e6d7a1ad92-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -62062,6 +63716,13 @@
           "gravel": "road-gravel-gray"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -62316,6 +63977,13 @@
           "dirt": "road-dirt-packed"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -62605,6 +64273,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack13ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -62827,6 +64502,13 @@
           "/tmp/race-pack15-native-b/race-environments-renderer-9bfc6-ts-independent-sky-handheld/site-9355ce47e2414978-state.json",
           "/tmp/race-pack15-native-b/race-environments-renderer-e77f7-hts-independent-sky-desktop/site-9355ce47e2414978-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -63048,6 +64730,13 @@
           "/tmp/race-pack15-native-b/race-environments-renderer-39d4b-nt-independent-sky-handheld/site-16532ce2e70c3a9d-state.json",
           "/tmp/race-pack15-native-b/race-environments-renderer-f29be-ent-independent-sky-desktop/site-16532ce2e70c3a9d-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -63270,6 +64959,13 @@
           "/tmp/race-pack15-native-b/race-environments-renderer-138f0-mit-independent-sky-desktop/site-15b1ac599d7224a9-state.json",
           "/tmp/race-pack15-native-b/race-environments-renderer-824cc-it-independent-sky-handheld/site-15b1ac599d7224a9-state.json"
         ]
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -63511,6 +65207,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -64012,6 +65715,13 @@
         "tiles": "Existing normal and rough art refs replaced by regional substrate; physical tile IDs, weights and material semantics unchanged.",
         "road": "All existing active surface-specific road and shoulder refs retained.",
         "acceptance": "Decoded regional substrates reviewed; current effective ground/tile/road/shoulder reports required. Full driving terrain acceptance remains pending."
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -64493,6 +66203,13 @@
         "weather": "clear",
         "evidence": "data/race-environments/pack16-material-plan.json",
         "visualReview": "pending revised native material review"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     },
     {
@@ -64787,6 +66504,13 @@
           "asphalt": "road-asphalt-patched"
         },
         "pack12ShoulderStatus": "hidden"
+      },
+      "materialAtlasReview": {
+        "pack": "pack17",
+        "desktop": true,
+        "handheld": true,
+        "scope": "Native unlit actual asset canvases; all245 binding sets checked and49 compact material combinations viewed. Configured shoulders in initial atlas do not prove enabled world use. No production-driving or world-lighting approval.",
+        "evidence": "data/race-environments/pack17-material-groups.json"
       }
     }
   ],
