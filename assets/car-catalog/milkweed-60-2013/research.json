@@ -1,0 +1,51 @@
+{
+  "referenceVehicle": "Stock European launch October2013 BMW i3 BEV standard19inch wheels/Atelier base equipment, LHD, DIN1195kg; no range extender, later94/120Ah pack, i3s or US trim mixing",
+  "sources": [
+    {
+      "url": "https://newsroom.bmwgroup.com/global/the-bmw-i3",
+      "fields": [
+        "tuning.electricPowertrain",
+        "tuning.weightKg",
+        "dimensions",
+        "setup.tireSize",
+        "transmissions.automatic"
+      ],
+      "access": "BMW October2013 launch press kit. Actual linked English PDF downloaded via public newsroom attachment and page40 visually inspected; page15 motor text confirms11400rpm."
+    },
+    {
+      "url": "https://newsroom.bmwgroup.com/global/download/01161883-94ba-4336-8b6c-ce24b35fc245/20260722085925891-2.pdf",
+      "fields": [
+        "tuning.electricPowertrain",
+        "tuning.physics.bodyProfile",
+        "tuning.frontWeightDistribution",
+        "tuning.dragCoefficient",
+        "tuning.steeringRatio"
+      ],
+      "access": "Original41-page BMW PDF; local /tmp/bmw-i3-launch.pdf. BEV column, not REx. Older2014 attachment redirected to homepage, so launch2013 exact source selected."
+    }
+  ],
+  "verifiedFacts": {
+    "powerKw": 125,
+    "torqueNm": 250,
+    "massDinKg": 1195,
+    "massEuKg": 1270,
+    "usableBatteryKwh": 18.8,
+    "grossBatteryKwh": 22,
+    "maxMotorRpm": 11400,
+    "roundedReductionRatio": 9.7,
+    "maxRegenPowerKw": 50,
+    "frontWeightDistribution": 0.47,
+    "sourceQualification": "Manufacturer launch table prints9.7:1 rounded reduction; no unsupported9.665 precision. DIN excludes75kg EU allowance. Hybrid synchronous motor describes motor topology, not a hybrid combustion vehicle."
+  },
+  "gearingStatus": {
+    "individualRatios": "One forward ratio with electronic reverse",
+    "finalDrive": "9.7 manufacturer rounded fixed ratio used as published; no independently exact tooth-count precision claimed"
+  },
+  "estimates": [
+    "125kW converted to mechanicalhp, not170metricPS. Nominal tire radius.3498m derives155/70R19; loaded radius not measured.",
+    "Unpublished tracks set1.57m each; CG.45m,bodysection shapes,springs/dampers/brakes,tiregrip/pressure,92percentdrive and80percentregen efficiency,100Nmregen torque,.5kWaccessory loss,5rad/s regen taper and.35lift-off demand are gameplay estimates.",
+    "50kWregen cap and11400rpm motor ceiling sourced, but constant-torque/constant-power envelope is simplified. No OEM brake blending,charging infrastructure,thermal/SOC derating,independent inverter maps or range certification.",
+    "Display7.0sec0-60 estimates a different interval from manufacturer7.2sec0-100.150kph sourced display value is not independently calibrated gameplay limiter/performance.",
+    "Original lavender/mint badge-free2994 compactEV andLHDdash with shared tires/wheel. Tire smoke/spray remains; no exhaustpipe drawn, inherited combustion sound/mechanics suppressed by electric runtime."
+  ]
+}
