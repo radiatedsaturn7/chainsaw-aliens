@@ -544,11 +544,7 @@
       "source": "skyboxes/mount-washington.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "mount"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-natchez",
@@ -638,11 +634,7 @@
       "source": "skyboxes/tower-hill.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "tower"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "expanded-bush-blackberry-bramble-01",
@@ -3783,6 +3775,142 @@
       "maxEdge": 1024,
       "placements": [],
       "usageNote": "Exact venue-pack5 saved race bindings in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-tower-hill-snow-night",
+      "source": "environment-v1/tower-hill-snow-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "tower"
+        }
+      ],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-mount-washington-snow-noon",
+      "source": "environment-v1/mount-washington-snow-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "mount"
+        }
+      ],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pinkham-snow-noon",
+      "source": "environment-v1/pinkham-snow-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-kancamagus-morning",
+      "source": "environment-v1/kancamagus-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-bear-notch-morning",
+      "source": "environment-v1/bear-notch-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hurricane-evening",
+      "source": "environment-v1/hurricane-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-crawford-noon",
+      "source": "environment-v1/crawford-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-tamworth-noon",
+      "source": "environment-v1/tamworth-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-oneil-noon",
+      "source": "environment-v1/oneil-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-loudon-evening",
+      "source": "environment-v1/loudon-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-epping-morning",
+      "source": "environment-v1/epping-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ri116-morning",
+      "source": "environment-v1/ri116-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ri102-evening",
+      "source": "environment-v1/ri102-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ri44-morning",
+      "source": "environment-v1/ri44-morning.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-i95-noon",
+      "source": "environment-v1/i95-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact New England pack6 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-ground-sebring-olive",
+      "source": "environment-v1/ground-sebring-olive.png",
+      "kind": "texture",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Three Sebring layouts only, muted sandy olive airfield grass image; physical materials unchanged."
     }
   ]
 }

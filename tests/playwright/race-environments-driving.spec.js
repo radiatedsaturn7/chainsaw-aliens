@@ -1,5 +1,7 @@
 // Bounded real travel/drive evidence. Never overrides lighting, weather or deadlines.
 import fs from 'node:fs';
+import {execFileSync} from 'node:child_process';
+import {gunzipSync} from 'node:zlib';
 import {test,expect,devices} from '@playwright/test';
 import {resolveDiagnosticRaceChoice} from '../../tools/race-environments/selector.mjs';
 const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
@@ -7,7 +9,14 @@ const names=(process.env.RACE_DRIVE_NAMES||'Willow Springs — Horse Thief Mile|
 for(const name of names)for(const mobile of [false,true])test.describe(`${name} ${mobile?'handheld':'desktop'}`,()=>{
  test.use({viewport:mobile?{width:390,height:844}:{width:1280,height:720},isMobile:mobile,hasTouch:mobile,...(mobile?{userAgent:devices['iPhone 13'].userAgent}:{})});
  test('real authored foreground and sky',async({page},info)=>{
-  test.setTimeout(300000);const row=ledger.rows.find(r=>r.raceRef===name);expect(row?.binding).toBeTruthy();
+  test.setTimeout(300000);const row=structuredClone(ledger.rows.find(r=>r.raceRef===name));expect(row?.binding).toBeTruthy();
+  const baseline=process.env.RACE_DRIVE_BASE_COMMIT;
+  if(baseline){
+   const commit=execFileSync('git',['rev-parse',baseline],{encoding:'utf8'}).trim();expect(commit).toBe(baseline);
+   let doc=JSON.parse(execFileSync('git',['show',`${commit}:data/server-storage/files/${row.documentPath}`],{maxBuffer:40e6}));
+   if(doc.__chainsawStorage)doc=JSON.parse(gunzipSync(Buffer.from(doc.data,'base64')));
+   row.binding.skyboxArtRef=doc.race.skyboxArtRef||doc.race.skyboxSettings?.artRef;
+  }
   const errors=[],network=[];page.on('pageerror',e=>errors.push(e.stack||e.message));page.on('requestfailed',r=>network.push({url:r.url(),error:r.failure()}));
   const snapshot=()=>page.evaluate(()=>{const g=window.__game,e=g?.raceEditor,s=e?.playtestSession;return {state:g?.state,status:e?.status,error:g?.lastRaceTravelError,diagnostics:g?.raceRuntimePreparation?.lastDiagnostics,preparation:e?.racePlaytestPreparation?.phase,race:e?.selectedRace?.name,sky:e?.getRaceSkyboxSettings()?.artRef,weather:e?.getRaceWeatherState(),fx:e?.getRaceRenderVisualFx(),session:s?{running:s.running,pending:s.startupFramePending,elapsed:s.elapsedMs,speed:s.speedMps,distance:s.distanceM,worldX:s.worldX,worldZ:s.worldZ,camera:s.cameraView}:null};});
   try{
@@ -20,7 +29,7 @@ for(const name of names)for(const mobile of [false,true])test.describe(`${name} 
    await page.screenshot({path:info.outputPath('authored-driving-a.png')});await page.waitForTimeout(2000);await page.keyboard.up('g');
    const after=await snapshot();await page.screenshot({path:info.outputPath('authored-driving-b.png')});
    expect(Math.hypot(after.session.worldX-before.session.worldX,after.session.worldZ-before.session.worldZ)).toBeGreaterThan(.5);expect(after.sky).toBe(row.binding.skyboxArtRef);expect(after.session.elapsed).toBeGreaterThan(before.session.elapsed);expect(after.session.speed).toBeGreaterThan(1);
-   fs.writeFileSync(info.outputPath('driving-state.json'),JSON.stringify({race:name,device:mobile?'handheld':'desktop',selector,before,after,errors,network,note:'Actual production travel and real update/draw loop; authored captures have no sky brightness, weather or world lighting override. Short drive sample, not route-wide approval.'},null,2));
+   fs.writeFileSync(info.outputPath('driving-state.json'),JSON.stringify({race:name,baseline:baseline||null,device:mobile?'handheld':'desktop',selector,before,after,errors,network,note:'Actual production travel and real update/draw loop; authored captures have no sky brightness, weather or world lighting override. Short drive sample, not route-wide approval.'},null,2));
    // Separately authorized sky-only exposure diagnostic, restored immediately.
    if(process.env.RACE_DRIVE_SKY_DIAGNOSTIC==='1'){
     const saved=await page.evaluate(()=>{const e=window.__game.raceEditor,fx=structuredClone(e.selectedRace.visualFx);e.selectedRace.visualFx={...fx,skyBrightness:1};return fx;});
