@@ -578,11 +578,7 @@
       "source": "skyboxes/ohio-river-crossing.png",
       "kind": "skybox",
       "maxEdge": 1024,
-      "placements": [
-        {
-          "race": "ohio"
-        }
-      ]
+      "placements": []
     },
     {
       "name": "skybox-ozarks",
@@ -3558,6 +3554,45 @@
           "race": "city"
         }
       ]
+    },
+    {
+      "name": "environment-v1-ohio-little-muskingum-storm",
+      "source": "environment-v1/ohio-little-muskingum-storm.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [
+        {
+          "race": "ohio"
+        }
+      ]
+    },
+    {
+      "name": "environment-v1-ouninpohja-boreal-noon",
+      "source": "environment-v1/ouninpohja-boreal-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-old-staples-woodland-day",
+      "source": "environment-v1/old-staples-woodland-day.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-ground-ohio-wet-leaf-litter",
+      "source": "environment-v1/ground-ohio-wet-leaf-litter.png",
+      "kind": "texture",
+      "maxEdge": 512,
+      "placements": []
+    },
+    {
+      "name": "environment-v1-ground-finnish-boreal-verge",
+      "source": "environment-v1/ground-finnish-boreal-verge.png",
+      "kind": "texture",
+      "maxEdge": 512,
+      "placements": []
     }
   ]
 }

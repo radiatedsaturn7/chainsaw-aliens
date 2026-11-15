@@ -8,7 +8,7 @@
       "documentPath": "races/Col de Turini/document.json",
       "siteGroup": "site-1ebbc90566342c0b",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "legacy-turini",
@@ -170,6 +170,14 @@
         "maxX": -43.31733232288647,
         "minY": -1604.5672467858838,
         "maxY": 196.7374554571251
+      },
+      "binding": {
+        "skyboxArtRef": "skybox-col-de-turini"
+      },
+      "locationReview": "Existing original Turini art visually reviewed: folded Maritime Alps valleys, conifers and snowy upper shoulders; suitable noon snowy route, no current runtime users.",
+      "originalImage": "assets/campaign-art/skyboxes/col-de-turini.png",
+      "terrainReview": {
+        "acceptance": "pending: retain inherited snow ground until runtime review; no terrain change yet"
       }
     },
     {
@@ -686,7 +694,7 @@
       "documentPath": "races/Nurburgring Nordschleife/document.json",
       "siteGroup": "site-ce8b9b1ca4e96f75",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "raceway-nordschleife-full",
@@ -862,6 +870,14 @@
         "maxX": 3231.5049592644655,
         "minY": -2325.433832432047,
         "maxY": 2522.1379293647124
+      },
+      "binding": {
+        "skyboxArtRef": "skybox-eifel-circuit"
+      },
+      "locationReview": "Existing original Eifel art visually reviewed: low rounded wooded ridges and abandoned circuit; suitable independent site art, no current runtime users.",
+      "originalImage": "assets/campaign-art/skyboxes/eifel-circuit.png",
+      "terrainReview": {
+        "acceptance": "pending: inherited frozen-forest ground must be assessed against authored clear/evening course; no terrain change yet"
       }
     },
     {
@@ -869,7 +885,7 @@
       "documentPath": "races/Ouninpohja/document.json",
       "siteGroup": "site-4a3a8465fc834db9",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "legacy-ouninpohja",
@@ -1006,6 +1022,26 @@
         "maxX": 5539.619319329667,
         "minY": -198.9502375535583,
         "maxY": 4548.190127775904
+      },
+      "binding": {
+        "skyboxArtRef": "environment-v1-ouninpohja-boreal-noon",
+        "groundPlaneArtRef": "environment-v1-ground-finnish-boreal-verge",
+        "terrainTileArtById": {
+          "snow": "environment-v1-ground-finnish-boreal-verge"
+        }
+      },
+      "locationReview": "Source GPS61.7240972,24.89217105 to61.7429505,25.0763056: gently rolling Finnish boreal fields/forest. Existing Finnish lake art rejected because lake view not established.",
+      "sources": [
+        "https://www.rally-maps.com/Rally-Finland-2025/Ouninpohja",
+        "https://www.visitfinland.com/en/product/cf45dce9-8a6c-4fef-b7f1-eb11c956d53d/exhibition-rally-finland-75-years-of-gravel-heroes-and-a-travelling-circus/"
+      ],
+      "originalImage": "/workspace/generated_images/exec-eb715daf-dc34-435e-b1dc-741be5938652.png",
+      "terrainReview": {
+        "ground": "Explicit boreal verge pixels on existing snow-ID tiles and unpainted plane, material IDs/weights unchanged.",
+        "road": "Retain actual gravel/asphalt segments and their gray-gravel/patched-asphalt art; no false blanket asphalt rewrite.",
+        "shoulder": "Hidden authored margin retained.",
+        "rough": "Explicit same boreal art for normal and rough cell variants.",
+        "acceptance": "source-reviewed; production pending"
       }
     },
     {
@@ -1888,7 +1924,7 @@
       "documentPath": "races/Ohio River Crossing/document.json",
       "siteGroup": "site-fcd5f9509ef8055c",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [
         {
           "id": "america-middle-ohio",
@@ -2034,7 +2070,27 @@
         1074282050,
         1074282051,
         1487268423
-      ]
+      ],
+      "binding": {
+        "skyboxArtRef": "environment-v1-ohio-little-muskingum-storm",
+        "groundPlaneArtRef": "environment-v1-ground-ohio-wet-leaf-litter",
+        "terrainArtMap": {
+          "ground-dirty-snow-v2": "environment-v1-ground-ohio-wet-leaf-litter"
+        }
+      },
+      "locationReview": "SR26 Little Muskingum enclosed wooded valley northeast of Marietta, as imported-middle.json explicitly states; no Ohio River crossing or large bridge. Storm/evening4C. Reject broad-river draft.",
+      "sources": [
+        "data/campaigns/america/imported-middle.json: Ohio segmentDescription",
+        "data/campaigns/america/middle-sources/ohio.json"
+      ],
+      "originalImage": "/workspace/generated_images/exec-ebe94e4f-9d11-4e29-ad91-d40bf6bc3543.png",
+      "terrainReview": {
+        "ground": "Replace dirty-snow pixels with wet silt/leaf-litter; preserve snow tileId and snow weights as explicitly required, so this is visual only.",
+        "road": "Keep wet-asphalt texture and actual wet-asphalt segment surfaces.",
+        "shoulder": "Keep gray gravel shoulder. Dirt/gravel/snow conditional shoulder refs retained; snow branch inactive on wet-asphalt segments.",
+        "rough": "No authored roughArtRef; same registered native tile image used by existing fallback.",
+        "acceptance": "source-reviewed; production pending"
+      }
     },
     {
       "raceRef": "Ozark Backroads",
@@ -17141,7 +17197,7 @@
       "documentPath": "races/Old Staples Road/document.json",
       "siteGroup": "site-ee77123d64fe8992",
       "sharingEvidence": [],
-      "status": "pending-location-and-render-review",
+      "status": "bound-awaiting-production-review",
       "catalog": [],
       "enabledCampaign": false,
       "selectorReachable": true,
@@ -17201,7 +17257,23 @@
         19384516,
         971670229,
         971670230
-      ]
+      ],
+      "binding": {
+        "skyboxArtRef": "environment-v1-old-staples-woodland-day",
+        "groundPlaneArtRef": "grass"
+      },
+      "locationReview": "Separate Cumberland RI origin41.980251,-71.4265252. Clear-day low temperate woodland; no Tower Hill snow or skyline fallback.",
+      "sources": [
+        "Saved race.source.origin and OSM geometry"
+      ],
+      "originalImage": "/workspace/generated_images/exec-d27aa03c-6e7c-4c04-98c6-f476ca9224af.png",
+      "terrainReview": {
+        "ground": "Existing grass tile material and default grass art retained; explicit grass unpainted-plane ref.",
+        "road": "Default renderer asphalt/gravel visuals retained for actual segment types.",
+        "shoulder": "Existing default/absent margin settings retained.",
+        "rough": "Existing default tile lookup retained.",
+        "acceptance": "source-reviewed; production pending"
+      }
     },
     {
       "raceRef": "Watkins Glen \u2014 Long Course",

@@ -760,7 +760,12 @@
       "catalog-ironwood-v8-2004-dashboard": "art/catalog-ironwood-v8-2004-dashboard/document.json",
       "environment-v1-moki-cedar-mesa-day": "art/environment-v1-moki-cedar-mesa-day/document.json",
       "environment-v1-ozark-eminence-day": "art/environment-v1-ozark-eminence-day/document.json",
-      "environment-v1-stl-riverfront-night": "art/environment-v1-stl-riverfront-night/document.json"
+      "environment-v1-stl-riverfront-night": "art/environment-v1-stl-riverfront-night/document.json",
+      "environment-v1-ohio-little-muskingum-storm": "art/environment-v1-ohio-little-muskingum-storm/document.json",
+      "environment-v1-ouninpohja-boreal-noon": "art/environment-v1-ouninpohja-boreal-noon/document.json",
+      "environment-v1-old-staples-woodland-day": "art/environment-v1-old-staples-woodland-day/document.json",
+      "environment-v1-ground-ohio-wet-leaf-litter": "art/environment-v1-ground-ohio-wet-leaf-litter/document.json",
+      "environment-v1-ground-finnish-boreal-verge": "art/environment-v1-ground-finnish-boreal-verge/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",

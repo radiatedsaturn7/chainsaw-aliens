@@ -17,12 +17,13 @@ for(const row of ledger.rows){
  const baseline=decode(execFileSync('git',['show',ledger.base+':'+file],{maxBuffer:40e6}));
  if(!row.binding){assert.deepEqual(doc,baseline,`Unplanned race mutation ${row.raceRef}`);continue;}
  const next=structuredClone(doc),r=next.race,b=row.binding;
- assert.ok(Object.keys(b).every(k=>['skyboxArtRef','groundPlaneArtRef','terrainArtMap','roadArtMap'].includes(k)),'Unsupported binding');
+ assert.ok(Object.keys(b).every(k=>['skyboxArtRef','groundPlaneArtRef','terrainArtMap','terrainTileArtById','roadArtMap'].includes(k)),'Unsupported binding');
  if(b.skyboxArtRef){r.skyboxArtRef=registered(b.skyboxArtRef);r.skyboxSettings={...r.skyboxSettings,artRef:r.skyboxArtRef};}
  if(b.groundPlaneArtRef)r.groundPlaneArtRef=registered(b.groundPlaneArtRef);
  const replace=(obj,key,map)=>{if(obj&&map&&Object.hasOwn(map,obj[key]))obj[key]=registered(map[obj[key]]);};
  for(const tile of [...Object.values(r.road?.groundTiles||{}),...Object.values(r.road?.tileMap?.cells||{})])if(tile&&typeof tile==='object')for(const key of ['artRef','roughArtRef'])replace(tile,key,b.terrainArtMap);
- for(const texture of [r.roadTextures?.road,r.roadTextures?.shoulder,...Object.values(r.roadTextures?.surfaceRoads||{})])replace(texture,'artRef',b.roadArtMap);
+ for(const tile of Object.values(r.road?.tileMap?.cells||{}))if(b.terrainTileArtById?.[tile.tileId]){tile.artRef=registered(b.terrainTileArtById[tile.tileId]);tile.roughArtRef=tile.artRef;}
+ for(const texture of [r.roadTextures?.road,r.roadTextures?.shoulder,...Object.values(r.roadTextures?.surfaceRoads||{}),...Object.values(r.roadTextures?.surfaceShoulders||{}),r.margin])for(const key of ['artRef','roughArtRef'])replace(texture,key,b.roadArtMap);
  assertVisualOnly(baseline.race,r);
  if(!apply)assert.deepEqual(doc,next,`Binding not applied: ${row.raceRef}`);
  assert.deepEqual({...baseline,race:null},{...next,race:null},'Document metadata changed');

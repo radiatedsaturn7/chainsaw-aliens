@@ -6,7 +6,8 @@ export function nonvisualRace(race){
  delete r.groundPlaneArtRef;
  for(const c of Object.values(r.road?.tileMap?.cells||{})){delete c.artRef;delete c.roughArtRef;}
  for(const t of Object.values(r.road?.groundTiles||{})){if(t&&typeof t==='object'){delete t.artRef;delete t.roughArtRef;}}
- for(const t of [r.roadTextures?.road,r.roadTextures?.shoulder,...Object.values(r.roadTextures?.surfaceRoads||{})])if(t)delete t.artRef;
+ for(const t of [r.roadTextures?.road,r.roadTextures?.shoulder,...Object.values(r.roadTextures?.surfaceRoads||{}),...Object.values(r.roadTextures?.surfaceShoulders||{})])if(t){delete t.artRef;delete t.roughArtRef;}
+ if(r.margin)delete r.margin.artRef;
  return r;
 }
 export function assertVisualOnly(before,after){assert.deepEqual(nonvisualRace(after),nonvisualRace(before),'Nonvisual race data changed');}

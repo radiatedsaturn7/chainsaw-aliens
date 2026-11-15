@@ -3043,5 +3043,40 @@
     "documentSha256": "723ed104fef1000cc95a517a26734cff5a4dde6140bc88bac6ffde5c762008ab",
     "width": 1024,
     "height": 341
+  },
+  "environment-v1-ohio-little-muskingum-storm": {
+    "source": "assets/campaign-art/environment-v1/ohio-little-muskingum-storm.png",
+    "sourceSha256": "317d6b2154577ed44eb49396021fcd1160d43e26cbd2993aeafd2a72c41e691c",
+    "documentSha256": "83098eddbed5394566603be5d3111fd3aac77e375200509fcd4d34ab3de3088a",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-ouninpohja-boreal-noon": {
+    "source": "assets/campaign-art/environment-v1/ouninpohja-boreal-noon.png",
+    "sourceSha256": "8395d4c182f8e72146aa5125f9bd4f4c1e3d0b8864b7bb9a2d432ee2aaf9caa5",
+    "documentSha256": "bb5d1a0c49fd63137790bab75be52376d67a6b14b1903bb77cac3b4addbda14b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-old-staples-woodland-day": {
+    "source": "assets/campaign-art/environment-v1/old-staples-woodland-day.png",
+    "sourceSha256": "298e5dc8282616ce42ebe6380f36949ef9828ab69540ed3a10da94a847714fa9",
+    "documentSha256": "c1e3745413f86f89486605993fcdca33e1ee89ecc268b0061806feed4d5aa88b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-ground-ohio-wet-leaf-litter": {
+    "source": "assets/campaign-art/environment-v1/ground-ohio-wet-leaf-litter.png",
+    "sourceSha256": "748bbb5408983dca060ae690a404b2c220703b4b7b72d89ae3f467976039b1f1",
+    "documentSha256": "5e03f1e542a847ba3a17d9f78dd68179bebcb3077abfba7058a099c5858ca95b",
+    "width": 512,
+    "height": 512
+  },
+  "environment-v1-ground-finnish-boreal-verge": {
+    "source": "assets/campaign-art/environment-v1/ground-finnish-boreal-verge.png",
+    "sourceSha256": "2fddd6265242fedce5fa4fed4314949155f362463b9ab2d19d669aeb0118d3ab",
+    "documentSha256": "b75a2e2a86bb78cf1194aeaf8f58aef9a621e04ca8a939cbb8b65756cc8674ea",
+    "width": 512,
+    "height": 512
   }
 }
