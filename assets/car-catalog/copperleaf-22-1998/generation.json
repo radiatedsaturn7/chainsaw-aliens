@@ -1,0 +1,7 @@
+{
+  "tool": "supported image_gen imagegen",
+  "bodyOriginal": "/workspace/generated_images/exec-03680205-5ef1-4839-ae3a-88f12fca4293.png",
+  "dashboardOriginal": "/workspace/generated_images/exec-31bd382a-8442-43eb-bb2c-941ff874a06a.png",
+  "brief": "Original fictional copper-orange 2994 wide-fender rally coupe, eight directional views, transparent openings for shared wheels; badge-free RHD charcoal/copper dashboard with empty binnacle for real runtime gauges. No manufacturer or race livery copied.",
+  "processing": "Original PNGs copied unchanged; native car-catalog importer performs sprite segmentation/serialization. Wheel anchors measured against alpha openings."
+}
