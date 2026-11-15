@@ -2,7 +2,7 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {gunzipSync} from 'node:zlib';
-import {steeringIntent} from '../../tools/race-environments/driving-controls.mjs';
+import {steeringIntent,routeProgressDelta} from '../../tools/race-environments/driving-controls.mjs';
 import {test,expect,devices} from '@playwright/test';
 import {resolveDiagnosticRaceChoice} from '../../tools/race-environments/selector.mjs';
 const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
@@ -31,8 +31,8 @@ for(const name of names)for(const mobile of [false,true])test.describe(`${name} 
     const trace=[],held=new Set();let progress=0;const deadline=Date.now()+90000;
     await page.screenshot({path:info.outputPath('authored-driving-a.png')});
     try{while(Date.now()<deadline&&progress<targetDistance){
-     const t=await page.evaluate(()=>{const e=window.__game.raceEditor,s=e.playtestSession,p=e.getRaceRouteProjectionForWorldPoint({x:s.worldX,z:s.worldZ}),look=e.getRaceWorldPoseAtDistance(p.distance+Math.max(8,s.speedMps*1.8));return {elapsed:s.elapsedMs,yaw:s.carYaw,targetYaw:Math.atan2(look.x-s.worldX,look.z-s.worldZ),speed:s.speedMps,lateral:p.lateral,width:Number(p.segment?.roadWidthM||e.selectedRace.road.width||8),distance:p.distance,x:s.worldX,z:s.worldZ};});
-     if(!trace.length)distanceTelemetry={startDistance:t.distance};progress=t.distance-distanceTelemetry.startDistance;const intent=steeringIntent(t);trace.push({...t,...intent,progress});
+     const t=await page.evaluate(()=>{const e=window.__game.raceEditor,s=e.playtestSession,p=e.getRaceRouteProjectionForWorldPoint({x:s.worldX,z:s.worldZ}),look=e.getRaceWorldPoseAtDistance(p.distance+Math.max(8,s.speedMps*1.8));return {elapsed:s.elapsedMs,yaw:s.carYaw,targetYaw:Math.atan2(look.x-s.worldX,look.z-s.worldZ),speed:s.speedMps,lateral:p.lateral,width:Number(p.segment?.roadWidthM||e.selectedRace.road.width||8),distance:p.distance,x:s.worldX,z:s.worldZ,routeLength:s.routeLength||e.getRaceRouteLength(),runtimeType:s.routeRuntimeType||e.getSelectedRaceRuntimeType()};});
+     if(!trace.length)distanceTelemetry={startDistance:t.distance,routeLength:t.routeLength,runtimeType:t.runtimeType,progressMethod:'signed per-sample circuit unwrap with world/time continuity guards'};if(trace.length)progress+=routeProgressDelta(trace.at(-1),t);const intent=steeringIntent(t);trace.push({...t,...intent,progress});
      expect(Math.abs(t.lateral)+1,'Conservative stock-car corridor').toBeLessThanOrEqual(t.width/2);
      for(const [key,on]of [['ArrowLeft',intent.steer<0],['ArrowRight',intent.steer>0],['g',intent.throttle],['r',intent.brake]]){if(on&&!held.has(key)){await page.keyboard.down(key);held.add(key);}else if(!on&&held.has(key)){await page.keyboard.up(key);held.delete(key);}}
      await page.waitForTimeout(150);

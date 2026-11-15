@@ -4551,6 +4551,198 @@
       "maxEdge": 1024,
       "placements": [],
       "usageNote": "Exact Front Range and San Gabriel pack10 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "ground-alpine-snow-granite-v1",
+      "source": "environment-v1/ground-alpine-snow-granite-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Material-specific race environment terrain; exact existing physical material preserved."
+    },
+    {
+      "name": "ground-decomposed-granite-dirt-v1",
+      "source": "environment-v1/ground-decomposed-granite-dirt-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Material-specific race environment terrain; exact existing physical material preserved."
+    },
+    {
+      "name": "ground-winter-snow-litter-v1",
+      "source": "environment-v1/ground-winter-snow-litter-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Compacted winter snow with sparse dead vegetation on preserved snow-material terrain in Northeast routes and Fountain."
+    },
+    {
+      "name": "ground-temperate-grass-v1",
+      "source": "environment-v1/ground-temperate-grass-v1.png",
+      "kind": "terrain",
+      "maxEdge": 512,
+      "placements": [],
+      "usageNote": "Material-specific grass or snow for Northeast existing physical cells."
+    },
+    {
+      "name": "environment-v1-thompson-noon",
+      "source": "environment-v1/thompson-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-pachaug-evening",
+      "source": "environment-v1/pachaug-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-seekonk-noon",
+      "source": "environment-v1/seekonk-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-palmer-night",
+      "source": "environment-v1/palmer-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-limerock-west-noon",
+      "source": "environment-v1/limerock-west-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-brandywine-noon",
+      "source": "environment-v1/brandywine-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-grafton-noon",
+      "source": "environment-v1/grafton-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-smugglers-noon",
+      "source": "environment-v1/smugglers-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-njmp-night",
+      "source": "environment-v1/njmp-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-hartford-night",
+      "source": "environment-v1/hartford-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-wilmington-dawn",
+      "source": "environment-v1/wilmington-dawn.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-baltimore-evening",
+      "source": "environment-v1/baltimore-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-portlandme-night",
+      "source": "environment-v1/portlandme-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-boston-night",
+      "source": "environment-v1/boston-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-manchester-noon",
+      "source": "environment-v1/manchester-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-newark-night",
+      "source": "environment-v1/newark-night.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-newyork-dawn",
+      "source": "environment-v1/newyork-dawn.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-providence-noon",
+      "source": "environment-v1/providence-noon.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-philadelphia-dawn",
+      "source": "environment-v1/philadelphia-dawn.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
+    },
+    {
+      "name": "environment-v1-burlington-evening",
+      "source": "environment-v1/burlington-evening.png",
+      "kind": "skybox",
+      "maxEdge": 1024,
+      "placements": [],
+      "usageNote": "Exact Northeast corridor pack11 saved race binding in race-environments ledger."
     }
   ]
 }

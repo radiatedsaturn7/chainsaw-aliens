@@ -3844,8 +3844,8 @@
   },
   "environment-v1-ppir-noon": {
     "source": "assets/campaign-art/environment-v1/ppir-noon.png",
-    "sourceSha256": "3054e4d054affc1c7c44f67d1670f3dcb2a88179dfc1ccda111f9b4d5d0ff9c9",
-    "documentSha256": "679b04e10a5db7fc59b0504a937a3daecea555fe00211da52453d7bc9e14f24b",
+    "sourceSha256": "895fb45cf73ccde46f03c65d95e7a252064a7b81c8166b0607d2b2aadc4382a6",
+    "documentSha256": "21711581d84146f4aba48d6fd66c33200a26d234ee1c027f7540dffd94497de5",
     "width": 1024,
     "height": 341
   },
@@ -3918,5 +3918,173 @@
     "documentSha256": "635378bb4b695459fa41a0d80f13f90a0e15778967ef953cfe9d0925ddf8be9e",
     "width": 1024,
     "height": 350
+  },
+  "ground-alpine-snow-granite-v1": {
+    "source": "assets/campaign-art/environment-v1/ground-alpine-snow-granite-v1.png",
+    "sourceSha256": "42ae8cdd00297ecd53ea3c68c59b851be132a020787c5da1cce4706a9924e047",
+    "documentSha256": "8540a8790d3b6846ee199ee66bb086056eb013e4097892a89bac43d05f5f1032",
+    "width": 512,
+    "height": 512
+  },
+  "ground-decomposed-granite-dirt-v1": {
+    "source": "assets/campaign-art/environment-v1/ground-decomposed-granite-dirt-v1.png",
+    "sourceSha256": "903c4523fb7eb5146d4e60ff8de21632dbcf7f540ea873de1797f1fc39ad65db",
+    "documentSha256": "9fb19cf79f951c5408d286bf63e27860eb3d77c74138d2145b8e8b6c959f1bbe",
+    "width": 512,
+    "height": 512
+  },
+  "ground-winter-snow-litter-v1": {
+    "source": "assets/campaign-art/environment-v1/ground-winter-snow-litter-v1.png",
+    "sourceSha256": "1e45a9107eddc4f2a3b92866c137f8f20d2a73faaa8e40649d3e9dd122116d29",
+    "documentSha256": "5f5068561be0dc07a6fd2036c985fda28cf4b9b849a52840e1accb89681706d0",
+    "width": 512,
+    "height": 512
+  },
+  "ground-temperate-grass-v1": {
+    "source": "assets/campaign-art/environment-v1/ground-temperate-grass-v1.png",
+    "sourceSha256": "ebe0e7018da8521af23506cb629eb2bda586f37e2a9e8c3ec440a5dffa2ec1cf",
+    "documentSha256": "243c6e948b4dc474fac6b3a3a7d7fa7a2cc696c18ccac1d9ea605dfeba4a37b4",
+    "width": 512,
+    "height": 512
+  },
+  "environment-v1-thompson-noon": {
+    "source": "assets/campaign-art/environment-v1/thompson-noon.png",
+    "sourceSha256": "03276975f4faab0c7343e46e2225c4845329c404fe29615a033eaef67f764a79",
+    "documentSha256": "f6d62253dd2fb4352793a56da69ee46b4892eaffc8243093edb4fc97bcdba012",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-pachaug-evening": {
+    "source": "assets/campaign-art/environment-v1/pachaug-evening.png",
+    "sourceSha256": "77bb92c95d9db79d449c8725e3b910f1b077106b5ea740b24a9e19b99ccd3146",
+    "documentSha256": "97519963e683f060a0279db1d6ad8dbfe7cc4e51105b6ecca9cd1a15796dfb73",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-seekonk-noon": {
+    "source": "assets/campaign-art/environment-v1/seekonk-noon.png",
+    "sourceSha256": "da1310c95fccf1cd39c5549e2c040f24ddcd9be60e0245d48a00d3778554dee5",
+    "documentSha256": "e8a6fce6abb99a1fe7d33502feae7bd6531d83f89c87ce65762ddececc1f9fea",
+    "width": 1024,
+    "height": 342
+  },
+  "environment-v1-palmer-night": {
+    "source": "assets/campaign-art/environment-v1/palmer-night.png",
+    "sourceSha256": "1e6713425d90c32a761ff806b6f1a223d747844ac2b2d0cff44e630bf39407f5",
+    "documentSha256": "2eaae2a6d9ce960a835c1d752c34378641685b42b6a7593f5912d02a19f55a62",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-limerock-west-noon": {
+    "source": "assets/campaign-art/environment-v1/limerock-west-noon.png",
+    "sourceSha256": "30f2db60534a85c5703382839a753e5686fdc89c29b01f04fc7cdf7671cc253c",
+    "documentSha256": "dda3d87b644c90e6aa46eeefceb84d069e83cc56fbfc671a56360f47639a792c",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-brandywine-noon": {
+    "source": "assets/campaign-art/environment-v1/brandywine-noon.png",
+    "sourceSha256": "bc41001768166daad82219b093138532cbc791be0546d2be104f8fadb3c43f2b",
+    "documentSha256": "e1e2ead281d3be84214567aab76fcaa3076c883b1f8a7e1d3656382fb1768abb",
+    "width": 1024,
+    "height": 342
+  },
+  "environment-v1-grafton-noon": {
+    "source": "assets/campaign-art/environment-v1/grafton-noon.png",
+    "sourceSha256": "4ddf07fe4ffb66585135ade39f64f9baadaee66e3ba36a874204dba846286637",
+    "documentSha256": "dc4328fa1cd2dc7ad18d16b3ba9892b94e9ce399fa58e85923cb0349deb5e283",
+    "width": 1024,
+    "height": 342
+  },
+  "environment-v1-smugglers-noon": {
+    "source": "assets/campaign-art/environment-v1/smugglers-noon.png",
+    "sourceSha256": "4ed47bc49d5061923642d33cf7d8f9006ddecaf8f4492f8061ce836a45007fee",
+    "documentSha256": "df4b9020b3ba270417a5f739dd718c8eeb572bca522ff4efacd96d55793e04ce",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-njmp-night": {
+    "source": "assets/campaign-art/environment-v1/njmp-night.png",
+    "sourceSha256": "77521e7dcf227fc59be688cb44e1ac60684951a55d59e24f4ace34c58cd1bc9f",
+    "documentSha256": "b28161b3420989ff7e0f19f8f35deea29f5fcab083d68b3476ea362ce40f44a5",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-hartford-night": {
+    "source": "assets/campaign-art/environment-v1/hartford-night.png",
+    "sourceSha256": "30b42fae7c77988511561def58f6f4f3466238d58143df09c86747545fbbb368",
+    "documentSha256": "2b10957e39310a5987294ea9aa1bb442012a790aed590fbaccd8c786c241b3e7",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-wilmington-dawn": {
+    "source": "assets/campaign-art/environment-v1/wilmington-dawn.png",
+    "sourceSha256": "4d7479e7b2c3e60847d7926f0f810f60679cc3ced762b0c9b8b809b214d998cf",
+    "documentSha256": "f48de8d299b1552d6444f35d3ab69757afbb6659c17404abb1887ceaebcf9c64",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-baltimore-evening": {
+    "source": "assets/campaign-art/environment-v1/baltimore-evening.png",
+    "sourceSha256": "cddcaf752c7f112597807841b1fd2d666621a37216f36a3ab355ee8493ca6a09",
+    "documentSha256": "5909f5ec558e1b26cddb23e7d9b64b82779a4974d309ca5620e6b11c77ff7f9e",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-portlandme-night": {
+    "source": "assets/campaign-art/environment-v1/portlandme-night.png",
+    "sourceSha256": "fd1b7ac009fe5abdb0af8190bd38b375e062d6d8672c67e46ba47d9fcf85cafe",
+    "documentSha256": "71f8e8104573e05788ac74a6ca30cbd8558f01fec52731a486dfd344a58e5854",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-boston-night": {
+    "source": "assets/campaign-art/environment-v1/boston-night.png",
+    "sourceSha256": "54f4a5e1b1d89f1fbf7873044628147160d600b90b8e8dd516a29369a21222a6",
+    "documentSha256": "4d1cc06164672209f0ed2d61521a0e2702d2042dae9f3750101dc6eed2594930",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-manchester-noon": {
+    "source": "assets/campaign-art/environment-v1/manchester-noon.png",
+    "sourceSha256": "e5b46cdef3566adbc64c82fa0ae56093d0fc6f1a92793dc685707d6b3ecb9c9a",
+    "documentSha256": "747f48e1f057e9943aa42c8bbbc553025b4513c4337e50a20fb5944a2f5bf713",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-newark-night": {
+    "source": "assets/campaign-art/environment-v1/newark-night.png",
+    "sourceSha256": "449e9eb62ba6f9b8a41e8a4bceae6e6559302cbb05d7bf0d6916bf44f783ff00",
+    "documentSha256": "97a361bcff3e793da63c55dad4c8bf3d7d9745c81bf824dda810a374f3c9f09b",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-newyork-dawn": {
+    "source": "assets/campaign-art/environment-v1/newyork-dawn.png",
+    "sourceSha256": "3f76e972c2e840a53d9174640b5faaa7b9536663a7a4d6271762f4de739270d6",
+    "documentSha256": "805b2aaf3fc62919bc5815668afdf1026b0afcc9ecb6b6f076bdad49c6d097f0",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-providence-noon": {
+    "source": "assets/campaign-art/environment-v1/providence-noon.png",
+    "sourceSha256": "62dc3206651fffa04f6999708e8f3e9ca5ff10e989d3c142eb0bc87e847c71f7",
+    "documentSha256": "a1b9082c5af68551a9ef02e69c95b0d52632301ee18b1d3c493f4372bb8a76a8",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-philadelphia-dawn": {
+    "source": "assets/campaign-art/environment-v1/philadelphia-dawn.png",
+    "sourceSha256": "9346d2f310ca48e5ff1b7d0934835f21c9b72fbbf3a7d6c97f9467de7187e357",
+    "documentSha256": "8c68738a7b12c83d09227b86896fd31ce892456c88c88a724dec34fdb4249f4d",
+    "width": 1024,
+    "height": 341
+  },
+  "environment-v1-burlington-evening": {
+    "source": "assets/campaign-art/environment-v1/burlington-evening.png",
+    "sourceSha256": "33cc0a551139203557fa3a262209d95f199c451b20f63eca00fca8bc644f7265",
+    "documentSha256": "edd44a3587b3642c8bfc59effe4fe970523c21f44fb033a2df6a5395539c3c24",
+    "width": 1024,
+    "height": 341
   }
 }

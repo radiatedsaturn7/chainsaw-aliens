@@ -70,3 +70,32 @@ The native audit optionally accepts corrective capture directories after the pac
 Pack10 (`front-range-sangabriel-pack10`) binds twenty distinct Colorado / San Gabriel sites, including both remaining main-route skies. `prepare-front-range-pack.mjs` consumes the explicit source recipes and transfers the two exact main-route placement registrations; the preload/placement unit assertions stay unchanged. No state-wide sky sharing is inferred. Decode actual terrain pixels before selecting references: existing industrial-concrete/rubble images depict robotic panels and were rejected for Pomona and Denver. Ground and normal/rough tile image refs change while material IDs, weights, active surface-specific road/shoulder settings and all nonvisual fields remain guarded.
 
 Retain `pack10-repairs.json` before/after source metrics and original paths for Schnebly and Mingus. Recomposition removes near features from outer edges; a lower seam score alone is not visual acceptance. Run both native device projections and inspect matched wrap/pitch views with the unchanged staging renderer. New pack source warnings, authored fog/exposure limitations, and production-load failures remain explicit. Native compositor coverage cannot stand in for driving. Use serial representative production cases with `RACE_DRIVE_DISTANCE=20`, and record simulation/wall duration; do not repeat previously characterized baseline cases or alter their deadlines.
+
+Pack11 (`northeast-corridor-pack11`) adds twenty Northeast route/site variants with
+explicit grass versus snow artwork intent. `prepare-northeast-pack.mjs` consumes
+`pack11-recipes.json`; import only its listed sky and ground refs, then use
+`bind.mjs --apply` and the all-245 read-back guard. Pikes snow and Angeles dirt
+use separately authored material-correct textures. `terrain-materials.mjs` checks
+normal and rough references, with negative swaps and nonempty per-route coverage.
+The full unit run exposes the newly unused legacy `skybox-tower-hill`; no false
+placement, deferred exemption or intent reclassification was added. Original art
+and all earlier evidence remain retained. See `pack11-evidence.json` for exact
+usage, test, native, driving and boundary findings; do not infer release readiness.
+
+The distance-mode driving harness unwraps signed circuit progress per sample,
+using the actual runtime type and route length. Reverse travel remains negative;
+world displacement and simulation-time continuity reject projection jumps and
+resets. The original Thompson/NJMP failures crossed the lap seam, rather than
+failing startup, and are retained separately from corrected runs. This is QA-only
+measurement: no simulation, input tuning, route, loading deadline or acceptance
+distance changes. New tests cover forward/reverse seams, stationary samples,
+open-route non-wrapping, projection discontinuity, teleport and clock reset.
+
+The final PPIR correction also replaces its 5,016 dry-scrub visual cells with
+compacted winter-snow art, matching their preserved snow material. Its earlier
+horizon-only drive/native captures remain superseded evidence for the foreground.
+This is not a certification of older packs: Angeles Forest County N3 still has
+17,952 snow cells displaying dry scrub. Keep that named debt visible for the
+remaining material audit, rather than weakening the material guard or changing
+physics. Pack11's twenty new routes have complete declared normal/rough material
+coverage; full-project visual/terrain acceptance remains pending.

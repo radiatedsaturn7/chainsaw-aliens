@@ -1,0 +1,990 @@
+{
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "pack": "northeast-corridor-pack11",
+  "recipes": [
+    {
+      "key": "thompson-noon",
+      "brief": "Thompson Connecticut speedway, low rolling wooded northeastern Connecticut hills, small disused oval bleachers at one side, modest pit roofs, low dense oak and pine tree horizon, open dormant grass infield",
+      "time": "noon",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Thompson Connecticut speedway, low rolling wooded northeastern Connecticut hills, small disused oval bleachers at one side, modest pit roofs, low dense oak and pine tree horizon, open dormant grass infield. Clear daylight, muted blue sky, subdued natural greens/browns, not oversaturated.",
+      "sourceImage": "/workspace/generated_images/exec-3e3e8a96-483a-41b7-a82a-e253fc96cdcc.png",
+      "raceRef": "Thompson Speedway — 1.7-mile road course",
+      "ref": "environment-v1-thompson-noon",
+      "source": "environment-v1/thompson-noon.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 1,
+      "sourceOrigin": {
+        "name": "Thompson Speedway — 1.7-mile road course",
+        "lat": 41.98,
+        "lon": -71.825,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H01-S05.json",
+      "catalog": [
+        {
+          "id": "H01-S05",
+          "hubStage": 1,
+          "startGps": {
+            "lat": 41.98091374,
+            "lon": -71.83054752
+          },
+          "finishGps": {
+            "lat": 41.98091374,
+            "lon": -71.83054752
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "https://www.thompsonspeedway.com/"
+      ],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-3e3e8a96-483a-41b7-a82a-e253fc96cdcc.png",
+        "sourceReviewed": true,
+        "sourceSha256": "03276975f4faab0c7343e46e2225c4845329c404fe29615a033eaef67f764a79"
+      },
+      "sourceSha256": "03276975f4faab0c7343e46e2225c4845329c404fe29615a033eaef67f764a79"
+    },
+    {
+      "key": "pachaug-evening",
+      "brief": "Pachaug State Forest Connecticut public woodland gravel route: close but low overlapping oak and white pine crowns, shallow glacial knolls, scattered stone wall remnants, no alpine peaks, no skyline, forest opening not a lake",
+      "time": "evening",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Pachaug State Forest Connecticut public woodland gravel route: close but low overlapping oak and white pine crowns, shallow glacial knolls, scattered stone wall remnants, no alpine peaks, no skyline, forest opening not a lake. Clear late afternoon/evening, restrained warm low horizon, blue upper sky; no baked black filter as engine applies evening exposure.",
+      "sourceImage": "/workspace/generated_images/exec-b2ff0098-73d2-4021-8c28-10d7d44d783b.png",
+      "raceRef": "Pachaug State Forest — public gravel access roads",
+      "ref": "environment-v1-pachaug-evening",
+      "source": "environment-v1/pachaug-evening.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 0.42,
+      "sourceOrigin": {
+        "name": "Pachaug State Forest — public gravel access roads",
+        "lat": 41.56,
+        "lon": -71.85,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H01-S04.json",
+      "catalog": [
+        {
+          "id": "H01-S04",
+          "hubStage": 1,
+          "startGps": {
+            "lat": 41.5427355,
+            "lon": -71.8229626
+          },
+          "finishGps": {
+            "lat": 41.55416686666666,
+            "lon": -71.79896896666666
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [
+        "https://ctparks.com/parks/pachaug-state-forest"
+      ],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-b2ff0098-73d2-4021-8c28-10d7d44d783b.png",
+        "sourceReviewed": true,
+        "sourceSha256": "77bb92c95d9db79d449c8725e3b910f1b077106b5ea740b24a9e19b99ccd3146"
+      },
+      "sourceSha256": "77bb92c95d9db79d449c8725e3b910f1b077106b5ea740b24a9e19b99ccd3146"
+    },
+    {
+      "key": "seekonk-noon",
+      "brief": "Seekonk Massachusetts small paved oval: flat coastal plain, compact low empty bleachers, abandoned weathered announcer booth, distant mixed suburban woodland and a few small industrial roofs, no mountains",
+      "time": "noon",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Seekonk Massachusetts small paved oval: flat coastal plain, compact low empty bleachers, abandoned weathered announcer booth, distant mixed suburban woodland and a few small industrial roofs, no mountains. Clear daylight, muted blue sky, subdued natural greens/browns, not oversaturated.",
+      "sourceImage": "/workspace/generated_images/exec-f4052b92-0ec0-467b-a1d8-374ac16473d0.png",
+      "raceRef": "Seekonk Speedway — oval",
+      "ref": "environment-v1-seekonk-noon",
+      "source": "environment-v1/seekonk-noon.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 1,
+      "sourceOrigin": {
+        "name": "Seekonk Speedway — oval",
+        "lat": 41.7844807,
+        "lon": -71.3020359,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H01-S06.json",
+      "catalog": [
+        {
+          "id": "H01-S06",
+          "hubStage": 1,
+          "startGps": {
+            "lat": 41.7849818,
+            "lon": -71.30176655
+          },
+          "finishGps": {
+            "lat": 41.7849818,
+            "lon": -71.30176655
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-f4052b92-0ec0-467b-a1d8-374ac16473d0.png",
+        "sourceReviewed": true,
+        "sourceSha256": "da1310c95fccf1cd39c5549e2c040f24ddcd9be60e0245d48a00d3778554dee5"
+      },
+      "sourceSha256": "da1310c95fccf1cd39c5549e2c040f24ddcd9be60e0245d48a00d3778554dee5"
+    },
+    {
+      "key": "palmer-night",
+      "brief": "Palmer Massachusetts Whiskey Hill raceway: hollow within wooded rounded hills, several layered dark ridges, small abandoned paddock roofs very distant, no giant mountains",
+      "time": "night",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Palmer Massachusetts Whiskey Hill raceway: hollow within wooded rounded hills, several layered dark ridges, small abandoned paddock roofs very distant, no giant mountains. Clear nighttime palette, blue-black sky, sparse small stars and a subtle small crescent moon where visible, restrained cool land silhouettes with tiny sparse abandoned-site residual lights. No daylight sky, no floodlit giant moon; engine applies dark exposure.",
+      "sourceImage": "/workspace/generated_images/exec-c72b3de2-844a-4077-b2db-1d7b63daf56d.png",
+      "raceRef": "Palmer Motorsports Park — Massachusetts",
+      "ref": "environment-v1-palmer-night",
+      "source": "environment-v1/palmer-night.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 0.05,
+      "sourceOrigin": {
+        "name": "Palmer Motorsports Park — Massachusetts",
+        "lat": 42.2259907,
+        "lon": -72.2527533,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/side-races/sources/H01-S09.json",
+      "catalog": [
+        {
+          "id": "H01-S09",
+          "hubStage": 1,
+          "startGps": {
+            "lat": 42.233093966666665,
+            "lon": -72.24454033333333
+          },
+          "finishGps": {
+            "lat": 42.233093966666665,
+            "lon": -72.24454033333333
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://www.palmermotorsportspark.com/TrackMaps.htm"
+      ],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-c72b3de2-844a-4077-b2db-1d7b63daf56d.png",
+        "sourceReviewed": true,
+        "sourceSha256": "1e6713425d90c32a761ff806b6f1a223d747844ac2b2d0cff44e630bf39407f5"
+      },
+      "sourceSha256": "1e6713425d90c32a761ff806b6f1a223d747844ac2b2d0cff44e630bf39407f5"
+    },
+    {
+      "key": "limerock-west-noon",
+      "brief": "Lime Rock Connecticut road circuit at Lakeville: folded soft Berkshire foothills, dense forest bands, low grassy infield and tiny old timing/paddock structures, intimate valley enclosed by green-brown rounded ridges, no grandstands, no alpine peaks",
+      "time": "noon",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Lime Rock Connecticut road circuit at Lakeville: folded soft Berkshire foothills, dense forest bands, low grassy infield and tiny old timing/paddock structures, intimate valley enclosed by green-brown rounded ridges, no grandstands, no alpine peaks. Clear daylight, muted blue sky, subdued natural greens/browns, not oversaturated.",
+      "sourceImage": "/workspace/generated_images/exec-bfc5c846-a401-4de7-b477-afefe6c3f59f.png",
+      "raceRef": "Lime Rock Park — West Chicane",
+      "ref": "environment-v1-limerock-west-noon",
+      "source": "environment-v1/limerock-west-noon.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 1,
+      "sourceOrigin": {
+        "name": "Lime Rock Park",
+        "lat": 41.928,
+        "lon": -73.38,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/raceways/sources/lime.json",
+      "catalog": [
+        {
+          "id": "raceway-lime-west-chicane",
+          "venueKey": "lime",
+          "venueName": "Lime Rock Park",
+          "hubStage": 1,
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-bfc5c846-a401-4de7-b477-afefe6c3f59f.png",
+        "sourceReviewed": true,
+        "sourceSha256": "30f2db60534a85c5703382839a753e5686fdc89c29b01f04fc7cdf7671cc253c"
+      },
+      "sourceSha256": "30f2db60534a85c5703382839a753e5686fdc89c29b01f04fc7cdf7671cc253c"
+    },
+    {
+      "key": "brandywine-noon",
+      "brief": "Montchanin Road Brandywine Valley Delaware in winter: gentle rolling Piedmont farmland, leafless deciduous hedgerows, stone estate wall and very small weathered stone barn, patchy settled snow across lower fields, no mountains or urban skyline",
+      "time": "noon",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Montchanin Road Brandywine Valley Delaware in winter: gentle rolling Piedmont farmland, leafless deciduous hedgerows, stone estate wall and very small weathered stone barn, patchy settled snow across lower fields, no mountains or urban skyline. Clear daylight, muted blue sky, subdued natural greens/browns, not oversaturated.",
+      "sourceImage": "/workspace/generated_images/exec-afe70618-3996-4647-93f1-6dab3f04d9c4.png",
+      "raceRef": "Brandywine Valley — Montchanin Road",
+      "ref": "environment-v1-brandywine-noon",
+      "source": "environment-v1/brandywine-noon.png",
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "brightness": 1,
+      "sourceOrigin": {
+        "name": "Brandywine Valley — Montchanin Road",
+        "lat": 39.805,
+        "lon": -75.591,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-de.json",
+      "catalog": [
+        {
+          "id": "state-de",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 3,
+          "location": {
+            "lat": 39.805,
+            "lon": -75.591
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-afe70618-3996-4647-93f1-6dab3f04d9c4.png",
+        "sourceReviewed": true,
+        "sourceSha256": "bc41001768166daad82219b093138532cbc791be0546d2be104f8fadb3c43f2b"
+      },
+      "sourceSha256": "bc41001768166daad82219b093138532cbc791be0546d2be104f8fadb3c43f2b"
+    },
+    {
+      "key": "grafton-noon",
+      "brief": "Grafton Notch Maine Route26: deep U-shaped wooded notch, Old Speck rounded mountain shoulder and angular exposed Eyebrow ledge, dark spruce and bare hardwood forests stepping down into narrow valley, no lake, no buildings",
+      "time": "noon",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Grafton Notch Maine Route26: deep U-shaped wooded notch, Old Speck rounded mountain shoulder and angular exposed Eyebrow ledge, dark spruce and bare hardwood forests stepping down into narrow valley, no lake, no buildings. Clear daylight, muted blue sky, subdued natural greens/browns, not oversaturated.",
+      "sourceImage": "/workspace/generated_images/exec-481462f9-b048-471f-b395-33bb8eead78d.png",
+      "raceRef": "Grafton Notch — Maine 26",
+      "ref": "environment-v1-grafton-noon",
+      "source": "environment-v1/grafton-noon.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 1,
+      "sourceOrigin": {
+        "name": "Grafton Notch — Maine 26",
+        "lat": 44.589,
+        "lon": -70.94,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-me.json",
+      "catalog": [
+        {
+          "id": "state-me",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 2,
+          "location": {
+            "lat": 44.589,
+            "lon": -70.94
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-481462f9-b048-471f-b395-33bb8eead78d.png",
+        "sourceReviewed": true,
+        "sourceSha256": "4ddf07fe4ffb66585135ade39f64f9baadaee66e3ba36a874204dba846286637"
+      },
+      "sourceSha256": "4ddf07fe4ffb66585135ade39f64f9baadaee66e3ba36a874204dba846286637"
+    },
+    {
+      "key": "smugglers-noon",
+      "brief": "Smugglers Notch Vermont108: narrow dramatic wooded pass between steep Mount Mansfield and Spruce Peak shoulders, folded green-gray schist cliffs amid dense conifers and hardwoods, boulder foothills but no giant foreground rocks, no lake",
+      "time": "noon",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Smugglers Notch Vermont108: narrow dramatic wooded pass between steep Mount Mansfield and Spruce Peak shoulders, folded green-gray schist cliffs amid dense conifers and hardwoods, boulder foothills but no giant foreground rocks, no lake. Clear daylight, muted blue sky, subdued natural greens/browns, not oversaturated.",
+      "sourceImage": "/workspace/generated_images/exec-51c4b701-cf25-4c45-9f4c-5298a994d1c9.png",
+      "raceRef": "Smugglers Notch — Vermont 108",
+      "ref": "environment-v1-smugglers-noon",
+      "source": "environment-v1/smugglers-noon.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 1,
+      "sourceOrigin": {
+        "name": "Smugglers Notch — Vermont 108",
+        "lat": 44.556,
+        "lon": -72.792,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-vt.json",
+      "catalog": [
+        {
+          "id": "state-vt",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 2,
+          "location": {
+            "lat": 44.556,
+            "lon": -72.792
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [
+        "https://www.vtstateparks.com/parks/smugglers-notch"
+      ],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-51c4b701-cf25-4c45-9f4c-5298a994d1c9.png",
+        "sourceReviewed": true,
+        "sourceSha256": "4ed47bc49d5061923642d33cf7d8f9006ddecaf8f4492f8061ce836a45007fee"
+      },
+      "sourceSha256": "4ed47bc49d5061923642d33cf7d8f9006ddecaf8f4492f8061ce836a45007fee"
+    },
+    {
+      "key": "njmp-night",
+      "brief": "New Jersey Motorsports Park Thunderbolt Millville flat coastal plain in winter: extremely low pitch pine/oak woodland, tiny abandoned timing tower and garage silhouettes, patchy old snow on infield, no hills or mountains",
+      "time": "night",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: New Jersey Motorsports Park Thunderbolt Millville flat coastal plain in winter: extremely low pitch pine/oak woodland, tiny abandoned timing tower and garage silhouettes, patchy old snow on infield, no hills or mountains. Clear nighttime palette, blue-black sky, sparse small stars and a subtle small crescent moon where visible, restrained cool land silhouettes with tiny sparse abandoned-site residual lights. No daylight sky, no floodlit giant moon; engine applies dark exposure.",
+      "sourceImage": "/workspace/generated_images/exec-2276b32b-6328-4454-befa-f42af8de7495.png",
+      "raceRef": "NJMP — Thunderbolt",
+      "ref": "environment-v1-njmp-night",
+      "source": "environment-v1/njmp-night.png",
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "brightness": 0.05,
+      "sourceOrigin": {
+        "name": "NJMP — Thunderbolt",
+        "lat": 39.355,
+        "lon": -75.061,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/state-nj.json",
+      "catalog": [
+        {
+          "id": "state-nj",
+          "venueKey": "state-nj",
+          "venueName": "NJMP — Thunderbolt",
+          "hubStage": 3,
+          "location": {
+            "lat": 39.355,
+            "lon": -75.061
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [
+        "https://njmp.com/track-map/"
+      ],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-2276b32b-6328-4454-befa-f42af8de7495.png",
+        "sourceReviewed": true,
+        "sourceSha256": "77521e7dcf227fc59be688cb44e1ac60684951a55d59e24f4ace34c58cd1bc9f"
+      },
+      "sourceSha256": "77521e7dcf227fc59be688cb44e1ac60684951a55d59e24f4ace34c58cd1bc9f"
+    },
+    {
+      "key": "hartford-night",
+      "brief": "Hartford Connecticut: distant compact skyline with Travelers Tower-inspired slender stone tower and modern rectangular slabs, Connecticut River low valley treeline, few ruined industrial brick roofs at bottom, no mountains or giant close buildings",
+      "time": "night",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Hartford Connecticut: distant compact skyline with Travelers Tower-inspired slender stone tower and modern rectangular slabs, Connecticut River low valley treeline, few ruined industrial brick roofs at bottom, no mountains or giant close buildings. Clear nighttime palette, blue-black sky, sparse small stars and a subtle small crescent moon where visible, restrained cool land silhouettes with tiny sparse abandoned-site residual lights. No daylight sky, no floodlit giant moon; engine applies dark exposure.",
+      "sourceImage": "/workspace/generated_images/exec-9f94adcf-878e-4e37-b45d-4bf6df98f78c.png",
+      "raceRef": "Hartford, CT — Landmark Run",
+      "ref": "environment-v1-hartford-night",
+      "source": "environment-v1/hartford-night.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 0.05,
+      "sourceOrigin": {
+        "name": "Hartford — Landmark Run",
+        "lat": 41.763,
+        "lon": -72.687,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ct.json",
+      "catalog": [
+        {
+          "id": "city-ct",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 1,
+          "location": {
+            "lat": 41.763,
+            "lon": -72.687
+          },
+          "startGps": {
+            "lat": 41.772905438461535,
+            "lon": -72.70882999999999
+          },
+          "finishGps": {
+            "lat": 41.75860016666667,
+            "lon": -72.66613029999999
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-9f94adcf-878e-4e37-b45d-4bf6df98f78c.png",
+        "sourceReviewed": true,
+        "sourceSha256": "30b42fae7c77988511561def58f6f4f3466238d58143df09c86747545fbbb368"
+      },
+      "sourceSha256": "30b42fae7c77988511561def58f6f4f3466238d58143df09c86747545fbbb368"
+    },
+    {
+      "key": "wilmington-dawn",
+      "brief": "Wilmington Delaware: low Brandywine and Christina river industrial valley, small downtown office blocks and old brick warehouses, faint port cranes far side, winter patchy settled snow, gently rolling horizon not mountain, no huge suspension bridge",
+      "time": "dawn",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Wilmington Delaware: low Brandywine and Christina river industrial valley, small downtown office blocks and old brick warehouses, faint port cranes far side, winter patchy settled snow, gently rolling horizon not mountain, no huge suspension bridge. Clear dawn, muted pale rose band low on horizon, cool blue-gray upper sky, restrained city/land contrast, no giant sun disk.",
+      "sourceImage": "/workspace/generated_images/exec-91ee35bd-aa04-4c76-b1a3-72226136d9d3.png",
+      "raceRef": "Wilmington, DE — Landmark Run",
+      "ref": "environment-v1-wilmington-dawn",
+      "source": "environment-v1/wilmington-dawn.png",
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "brightness": 0.65,
+      "sourceOrigin": {
+        "name": "Wilmington — Landmark Run",
+        "lat": 39.743,
+        "lon": -75.552,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-de.json",
+      "catalog": [
+        {
+          "id": "city-de",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 3,
+          "location": {
+            "lat": 39.743,
+            "lon": -75.552
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-91ee35bd-aa04-4c76-b1a3-72226136d9d3.png",
+        "sourceReviewed": true,
+        "sourceSha256": "4d7479e7b2c3e60847d7926f0f810f60679cc3ced762b0c9b8b809b214d998cf"
+      },
+      "sourceSha256": "4d7479e7b2c3e60847d7926f0f810f60679cc3ced762b0c9b8b809b214d998cf"
+    },
+    {
+      "key": "baltimore-evening",
+      "brief": "Baltimore Maryland: low Inner Harbor port city skyline, compact domed and rectangular city silhouettes, old brick industrial warehouses and tiny distant container cranes, winter settled snow on low land, gentle coastal relief, no mountains",
+      "time": "evening",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Baltimore Maryland: low Inner Harbor port city skyline, compact domed and rectangular city silhouettes, old brick industrial warehouses and tiny distant container cranes, winter settled snow on low land, gentle coastal relief, no mountains. Clear late afternoon/evening, restrained warm low horizon, blue upper sky; no baked black filter as engine applies evening exposure.",
+      "sourceImage": "/workspace/generated_images/exec-3341231a-9eee-4312-8d4e-7abff20381f5.png",
+      "raceRef": "Baltimore, MD — Landmark Run",
+      "ref": "environment-v1-baltimore-evening",
+      "source": "environment-v1/baltimore-evening.png",
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "brightness": 0.42,
+      "sourceOrigin": {
+        "name": "Baltimore — Landmark Run",
+        "lat": 39.291,
+        "lon": -76.614,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-md.json",
+      "catalog": [
+        {
+          "id": "city-md",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 3,
+          "location": {
+            "lat": 39.291,
+            "lon": -76.614
+          },
+          "startGps": {
+            "lat": 39.277888266666665,
+            "lon": -76.62782058666666
+          },
+          "finishGps": {
+            "lat": 39.30293876666667,
+            "lon": -76.60170086666666
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-3341231a-9eee-4312-8d4e-7abff20381f5.png",
+        "sourceReviewed": true,
+        "sourceSha256": "cddcaf752c7f112597807841b1fd2d666621a37216f36a3ab355ee8493ca6a09"
+      },
+      "sourceSha256": "cddcaf752c7f112597807841b1fd2d666621a37216f36a3ab355ee8493ca6a09"
+    },
+    {
+      "key": "portlandme-night",
+      "brief": "Portland Maine: Casco Bay coastal peninsula, low dark Atlantic bay strip only at distant horizon with tiny islands, modest old brick waterfront city roofs and distant compact tower, low wooded headlands, no high mountains",
+      "time": "night",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Portland Maine: Casco Bay coastal peninsula, low dark Atlantic bay strip only at distant horizon with tiny islands, modest old brick waterfront city roofs and distant compact tower, low wooded headlands, no high mountains. Clear nighttime palette, blue-black sky, sparse small stars and a subtle small crescent moon where visible, restrained cool land silhouettes with tiny sparse abandoned-site residual lights. No daylight sky, no floodlit giant moon; engine applies dark exposure.",
+      "sourceImage": "/workspace/generated_images/exec-cc0071f1-88ba-4bd6-a408-680d2ea51b2c.png",
+      "raceRef": "Portland, ME — Landmark Run",
+      "ref": "environment-v1-portlandme-night",
+      "source": "environment-v1/portlandme-night.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 0.05,
+      "sourceOrigin": {
+        "name": "Portland — Landmark Run",
+        "lat": 43.659,
+        "lon": -70.254,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-me.json",
+      "catalog": [
+        {
+          "id": "city-me",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 2,
+          "location": {
+            "lat": 43.659,
+            "lon": -70.254
+          },
+          "startGps": {
+            "lat": 43.646192428571425,
+            "lon": -70.26920485714285
+          },
+          "finishGps": {
+            "lat": 43.668818671428575,
+            "lon": -70.24270072857142
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-cc0071f1-88ba-4bd6-a408-680d2ea51b2c.png",
+        "sourceReviewed": true,
+        "sourceSha256": "fd1b7ac009fe5abdb0af8190bd38b375e062d6d8672c67e46ba47d9fcf85cafe"
+      },
+      "sourceSha256": "fd1b7ac009fe5abdb0af8190bd38b375e062d6d8672c67e46ba47d9fcf85cafe"
+    },
+    {
+      "key": "boston-night",
+      "brief": "Boston Massachusetts: low Back Bay and downtown urban skyline, mix of narrow modern slabs and old masonry silhouettes behind low Charles estuary tree belt, understated far harbor, no mountains, weathered abandoned city not a neon cybercity",
+      "time": "night",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Boston Massachusetts: low Back Bay and downtown urban skyline, mix of narrow modern slabs and old masonry silhouettes behind low Charles estuary tree belt, understated far harbor, no mountains, weathered abandoned city not a neon cybercity. Clear nighttime palette, blue-black sky, sparse small stars and a subtle small crescent moon where visible, restrained cool land silhouettes with tiny sparse abandoned-site residual lights. No daylight sky, no floodlit giant moon; engine applies dark exposure.",
+      "sourceImage": "/workspace/generated_images/exec-8cbf4e21-3fba-4700-bb1c-5a768fd97a7b.png",
+      "raceRef": "Boston, MA — Landmark Run",
+      "ref": "environment-v1-boston-night",
+      "source": "environment-v1/boston-night.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 0.05,
+      "sourceOrigin": {
+        "name": "Boston — Landmark Run",
+        "lat": 42.356,
+        "lon": -71.061,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ma.json",
+      "catalog": [
+        {
+          "id": "city-ma",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 1,
+          "location": {
+            "lat": 42.356,
+            "lon": -71.061
+          },
+          "startGps": {
+            "lat": 42.371164625,
+            "lon": -71.086528475
+          },
+          "finishGps": {
+            "lat": 42.34257572,
+            "lon": -71.04643376
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-8cbf4e21-3fba-4700-bb1c-5a768fd97a7b.png",
+        "sourceReviewed": true,
+        "sourceSha256": "54f4a5e1b1d89f1fbf7873044628147160d600b90b8e8dd516a29369a21222a6"
+      },
+      "sourceSha256": "54f4a5e1b1d89f1fbf7873044628147160d600b90b8e8dd516a29369a21222a6"
+    },
+    {
+      "key": "manchester-noon",
+      "brief": "Manchester New Hampshire Merrimack valley: long weathered red brick Amoskeag mill rooftops and sparse chimney silhouettes, modest downtown cluster, soft low wooded New Hampshire hills, river valley dip not a large lake",
+      "time": "noon",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Manchester New Hampshire Merrimack valley: long weathered red brick Amoskeag mill rooftops and sparse chimney silhouettes, modest downtown cluster, soft low wooded New Hampshire hills, river valley dip not a large lake. Clear daylight, muted blue sky, subdued natural greens/browns, not oversaturated.",
+      "sourceImage": "/workspace/generated_images/exec-08cb37d3-3138-4993-bf00-33052f319fca.png",
+      "raceRef": "Manchester, NH — Landmark Run",
+      "ref": "environment-v1-manchester-noon",
+      "source": "environment-v1/manchester-noon.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 1,
+      "sourceOrigin": {
+        "name": "Manchester — Landmark Run",
+        "lat": 42.992,
+        "lon": -71.462,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-nh.json",
+      "catalog": [
+        {
+          "id": "city-nh",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 1,
+          "location": {
+            "lat": 42.992,
+            "lon": -71.462
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-08cb37d3-3138-4993-bf00-33052f319fca.png",
+        "sourceReviewed": true,
+        "sourceSha256": "e5b46cdef3566adbc64c82fa0ae56093d0fc6f1a92793dc685707d6b3ecb9c9a"
+      },
+      "sourceSha256": "e5b46cdef3566adbc64c82fa0ae56093d0fc6f1a92793dc685707d6b3ecb9c9a"
+    },
+    {
+      "key": "newark-night",
+      "brief": "Newark New Jersey: distant compact downtown brick and office skyline, low industrial meadowlands and rail warehouse silhouettes, very distant port gantries, flat broad coastal basin, no mountains, no Manhattan mega skyline",
+      "time": "night",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Newark New Jersey: distant compact downtown brick and office skyline, low industrial meadowlands and rail warehouse silhouettes, very distant port gantries, flat broad coastal basin, no mountains, no Manhattan mega skyline. Clear nighttime palette, blue-black sky, sparse small stars and a subtle small crescent moon where visible, restrained cool land silhouettes with tiny sparse abandoned-site residual lights. No daylight sky, no floodlit giant moon; engine applies dark exposure.",
+      "sourceImage": "/workspace/generated_images/exec-1564ce73-d203-4799-a00d-2686d5695491.png",
+      "raceRef": "Newark, NJ — Landmark Run",
+      "ref": "environment-v1-newark-night",
+      "source": "environment-v1/newark-night.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 0.05,
+      "sourceOrigin": {
+        "name": "Newark — Landmark Run",
+        "lat": 40.744,
+        "lon": -74.171,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-nj.json",
+      "catalog": [
+        {
+          "id": "city-nj",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 1,
+          "location": {
+            "lat": 40.744,
+            "lon": -74.171
+          },
+          "lightingPreset": "night"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-1564ce73-d203-4799-a00d-2686d5695491.png",
+        "sourceReviewed": true,
+        "sourceSha256": "449e9eb62ba6f9b8a41e8a4bceae6e6559302cbb05d7bf0d6916bf44f783ff00"
+      },
+      "sourceSha256": "449e9eb62ba6f9b8a41e8a4bceae6e6559302cbb05d7bf0d6916bf44f783ff00"
+    },
+    {
+      "key": "newyork-dawn",
+      "brief": "New York City: recognizably dense distant Manhattan silhouette with tall slender stepped towers amid blocky skyline, low estuary edge and sparse old dock gantries, foreground tree belt, no close buildings, abandoned but structurally plausible city, no text",
+      "time": "dawn",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: New York City: recognizably dense distant Manhattan silhouette with tall slender stepped towers amid blocky skyline, low estuary edge and sparse old dock gantries, foreground tree belt, no close buildings, abandoned but structurally plausible city, no text. Clear dawn, muted pale rose band low on horizon, cool blue-gray upper sky, restrained city/land contrast, no giant sun disk.",
+      "sourceImage": "/workspace/generated_images/exec-878503a8-6afd-4b3e-b772-6e068504927a.png",
+      "raceRef": "New York, NY — Landmark Run",
+      "ref": "environment-v1-newyork-dawn",
+      "source": "environment-v1/newyork-dawn.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 0.65,
+      "sourceOrigin": {
+        "name": "New York, NY — Landmark Run",
+        "lat": 40.751,
+        "lon": -73.983,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ny.json",
+      "catalog": [
+        {
+          "id": "city-ny",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 1,
+          "location": {
+            "lat": 40.751,
+            "lon": -73.983
+          },
+          "startGps": {
+            "lat": 40.73561923333333,
+            "lon": -73.97552736666667
+          },
+          "finishGps": {
+            "lat": 40.763784125,
+            "lon": -73.995481275
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-878503a8-6afd-4b3e-b772-6e068504927a.png",
+        "sourceReviewed": true,
+        "sourceSha256": "3f76e972c2e840a53d9174640b5faaa7b9536663a7a4d6271762f4de739270d6"
+      },
+      "sourceSha256": "3f76e972c2e840a53d9174640b5faaa7b9536663a7a4d6271762f4de739270d6"
+    },
+    {
+      "key": "providence-noon",
+      "brief": "Providence Rhode Island: modest downtown skyline with stepped Art Deco tower and small capitol dome, old brick mill roofs, low wooded College Hill shoulder, compact New England river valley, no mountains or broad ocean",
+      "time": "noon",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Providence Rhode Island: modest downtown skyline with stepped Art Deco tower and small capitol dome, old brick mill roofs, low wooded College Hill shoulder, compact New England river valley, no mountains or broad ocean. Clear daylight, muted blue sky, subdued natural greens/browns, not oversaturated.",
+      "sourceImage": "/workspace/generated_images/exec-c0e2ae7e-6aee-47ca-8637-2633067dc067.png",
+      "raceRef": "Providence, RI — Landmark Run",
+      "ref": "environment-v1-providence-noon",
+      "source": "environment-v1/providence-noon.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 1,
+      "sourceOrigin": {
+        "name": "Providence, RI — Landmark Run",
+        "lat": 41.825,
+        "lon": -71.411,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-ri.json",
+      "catalog": [
+        {
+          "id": "city-ri",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 1,
+          "location": {
+            "lat": 41.825,
+            "lon": -71.411
+          },
+          "startGps": {
+            "lat": 41.83589845,
+            "lon": -71.39861069999999
+          },
+          "finishGps": {
+            "lat": 41.814769325,
+            "lon": -71.423259525
+          },
+          "lightingPreset": "noon"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-c0e2ae7e-6aee-47ca-8637-2633067dc067.png",
+        "sourceReviewed": true,
+        "sourceSha256": "62dc3206651fffa04f6999708e8f3e9ca5ff10e989d3c142eb0bc87e847c71f7"
+      },
+      "sourceSha256": "62dc3206651fffa04f6999708e8f3e9ca5ff10e989d3c142eb0bc87e847c71f7"
+    },
+    {
+      "key": "philadelphia-dawn",
+      "brief": "Philadelphia Pennsylvania winter: broad low Delaware river urban basin, compact skyline with stepped masonry civic tower and modern angular glass silhouettes, distant old industrial brick roof band, patchy old settled snow on low land, no mountains",
+      "time": "dawn",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Philadelphia Pennsylvania winter: broad low Delaware river urban basin, compact skyline with stepped masonry civic tower and modern angular glass silhouettes, distant old industrial brick roof band, patchy old settled snow on low land, no mountains. Clear dawn, muted pale rose band low on horizon, cool blue-gray upper sky, restrained city/land contrast, no giant sun disk.",
+      "sourceImage": "/workspace/generated_images/exec-a9e4a1b4-8c79-428b-b388-267ce4af841d.png",
+      "raceRef": "Philadelphia, PA — Landmark Run",
+      "ref": "environment-v1-philadelphia-dawn",
+      "source": "environment-v1/philadelphia-dawn.png",
+      "ground": "ground-winter-snow-litter-v1",
+      "tiles": {
+        "snow": "ground-winter-snow-litter-v1"
+      },
+      "brightness": 0.65,
+      "sourceOrigin": {
+        "name": "Philadelphia, PA — Landmark Run",
+        "lat": 39.955,
+        "lon": -75.164,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-pa.json",
+      "catalog": [
+        {
+          "id": "city-pa",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 3,
+          "location": {
+            "lat": 39.955,
+            "lon": -75.164
+          },
+          "startGps": {
+            "lat": 39.9654505,
+            "lon": -75.18889531666666
+          },
+          "finishGps": {
+            "lat": 39.945202849999994,
+            "lon": -75.14261665000001
+          },
+          "lightingPreset": "morning"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-a9e4a1b4-8c79-428b-b388-267ce4af841d.png",
+        "sourceReviewed": true,
+        "sourceSha256": "9346d2f310ca48e5ff1b7d0934835f21c9b72fbbf3a7d6c97f9467de7187e357"
+      },
+      "sourceSha256": "9346d2f310ca48e5ff1b7d0934835f21c9b72fbbf3a7d6c97f9467de7187e357"
+    },
+    {
+      "key": "burlington-evening",
+      "brief": "Burlington Vermont: low brick waterfront and church spire silhouettes overlooking a narrow distant Lake Champlain strip, layered low Adirondack ridges across lake with broad rounded summits, tree-covered shores, no gigantic foreground mountains",
+      "time": "evening",
+      "prompt": "Original badge-free 2994 abandoned regional racing game pixel-art SKYBOX panorama, wide 3:1 aspect ratio, opaque. Distant backdrop only, no road or vehicle. Pixel clusters and restrained detailed silhouettes, not photoreal. Upper 50% mostly quiet sky; horizon base near 62%, tallest land/building tip no higher than 42%; objects distant and small. Bottom continuous low natural ground/tree color, no rectangular strips or hard horizontal footer. Left and right edges MUST wrap seamlessly with same sky colors and same low horizon height, no cut-off landmark on edges. Top row quiet consistent sky. No text logos symbols or UI. Composition must reflect this specific site: Burlington Vermont: low brick waterfront and church spire silhouettes overlooking a narrow distant Lake Champlain strip, layered low Adirondack ridges across lake with broad rounded summits, tree-covered shores, no gigantic foreground mountains. Clear late afternoon/evening, restrained warm low horizon, blue upper sky; no baked black filter as engine applies evening exposure.",
+      "sourceImage": "/workspace/generated_images/exec-fc744df3-ea39-4b24-a491-17666a1fe04b.png",
+      "raceRef": "Burlington, VT — Landmark Run",
+      "ref": "environment-v1-burlington-evening",
+      "source": "environment-v1/burlington-evening.png",
+      "ground": "ground-temperate-grass-v1",
+      "tiles": {
+        "grass": "ground-temperate-grass-v1"
+      },
+      "brightness": 0.42,
+      "sourceOrigin": {
+        "name": "Burlington, VT — Landmark Run",
+        "lat": 44.477,
+        "lon": -73.211,
+        "country": "us"
+      },
+      "sourceSnapshot": "data/campaigns/america/state-expansion/sources/city-vt.json",
+      "catalog": [
+        {
+          "id": "city-vt",
+          "venueKey": null,
+          "venueName": null,
+          "hubStage": 2,
+          "location": {
+            "lat": 44.477,
+            "lon": -73.211
+          },
+          "startGps": {
+            "lat": 44.48490373333333,
+            "lon": -73.22272433333333
+          },
+          "finishGps": {
+            "lat": 44.47325905,
+            "lon": -73.19188415
+          },
+          "lightingPreset": "evening"
+        }
+      ],
+      "references": [],
+      "sourceLimitation": "Installed route GPS/source metadata identifies site. Horizon is an original fictional 2994 regional composition, not a surveyed bearing-specific photograph. Named civic silhouettes are distant fictionalized forms; no new physical buildings.",
+      "provenance": {
+        "tool": "image_gen",
+        "sourceImage": "/workspace/generated_images/exec-fc744df3-ea39-4b24-a491-17666a1fe04b.png",
+        "sourceReviewed": true,
+        "sourceSha256": "33cc0a551139203557fa3a262209d95f199c451b20f63eca00fca8bc644f7265"
+      },
+      "sourceSha256": "33cc0a551139203557fa3a262209d95f199c451b20f63eca00fca8bc644f7265"
+    }
+  ],
+  "groundAssets": [
+    {
+      "key": "ground-winter-snow-litter-v1",
+      "prompt": "Original seamless top-down pixel-art game terrain texture, opaque square512x512. Material is OLD COMPACTED ROADSIDE SNOW for northeastern US winter: granular off-white icy snow crust covering majority, shallow gray melt-darkened compressed snow, scattered tiny brown leaf fragments and sparse dead grass tips embedded, no deep fluffy snowdrifts or blanket clean white. Must read as snow/ice under tires, not bare dirt or grass. Flat overhead low-contrast finely pixelated texture, no perspective, horizon, objects, logos or text. Seamlessly repeating BOTH axes, matching edge values and feature scale.",
+      "sourceImage": "/workspace/generated_images/exec-42013f23-dce9-43c9-9972-16af119f7bf6.png",
+      "source": "environment-v1/ground-winter-snow-litter-v1.png",
+      "sourceReviewed": true,
+      "sourceSha256": "1e45a9107eddc4f2a3b92866c137f8f20d2a73faaa8e40649d3e9dd122116d29"
+    },
+    {
+      "key": "ground-temperate-grass-v1",
+      "prompt": "Original seamless opaque square 512x512 top-down pixel-art racing game terrain. Temperate northeastern American rough grass turf: fine dense olive and brown-green grass blades, small dry straw/leaf fragments, subtle soil glimpses, no broad bare dirt areas, no rocks or snow. Ground material must clearly read as GRASS. Low contrast, no directional shadow, no horizon/perspective/text. Crisp small pixel clusters, seamless both axes with matching edges, suitable abandoned roadside grass and overgrown infields.",
+      "sourceImage": "/workspace/generated_images/exec-192394cc-1e2e-431c-9e10-aba581539ad3.png",
+      "source": "environment-v1/ground-temperate-grass-v1.png",
+      "sourceReviewed": true,
+      "sourceSha256": "ebe0e7018da8521af23506cb629eb2bda586f37e2a9e8c3ec440a5dffa2ec1cf"
+    }
+  ],
+  "sharing": "West Chicane is the proven Lime Rock site but authored noon differs from existing evening variants; distinct time-compatible composition. No city/state sharing.",
+  "reviewNotes": {
+    "sourceReview": "20/20 viewed in four labeled sheets /tmp/pack11-source0.jpg through source3.jpg. Horizons distinct by site; all original image sources retained.",
+    "terrain": "15 grass routes use new temperate grass; 5 snow-material routes use old compacted snow with litter. Existing segment surfaces and surface-specific road/shoulder refs retained.",
+    "projectionLimit": "Native Thompson view exposes vertical extrusion bands above and below source art; this is not accepted as clean full-pitch art. Actual driving foreground hides some lower extension; representative production must be evaluated separately.",
+    "night": "Six clear-night .05 variants have restrained crescent/star cues in original art; actual authored visibility may suppress them. No release brightness override.",
+    "sourceMetrics": "15 source images have lower-row-extension warnings; one also has horizontal-wrap warning (Brandywine). Decoded global seam metric has no new warnings, which does not supersede visual review."
+  }
+}

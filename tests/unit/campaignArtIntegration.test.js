@@ -1,3 +1,4 @@
+import {assertTerrainArtMaterial} from '../../tools/race-environments/terrain-materials.mjs';
 import {assertFenceRoadClearance,fenceRoadGap,assertFencePathGeometry} from '../helpers/campaignFenceValidation.mjs';
 import {createRaceStaticColliderWorld} from '../../src/racing/RaceSimulation.js';
 import {buildRaceFencePlacements} from '../../src/racing/RaceFences.js';
@@ -131,11 +132,11 @@ test('delivered art satisfies explicit campaign, editor and configured-unused in
 });
 
 test('exposed terrain keeps material weights and the marked turnout is a usable pull-off',()=>{
- const expected={'ground-brown-dirt-v2':'dirt','ground-industrial-concrete-v2':'asphalt','ground-industrial-rubble-v2':'gravel','ground-canyon-rock-v2':'gravel','ground-gray-gravel-v2':'gravel','ground-red-gravel-v2':'gravel','ground-desert-scrub-v2':'dirt','ground-alpine-rock-v2':'gravel'};
+
  const editor=new RaceEditor({});
  for(const entry of read('data/campaigns/america/catalog.json')){
   const r=read(root+entry.documentPath).race;
-  for(const c of Object.values(r.road.tileMap.cells))if(expected[c.artRef])assert.equal(editor.normalizeRaceTileMapCell(c).tileId,expected[c.artRef]);
+  for(const c of Object.values(r.road.tileMap.cells))assertTerrainArtMaterial(c,editor.normalizeRaceTileMapCell(c));
   if(entry.sourceKey==='angeles'){
    const turnout=r.scenery.find(p=>p.id==='campaign-complete-angeles-angeles-crest-turnout-sign')?.campaignPlacement?.turnout;
    assert.ok(turnout);assert.ok(turnout.spread<=1.2);assert.ok(turnout.widthM>=6&&turnout.lengthM>=12);

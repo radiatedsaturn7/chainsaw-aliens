@@ -26,3 +26,41 @@ test('diagnostic selector aliases must exactly match the manifest folder and log
  assert.throws(()=>resolveDiagnosticRaceChoice([{value:'other'}],'A — B','races/A %E2%80%94 B/document.json'),/absent/);
  assert.throws(()=>resolveDiagnosticRaceChoice([{value:'other'}],'A — B','races/other/document.json'),/does not identify/);
 });
+
+import {assertTerrainArtMaterial} from '../../tools/race-environments/terrain-materials.mjs';
+test('material-specific terrain rejects snow/rock and dirt/gravel swaps in normal and rough layers',()=>{
+ for(const [ref,correct,wrong] of [['ground-alpine-snow-granite-v1','snow','gravel'],['ground-decomposed-granite-dirt-v1','dirt','gravel'],['ground-winter-snow-litter-v1','snow','grass'],['ground-temperate-grass-v1','grass','snow'],['ground-alpine-rock-v2','gravel','snow'],['ground-gray-gravel-v2','gravel','dirt']]){
+  for(const slot of ['artRef','roughArtRef']){
+   assertTerrainArtMaterial({[slot]:ref},{tileId:correct});
+   assert.throws(()=>assertTerrainArtMaterial({[slot]:ref},{tileId:wrong}),/must visually represent/);
+  }
+ }
+});
+import {gunzipSync} from 'node:zlib';
+import {terrainArtMaterials} from '../../tools/race-environments/terrain-materials.mjs';
+test('Northeast visual bindings declare a matching material for every normal and rough terrain cell',()=>{
+ const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
+ const rows=ledger.rows.filter(r=>r.environmentPack==='northeast-corridor-pack11');
+ assert.equal(rows.length,20);
+ let cells=0;
+ for(const row of rows){
+  let doc=JSON.parse(fs.readFileSync('data/server-storage/files/'+row.documentPath));
+  if(doc.__chainsawStorage)doc=JSON.parse(gunzipSync(Buffer.from(doc.data,'base64')));
+  const entries=Object.values(doc.race.road.tileMap.cells);assert.ok(entries.length>0,row.raceRef);
+  for(const cell of entries){
+   assert.ok(terrainArtMaterials[cell.artRef],`${row.raceRef}: undeclared terrain art ${cell.artRef}`);
+   if(cell.roughArtRef)assert.ok(terrainArtMaterials[cell.roughArtRef],`${row.raceRef}: undeclared rough art`);
+   assertTerrainArtMaterial(cell,{tileId:cell.tileId});cells++;
+  }
+ }
+ assert.ok(cells>20);
+});
+
+test('PPIR snow cells keep snow artwork after distant-horizon correction',()=>{
+ const ledger=JSON.parse(fs.readFileSync('data/race-environments/ledger.json'));
+ const row=ledger.rows.find(r=>r.binding?.skyboxArtRef==='environment-v1-ppir-noon');
+ let doc=JSON.parse(fs.readFileSync('data/server-storage/files/'+row.documentPath));
+ if(doc.__chainsawStorage)doc=JSON.parse(gunzipSync(Buffer.from(doc.data,'base64')));
+ const cells=Object.values(doc.race.road.tileMap.cells);assert.ok(cells.length>0);
+ for(const c of cells){assert.equal(c.tileId,'snow');assert.ok(terrainArtMaterials[c.artRef]);assert.ok(terrainArtMaterials[c.roughArtRef]);assertTerrainArtMaterial(c,{tileId:c.tileId});}
+});

@@ -5,13 +5,13 @@
       "key": "pikes-evening",
       "raceRef": "Pikes Peak Highway",
       "brief": "Treeless upper Pikes Peak pink-gray granite rounded shoulders and talus, alpine tundra sparse, far ranges and eastern plains. No forest at summit or fantasy sharp Alps.",
-      "ground": "ground-alpine-rock-v2",
+      "ground": "ground-alpine-snow-granite-v1",
       "brightness": 0.42,
       "sourceImage": "/workspace/generated_images/exec-1cb1f9f0-da4b-4547-b84e-d3bd20e9e696.png",
       "ref": "environment-v1-pikes-evening",
       "source": "environment-v1/pikes-evening.png",
       "tiles": {
-        "snow": "ground-alpine-rock-v2"
+        "snow": "ground-alpine-snow-granite-v1"
       },
       "sourceOrigin": {
         "name": "Pikes Peak Highway",
@@ -77,19 +77,20 @@
         ],
         "warnings": [],
         "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
-      }
+      },
+      "materialCorrection": "Actual snow/dirt texture replaces rock/gravel visual; underlying IDs and weights unchanged."
     },
     {
       "key": "angeles-evening",
       "raceRef": "Angeles Crest Highway",
       "brief": "High San Gabriel gray angular folded ridges, scattered Jeffrey pines on higher slopes, chaparral below, deep hazy southern valleys. No red sandstone desert.",
-      "ground": "ground-gray-gravel-v2",
+      "ground": "ground-decomposed-granite-dirt-v1",
       "brightness": 0.42,
       "sourceImage": "/workspace/generated_images/exec-bb11dde1-1599-4fe6-ad60-edfc1ea48f1d.png",
       "ref": "environment-v1-angeles-evening",
       "source": "environment-v1/angeles-evening.png",
       "tiles": {
-        "dirt": "ground-gray-gravel-v2"
+        "dirt": "ground-decomposed-granite-dirt-v1"
       },
       "sourceOrigin": {
         "name": "Angeles Crest Highway",
@@ -143,7 +144,7 @@
         "width": 2172,
         "height": 724,
         "edgeMeanRGB": 2.5488029465930016,
-        "edgeMaximumRGB": 34.0,
+        "edgeMaximumRGB": 34,
         "topRangeRGB": [
           7,
           4,
@@ -156,11 +157,12 @@
         ],
         "warnings": [],
         "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
-      }
+      },
+      "materialCorrection": "Actual snow/dirt texture replaces rock/gravel visual; underlying IDs and weights unchanged."
     },
     {
       "key": "goldcamp-night",
-      "raceRef": "Gold Camp Road \u2014 Colorado Springs",
+      "raceRef": "Gold Camp Road — Colorado Springs",
       "brief": "Close dark weathered granite Cheyenne Mountain canyon with ponderosa pines and a tiny abandoned stone railroad portal to one side; layered distant city basin, clear night crescent only high center.",
       "ground": "ground-gray-gravel-v2",
       "brightness": 0.05,
@@ -171,7 +173,7 @@
         "snow": "ground-gray-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Gold Camp Road \u2014 Colorado Springs",
+        "name": "Gold Camp Road — Colorado Springs",
         "lat": 38.79,
         "lon": -104.9,
         "country": "us"
@@ -230,7 +232,7 @@
     },
     {
       "key": "phantom-morning",
-      "raceRef": "Phantom Canyon Road \u2014 Gold Belt Tour",
+      "raceRef": "Phantom Canyon Road — Gold Belt Tour",
       "brief": "Enclosed rugged granite canyon, steep pale pink crags with sparse pinyon and juniper, narrow dry valley, abandoned tiny iron trestle deep below. No broad red mesas.",
       "ground": "ground-gray-gravel-v2",
       "brightness": 0.65,
@@ -241,7 +243,7 @@
         "snow": "ground-gray-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Phantom Canyon Road \u2014 Gold Belt Tour",
+        "name": "Phantom Canyon Road — Gold Belt Tour",
         "lat": 38.61,
         "lon": -105.12,
         "country": "us"
@@ -280,7 +282,7 @@
         "width": 2172,
         "height": 724,
         "edgeMeanRGB": 7.377532228360957,
-        "edgeMaximumRGB": 95.0,
+        "edgeMaximumRGB": 95,
         "topRangeRGB": [
           8,
           3,
@@ -297,7 +299,7 @@
     },
     {
       "key": "shelf-morning",
-      "raceRef": "Shelf Road \u2014 Gold Belt Tour",
+      "raceRef": "Shelf Road — Gold Belt Tour",
       "brief": "Tall tawny limestone canyon wall and a narrow natural window rock high in central bluff, dry creek valley with pinyon juniper, broad low distant ridge at both ends.",
       "ground": "ground-gray-gravel-v2",
       "brightness": 0.65,
@@ -308,7 +310,7 @@
         "snow": "ground-gray-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Shelf Road \u2014 Gold Belt Tour",
+        "name": "Shelf Road — Gold Belt Tour",
         "lat": 38.65,
         "lon": -105.23,
         "country": "us"
@@ -364,7 +366,7 @@
     },
     {
       "key": "skyline-night",
-      "raceRef": "Skyline Drive \u2014 Ca\u00f1on City",
+      "raceRef": "Skyline Drive — Cañon City",
       "brief": "Narrow tilted tan hogback ridge over broad Canon City Arkansas River basin; dark sparse settlement grid and low distant Wet Mountains, clear crescent and sparse stars.",
       "ground": "ground-desert-scrub-v2",
       "brightness": 0.05,
@@ -375,7 +377,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "Skyline Drive \u2014 Ca\u00f1on City",
+        "name": "Skyline Drive — Cañon City",
         "lat": 38.46,
         "lon": -105.25,
         "country": "us"
@@ -430,7 +432,7 @@
     },
     {
       "key": "utepass-morning",
-      "raceRef": "US 24 \u2014 Ute Pass Woodland Park",
+      "raceRef": "US 24 — Ute Pass Woodland Park",
       "brief": "Ponderosa-pine wooded Ute Pass saddle, forested green granite foothills and massive Pikes Peak shoulder well back left of center, scattered ruined timber structures.",
       "ground": "ground-frozen-forest",
       "brightness": 0.65,
@@ -441,7 +443,7 @@
         "snow": "ground-frozen-forest"
       },
       "sourceOrigin": {
-        "name": "US 24 \u2014 Ute Pass / Woodland Park",
+        "name": "US 24 — Ute Pass / Woodland Park",
         "lat": 38.91,
         "lon": -104.98,
         "country": "us"
@@ -497,7 +499,7 @@
     },
     {
       "key": "co67-morning",
-      "raceRef": "CO 67 \u2014 Woodland Park Cripple Creek",
+      "raceRef": "CO 67 — Woodland Park Cripple Creek",
       "brief": "High rolling montane grass meadows alternating with dark ponderosa/aspen woods, distant Pikes massif, tiny weathered mining headframe in central valley.",
       "ground": "ground-frozen-forest",
       "brightness": 0.65,
@@ -508,7 +510,7 @@
         "snow": "ground-frozen-forest"
       },
       "sourceOrigin": {
-        "name": "CO 67 \u2014 Woodland Park / Cripple Creek",
+        "name": "CO 67 — Woodland Park / Cripple Creek",
         "lat": 38.83,
         "lon": -105.14,
         "country": "us"
@@ -566,7 +568,7 @@
     },
     {
       "key": "gardengods-night",
-      "raceRef": "Garden of the Gods \u2014 paved park road",
+      "raceRef": "Garden of the Gods — paved park road",
       "brief": "Distinct upright red sandstone fins and tilted narrow slabs rising out of low juniper foothills, dark Pikes Peak mass beyond, clear starry night restrained crescent.",
       "ground": "ground-red-gravel-v2",
       "brightness": 0.05,
@@ -577,7 +579,7 @@
         "snow": "ground-red-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Garden of the Gods \u2014 paved park road",
+        "name": "Garden of the Gods — paved park road",
         "lat": 38.88,
         "lon": -104.88,
         "country": "us"
@@ -632,18 +634,18 @@
     },
     {
       "key": "ppir-noon",
-      "raceRef": "Pikes Peak International Raceway \u2014 Fountain",
-      "brief": "Broad dry shortgrass Front Range plain, distant Pikes Peak to west, low abandoned speedway grandstand with oval banks and thin light masts, no logos or crowds.",
-      "ground": "ground-desert-scrub-v2",
+      "raceRef": "Pikes Peak International Raceway — Fountain",
+      "brief": "Fountain shortgrass plain with a low distant Pikes Peak massif and tiny low grandstands; angular scale corrected after actual production driving comparison. Clear noon preserved.",
+      "ground": "ground-winter-snow-litter-v1",
       "brightness": 1,
-      "sourceImage": "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png",
+      "sourceImage": "/workspace/generated_images/exec-ca6b9c00-b82e-488a-81fe-d6b36183214f.png",
       "ref": "environment-v1-ppir-noon",
       "source": "environment-v1/ppir-noon.png",
       "tiles": {
-        "snow": "ground-desert-scrub-v2"
+        "snow": "ground-winter-snow-litter-v1"
       },
       "sourceOrigin": {
-        "name": "Pikes Peak International Raceway \u2014 Fountain",
+        "name": "Pikes Peak International Raceway — Fountain",
         "lat": 38.59,
         "lon": -104.68,
         "country": "us"
@@ -668,13 +670,13 @@
         "https://www.ppir.com/contactus"
       ],
       "sourceLimitation": "Saved GPS/source identifies exact route; listed primary/local references support regional geology, ecology or venue identity, not a surveyed panorama. Ruins and viewpoint are original fictional 2994 art.",
-      "sourceSha256": "3054e4d054affc1c7c44f67d1670f3dcb2a88179dfc1ccda111f9b4d5d0ff9c9",
+      "sourceSha256": "895fb45cf73ccde46f03c65d95e7a252064a7b81c8166b0607d2b2aadc4382a6",
       "provenance": {
         "tool": "image_gen",
-        "sourceImage": "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png",
-        "sourceSha256": "3054e4d054affc1c7c44f67d1670f3dcb2a88179dfc1ccda111f9b4d5d0ff9c9",
+        "sourceImage": "/workspace/generated_images/exec-ca6b9c00-b82e-488a-81fe-d6b36183214f.png",
+        "sourceSha256": "895fb45cf73ccde46f03c65d95e7a252064a7b81c8166b0607d2b2aadc4382a6",
         "sourceReviewed": true,
-        "priorSourceImage": null
+        "priorSourceImage": "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png"
       },
       "sourceBoundaryMetrics": {
         "path": "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png",
@@ -694,11 +696,16 @@
         ],
         "warnings": [],
         "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
-      }
+      },
+      "sourceHistory": [
+        "/workspace/generated_images/exec-f26850c4-4de8-4bff-b440-8d16add94fe2.png"
+      ],
+      "revisionNote": "Reduced distant massif and grandstand angular size; quiet sky; removed solid bottom strip. Production fit pending.",
+      "materialCorrection": "Existing Fountain snow cells now display compacted winter snow with embedded dead vegetation, not dry scrub. No material ID/weight changes. Clear weather and distant shortgrass panorama retained; foreground fit rechecked."
     },
     {
       "key": "pueblo-evening",
-      "raceRef": "Pueblo Motorsports Park \u2014 road course or drag strip",
+      "raceRef": "Pueblo Motorsports Park — road course or drag strip",
       "brief": "Open tawny shortgrass prairie and rolling shale mesas west of Pueblo, low distant Wet Mountain skyline, sparse abandoned paddock sheds and slim timing tower.",
       "ground": "ground-desert-scrub-v2",
       "brightness": 0.42,
@@ -710,7 +717,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "Pueblo Motorsports Park \u2014 road course or drag strip",
+        "name": "Pueblo Motorsports Park — road course or drag strip",
         "lat": 38.31,
         "lon": -104.67,
         "country": "us"
@@ -765,7 +772,7 @@
     },
     {
       "key": "angelesforest-evening",
-      "raceRef": "Angeles Forest Highway \u2014 County N3",
+      "raceRef": "Angeles Forest Highway — County N3",
       "brief": "North slope San Gabriel uplift with broad dry brush-filled basin and sage green chaparral ridges, weathered gray granite cuts, scattered pine pockets and distant Antelope Valley opening.",
       "ground": "ground-desert-scrub-v2",
       "brightness": 0.42,
@@ -776,7 +783,7 @@
         "snow": "ground-desert-scrub-v2"
       },
       "sourceOrigin": {
-        "name": "Angeles Forest Highway \u2014 County N3",
+        "name": "Angeles Forest Highway — County N3",
         "lat": 34.34,
         "lon": -118.12,
         "country": "us"
@@ -815,7 +822,7 @@
         "width": 2172,
         "height": 724,
         "edgeMeanRGB": 8.030386740331492,
-        "edgeMaximumRGB": 69.0,
+        "edgeMaximumRGB": 69,
         "topRangeRGB": [
           4,
           4,
@@ -1104,7 +1111,7 @@
     },
     {
       "key": "sangabriel-morning",
-      "raceRef": "San Gabriel Canyon Road \u2014 SR 39",
+      "raceRef": "San Gabriel Canyon Road — SR 39",
       "brief": "Large V-shaped San Gabriel canyon, pale granite wash and small restrained blue-green reservoir glimpse deep center valley, steep chaparral flanks and oak pockets.",
       "ground": "ground-gray-gravel-v2",
       "brightness": 0.65,
@@ -1115,7 +1122,7 @@
         "snow": "ground-gray-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "San Gabriel Canyon Road \u2014 SR 39",
+        "name": "San Gabriel Canyon Road — SR 39",
         "lat": 34.22,
         "lon": -117.86,
         "country": "us"
@@ -1154,7 +1161,7 @@
         "width": 2144,
         "height": 733,
         "edgeMeanRGB": 4.797635288767621,
-        "edgeMaximumRGB": 33.0,
+        "edgeMaximumRGB": 33,
         "topRangeRGB": [
           7,
           5,
@@ -1221,7 +1228,7 @@
         "width": 2144,
         "height": 733,
         "edgeMeanRGB": 19.272851296043655,
-        "edgeMaximumRGB": 138.0,
+        "edgeMaximumRGB": 138,
         "topRangeRGB": [
           10,
           5,
@@ -1312,7 +1319,7 @@
     },
     {
       "key": "denver-morning",
-      "raceRef": "Denver, CO \u2014 Landmark Run",
+      "raceRef": "Denver, CO — Landmark Run",
       "brief": "Abandoned Denver downtown from low urban street elevation: distinct mixed brick warehouses and modern stepped towers, distant blue Front Range only on west horizon, dry plains city not mountain valley, small muted cottonwood canopy.",
       "ground": "ground-gray-gravel-v2",
       "brightness": 0.65,
@@ -1323,7 +1330,7 @@
         "snow": "ground-gray-gravel-v2"
       },
       "sourceOrigin": {
-        "name": "Denver, CO \u2014 Landmark Run",
+        "name": "Denver, CO — Landmark Run",
         "lat": 39.748,
         "lon": -104.994,
         "country": "us"
