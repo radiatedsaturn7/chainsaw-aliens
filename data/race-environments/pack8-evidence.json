@@ -1,0 +1,230 @@
+{
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "baseTree": "00c1e74336c39fb70a952533f373661f28c31ffa",
+  "parentCheckpoint": "ec422c463c02514a396978dfdbc054b076455950",
+  "integrationCheckpoint": "628e062036e0d902949713e28c40a0c3e645ea32",
+  "artCheckpoint": "5806d1b828b7661f6b5177b49b86d01309f5c597",
+  "artTree": "5bee519103058bdc9fd44d812e147f0706e5c2a5",
+  "scope": "Local-only Ozark and Mississippi riverlands pack, plus three prior source boundary repairs. No runtime, physical surfaces, weights, route, mission, lighting/weather/time, car or remote changes. New staging renderer and CI retained unchanged.",
+  "counts": {
+    "reachable": 245,
+    "bound": 96,
+    "remainingUnbound": 149,
+    "newBindings": 22,
+    "newCompositions": 21,
+    "repairedCompositions": 3,
+    "sourceReviewed": 21,
+    "newRowsWithEffectiveLayerAndRegionalTextureReview": 22,
+    "nativeDeviceChecksPassed": 44,
+    "repairNativeDeviceChecksPassed": 6,
+    "newRowsWithBothDeviceDiagnosticAndAuthoredReview": 22,
+    "nativeAuthoredNightReadabilityUnresolved": 2,
+    "fullyAcceptedEnvironments": 0,
+    "mainRouteBound": 8,
+    "mainRouteTotal": 11,
+    "actualDrivingSamplesPassed": 4,
+    "actualDrivingSamplesFailed": 0,
+    "newRacesWithBothDeviceShortDrivingPass": 2,
+    "newRacesWithBothDeviceVisibleOpeningForegroundSky": 1
+  },
+  "checks": {
+    "focusedUnits": {
+      "passed": 90,
+      "failed": 0,
+      "log": "/tmp/race-pack8-units.log"
+    },
+    "landedRendererCameraUnits": {
+      "passed": 10,
+      "log": "/tmp/race-pack8-integration-units.log"
+    },
+    "sourceBoundaryNegativeFixtures": {
+      "passed": 3,
+      "command": "python tools/race-environments/test_source_boundaries.py"
+    },
+    "campaignBrowser": {
+      "passed": 6,
+      "log": "/tmp/race-pack8-campaign.log"
+    },
+    "manifest": {
+      "documents": 1669,
+      "assets": 16,
+      "log": "/tmp/race-pack8-manifest.log"
+    },
+    "allRaceNonvisual": {
+      "races": 245,
+      "result": "Preflight passed before atomic per-file binding; every nonvisual race semantic compared against exact new base.",
+      "log": "/tmp/race-pack8-final-bind.json"
+    },
+    "native": {
+      "audit": "/tmp/race-pack8-native-audit.json",
+      "log": "/tmp/race-pack8-native.log",
+      "captures": "/tmp/race-environment-pack8-renderer",
+      "repairCaptures": "/tmp/race-environment-pack8-repairs-native",
+      "sheets": "/tmp/race-pack8-sheets"
+    },
+    "art": {
+      "decodedBound": 96,
+      "horizontalNumericWarnings": 0,
+      "report": "/tmp/race-pack8-art.json"
+    },
+    "unusedSnowDiagnostic": "UNUSED CONFIGURED ART: road-snow-patchy — Pikes Peak Highway snow mapping has no active segment; retained configuration debt."
+  },
+  "visualFindings": {
+    "newSources": "All 21 original compositions viewed, plus corrected Gateway morning source. Only proven WWT same-site night oval/drag share pixels; other settings have distinct site compositions. Structures are illustrative abandoned 2994 interpretations, not surveyed replicas.",
+    "native": "22 routes viewed individually on desktop and handheld, both sky100 diagnostic and unchanged authored compositor. 20 have readable silhouettes in independent compositor; two night layouts nearly black. This is not production foreground or driving acceptance.",
+    "night": "Clear WWT night source uses restrained crescent, sparse stars and localized dim facility light. Authored .05 brightness compresses contrast to at most12.75 RGB; zero weather opacity. No daylight panorama behind night headlights; actual foreground comparison remains separately reported. Actual desktop and handheld drag-strip frames confirm sky/moon almost invisible while headlight road is readable. Both loaded and moved successfully. Diagnostic sky100 has compatible night hue, but no released brightness change.",
+    "wrap": "Viewed yaw +/-0.01 with horizon .35/.8. No conspicuous side color step; faint horizontal banding and vertically extended boundary-color variation remain at extreme pitch. No full seam acceptance granted.",
+    "sourceWarnings": [
+      {
+        "path": "/workspace/generated_images/exec-3117f571-326a-4653-bdaf-3b344abca15a.png",
+        "width": 2172,
+        "height": 724,
+        "edgeMeanRGB": 2.235267034990792,
+        "edgeMaximumRGB": 30.333333333333332,
+        "topRangeRGB": [
+          7,
+          6,
+          13
+        ],
+        "bottomRangeRGB": [
+          5,
+          5,
+          5
+        ],
+        "warnings": [
+          "top-row-extrusion"
+        ],
+        "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+      }
+    ],
+    "terrain": "Decoded leaf litter, muted olive grass and dirt textures inspected in /tmp/race-pack8-terrain.jpg. Native effective normal/rough tile refs verified for all22. Physical snow tile IDs unchanged even where inherited snow imagery replaced. Ground tiling numeric warnings for olive/dirt remain and require production inspection.",
+    "pevely": "Real dirt oval visual uses packed dirt; inherited physics remains asphalt. Explicit data-policy mismatch retained, not silently repaired.",
+    "repair": "Forbes treetop stretch removed; Keystone/Sideling conspicuous wrap steps reduced. Raw source edge means Forbes6.61→4.24, Keystone10.62→3.27, Sideling16.90→4.64. Native comparison also includes landed renderer edge blending; do not attribute all improvement to artwork."
+  },
+  "provenance": {
+    "recipes": "data/race-environments/pack8-recipes.json",
+    "repairs": "data/race-environments/pack8-repairs.json",
+    "integration": "data/race-environments/pack8-integration.json",
+    "sourceMetrics": "/tmp/pack8-final-source-metrics.json",
+    "repairSourceMetrics": "/tmp/pack8-repairs-source-metrics.json",
+    "originals": "/workspace/generated_images; exact source/managed/import hashes verified; previous originals and QA retained"
+  },
+  "disk": {
+    "availableBytes": 3557629952,
+    "allocatedKiB": {
+      "originalImages": 324088,
+      "sharedGitObjects": 3924780,
+      "environmentSources": 180956,
+      "nativeArt": 1145472,
+      "nativeQA": 19100,
+      "repairQA": 3492,
+      "drivingQA": 4112,
+      "contactSheets": 4312
+    },
+    "start": {
+      "availableBytes": 3760062464,
+      "allocatedKiB": {
+        "originalImages": 279820,
+        "sharedGitObjects": 3856780,
+        "environmentSources": 146388,
+        "nativeArt": 1130692
+      }
+    },
+    "netConsumedBytes": 202432512,
+    "measurement": "Allocated du blocks, shared Git objects counted once; df/statvfs measures available overlay space. No deletion or cleanup.",
+    "forecast": "At this compact pack’s observed growth,149 further bindings might cost roughly1.3GiB, but imagery, Git and QA vary. Remeasure every pack and preserve rollback headroom; no capacity guarantee."
+  },
+  "next": "149 unbound races remain. Continue coherent location packs; separately resolve night foreground readability, extreme-pitch edge quality, ground tiling and remaining main-route acceptance. Historical startup failures remain historical; do not automatically attribute current failures to old base. No partial publication.",
+  "driving": {
+    "scope": "Short real-travel and driving samples only. Inspect retained authored frames separately; no route-wide or visual acceptance inferred.",
+    "successes": [
+      {
+        "file": "/tmp/race-environment-pack8-driving/race-environments-driving--00bf9-authored-foreground-and-sky/driving-state.json",
+        "race": "World Wide Technology Raceway — drag strip",
+        "device": "desktop",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "displacementM": 0.9707399156215938,
+        "elapsedMs": 2900.000000000002,
+        "speedMps": 3.342474,
+        "sky": "environment-v1-gateway-night",
+        "brightness": 0.05,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-environment-pack8-driving/race-environments-driving--19f18-authored-foreground-and-sky/driving-state.json",
+        "race": "Gateway Kartplex — WWT complex",
+        "device": "desktop",
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        },
+        "displacementM": 0.7435794420100641,
+        "elapsedMs": 2833.333333333335,
+        "speedMps": 2.75229,
+        "sky": "environment-v1-gateway-morning",
+        "brightness": 0.65,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-environment-pack8-driving/race-environments-driving--edc10-authored-foreground-and-sky/driving-state.json",
+        "race": "World Wide Technology Raceway — drag strip",
+        "device": "handheld",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "displacementM": 2.8261646166055368,
+        "elapsedMs": 3300.0000000000036,
+        "speedMps": 5.931416,
+        "sky": "environment-v1-gateway-night",
+        "brightness": 0.05,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      },
+      {
+        "file": "/tmp/race-environment-pack8-driving/race-environments-driving--f4a67-authored-foreground-and-sky/driving-state.json",
+        "race": "Gateway Kartplex — WWT complex",
+        "device": "handheld",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "displacementM": 1.1739757382028728,
+        "elapsedMs": 2966.666666666669,
+        "speedMps": 3.711879,
+        "sky": "environment-v1-gateway-morning",
+        "brightness": 0.65,
+        "missingArtRefs": [],
+        "errors": [],
+        "network": []
+      }
+    ],
+    "failures": [],
+    "successfulSamples": 4,
+    "failedSamples": 0,
+    "distinctSuccessfulRaces": 2,
+    "log": "/tmp/race-pack8-driving.log",
+    "visualInspection": "Viewed authored-driving-b and diagnostic-sky100-world-authored for all4 successful samples. Kartplex opening palette/horizon readable on both. Drag strip sky/moon nearly invisible at .05 on both; brightness1 diagnostic has coherent night palette but does not clear release visibility. Movement0.74–2.83m only, not laps or route-wide acceptance."
+  },
+  "commands": {
+    "units": "node --test tests/unit/campaignArtIntegration.test.js tests/unit/americaCampaign.test.js tests/unit/raceTerrainTextureBlend.test.js tests/unit/raceRoadTextures.test.js tests/unit/raceDecals.test.js tests/unit/raceVisualFx.test.js tests/unit/raceEnvironmentVisualContract.test.js tests/unit/raceEnvironmentDrivingControls.test.js",
+    "integration": "node --test tests/unit/raceSkyboxTexture.test.js tests/unit/raceDownhillCamera.test.js",
+    "assets": "python tools/project_manifest.py --check --validate-assets",
+    "nonvisual": "node tools/race-environments/bind.mjs --apply (preflight all245 before writes; use without --apply to repeat read-only)",
+    "art": "node tools/race-environments/check-art.mjs",
+    "browser": "playwright test tests/playwright/race-road-textures.spec.js --config race-environments-pack8-campaign-local.config.mjs --workers=1",
+    "native": "RACE_RENDER_COMPACT=1 RACE_RENDER_PACK=ozark-riverlands-pack8 playwright test --config race-environments-pack8-renderer-local.config.mjs",
+    "driving": "RACE_DRIVE_NAMES=\"Gateway Kartplex — WWT complex|World Wide Technology Raceway — drag strip\" RACE_DRIVE_SKY_DIAGNOSTIC=1 playwright test --config race-environments-pack8-driving-local.config.mjs",
+    "portableConfigs": "Tracked tools/race-environments configs with RACE_QA_CHROMIUM=/usr/bin/chromium and fresh --output. Local configs select ports4260-4262, same system Chromium SwiftShader, single worker, /tmp outputs."
+  },
+  "elapsedMinutesSinceInventory": 40.3,
+  "preservation": "All incoming src/.github/car/Game Menu bytes match exact new staging; no deleted tracked paths. Original source hashes and previous QA retained. QA-only ledger/evidence edits followed production tests; tested production files remain at artCheckpoint."
+}

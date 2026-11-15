@@ -8879,6 +8879,12 @@
           "handheld": true,
           "diagnosticContactSheetsViewed": true,
           "scope": "Native projection and effective binding only; not driving acceptance."
+        },
+        "pack8BoundaryRepair": {
+          "sourceMetrics": "/tmp/pack8-repairs-source-metrics.json",
+          "nativeCaptures": "/tmp/race-environment-pack8-repairs-native",
+          "bothDevicesViewed": true,
+          "result": "Large source boundary defects reduced; Forbes treetop stretch removed; minor banding remains. New base renderer also blends horizontal edges, so native before/after alone cannot isolate art improvement."
         }
       },
       "physicalSiteLabel": "Forbes State Forest — designated gravel roads",
@@ -9324,6 +9330,12 @@
           "handheld": true,
           "diagnosticContactSheetsViewed": true,
           "scope": "Native projection and effective binding only; not driving acceptance."
+        },
+        "pack8BoundaryRepair": {
+          "sourceMetrics": "/tmp/pack8-repairs-source-metrics.json",
+          "nativeCaptures": "/tmp/race-environment-pack8-repairs-native",
+          "bothDevicesViewed": true,
+          "result": "Large source boundary defects reduced; Forbes treetop stretch removed; minor banding remains. New base renderer also blends horizontal edges, so native before/after alone cannot isolate art improvement."
         }
       },
       "physicalSiteLabel": "Keystone Motorsports Park — New Alexandria",
@@ -11758,7 +11770,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-2e5ce-ver-independent-sky-desktop/site-6f7ee9926494c5dd-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-6008d-er-independent-sky-handheld/site-6f7ee9926494c5dd-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "MO 19 — Eminence / Current River",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -11843,7 +11910,7 @@
         "ground": "MO19 north of Eminence Missouri, broad rounded oak-pine ridge descending to the Current River valley, small pale dolomite bluff glimpsed through trees, abandoned low timber river outfitter in central left. Distinct open rolling ridge, no Arkansas mountains or big city.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -11958,7 +12025,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-0ac37-ach-independent-sky-desktop/site-609064f37aca1fb7-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-bb229-ch-independent-sky-handheld/site-609064f37aca1fb7-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "MO 106 — Alley Spring approach",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -12044,7 +12166,7 @@
         "ground": "Alley Spring approach on MO106 west of Eminence: enclosed low wooded Jacks Fork valley, layered pale dolomite ledges, small glimpse of turquoise spring-fed water and distant weathered red mill-like timber structure central right. Not a huge waterfall or alpine landscape.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -12159,7 +12281,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-58bef-ch-independent-sky-handheld/site-3424a58af1a064f0-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-c4787-ach-independent-sky-desktop/site-3424a58af1a064f0-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "MO 106 — Powder Mill approach",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -12243,7 +12420,7 @@
         "ground": "Powder Mill approach MO106 Current River Missouri: a broad wooded river bend with pale gravel bar and low broken dolomite escarpment behind, very small abandoned low river research/outfitter shed. No giant lake.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -12358,7 +12535,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-eb3f1-ess-independent-sky-desktop/site-64c6850d56553d64-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-f091d-ss-independent-sky-handheld/site-64c6850d56553d64-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "MO V — Two Rivers access",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -12443,7 +12675,7 @@
         "ground": "Two Rivers access Missouri, wooded low ridges around the confluence of the Current and Jacks Fork, two narrow spring-fed river channels glimpsed between gravel bars in middle distance, dense riverside sycamore and oak, tiny weathered shelter. Unlike Powder Mill single bend, emphasize branching low valley.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -12559,7 +12791,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-65506-ss-independent-sky-handheld/site-28d57b9433a11920-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-c9c5b-ess-independent-sky-desktop/site-28d57b9433a11920-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "MO H / NN — Roberts Field access",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -12645,7 +12932,7 @@
         "ground": "Roberts Field access near Current River Missouri: quiet open grassy riverside field enclosed by low oak wooded hills, one pale dolomite shoulder and abandoned farm fence/barn central. River only a slim distant glint, no large mountains.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -12760,7 +13047,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-a6a1b-oad-independent-sky-desktop/site-b84493071fee21ca-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-eea05-ad-independent-sky-handheld/site-b84493071fee21ca-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "Jerktail Landing gravel road",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -12844,7 +13186,7 @@
         "ground": "Jerktail Landing Missouri: intimate forested Current River access, low near oak and shortleaf pine ridge, pale gravel river landing and dark wooded valley opening center-left, small ruined canoe shelter. No alpine peaks.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -12959,7 +13301,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-1e534-ren-independent-sky-desktop/site-4371a2e6ea253028-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-dcf51-en-independent-sky-handheld/site-4371a2e6ea253028-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "US 60 — Winona / Van Buren",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -13043,7 +13440,7 @@
         "ground": "US60 Winona to Van Buren Missouri, broad low forested Ozark highway ridge, long horizontal pale road-cut rock layers and a distant derelict rural service station, mixed shortleaf pine and oak. No major river foreground or snowy mountains.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -13159,7 +13556,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-61fb5-st-independent-sky-handheld/site-d82c5ca31f178e1b-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-fb5db-est-independent-sky-desktop/site-d82c5ca31f178e1b-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "Glade Top Trail — Mark Twain National Forest",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -13245,7 +13697,7 @@
         "ground": "Glade Top Trail Mark Twain National Forest Missouri: open dolomite bald knobs and broad rolling upland vistas, tawny prairie grasses on pale flat rock outcrops, scattered red cedar and oak clumps, distant layered low ridges, abandoned small fire lookout low on central ridge. Not dense forest everywhere.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -13360,7 +13812,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-b4f49-ls-independent-sky-handheld/site-b21506fb96eb02cd-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-d30f4-lls-independent-sky-desktop/site-b21506fb96eb02cd-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "Ozarks International Raceway — Gravois Mills",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -13449,7 +13956,7 @@
         "ground": "Ozarks International Raceway Gravois Mills Missouri: hilly wooded racing facility cut into oak ridges, rolling green slopes with pale exposed rock cuts, tiny distant empty pit garages and control box, abandoned restrained condition. No urban skyline, lake or grand alpine peak.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -13566,7 +14073,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-97ea1-rse-independent-sky-desktop/facility-gateway-50603b2b39-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-bc572-se-independent-sky-handheld/facility-gateway-50603b2b39-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "World Wide Technology Raceway / Gateway complex",
       "siteEvidenceStatus": "exact-authored-facility-route-and-source-coordinate",
@@ -13661,7 +14223,7 @@
         "ground": "World Wide Technology Raceway Madison Illinois on flat Mississippi floodplain, weathered low empty grandstand and oval banking, small pit buildings and rail-industrial silhouettes, distant compact St Louis skyline and tiny Gateway Arch toward center-right. All structures far away, no giant bridge or mountains.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -13778,7 +14340,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Unresolved near-black panorama at authored .05 exposure; clear weather, not missing art or fog."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-1cd38-al-independent-sky-handheld/facility-gateway-a8ccedb566-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-e70fa-val-independent-sky-desktop/facility-gateway-a8ccedb566-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "World Wide Technology Raceway / Gateway complex",
       "siteEvidenceStatus": "exact-authored-facility-route-and-source-coordinate",
@@ -13871,7 +14488,7 @@
         "ground": "SAME exact World Wide Technology Raceway physical place: flat Mississippi floodplain, empty low grandstand/oval banking, pit buildings, distant compact St Louis skyline and tiny Gateway Arch. Clear NIGHT with restrained steel-blue silhouette, sparse stars, small crescent optional, only a few dim amber maintenance lights. No daylight sky or brightly floodlit stands.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -13988,7 +14605,103 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Unresolved near-black panorama at authored .05 exposure; clear weather, not missing art or fog."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-d3077-ip-independent-sky-handheld/facility-gateway-a8ccedb566-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-d90ac-rip-independent-sky-desktop/facility-gateway-a8ccedb566-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "both short movement samples passed; authored and separate diagnostic frames viewed",
+            "samples": [
+              {
+                "file": "/tmp/race-environment-pack8-driving/race-environments-driving--00bf9-authored-foreground-and-sky/driving-state.json",
+                "race": "World Wide Technology Raceway — drag strip",
+                "device": "desktop",
+                "viewport": {
+                  "width": 1280,
+                  "height": 720
+                },
+                "displacementM": 0.9707399156215938,
+                "elapsedMs": 2900.000000000002,
+                "speedMps": 3.342474,
+                "sky": "environment-v1-gateway-night",
+                "brightness": 0.05,
+                "missingArtRefs": [],
+                "errors": [],
+                "network": []
+              },
+              {
+                "file": "/tmp/race-environment-pack8-driving/race-environments-driving--edc10-authored-foreground-and-sky/driving-state.json",
+                "race": "World Wide Technology Raceway — drag strip",
+                "device": "handheld",
+                "viewport": {
+                  "width": 390,
+                  "height": 844
+                },
+                "displacementM": 2.8261646166055368,
+                "elapsedMs": 3300.0000000000036,
+                "speedMps": 5.931416,
+                "sky": "environment-v1-gateway-night",
+                "brightness": 0.05,
+                "missingArtRefs": [],
+                "errors": [],
+                "network": []
+              }
+            ],
+            "visualFinding": "Authored sky/moon nearly invisible behind headlights on both devices. Sky100 reveals coherent blue night palette and crescent against unchanged dark foreground, but is diagnostic only; production readability unresolved.",
+            "framesViewed": [
+              "authored-driving-b.png",
+              "diagnostic-sky100-world-authored.png"
+            ],
+            "fullAcceptance": false
+          }
+        }
       },
       "physicalSiteLabel": "World Wide Technology Raceway / Gateway complex",
       "siteEvidenceStatus": "exact-authored-facility-route-and-source-coordinate",
@@ -14080,7 +14793,7 @@
         "ground": "SAME exact World Wide Technology Raceway physical place: flat Mississippi floodplain, empty low grandstand/oval banking, pit buildings, distant compact St Louis skyline and tiny Gateway Arch. Clear NIGHT with restrained steel-blue silhouette, sparse stars, small crescent optional, only a few dim amber maintenance lights. No daylight sky or brightly floodlit stands.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -14197,7 +14910,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-59ba0-es-independent-sky-handheld/site-7728fb281937918e-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-c57d7-hes-independent-sky-desktop/site-7728fb281937918e-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "I-64 — St. Louis downtown approaches",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -14323,7 +15091,7 @@
         "ground": "I64 St Louis downtown western approaches: low layered red-brick warehouse roofs and weathered industrial tanks in front of downtown towers, slim Gateway Arch far right of central cluster, flat Mississippi basin, overgrown abandoned rail corridor. No mountain range. Separate viewpoint from river bridge and downtown landmark loop.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -14440,7 +15208,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-160db-ge-independent-sky-handheld/site-c7f00861949723bf-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-e77a2-dge-independent-sky-desktop/site-c7f00861949723bf-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "I-70 — Stan Musial Veterans Memorial Bridge",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -14550,7 +15373,7 @@
         "ground": "I70 Stan Musial Veterans Memorial Bridge St Louis Mississippi crossing: wide horizontal muddy river with low industrial banks, distinctive TWO tall cable-stayed bridge pylons and restrained cable fans in central composition, modest downtown skyline off to one side. Flat basin, no suspension bridge or mountains.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -14665,7 +15488,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-138a2-ffs-independent-sky-desktop/site-72a95d1b5b2b1923-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-97ab2-fs-independent-sky-handheld/site-72a95d1b5b2b1923-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "IL 100 — Great River Road bluffs",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -14760,7 +15638,7 @@
         "ground": "Illinois100 Great River Road near Alton and Elsah: long cream limestone bluffs topped by deciduous woodland, broad Mississippi water glimpsed below in middle distance, tiny weathered riverside brick settlement at cliff foot. Not Ozark stream or mountainous gorge.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -14875,7 +15753,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-28c9b-sta-independent-sky-desktop/site-d33be2e789a2ea03-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-40060-ta-independent-sky-handheld/site-d33be2e789a2ea03-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "MO 94 — Defiance / Augusta",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -14976,7 +15909,7 @@
         "ground": "MO94 Defiance Augusta wine country: gentle Missouri River valley hills, broad vineyards in orderly muted rows on central slopes, oak woodland, weathered stone farm cellar and distant thin floodplain river glint. Low rounded terrain, no alpine vineyard or huge cliffs.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -15093,7 +16026,103 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": "top-row-extrusion: blue range13 exceeds12"
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-71c12-ex-independent-sky-handheld/facility-gateway-4c19cda147-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-b28e0-lex-independent-sky-desktop/facility-gateway-4c19cda147-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "both short movement samples passed; authored and separate diagnostic frames viewed",
+            "samples": [
+              {
+                "file": "/tmp/race-environment-pack8-driving/race-environments-driving--19f18-authored-foreground-and-sky/driving-state.json",
+                "race": "Gateway Kartplex — WWT complex",
+                "device": "desktop",
+                "viewport": {
+                  "width": 1280,
+                  "height": 720
+                },
+                "displacementM": 0.7435794420100641,
+                "elapsedMs": 2833.333333333335,
+                "speedMps": 2.75229,
+                "sky": "environment-v1-gateway-morning",
+                "brightness": 0.65,
+                "missingArtRefs": [],
+                "errors": [],
+                "network": []
+              },
+              {
+                "file": "/tmp/race-environment-pack8-driving/race-environments-driving--f4a67-authored-foreground-and-sky/driving-state.json",
+                "race": "Gateway Kartplex — WWT complex",
+                "device": "handheld",
+                "viewport": {
+                  "width": 390,
+                  "height": 844
+                },
+                "displacementM": 1.1739757382028728,
+                "elapsedMs": 2966.666666666669,
+                "speedMps": 3.711879,
+                "sky": "environment-v1-gateway-morning",
+                "brightness": 0.65,
+                "missingArtRefs": [],
+                "errors": [],
+                "network": []
+              }
+            ],
+            "visualFinding": "Morning panorama and muted foreground visible together with no obvious opening-frame palette break. Only 0.74m/1.17m movement; no route-wide acceptance.",
+            "framesViewed": [
+              "authored-driving-b.png",
+              "diagnostic-sky100-world-authored.png"
+            ],
+            "fullAcceptance": false
+          }
+        }
       },
       "physicalSiteLabel": "World Wide Technology Raceway / Gateway complex",
       "siteEvidenceStatus": "exact-authored-facility-route-and-source-coordinate",
@@ -15185,7 +16214,7 @@
         "ground": "SAME exact Gateway/WWT facility in Madison Illinois, viewed from Kartplex within oval: empty low grandstands, flat infield and small pit buildings, industrial horizon and distant compact St Louis skyline/tiny Gateway Arch. Morning palette, restrained abandonment, no mountains.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -15300,7 +16329,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": "Dirt visual reference on pre-existing asphalt physics; no physical surface change."
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-57033-ly-independent-sky-handheld/site-6a38c943710afccb-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-74cc9-ely-independent-sky-desktop/site-6a38c943710afccb-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "Federated Auto Parts Raceway at I-55 — Pevely",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -15391,7 +16475,7 @@
         "ground": "I55 Raceway Pevely Missouri, small high-banked reddish dirt oval in a low wooded hollow, empty modest steel bleachers and control box, wooded Jefferson County rolling hills. Abandoned overgrown atmosphere. No giant paved superspeedway.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -27947,7 +29031,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-20ac5-23-independent-sky-handheld/site-78f0fe9c94a11f29-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-4381a--23-independent-sky-desktop/site-78f0fe9c94a11f29-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "Pig Trail — Arkansas 23",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -28033,7 +29172,7 @@
         "ground": "Arkansas23 Pig Trail near Cass/Brashears: densely wooded Boston Mountains folded ridges, darker higher sandstone ledges, tight enclosed forest valley, weathered remote timber homestead. Distinct from low Missouri dolomite valleys; no river bridge or alpine peaks.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -28587,6 +29726,12 @@
           "handheld": true,
           "diagnosticContactSheetsViewed": true,
           "scope": "Native projection and effective binding only; not driving acceptance."
+        },
+        "pack8BoundaryRepair": {
+          "sourceMetrics": "/tmp/pack8-repairs-source-metrics.json",
+          "nativeCaptures": "/tmp/race-environment-pack8-repairs-native",
+          "bothDevicesViewed": true,
+          "result": "Large source boundary defects reduced; Forbes treetop stretch removed; minor banding remains. New base renderer also blends horizontal edges, so native before/after alone cannot isolate art improvement."
         }
       },
       "physicalSiteLabel": "National Road — Sideling Hill",
@@ -28806,7 +29951,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-19ae8-go-independent-sky-handheld/site-a49d702c7d874e77-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-3e867-ngo-independent-sky-desktop/site-a49d702c7d874e77-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "Natchez Trace — Tishomingo",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -28903,7 +30103,7 @@
         "ground": "Natchez Trace Parkway Tishomingo Mississippi: low Appalachian foothills with mossy sandstone boulders, ferny wooded hollow, oak/pine canopy and small Bear Creek-like stream glimpse, weathered low stone shelter. No Mississippi delta swamp, no huge peaks or big river bridge.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -34516,7 +35716,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-0c598-Run-independent-sky-desktop/site-f5f47a1aa540e675-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-c53d9-un-independent-sky-handheld/site-f5f47a1aa540e675-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "Little Rock — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -34646,7 +35901,7 @@
         "ground": "Little Rock Arkansas downtown river district: broad Arkansas River in middle distance, low wooded hills beyond, compact skyline of simple rectangular civic towers and low red-brick warehouse blocks, small low steel pedestrian bridge segment central. Restrained overgrown abandoned 2994 city, no Gateway Arch or mountains.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
@@ -36484,7 +37739,62 @@
       "qa": {
         "desktop": false,
         "handheld": false,
-        "seam": false
+        "seam": false,
+        "pack8": {
+          "bindingVerified": true,
+          "sourceCompositionViewed": true,
+          "effectiveTerrain": {
+            "bindingVerifiedBothDevices": true,
+            "sourceTextureSheetViewed": "/tmp/race-pack8-terrain.jpg",
+            "suitability": "Regional substrate chosen; real production tiling/foreground acceptance remains separate. Existing material IDs/weights/road surface/shoulder modes unchanged.",
+            "pevelyDebt": null
+          },
+          "nativeDiagnostic": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Loaded distinct place composition and projected horizon visible at sky100, not driving acceptance."
+          },
+          "nativeAuthored": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "result": "Readable place silhouette under authored exposure in independent sky compositor; foreground acceptance pending."
+          },
+          "wrap": {
+            "devices": [
+              "desktop",
+              "handheld"
+            ],
+            "viewed": true,
+            "numericWarning": false,
+            "result": "No conspicuous side color jump in viewed yaw/pitch sheets. Subtle banding and vertically extended boundary rows remain at extreme pitch; not final seam acceptance.",
+            "sourceWarning": null
+          },
+          "weather": {
+            "runtimeIds": [
+              "clear"
+            ],
+            "visibilityOpacities": [
+              0,
+              0
+            ],
+            "intentionalFogOcclusion": false
+          },
+          "nativeReports": [
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-01bbb-Run-independent-sky-desktop/site-0c5d5fef0282a090-state.json",
+            "/tmp/race-environment-pack8-renderer/race-environments-renderer-03d91-un-independent-sky-handheld/site-0c5d5fef0282a090-state.json"
+          ],
+          "sheets": "/tmp/race-pack8-sheets (late/final exposure and final edge sheets)",
+          "actualDriving": {
+            "status": "not-run-this-pack",
+            "scope": "Independent native renderer is not a production-driving substitute."
+          }
+        }
       },
       "physicalSiteLabel": "St. Louis — Landmark Run",
       "siteEvidenceStatus": "source-origin-and-snapshot-present-needs-biome-review",
@@ -36614,7 +37924,7 @@
         "ground": "St Louis downtown landmark loop: close layered old red-brick urban rooftops, compact civic/downtown skyline and slender Gateway Arch behind toward central left, weathered industrial riverfront and low water horizon, flat basin. Distinct from I64 distant approach and cable-stayed crossing. Abandoned city, no colorful robotic data center treatment.",
         "tiles": "Explicit normal and rough images per existing tile ID; Inherited snow imagery replaced on clear Ozark/riverlands routes; physical tile IDs retained. Physical IDs and weights unchanged.",
         "road": "Existing surface-specific road art, repeats, shoulders and margin semantics retained; native effective audit required.",
-        "acceptance": "Source recipe reviewed; actual production appearance pending."
+        "acceptance": "source-and-effective-bindings-reviewed; production review pending"
       }
     },
     {
