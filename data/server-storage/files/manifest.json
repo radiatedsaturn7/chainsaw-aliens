@@ -757,7 +757,23 @@
       "catalog-hellebore-rs-2015-body": "art/catalog-hellebore-rs-2015-body/document.json",
       "catalog-hellebore-rs-2015-dashboard": "art/catalog-hellebore-rs-2015-dashboard/document.json",
       "catalog-ironwood-v8-2004-body": "art/catalog-ironwood-v8-2004-body/document.json",
-      "catalog-ironwood-v8-2004-dashboard": "art/catalog-ironwood-v8-2004-dashboard/document.json"
+      "catalog-ironwood-v8-2004-dashboard": "art/catalog-ironwood-v8-2004-dashboard/document.json",
+      "catalog-tansy-cargo-2010-body": "art/catalog-tansy-cargo-2010-body/document.json",
+      "catalog-tansy-cargo-2010-dashboard": "art/catalog-tansy-cargo-2010-dashboard/document.json",
+      "catalog-lunaria-30-1991-body": "art/catalog-lunaria-30-1991-body/document.json",
+      "catalog-lunaria-30-1991-dashboard": "art/catalog-lunaria-30-1991-dashboard/document.json",
+      "catalog-juniper-40-2014-body": "art/catalog-juniper-40-2014-body/document.json",
+      "catalog-juniper-40-2014-dashboard": "art/catalog-juniper-40-2014-dashboard/document.json",
+      "catalog-magnolia-40-1990-body": "art/catalog-magnolia-40-1990-body/document.json",
+      "catalog-magnolia-40-1990-dashboard": "art/catalog-magnolia-40-1990-dashboard/document.json",
+      "catalog-rowan-53-2004-body": "art/catalog-rowan-53-2004-body/document.json",
+      "catalog-rowan-53-2004-dashboard": "art/catalog-rowan-53-2004-dashboard/document.json",
+      "catalog-iris-22-2001-body": "art/catalog-iris-22-2001-body/document.json",
+      "catalog-iris-22-2001-dashboard": "art/catalog-iris-22-2001-dashboard/document.json",
+      "catalog-sumac-40-2012-body": "art/catalog-sumac-40-2012-body/document.json",
+      "catalog-sumac-40-2012-dashboard": "art/catalog-sumac-40-2012-dashboard/document.json",
+      "catalog-zinnia-16-2010-body": "art/catalog-zinnia-16-2010-body/document.json",
+      "catalog-zinnia-16-2010-dashboard": "art/catalog-zinnia-16-2010-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -847,7 +863,15 @@
       "Milkweed 60 2013": "cars/Milkweed 60 2013/document.json",
       "Gentian SX 1977": "cars/Gentian SX 1977/document.json",
       "Hellebore RS 2015": "cars/Hellebore RS 2015/document.json",
-      "Ironwood V8 2004": "cars/Ironwood V8 2004/document.json"
+      "Ironwood V8 2004": "cars/Ironwood V8 2004/document.json",
+      "Tansy Cargo 2010": "cars/Tansy Cargo 2010/document.json",
+      "Lunaria 30 1991": "cars/Lunaria 30 1991/document.json",
+      "Juniper 40 2014": "cars/Juniper 40 2014/document.json",
+      "Magnolia 40 1990": "cars/Magnolia 40 1990/document.json",
+      "Rowan 53 2004": "cars/Rowan 53 2004/document.json",
+      "Iris 22 2001": "cars/Iris 22 2001/document.json",
+      "Sumac 40 2012": "cars/Sumac 40 2012/document.json",
+      "Zinnia 16 2010": "cars/Zinnia 16 2010/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
