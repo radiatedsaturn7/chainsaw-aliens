@@ -1,0 +1,17 @@
+
+Running 3 tests using 1 worker
+
+(node:5711) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5711) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/playwright/tamarisk-driving.spec.js:3:34 › Tamarisk desktop keyboard moving gameplay (1.1m)
+  ✓  2 tests/playwright/tamarisk-driving.spec.js:3:34 › Tamarisk handheld touch moving gameplay (25.8s)
+  ✓  3 tests/playwright/tamarisk-preview.spec.js:6:1 › Tamarisk 2024 actual editor preview composites exterior/cockpit and advances production physics (27.8s)
+
+  3 passed (2.0m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
