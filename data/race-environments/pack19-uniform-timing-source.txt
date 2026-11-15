@@ -1,0 +1,39 @@
+import fs from 'node:fs';import {test,expect} from '@playwright/test';
+test('uniform material GPU parity including sparse and mixed negative-coordinate grids',async({page},info)=>{
+   await page.route('**/src/racing/RaceTerrainTextureBlend.js',async route=>{
+    const source=fs.readFileSync('src/racing/RaceTerrainTextureBlend.js','utf8');
+    const injection=`
+ const originalCompile=material.onBeforeCompile;
+ material.userData.pack19OriginalCompile=originalCompile;
+ material.userData.pack19Uniform=grid.refs.length===1;
+ material.userData.pack19Enabled=true;
+ material.onBeforeCompile=shader=>{
+  originalCompile(shader);
+  if(material.userData.pack19Uniform&&material.userData.pack19Enabled){
+   shader.fragmentShader=shader.fragmentShader.replace('vec4 terrainPaint=vec4(0.);','vec4 terrainUniformSample=terrainSample(base,uv,lod);\\n    vec4 terrainPaint=vec4(0.);').replace('terrainSample(base+vec2(float(x)-1.,float(z)-1.),uv,lod)','terrainUniformSample');
+  }
+ };
+ material.customProgramCacheKey=()=> 'pack19-uniform-'+material.userData.pack19Enabled+'-'+material.userData.pack19Uniform;
+`;
+    await route.fulfill({contentType:'text/javascript',body:source.replace(' return material;',' '+injection+'\n return material;')});
+   });
+
+ await page.goto('/index.html');
+ const result=await page.evaluate(async()=>{
+ const THREE=await import('/src/vendorBridge/three.js');const {terrainBlendGrid,createTerrainBlendMaterial}=await import('/src/racing/RaceTerrainTextureBlend.js');
+ const images={};for(const [name,c]of [['a','#56902d'],['b','#bd7251']]){const canvas=document.createElement('canvas');canvas.width=canvas.height=32;const ctx=canvas.getContext('2d');ctx.fillStyle=c;ctx.fillRect(0,0,32,32);ctx.fillStyle='#e4c99a';for(let y=0;y<32;y+=4)for(let x=0;x<32;x+=4)if((x+y)%8)ctx.fillRect(x,y,2,2);images[name]=canvas;}
+ const renderer=new THREE.WebGLRenderer({antialias:false,preserveDrawingBuffer:true});renderer.setSize(320,240);const reports=[];
+ for(const mixed of [false,true]){
+ const grid=terrainBlendGrid({cellSizeM:4,cells:{'-2,-2':{art:'a'},'0,0':{art:mixed?'b':'a'},'2,1':{art:'a'}}},c=>c.art);
+ const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(55,320/240,.1,200);camera.position.set(-7,12,14);camera.lookAt(-1,0,-2);
+ const geo=new THREE.PlaneGeometry(32,32,8,8);geo.rotateX(-Math.PI/2);const pos=geo.getAttribute('position');for(let i=0;i<pos.count;i++)pos.setY(i,pos.getX(i)*.12+Math.sin(pos.getZ(i))*.3);geo.computeVertexNormals();const colors=new Float32Array(pos.count*3).fill(.8);geo.setAttribute('color',new THREE.BufferAttribute(colors,3));
+ scene.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:'#315a32',side:THREE.DoubleSide})));
+ const mat=createTerrainBlendMaterial({THREE,grid,getCanvas:r=>images[r],textureWorldM:2.5,makeMaterial:map=>new THREE.MeshBasicMaterial({map,vertexColors:true,side:THREE.DoubleSide,depthWrite:false})});const overlay=new THREE.Mesh(geo.clone(),mat);overlay.renderOrder=1;scene.add(overlay);
+ const gl=renderer.getContext();const capture=enabled=>{mat.userData.pack19Enabled=enabled;mat.needsUpdate=true;renderer.render(scene,camera);const a=new Uint8Array(320*240*4);gl.readPixels(0,0,320,240,gl.RGBA,gl.UNSIGNED_BYTE,a);return {a,png:renderer.domElement.toDataURL()};};
+ for(const pose of [0,1]){if(pose){camera.position.set(2,3,-9);camera.lookAt(-2,0,-3);}const a=capture(false),b=capture(true);let count=0,max=0;for(let i=0;i<a.a.length;i++){const d=Math.abs(a.a[i]-b.a[i]);if(d)count++;max=Math.max(max,d);}const timings=[];for(const enabled of [false,true,true,false,false,true]){mat.userData.pack19Enabled=enabled;mat.needsUpdate=true;renderer.render(scene,camera);gl.finish();const start=performance.now();for(let n=0;n<6;n++){renderer.render(scene,camera);gl.finish();}timings.push({enabled,msPerFrame:(performance.now()-start)/6});}reports.push({timings,mixed,pose,uniform:mat.userData.pack19Uniform,width:grid.width,height:grid.height,gridAllZero:grid.data.every((v,i)=>i%4===3?v===255:v===0),differentChannels:count,max,original:a.png,prototype:b.png});}
+ mat.dispose();geo.dispose();
+ }renderer.dispose();return reports;
+ });
+ for(const [i,r]of result.entries()){for(const k of ['original','prototype']){fs.writeFileSync(info.outputPath(`${i}-${k}.png`),Buffer.from(r[k].split(',')[1],'base64'));delete r[k];}expect(r.uniform).toBe(!r.mixed);expect(r.max).toBe(0);}
+ fs.writeFileSync(info.outputPath('parity.json'),JSON.stringify(result,null,2));
+});
