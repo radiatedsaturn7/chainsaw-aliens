@@ -1,0 +1,33 @@
+{
+  "base": "61dd1fe1e85b805eb2999d8e3250e9ad455d4e76",
+  "catalogAndSourceAliasHits": {
+    "cx-90": [],
+    "saab": [],
+    "corvette": [],
+    "rs2": [
+      "Fenfire 1800 1986",
+      "Alder RS 1994"
+    ],
+    "gnx": [
+      "Ashbaron 1987"
+    ]
+  },
+  "oldUnpublishedCrosswalk": {
+    "Oleander": "2004 Cadillac XLR base",
+    "Aconite": "2006 Mitsubishi Lancer Evolution IX5MT",
+    "Lupin": "1994 Nissan Quest XE",
+    "Dahlia": "1993 Honda Civic del Sol Si",
+    "Verbena": "2015 Abarth695biposto5MT",
+    "Burdock Six": "1973 AMC Gremlin2323MT",
+    "Silene": "1982 DeLorean5MT",
+    "Cowslip": "1958 Austin-Healey Sprite MkI",
+    "Yarrow": "early1992 Mercedes-Benz500E",
+    "Borage": "1970 Datsun510four-door4MT",
+    "Fireweed": "2016 Dodge Viper SRT basecoupe"
+  },
+  "selected": [
+    "2024 Mazda CX-90 3.3 Turbo Select AWD",
+    "1992 Saab900Turbo US3door5MT",
+    "2005 Chevrolet Corvette basecoupe6MT nonZ51"
+  ]
+}

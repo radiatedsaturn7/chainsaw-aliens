@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "lobelia-2005",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 700,
+    "gear": 1,
+    "elapsed": 1083.2999999999993,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "lobelia-2005",
+    "x": 0.001068,
+    "z": 13.398927,
+    "speed": 11.660994,
+    "rpm": 3190.592847,
+    "gear": 1,
+    "elapsed": 4666.433333333339,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "lobelia-2005",
+    "x": 0.003361,
+    "z": 39.244188,
+    "speed": 21.493232,
+    "rpm": 5905.745626,
+    "gear": 1,
+    "elapsed": 6216.333333333342,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

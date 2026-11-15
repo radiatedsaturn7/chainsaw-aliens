@@ -1030,7 +1030,9 @@
       "catalog-tamarisk-2024-body": "art/catalog-tamarisk-2024-body/document.json",
       "catalog-tamarisk-2024-dashboard": "art/catalog-tamarisk-2024-dashboard/document.json",
       "catalog-valerian-turbo-1992-body": "art/catalog-valerian-turbo-1992-body/document.json",
-      "catalog-valerian-turbo-1992-dashboard": "art/catalog-valerian-turbo-1992-dashboard/document.json"
+      "catalog-valerian-turbo-1992-dashboard": "art/catalog-valerian-turbo-1992-dashboard/document.json",
+      "catalog-lobelia-2005-body": "art/catalog-lobelia-2005-body/document.json",
+      "catalog-lobelia-2005-dashboard": "art/catalog-lobelia-2005-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1133,7 +1135,8 @@
       "Heather 1993": "cars/Heather 1993/document.json",
       "Speedwell 1968": "cars/Speedwell 1968/document.json",
       "Tamarisk 2024": "cars/Tamarisk 2024/document.json",
-      "Valerian Turbo 1992": "cars/Valerian Turbo 1992/document.json"
+      "Valerian Turbo 1992": "cars/Valerian Turbo 1992/document.json",
+      "Lobelia 2005": "cars/Lobelia 2005/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
