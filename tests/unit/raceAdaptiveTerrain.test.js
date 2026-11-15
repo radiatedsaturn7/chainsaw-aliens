@@ -121,3 +121,17 @@ test('queued balancing and indexed borders preserve the reference mesh on straig
   assert.equal(queued.stats.unresolvedHeightErrors,reference.stats.unresolvedHeightErrors);
  }
 });
+
+// Actual narrow clipped boundary from the Las Vegas city-run world bake.
+test('Las Vegas narrow clipping ears retain every boundary edge in either winding',()=>{
+ const polygon=[p(-53.70100964357193,57.34876971167309),p(-52.5,55.11758427491096),p(-52.5,55.11758587782883),p(-52.51682621226778,55.148844888110425),p(-52.51682676371071,55.14884591255728)];
+ for(const boundary of [polygon,[...polygon].reverse()]){
+  const triangles=triangulateTerrainBoundary(boundary);
+  assert.equal(triangles.length,boundary.length-2);
+  for(let i=0;i<boundary.length;i++)assert.ok(triangles.some(t=>t.includes(boundary[i])&&t.includes(boundary[(i+1)%boundary.length])),`missing boundary edge ${i}`);
+  const cross=(a,b,c)=>(b.x-a.x)*(c.z-a.z)-(b.z-a.z)*(c.x-a.x);
+  const expected=Math.abs(boundary.reduce((sum,b,i)=>sum+cross(boundary[0],b,boundary[(i+1)%boundary.length]),0));
+  const actual=triangles.reduce((sum,t)=>sum+Math.abs(cross(...t)),0);
+  assert.ok(Math.abs(actual-expected)<1e-12,'preserves polygon area');
+ }
+});

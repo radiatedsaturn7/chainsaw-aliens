@@ -47,4 +47,22 @@ class CampaignArtImportTests(unittest.TestCase):
     with contextlib.redirect_stdout(io.StringIO()):module.main(['--only','test'])
     self.assertEqual((root/'art/test/document.json').read_bytes(),known)
    finally:os.chdir(previous)
+ def test_reexport_requires_selection_preserves_original_and_rejects_native_edits(self):
+  spec=importlib.util.spec_from_file_location('campaign_import',SCRIPT);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+  with tempfile.TemporaryDirectory() as folder:
+   previous=Path.cwd()
+   try:
+    os.chdir(folder);root=Path('data/server-storage/files');root.mkdir(parents=True);(root/'manifest.json').write_text(json.dumps({'folders':{'art':{}}}))
+    source=Path('assets/campaign-art/test.png');source.parent.mkdir(parents=True)
+    with source.open('wb') as f:png.Writer(4,4,greyscale=False,alpha=True).write(f,[[120,30,10,255]*4]*4)
+    original=source.read_bytes();m.REVIEWED={'test.png':'test'};m.EXPANDED.parent.mkdir(parents=True);m.EXPANDED.write_text(json.dumps({'assets':[{'name':'test','maxEdge':4}]}))
+    with contextlib.redirect_stdout(io.StringIO()):m.main(['--only','test'])
+    target=root/'art/test/document.json';old=target.read_bytes();m.EXPANDED.write_text(json.dumps({'assets':[{'name':'test','maxEdge':2}]}))
+    with contextlib.redirect_stdout(io.StringIO()):m.main(['--only','test','--reexport'])
+    self.assertNotEqual(target.read_bytes(),old);self.assertEqual(source.read_bytes(),original)
+    ledger=json.loads(Path('data/campaigns/america/art-imports.json').read_text());self.assertEqual((ledger['test']['width'],ledger['test']['height']),(2,2))
+    with self.assertRaises(SystemExit),contextlib.redirect_stderr(io.StringIO()):m.main(['--reexport'])
+    target.write_text('{"edited":true}')
+    with self.assertRaisesRegex(RuntimeError,'Preserve local artwork edits'):m.main(['--only','test','--reexport'])
+   finally:os.chdir(previous)
 if __name__=='__main__':unittest.main()

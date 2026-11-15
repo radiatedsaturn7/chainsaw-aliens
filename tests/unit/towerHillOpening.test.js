@@ -6,12 +6,13 @@ import RaceEditor from '../../src/ui/RaceEditor.js';
 import {createMechanicalState,applyMechanicalMission,stepMechanicalState} from '../../src/racing/simulation/MechanicalModel.js';
 const read=p=>{const d=JSON.parse(fs.readFileSync(new URL(p,import.meta.url)));return d.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(d.data,'base64'))):d;};
 const race=read('../../data/server-storage/files/races/Tower Hill Road/document.json').race;
-test('Tower Hill opening retains GPS, finite runouts, Providence terrain and dense roadside scenery',()=>{
+test('Tower Hill opening retains GPS, finite runouts, authored winter terrain and dense roadside scenery',()=>{
  assert.deepEqual(race.source.osmWayIds,[19365929]);
  assert.ok(race.source.routeReference.originalGeometry.length>20);
  assert.equal(race.road.autoExtend,false);
  assert.ok(race.road.continuations.start.length&&race.road.continuations.finish.length);
- assert.equal(race.groundPlaneArtRef,'providenceGround');
+ assert.equal(race.groundPlaneArtRef,'ground-frosted-grass-v1');
+ assert.ok(fs.existsSync(new URL('../../data/server-storage/files/art/'+race.groundPlaneArtRef+'/document.json',import.meta.url)),'authored winter ground artwork exists');
  assert.equal(race.finishBehavior.cutsceneRef,'lastongridintro');
  assert.equal(race.raceStart.cutsceneRef,'introtowerhill');
  assert.equal(new RaceEditor({}).normalizeLoadedRaceDocument(race).raceStart.cutsceneRef,'introtowerhill');

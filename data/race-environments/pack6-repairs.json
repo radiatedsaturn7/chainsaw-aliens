@@ -1,0 +1,32 @@
+{
+  "repairs": [
+    {
+      "ref": "skybox-daytona",
+      "source": "assets/campaign-art/skyboxes/daytona.png",
+      "originalGeneratedImage": "/workspace/generated_images/exec-875b6e80-6c1c-46ed-be49-f1aefe48f645.png",
+      "priorSourceRetained": "/workspace/generated_images/daytona-before-pack6.png",
+      "reason": "Repair textured lower clamp boundary while retaining Daytona noon composition.",
+      "scope": [
+        "Daytona Tri-Oval",
+        "Daytona International Speedway — Sports Car Course"
+      ],
+      "tool": "image_gen.imagegen",
+      "sourceSha256": "6ba9e645d833f724f68f3d391987564af7fdc27469a5df10531e75f94163088f",
+      "acceptance": "Fresh desktop/handheld native pitch review: strong lower clamp streaks reduced, minor variation remains. Current desktop actual drive passed; full visual acceptance pending."
+    },
+    {
+      "ref": "environment-v1-ground-sebring-olive",
+      "source": "assets/campaign-art/environment-v1/ground-sebring-olive.png",
+      "originalGeneratedImage": "/workspace/generated_images/exec-92ea0673-275e-4cae-b999-e5e3596047cc.png",
+      "reason": "Dedicated low-saturation olive sandy airfield grass to address captured green foreground/panorama mismatch. Physical snow tile IDs and weights retained.",
+      "scope": [
+        "Sebring International Raceway — Full Circuit",
+        "Sebring International Raceway — Short Circuit",
+        "Sebring International Raceway — Club Circuit"
+      ],
+      "tool": "image_gen.imagegen",
+      "sourceSha256": "b643891a14e29ef756f6a7626928f0106d7f6e6d08d0cda5d731636ee19e4107",
+      "acceptance": "Native ground loaded and actual desktop/handheld Sebring Short samples passed. Before/after views show improved foreground/panorama palette join; no full-route acceptance inferred."
+    }
+  ]
+}

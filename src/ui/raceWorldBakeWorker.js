@@ -207,6 +207,15 @@ export async function buildRaceTransferPackage(sourceRace = null, {
     };
   }
   editor.validateRaceSurfaceGeometry = () => null;
+  // Report actual terrain milestones so the inactivity watchdog does not
+  // abort a large race that is still making progress. The absolute loading
+  // deadline remains in force; this is not a periodic keep-alive timer.
+  let terrainProgress=0.12;
+  editor.onRaceTerrainBuildProgress = ({phase,pass=1}) => {
+    const progress=phase==='refining'?0.2:phase==='refine'?0.3:Math.min(0.65,0.4+0.08*pass);
+    terrainProgress=Math.max(terrainProgress,progress);
+    reportProgress(terrainProgress,'world-bake');
+  };
   reportProgress(0.12, 'world-bake');
   const bake = editor.buildRaceWorldBake({
     ...(options || editor.getRacePlaytestWorldBakeOptions()),

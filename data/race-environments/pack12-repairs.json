@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "angelesForest": {
+    "sourceImage": "/workspace/generated_images/exec-0dd69ed1-2b4b-4bc0-8dc5-45392f980cf5.png",
+    "sourceSha256": "9083d1e17254136cb0159bd259e2812344e47c02579d6bd5bd7646b1f9ae1ea8",
+    "ref": "ground-snow-chaparral-v1",
+    "physicalSnowCells": 17952,
+    "sourceReviewed": true,
+    "provenance": {
+      "tool": "image_gen",
+      "intent": "Compacted snow with sparse chaparral twigs and granite grains; original source retained."
+    }
+  },
+  "ppir": {
+    "sourceImage": "/workspace/generated_images/exec-8927300f-113b-4342-aee0-93984ed2624b.png",
+    "sourceSha256": "b01963fa1989f085d39ac71f62bf37ab5839991e79b49aec38ea60cb7747220f",
+    "ref": "environment-v1-ppir-noon",
+    "sourceReviewed": true,
+    "priorWinterRevision": "/workspace/generated_images/exec-17ca43e3-196d-4a88-b0cb-da5f1b9241bd.png",
+    "sourceBoundaryMetrics": {
+      "path": "/workspace/generated_images/exec-8927300f-113b-4342-aee0-93984ed2624b.png",
+      "width": 2172,
+      "height": 724,
+      "edgeMeanRGB": 4.332872928176796,
+      "edgeMaximumRGB": 53.333333333333336,
+      "topRangeRGB": [
+        12,
+        6,
+        5
+      ],
+      "bottomRangeRGB": [
+        6,
+        6,
+        5
+      ],
+      "warnings": [],
+      "scope": "Sampling diagnostics only; flat/blank artwork can pass these metrics. Native projection and human review remain required."
+    },
+    "finalNativeReports": [
+      "/tmp/race-pack12-ppir-final-native/race-environments-renderer-f232d-ain-independent-sky-desktop/site-1ea8542dba6e677f-state.json",
+      "/tmp/race-pack12-ppir-final-native/race-environments-renderer-04993-in-independent-sky-handheld/site-1ea8542dba6e677f-state.json"
+    ],
+    "finalNativeReviewed": true,
+    "productionSample": {
+      "file": "/tmp/race-pack12-regional-driving/race-environments-driving--79e38-authored-foreground-and-sky/driving-state.json",
+      "race": "Pikes Peak International Raceway — Fountain",
+      "device": "desktop",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "displacementM": 25.01872453451814,
+      "timing": {
+        "wallMs": 7597,
+        "simulationMs": 5949.800000000003
+      },
+      "routeProgressM": 25.005329731899522,
+      "elapsedMs": 8499.699999999995,
+      "speedMps": 10.81475830078125,
+      "sky": "environment-v1-ppir-noon",
+      "brightness": 1,
+      "missingArtRefs": [],
+      "errors": [],
+      "network": []
+    }
+  },
+  "towerHill": {
+    "registry": "data/race-environments/superseded-art.json",
+    "sourceAndNativeComparisonsReviewed": true,
+    "nativeCases": 4,
+    "authoredVisibility": "Nearly black unchanged .05 exposure; no full driving acceptance.",
+    "boundaryLimit": "Replacement has top/bottom extension bands; original has lower-edge columns and daytime autumn city mismatch.",
+    "actualDriving": {
+      "summary": "/tmp/race-pack12-tower-driving-summary.json",
+      "handheldRouteProgressM": 20.07923498216953,
+      "handheldWallMs": 49408,
+      "handheldSimulationMs": 4100,
+      "desktopRouteProgressM": 18.764371192746122,
+      "desktopResult": "Failed 20m in90s budget; steering remained inside conservative corridor; live session, no required missing art.",
+      "handheldNetworkCaveat": "One burnoutsmoke fetch aborted; no page errors or missing required artwork.",
+      "review": "Actual authored foreground and matched paused diagnostic inspected; authored sky nearly hidden, diagnostic night silhouette does not look like daylight."
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "priorBase": "24b3164e4b7765482a9b819e6968f821b452b344",
+  "base": "2dd6bff9928437c115a16e8d9aab62a4b60443df",
+  "baseTree": "00c1e74336c39fb70a952533f373661f28c31ffa",
+  "merge": "628e062036e0d902949713e28c40a0c3e645ea32",
+  "conflicts": [],
+  "changes": "Five staging commits, 71 paths; no race documents changed. All incoming car/garage/menu/physics/camera/renderer/CI files retained unchanged. Race-only differences remain separate.",
+  "renderer": "Staging now blends 4% horizontal edge strips and adds periodic gutters in RaceSkyboxTexture.js, called by RaceEditor. This work does not introduce or alter that implementation. New source metrics compare original pixels independently of renderer; new native captures use landed renderer. Prior native screenshots cannot isolate artwork improvement from this base change.",
+  "ci": "merge-tests adds bootstrap/skybox/economy/garage/dialogue/junction units and container-native python3-pil dependencies. Campaign artwork workflow itself unchanged.",
+  "preservation": "Final verification must compare src, .github, cars and Game Menu exactly against this base, and all 245 nonvisual race semantics through bind.mjs."
+}

@@ -1,4 +1,4 @@
-import {collectSceneryArtRefs} from '../../src/racing/RaceSceneryAssets.js';
+import {collectSceneryArtRefs,hydrateSceneryDefinitions} from '../../src/racing/RaceSceneryAssets.js';
 // Exercise the real worker preparation and transfer pipeline in an isolated,
 // deliberately small-stack process per saved stage (keeps memory bounded too).
 import fs from 'node:fs';
@@ -17,6 +17,13 @@ const raceways=process.argv.includes('--raceways')||expansion||wilderness;
 const catalog=JSON.parse(fs.readFileSync(new URL(raceways?'../../data/campaigns/america/raceways/catalog.json':sideRaces?'../../data/campaigns/america/side-races/catalog.json':'../../data/campaigns/america/catalog.json',import.meta.url)))
  .filter(stage=>(!wilderness||stage.id.startsWith('detour-'))&&(!expansion||/^(city|state)-/.test(stage.id))&&(!sideRaces||stage.status==='installed')&&!skipped.has(stage.id)).map(stage=>({...stage,name:stage.name||stage.raceRef}));
 
+const shardArg=process.argv.find(a=>a.startsWith('--shard='))?.slice(8);
+if(shardArg){
+ const [index,total]=shardArg.split('/').map(Number);
+ assert.ok(Number.isInteger(index)&&Number.isInteger(total)&&index>=1&&index<=total&&total<=64,'Invalid shard');
+ const selected=catalog.filter((_,i)=>i%total===index-1);catalog.splice(0,catalog.length,...selected);
+}
+
 const auditEdges=process.argv.includes('--audit-edges');
 const stageTimeoutMs=Math.max(1000,Number(process.argv.find(a=>a.startsWith('--timeout-ms='))?.slice(13))||360000);
 const id=process.argv.find(a=>a.startsWith('--stage='))?.slice(8);
@@ -24,6 +31,15 @@ if(id){
  const stage=catalog.find(s=>s.id===id);assert.ok(stage,`Unknown stage ${id}`);
  const stored=JSON.parse(fs.readFileSync(path.resolve(fileURLToPath(new URL('../../data/server-storage/files/',import.meta.url)),stage.documentPath||`races/${stage.name}/document.json`)));
  const doc=stored.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(stored.data,'base64'))):stored;
+ // The browser hydrates missing definitions through HTTP. This offline harness
+ // must resolve the same saved documents from disk before worker preparation.
+ const missing=await hydrateSceneryDefinitions(doc.race,async ref=>{
+  const filename=new URL(`../../data/server-storage/files/doodads/${encodeURIComponent(ref)}/document.json`,import.meta.url);
+  if(!fs.existsSync(filename))return null;
+  const value=JSON.parse(fs.readFileSync(filename));
+  return value.__chainsawStorage?JSON.parse(zlib.gunzipSync(Buffer.from(value.data,'base64'))):value;
+ });
+ assert.deepEqual(missing,[],'Referenced saved doodads must exist');
  const {buildRaceTransferPackage}=await import('../../src/ui/raceWorldBakeWorker.js');
  {
   const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');

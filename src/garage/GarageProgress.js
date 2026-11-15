@@ -19,6 +19,6 @@ export function normalizeGarageProgress(source={}){
    tune:Object.fromEntries(Object.entries(setup.tune||{}).filter(([key,value])=>safeGarageKey(key)&&Number.isFinite(value)))};
  }
  const ownedCars=[...new Set((Array.isArray(source.ownedCars)?source.ownedCars:[]).filter(safeGarageKey))];
- const rewards=Object.fromEntries(Object.entries(source.rewards||{}).filter(([ref])=>safeGarageKey(ref)).map(([ref,r])=>[ref,{clears:Math.max(0,Math.floor(Number(r?.clears)||0)),lastRun:String(r?.lastRun||''),lastReward:r?.lastReward||{}}]));
+ const rewards=Object.fromEntries(Object.entries(source.rewards||{}).filter(([ref])=>safeGarageKey(ref)).map(([ref,r])=>[ref,{clears:Math.max(0,Math.floor(Number(r?.clears)||0)),lastRun:String(r?.lastRun||''),lastReward:r?.lastReward||{},objectiveEarned:r?.objectiveEarned===true,bestTimes:Object.fromEntries(Object.entries(r?.bestTimes||{}).filter(([car,time])=>safeGarageKey(car)&&Number.isFinite(time)&&time>0))}]));
  return {parts,cars,ownedCars,rewards};
 }

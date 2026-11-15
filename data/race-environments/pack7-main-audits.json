@@ -1,0 +1,25 @@
+{
+  "sourceContactSheet": "/tmp/pack7-main-audits.jpg",
+  "inspection": "All three existing sources actually viewed. No production acceptance assigned.",
+  "audits": [
+    {
+      "race": "Angeles Crest",
+      "finding": "Existing angular gray San Gabriel ridges and dry pine/chaparral plausibly match saved site. Original fictional structures are not surveyed features. Retain as reuse candidate pending native and actual driving inspection.",
+      "bindingChanged": false,
+      "regionalSource": "https://www.recreation.gov/camping/campgrounds/10370456"
+    },
+    {
+      "race": "Pikes Peak",
+      "finding": "Existing sky too wooded for saved upper alpine segment; blanket clean-snow ground inappropriate for clear granite/talus route. Needs new pink-gray granite alpine composition and regional substrate; leave physical materials and unused configured snow diagnostic intact.",
+      "bindingChanged": false,
+      "regionalSource": "https://coloradosprings.gov/pikes-peak-americas-mountain/page/safely-using-mountain"
+    },
+    {
+      "race": "Oak Creek",
+      "finding": "Existing open iconic Sedona buttes not representative of saved upper 89A/Vista pine-rim canyon. Needs ponderosa/red-tan strata composition and appropriate litter/rock substrate.",
+      "bindingChanged": false,
+      "regionalSource": "https://www.arizonahighways.com/oak-creek-canyon"
+    }
+  ],
+  "lighting": "All three effective evening .42 despite timeOfDay day; unchanged."
+}

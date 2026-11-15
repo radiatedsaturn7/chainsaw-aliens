@@ -1,3 +1,4 @@
+import {updateVehicleFeedback} from './RaceVehicleFeedback.js';
 import {paceNoteLookahead, callSeconds, codriverBody, codriverChain, codriverPhrase, speakCodriver, updateCodriverEvents} from './RaceCodriver.js';
 import {getRaceAiPlannedSpeed} from './RaceAiRoadPlan.js';
 
@@ -68,6 +69,11 @@ export function updateRaceDrivingAssists(editor, dt) {
   const state = session.drivingAssists ||= {};
   const active = !editor.raceInput.paused && !session.raceResults && !session.carEditorPreview
     && !(session.countdownRemainingMs > 0) && !session.raceIntro?.active && !(session.edgeResetFadeMs > 0);
+  const physics=editor.vehicleDynamicsAuthority?.workerBridge ? session.vehicleDynamicsPresentationState : session.vehicleDynamicsRunner?.state;
+  // Worker presentation does not guarantee applied controls: omit input-dependent
+  // diagnoses when authoritative controls are unavailable rather than guessing.
+  const controls=editor.vehicleDynamicsAuthority?.workerBridge ? null : editor.vehicleDynamicsAuthority?.latest?.telemetry?.controls;
+  updateVehicleFeedback(session,physics,controls,dt,{active});
   const distance = session.projectedDistance ?? session.distance ?? 0;
   const pose = editor.getRaceWorldPoseAtDistance(distance, {runtimeType:session.routeRuntimeType});
   updateWrongWay(state, {x:session.worldX, z:session.worldZ, yaw:pose.yaw, dt, active});

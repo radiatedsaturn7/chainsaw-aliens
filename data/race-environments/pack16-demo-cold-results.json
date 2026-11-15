@@ -1,0 +1,28 @@
+{
+  "scope": "Cold serial Demo desktop, fresh server per snapshot; same browser/config and unchanged continuity/20m assertions. No concurrent heavy rendering. Short samples, not full-route approval.",
+  "snapshots": {
+    "baseline": {
+      "evidence": "/tmp/race-pack16-baseline-demo/pack16-driving-probe-Demo--d6144-authored-foreground-and-sky/driving-state.json",
+      "passed": true,
+      "timing": {
+        "wallMs": 7145,
+        "simulationMs": 5466.399999999994
+      },
+      "distanceM": 21.25042724609375,
+      "errors": [],
+      "network": []
+    },
+    "candidate": {
+      "evidence": "/tmp/race-pack16-candidate-demo/pack16-driving-probe-Demo--d6144-authored-foreground-and-sky/driving-state.json",
+      "passed": true,
+      "timing": {
+        "wallMs": 47840,
+        "simulationMs": 4033.333333333325
+      },
+      "distanceM": 20.052247999999963,
+      "errors": [],
+      "network": []
+    }
+  },
+  "finding": "Previous continuity rejection not reproduced; both passed unchanged guard. Candidate substantially slower in this one cold sample; causal attribution is not established. No deadlines or performance gates changed."
+}

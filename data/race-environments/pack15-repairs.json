@@ -1,0 +1,20 @@
+[
+  {
+    "key": "littletujunga-noon",
+    "ref": "environment-v1-littletujunga-noon",
+    "source": "environment-v1/littletujunga-noon.png",
+    "prompt": "Repair this existing 2994 panorama without changing its identity: Little Tujunga California chaparral hills, blue noon, gray-green scrub and tan granite. Make the outermost left and right 15% match exactly in sky color, distant ridge heights, shrub heights and ground colors for a continuous horizontally wrapping 360 panorama, removing the discontinuity. Keep natural varied central hills and scrub. Top 10% and bottom 10% must each be perfectly uniform single flat colors with no grain or gradients, naturally transitioning into landscape. No roads/text/borders. Preserve 3:1.",
+    "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-6edda09d-ece9-460f-8141-bb55802b03c8.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "sourceImage": "/workspace/generated_images/exec-6edda09d-ece9-460f-8141-bb55802b03c8.png",
+    "sourceReview": "Source re-viewed: shrubs restored through edges, but decoded wrap warning persists (15.66 mean RGB). Flat bottom has a hard transition; not accepted as closed."
+  },
+  {
+    "key": "ozark-eminence-day",
+    "ref": "environment-v1-ozark-eminence-day",
+    "source": "environment-v1/ozark-eminence-day.png",
+    "prompt": "Repair this existing Missouri MO-19 near Eminence winter woodland/bluff valley panorama. Preserve central composition, rounded forested ridges, river and limestone bluffs, blue day. Replace textured bottommost 12% with a perfectly uniform flat muted dark winter woodland color transitioning naturally above it, no grain, no stripes; topmost 10% perfectly uniform blue. Make left/right outer edges match sky and wooded ridge heights and colors seamlessly for wrapping. No road/text/borders, preserve 3:1.",
+    "hint": "Generated images are saved to /workspace/generated_images as /workspace/generated_images/exec-6b80ff94-847d-4f4e-ac17-1747ba0c1093.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+    "sourceImage": "/workspace/generated_images/exec-6b80ff94-847d-4f4e-ac17-1747ba0c1093.png",
+    "sourceReview": "Source re-viewed: textured lower woodland boundary replaced with quiet gray-brown extension; native comparison pending. Historical supersession evidence stays unchanged."
+  }
+]

@@ -1,0 +1,155 @@
+{
+  "scope": "Independent server API/static payload validity probe. Not a measured in-game worker transfer and no timing inference under concurrent units.",
+  "results": [
+    {
+      "snapshot": "baseline",
+      "ref": "8300 body",
+      "route": "api",
+      "path": "/__storage/file?folder=art&name=8300%20body",
+      "status": 200,
+      "bytes": 32353144,
+      "sha256": "d4996f6492ec1bef3e343ca84bfdfedc7db350cf6944967e1adef31f93ac1ab8",
+      "payloadSha256": "dbaa53387419ffd3d70577506f4583fc946bc5828e3e5eb6d6960ac71567c026",
+      "validJson": true,
+      "keys": [
+        "kind",
+        "width",
+        "height",
+        "fps",
+        "frames",
+        "editor"
+      ],
+      "frames": 8,
+      "width": 550,
+      "height": 315
+    },
+    {
+      "snapshot": "baseline",
+      "ref": "8300 body",
+      "route": "static",
+      "path": "/data/server-storage/files/art/8300%20body/document.json",
+      "status": 404,
+      "bytes": 9,
+      "sha256": "e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31"
+    },
+    {
+      "snapshot": "baseline",
+      "ref": "snowsmoke",
+      "route": "api",
+      "path": "/__storage/file?folder=art&name=snowsmoke",
+      "status": 200,
+      "bytes": 30873679,
+      "sha256": "fbc83ba17665b6ef46b4b208751fddfbc19c570c2962f8878ad06c59ff3d8d87",
+      "payloadSha256": "0ba1139f707edbe3330f6ed799c4e5c67c4f29643ae4796c2fa85e6d9f8eb7c2",
+      "validJson": true,
+      "keys": [
+        "kind",
+        "width",
+        "height",
+        "fps",
+        "frames",
+        "editor"
+      ],
+      "frames": 12,
+      "width": 309,
+      "height": 412
+    },
+    {
+      "snapshot": "baseline",
+      "ref": "snowsmoke",
+      "route": "static",
+      "path": "/data/server-storage/files/art/snowsmoke/document.json",
+      "status": 200,
+      "bytes": 5756531,
+      "sha256": "8ecb53fb2b2782b786bcb480a334b0d35587a01a847f7db2cad8bc4bc98f878e",
+      "payloadSha256": "0ba1139f707edbe3330f6ed799c4e5c67c4f29643ae4796c2fa85e6d9f8eb7c2",
+      "validJson": true,
+      "keys": [
+        "kind",
+        "width",
+        "height",
+        "fps",
+        "frames",
+        "editor"
+      ],
+      "frames": 12,
+      "width": 309,
+      "height": 412
+    },
+    {
+      "snapshot": "candidate",
+      "ref": "8300 body",
+      "route": "api",
+      "path": "/__storage/file?folder=art&name=8300%20body",
+      "status": 200,
+      "bytes": 32353144,
+      "sha256": "d4996f6492ec1bef3e343ca84bfdfedc7db350cf6944967e1adef31f93ac1ab8",
+      "payloadSha256": "dbaa53387419ffd3d70577506f4583fc946bc5828e3e5eb6d6960ac71567c026",
+      "validJson": true,
+      "keys": [
+        "kind",
+        "width",
+        "height",
+        "fps",
+        "frames",
+        "editor"
+      ],
+      "frames": 8,
+      "width": 550,
+      "height": 315
+    },
+    {
+      "snapshot": "candidate",
+      "ref": "8300 body",
+      "route": "static",
+      "path": "/data/server-storage/files/art/8300%20body/document.json",
+      "status": 404,
+      "bytes": 9,
+      "sha256": "e3ebaa16dd9d9b9fc107c42183fb6cf9d22927e1af03dbbdfa0ccc38e4e4ac31"
+    },
+    {
+      "snapshot": "candidate",
+      "ref": "snowsmoke",
+      "route": "api",
+      "path": "/__storage/file?folder=art&name=snowsmoke",
+      "status": 200,
+      "bytes": 30873679,
+      "sha256": "fbc83ba17665b6ef46b4b208751fddfbc19c570c2962f8878ad06c59ff3d8d87",
+      "payloadSha256": "0ba1139f707edbe3330f6ed799c4e5c67c4f29643ae4796c2fa85e6d9f8eb7c2",
+      "validJson": true,
+      "keys": [
+        "kind",
+        "width",
+        "height",
+        "fps",
+        "frames",
+        "editor"
+      ],
+      "frames": 12,
+      "width": 309,
+      "height": 412
+    },
+    {
+      "snapshot": "candidate",
+      "ref": "snowsmoke",
+      "route": "static",
+      "path": "/data/server-storage/files/art/snowsmoke/document.json",
+      "status": 200,
+      "bytes": 5756531,
+      "sha256": "8ecb53fb2b2782b786bcb480a334b0d35587a01a847f7db2cad8bc4bc98f878e",
+      "payloadSha256": "0ba1139f707edbe3330f6ed799c4e5c67c4f29643ae4796c2fa85e6d9f8eb7c2",
+      "validJson": true,
+      "keys": [
+        "kind",
+        "width",
+        "height",
+        "fps",
+        "frames",
+        "editor"
+      ],
+      "frames": 12,
+      "width": 309,
+      "height": 412
+    }
+  ]
+}

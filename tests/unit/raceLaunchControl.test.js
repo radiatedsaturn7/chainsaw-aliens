@@ -55,7 +55,7 @@ test('sequential automatic take-up avoids idle lugging without changing manual c
  let result;
  for(let i=0;i<120;i++)result=step(result?.state,{enabled:false});
  assert.ok(result.state.engineRpm>4400);
- assert.equal(result.state.clutchCoupling,.35);
+ assert.ok(result.state.clutchCoupling>.95,'sustained launch must feed in clutch torque even with stationary wheels');
  assert.equal(result.state.tractionTorqueScale,1);
  assert.equal(step({}, {enabled:false,autoShift:false}).state.clutchCoupling,1);
 });

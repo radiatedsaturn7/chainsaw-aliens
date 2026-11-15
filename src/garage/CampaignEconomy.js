@@ -1,3 +1,4 @@
+import {openingObjective,evaluateCampaignRun} from './CampaignObjectives.js';
 import {normalizeItemDocument} from '../items/ItemDocument.js';
 import {safeGarageKey} from './CarPart.js';
 
@@ -36,13 +37,13 @@ export function raceRewardQuote(ref,race={},progress={}){
   ['street-brakes','sport-tires','street-suspension','sport-intake','street-exhaust','street-cooling'];
  const hash=Array.from(String(ref)).reduce((n,c)=>(n*31+c.charCodeAt(0))>>>0,0);
  const part=CAMPAIGN_PART_REWARDS[ref]||pool[hash%pool.length];
- return {scrap,firstBonus:first?scrap:0,part:first?part:null,first,total:scrap*(first?2:1),surfaces,weather:String(race.weather||'clear'),distanceKm:km};
+ return {objective:openingObjective(ref,progress.rewards?.[ref]),scrap,firstBonus:first?scrap:0,part:first?part:null,first,total:scrap*(first?2:1),surfaces,weather:String(race.weather||'clear'),distanceKm:km};
 }
 export function ownedCampaignCars(garage,selected=''){
  return [...new Set([...(garage.ownedCars||[]),selected].filter(safeGarageKey))];
 }
 export function campaignCarPrice(pi=500){return Math.round((1500+Math.max(0,Math.min(1000,Number(pi)||500))**2/40)/100)*100;}
-export async function awardCampaignRace(garage,{ref,race,runId,success=true}){
+export async function awardCampaignRace(garage,{ref,race,runId,success=true,run=null}){
  if(!success||!safeGarageKey(ref)||!runId)return null;
  const result=await garage.transaction(async next=>{
   const prior=next.garage.rewards[ref];
@@ -56,8 +57,11 @@ export async function awardCampaignRace(garage,{ref,race,runId,success=true}){
     next.garage.parts[item.id]=item;next.bags.items[item.id]=1;next.inventory[item.id]=1;next.contentNames[item.id]=item.name;partName=item.name;
    }
   }
-  const reward={scrap:quote.total+salvage,base:quote.scrap,firstBonus:quote.firstBonus,salvage,partName};
-  next.garage.rewards[ref]={clears:(prior?.clears||0)+1,lastRun:runId,lastReward:reward};
+  const evaluation=evaluateCampaignRun(ref,run,prior);
+  const reward={scrap:quote.total+salvage+evaluation.objectiveBonus,base:quote.scrap,firstBonus:quote.firstBonus,salvage,partName,...evaluation};
+  const bestTimes={...prior?.bestTimes};
+  if(evaluation.personalBest&&safeGarageKey(run?.carRef))bestTimes[run.carRef]=run.elapsedMs;
+  next.garage.rewards[ref]={clears:(prior?.clears||0)+1,lastRun:runId,lastReward:reward,objectiveEarned:evaluation.objectiveEarned,bestTimes};
   return {credit:reward.scrap,...reward};
  });
  // Travel restores the pre-race player snapshot, then replays item events.

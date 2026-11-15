@@ -1,0 +1,30 @@
+{
+  "scope": "17 routes, actual engine sky projection at desktop and handheld. Diagnostic 100% no-fog and unchanged authored composite, yaw wrap and extreme pitch inspected; not foreground/driving acceptance.",
+  "evidence": [
+    "data/race-environments/pack17-sky-exposure-1.jpg",
+    "data/race-environments/pack17-sky-exposure-3.jpg",
+    "data/race-environments/pack17-sky-edges-2.jpg",
+    "data/race-environments/pack17-sky-edges-4.jpg",
+    "data/race-environments/pack17-sky-edges-0.jpg",
+    "data/race-environments/pack17-sky-edges-1.jpg",
+    "data/race-environments/pack17-sky-exposure-0.jpg",
+    "data/race-environments/pack17-sky-exposure-4.jpg",
+    "data/race-environments/pack17-sky-edges-3.jpg",
+    "data/race-environments/pack17-sky-exposure-2.jpg"
+  ],
+  "numericWrapWarnings": 0,
+  "findings": [
+    "All ten measured warning cases repaired; inspected across wrap on both sizes.",
+    "Six main-route boundary revisions reduce conspicuous old joins; low-contrast vertical extensions and thin boundary lines remain at extreme pitch. Do not count as flawless seam approval.",
+    "Laurel, Ohio, Ozark, Pikes, Moki, Angeles and Tantalus horizons are strongly obscured by unchanged authored fog; Anchorage remains almost black under authored night settings.",
+    "Miami, Charleston, Richmond and Little Tujunga retain visible authored horizons; raw diagnostics are not production foreground exposure acceptance."
+  ],
+  "releaseAcceptance": false,
+  "materialReview": {
+    "routes": 245,
+    "deviceOutputs": 490,
+    "combinationsReviewed": 49,
+    "finalMokiEvidence": "data/race-environments/pack17-moki-final.jpg",
+    "note": "Material identity and native load only. Existing snow-coded physical cells constrain cold cover even at unexpected sites; this is not a claim that every original climate assignment is correct."
+  }
+}

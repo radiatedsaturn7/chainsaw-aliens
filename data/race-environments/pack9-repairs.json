@@ -1,0 +1,11 @@
+[
+  {
+    "key": "gateway-morning",
+    "sourceImage": "/workspace/generated_images/exec-6640ca94-723c-44af-9d65-8978d32deb64.png",
+    "priorSourceImage": "/workspace/generated_images/exec-3117f571-326a-4653-bdaf-3b344abca15a.png",
+    "ref": "environment-v1-gateway-morning",
+    "source": "environment-v1/gateway-morning.png",
+    "sourceSha256": "9ee70751fabb4d5575098c64e55714a633fba7a5723d637fe21c405ef124010f",
+    "priorReviewRetained": "pack8 evidence refers to prior image; new acceptance pending"
+  }
+]

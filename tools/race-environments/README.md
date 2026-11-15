@@ -1,0 +1,208 @@
+# Race environment pipeline
+
+`data/race-environments/ledger.json` covers all 245 saved races exposed by the real Game Menu selector, including 233 enabled campaign choices, three additional catalog courses and nine uncatalogued documents. Pending rows are not visual acceptance. The current base is pinned in ledger.json (2dd6bff9 after reconciliation); historical baseline diagnosis remains pinned to ef6034818.
+
+Every row starts with its own collision-free site group. A shared group requires explicit source/GPS and compatible time/weather evidence; state/chapter `venueKey` is insufficient. Before grouping layouts compare actual route bounds, authored lighting and weather. Preserve Tower Hill's snowy night and Bayard's noon. Ozark is MO-19 near Eminence. Data Center City is St. Louis riverfront, with fictional clean colorful robotic compounds.
+
+1. Research the exact row using catalog location, route GPS and primary geographic sources. Write the site, biome, horizon, season and art brief into that row. Preserve original imagegen PNGs.
+2. Add reviewed originals to `assets/campaign-art/environment-v1` and register them in `expanded-art.json`. Use the existing `tools/art/import_campaign_art.py --only REF` importer (pypng required). It retains source PNGs and uses native saved-art format at 1024px maximum for skies.
+3. Set explicit row binding. `skyboxArtRef` synchronizes both saved sky refs. Optional `groundPlaneArtRef`, `terrainArtMap` and `roadArtMap` change only references. Never run the old dressing generator: it also modifies physical materials, lighting and scenery.
+4. `node tools/race-environments/bind.mjs` checks all races against the pinned base; `--apply` preflights the entire set before writing. Exact geometry, materials/weights, physics, scenery, weather, time, lighting and mission data must match. Unexpected unplanned mutations fail.
+5. `node tools/race-environments/check-art.mjs` validates opacity/decoding and distinct pixel hashes and reports horizontal edge differences. These numbers are diagnostics, not proof of a seamless panorama. Inspect a last-edge/first-edge contact strip and actual camera wrapping before marking seam QA complete.
+6. Run `tests/unit/raceEnvironmentVisualContract.test.js`, Campaign Artwork units, manifest/assets and `tests/playwright/race-environments.spec.js`. The production harness starts the real saved race with a stock car on desktop/handheld. Extend the pack list per region; retain individual captures and state evidence. A startup screenshot is not route-wide acceptance: add mid-route/horizon-heading samples before final approval.
+
+First pack: Moki Dugway, Ozark Backroads, Data Center City. Ground/road textures are retained provisionally; their effective appearance must be checked in production. No claim of all-route completion. Five existing conflicting sky fields and Old Staples Road's missing sky remain explicitly pending outside this pack.
+
+Partition future work by verified physical sites (not broad state groups), and give each pack exclusive ledger rows/art refs. Re-run combined preservation and uniqueness checks after integration. Never publish until all reachable rows have reviewed terrain, sky, seam and desktop/handheld evidence.
+
+Reproducible production capture command: `npx playwright test --config tools/race-environments/playwright.config.mjs`. Set `RACE_QA_CHROMIUM=/usr/bin/chromium` only when using an installed system Chromium. Restrict a diagnostic run with `--grep 'ozark.*desktop'`. Keep failed capture evidence; never extend production startup deadlines or change race data to make QA pass.
+
+For matched baseline diagnosis, `snapshot-server.cjs` exposes the existing test server against a chosen `RACE_QA_COMMIT`. Its file index is that immutable Git tree; every working-file read is checked against the Git blob hash and falls back to Git bytes on any difference. It creates no checkout and performs no disk writes. `race-environments-diagnosis.spec.js` uses serial 120s readiness / 180s first-frame / 300s total budgets, records HTTP failures, exceptions, warmup and draw counts, and uses the actual G accelerator (ArrowUp changes gear). Capture files include exact commit and timings. Observational draw wrappers call the originals and do not advance or bypass warmup/deadlines.
+
+Texture binding also supports explicit `terrainTileArtById`, which supplies normal/rough image refs while preserving tile material IDs/weights. `roadArtMap` covers normal/rough road and per-surface shoulder refs plus authored margin art; widths, repeats, collisions and all other fields remain guarded. A texture showing grass or leaf litter does not silently change an inherited snow material's physics.
+
+Pack2 diagnosis: `G` is acceleration; require speed>1m/s and elapsed>2s. The harness now fails immediately if the game already enters its failure prompt, instead of spending the remaining first-frame allowance polling a dead session. This does not extend or bypass any game deadline. Native sky-compositor tests use exact stored race objects and hydrated art without terrain/transport; they are explicitly independent renderer evidence, not driving tests.
+
+Pack3: 10 bound races, not 10 accepted environments. Ohiopyle uses cold-season hemlock/bare hardwood hills; Erick–Texola uses a low prairie/utility horizon and dormant prairie substrate. Their authored exposures and physical surface IDs remain unchanged. `group-sites.mjs --apply` joins only exact source layouts/catalog IDs (including explicit existingSideId) and four named Gateway facility routes. It records 40 races at 14 facilities; full authored-environment signatures split those into 30 variants. Other sites stay independent. It does not imply every facility has finished art.
+
+`free-race-art.json` is an explicit supplemental placement scope, not an unused-art exemption. Campaign validation still scans enabled campaign paths and landmarks. Supplemental refs must name a saved selector race outside those paths, an active sky/ground slot and a real manifest asset; browser diagnostics also call the actual menu resource choices. Old Staples selector membership does not cure its separately documented baseline storage-transport problem.
+
+The matched renderer diagnostic temporarily sets BOTH sky fields to the existing Providence art and restores them, records raw/full pixel ranges and runtime visibility, and preserves the saved weather and lighting. Ohio's 900m visibility extinguishes the distant panorama completely; City's 2200m visibility plus .05 brightness leaves at most 1.524 RGB levels of source contrast. Do not brighten assets or declare these views readable to evade that result. Any change to the display visibility policy requires a separately reviewed proposal; none is implemented here. `RACE_RENDER_NAMES='Name|Other name'` bounds the diagnostic without extending game deadlines.
+
+Rob authorized diagnostic-only 100% sky brightness on 2026-11-15 at 06:07 UTC. The native harness now captures `sky100-authored-weather` and `sky100-raw-no-fog` beside the unchanged authored composite at identical framing. Temporary skyBrightness is restored, weather equality is asserted, and no world brightness or saved defaults change. Raw/no-fog is art/framing evidence only.
+
+Venue pack4 is a bounded 15-layout pack: four Watkins Glen, two Road America, three Homestead, three Daytona and three daylight Willow layouts. `prepare-venue-pack.mjs` consumes explicit original-image recipes, preserves originals, registers nine newly authored skies and reuses the reviewed Daytona noon original. It never includes the separate night Willow route. Run the native importer for exactly the recipe refs, then `bind.mjs --apply`. Every existing snow material ID/weight is deliberately preserved while normal/rough image slots use regional substrate; this must not be described as a physics correction.
+
+For scalable diagnosis use `RACE_RENDER_PACK=venue-pack4` with the native renderer spec. Each layout/device is an isolated case with its own output folder, runtime selector check, effective terrain/road/shoulder audit, six yaw captures, matched authored composite, known-good control, 100%-brightness sky with authored weather, and raw/no-fog sky. This avoids a single giant timeout and avoids same-site layouts overwriting one another's evidence. Ground repeat captures belong to the selected layout. It is still not a driving or full-terrain acceptance test. No already-proven startup failures need repeating for this pack.
+
+The test server's index uses encoded directory names for some layouts. The diagnostic asserts either the exact logical race name or the exact manifest directory whose URI-decoded spelling equals that race. It never accepts a guessed alias. Raw selector identity is recorded and is not proof of human-name transport. This helper runs in the Node test runner because the server does not serve `.mjs` with a browser module MIME type. Failed harness attempts remain in their original capture directories.
+
+After the full pack capture run, `node tools/race-environments/summarize-venue-qa.mjs /absolute/capture/directory` requires both device reports for every layout and checks the actual native sky, plane and effective tile refs against the ledger. This audit does not auto-award visual or driving acceptance. Night acceptance additionally requires sky and foreground together in unchanged authored gameplay; diagnostic brightness alone cannot satisfy it, and moon/stars are weather-appropriate options rather than mandatory decorations.
+
+Pack5 adds 16 layouts at Willow, VIR, Road Atlanta, Sebring, Mid-Ohio and Lime Rock, including six authored clear-night routes. Exact recipes and retained originals are in `pack5-recipes.json`; illustrative abandoned structures are not claims about surveyed buildings. `prepare-night-venue-pack.mjs` registers only this explicit pack. Import the listed refs before applying bindings; a missing Python `png` module is an environment dependency error, never permission to bypass the native importer. Existing task dependency installation is `/tmp/race-environment-python`.
+
+Native captures now include pitch/horizon ratios .35 and .8 on either side of the yaw wrap, in addition to six headings and matched authored exposure. `RACE_RENDER_DEVICES=desktop` can bound a representative same-art recheck, but does not award handheld acceptance. Pass `venue-pack5` as the third argument to `summarize-venue-qa.mjs` for its strict 32-report audit.
+
+`race-environments-driving.spec.js` starts exact runtime selector choices through normal travel with RTG-001, records unchanged exposure/weather and missing-art diagnostics, requires actual world-coordinate movement, and captures paired authored driving frames. `RACE_DRIVE_NAMES` selects a bounded list. Optional `RACE_DRIVE_SKY_DIAGNOSTIC=1` takes a separately labeled 100% sky-only exposure frame and restores it; the foreground/weather remain authored. This diagnostic does not count toward release appearance. Successful startup/movement and readable sky/foreground are separate findings. Do not substitute another layout's startup pass for actual route acceptance.
+
+Use `RACE_QA_CHROMIUM=/usr/bin/chromium npx playwright test --config tools/race-environments/driving.config.mjs` for that harness, with a fresh output directory when retaining earlier evidence. `summarize-driving-qa.mjs DIR [DIR...]` verifies measured movement, live state and exact authored sky/weather, reports failures alongside successes, and never grants visual acceptance. Moving diagnostic captures are not guaranteed pixel-matched poses.
+
+Pack5 evidence records 41/245 bindings, seven successful short driving samples and one unresolved Daytona desktop startup failure. Clear-night source art loads, but .05 authored sky brightness limits contrast to 12.75 RGB levels before other effects; Willow/VIR actual views remain too dark. The corrected Daytona evening cloud strip is gone in native pitch tests. Several older lower texture rows still streak when exposed at extreme diagnostic pitch, and Sebring's foreground grass/panorama palette transition remains pending. See `data/race-environments/pack5-evidence.json`; no full environment or release acceptance follows from these test counts.
+
+Pack7 adds 18 independently located Appalachian routes, retaining each exact installed source origin and documenting illustrative, rather than surveyed, structures in `pack7-recipes.json`. `prepare-appalachian-pack.mjs` prepares only these reviewed bindings; it does not replace physical tile IDs, surface weights or authored weather. `pack7-repairs.json` retains prior source provenance and the seven imagegen boundary revisions; current pack6 recipes point at the revised originals. All original images and previous QA remain retained.
+
+Optional `RACE_DRIVE_STEER=1` uses normal keyboard input with read-only route telemetry, conservative two-metre car-envelope corridor checks and a 50-metre progress gate. The input sign follows the existing production preview controller's documented physical-steering/world-yaw convention. It is a QA driver, not a change to vehicle physics; a failure is not proof of a runtime defect. Its first Tower Hill traces demonstrated movement but invalid road acceptance, and remain preserved separately.
+
+Pack8 authoring contract: keep all skyline features clear of the top row, match both side colors at each height, and fade lower scenery into a horizontally uniform local dark color before the last row. This is an artwork instruction, not an engine patch or a license to tint-copy unrelated locations. `source-boundaries.py IMAGE...` reads original pixels and reports side discontinuities and top/bottom row color ranges; it never edits images or grants visual acceptance. Its negative fixtures cover hidden boundary detail that a mean seam score can miss. Inspect distinct geography, native wrap/pitch, authored exposure and actual foreground separately.
+
+`prepare-ozark-pack.mjs` prepares 22 exact saved routes using 21 compositions. Only the WWT oval/drag pair shares identical night artwork, supported by the same physical facility origin and equal authored settings. Other WWT lighting variants remain separate. Pevely's dirt appearance is visual-only; its inherited asphalt physics is documented as unresolved data debt, never changed here. Every actual route receives individual QA evidence, even when the panorama is shared.
+
+Staging 2dd6bff adds `RaceSkyboxTexture` edge blending and gutters. Pack8 preserves that landed implementation unchanged. Raw source-pixel before/after metrics isolate artwork improvements; comparisons between older native captures and current captures include the renderer change and must not be attributed solely to artwork. Old baseline startup findings are historical, not automatically proof of current-base behavior.
+
+To reproduce pack8 native checks, set `RACE_RENDER_PACK=ozark-riverlands-pack8 RACE_RENDER_COMPACT=1 RACE_QA_CHROMIUM=/usr/bin/chromium` and use `tools/race-environments/renderer.config.mjs`. Give Playwright a fresh `--output` directory to retain previous evidence. Audit it with `summarize-venue-qa.mjs DIR ozark-riverlands-pack8` and generate review sheets with `contact-sheets.py DIR PREFIX`. The bounded production sample uses `RACE_DRIVE_NAMES='Gateway Kartplex — WWT complex|World Wide Technology Raceway — drag strip' RACE_DRIVE_SKY_DIAGNOSTIC=1` with the driving config. Inspect original authored frames separately from sky100 frames; the moving diagnostic is not an exact-pose image comparison. See `pack8-evidence.json` for exact base, test commands/logs, per-route ledger findings and unresolved quality issues.
+
+Pack9 covers 21 separate Utah/Arizona locations (`canyon-country-pack9`), including the upper Oak Creek main route. `prepare-canyon-pack.mjs` follows explicit source recipes and migrates Oak Creek's authoritative main-route sky placement rather than weakening the saved-settings/preload test. Source and native boundary warnings remain visible; a successful import is not seam acceptance. Pevely's dirt/asphalt mismatch remains unchanged: a polished packed-clay image could reduce loose-rut cues, but cannot make dirt and asphalt physics equivalent.
+
+The native audit optionally accepts corrective capture directories after the pack argument. Later reports replace only an explicitly matching race/device case; original paths are listed as superseded. Current ref and effective-texture assertions still run on every final case. Keep old and corrective screenshots, and inspect the changed layers rather than claiming obsolete images as current evidence.
+
+`RACE_DRIVE_DISTANCE=20` requests a bounded normal-input route-progress sample with a conservative two-metre car corridor and records simulation versus wall time. It never changes vehicle or loading deadlines. `RACE_DRIVE_MATCHED_PAIR=1` uses the existing pause control to capture authored and sky100 exposures at an asserted identical pose/camera. The pause overlay is retained and labeled; this diagnostic pair is separate from normal authored driving screenshots and never grants moving or night-visibility acceptance. A later diagnostic failure excludes an earlier movement record from the success summary.
+
+Pack10 (`front-range-sangabriel-pack10`) binds twenty distinct Colorado / San Gabriel sites, including both remaining main-route skies. `prepare-front-range-pack.mjs` consumes the explicit source recipes and transfers the two exact main-route placement registrations; the preload/placement unit assertions stay unchanged. No state-wide sky sharing is inferred. Decode actual terrain pixels before selecting references: existing industrial-concrete/rubble images depict robotic panels and were rejected for Pomona and Denver. Ground and normal/rough tile image refs change while material IDs, weights, active surface-specific road/shoulder settings and all nonvisual fields remain guarded.
+
+Retain `pack10-repairs.json` before/after source metrics and original paths for Schnebly and Mingus. Recomposition removes near features from outer edges; a lower seam score alone is not visual acceptance. Run both native device projections and inspect matched wrap/pitch views with the unchanged staging renderer. New pack source warnings, authored fog/exposure limitations, and production-load failures remain explicit. Native compositor coverage cannot stand in for driving. Use serial representative production cases with `RACE_DRIVE_DISTANCE=20`, and record simulation/wall duration; do not repeat previously characterized baseline cases or alter their deadlines.
+
+Pack11 (`northeast-corridor-pack11`) adds twenty Northeast route/site variants with
+explicit grass versus snow artwork intent. `prepare-northeast-pack.mjs` consumes
+`pack11-recipes.json`; import only its listed sky and ground refs, then use
+`bind.mjs --apply` and the all-245 read-back guard. Pikes snow and Angeles dirt
+use separately authored material-correct textures. `terrain-materials.mjs` checks
+normal and rough references, with negative swaps and nonempty per-route coverage.
+The full unit run exposes the newly unused legacy `skybox-tower-hill`; no false
+placement, deferred exemption or intent reclassification was added. Original art
+and all earlier evidence remain retained. See `pack11-evidence.json` for exact
+usage, test, native, driving and boundary findings; do not infer release readiness.
+
+The distance-mode driving harness unwraps signed circuit progress per sample,
+using the actual runtime type and route length. Reverse travel remains negative;
+world displacement and simulation-time continuity reject projection jumps and
+resets. The original Thompson/NJMP failures crossed the lap seam, rather than
+failing startup, and are retained separately from corrected runs. This is QA-only
+measurement: no simulation, input tuning, route, loading deadline or acceptance
+distance changes. New tests cover forward/reverse seams, stationary samples,
+open-route non-wrapping, projection discontinuity, teleport and clock reset.
+
+The final PPIR correction also replaces its 5,016 dry-scrub visual cells with
+compacted winter-snow art, matching their preserved snow material. Its earlier
+horizon-only drive/native captures remain superseded evidence for the foreground.
+This is not a certification of older packs: Angeles Forest County N3 still has
+17,952 snow cells displaying dry scrub. Keep that named debt visible for the
+remaining material audit, rather than weakening the material guard or changing
+physics. Pack11's twenty new routes have complete declared normal/rough material
+coverage; full-project visual/terrain acceptance remains pending.
+
+Pack12 (`plains-route66-pack12`) binds twenty separate Texas Route 66 / Great
+Plains sites. Source recipes retain exact saved GPS/source metadata and distinguish
+fictional 2994 compositions from surveyed views. Eighteen routes retain snow
+material with sparse prairie-straw snow art; Sandhills and noon Bayard retain grass
+with a separate mixed prairie-grass texture. Angeles Forest's 17,952 snow cells
+now use snow/chaparral art, resolving the specific pack11 debt above. PPIR keeps
+its low distant mountain profile and now has a pale winter-field transition with
+a quieter bottom edge. No physical material, route, scenery or authored lighting
+changes are authorized by this pipeline.
+
+The explicit `superseded-art.json` schema preserves retired source/native bytes,
+registered paths and SHA-256 values, a hashed compact comparison, and a real
+replacement in the named race. Every saved race is checked for lingering old sky
+bindings. Missing/changed originals, evidence, replacement placement, conflicting
+intent, self/cyclic retirement and unrelated unused art fail. Tower Hill's old
+autumn cityscape is a season/location mismatch; Bayard's plausible older noon
+prairie is separately documented as superseded by a more specific local composition,
+not mislabeled as invalid. These are visible diagnostics, not a deferred-art list.
+The snow-ribbon configuration warning remains visible. Supersession negative
+coverage is imported by the existing Campaign Artwork integration test command.
+
+For native pack12 reproduction use `RACE_RENDER_PACK=plains-route66-pack12
+RACE_RENDER_COMPACT=1 RACE_QA_CHROMIUM=/usr/bin/chromium` with
+`tools/race-environments/renderer.config.mjs` and a fresh output directory.
+Requested race names now fail collection if any route is absent/unbound/filtered,
+so a typo cannot silently shrink coverage. `RACE_RENDER_DIAGNOSTIC_REF` allows
+an explicitly labeled in-memory art comparison only for one named race; it never
+writes a saved document or changes authored weather/effects. For evidence collected
+across separate runs, `RACE_QA_BASE_DIRS` can be a JSON array of exact base capture
+directories passed to `summarize-venue-qa.mjs`; the same complete two-device count,
+current refs, material and exposure assertions still apply without re-rendering
+already captured cases. Additional positional directories remain corrective overrides.
+
+Keep source acceptance, measured/native wrap and effective-layer review, authored
+appearance and actual movement separate. Source/decoded boundary thresholds are
+not equivalent, and a lower metric does not certify a seamless image. Tower Hill
+handheld met the 20m distance check; desktop moved 18.76m but missed the 90-second
+budget. Neither native darkness nor diagnostic brightness substitutes for full
+night driving acceptance. See pack12 evidence for final exact results and retained
+limitations. Do not publish the still-incomplete all-245 request.
+
+## Western mountains and Pacific pack13 checkpoint
+
+Adds 24 distinct physical-site panoramas and material-compatible visual bindings:
+201/245 assigned, 44 remaining. Recipes and remaining route list are in
+`data/race-environments/pack13-{recipes,evidence}.json`. The new physical cells remain
+310,626 snow, 18,557 grass and 20,860 gravel; the six reused visual substrates were
+reviewed as source tiles and native repeats. Active road ribbons remain patched
+asphalt, Skalkaho gray gravel, Magruder packed dirt and Thompson snowroad; shoulders
+remain hidden. No road/surface/geometry/lighting/weather or mission changes.
+
+All 48 current new native device views were manually reviewed, alongside 12 current
+older-repair views and six original/replacement comparisons. Seventy native cases
+ran successfully in total, including four retained superseded cases. The decoded
+201-route wrap/opacity/uniqueness check has no numeric warnings after corrections,
+but this is not seam or full-route acceptance. Boise lower-edge columns, Thompson
+cloud-top extension, Little Tujunga's broad bare edge strip and older Moki lower-edge
+extrusion remain explicit polish gaps. Seven new night routes have authored .05
+sky exposure; Thompson's snow fog fully occludes the sky. The saved lighting stays
+unchanged. Diagnostic 100% views are never release defaults.
+
+Final focused suite: 112 passed, no skips; exact Campaign browser set: six passed;
+manifest: 1,781 documents/16 assets; all-245 visual-only comparison passed against
+`2dd6bff9928437c115a16e8d9aab62a4b60443df`. The first suite caught an overlapping
+Hatcher import checksum and legitimate removal of the last inherited Moki sky use.
+The settled final run is green after exact Moki/Oak Creek supersession records with
+pinned original source/native bytes and reviewed comparison images. Both originals
+remain geographically plausible; the records explain the more specific active
+composition, not a fabricated placement or blanket exemption. Existing negative
+coverage remains unchanged and the configured-unused snow warning stays visible.
+
+Short real driving: Sandia desktop 22.99m (6.27s simulation/8.37s wall) and Laguna
+handheld 20.17m (4.03s simulation/35.85s wall), with no page/network/missing-art errors.
+Skalkaho handheld failed 20m: 3.92m during the 90s input budget, live running session,
+5.10s simulation advance, near road centre and no missing art. This is not a startup
+failure or an established baseline defect; it was not retried. Laguna's matched
+paused authored/100%-sky pair is retained; actual night readability remains pending.
+Tower Hill was not rerun. See the evidence JSON for exact capture paths and logs.
+
+Repeat native coverage with `RACE_RENDER_PACK=western-mountains-pacific-pack13
+RACE_RENDER_COMPACT=1 RACE_QA_CHROMIUM=/usr/bin/chromium` and
+`tools/race-environments/renderer.config.mjs`. Use fresh capture directories. Keep
+source review, native authored/diagnostic evidence, effective materials and actual
+driving separate. Before the remaining regional packs, preflight old artwork use;
+inspect imported native boundary rows as well as original image edges. Retain all
+originals and QA, recheck staging at the next integration checkpoint, and do not
+publish this still-incomplete all-245 branch.
+
+
+## Pack 14: Southern and Great Lakes checkpoint
+
+24 exact previously unbound routes are now assigned, bringing the ledger to 225/245 (20 remain). See `data/race-environments/pack14-recipes.json` for distinct site compositions and original-image provenance, `pack14-evidence.json` for separate native/driving/material evidence, and `release-checklist.md` for remaining full-scope and hosted-check gates. Indianapolis oval and road course retain separate authored night/evening variants. All 373,782 physical snow cells in this pack remain snow; 13 routes use a new snow/deciduous-litter visual, 11 retain the existing winter-snow material. Road and margin semantics are preserved.
+
+48 new native device cases plus eight repair cases and eight original/current retirement comparisons were captured and reviewed; these are not full-route driving acceptance. GingerMan desktop and NCM handheld passed the unchanged 20 m input-driven gate, but NCM retains two aborted smoke-art network requests and nearly black authored exposure. Both have matched paused diagnostics. Eight new night scenes retain 5% brightness. No world lighting/weather was changed.
+
+Boise bottom, Thompson top and Moki bottom boundary variation is reduced. Little Tujunga vegetation improves the bare side fields but its numeric wrap worsens and remains open; extreme-pitch clamped bands persist elsewhere. The older Ozark active panorama also retains conspicuous lower extrusion. All full-route QA flags remain pending. Original `skybox-data-center-city` and `skybox-ozarks` bytes are specifically preserved in the existing supersession schema with pinned original/current comparisons; no generic usage exemption or test gate was weakened.
+
+Reproduce new native coverage with `RACE_RENDER_PACK=south-greatlakes-pack14 RACE_RENDER_COMPACT=1` and the portable renderer config. Apply only this pack via `prepare-south-greatlakes-pack.mjs`, repeat `--only REF` arguments through the canonical importer, then run `bind.mjs --apply` followed by the readback. Preserve old evidence. The release checklist deliberately keeps assignment, semantic eligibility, native review, actual driving, and complete acceptance distinct.
+
+Pack14 validation history is explicit: the full 112-test command first found the unplaced city sky, then found the unplaced Ozark sky (111 passed in each run). After both specific preserved-original records, the actual-use gate and all 15 supersession negatives passed in a targeted 16-test rerun, with the configured snow warning visible. The other 111 checks stayed unchanged; a final single all-112 invocation was not repeated after that registry-only repair. Six Campaign Artwork browser tests, the 245-race preservation readback, 225 decoded active skies and the 1806-document manifest passed. One numeric sky warning remains at Little Tujunga. Nothing is published from this checkpoint.
+
+## Final islands and legacy pack
+
+`prepare-final-islands-pack.mjs` imports explicit recipes for the final20 rows (12 real-location routes and eight legacy/test entries). All245 are assigned, but the release remains blocked by global material and visual review. Run `audit-material-coverage.mjs` for exact normal/rough cell mismatches and unclassified refs across the whole ledger; its nonzero exit is intentional until corrected. See `pack15-material-blockers.json` for source inspection and named routes. Four zero-cell legacy grass maps are pinned individually in the regression rather than exempting nonempty maps.
+
+Original PNGs, superseded native art, all prior QA and paused car work remain retained. The final strict completeness gate is not waived by complete assignment, opacity or hash uniqueness.

@@ -1,6 +1,8 @@
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
+  // Saved artwork produces very large Git diffs; do not embed them in test reports.
+  captureGitInfo: { commit: false, diff: false },
   testDir: './tests/playwright',
   fullyParallel: true,
   timeout: 60_000,
