@@ -77,7 +77,11 @@ export class MenuResources {
       return this.garageCatalog().filter(({item})=>item.carPart.forSale||this.garage?.items.progress.bags.items[item.id]>0).map(({ref,item})=>({value:ref,label:item.name}));
     }
     const folder={cars:'cars',races:'races',levels:'levels',movies:'cutscenes',actors:'actors',doodads:'doodads'}[source];
-    return folder?listProjectFiles(folder,{allowSyncFetch:false}).map(f=>({label:f.name,value:f.name})):[];
+    const entries=folder?listProjectFiles(folder,{allowSyncFetch:false}):[];
+    // Static manifest entries acquire timestamps as they load. Keep carousel
+    // order stable while fetching only one page.
+    if(source==='cars')entries.sort((a,b)=>a.name.localeCompare(b.name));
+    return entries.map(f=>({label:f.name,value:f.name}));
   }
   request(key,fn){if(this.pending.has(key))return this.pending.get(key);if(this.errors.has(key))return Promise.resolve();const task=Promise.resolve().then(fn).catch(e=>this.errors.set(key,String(e?.message||e))).finally(()=>{this.pending.delete(key);this.showroomFrames=new WeakMap();});this.pending.set(key,task);return task;}
   car(ref){
@@ -108,9 +112,9 @@ export class MenuResources {
     if(!ref)return null;
     const cached=loadProjectFile('cars',ref,{allowSyncFetch:false})?.data;
     if(this.cars.has(ref)&&(!cached||this.carSources.get(ref)===cached))return this.cars.get(ref);
-    const install=data=>{if(!data)throw Error(`Car not found: ${ref}`);const car=this.game.carEditor.normalizeLoadedCarDocument(data.car||data);this.cars.set(ref,car);this.carSources.set(ref,data);for(const artRef of this.exteriorArtRefs(car))this.request(`art:${artRef}`,()=>hydrateRaceArtSpriteShared(artRef));return car};
+    const install=data=>{if(!data)throw Error(`Car not found: ${ref}`);const car=this.game.carEditor.normalizeLoadedCarDocument(data.car||data);this.cars.set(ref,car);this.carSources.set(ref,data);for(const artRef of this.exteriorArtRefs(car))this.request(`car-art:${artRef}`,()=>this.prepareCarArt(artRef));return car};
     if(cached)return install(cached);
-    this.request(`car:${ref}`,async()=>install((await hydrateProjectFilePayload('cars',ref))?.data));return null;
+    this.request(`car:${ref}`,async()=>install((await hydrateProjectFilePayload('cars',ref,{hydrateDependencies:false}))?.data));return null;
   }
   asset(source,ref,parameters={}){
     if(source==='garage'){
@@ -153,6 +157,22 @@ export class MenuResources {
     ctx.drawImage(canvas,b.x,b.y,b.w,b.h);
   }
   tuning(car){if(!this.tunings.has(car))this.tunings.set(car,this.game.carEditor.getRaceCarTuning(car));return this.tunings.get(car);}
+  prepareCarArt(ref){
+    // Compressed pixel sheets expand to large JS arrays. Bound decode concurrency
+    // and create each canvas only in the cache actually used by the car renderer.
+    const task=(this.carArtQueue||Promise.resolve()).then(async()=>{
+      const payload=await hydrateRaceArtSpriteShared(ref);
+      if(!payload)throw Error(`Artwork not found: ${ref}`);
+      const count=getArtDocumentFrames(payload.data).frames.length||1;
+      const cache=this.game.carEditor.raceArtSpriteCache ||= new Map();
+      for(let frameIndex=0;frameIndex<count;frameIndex++){
+        if(!getRaceArtSpriteCanvasShared(ref,{frameIndex,cache,allowSyncFetch:false}))throw Error(`Artwork could not be drawn: ${ref}`);
+        await new Promise(resolve=>setTimeout(resolve,0));
+      }
+    });
+    this.carArtQueue=task.catch(()=>{});
+    return task;
+  }
   async prepareArt(ref){
     const payload=await hydrateRaceArtSpriteShared(ref);
     if(!payload)throw Error(`Artwork not found: ${ref}`);

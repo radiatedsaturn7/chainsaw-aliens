@@ -363,8 +363,11 @@ async function fetchStaticFile(folder, name) {
     const data = await decodeStoredProjectDocument(storedData, documentUrl);
     const payload = {version: Number(metadata.version || 1), folder, name,
       savedAt: Number(metadata.savedAt || 0), data};
-    updateCachedPayload(payload, 'static');
+    const installed = updateCachedPayload(payload, 'static');
     serverIndex[folder][name] = {...serverIndex[folder][name], systemFile: metadata.systemFile === true};
+    // Reuse the decoded document. Parsing our own cache here doubles the live
+    // pixel arrays on static hosts (including GitHub Pages).
+    if (installed) return attachStorageSource(payload, 'static');
     const raw = volatileFiles.get(key);
     return attachStorageSource(raw ? JSON.parse(raw) : payload, volatileFileSources.get(key) || 'static');
   })().finally(() => staticLoads.delete(key));
@@ -530,19 +533,12 @@ async function hydrateProjectFileOnly(folder, name, options = {}) {
   if (cachedPayload) {
     return attachStorageSource(cachedPayload, cachedSource);
   }
-  await fetchStaticFile(folder, name);
-  const cached = volatileFiles.get(key);
-  if (!cached) return null;
-  try {
-    return attachStorageSource(JSON.parse(cached), volatileFileSources.get(key) || 'cache');
-  } catch (error) {
-    return null;
-  }
+  return fetchStaticFile(folder, name);
 }
 
 export async function hydrateProjectFile(folder, name, options = {}) {
   const payload = await hydrateProjectFileOnly(folder, name, options);
-  if (payload?.storageSource === 'static') {
+  if (payload?.storageSource === 'static' && options.hydrateDependencies !== false) {
     try { await hydrateStaticDependencies(payload); }
     catch (error) {
       // An incomplete published open must not look successful to the legacy

@@ -191,7 +191,7 @@ export async function hydrateProjectFilePayload(folder, name, options = {}) {
   }
   const payload = await hydrateProjectFile(folder, clean, options);
   if (!payload) return null;
-  const raw = JSON.stringify(payload);
+  const raw = readCachedProjectFile(folder, clean, {allowSyncFetch:false}) || JSON.stringify(payload);
   cacheParsedPayload(`${folder}:${clean}`, raw, payload);
   return payload;
 }
