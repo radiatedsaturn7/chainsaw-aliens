@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "campion-1992",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 650,
+    "gear": 1,
+    "elapsed": 1066.666666666667,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "campion-1992",
+    "x": 0,
+    "z": 11.253735542297363,
+    "speed": 6.566075801849365,
+    "rpm": 2131.545166015625,
+    "gear": 1,
+    "elapsed": 5816.499999999999,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "campion-1992",
+    "x": 0.006264999974519014,
+    "z": 34.912479400634766,
+    "speed": 14.889572143554688,
+    "rpm": 4956.828125,
+    "gear": 1,
+    "elapsed": 8116.399999999997,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

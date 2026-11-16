@@ -1040,7 +1040,9 @@
       "catalog-anemone-1986-body": "art/catalog-anemone-1986-body/document.json",
       "catalog-anemone-1986-dashboard": "art/catalog-anemone-1986-dashboard/document.json",
       "catalog-scabious-2015-body": "art/catalog-scabious-2015-body/document.json",
-      "catalog-scabious-2015-dashboard": "art/catalog-scabious-2015-dashboard/document.json"
+      "catalog-scabious-2015-dashboard": "art/catalog-scabious-2015-dashboard/document.json",
+      "catalog-campion-1992-body": "art/catalog-campion-1992-body/document.json",
+      "catalog-campion-1992-dashboard": "art/catalog-campion-1992-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1148,7 +1150,8 @@
       "Gorse 2015": "cars/Gorse 2015/document.json",
       "Camomile 1988": "cars/Camomile 1988/document.json",
       "Anemone 1986": "cars/Anemone 1986/document.json",
-      "Scabious 2015": "cars/Scabious 2015/document.json"
+      "Scabious 2015": "cars/Scabious 2015/document.json",
+      "Campion 1992": "cars/Campion 1992/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
