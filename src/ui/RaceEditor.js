@@ -9,7 +9,7 @@ import {restoreRaceDrivingPreferences,captureRaceDrivingPreferences} from '../ra
 import {joinRaceAtGradeCrossings} from '../racing/RaceAtGradeJunctions.js';
 import { raceLineGraphic, distantRaceLineGraphic, RACE_LINE_DEPTH_M } from '../racing/RaceLineGraphics.js';
 import { axleTireGeometry, tireSizeForWheel } from '../racing/TireSizes.js';
-import {stopCodriver} from '../racing/RaceCodriver.js';
+import {stopCodriver,updateCodriverEvents} from '../racing/RaceCodriver.js';
 import {cockpitDashboardRect,cockpitWheelLayout,cockpitGaugeBounds} from '../racing/CarCockpitLayout.js';
 import { normalizeCvtTuning, validateCvt } from '../racing/simulation/CvtTransmissionModel.js';
 import {raceDriftScoreVariables} from '../racing/RaceDriftScore.js';
@@ -1198,7 +1198,11 @@ export default class RaceEditor {
     if(startupFramePending && this.raceLoadingPresentation)return;
     if (liveSession && this.playtestSession?.raceIntro?.active && !this.raceInput.paused) {
       if (input?.wasPressedCode?.('Escape')) { this.toggleRacePause(); return; }
-      if(!this.playtestSession.raceMusicPending)advanceRaceIntro(this.playtestSession, dt);
+      const session=this.playtestSession;
+      updateCodriverEvents(session.drivingAssists ||= {},session,dt,{
+        enabled:this.selectedRace?.codriver?.enabled===true&&this.selectedRace?.codriver?.spoken===true,
+        paused:false,intro:true,active:false});
+      if(!session.raceMusicPending)advanceRaceIntro(session, dt);
       return;
     }
     this.updateRaceMapThumbstickPan(dt);
@@ -13705,7 +13709,7 @@ export default class RaceEditor {
       speedMps: initialSpeedMps,
       countdownRemainingMs: options?.carEditorPreview === true
         ? 0
-        : (raceStart.countdown ? 6000 : 0),
+        : (raceStart.countdown ? 4000 : 0),
       rollingStart: raceStart.rollingStart,
       rollingStartSpeedMps: raceStart.rollingStartSpeedMps,
       firedTriggerIds: new Set(),
@@ -24756,7 +24760,7 @@ export default class RaceEditor {
 
   drawRaceCountdown(ctx, bounds) {
     const remaining = Number(this.playtestSession?.countdownRemainingMs || 0);
-    if (remaining <= 0) return;
+    if (remaining <= 0 || remaining > 4000 || this.playtestSession?.raceIntro?.active) return;
     const label = remaining > 1000 ? String(Math.ceil((remaining - 1000) / 1000)) : 'GO!';
     ctx.save();
     ctx.fillStyle = 'rgba(5,8,7,0.58)';

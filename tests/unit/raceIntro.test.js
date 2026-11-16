@@ -72,3 +72,14 @@ test('intro presentation initializes grounded physics height without advancing t
  const height=s.vehicleRenderState.position.y;s.startupFramePending=false;e.updatePlaytest(.016);
  assert.ok(Math.abs(s.vehicleRenderState.position.y-height)<.002);
 });
+
+test('countdown HUD hides five/four and the showcase, then draws three through GO',async()=>{
+ const {default:RaceEditor}=await import('../../src/ui/RaceEditor.js');
+ const editor=Object.create(RaceEditor.prototype),labels=[];
+ const ctx={save(){},restore(){},fillRect(){},fillText(text){labels.push(text);}};
+ editor.playtestSession={countdownRemainingMs:6000};
+ for(const ms of [6000,5000,4000,3000,2000,1000,0]){editor.playtestSession.countdownRemainingMs=ms;editor.drawRaceCountdown(ctx,{x:0,y:0,w:800,h:600});}
+ assert.deepEqual(labels,['3','2','1','GO!']);
+ editor.playtestSession={countdownRemainingMs:4000,raceIntro:{active:true}};
+ editor.drawRaceCountdown(ctx,{x:0,y:0,w:800,h:600});assert.equal(labels.length,4);
+});
