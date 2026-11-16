@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "loosestrife-1988",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 900,
+    "gear": 1,
+    "elapsed": 2533.233333333335,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "loosestrife-1988",
+    "x": -0.0010450000409036875,
+    "z": 12.706939697265625,
+    "speed": 8.351822853088379,
+    "rpm": 3789.532470703125,
+    "gear": 1,
+    "elapsed": 6499.833333333334,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "loosestrife-1988",
+    "x": -0.030993999913334846,
+    "z": 39.04198455810547,
+    "speed": 14.585439682006836,
+    "rpm": 6585.82177734375,
+    "gear": 1,
+    "elapsed": 8816.433333333332,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}
