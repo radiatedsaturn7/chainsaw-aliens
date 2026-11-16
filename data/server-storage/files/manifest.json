@@ -1048,7 +1048,9 @@
       "catalog-angelica-1999-body": "art/catalog-angelica-1999-body/document.json",
       "catalog-angelica-1999-dashboard": "art/catalog-angelica-1999-dashboard/document.json",
       "catalog-pennyroyal-1994-body": "art/catalog-pennyroyal-1994-body/document.json",
-      "catalog-pennyroyal-1994-dashboard": "art/catalog-pennyroyal-1994-dashboard/document.json"
+      "catalog-pennyroyal-1994-dashboard": "art/catalog-pennyroyal-1994-dashboard/document.json",
+      "catalog-periwinkle-1998-body": "art/catalog-periwinkle-1998-body/document.json",
+      "catalog-periwinkle-1998-dashboard": "art/catalog-periwinkle-1998-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1160,7 +1162,8 @@
       "Campion 1992": "cars/Campion 1992/document.json",
       "Goldenrod 1996": "cars/Goldenrod 1996/document.json",
       "Angelica 1999": "cars/Angelica 1999/document.json",
-      "Pennyroyal 1994": "cars/Pennyroyal 1994/document.json"
+      "Pennyroyal 1994": "cars/Pennyroyal 1994/document.json",
+      "Periwinkle 1998": "cars/Periwinkle 1998/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
