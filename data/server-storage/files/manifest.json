@@ -1058,7 +1058,9 @@
       "catalog-holly-1988-body": "art/catalog-holly-1988-body/document.json",
       "catalog-holly-1988-dashboard": "art/catalog-holly-1988-dashboard/document.json",
       "catalog-eyebright-2015-body": "art/catalog-eyebright-2015-body/document.json",
-      "catalog-eyebright-2015-dashboard": "art/catalog-eyebright-2015-dashboard/document.json"
+      "catalog-eyebright-2015-dashboard": "art/catalog-eyebright-2015-dashboard/document.json",
+      "catalog-chervil-1973-body": "art/catalog-chervil-1973-body/document.json",
+      "catalog-chervil-1973-dashboard": "art/catalog-chervil-1973-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1175,7 +1177,8 @@
       "Agrimony 1988": "cars/Agrimony 1988/document.json",
       "Harebell 1970": "cars/Harebell 1970/document.json",
       "Holly 1988": "cars/Holly 1988/document.json",
-      "Eyebright 2015": "cars/Eyebright 2015/document.json"
+      "Eyebright 2015": "cars/Eyebright 2015/document.json",
+      "Chervil 1973": "cars/Chervil 1973/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
