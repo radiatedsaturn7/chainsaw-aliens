@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "sneezewort-1965",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 500,
+    "gear": 1,
+    "elapsed": 2533.233333333335,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "sneezewort-1965",
+    "x": 0,
+    "z": 15.935626029968262,
+    "speed": 10.269803047180176,
+    "rpm": 3711.71484375,
+    "gear": 1,
+    "elapsed": 6633.133333333337,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "sneezewort-1965",
+    "x": 0.0002629999944474548,
+    "z": 45.4125862121582,
+    "speed": 15.100556373596191,
+    "rpm": 3011.626708984375,
+    "gear": 2,
+    "elapsed": 8999.633333333337,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

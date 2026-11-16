@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "alyssum-2009",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 900,
+    "gear": 1,
+    "elapsed": 2866.5333333333306,
+    "throttle": 0,
+    "camera": "first-person"
+  },
+  "moving": {
+    "id": "alyssum-2009",
+    "x": -0.0026100000832229853,
+    "z": 13.682703018188477,
+    "speed": 8.963480949401855,
+    "rpm": 4984.5546875,
+    "gear": 1,
+    "elapsed": 7183.033333333331,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "cockpit": {
+    "id": "alyssum-2009",
+    "x": 0.008821000345051289,
+    "z": 38.2884407043457,
+    "speed": 13.821120262145996,
+    "rpm": 4255.12451171875,
+    "gear": 2,
+    "elapsed": 9366.333333333334,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

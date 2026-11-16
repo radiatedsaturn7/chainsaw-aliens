@@ -1,0 +1,15 @@
+{
+  "base": "ed8b4ad4e92d791dc336dc973f96d3c8a8af6d57",
+  "baseTree": "1d586af9e3d2105aea60515068c426e73ba86a8f",
+  "unchangedTrackedFiles": 19400,
+  "unchangedManifestEntries": 1880,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/harebellCatalog.test.js"
+  ],
+  "freeBytes": 57297465344,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

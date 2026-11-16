@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "teasel-2006",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 700,
+    "gear": 1,
+    "elapsed": 2333.233333333335,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "teasel-2006",
+    "x": 0,
+    "z": 12.548666954040527,
+    "speed": 6.851247787475586,
+    "rpm": 2469.572998046875,
+    "gear": 1,
+    "elapsed": 7366.333333333334,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "teasel-2006",
+    "x": -0.000155999994603917,
+    "z": 38.27418899536133,
+    "speed": 13.527742385864258,
+    "rpm": 4934.20166015625,
+    "gear": 1,
+    "elapsed": 9799.633333333337,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

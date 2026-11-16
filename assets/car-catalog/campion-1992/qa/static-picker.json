@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 20,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 104,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Campion 1992",
+    "start": 20,
+    "visible": [
+      "Campion 1992",
+      "Celandine LS 1995",
+      "Chicory GT 2008",
+      "Cicada Turbo 2015"
+    ],
+    "targetIndex": 20,
+    "selectedIndex": 20,
+    "loadedCars": 27,
+    "totalChoices": 104,
+    "carId": "campion-1992",
+    "art": [
+      {
+        "ref": "catalog-campion-1992-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 53,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 111,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Holly 1988",
+    "start": 52,
+    "visible": [
+      "Hemlock RT 2005",
+      "Holly 1988",
+      "Honeysuckle 22 2009",
+      "Iris 22 2001"
+    ],
+    "targetIndex": 53,
+    "selectedIndex": 53,
+    "loadedCars": 59,
+    "totalChoices": 111,
+    "carId": "holly-1988",
+    "art": [
+      {
+        "ref": "catalog-holly-1988-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

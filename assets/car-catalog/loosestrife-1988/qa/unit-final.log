@@ -1,0 +1,56 @@
+✔ Alyssum preserves US2009 pure coupe net anchors and staggered tires (1.31366ms)
+✔ Alyssum native roundtrip preserves existing AMT approximation (93.427684ms)
+✔ Alyssum has eight distinct original exterior frames, shared tire layers and original hashes (133.496576ms)
+✔ separate staging branch retains 125 playable documents and excludes3 legacy system templates (182.691089ms)
+✔ Alyssum fitted collider maintains tire contact and launches with existing AMT controls (1883.704308ms)
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (180.5825ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (5.459711ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (36.637367ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (6706.44203ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (14.591916ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (3313.660992ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (246.98211ms)
+✔ requires explicit source data and mappings (0.760621ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (66.570547ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (235.483233ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.074641ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (52.24243ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (72.911016ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (984.992302ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (711.193659ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (504.640604ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (5684.438573ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (7205.84879ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.377546ms)
+✔ Loosestrife preserves French1988 Mi16 paired DIN anchors and early14inch tires (0.839279ms)
+✔ Loosestrife native roundtrip preserves manual5speed and explicitly fictional automatic assistance (78.909243ms)
+✔ Loosestrife has eight distinct original exterior frames, shared tire layers and original hashes (96.501726ms)
+✔ separate staging branch retains 126 playable documents and excludes3 legacy system templates (144.749796ms)
+✔ Loosestrife launches with sustained tread contact (2179.378858ms)
+✖ Loosestrife 1988 published wheel graphics cover original opening heights without changing physical radius (294.097335ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 29
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 15999.832562
+
+✖ failing tests:
+
+test at tests/unit/loosestrifeWheelCoverage.test.js:8:2
+✖ Loosestrife 1988 published wheel graphics cover original opening heights without changing physical radius (294.097335ms)
+  AssertionError [ERR_ASSERTION]: frontLeft bounded upper opening
+      at TestContext.<anonymous> (file:///workspace/chainsaw-aliens/tests/unit/loosestrifeWheelCoverage.test.js:29:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

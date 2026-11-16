@@ -1,0 +1,18 @@
+
+Running 4 tests using 1 worker
+
+(node:41573) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41573) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/playwright/osier-driving.spec.js:3:34 › Osier desktop keyboard moving gameplay (43.6s)
+  ✓  2 tests/playwright/osier-driving.spec.js:3:34 › Osier handheld touch moving gameplay (27.0s)
+  ✓  3 tests/playwright/osier-preview.spec.js:6:1 › Osier 2005 actual editor preview composites exterior/cockpit and advances production physics (30.8s)
+  ✓  4 tests/playwright/osier-static-picker.spec.js:3:29 › Osier desktop keyboard static picker initial page, later page, cockpit and keyboard drive (2.0m)
+
+  4 passed (3.8m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

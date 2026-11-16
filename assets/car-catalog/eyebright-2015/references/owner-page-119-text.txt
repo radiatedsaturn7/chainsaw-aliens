@@ -1,0 +1,28 @@
+VEHICLE DIMENSION
+Wheel Base
+Track Front
+Track Rear
+Front Overhang
+Rear Overhang
+Overall Length
+Max. Width
+Overall Height (Unladen / laden)
+Minimum Turning Circle Dia.
+Minimum Turning Clearance Circle Dia.
+Ground Clearance
+IMPORTANT TECHNICAL INFORMATION
+MAIN CHASSIS DIMENSIONS (IN mm)
+2230
+1325
+1315
+489
+444
+3162
+1495 - Over body
+1753 - Over ORVM
+1652 / 1613
+8.0 m
+8.3 m
+152
+117
+117

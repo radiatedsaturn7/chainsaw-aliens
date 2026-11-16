@@ -1,0 +1,32 @@
+{
+  "exterior": "All eight actual compositor views reviewed; distinct directions, complete body, fitted animated tires, transparent margins, no logos.",
+  "cockpit": "Desktop and handheld moving images reviewed after moving wheel fromx420 tox350. Speed,RPM,gear,fuel clear; wheel animated. Shared wiper layer retained.",
+  "picker": "Initial visible Flint entry loaded, then Madder index68/page start68 art loaded and selected car driven in cockpit. Final montage and full images reviewed.",
+  "motion": {
+    "desktop": {
+      "distanceM": 12.323819160486783,
+      "speedMps": 11.69049072265625,
+      "rpm": 4021.928955078125,
+      "errors": []
+    },
+    "handheld": {
+      "distanceM": 17.420783023819855,
+      "speedMps": 14.732964,
+      "rpm": 4775.575372,
+      "errors": []
+    },
+    "static": {
+      "distanceM": 11.006814956823169,
+      "speedMps": 11.02620792388916,
+      "rpm": 3253.24169921875,
+      "errors": []
+    }
+  },
+  "focusedPassed": 29,
+  "browserPassed": 4,
+  "manifest": {
+    "documents": 1922,
+    "assets": 16
+  },
+  "initialFailures": "First unit assertion expected fractional summary power; native rounding test corrected. First browser suite passed; wheel placement visually improved and all4browserchecks repeated. Prior evidence preserved."
+}

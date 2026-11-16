@@ -1,0 +1,21 @@
+{
+  "method": "Supported image_gen; two separately generated original transparent PNGs, copied byte-for-byte. No prior unpublished-car art imported.",
+  "bodyOriginal": "/workspace/generated_images/exec-bb0977ab-188c-4dc7-b2ea-808e4e4b5cf4.png",
+  "dashboardOriginal": "/workspace/generated_images/exec-e76c5a8b-a6d3-485a-8a90-493d2d85304a.png",
+  "bodyBrief": "Original logo-free cream/forest-green 2994 five-door widebody early1992 Evoluzione I inspired rally hatchback; four round headlights, hood vents, raised roof spoiler; eight distinct views in4x2, transparent wheel openings, no scenery. Runtime mapping reconciles sheet direction with native right/left slots.",
+  "dashboardBrief": "Original LHD charcoal angular1992 dashboard, forest-green/cream trim, left blank binnacle, squared vents, HVAC/radio stack and glovebox; transparent windshield; no logos, numbers, painted instruments or wheel.",
+  "originalHashes": {
+    "body": "eb977fb110343329f0a3fc92f2caea4fcc0425dd848f9c25c09283b595b03365",
+    "dashboard": "bb7c0c28401c00674dcce13ce7b1525ac99cf8378330e33c14d76a3877931773"
+  },
+  "brochurePreviewSha256": "70c1a1a5900f43aeebf852236b7addebfde021fe60e32d45bc9fa1009d8f86f8",
+  "brochurePageRead": [
+    11,
+    12,
+    13,
+    14,
+    17,
+    18
+  ],
+  "imprint": "Lancia Pubblicita e Immagine - Imprime n.06.5.2069.06 - IV/92"
+}

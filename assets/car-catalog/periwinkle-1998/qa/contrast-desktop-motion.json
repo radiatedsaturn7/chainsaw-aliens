@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "periwinkle-1998",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 850,
+    "gear": 1,
+    "elapsed": 1600.0333333333342,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "periwinkle-1998",
+    "x": -0.00046999999904073775,
+    "z": 13.49549388885498,
+    "speed": 8.744667053222656,
+    "rpm": 3416.115478515625,
+    "gear": 1,
+    "elapsed": 5549.833333333334,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "periwinkle-1998",
+    "x": -0.016623999923467636,
+    "z": 37.38282012939453,
+    "speed": 14.709184646606445,
+    "rpm": 5670.474609375,
+    "gear": 1,
+    "elapsed": 7583.033333333335,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

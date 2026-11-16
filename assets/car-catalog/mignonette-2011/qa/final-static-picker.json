@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 75,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 127,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Mignonette 2011",
+    "start": 72,
+    "visible": [
+      "Mallow S 2006",
+      "Marigold 1991",
+      "Meadowsweet 1992",
+      "Mignonette 2011"
+    ],
+    "targetIndex": 75,
+    "selectedIndex": 75,
+    "loadedCars": 79,
+    "totalChoices": 127,
+    "carId": "mignonette-2011",
+    "art": [
+      {
+        "ref": "catalog-mignonette-2011-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

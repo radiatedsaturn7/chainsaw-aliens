@@ -1,0 +1,37 @@
+✔ Alyssum preserves US2009 pure coupe net anchors and staggered tires (1.690385ms)
+✔ Alyssum native roundtrip preserves existing AMT approximation (213.757576ms)
+✔ Alyssum has eight distinct original exterior frames, shared tire layers and original hashes (243.64211ms)
+✔ separate staging branch retains 125 playable documents and excludes3 legacy system templates (237.295647ms)
+✔ Alyssum fitted collider maintains tire contact and launches with existing AMT controls (2537.436383ms)
+✔ Alyssum 2009 published wheel graphics cover original opening heights without changing physical radius (611.137905ms)
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (248.422609ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (5.724044ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (57.27392ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (9782.413642ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (13.706677ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (3052.850658ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (264.134668ms)
+✔ requires explicit source data and mappings (0.957175ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (133.860943ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (332.039717ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (3.865417ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (155.724253ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (122.278323ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (954.732301ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (913.79784ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (747.530586ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (7464.873216ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (6603.078569ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.404837ms)
+✔ Madder preserves1969 two-door1116DIN anchors and distinguishes estimated running mass (0.848603ms)
+✔ Madder native roundtrip preserves standard four-speed reductions and explicit manual assist (170.668465ms)
+✔ Madder has eight distinct original exterior frames, shared tire layers and original hashes (531.868275ms)
+✔ separate staging branch retains 124 playable documents and excludes3 legacy system templates (444.174568ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18380.488101

@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "goldenrod-1996",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 650,
+    "gear": 1,
+    "elapsed": 2199.9333333333393,
+    "throttle": 0,
+    "camera": "first-person"
+  },
+  "moving": {
+    "id": "goldenrod-1996",
+    "x": 0.0015010000206530094,
+    "z": 11.567377090454102,
+    "speed": 7.7567548751831055,
+    "rpm": 1880.20556640625,
+    "gear": 1,
+    "elapsed": 6533.133333333337,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "cockpit": {
+    "id": "goldenrod-1996",
+    "x": 0.0056050000712275505,
+    "z": 33.90399932861328,
+    "speed": 14.028820991516113,
+    "rpm": 3475.88427734375,
+    "gear": 1,
+    "elapsed": 8583.033333333331,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "agrimony-1988",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 850,
+    "gear": 1,
+    "elapsed": 1049.9333333333318,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "agrimony-1988",
+    "x": 0,
+    "z": 17.65154,
+    "speed": 11.396391,
+    "rpm": 4540.401511,
+    "gear": 1,
+    "elapsed": 5183.066666666669,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "agrimony-1988",
+    "x": 0,
+    "z": 36.912424,
+    "speed": 14.058465,
+    "rpm": 3887.996804,
+    "gear": 2,
+    "elapsed": 6732.999999999996,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

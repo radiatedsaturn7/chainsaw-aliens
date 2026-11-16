@@ -1,0 +1,27 @@
+{
+  "focusedTests": {
+    "gorse": 36,
+    "camomile": 36,
+    "camomileFinalDescriptionRoundtrip": 4
+  },
+  "browserTests": {
+    "gorse": 3,
+    "camomile": 3,
+    "realStaticPicker": 1
+  },
+  "manifest": {
+    "documents": 1853,
+    "assets": 16,
+    "check": true,
+    "validateAssets": true
+  },
+  "playable": 101,
+  "excludedSystemTemplates": 3,
+  "visualReview": "All sixteen new exterior views and both desktop/handheld live-gauge cockpit layouts reviewed. Original source art preserved.",
+  "resolvedIssues": [
+    "Gorse estimated high-RPM curve corrected from123 to121 normalized hp, then full focused/browser rerun passed.",
+    "Initial static-picker test closed menu preview after opening Race Editor, returning to Menu Editor; reordered test handoff and targeted rerun passed. No runtime fix.",
+    "Camomile picker description made readable; four catalog tests and final picker rerun passed."
+  ],
+  "remainingBlockers": []
+}

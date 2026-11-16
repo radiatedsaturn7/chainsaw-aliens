@@ -1,0 +1,36 @@
+✔ Agrimony retains May1988 SHXJ manual hardtop anchors and high-range qualification (4.331866ms)
+✔ Agrimony native roundtrip preserves published high-range reduction ratios and explicit manual assist (139.478485ms)
+✔ Agrimony has eight distinct original exterior frames, shared tire layers and original hashes (184.885788ms)
+✔ separate staging branch retains 109 playable documents and excludes3 legacy system templates (252.304586ms)
+✔ Agrimony 1988 published wheel graphics cover original opening heights without changing physical radius (301.813659ms)
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (180.04319ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (10.990693ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (35.817275ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (5925.828902ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (13.763631ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (2897.10957ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (154.470762ms)
+✔ requires explicit source data and mappings (0.774051ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (56.088808ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (189.51877ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (1.824035ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (62.519231ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (56.299984ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (727.046898ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (545.183761ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (564.60324ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (5339.854624ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (5651.677193ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.366229ms)
+✔ Periwinkle retains UK twin-point catalyst and EEC anchors with explicit estimates (3.31344ms)
+✔ Periwinkle native roundtrip preserves estimated reduction ratios and explicit manual assist (102.997214ms)
+✔ Periwinkle has eight distinct original exterior frames, shared tire layers and original hashes (391.566057ms)
+✔ separate staging branch retains 108 playable documents and excludes3 legacy system templates (293.672687ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 26490.881999

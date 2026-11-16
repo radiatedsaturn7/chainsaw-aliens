@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "comfrey-1991",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 900,
+    "gear": 1,
+    "elapsed": 1033.3333333333337,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "comfrey-1991",
+    "x": 0.00024900000425986946,
+    "z": 11.885804176330566,
+    "speed": 6.063075065612793,
+    "rpm": 4635.7041015625,
+    "gear": 2,
+    "elapsed": 5433.299999999994,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "comfrey-1991",
+    "x": 0.00022899999748915434,
+    "z": 31.638397216796875,
+    "speed": 9.43761157989502,
+    "rpm": 4245.9814453125,
+    "gear": 3,
+    "elapsed": 7949.799999999994,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

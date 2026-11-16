@@ -1,0 +1,19 @@
+{
+  "initialHead": "58c2ec08e9457b778a19f617fad3aded4e4fa0ee",
+  "initialTree": "7e1315cdc36f12c3be7b8250e39ca4c251595722",
+  "observedHead": "2b699e5d92fef0f520913cfac3a3694c9ca10286",
+  "observedTree": "7dd651525fccdb9b0de4a903957eed40b7960d27",
+  "changedFiles": [
+    "src/racing/RaceCodriver.js",
+    "src/radio/RadioLibrary.js",
+    "src/radio/RadioPlayer.js",
+    "src/ui/RaceEditor.js",
+    "tests/unit/raceCodriver.test.js",
+    "tests/unit/raceIntro.test.js",
+    "tests/unit/racePauseRestart.test.js",
+    "tests/unit/raceTriggers.test.js",
+    "tests/unit/radioPlayer.test.js"
+  ],
+  "carAndAssetChanges": false,
+  "action": "Read-only fetch and comparison only. Preserve original local base and saved checkpoints; no rebase or integration."
+}

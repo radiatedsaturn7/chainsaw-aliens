@@ -1,0 +1,44 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (154.00109ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (5.490103ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (32.044634ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (5941.911063ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (13.430309ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (2745.650211ms)
+✔ Campion retains brochure standard US1992 AWD automatic anchors (1.606399ms)
+✔ Campion explicit estimated gearing survives native editor manual and assist roundtrip (141.461536ms)
+✔ Campion has eight distinct original exterior frames, shared tire layers and original hashes (196.470518ms)
+✔ separate staging branch retains 104 playable documents and excludes3 legacy system templates (293.700582ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (223.868022ms)
+✔ requires explicit source data and mappings (0.606089ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (69.397639ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (196.595614ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (3.050214ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (142.202077ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (83.040277ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (777.3622ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (541.075312ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (582.918554ms)
+✔ performance is finite, deterministic, responds to upgrades and balances E1 through S (2.178207ms)
+✔ saved variants remain unique, exclude player, then fill only with the selected default (0.698257ms)
+✔ eligibility, category and performance filters apply together; fallback cannot select player (0.325709ms)
+✔ missing acceleration and legacy null selection use valid defaults (0.208944ms)
+✔ PI class ceilings are inclusive from E1 100 through S 1000 (0.238167ms)
+✔ dry-tarmac PI ignores stale performance claims and responds to gearing, driven wheels and tire compounds (0.382344ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (4651.671193ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (4227.853978ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.360962ms)
+✔ legacy expectation adds only explicit absent gauge defaults and keeps all authored values (6.120768ms)
+✔ Goldenrod retains standard1996 wagon anchors and estimated curb qualification (1.310345ms)
+✔ Goldenrod explicit estimated gearing survives native editor manual and assist roundtrip (77.915601ms)
+✔ Goldenrod has eight distinct original exterior frames, shared tire layers and original hashes (132.86262ms)
+✔ separate staging branch retains 105 playable documents and excludes3 legacy system templates (213.789726ms)
+✔ Goldenrod 1996 published wheel graphics cover original opening heights without changing physical radius (279.073416ms)
+✔ two-output force allocation exactly matches generic distribution (63.018061ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10451.95748

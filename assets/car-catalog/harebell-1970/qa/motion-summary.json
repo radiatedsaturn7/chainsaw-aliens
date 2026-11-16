@@ -1,0 +1,20 @@
+{
+  "desktop": {
+    "startSpeedMps": 0,
+    "movingSpeedMps": 7.894388198852539,
+    "cockpitSpeedMps": 14.360837936401367,
+    "cockpitRpm": 5798.62890625,
+    "cockpitGear": 1,
+    "distanceM": 37.65854263305664,
+    "errors": []
+  },
+  "handheld": {
+    "startSpeedMps": 0,
+    "movingSpeedMps": 10.315976,
+    "cockpitSpeedMps": 15.973637,
+    "cockpitRpm": 6182.818031,
+    "cockpitGear": 1,
+    "distanceM": 34.488011,
+    "errors": []
+  }
+}

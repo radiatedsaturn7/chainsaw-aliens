@@ -1,0 +1,64 @@
+✖ Betony preserves selected UK dual motor power, mass and 19 inch tires (1.328623ms)
+✔ Betony native roundtrip retains single reduction and live electric instrumentation (137.545342ms)
+✔ Betony has eight distinct original exterior frames, shared tire layers and original hashes (131.644984ms)
+✔ separate staging branch retains 114 playable documents and excludes3 legacy system templates (217.426583ms)
+✔ Betony saved pack drives, consumes energy and regenerates with measured electric state (1.568533ms)
+✔ Betony 2021 published wheel graphics cover original opening heights without changing physical radius (356.728076ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (272.578292ms)
+✔ requires explicit source data and mappings (0.601181ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (63.86082ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (177.814864ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.495142ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (84.61488ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (150.352354ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (566.657253ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (633.750369ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (567.452936ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (6150.770859ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (5987.745923ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.340781ms)
+✔ Chervil keeps DIN separate from SAE and driver mass separate from unladen (1.335222ms)
+✔ Chervil native roundtrip preserves reciprocal published five-speed ratios and explicit manual assist (145.690022ms)
+✔ Chervil has eight distinct original exterior frames, shared tire layers and original hashes (140.093982ms)
+✔ separate staging branch retains 113 playable documents and excludes3 legacy system templates (190.972868ms)
+✔ zero RPM launch has torque without idle, clutch or invented free RPM (1.277776ms)
+✔ constant-power envelope and overspeed cutoff (0.190656ms)
+✔ neutral, empty pack and opposite-direction command cannot propel (0.266119ms)
+✔ regen opposes both directions, tapers to zero and cannot charge full pack (0.205909ms)
+✔ substep energy bounds scale delivered torque, never create energy (0.237997ms)
+✔ traction intervention precedes energy accounting; neutral does not regenerate (0.13327ms)
+✔ explicit state is deterministic and serializable; zero dt preserves energy (0.750756ms)
+✔ reject invalid integration inputs rather than poison replay state (1.291807ms)
+✔ launch energy includes rotational acceleration even with zero winding losses (0.205528ms)
+✔ regen cannot reverse a shaft or recover more than its kinetic energy (0.274792ms)
+✔ worker initialization preserves authored EV config and partially depleted traction state (42.72897ms)
+✔ real worker-authority snapshots carry changing battery telemetry through client and dashboard (90.82529ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 34
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 18244.027221
+
+✖ failing tests:
+
+test at tests/unit/betonyCatalog.test.js:3:1
+✖ Betony preserves selected UK dual motor power, mass and 19 inch tires (1.328623ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2113 !== 2114
+  
+      at TestContext.<anonymous> (file:///workspace/chainsaw-aliens/tests/unit/betonyCatalog.test.js:3:106)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2113,
+    expected: 2114,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

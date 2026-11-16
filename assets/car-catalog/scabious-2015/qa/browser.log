@@ -1,0 +1,18 @@
+
+Running 4 tests using 1 worker
+
+(node:11859) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:11859) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/playwright/scabious-driving.spec.js:3:34 › Scabious desktop keyboard moving gameplay (29.3s)
+  ✓  2 tests/playwright/scabious-driving.spec.js:3:34 › Scabious handheld touch moving gameplay (24.7s)
+  ✓  3 tests/playwright/scabious-preview.spec.js:6:1 › Scabious 2015 actual editor preview composites exterior/cockpit and advances production physics (26.3s)
+  ✓  4 tests/playwright/sport-static-picker.spec.js:3:29 › Anemone desktop keyboard static picker initial page, later page, cockpit and keyboard drive (38.2s)
+
+  4 passed (2.0m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

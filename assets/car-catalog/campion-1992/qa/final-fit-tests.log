@@ -1,0 +1,13 @@
+✔ Campion retains brochure standard US1992 AWD automatic anchors (1.265227ms)
+✔ Campion explicit estimated gearing survives native editor manual and assist roundtrip (84.947146ms)
+✔ Campion has eight distinct original exterior frames, shared tire layers and original hashes (89.927254ms)
+✔ separate staging branch retains 104 playable documents and excludes3 legacy system templates (128.742221ms)
+✔ Campion 1992 published wheel graphics cover original opening heights without changing physical radius (344.654706ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 726.648391

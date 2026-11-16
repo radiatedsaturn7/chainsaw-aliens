@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "calamint-2003",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 750,
+    "gear": 1,
+    "elapsed": 2316.533333333334,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "calamint-2003",
+    "x": 0.0000470000013592653,
+    "z": 8.868215560913086,
+    "speed": 6.8205718994140625,
+    "rpm": 2704.27978515625,
+    "gear": 1,
+    "elapsed": 6349.733333333335,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "calamint-2003",
+    "x": 0.005036000162363052,
+    "z": 34.720279693603516,
+    "speed": 14.739240646362305,
+    "rpm": 5934.43115234375,
+    "gear": 1,
+    "elapsed": 8632.933333333332,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

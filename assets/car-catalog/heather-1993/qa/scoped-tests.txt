@@ -1,0 +1,31 @@
+✔ catalog uses editor serialization and preserves original eight angles and provenance (214.472623ms)
+✔ requires explicit source data and mappings (0.607161ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (70.482115ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (230.488449ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.071807ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (50.289744ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (57.940697ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (468.118054ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (621.780967ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (648.36122ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (5033.123723ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (5198.557498ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.356615ms)
+✔ legacy expectation adds only explicit absent gauge defaults and keeps all authored values (10.790993ms)
+✔ Heather is UK2.0 SE B200F manual with catalyst, not2.3 (1.650345ms)
+✔ Heather explicit estimated gearing survives native editor manual and assist roundtrip (146.228734ms)
+✔ Heather has eight distinct original exterior frames, shared tire layers and original hashes (294.698738ms)
+✔ separate staging branch has95 playable documents and excludes3 legacy system templates (240.809767ms)
+✔ Heather 1993 published wheel graphics cover original opening heights without changing physical radius (644.772098ms)
+✔ Meadowsweet uses French April1992 CEE anchors and avoids EvoII substitution (1.30708ms)
+✔ Meadowsweet explicit estimated gearing survives native editor manual and assist roundtrip (135.370372ms)
+✔ Meadowsweet has eight distinct original exterior frames, shared tire layers and original hashes (240.037659ms)
+✔ separate staging branch retains at least94 playable documents and excludes3 legacy system templates (289.546344ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10679.92276

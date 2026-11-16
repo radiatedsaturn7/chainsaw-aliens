@@ -1,0 +1,45 @@
+✔ catalog uses editor serialization and preserves original eight angles and provenance (208.43331ms)
+✔ requires explicit source data and mappings (0.638217ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (79.304146ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (172.227685ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (4.429443ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (62.874899ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (84.796512ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (651.49036ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (632.070829ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (580.540884ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (6216.352034ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (6047.882797ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.426059ms)
+✔ zero RPM launch has torque without idle, clutch or invented free RPM (13.025613ms)
+✔ constant-power envelope and overspeed cutoff (0.248473ms)
+✔ neutral, empty pack and opposite-direction command cannot propel (0.432308ms)
+✔ regen opposes both directions, tapers to zero and cannot charge full pack (0.257476ms)
+✔ substep energy bounds scale delivered torque, never create energy (0.264307ms)
+✔ traction intervention precedes energy accounting; neutral does not regenerate (0.175263ms)
+✔ explicit state is deterministic and serializable; zero dt preserves energy (1.023826ms)
+✔ reject invalid integration inputs rather than poison replay state (0.628472ms)
+✔ launch energy includes rotational acceleration even with zero winding losses (0.264026ms)
+✔ regen cannot reverse a shaft or recover more than its kinetic energy (0.322224ms)
+✔ authoritative electric torque bypasses ICE idle, clutch, shifts and fuel failures (2.994591ms)
+✔ regen disables under service brake, handbrake, lost contact and slip (1.157706ms)
+✔ editor preserves EV tuning and single reduction through JSON and runtime config (88.12991ms)
+✔ electric model editor uses shared scroll layout and every field is reachable (246.389017ms)
+✔ Rue preserves US SV electric anchors and separates nominal from usable capacity (1.8069ms)
+✔ Rue native roundtrip retains single reduction and live electric instrumentation (113.77033ms)
+✔ Rue has eight distinct original exterior frames, shared tire layers and original hashes (192.828677ms)
+✔ separate staging branch retains 120 playable documents and excludes3 legacy system templates (185.221739ms)
+✔ Rue saved pack drives, consumes energy and regenerates with measured electric state (1.096915ms)
+✔ Rue 2011 published wheel graphics cover original opening heights without changing physical radius (485.001511ms)
+✔ Sneezewort preserves standard Monza net ratings separately from gross and sourced three-speed (3.747209ms)
+✔ Sneezewort native roundtrip preserves verified three-speed reductions and explicit manual assist (148.757098ms)
+✔ Sneezewort has eight distinct original exterior frames, shared tire layers and original hashes (261.132595ms)
+✔ separate staging branch retains 119 playable documents and excludes3 legacy system templates (343.960355ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 19600.934733

@@ -1,0 +1,37 @@
+{
+  "mobile": false,
+  "initial": {
+    "id": "osier-2005",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 700,
+    "gear": 1,
+    "elapsed": 2549.933333333332,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "osier-2005",
+    "x": 0,
+    "z": 14.109981536865234,
+    "speed": 7.0155792236328125,
+    "rpm": 2073.419189453125,
+    "gear": 1,
+    "elapsed": 7816.4333333333325,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "osier-2005",
+    "x": 0.0075690001249313354,
+    "z": 38.61309051513672,
+    "speed": 14.45588493347168,
+    "rpm": 4355.853515625,
+    "gear": 1,
+    "elapsed": 10183.033333333331,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

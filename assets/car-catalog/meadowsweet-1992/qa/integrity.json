@@ -1,0 +1,29 @@
+{
+  "base": "9588b8424c64653ff4864df0ff26764c3d51f0c8",
+  "baseTree": "7e1315cdc36f12c3be7b8250e39ca4c251595722",
+  "existing": {
+    "cars": {
+      "entries": 96,
+      "trackedFilesUnchanged": 633
+    },
+    "races": {
+      "entries": 245,
+      "trackedFilesUnchanged": 700
+    }
+  },
+  "baseCarEntries": 96,
+  "finalCarEntries": 97,
+  "newNames": [
+    "Meadowsweet 1992"
+  ],
+  "basePlayableCount": 93,
+  "finalPlayableCount": 94,
+  "excludedLegacySystemTemplates": [
+    "2022 Subaru WRX",
+    "2022 Subaru BRZ",
+    "2023 Honda Civic Type R"
+  ],
+  "runtimeAliasMatches": [
+    "Meadowsweet 1992"
+  ]
+}

@@ -1,0 +1,58 @@
+IMPORTANT TECHNICAL INFORMATION
+1. ENGINE
+Model
+Type
+No. of Cylinders
+Bore / Stroke
+Capacity
+Max. Engine Output
+Max. Torque
+Engine Oil Capacity
+Compression Ratio
+2. CLUTCH
+Type
+Outside diameter of
+clutch lining
+Friction Area
+3.TRANSAXLE
+Type
+Model
+No. of gears
+4. SUSPENSION
+Front
+Rear
+5. STEERING
+Type
+Steering Wheel
+Ratio
+114
+273 MPFI (BS-IV-OBD-II)
+4 Stroke, water cooled, multipoint fuel injection
+system, SOHC, 2V/Cylinder
+2 in-line
+73.5 mm x 73.5 mm.
+624 cc
+38 PS at 5500 +/-250 rpm as per IS:14599 /
+ISO :1585
+51Nm at 4000 +/-500 rpm as per IS:14599 /
+ISO :1585
+2.2 Litre
+10.3 : 1
+Single plate dry friction diaphragm type
+160 mm
+212 cm
+2
+Synchromesh on all forward gears, sliding
+mesh for reverse gear.
+TA 59 4 speed (MT) / TA 59 5 speed (AMT)
+4 Forward & 1 Reverse (MT) / 5 Forward & 1
+Reverse (AMT)
+Independent suspended.
+Independently Suspended Semi Trailing Arm
+Suspension with Gas filled Hydraulic Shock
+Absorber
+Mechanical Rack & Pinion steering /
+Mechanical Rack & Pinion steering with
+electric power steering
+360 mm dia.
+15 : 1

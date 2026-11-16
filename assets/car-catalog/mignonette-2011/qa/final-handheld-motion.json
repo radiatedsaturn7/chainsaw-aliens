@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "mignonette-2011",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 950,
+    "gear": 1,
+    "elapsed": 1116.5666666666643,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "mignonette-2011",
+    "x": 0.016394,
+    "z": 18.31718,
+    "speed": 14.251839,
+    "rpm": 6207.581804,
+    "gear": 1,
+    "elapsed": 5116.399999999996,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "mignonette-2011",
+    "x": 0.043112,
+    "z": 46.740608,
+    "speed": 22.715919,
+    "rpm": 6479.600992,
+    "gear": 2,
+    "elapsed": 6616.3999999999905,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

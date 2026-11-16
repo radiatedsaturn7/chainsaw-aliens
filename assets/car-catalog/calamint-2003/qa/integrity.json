@@ -1,0 +1,15 @@
+{
+  "base": "c32c061d7c4bd33b296e6c77f7cf169103e91729",
+  "baseTree": "31479b112221403ad28523d70a4c2bca8279037a",
+  "unchangedTrackedFiles": 20565,
+  "unchangedManifestEntries": 1931,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/mignonetteCatalog.test.js"
+  ],
+  "freeBytes": 55788441600,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

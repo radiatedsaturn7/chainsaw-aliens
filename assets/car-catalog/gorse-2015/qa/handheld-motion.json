@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "gorse-2015",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 750,
+    "gear": 1,
+    "elapsed": 999.9000000000015,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "gorse-2015",
+    "x": -0.013667,
+    "z": 19.889122,
+    "speed": 11.215874,
+    "rpm": 3228.544813,
+    "gear": 2,
+    "elapsed": 5099.799999999999,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "gorse-2015",
+    "x": -0.030132,
+    "z": 38.291816,
+    "speed": 13.948667,
+    "rpm": 4076.999338,
+    "gear": 3,
+    "elapsed": 6516.400000000001,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

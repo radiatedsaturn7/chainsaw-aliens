@@ -1,0 +1,36 @@
+{
+  "ab7ebf3caf98e21f84f2ec3efdd66ee1b865b218": {
+    "matches": {
+      "Citroen SM": [
+        "Chervil 1973"
+      ],
+      "Polestar 2": [],
+      "Chervil/Betony": [
+        "Chervil 1973"
+      ]
+    },
+    "manifestCarsIncludingTemplates": 116
+  },
+  "f51518946685c18a895e73309c939a5a54e75d84": {
+    "matches": {
+      "Citroen SM": [],
+      "Polestar 2": [],
+      "Chervil/Betony": []
+    },
+    "manifestCarsIncludingTemplates": 96
+  },
+  "oldElevenCrosswalk": [
+    "2004CadillacXLR",
+    "2006LancerEvolutionIX",
+    "1994NissanQuestXE",
+    "1993HondaCivicdelSolSi",
+    "2015Abarth695biposto",
+    "1973AMCGremlin232",
+    "1982DeLorean",
+    "1958AustinHealeySpriteMkI",
+    "1992Mercedes500E",
+    "1970Datsun510fourdoor",
+    "2016DodgeViperSRT"
+  ],
+  "oldElevenOverlap": false
+}

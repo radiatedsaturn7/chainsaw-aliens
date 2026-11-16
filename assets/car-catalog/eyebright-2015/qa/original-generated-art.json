@@ -1,0 +1,32 @@
+{
+  "/workspace/generated_images/exec-ad568795-f644-4699-b17f-fb1bd80b6bdd.png": {
+    "bytes": 1030594,
+    "sha256": "97cef802f5864de70e292c00adf918ee7cbdb36a74bde848935dd6342e2018b7",
+    "package": "holly-1988/body-initial.png"
+  },
+  "/workspace/generated_images/exec-db27c383-91cf-4ac0-b86d-07bf86e754d7.png": {
+    "bytes": 661037,
+    "sha256": "5ab56f54ac49971a449eb7f4e9f0f4294f36f3a04132f0a4dea8727be59d5efc",
+    "package": "holly-1988/body.png"
+  },
+  "/workspace/generated_images/exec-dd3ee0e6-a024-419c-b2cb-26b43fb37039.png": {
+    "bytes": 2307253,
+    "sha256": "89fc5dcdbc0404fbc27d4755e3c6307b99c9cba5cfb01fd196466341aa5441ce",
+    "package": "holly-1988/dashboard.png"
+  },
+  "/workspace/generated_images/exec-a46e858e-c7f3-43e0-a968-9d972323d0cc.png": {
+    "bytes": 1529536,
+    "sha256": "dafe70030de18c6c8497743243d8993eb042962c11b8cc489c468b277ab3265e",
+    "package": "eyebright-2015/body-initial.png"
+  },
+  "/workspace/generated_images/exec-879a2ff1-4370-418d-8c99-514dfb291a7a.png": {
+    "bytes": 972237,
+    "sha256": "3307820e39cd5190bea9202804c2a5f0f9a984a5434a21dff211921fe582b227",
+    "package": "eyebright-2015/body.png"
+  },
+  "/workspace/generated_images/exec-85e5475b-2ab1-47f0-91fc-9b59de0b600c.png": {
+    "bytes": 2430693,
+    "sha256": "469c15bd8d866ee29ccf80462f04c5f4fc491cc799521585aeb7fd351fc89d18",
+    "package": "eyebright-2015/dashboard.png"
+  }
+}

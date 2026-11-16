@@ -1,0 +1,58 @@
+{
+  "priorLargeOriginals": {
+    "/workspace/references/240z1971/1971-fsm.zip": {
+      "sha256": "9cf54c96999ec944a598c7626c2c4143841f61f1036bc8b89f7623f5f2998d2e",
+      "bytes": 238518787
+    },
+    "/workspace/references/240z1971/manual/71 DATSUN S30 SERVICE MANUAL/1971 S30 Service Manual.pdf": {
+      "sha256": "a439ae65d7a16263434ec17b2dacc9949d0426aebf37192cac077667a7d76177",
+      "bytes": 336682490
+    },
+    "/workspace/references/240z1971/1970-original-brochure.pdf": {
+      "sha256": "de6db7210354edf35b24ee361ac3161157d62eeb3e9d5a2b3918da8140ca54fe",
+      "bytes": 6105323
+    }
+  },
+  "newGeneratedOriginals": {
+    "/workspace/generated_images/exec-b380e44b-5c16-4bf4-962a-a823900d1383.png": {
+      "sha256": "e6d162bb18effdc06f64b9497ccb73ebde67b0558a06bfbb1b0567f95c4c5984",
+      "package": "chervil-1973/body-initial.png"
+    },
+    "/workspace/generated_images/exec-224d7f13-ba2d-42e6-9ac2-604882e5ae02.png": {
+      "sha256": "e7c4a9bc0a38254d4064643a9123dcb5a41d31d97e5aeab4b2412d51da73f240",
+      "package": "chervil-1973/body.png"
+    },
+    "/workspace/generated_images/exec-27990bb6-c896-4906-8230-b8500de57b26.png": {
+      "sha256": "9d95fd21a9959bff4ef804c15d97e729d35eded77398dd741481039745c1ad4f",
+      "package": "chervil-1973/dashboard.png"
+    },
+    "/workspace/generated_images/exec-b732e84d-b5ec-4440-904b-1f49a8ea82f3.png": {
+      "sha256": "6ac7131f00e04a11b947df02372bc9ae217928f744e588aca4d418697de9490c",
+      "package": "betony-2021/body-initial.png"
+    },
+    "/workspace/generated_images/exec-8d808da1-9135-436d-974e-67e22030585b.png": {
+      "sha256": "45f95b2d48941c9b979280f025f98403a51af294daecc1d07a358941f20eb2c7",
+      "package": "betony-2021/body-spacing-pass.png"
+    },
+    "/workspace/generated_images/exec-19b311b3-69c7-4b15-8b38-e7a8684fb357.png": {
+      "sha256": "f13445f59b85d80859ffc371af98d34cda9d993b8c40e556f372c0da586ca2be",
+      "package": "betony-2021/body.png"
+    },
+    "/workspace/generated_images/exec-0649559c-3729-4890-a074-4549d5d83e8f.png": {
+      "sha256": "6abcdadbf50cea4f0439a83d66a0c7217175e39d7e5a5ef813f07deb67ee8726",
+      "package": "betony-2021/dashboard.png"
+    }
+  },
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "unchangedStagingFiles": [
+    "src/racing/RaceCodriver.js",
+    "src/radio/RadioLibrary.js",
+    "src/radio/RadioPlayer.js",
+    "src/ui/RaceEditor.js",
+    "tests/unit/raceCodriver.test.js",
+    "tests/unit/raceIntro.test.js",
+    "tests/unit/racePauseRestart.test.js",
+    "tests/unit/raceTriggers.test.js",
+    "tests/unit/radioPlayer.test.js"
+  ]
+}

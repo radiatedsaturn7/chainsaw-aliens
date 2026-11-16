@@ -1,0 +1,37 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (168.678097ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (6.251296ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (44.769912ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (8131.713748ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (25.435325ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (4101.81345ms)
+✔ Betony preserves selected UK dual motor power, mass and 19 inch tires (1.5604ms)
+✔ Betony native roundtrip retains single reduction and live electric instrumentation (155.941188ms)
+✔ Betony has eight distinct original exterior frames, shared tire layers and original hashes (112.641707ms)
+✔ separate staging branch retains 114 playable documents and excludes3 legacy system templates (176.693617ms)
+✔ Betony saved pack drives, consumes energy and regenerates with measured electric state (1.330045ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (153.976462ms)
+✔ requires explicit source data and mappings (0.885147ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (74.66884ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (169.497219ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.573559ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (59.274909ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (57.163488ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (566.565855ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (594.659646ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (565.12665ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (6938.810076ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (7053.270331ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.527962ms)
+✔ Mugwort retains selected1976 DIN power,mass and rear-engine four-speed identity (2.164276ms)
+✔ Mugwort native roundtrip preserves published four-speed ratios and explicit manual assist (277.849056ms)
+✔ Mugwort has eight distinct original exterior frames, shared tire layers and original hashes (410.266207ms)
+✔ separate staging branch retains 115 playable documents and excludes3 legacy system templates (319.033905ms)
+✔ Mugwort 1976 published wheel graphics cover original opening heights without changing physical radius (472.758516ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 33071.935738

@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 7,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 106,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Angelica 1999",
+    "start": 4,
+    "visible": [
+      "2024 Sentinel Sedan",
+      "Alder RS 1994",
+      "Anemone 1986",
+      "Angelica 1999"
+    ],
+    "targetIndex": 7,
+    "selectedIndex": 7,
+    "loadedCars": 11,
+    "totalChoices": 106,
+    "carId": "angelica-1999",
+    "art": [
+      {
+        "ref": "catalog-angelica-1999-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

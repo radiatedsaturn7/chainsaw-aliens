@@ -1,0 +1,11 @@
+# Chervil 1973
+
+Original badge-free 2994 interpretation of the European 1973 Citroën SM Injection 2.7 V6 five-speed manual. Original manufacturer injection manual and 1973 brochure are retained. Selected specification: 2670 cc, 178 DIN cv at 5500 rpm, 23.7 DIN kgm at 4000 rpm, 1520 kg running-order unladen, 205/70 VR15 tires and 90 L fuel. The 188 SAE cv figure is documented separately and not used. The 1590 kg figure includes a 70 kg driver and is not substituted for unladen mass. This is neither the carbureted version nor the 3.0 automatic.
+
+The manual publishes gearbox output/input ratios. Runtime reductions use their reciprocals, with the published 35/8 final drive. A conflicting printed third-gear total is documented; the individual gearbox column is used consistently. Driver-loaded axle weights provide an explicitly approximate front-weight fraction. Aerodynamics, tire grip, suspension, clutch and other gameplay calibration remain estimates. Conventional runtime suspension and steering approximate hydropneumatic self-leveling and DIRAVI. Assisted shifting uses the same manual gearing, not a claimed factory automatic.
+
+Initial and final original body sheets, original dashboard, prompts and source references are preserved. Eight production composites reviewed in qa/eight-view-review.png. Removed rear spats and salvaged lamp-bank details are fictional 2994 maintenance adaptations. The fitted left instrument pod displays live speed, RPM, gear and fuel; steering and wipers animate.
+
+Validation: 28 focused tests passed; four browser checks passed (keyboard movement, handheld touch movement, production editor eight-angle preview, and real paged static picker to cockpit driving). Manifest validation passed with 1889 documents and 16 assets. Picker initially loaded seven of 113 cars, then reached Chervil at index/page start 24 and waited for exterior art. Keyboard motion reached 17.48 m before cockpit capture and 16.22 m/s in cockpit; touch motion reached 12.85 m and 14.80 m/s in cockpit. No browser page errors. Screenshots and numerical evidence retained.
+
+This independent local checkpoint has 113 playable cars, separate from the old 104-car branch. Existing cars, races, artwork and prior evidence are protected by integrity verification. No runtime/world edits, remote writes, publication, transfer or deletion.

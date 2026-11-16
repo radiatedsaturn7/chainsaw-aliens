@@ -1,0 +1,23 @@
+{
+  "997a447fbc7fb4bffe766c512752e17f2edd1050": {
+    "head": "997a447fbc7fb4bffe766c512752e17f2edd1050",
+    "matches": {
+      "mini cooper": [],
+      "vehicross": [],
+      "peugeot106": [],
+      "angelica": [],
+      "pennyroyal": []
+    }
+  },
+  "FETCH_HEAD": {
+    "head": "58c2ec08e9457b778a19f617fad3aded4e4fa0ee",
+    "matches": {
+      "mini cooper": [],
+      "vehicross": [],
+      "peugeot106": [],
+      "angelica": [],
+      "pennyroyal": []
+    }
+  },
+  "oldEleven": "Exact supplied crosswalk checked: CadillacXLR, EvoIX, Quest, delSolSi,695biposto,Gremlin232,DeLorean,SpriteMkI,500E,Datsun510,ViperSRT; no candidate overlap."
+}

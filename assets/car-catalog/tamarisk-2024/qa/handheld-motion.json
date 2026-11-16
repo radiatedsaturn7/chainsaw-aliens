@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "tamarisk-2024",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 750,
+    "gear": 1,
+    "elapsed": 1033.233333333331,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "tamarisk-2024",
+    "x": 0.015192,
+    "z": 22.375812,
+    "speed": 14.07072,
+    "rpm": 4305.314643,
+    "gear": 2,
+    "elapsed": 5133.199999999995,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "tamarisk-2024",
+    "x": 0.040566,
+    "z": 48.485517,
+    "speed": 19.638301,
+    "rpm": 5944.513236,
+    "gear": 2,
+    "elapsed": 6666.3666666666595,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

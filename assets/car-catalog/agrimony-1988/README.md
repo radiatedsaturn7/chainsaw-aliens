@@ -1,0 +1,13 @@
+# Agrimony 1988
+
+Original badge-free2994 compact off-roader inspired by the May1988 Japanese Suzuki Escudo E-TA01W SHXJ hardtop5MT. Excludes automatic SHXR, softtop, van, later16-valve Nomade and export-market specifications. The Escudo/Vitara/Sidekick/Tracker family is absent from both the saved108-car roster and staging; the old eleven-model crosswalk has no overlap.
+
+Suzuki's original technical sheet provides990kg for the selected manual hardtop, net82PS at5500rpm and13.1kgm at3000rpm. PS and kgm are converted to mechanical horsepower andlb-ft; the existing editor rounds headline ratings. The website's representative1010kg row is the automatic and is deliberately not used. Published five-speed ratios3.652/1.947/1.379/1/.864,reverse3.670 and final5.125 are retained. High transfer ratio1.000 is selected; low1.816 is recorded but not applied. Original PDF, HTML and inspected image are preserved.
+
+The current simulation approximates high-range4WD with AWD and50/50 balance. It does not reproduce selectable2H/4L or locked-transfer windup. The source gives195SR15 without aspect ratio;80% and derived0.3465m radius are explicit assumptions. Other physics, performance targets and controls are labelled estimates in import.json. Auto Assist (5MT) automates the manual gears; it is not the separately available factory3AT.
+
+Eight original exterior views use fitted shared moving tires. The first generated sheet was safely rejected for insufficient transparent separation before any document write; body-initial.png is preserved. The regenerated sheet adds wider gutters. Its actual rear-quarter cell order is explicitly mapped, rather than assuming prompt order. The right-hand-drive squared dashboard has fitted live speed/RPM/gear/fuel displays and animated steering. Original PNGs and prompts remain intact.
+
+Immediate base49aa617a37a4b9c629243ee1e62f532e01134076 contains108 playable cars with staging radio/countdown changes integrated. Agrimony makes109, excluding3system templates. Existing race content, runtime/world files and prior art are unchanged. Browser checks cover actual keyboard/touch motion, eight exterior views and initial-to-later real picker selection before cockpit driving. No remote writes, publication, transfers or deletion. Older104-car branch remains separate.
+
+Validation:28focused tests and all4browser checks pass. Manifest:1,877documents/16assets. All eight exterior views and moving desktop/handheld cockpits visually reviewed. Picker starts with7of109cars loaded, then reaches Agrimony at index5 on the page beginning4, waits for art and drives its selected cockpit. No unresolved validation blocker.

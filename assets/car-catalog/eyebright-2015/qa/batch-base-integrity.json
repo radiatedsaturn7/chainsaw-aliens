@@ -1,0 +1,10 @@
+{
+  "base": "ed8b4ad4e92d791dc336dc973f96d3c8a8af6d57",
+  "unchangedTrackedFiles": 19400,
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/harebellCatalog.test.js"
+  ],
+  "mismatches": []
+}

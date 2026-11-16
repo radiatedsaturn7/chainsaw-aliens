@@ -1,0 +1,15 @@
+{
+  "base": "79e63416116e93c9f5343310cf73e680db0acad2",
+  "baseTree": "e669ffe7daf6bbd5bbce86f23a8630825d4e5112",
+  "unchangedTrackedFiles": 19794,
+  "unchangedManifestEntries": 1901,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/comfreyCatalog.test.js"
+  ],
+  "freeBytes": 56813178880,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

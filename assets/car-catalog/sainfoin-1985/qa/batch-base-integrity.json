@@ -1,0 +1,10 @@
+{
+  "base": "71951bc3da58d945d81f5e53e170c47e2e03aaab",
+  "protectedTrackedFilesUnchanged": 19743,
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/restharrowCatalog.test.js"
+  ],
+  "mismatches": []
+}

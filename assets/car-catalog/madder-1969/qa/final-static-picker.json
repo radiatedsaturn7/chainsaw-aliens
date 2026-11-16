@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 68,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 124,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Madder 1969",
+    "start": 68,
+    "visible": [
+      "Madder 1969",
+      "Magnolia 40 1990",
+      "Mallow S 2006",
+      "Marigold 1991"
+    ],
+    "targetIndex": 68,
+    "selectedIndex": 68,
+    "loadedCars": 75,
+    "totalChoices": 124,
+    "carId": "madder-1969",
+    "art": [
+      {
+        "ref": "catalog-madder-1969-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

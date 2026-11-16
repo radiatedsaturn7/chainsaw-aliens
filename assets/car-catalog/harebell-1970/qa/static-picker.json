@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 47,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 110,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Harebell 1970",
+    "start": 44,
+    "visible": [
+      "Goldenrod 1996",
+      "Gorse 2015",
+      "Gossamer 2005",
+      "Harebell 1970"
+    ],
+    "targetIndex": 47,
+    "selectedIndex": 47,
+    "loadedCars": 51,
+    "totalChoices": 110,
+    "carId": "harebell-1970",
+    "art": [
+      {
+        "ref": "catalog-harebell-1970-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

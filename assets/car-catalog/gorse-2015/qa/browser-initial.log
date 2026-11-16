@@ -1,0 +1,17 @@
+
+Running 3 tests using 1 worker
+
+(node:8737) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:8737) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/playwright/gorse-driving.spec.js:3:34 › Gorse desktop keyboard moving gameplay (35.4s)
+  ✓  2 tests/playwright/gorse-driving.spec.js:3:34 › Gorse handheld touch moving gameplay (26.4s)
+  ✓  3 tests/playwright/gorse-preview.spec.js:6:1 › Gorse 2015 actual editor preview composites exterior/cockpit and advances production physics (35.0s)
+
+  3 passed (1.7m)
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

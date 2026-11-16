@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 6,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 103,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Anemone 1986",
+    "start": 4,
+    "visible": [
+      "2024 Sentinel Sedan",
+      "Alder RS 1994",
+      "Anemone 1986",
+      "Ashbaron 1987"
+    ],
+    "targetIndex": 6,
+    "selectedIndex": 6,
+    "loadedCars": 11,
+    "totalChoices": 103,
+    "carId": "anemone-1986",
+    "art": [
+      {
+        "ref": "catalog-anemone-1986-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

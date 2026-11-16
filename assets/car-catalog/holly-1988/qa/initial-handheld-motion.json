@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "holly-1988",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 850,
+    "gear": 1,
+    "elapsed": 1083.2333333333347,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "holly-1988",
+    "x": 0,
+    "z": 17.728524,
+    "speed": 12.21633,
+    "rpm": 5347.180147,
+    "gear": 1,
+    "elapsed": 5149.833333333331,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "holly-1988",
+    "x": -0.000148,
+    "z": 37.071239,
+    "speed": 16.083528,
+    "rpm": 4032.872158,
+    "gear": 2,
+    "elapsed": 6549.733333333332,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}
