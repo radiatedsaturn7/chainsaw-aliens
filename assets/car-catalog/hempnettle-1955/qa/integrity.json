@@ -1,0 +1,15 @@
+{
+  "base": "a63df94d14c7bd2b5c763cefdd40bc1c6718d308",
+  "baseTree": "720a69dab5e408f4e6a172b4cc6fa4f13225bbb7",
+  "unchangedTrackedFiles": 20676,
+  "unchangedManifestEntries": 1934,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/calamintCatalog.test.js",
+    "tests/unit/catalogCameraSmoke.test.js"
+  ],
+  "freeBytes": 55695446016,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}

@@ -1090,7 +1090,9 @@
       "catalog-mignonette-2011-body": "art/catalog-mignonette-2011-body/document.json",
       "catalog-mignonette-2011-dashboard": "art/catalog-mignonette-2011-dashboard/document.json",
       "catalog-calamint-2003-body": "art/catalog-calamint-2003-body/document.json",
-      "catalog-calamint-2003-dashboard": "art/catalog-calamint-2003-dashboard/document.json"
+      "catalog-calamint-2003-dashboard": "art/catalog-calamint-2003-dashboard/document.json",
+      "catalog-hempnettle-1955-body": "art/catalog-hempnettle-1955-body/document.json",
+      "catalog-hempnettle-1955-dashboard": "art/catalog-hempnettle-1955-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1223,7 +1225,8 @@
       "Alyssum 2009": "cars/Alyssum 2009/document.json",
       "Loosestrife 1988": "cars/Loosestrife 1988/document.json",
       "Mignonette 2011": "cars/Mignonette 2011/document.json",
-      "Calamint 2003": "cars/Calamint 2003/document.json"
+      "Calamint 2003": "cars/Calamint 2003/document.json",
+      "Hempnettle 1955": "cars/Hempnettle 1955/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
