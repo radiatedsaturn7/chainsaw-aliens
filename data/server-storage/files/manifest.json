@@ -1082,7 +1082,9 @@
       "catalog-osier-2005-body": "art/catalog-osier-2005-body/document.json",
       "catalog-osier-2005-dashboard": "art/catalog-osier-2005-dashboard/document.json",
       "catalog-madder-1969-body": "art/catalog-madder-1969-body/document.json",
-      "catalog-madder-1969-dashboard": "art/catalog-madder-1969-dashboard/document.json"
+      "catalog-madder-1969-dashboard": "art/catalog-madder-1969-dashboard/document.json",
+      "catalog-alyssum-2009-body": "art/catalog-alyssum-2009-body/document.json",
+      "catalog-alyssum-2009-dashboard": "art/catalog-alyssum-2009-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1211,7 +1213,8 @@
       "Fumitory 1974": "cars/Fumitory 1974/document.json",
       "Woodruff 1991": "cars/Woodruff 1991/document.json",
       "Osier 2005": "cars/Osier 2005/document.json",
-      "Madder 1969": "cars/Madder 1969/document.json"
+      "Madder 1969": "cars/Madder 1969/document.json",
+      "Alyssum 2009": "cars/Alyssum 2009/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

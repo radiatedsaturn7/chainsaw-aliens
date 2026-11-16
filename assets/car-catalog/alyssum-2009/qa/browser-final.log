@@ -1,0 +1,119 @@
+
+Running 4 tests using 1 worker
+
+(node:45053) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45053) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/playwright/alyssum-driving.spec.js:3:34 › Alyssum desktop keyboard moving gameplay (1.2m)
+(node:45256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 tests/playwright/alyssum-driving.spec.js:3:34 › Alyssum handheld touch moving gameplay (49.3s)
+(node:45349) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45349) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 tests/playwright/alyssum-preview.spec.js:6:1 › Alyssum 2009 actual editor preview composites exterior/cockpit and advances production physics (48.7s)
+(node:45444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 tests/playwright/alyssum-static-picker.spec.js:3:29 › Alyssum desktop keyboard static picker initial page, later page, cockpit and keyboard drive (1.0m)
+
+
+  1) tests/playwright/alyssum-driving.spec.js:3:34 › Alyssum desktop keyboard moving gameplay ──────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThan[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: > [32m2[39m
+    Received:   [31m9.999999974752427e-7[39m
+
+    Call Log:
+    - Timeout 30000ms exceeded while waiting on the predicate
+
+      11 |  const sample=()=>page.evaluate(()=>{const e=window.__game.raceEditor,s=e.playtestSession;return {id:s.runtimeCar.id,x:s.worldX,z:s.worldZ,speed:s.speedMps,rpm:s.engineRpm,gear:s.gear,elapsed:s.elapsedMs,throttle:e.raceInput.throttleAxis,camera:s.cameraView};});const initial=await sample();
+      12 |  let cdp;if(mobile){await page.screenshot({path:info.outputPath('before-touch.png')});const pt=await page.evaluate(()=>{const e=window.__game.raceEditor,b=e.buttons.find(b=>b.playtestControl==='go').bounds;const c=window.__game.canvas,r=c.getBoundingClientRect();return {x:r.x+(b.x+b.w/2)*r.width/c.width,y:r.y+(b.y+b.h/2)*r.height/c.height};});cdp=await context.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...pt,id:1}]});}else await page.keyboard.down('KeyG');
+    > 13 |  await expect.poll(async()=>Math.abs((await sample()).speed),{timeout:30000}).toBeGreaterThan(2);await page.waitForTimeout(1800);const moving=await sample();expect(Math.hypot(moving.x-initial.x,moving.z-initial.z)).toBeGreaterThan(2);expect(moving.rpm).toBeGreaterThan(850);await page.screenshot({path:info.outputPath('moving-exterior.png')});
+         |  ^
+      14 |  await page.evaluate(()=>{const e=window.__game.raceEditor;e.raceInput.cameraView='first-person';e.playtestSession.cameraView='first-person';});await page.waitForTimeout(1500);const cockpit=await sample();await page.screenshot({path:info.outputPath('moving-cockpit.png')});expect(cockpit.elapsed).toBeGreaterThan(moving.elapsed);expect(cockpit.rpm).not.toBe(initial.rpm);
+      15 |  if(mobile)await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});else await page.keyboard.up('KeyG');
+      16 |  fs.writeFileSync(info.outputPath('motion.json'),JSON.stringify({mobile,initial,moving,cockpit,errors},null,2));await info.attach('motion',{body:Buffer.from(JSON.stringify({mobile,initial,moving,cockpit,errors},null,2)),contentType:'application/json'});expect(errors).toEqual([]);await context.close();
+        at /workspace/chainsaw-aliens/tests/playwright/alyssum-driving.spec.js:13:2
+
+    Error Context: ../../tmp/alyssum-browser-final/alyssum-driving-Alyssum-desktop-keyboard-moving-gameplay/error-context.md
+
+  2) tests/playwright/alyssum-driving.spec.js:3:34 › Alyssum handheld touch moving gameplay ────────
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThan[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: > [32m2[39m
+    Received:   [31m0.000001[39m
+
+    Call Log:
+    - Timeout 30000ms exceeded while waiting on the predicate
+
+      11 |  const sample=()=>page.evaluate(()=>{const e=window.__game.raceEditor,s=e.playtestSession;return {id:s.runtimeCar.id,x:s.worldX,z:s.worldZ,speed:s.speedMps,rpm:s.engineRpm,gear:s.gear,elapsed:s.elapsedMs,throttle:e.raceInput.throttleAxis,camera:s.cameraView};});const initial=await sample();
+      12 |  let cdp;if(mobile){await page.screenshot({path:info.outputPath('before-touch.png')});const pt=await page.evaluate(()=>{const e=window.__game.raceEditor,b=e.buttons.find(b=>b.playtestControl==='go').bounds;const c=window.__game.canvas,r=c.getBoundingClientRect();return {x:r.x+(b.x+b.w/2)*r.width/c.width,y:r.y+(b.y+b.h/2)*r.height/c.height};});cdp=await context.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...pt,id:1}]});}else await page.keyboard.down('KeyG');
+    > 13 |  await expect.poll(async()=>Math.abs((await sample()).speed),{timeout:30000}).toBeGreaterThan(2);await page.waitForTimeout(1800);const moving=await sample();expect(Math.hypot(moving.x-initial.x,moving.z-initial.z)).toBeGreaterThan(2);expect(moving.rpm).toBeGreaterThan(850);await page.screenshot({path:info.outputPath('moving-exterior.png')});
+         |  ^
+      14 |  await page.evaluate(()=>{const e=window.__game.raceEditor;e.raceInput.cameraView='first-person';e.playtestSession.cameraView='first-person';});await page.waitForTimeout(1500);const cockpit=await sample();await page.screenshot({path:info.outputPath('moving-cockpit.png')});expect(cockpit.elapsed).toBeGreaterThan(moving.elapsed);expect(cockpit.rpm).not.toBe(initial.rpm);
+      15 |  if(mobile)await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});else await page.keyboard.up('KeyG');
+      16 |  fs.writeFileSync(info.outputPath('motion.json'),JSON.stringify({mobile,initial,moving,cockpit,errors},null,2));await info.attach('motion',{body:Buffer.from(JSON.stringify({mobile,initial,moving,cockpit,errors},null,2)),contentType:'application/json'});expect(errors).toEqual([]);await context.close();
+        at /workspace/chainsaw-aliens/tests/playwright/alyssum-driving.spec.js:13:2
+
+    Error Context: ../../tmp/alyssum-browser-final/alyssum-driving-Alyssum-handheld-touch-moving-gameplay/error-context.md
+
+  3) tests/playwright/alyssum-preview.spec.js:6:1 › Alyssum 2009 actual editor preview composites exterior/cockpit and advances production physics 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThan[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: > [32m0.25[39m
+    Received:   [31m0.0000019999999949504854[39m
+
+    Call Log:
+    - Timeout 30000ms exceeded while waiting on the predicate
+
+      31 |  // The real editor autoplays its production RaceSimulation/VehicleDynamicsRunner
+      32 |  // preview. Never substitute a synthetic physics fixture or mutate race documents.
+    > 33 |  await expect.poll(()=>page.evaluate(()=>{
+         |  ^
+      34 |   const e=window.__game.carEditor,s=e.carEditorPreviewPlaytest?.session;
+      35 |   if(e.carEditorPreviewRuntimeFailureMessage)throw Error(e.carEditorPreviewRuntimeFailureMessage);
+      36 |   return Math.abs(Number(s?.speedMps||0));
+        at /workspace/chainsaw-aliens/tests/playwright/alyssum-preview.spec.js:33:2
+
+    Error Context: ../../tmp/alyssum-browser-final/alyssum-preview-Alyssum-20-650b5-advances-production-physics/error-context.md
+
+  4) tests/playwright/alyssum-static-picker.spec.js:3:29 › Alyssum desktop keyboard static picker initial page, later page, cockpit and keyboard drive 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThan[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: > [32m2[39m
+    Received:   [31m9.999999974752427e-7[39m
+
+    Call Log:
+    - Timeout 30000ms exceeded while waiting on the predicate
+
+      19 |  const sample=()=>page.evaluate(()=>{const e=window.__game.raceEditor,s=e.playtestSession;return {id:s.runtimeCar.id,x:s.worldX,z:s.worldZ,speed:s.speedMps,rpm:s.engineRpm,gear:s.gear,elapsed:s.elapsedMs,throttle:e.raceInput.throttleAxis,camera:s.cameraView};});await page.evaluate(()=>{const e=window.__game.raceEditor;e.raceInput.cameraView='first-person';e.playtestSession.cameraView='first-person';});const initial=await sample();
+      20 |  let cdp;if(mobile){await page.screenshot({path:info.outputPath('before-touch.png')});const pt=await page.evaluate(()=>{const e=window.__game.raceEditor,b=e.buttons.find(b=>b.playtestControl==='go').bounds;const c=window.__game.canvas,r=c.getBoundingClientRect();return {x:r.x+(b.x+b.w/2)*r.width/c.width,y:r.y+(b.y+b.h/2)*r.height/c.height};});cdp=await context.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...pt,id:1}]});}else await page.keyboard.down('KeyG');
+    > 21 |  await expect.poll(async()=>Math.abs((await sample()).speed),{timeout:30000}).toBeGreaterThan(2);await page.waitForTimeout(1800);const moving=await sample();expect(Math.hypot(moving.x-initial.x,moving.z-initial.z)).toBeGreaterThan(2);expect(moving.rpm).toBeGreaterThan(850);await page.screenshot({path:info.outputPath('moving-exterior.png')});
+         |  ^
+      22 |  await page.evaluate(()=>{const e=window.__game.raceEditor;e.raceInput.cameraView='first-person';e.playtestSession.cameraView='first-person';});await page.waitForTimeout(1500);const cockpit=await sample();await page.screenshot({path:info.outputPath('moving-cockpit.png')});expect(cockpit.elapsed).toBeGreaterThan(moving.elapsed);expect(cockpit.rpm).not.toBe(initial.rpm);
+      23 |  if(mobile)await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});else await page.keyboard.up('KeyG');
+      24 |  fs.writeFileSync(info.outputPath('motion.json'),JSON.stringify({mobile,initial,moving,cockpit,errors},null,2));await info.attach('motion',{body:Buffer.from(JSON.stringify({mobile,initial,moving,cockpit,errors},null,2)),contentType:'application/json'});expect(errors).toEqual([]);await context.close();
+        at /workspace/chainsaw-aliens/tests/playwright/alyssum-static-picker.spec.js:21:2
+
+    Error Context: ../../tmp/alyssum-browser-final/alyssum-static-picker-Alys-d5034--cockpit-and-keyboard-drive/error-context.md
+
+  4 failed
+    tests/playwright/alyssum-driving.spec.js:3:34 › Alyssum desktop keyboard moving gameplay ───────
+    tests/playwright/alyssum-driving.spec.js:3:34 › Alyssum handheld touch moving gameplay ─────────
+    tests/playwright/alyssum-preview.spec.js:6:1 › Alyssum 2009 actual editor preview composites exterior/cockpit and advances production physics 
+    tests/playwright/alyssum-static-picker.spec.js:3:29 › Alyssum desktop keyboard static picker initial page, later page, cockpit and keyboard drive 
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
