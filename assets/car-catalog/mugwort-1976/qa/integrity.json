@@ -1,0 +1,15 @@
+{
+  "base": "403b769b7997e82e749a685835de8b5dd2d7435d",
+  "baseTree": "b0e46e66b4c0928f35cb53c008f92f6dafeebb3e",
+  "unchangedTrackedFiles": 19634,
+  "unchangedManifestEntries": 1892,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/betonyCatalog.test.js",
+    "tests/unit/catalogCameraSmoke.test.js"
+  ],
+  "freeBytes": 56997888000,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}
