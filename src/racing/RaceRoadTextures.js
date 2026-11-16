@@ -59,7 +59,8 @@ export function texturedRoadStrip(nearLeft, nearRight, farLeft, farRight, nearDi
     points: [point(farLeft, far.center-far.span/2, farDistance), point(farRight, far.center+far.span/2, farDistance),
       point(nearRight, near.center+near.span/2, nearDistance), point(nearLeft, near.center-near.span/2, nearDistance)],
     depthOffset: source.includes('shoulder') ? -.091 : source.includes('boundary') ? -.09 : -.08,
-    threeLiftM: source.includes('boundary') ? .035 : .012,
+    // Base artwork replaces the road surface; lifting it opens a visible seam.
+    threeLiftM: 0,
     textureWorldM: repeatM
   };
 }
@@ -141,7 +142,7 @@ export function buildRoadTextureStrips(worldBake, settings, { marginWidth = .22,
               const mesh=texturedRoadStrip(point(left,start),point(right,start),point(left,end),point(right,end),start,end,other,layer+'-texture-blend');
               const alpha=d=>{const t=Math.max(0,1-Math.abs(d-boundary)/band);return .5*t*t*(3-2*t);};
               mesh.points.forEach((p,k)=>p.alpha=alpha(k<2?end:start));
-              Object.assign(mesh,{vertexAlpha:true,fallbackOpacity:(alpha(start)+alpha(end))/2,threeLiftM:.014,depthOffset:layer === 'road' ? -.080005 : -.091005});output.push(mesh);
+              Object.assign(mesh,{vertexAlpha:true,fallbackOpacity:(alpha(start)+alpha(end))/2,threeLiftM:.002,depthOffset:layer === 'road' ? -.080005 : -.091005});output.push(mesh);
             }
           }
         }

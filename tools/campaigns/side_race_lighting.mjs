@@ -10,8 +10,8 @@ export function applySideRaceLighting(race, eventId) {
   race.timeOfDay=preset.timeOfDay;
   race.brightness=preset.brightness;
   race.visualFx={...previous,...preset.visualFx,
-    // Match scene lighting and avoid bringing back the unwanted blur.
-    skyBrightness:preset.brightness,motionBlur:previous.motionBlur??0,speedLines:previous.speedLines??0,
+    // Keep authored panoramas visible independently of road lighting.
+    skyBrightness:preset.visualFx.skyBrightness,motionBlur:previous.motionBlur??0,speedLines:previous.speedLines??0,
     speedLineArtRef:previous.speedLineArtRef||'',speedLineArtMode:previous.speedLineArtMode||'overlay'};
   return name;
 }
