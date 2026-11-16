@@ -1094,7 +1094,9 @@
       "catalog-hempnettle-1955-body": "art/catalog-hempnettle-1955-body/document.json",
       "catalog-hempnettle-1955-dashboard": "art/catalog-hempnettle-1955-dashboard/document.json",
       "catalog-santolina-1967-body": "art/catalog-santolina-1967-body/document.json",
-      "catalog-santolina-1967-dashboard": "art/catalog-santolina-1967-dashboard/document.json"
+      "catalog-santolina-1967-dashboard": "art/catalog-santolina-1967-dashboard/document.json",
+      "catalog-teasel-2006-body": "art/catalog-teasel-2006-body/document.json",
+      "catalog-teasel-2006-dashboard": "art/catalog-teasel-2006-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1229,7 +1231,8 @@
       "Mignonette 2011": "cars/Mignonette 2011/document.json",
       "Calamint 2003": "cars/Calamint 2003/document.json",
       "Hempnettle 1955": "cars/Hempnettle 1955/document.json",
-      "Santolina 1967": "cars/Santolina 1967/document.json"
+      "Santolina 1967": "cars/Santolina 1967/document.json",
+      "Teasel 2006": "cars/Teasel 2006/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
