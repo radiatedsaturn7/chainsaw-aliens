@@ -1,0 +1,32 @@
+{
+  "49aa617a37a4b9c629243ee1e62f532e01134076": {
+    "matches": {
+      "Escudo/Vitara/Sidekick/Tracker": [],
+      "240Z/Fairlady S30": [],
+      "Agrimony/Harebell": []
+    },
+    "manifestCarsIncludingTemplates": 111
+  },
+  "2b699e5d92fef0f520913cfac3a3694c9ca10286": {
+    "matches": {
+      "Escudo/Vitara/Sidekick/Tracker": [],
+      "240Z/Fairlady S30": [],
+      "Agrimony/Harebell": []
+    },
+    "manifestCarsIncludingTemplates": 96
+  },
+  "oldElevenCrosswalk": [
+    "2004CadillacXLR",
+    "2006LancerEvolutionIX",
+    "1994NissanQuestXE",
+    "1993HondaCivicdelSolSi",
+    "2015Abarth695biposto",
+    "1973AMCGremlin232",
+    "1982DeLorean",
+    "1958AustinHealeySpriteMkI",
+    "1992Mercedes500E",
+    "1970Datsun510fourdoor",
+    "2016DodgeViperSRT"
+  ],
+  "oldElevenOverlap": false
+}
