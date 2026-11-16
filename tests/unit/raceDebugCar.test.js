@@ -45,13 +45,13 @@ test('failed car artwork preparation keeps old session alive',async()=>{
  await assert.rejects(editor.selectRaceDebugCar(picker),/prepare car artwork/);
  assert.deepEqual(calls,[]);assert.equal(editor.playtestSession.raceTravelPreparedArtOnly,true);
 });
-test('lighting presets and deterministic imports match sky and scene brightness',()=>{
+test('lighting presets and deterministic imports keep sky artwork visible',()=>{
  for(const name of ['morning','noon','evening','night']){
-  const preset=raceFxPreset(name);assert.equal(preset.visualFx.skyBrightness,preset.brightness);
+  const preset=raceFxPreset(name);assert.equal(preset.visualFx.skyBrightness,1);
  }
  for(let i=0;i<30;i++){
   const race={};applySideRaceLighting(race,'lighting-test-'+i);
-  assert.equal(race.visualFx.skyBrightness,race.brightness);
+  assert.equal(race.visualFx.skyBrightness,1);
  }
 });
 

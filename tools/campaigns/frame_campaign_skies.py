@@ -15,7 +15,7 @@ def frame(race):
     if not settings.get('offsetYRatio'):
         race['skyboxSettings'] = {**settings, 'offsetYRatio': -0.1}
     if race.get('name') == 'Tower Hill Road':
-        race['visualFx'] = {**race.get('visualFx', {}), 'skyBrightness': 0.3}
+        race['visualFx'] = {**race.get('visualFx', {}), 'skyBrightness': 1}
 
 
 if __name__ == '__main__':

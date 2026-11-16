@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from '../../src/vendorBridge/three.js';
-import {raceStartsWithHeadlights,raceBrightness,applyRaceEnvironmentDraft,rallyLightPose,rearLightPose,installRaceLighting,updateRaceLighting,RALLY_LIGHT_REACH_M} from '../../src/racing/RaceLighting.js';
+import {raceStartsWithHeadlights,raceBrightness,applyRaceEnvironmentDraft,rallyLightPose,rearLightPose,installRaceLighting,updateRaceLighting,RALLY_LIGHT_REACH_M,LOW_BEAM_REACH_M,HIGH_BEAM_REACH_M,nightAmbientBrightness} from '../../src/racing/RaceLighting.js';
 import RaceEditor from '../../src/ui/RaceEditor.js';
 test('night defaults to .05, day to 1, and explicit darkness is preserved',()=>{
  assert.equal(raceBrightness({timeOfDay:'night'}),.05);assert.equal(raceBrightness({timeOfDay:'day'}),1);assert.equal(raceBrightness({timeOfDay:'night',brightness:0}),0);assert.equal(raceBrightness({timeOfDay:'night',brightness:.2}),.2);
@@ -28,10 +28,14 @@ test('basic, instanced and custom shader hooks preserve existing hooks and share
  const custom=new THREE.ShaderMaterial();installRaceLighting(custom,u);const c={vertexShader:'void main(){gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:'void main(){gl_FragColor=vec4(1.0);}',uniforms:{}};custom.onBeforeCompile(c);assert.match(c.vertexShader,/vRtgWorld=\(modelMatrix/);assert.match(c.fragmentShader,/gl_FragColor.rgb = rtgFog/);
  updateRaceLighting(renderer,{brightness:1,pose:{}});assert.equal(u.rtgHeadlights.value,1);assert.equal(u.rtgAmbient.value,1);
 });
-test('headlamp specification uses two half-power beams rated at 900m with a soft range cutoff',()=>{
- assert.equal(RALLY_LIGHT_REACH_M,900);assert.equal(2*405000/(900*900),1);
+test('lamp reach and coverage are distinct without range-squared overexposure',()=>{
+ assert.equal(LOW_BEAM_REACH_M,55);assert.equal(HIGH_BEAM_REACH_M,160);assert.equal(RALLY_LIGHT_REACH_M,240);
  const material=new THREE.MeshBasicMaterial();installRaceLighting(material,{});const shader={vertexShader:THREE.ShaderLib.basic.vertexShader,fragmentShader:THREE.ShaderLib.basic.fragmentShader,uniforms:{}};material.onBeforeCompile(shader);
- assert.match(shader.fragmentShader,/ahead<=0.0/);assert.match(shader.fragmentShader,/smoothstep\(reach,reach\*1.33,distanceM\)/);assert.match(shader.fragmentShader,/.57735/);
+ assert.match(shader.fragmentShader,/ahead<=0.0/);assert.match(shader.fragmentShader,/smoothstep\(reach,reach\*1.33,distanceM\)/);assert.match(shader.fragmentShader,/240.0,.62,0.0,2.4,110.0,.28/);
+ assert.match(shader.fragmentShader,/mix\(.22,.24,rtgHighBeam\)/);
+ assert.match(shader.fragmentShader,/strength\/\(1.0\+distanceM\*distanceM/);
+ assert.ok(!shader.fragmentShader.includes('reach*reach'));
+ assert.match(shader.fragmentShader,/\.88\*lux\/\(lux\+1.0\)/);
 });
 
 test('headlight initial state follows the race, while pause settings override weather',()=>{
@@ -137,4 +141,34 @@ test('snow clouds use ambient-only color and fade coverage without a headlight f
  updateRaceLighting(renderer,{brightness:.04,pose:{x:0,y:0,z:0},headlightIntensity:1,highBeams:true,auxIntensity:1});
  assert.equal(uniforms.rtgAmbient.value,.04,'lamps must not raise the cloud ambient level');
  assert.match(cloud.customProgramCacheKey(),/snow-cloud/);
+});
+
+
+test('night ground fill preserves daylight, authored darkness and weather modulation',()=>{
+ assert.equal(nightAmbientBrightness({timeOfDay:'night'},.05),.088);
+ assert.equal(nightAmbientBrightness({timeOfDay:'day'},.05),.05);
+ assert.equal(nightAmbientBrightness({timeOfDay:'night'},0),0);
+ assert.equal(nightAmbientBrightness({timeOfDay:'night'},1),1);
+ const e=new RaceEditor({});e.selectedRace.timeOfDay='night';
+ e.getRaceRenderBrightness=()=>.05;e.getRaceWeatherState=()=>({id:'snow'});
+ e.getRaceWeatherVisualIntensity=()=>1;e.getRaceLightningFlash=()=>0;
+ assert.ok(Math.abs(e.getRaceLightingBrightness()-.088*.8)<1e-10);
+});
+
+test('blue distance fog toggles without changing weather visibility and uses material color space',()=>{
+ const material=new THREE.MeshBasicMaterial();
+ const renderer={scene:{traverse(fn){fn({material});}}};
+ const u=updateRaceLighting(renderer,{night:true,brightness:.088,visibilityDistanceM:300});
+ assert.equal(u.rtgNight.value,1);assert.equal(u.rtgVisibility.value,300);
+ const shader={vertexShader:THREE.ShaderLib.basic.vertexShader,fragmentShader:THREE.ShaderLib.basic.fragmentShader,uniforms:{}};
+ material.onBeforeCompile(shader);
+ assert.match(shader.fragmentShader,/#define RTG_LINEAR_FOG/);
+ assert.match(shader.fragmentShader,/rtgNight\*\.55/);
+ assert.match(shader.fragmentShader,/distanceM-75.0/);
+ assert.match(shader.fragmentShader,/vec3\(.10,.16,.25\)/);
+ const custom=new THREE.ShaderMaterial();installRaceLighting(custom,u);
+ const c={vertexShader:'void main(){gl_Position=vec4(position,1.0);}',fragmentShader:'void main(){gl_FragColor=vec4(1.0);}',uniforms:{}};
+ custom.onBeforeCompile(c);assert.ok(!c.fragmentShader.includes('#define RTG_LINEAR_FOG'));
+ updateRaceLighting(renderer,{brightness:1});assert.equal(u.rtgNight.value,0);
+ updateRaceLighting(renderer,{night:true,brightness:0});assert.equal(u.rtgNight.value,0);
 });
