@@ -1,0 +1,37 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (195.719509ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (6.125696ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (51.869294ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (7724.931127ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (16.050873ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (3399.600558ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (140.556088ms)
+✔ requires explicit source data and mappings (0.652158ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (60.085883ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (211.680216ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (1.85992ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (90.865869ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (60.510658ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (386.664084ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (623.691641ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (752.72395ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (7328.934424ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (8375.563962ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.561743ms)
+✔ Comfrey preserves September1991 KC2WD5MT net ratings and unladen mass (0.774612ms)
+✔ Comfrey native roundtrip preserves published five-speed reductions and explicit manual assist (132.643549ms)
+✔ Comfrey has eight distinct original exterior frames, shared tire layers and original hashes (126.20262ms)
+✔ separate staging branch retains 117 playable documents and excludes3 legacy system templates (182.550242ms)
+✔ Comfrey 1991 published wheel graphics cover original opening heights without changing physical radius (501.704906ms)
+✔ Restharrow preserves exact French4x4 diesel table and separates assumptions (1.039559ms)
+✔ Restharrow native roundtrip preserves source-constrained six-speed estimates and explicit manual assist (160.575966ms)
+✔ Restharrow has eight distinct original exterior frames, shared tire layers and original hashes (150.098317ms)
+✔ separate staging branch retains 116 playable documents and excludes3 legacy system templates (241.681759ms)
+✔ Restharrow nominal gearing matches the brochure road-speed progression (0.340922ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 33802.524918
