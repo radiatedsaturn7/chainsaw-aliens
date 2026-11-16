@@ -1068,7 +1068,9 @@
       "catalog-restharrow-2013-body": "art/catalog-restharrow-2013-body/document.json",
       "catalog-restharrow-2013-dashboard": "art/catalog-restharrow-2013-dashboard/document.json",
       "catalog-comfrey-1991-body": "art/catalog-comfrey-1991-body/document.json",
-      "catalog-comfrey-1991-dashboard": "art/catalog-comfrey-1991-dashboard/document.json"
+      "catalog-comfrey-1991-dashboard": "art/catalog-comfrey-1991-dashboard/document.json",
+      "catalog-sainfoin-1985-body": "art/catalog-sainfoin-1985-body/document.json",
+      "catalog-sainfoin-1985-dashboard": "art/catalog-sainfoin-1985-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1190,7 +1192,8 @@
       "Betony 2021": "cars/Betony 2021/document.json",
       "Mugwort 1976": "cars/Mugwort 1976/document.json",
       "Restharrow 2013": "cars/Restharrow 2013/document.json",
-      "Comfrey 1991": "cars/Comfrey 1991/document.json"
+      "Comfrey 1991": "cars/Comfrey 1991/document.json",
+      "Sainfoin 1985": "cars/Sainfoin 1985/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
