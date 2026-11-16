@@ -1070,7 +1070,9 @@
       "catalog-comfrey-1991-body": "art/catalog-comfrey-1991-body/document.json",
       "catalog-comfrey-1991-dashboard": "art/catalog-comfrey-1991-dashboard/document.json",
       "catalog-sainfoin-1985-body": "art/catalog-sainfoin-1985-body/document.json",
-      "catalog-sainfoin-1985-dashboard": "art/catalog-sainfoin-1985-dashboard/document.json"
+      "catalog-sainfoin-1985-dashboard": "art/catalog-sainfoin-1985-dashboard/document.json",
+      "catalog-sneezewort-1965-body": "art/catalog-sneezewort-1965-body/document.json",
+      "catalog-sneezewort-1965-dashboard": "art/catalog-sneezewort-1965-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1193,7 +1195,8 @@
       "Mugwort 1976": "cars/Mugwort 1976/document.json",
       "Restharrow 2013": "cars/Restharrow 2013/document.json",
       "Comfrey 1991": "cars/Comfrey 1991/document.json",
-      "Sainfoin 1985": "cars/Sainfoin 1985/document.json"
+      "Sainfoin 1985": "cars/Sainfoin 1985/document.json",
+      "Sneezewort 1965": "cars/Sneezewort 1965/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",
