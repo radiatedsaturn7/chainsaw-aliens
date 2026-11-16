@@ -1,0 +1,37 @@
+{
+  "mobile": true,
+  "initial": {
+    "id": "woodruff-1991",
+    "x": 0,
+    "z": 0,
+    "speed": 0,
+    "rpm": 750,
+    "gear": 1,
+    "elapsed": 1016.6333333333326,
+    "throttle": 0,
+    "camera": "third-person"
+  },
+  "moving": {
+    "id": "woodruff-1991",
+    "x": -0.010456,
+    "z": 14.109369,
+    "speed": 10.271255,
+    "rpm": 4093.204218,
+    "gear": 1,
+    "elapsed": 5116.366666666662,
+    "throttle": 1,
+    "camera": "third-person"
+  },
+  "cockpit": {
+    "id": "woodruff-1991",
+    "x": -0.025321,
+    "z": 32.604257,
+    "speed": 13.940403,
+    "rpm": 4206.529686,
+    "gear": 2,
+    "elapsed": 6699.666666666655,
+    "throttle": 1,
+    "camera": "first-person"
+  },
+  "errors": []
+}

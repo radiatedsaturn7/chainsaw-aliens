@@ -1076,7 +1076,9 @@
       "catalog-rue-2011-body": "art/catalog-rue-2011-body/document.json",
       "catalog-rue-2011-dashboard": "art/catalog-rue-2011-dashboard/document.json",
       "catalog-fumitory-1974-body": "art/catalog-fumitory-1974-body/document.json",
-      "catalog-fumitory-1974-dashboard": "art/catalog-fumitory-1974-dashboard/document.json"
+      "catalog-fumitory-1974-dashboard": "art/catalog-fumitory-1974-dashboard/document.json",
+      "catalog-woodruff-1991-body": "art/catalog-woodruff-1991-body/document.json",
+      "catalog-woodruff-1991-dashboard": "art/catalog-woodruff-1991-dashboard/document.json"
     },
     "cars": {
       "2022 Subaru BRZ": "cars/2022 Subaru BRZ/document.json",
@@ -1202,7 +1204,8 @@
       "Sainfoin 1985": "cars/Sainfoin 1985/document.json",
       "Sneezewort 1965": "cars/Sneezewort 1965/document.json",
       "Rue 2011": "cars/Rue 2011/document.json",
-      "Fumitory 1974": "cars/Fumitory 1974/document.json"
+      "Fumitory 1974": "cars/Fumitory 1974/document.json",
+      "Woodruff 1991": "cars/Woodruff 1991/document.json"
     },
     "cutscenes": {
       "c1": "cutscenes/c1/document.json",

@@ -1,0 +1,36 @@
+✔ automatic clutch supplies sustained launch torque without requiring wheel speed, FWD/RWD/AWD and reverse (202.211185ms)
+✔ clutch take-up is progressive, releases on pedal lift/braking, and restarts gently (8.905235ms)
+✔ manual clutch and torque converters do not inherit automatic take-up; low grip remains TC-limited (60.546341ms)
+✔ saved cars pull away on a dry 11% hill with aids on and off (6441.755001ms)
+✔ take-up state resumes deterministically and neutral clears the engagement ramp (14.490501ms)
+✔ Silverleaf arrests rollback and resumes climbing after a brake-held stop (2770.705062ms)
+✔ catalog uses editor serialization and preserves original eight angles and provenance (468.296382ms)
+✔ requires explicit source data and mappings (0.843745ms)
+✔ writes compact art/metadata/manifest, refuses duplicate without overwriting (76.971523ms)
+✔ Pillow PNG adapter preserves RGBA and rejects non-PNG inputs (203.660389ms)
+✔ Kestrel pilot retains sourced geometry, ratios, torque and power anchors (2.361561ms)
+✔ Flint coupe preserves sourced units and explicit mass/gearing uncertainty (80.654733ms)
+✔ Caravan-9 has US LX7-passenger mass, exact8AT and matching minivan geometry (52.849253ms)
+✔ 2018 Kestrel 660 measured wheel wells coincide with production rig after editor roundtrip (604.319078ms)
+✔ 2005 Flint Coupe measured wheel wells coincide with production rig after editor roundtrip (577.881912ms)
+✔ 2024 Caravan-9 measured wheel wells coincide with production rig after editor roundtrip (680.737049ms)
+✔ all sourced catalog cars use actual fixed-rear editor mode and existing surface FX (5866.038176ms)
+✔ published source-matched cars retain fixed-rear and particle art after editor roundtrip (5437.426414ms)
+✔ EV has tire smoke and spray, not an invented exhaust emitter; skid marks remain separate (0.443645ms)
+✔ Fumitory preserves US1974 no-AC mass, net rating and derived reductions (0.916584ms)
+✔ Fumitory native roundtrip preserves derived four-speed reductions and explicit manual assist (84.362128ms)
+✔ Fumitory has eight distinct original exterior frames, shared tire layers and original hashes (126.081023ms)
+✔ separate staging branch retains 121 playable documents and excludes3 legacy system templates (190.630473ms)
+✔ Woodruff preserves US1991 Deluxe RWD manual trim and SAE net anchors (1.474992ms)
+✔ Woodruff native roundtrip preserves estimated five-speed reductions and explicit manual assist (94.756711ms)
+✔ Woodruff has eight distinct original exterior frames, shared tire layers and original hashes (135.83395ms)
+✔ separate staging branch retains 122 playable documents and excludes3 legacy system templates (141.067078ms)
+✔ Woodruff 1991 published wheel graphics cover original opening heights without changing physical radius (308.791594ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11974.16366
