@@ -1,0 +1,54 @@
+{
+  "first": {
+    "selected": "2005 Flint Coupe",
+    "start": 0,
+    "visible": [
+      "2005 Flint Coupe",
+      "2018 Kestrel 660",
+      "2023 Volt-Hound GT",
+      "2024 Caravan-9"
+    ],
+    "targetIndex": 78,
+    "selectedIndex": 0,
+    "loadedCars": 7,
+    "totalChoices": 123,
+    "carId": "flint-coupe-2005",
+    "art": [
+      {
+        "ref": "catalog-flint-coupe-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  },
+  "later": {
+    "selected": "Osier 2005",
+    "start": 76,
+    "visible": [
+      "Nettle Turbo 2017",
+      "Nightcoil GT 1995",
+      "Osier 2005",
+      "Pennyroyal 1994"
+    ],
+    "targetIndex": 78,
+    "selectedIndex": 78,
+    "loadedCars": 83,
+    "totalChoices": 123,
+    "carId": "osier-2005",
+    "art": [
+      {
+        "ref": "catalog-osier-2005-body",
+        "ready": true
+      },
+      {
+        "ref": "8582 tires 3",
+        "ready": true
+      }
+    ],
+    "errors": []
+  }
+}

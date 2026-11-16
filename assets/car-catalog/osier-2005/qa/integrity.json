@@ -1,0 +1,15 @@
+{
+  "base": "40a2ada27fa4f518e958ed3b85f57ff30321b282",
+  "baseTree": "87499db34e909317dd0aa5ec8574d9aaea88374f",
+  "unchangedTrackedFiles": 20161,
+  "unchangedManifestEntries": 1916,
+  "mismatches": [],
+  "allowedChanges": [
+    "data/server-storage/files/manifest.json",
+    "tests/unit/catalogCameraSmoke.test.js",
+    "tests/unit/woodruffCatalog.test.js"
+  ],
+  "freeBytes": 56237137920,
+  "staging": "f51518946685c18a895e73309c939a5a54e75d84",
+  "stagingTree": "7dd651525fccdb9b0de4a903957eed40b7960d27"
+}
